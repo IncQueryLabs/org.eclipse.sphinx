@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rm:rmap xmlns:bc="http://www.eclipse.org/buckminster/Common-1.0" xmlns:rm="http://www.eclipse.org/buckminster/RMap-1.0">
+  <rm:locator pattern="^org\.eclipse\.sphinx(\..+)*" searchPathRef="org.eclipse.sphinx"/>
+  <rm:searchPath name="org.eclipse.sphinx">
+    <rm:provider componentTypes="osgi.bundle" readerType="svn">
+      <rm:uri format="https://{1}:{2}@www.artop.org/svn/development/core/branches/sphinx2/plugins/{0}?moduleAfterTag&amp;moduleAfterBranch">
+        <bc:propertyRef key="buckminster.component"/>
+        <bc:propertyRef key="svn.username"/>
+        <bc:propertyRef key="svn.password"/>
+      </rm:uri>
+    </rm:provider>
+    <rm:provider componentTypes="osgi.bundle" readerType="svn">
+      <rm:uri format="https://{1}:{2}@www.artop.org/svn/development/core/branches/sphinx2/examples/{0}?moduleAfterTag&amp;moduleAfterBranch">
+        <bc:propertyRef key="buckminster.component"/>
+        <bc:propertyRef key="svn.username"/>
+        <bc:propertyRef key="svn.password"/>
+      </rm:uri>
+    </rm:provider>
+    <rm:provider componentTypes="osgi.bundle" readerType="svn">
+      <rm:uri format="https://{1}:{2}@www.artop.org/svn/development/core/branches/sphinx2/docs/{0}?moduleAfterTag&amp;moduleAfterBranch">
+        <bc:propertyRef key="buckminster.component"/>
+        <bc:propertyRef key="svn.username"/>
+        <bc:propertyRef key="svn.password"/>
+      </rm:uri>
+    </rm:provider>
+    <rm:provider componentTypes="osgi.bundle" readerType="svn">
+      <rm:uri format="https://{1}:{2}@www.artop.org/svn/development/core/branches/sphinx2/tests/{0}?moduleAfterTag&amp;moduleAfterBranch">
+        <bc:propertyRef key="buckminster.component"/>
+        <bc:propertyRef key="svn.username"/>
+        <bc:propertyRef key="svn.password"/>
+      </rm:uri>
+    </rm:provider>
+    <rm:provider componentTypes="eclipse.feature" readerType="svn">
+      <rm:uri format="https://{1}:{2}@www.artop.org/svn/development/core/branches/sphinx2/features/{0}-feature?moduleAfterTag&amp;moduleAfterBranch">
+        <bc:propertyRef key="buckminster.component"/>
+        <bc:propertyRef key="svn.username"/>
+        <bc:propertyRef key="svn.password"/>
+      </rm:uri>
+    </rm:provider>
+    <rm:provider componentTypes="osgi.bundle" readerType="svn">
+      <rm:uri format="https://{1}:{2}@www.artop.org/svn/development/validation/branches/sphinx2/plugins/{0}?moduleAfterTag&amp;moduleAfterBranch">
+        <bc:propertyRef key="buckminster.component"/>
+        <bc:propertyRef key="svn.username"/>
+        <bc:propertyRef key="svn.password"/>
+      </rm:uri>
+    </rm:provider>
+    <rm:provider componentTypes="osgi.bundle" readerType="svn">
+      <rm:uri format="https://{1}:{2}@www.artop.org/svn/development/validation/branches/sphinx2/examples/{0}?moduleAfterTag&amp;moduleAfterBranch">
+        <bc:propertyRef key="buckminster.component"/>
+        <bc:propertyRef key="svn.username"/>
+        <bc:propertyRef key="svn.password"/>
+      </rm:uri>
+    </rm:provider>
+    <rm:provider componentTypes="osgi.bundle" readerType="svn">
+      <rm:uri format="https://{1}:{2}@www.artop.org/svn/development/validation/branches/sphinx2/docs/{0}?moduleAfterTag&amp;moduleAfterBranch">
+        <bc:propertyRef key="buckminster.component"/>
+        <bc:propertyRef key="svn.username"/>
+        <bc:propertyRef key="svn.password"/>
+      </rm:uri>
+    </rm:provider>
+  </rm:searchPath>
+</rm:rmap>

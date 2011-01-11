@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.sphinx.tests.platform.integration;singleton:=true
+Bundle-Version: 0.7.0.qualifier
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Require-Bundle: org.junit,
+ org.eclipse.sphinx.testutils.integration.referenceworkspace
+Bundle-ActivationPolicy: lazy
+Export-Package: org.eclipse.sphinx.tests.platform.integration.internal,
+ org.eclipse.sphinx.tests.platform.integration.resource,
+ org.eclipse.sphinx.tests.platform.integration.testsuite,
+ org.eclipse.sphinx.tests.platform.integration.util

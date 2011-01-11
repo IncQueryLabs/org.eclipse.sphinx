@@ -1,0 +1,79 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2008-2010 See4sys and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     See4sys - Initial API and implementation
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.platform.preferences;
+
+import org.eclipse.core.runtime.Assert;
+
+/**
+ * Abstract implementation of {@link IEclipsePreference}.
+ */
+public abstract class AbstractEclipsePreference<T> implements IEclipsePreference<T> {
+
+	/**
+	 * Qualifier of the preference.
+	 */
+	protected String qualifier;
+
+	/**
+	 * Key of the preference.
+	 */
+	protected String key;
+
+	/**
+	 * Default string value for the preference.
+	 */
+	protected String defaultValueAsString;
+
+	/**
+	 * Constructor of the class. Records the qualifier and the key that identify the preference, and the default value.
+	 * The qualifier and the key should not be null. The default value is provided as a string.
+	 * 
+	 * @param qualifier
+	 *            the qualifier of the preference
+	 * @param key
+	 *            the key of the preference
+	 * @param defaultValueAsString
+	 *            the default value of the preference
+	 */
+	public AbstractEclipsePreference(String qualifier, String key, String defaultValueAsString) {
+		Assert.isNotNull(qualifier);
+		Assert.isNotNull(key);
+
+		this.qualifier = qualifier;
+		this.key = key;
+		this.defaultValueAsString = defaultValueAsString;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.preferences.IEclipsePreference#getQualifier()
+	 */
+	public String getQualifier() {
+		return qualifier;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.preferences.IEclipsePreference#getKey()
+	 */
+	public String getKey() {
+		return key;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.preferences.IEclipsePreference#getDefaultValueAsString()
+	 */
+	public String getDefaultValueAsString() {
+		return defaultValueAsString;
+	}
+}

@@ -1,0 +1,555 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2008-2010 See4sys, BMW Car IT and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     See4sys - Initial API and implementation
+ *     BMW Car IT - Added/Updated javadoc
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.emf.edit;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.MissingResourceException;
+
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CommandWrapper;
+import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.common.command.UnexecutableCommand;
+import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.Enumerator;
+import org.eclipse.emf.common.util.ResourceLocator;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.util.UniqueEList;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EEnumLiteral;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.ExtendedMetaData;
+import org.eclipse.emf.ecore.util.FeatureMap;
+import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.emf.edit.EMFEditPlugin;
+import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.command.CommandParameter;
+import org.eclipse.emf.edit.command.RemoveCommand;
+import org.eclipse.emf.edit.command.SetCommand;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.provider.ComposedImage;
+import org.eclipse.emf.edit.provider.IItemLabelProvider;
+import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
+import org.eclipse.emf.edit.provider.ItemProviderAdapter;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.Activator;
+import org.eclipse.sphinx.emf.ecore.DefaultEcoreTraversalHelper;
+import org.eclipse.sphinx.emf.ecore.EcoreTraversalHelper;
+import org.eclipse.sphinx.emf.internal.EcorePerformanceStats;
+import org.eclipse.sphinx.emf.internal.messages.Messages;
+
+/**
+ * Extension of the default {@linkplain ItemProviderAdapter item provider adapter} implementation provided by EMF Edit.
+ */
+public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
+
+	/**
+	 * An instance is created from an adapter factory. The factory is used as a key so that we always know which factory
+	 * created this adapter.
+	 * 
+	 * @param adapterFactory
+	 *            The factory which created the Adapter.
+	 */
+	public ExtendedItemProviderAdapter(AdapterFactory adapterFactory) {
+		super(adapterFactory);
+	}
+
+	@Override
+	protected ItemPropertyDescriptor createItemPropertyDescriptor(AdapterFactory adapterFactory, ResourceLocator resourceLocator, String displayName,
+			String description, EStructuralFeature feature, boolean isSettable, boolean multiLine, boolean sortChoices, Object staticImage,
+			String category, String[] filterFlags) {
+		return new ItemPropertyDescriptor(adapterFactory, resourceLocator, displayName, description, feature, isSettable, multiLine, sortChoices,
+				staticImage, category, filterFlags) {
+			/*
+			 * Overridden for overloading default IItemLabelProvider getText() method behavior to avoid that proxy
+			 * EObject would be displayed using their label feature value, in case one is set, or their type name,
+			 * otherwise. All proxies (in simple reference or multiple reference) will be displayed using the proxy URI.
+			 * @see org.eclipse.emf.edit.provider.ItemPropertyDescriptor#getLabelProvider(java.lang.Object)
+			 */
+			@Override
+			public IItemLabelProvider getLabelProvider(Object object) {
+				final IItemLabelProvider itemLabelProvider = super.getLabelProvider(object);
+				return new IItemLabelProvider() {
+					public String getText(Object object) {
+						if (object instanceof EObject) {
+							EObject eObject = (EObject) object;
+							if (eObject.eIsProxy()) {
+								URI proxyUri = EcoreUtil.getURI(eObject);
+								if (proxyUri != null) {
+									return proxyUri.toString();
+								} else {
+									return Messages.label_unknownProxyURI;
+								}
+
+							}
+						} else if (object instanceof EList<?>) {
+							StringBuffer result = new StringBuffer();
+							for (Object child : (List<?>) object) {
+								if (result.length() != 0) {
+									result.append(", "); //$NON-NLS-1$
+								}
+								result.append(getText(child));
+							}
+							return result.toString();
+						}
+						return itemLabelProvider.getText(object);
+					}
+
+					public Object getImage(Object object) {
+						return itemLabelProvider.getImage(object);
+					}
+				};
+
+			}
+
+			/*
+			 * Overridden for avoiding that default values for unset attributes are displayed.
+			 * @see org.eclipse.emf.edit.provider.ItemPropertyDescriptor#getValue(org.eclipse.emf.ecore.EObject,
+			 * org.eclipse.emf.ecore.EStructuralFeature)
+			 */
+			@Override
+			protected Object getValue(EObject object, EStructuralFeature feature) {
+				if (!(feature instanceof EAttribute) || object.eIsSet(feature)) {
+					return super.getValue(object, feature);
+				}
+				return null;
+			}
+
+			/*
+			 * Overridden for adding a postfix to the property description which indicates the property's data type and
+			 * default value in case that the property represents a non string attribute.
+			 * @see org.eclipse.emf.edit.provider.ItemPropertyDescriptor#getDescription(java.lang.Object)
+			 */
+			@Override
+			public String getDescription(Object object) {
+				StringBuilder description = new StringBuilder(super.getDescription(object));
+
+				Object feature = getFeature(object);
+				if (feature instanceof EAttribute) {
+					EAttribute attribute = (EAttribute) feature;
+					Class<?> instanceClass = attribute.getEType().getInstanceClass();
+					if (String.class != instanceClass) {
+						description.append(" "); //$NON-NLS-1$
+						if (attribute.getDefaultValueLiteral() != null && attribute.getDefaultValueLiteral().length() > 0) {
+							description.append(NLS.bind(Messages.propertyDescriptionPostfix_mustBeADataTypeEgDefaultValue,
+									instanceClass.getSimpleName(), attribute.getDefaultValueLiteral()));
+						} else {
+							description.append(NLS.bind(Messages.propertyDescriptionPostfix_mustBeADataType, instanceClass.getSimpleName()));
+						}
+					}
+				}
+				return description.toString();
+			}
+
+			/*
+			 * @see org.eclipse.emf.edit.provider.ItemPropertyDescriptor#getChoiceOfValues(java.lang.Object)
+			 */
+			@Override
+			public Collection<?> getChoiceOfValues(Object object) {
+				Collection<?> result;
+				// Starts profiling
+				EcorePerformanceStats.INSTANCE.startEvent(EcorePerformanceStats.EcoreEvent.EVENT_CHOICES_OF_VALUES, object);
+				// Collects the choices of values for the specified feature of the given object
+				result = ExtendedItemProviderAdapter.this.getChoiceOfValues(object, parentReferences, feature);
+				// Ends profiling
+				EcorePerformanceStats.INSTANCE.endEvent(EcorePerformanceStats.EcoreEvent.EVENT_CHOICES_OF_VALUES, object);
+				return result;
+			}
+		};
+	}
+
+	/*
+	 * Overridden for delegating retrieval of reachable objects to EcoreTraveralHelper.
+	 * @see org.eclipse.sphinx.emf.ecore.EcoreTraversalHelper
+	 */
+	protected Collection<?> getChoiceOfValues(Object object, EReference[] parentReferences, EStructuralFeature feature) {
+		if (object instanceof EObject) {
+			EObject eObject = (EObject) object;
+			if (parentReferences != null) {
+				Collection<Object> result = new UniqueEList<Object>();
+				for (int i = 0; i < parentReferences.length; ++i) {
+					result.addAll(getTraversalHelper().getReachableEObjects(eObject, parentReferences[i]));
+				}
+				return result;
+			} else if (feature != null) {
+				if (feature instanceof EReference) {
+					Collection<EObject> result = getTraversalHelper().getReachableEObjects(eObject, (EReference) feature);
+					if (!feature.isMany() && !result.contains(null)) {
+						result.add(null);
+					}
+					return result;
+				} else if (feature.getEType() instanceof EEnum) {
+					EEnum eEnum = (EEnum) feature.getEType();
+					List<Enumerator> enumerators = new ArrayList<Enumerator>();
+					for (EEnumLiteral eEnumLiteral : eEnum.getELiterals()) {
+						enumerators.add(eEnumLiteral.getInstance());
+					}
+					return enumerators;
+				} else {
+					EDataType eDataType = (EDataType) feature.getEType();
+					List<String> enumeration = ExtendedMetaData.INSTANCE.getEnumerationFacet(eDataType);
+					if (!enumeration.isEmpty()) {
+						List<Object> enumerators = new ArrayList<Object>();
+						for (String enumerator : enumeration) {
+							enumerators.add(EcoreUtil.createFromString(eDataType, enumerator));
+						}
+						return enumerators;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the right traversal helper this item provider must use.
+	 * 
+	 * @since 0.7.0
+	 * @return The {@linkplain EcoreTraversalHelper traversal helper}
+	 */
+	protected EcoreTraversalHelper getTraversalHelper() {
+		return new DefaultEcoreTraversalHelper();
+	}
+
+	/*
+	 * Overridden to add support for the case where collection objects of given command parameter have different
+	 * containers, or the same container but different features.
+	 */
+	@Override
+	protected Command factorRemoveCommand(EditingDomain domain, CommandParameter commandParameter) {
+
+		if (commandParameter.getCollection() == null || commandParameter.getCollection().isEmpty()) {
+			return UnexecutableCommand.INSTANCE;
+		}
+
+		EObject eOwner = commandParameter.getEOwner();
+
+		// Try to refer to parent or owner in case that owner specified via CommandParameter is no EObject
+		if (eOwner == null) {
+			Object parentOfOwner = domain.getParent(commandParameter.getOwner());
+			if (parentOfOwner instanceof EObject) {
+				eOwner = (EObject) parentOfOwner;
+			}
+		}
+
+		final EObject eObject = eOwner;
+		final List<Object> list = new ArrayList<Object>(commandParameter.getCollection());
+
+		CompoundCommand removeCommand = new CompoundCommand(CompoundCommand.MERGE_COMMAND_ALL);
+
+		// Iterator over all the child references to factor each child to the right reference.
+		//
+		for (EStructuralFeature feature : getChildrenFeatures(commandParameter.getOwner())) {
+			// If it is a list type value...
+			//
+			if (feature.isMany()) {
+				List<?> value = (List<?>) getFeatureValue(eObject, feature);
+
+				// These will be the children belonging to this feature.
+				//
+				Collection<Object> childrenOfThisFeature = new ArrayList<Object>();
+				for (ListIterator<Object> objects = list.listIterator(); objects.hasNext();) {
+					Object o = objects.next();
+
+					// Is this object in this feature...
+					//
+					if (value.contains(o)) {
+						// Add it to the list and remove it from the other list.
+						//
+						childrenOfThisFeature.add(o);
+						objects.remove();
+					}
+				}
+
+				// If we have children to remove for this feature, create a command for it.
+				//
+				if (!childrenOfThisFeature.isEmpty()) {
+					removeCommand.append(createRemoveCommand(domain, eObject, feature, childrenOfThisFeature));
+				}
+			} else {
+				// It's just a single value
+				//
+				final Object value = getFeatureValue(eObject, feature);
+				for (ListIterator<Object> objects = list.listIterator(); objects.hasNext();) {
+					Object o = objects.next();
+
+					// Is this object in this feature...
+					//
+					if (o == value) {
+						// Create a command to unset this and remove the object from the other list.
+						//
+						Command setCommand = createSetCommand(domain, eObject, feature, SetCommand.UNSET_VALUE);
+						removeCommand.append(new CommandWrapper(setCommand) {
+							protected Collection<?> affected;
+
+							@Override
+							public void execute() {
+								super.execute();
+								affected = Collections.singleton(eObject);
+							}
+
+							@Override
+							public void undo() {
+								super.undo();
+								affected = Collections.singleton(value);
+							}
+
+							@Override
+							public void redo() {
+								super.redo();
+								affected = Collections.singleton(eObject);
+							}
+
+							@Override
+							public Collection<?> getResult() {
+								return Collections.singleton(value);
+							}
+
+							@Override
+							public Collection<?> getAffectedObjects() {
+								return affected;
+							}
+						});
+						objects.remove();
+						break;
+					}
+				}
+			}
+		}
+
+		// If all the objects are used up by the above, then we can't do the command.
+		//
+		if (list.isEmpty()) {
+			return removeCommand.unwrap();
+		} else {
+			// FIXME File bug to EMF: In the case where objects in the list have different container, or the same
+			// container but different features we must to iterate over all container features
+			for (Object object : new ArrayList<Object>(list)) {
+				if (object instanceof EObject) {
+					final EObject fallBackOwner = ((EObject) object).eContainer();
+					EStructuralFeature containingFeature = ((EObject) object).eContainingFeature();
+					if (containingFeature != null) {
+						if (containingFeature.isMany()) {
+							List<?> value = (List<?>) getFeatureValue(fallBackOwner, containingFeature);
+
+							// These will be the children belonging to this feature.
+							//
+							Collection<Object> childrenOfThisFeature = new ArrayList<Object>();
+							for (ListIterator<Object> objects = list.listIterator(); objects.hasNext();) {
+								Object o = objects.next();
+
+								// Is this object in this feature...
+								//
+								if (value.contains(o)) {
+									// Add it to the list and remove it from the other list.
+									//
+									childrenOfThisFeature.add(o);
+									objects.remove();
+								}
+							}
+
+							// If we have children to remove for this feature, create a command for it.
+							//
+							if (!childrenOfThisFeature.isEmpty()) {
+								removeCommand.append(createRemoveCommand(domain, fallBackOwner, containingFeature, childrenOfThisFeature));
+							}
+
+						} else {
+
+							// It's just a single value
+							//
+							final Object value = getFeatureValue(fallBackOwner, containingFeature);
+							for (ListIterator<Object> objects = list.listIterator(); objects.hasNext();) {
+								Object o = objects.next();
+
+								// Is this object in this feature...
+								//
+								if (o == value) {
+									// Create a command to set this to null and remove the object from the other list.
+									//
+									Command setCommand = domain.createCommand(SetCommand.class, new CommandParameter(fallBackOwner,
+											containingFeature, null));
+									removeCommand.append(new CommandWrapper(setCommand) {
+										protected Collection<?> affected;
+
+										@Override
+										public void execute() {
+											affected = Collections.singleton(fallBackOwner.eContainer() != null ? fallBackOwner.eContainer()
+													: fallBackOwner);
+											super.execute();
+										}
+
+										@Override
+										public void undo() {
+											super.undo();
+											affected = Collections.singleton(value);
+										}
+
+										@Override
+										public void redo() {
+											super.redo();
+											affected = Collections.singleton(fallBackOwner.eContainer() != null ? fallBackOwner.eContainer()
+													: fallBackOwner);
+										}
+
+										@Override
+										public Collection<?> getResult() {
+											return Collections.singleton(value);
+										}
+
+										@Override
+										public Collection<?> getAffectedObjects() {
+											return affected;
+										}
+									});
+									objects.remove();
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		if (list.isEmpty()) {
+			return removeCommand.unwrap();
+		} else {
+			removeCommand.dispose();
+			return UnexecutableCommand.INSTANCE;
+		}
+	}
+
+	@Override
+	protected Command createSetCommand(EditingDomain domain, EObject owner, EStructuralFeature feature, Object value, int index) {
+		Command setCommand = CustomCommandRegistry.INSTANCE.createCustomCommand(domain, new CommandParameter(owner, feature, value, index),
+				SetCommand.class);
+		if (setCommand != null) {
+			return setCommand;
+		}
+		return super.createSetCommand(domain, owner, feature, value, index);
+	}
+
+	@Override
+	protected Command createAddCommand(EditingDomain domain, EObject owner, EStructuralFeature feature, Collection<?> collection, int index) {
+		Command addCommand = CustomCommandRegistry.INSTANCE.createCustomCommand(domain, new CommandParameter(owner, feature, collection, index),
+				AddCommand.class);
+		if (addCommand != null) {
+			return addCommand;
+		}
+		return super.createAddCommand(domain, owner, feature, collection, index);
+	}
+
+	@Override
+	protected Command createRemoveCommand(EditingDomain domain, EObject owner, EStructuralFeature feature, Collection<?> collection) {
+		Command removeCommand = CustomCommandRegistry.INSTANCE.createCustomCommand(domain, new CommandParameter(owner, feature, collection),
+				RemoveCommand.class);
+		if (removeCommand != null) {
+			return removeCommand;
+		}
+		return super.createRemoveCommand(domain, owner, feature, collection);
+	}
+
+	/*
+	 * Overridden for tweaking create child/sibling submenu and action texts.
+	 * @see org.eclipse.emf.edit.provider.ItemProviderAdapter#getCreateChildText(java.lang.Object, java.lang.Object,
+	 * java.lang.Object, java.util.Collection)
+	 */
+	@Override
+	public String getCreateChildText(Object owner, Object feature, Object child, Collection<?> selection) {
+		if (feature instanceof EStructuralFeature && FeatureMapUtil.isFeatureMap((EStructuralFeature) feature)) {
+			FeatureMap.Entry entry = (FeatureMap.Entry) child;
+			feature = entry.getEStructuralFeature();
+			child = entry.getValue();
+		}
+
+		String featureText = getFeatureText(feature);
+		String childTypeText = feature instanceof EAttribute ? getTypeText((EAttribute) feature) : getTypeText(child);
+
+		// Attribute feature?
+		if (feature instanceof EAttribute) {
+			// Use feature name as action text
+			return getResourceLocator().getString("_UI_CreateChild_text3", //$NON-NLS-1$
+					new Object[] { childTypeText, featureText });
+		}
+		// Reference feature whose name is different from target type
+		else if (!childTypeText.equals(featureText)) {
+			// The try/catch provides backwards compatibility with metamodels whose Edit support has no
+			// extra _UI_CreateChild_text1 key
+			try {
+				// Use combination of feature name and target type name as action text
+				return getResourceLocator().getString("_UI_CreateChild_text1", //$NON-NLS-1$ 
+						new Object[] { childTypeText, featureText });
+			} catch (MissingResourceException e) {
+				return getResourceLocator().getString("_UI_CreateChild_text", //$NON-NLS-1$
+						new Object[] { childTypeText, featureText });
+			}
+		}
+		// Reference feature whose name is equal to target type
+		else {
+			// Use only target type name as action text
+			return getResourceLocator().getString("_UI_CreateChild_text", //$NON-NLS-1$ 
+					new Object[] { childTypeText, featureText });
+		}
+	}
+
+	/*
+	 * Overriden to avoid NullPointerException upon retrieval of image for XMLTypeDocumentRoot#processingInstruction
+	 * entry in mixed attributes.
+	 * @see org.eclipse.emf.edit.provider.ItemProviderAdapter#getCreateChildImage(java.lang.Object, java.lang.Object,
+	 * java.lang.Object, java.util.Collection)
+	 */
+	@Override
+	public Object getCreateChildImage(Object owner, Object feature, Object child, Collection<?> selection) {
+		// FIXME File bug to EMF: NPE is raised on attempt to retrieve image for
+		// XMLTypeDocumentRoot#processingInstruction entry in mixed attributes
+		try {
+			return super.getCreateChildImage(owner, feature, child, selection);
+		} catch (NullPointerException ex) {
+			// Ignore exception
+		}
+		return EMFEditPlugin.INSTANCE.getImage("full/ctool16/CreateChild"); //$NON-NLS-1$
+	}
+
+	@Override
+	protected Command createCreateChildCommand(EditingDomain domain, EObject owner, EStructuralFeature feature, Object value, int index,
+			Collection<?> collection) {
+		return new ExtendedCreateChildCommand(domain, owner, feature, value, index, collection, this);
+	}
+
+	@Override
+	protected Object overlayImage(Object object, Object image) {
+		if (object instanceof EObject) {
+			EObject eObject = (EObject) object;
+			if (eObject.eIsProxy()) {
+				List<Object> images = new ArrayList<Object>(2);
+				images.add(image);
+				images.add(Activator.INSTANCE.getImage("full/ovr16/exclampt_ovr")); //$NON-NLS-1$
+				image = new ComposedImage(images);
+				return image;
+			}
+		}
+		return super.overlayImage(object, image);
+	}
+}

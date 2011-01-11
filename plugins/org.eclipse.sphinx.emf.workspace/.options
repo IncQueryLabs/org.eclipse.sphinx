@@ -1,0 +1,17 @@
+# ----------------------------------------------------------- #
+#  Default debugging options for org.eclipse.sphinx.emf.workspace  #
+# ----------------------------------------------------------- #
+
+# -----------------------------------------------------------------------------
+# Performance monitoring options
+
+org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/readContributedModelLoaders=true
+org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/loadFile=true
+org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/detectFilesToLoad=true
+org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/resolveProxies=true
+org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/loadFile/timeOutValue=700
+org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/resolveProxies/timeOutValue=700
+org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/readContributedModelLoaders/timeOutValue=700
+org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/detectFilesToLoad/timeOutValue=700
+
+org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelSavingPerformanceStats/getSaveable=false

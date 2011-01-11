@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.sphinx.sdk"
+      label="%featureName"
+      version="0.7.0.qualifier"
+      provider-name="%providerName">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <includes
+         id="org.eclipse.sphinx"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.sphinx.doc"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.sphinx.examples"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.sphinx.examples.metamodels"
+         version="0.0.0"/>
+
+</feature>

@@ -1,0 +1,18 @@
+# Change in the Generator model
+	1. Change the domain file extension to xml 
+	2. Change in XxxCreationWizard#addPages() the domain file extension and the diagram file extension
+
+# Change in the generated code
+	1. Fix the creation of the initial model in XxxDiagramEditorUtil#createInitialModel()
+
+# Change in templates
+	1. Add dependency to "org.eclipse.sphinx.gmf.runtime.ui" [Done in manifest.xpt]
+	2. Removed extension point "org.eclipse.emf.ecore.extension_parser" from plugin.xml [Done in plugin.xpt ]
+	3. Replace XxxDiagramEditorUtil#getSaveOptions() by org.eclipse.sphinx.gmf.workspace.util.GMFResourceUtil#getSaveOptions() [Done]
+	4. Delete method XxxDiagramEditorUtil#attachModelToResource(ARPackage, Resource)
+
+# High level modification
+	[Done in org.eclipse.sphinx.gmf.workspace] Replace extension point "org.eclipse.emf.ecore.extension_parser" by "org.eclipse.emf.ecore.content_parser"
+	[Done in org.eclipse.sphinx.gmf.workspace] Add extension point "org.eclipse.core.contenttype.contentTypes" and a describer with name-space parameter
+	
+# The Gen Editor Generator Model Id must be the fqn of the MMDescriptor class

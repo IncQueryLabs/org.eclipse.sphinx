@@ -1,0 +1,77 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2008-2010 See4sys and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     See4sys - Initial API and implementation
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.emf.workspace.ui.internal.saving;
+
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.jface.util.SafeRunnable;
+import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
+import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchListener;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+
+/**
+ * Implementation of {@linkplain IWorkbenchListener workbench listener} that is responsible for opening a dialog to
+ * prompt the user if saving dirty resources before closing workbench is required or not (<em>i.e.</em>, ask for saving
+ * confirmation).
+ */
+public class CloseWorkbenchListener implements IWorkbenchListener {
+
+	/*
+	 * @see org.eclipse.ui.IWorkbenchListener#postShutdown(org.eclipse.ui.IWorkbench)
+	 */
+	public void postShutdown(IWorkbench workbench) {
+		// Nothing to do.
+	}
+
+	/*
+	 * @see org.eclipse.ui.IWorkbenchListener#preShutdown(org.eclipse.ui.IWorkbench, boolean)
+	 */
+	public boolean preShutdown(IWorkbench workbench, boolean forced) {
+
+		final boolean canceled[] = new boolean[1];
+		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+			public void run() {
+				SafeRunner.run(new SafeRunnable(Messages.error_failedToSaveModelsDuringWorkbenchClosing) {
+					public void run() {
+						IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+						if (window == null) {
+							IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
+							if (windows.length > 0) {
+								window = windows[0];
+							}
+						}
+						if (window != null) {
+							canceled[0] = !PlatformUI.getWorkbench().saveAll(window, window, null, true);
+						}
+					}
+				});
+			}
+		});
+
+		// Abort operation if saving has been canceled by user
+		if (canceled[0]) {
+			return false;
+		}
+
+		// Force reset of dirty information on all models in given projects for clearing dirty information of those
+		// models that have not been taken into account by the save operation (happens e.g. when user deselects some
+		// or all of them before proceeding with the save operation)
+		ModelSaveManager.INSTANCE.setSaved(ResourcesPlugin.getWorkspace().getRoot());
+		return true;
+	}
+}

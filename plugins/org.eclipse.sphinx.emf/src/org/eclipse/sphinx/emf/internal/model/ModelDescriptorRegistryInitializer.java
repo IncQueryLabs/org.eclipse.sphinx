@@ -1,0 +1,88 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2008-2010 See4sys and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     See4sys - Initial API and implementation
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.emf.internal.model;
+
+import java.util.Collection;
+import java.util.HashSet;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.Activator;
+import org.eclipse.sphinx.emf.internal.messages.Messages;
+import org.eclipse.sphinx.emf.internal.scoping.ResourceScopeValidationService;
+import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
+import org.eclipse.sphinx.platform.util.ExtendedPlatform;
+import org.eclipse.sphinx.platform.util.StatusUtil;
+
+public class ModelDescriptorRegistryInitializer extends Job {
+
+	public ModelDescriptorRegistryInitializer() {
+		super(Messages.job_initializingModelDescriptorRegistry);
+	}
+
+	@Override
+	protected IStatus run(IProgressMonitor monitor) {
+		try {
+			SubMonitor progress = SubMonitor.convert(monitor, 100);
+			if (progress.isCanceled()) {
+				throw new OperationCanceledException();
+			}
+
+			Collection<IFile> analyzedFiles = new HashSet<IFile>();
+			Collection<IProject> rootProjects = ExtendedPlatform.getRootProjects();
+
+			SubMonitor progress1 = progress.newChild(90);
+			progress1.beginTask(Messages.task_analyzingProjects, rootProjects.size());
+			for (IProject project : rootProjects) {
+				Collection<IFile> files = ExtendedPlatform.getAllFiles(project, true);
+
+				SubMonitor progress2 = progress1.newChild(1).setWorkRemaining(files.size());
+				for (IFile file : files) {
+					progress2.subTask(NLS.bind(Messages.subtask_analyzingFile, file.getFullPath().toString()));
+
+					ModelDescriptorRegistry.INSTANCE.addModel(file);
+					analyzedFiles.add(file);
+
+					progress2.worked(1);
+					if (progress2.isCanceled()) {
+						throw new OperationCanceledException();
+					}
+				}
+			}
+
+			ResourceScopeValidationService.INSTANCE.validateFiles(analyzedFiles, false, progress.newChild(10));
+
+			ExtendedPlatform.persistContentTypeIdProperties(analyzedFiles, true, null);
+			return Status.OK_STATUS;
+		} catch (OperationCanceledException ex) {
+			return Status.CANCEL_STATUS;
+		} catch (Exception ex) {
+			return StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
+		}
+	}
+
+	@Override
+	public boolean belongsTo(Object family) {
+		return IExtendedPlatformConstants.FAMILY_LONG_RUNNING.equals(family);
+	}
+}

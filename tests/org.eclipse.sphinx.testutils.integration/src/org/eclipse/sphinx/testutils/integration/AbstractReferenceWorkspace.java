@@ -1,0 +1,372 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2008-2010 See4sys and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     See4sys - Initial API and implementation
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.testutils.integration;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
+import org.eclipse.sphinx.emf.workspace.domain.mapping.AbstractWorkspaceEditingDomainMapping;
+import org.eclipse.sphinx.platform.util.ExtendedPlatform;
+import org.eclipse.sphinx.testutils.integration.internal.IInternalReferenceWorkspace;
+import org.eclipse.sphinx.testutils.integration.internal.ReferenceEditingDomainDescriptor;
+import org.eclipse.sphinx.testutils.integration.internal.ReferenceModelDescriptor;
+import org.eclipse.sphinx.testutils.integration.internal.ReferenceProjectDescriptor;
+
+/**
+ * 
+ */
+public abstract class AbstractReferenceWorkspace implements IInternalReferenceWorkspace {
+
+	private Map<IMetaModelDescriptor, ReferenceEditingDomainDescriptor> referenceEditingDomainsDescriptors = new HashMap<IMetaModelDescriptor, ReferenceEditingDomainDescriptor>();
+	private Set<ReferenceProjectDescriptor> referenceProjectDescriptors = new HashSet<ReferenceProjectDescriptor>();
+
+	public AbstractReferenceWorkspace(String[] referenceProjectNames) {
+		initContentDescriptors(referenceProjectNames);
+		initContentAccessors();
+	}
+
+	protected final void initContentDescriptors(String[] referenceProjectNames) {
+		initReferenceProjectDescriptors(referenceProjectNames);
+		initReferenceFileDescriptors();
+	}
+
+	protected void initContentAccessors() {
+		// Do nothing by default
+	}
+
+	private void initReferenceProjectDescriptors(String[] referenceProjectNames) {
+		if (referenceProjectNames == null) {
+			referenceProjectNames = getReferenceProjectsNames();
+		}
+		if (referenceProjectNames != null) {
+			for (String referenceProjectName : referenceProjectNames) {
+				addReferenceProjectDescriptor(referenceProjectName);
+			}
+		}
+	}
+
+	private void addReferenceProjectDescriptor(String projectName) {
+		if (referenceProjectDescriptors == null) {
+			referenceProjectDescriptors = new HashSet<ReferenceProjectDescriptor>();
+		}
+		for (ReferenceProjectDescriptor projectDescriptor : referenceProjectDescriptors) {
+			if (projectDescriptor.getProjectName().equals(projectName)) {
+				return;
+			}
+		}
+		referenceProjectDescriptors.add(new ReferenceProjectDescriptor(projectName));
+	}
+
+	protected abstract void initReferenceFileDescriptors();
+
+	protected void addFileDescriptors(String projectName, String[] filesPath) {
+		if (projectName != null && filesPath != null) {
+			for (String relativeFilePath : filesPath) {
+				addFileDescriptor(projectName, relativeFilePath);
+			}
+		}
+	}
+
+	protected void addFileDescriptor(String projectName, String relativeFilePath) {
+		if (projectName != null && relativeFilePath != null) {
+			ReferenceProjectDescriptor projectDescriptor = getReferenceProjectDescriptor(projectName);
+			if (projectDescriptor != null) {
+				projectDescriptor.addFile(relativeFilePath, null);
+			}
+		}
+	}
+
+	protected void addFileDescriptors(String projectName, String[] filesPath, IMetaModelDescriptor metaModeldescriptor) {
+		if (projectName != null && filesPath != null) {
+			for (String relativeFilePath : filesPath) {
+				addFileDescriptor(projectName, relativeFilePath, metaModeldescriptor);
+			}
+		}
+	}
+
+	protected void addFileDescriptor(String projectName, String relativeFilePath, IMetaModelDescriptor metaModelDescriptor) {
+		ReferenceEditingDomainDescriptor referenceEditingDomainDescriptor = getReferenceEditingDomainDescriptor(metaModelDescriptor);
+		if (referenceEditingDomainDescriptor == null) {
+			String editingDomainId = AbstractWorkspaceEditingDomainMapping.getDefaultEditingDomainId(Collections.singleton(metaModelDescriptor));
+			addEditingDomainDescriptor(metaModelDescriptor, editingDomainId);
+			referenceEditingDomainDescriptor = getReferenceEditingDomainDescriptor(metaModelDescriptor);
+		}
+
+		ReferenceProjectDescriptor referenceProjectDescriptor = getReferenceProjectDescriptor(projectName);
+		if (referenceProjectDescriptor != null) {
+			referenceProjectDescriptor.addFile(relativeFilePath, metaModelDescriptor);
+			IPath referenceProjectPath = referenceProjectDescriptor.getProject().getFullPath();
+			referenceEditingDomainDescriptor.addResourceURI(URI.createPlatformResourceURI(referenceProjectPath.append(relativeFilePath).toString(),
+					true));
+			addReferenceModelDescriptor(metaModelDescriptor, referenceEditingDomainDescriptor, referenceProjectDescriptor);
+		}
+	}
+
+	private void addEditingDomainDescriptor(IMetaModelDescriptor metaModelDescriptor, String editingDomainName) {
+		if (referenceEditingDomainsDescriptors != null) {
+			if (getReferenceEditingDomainDescriptor(metaModelDescriptor) == null) {
+				ReferenceEditingDomainDescriptor referenceEditingDomainsDescriptor = referenceEditingDomainsDescriptors.get(metaModelDescriptor);
+				if (referenceEditingDomainsDescriptor == null) {
+					referenceEditingDomainsDescriptors.put(metaModelDescriptor, new ReferenceEditingDomainDescriptor(editingDomainName));
+				}
+			}
+		}
+	}
+
+	private void addReferenceModelDescriptor(IMetaModelDescriptor metaModelDescriptor,
+			ReferenceEditingDomainDescriptor referenceEditingDomainDescriptor, ReferenceProjectDescriptor referenceProjectDescriptor) {
+		Assert.isNotNull(metaModelDescriptor);
+		Assert.isNotNull(referenceEditingDomainDescriptor);
+		Assert.isNotNull(referenceProjectDescriptor);
+
+		ReferenceModelDescriptor referenceModelDescriptor = new ReferenceModelDescriptor(metaModelDescriptor, referenceEditingDomainDescriptor.name,
+				referenceProjectDescriptor.getProject());
+		referenceProjectDescriptor.addReferenceModelDescriptor(referenceModelDescriptor);
+
+		for (IProject referencingProject : ExtendedPlatform.getAllReferencingProjects(referenceProjectDescriptor.getProject())) {
+			ReferenceProjectDescriptor referencingReferenceProjectDescriptor = getReferenceProjectDescriptor(referencingProject.getName());
+			if (referencingReferenceProjectDescriptor != null) {
+				ReferenceModelDescriptor forwardedReferenceModelDescriptor = new ReferenceModelDescriptor(metaModelDescriptor,
+						referenceEditingDomainDescriptor.name, referencingProject);
+				referencingReferenceProjectDescriptor.addReferenceModelDescriptor(forwardedReferenceModelDescriptor);
+			}
+		}
+	}
+
+	public void addResourceSetProblemListener(ResourceProblemListener resourceProblemListener) {
+		for (IMetaModelDescriptor metaModelDescriptor : referenceEditingDomainsDescriptors.keySet()) {
+			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(ResourcesPlugin.getWorkspace().getRoot(),
+					metaModelDescriptor);
+			if (editingDomain != null) {
+				editingDomain.addResourceSetListener(resourceProblemListener);
+			}
+		}
+	}
+
+	public void removeResourceSetProblemListener(ResourceProblemListener resourceProblemListener) {
+		for (IMetaModelDescriptor metaModelDescriptor : referenceEditingDomainsDescriptors.keySet()) {
+			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(ResourcesPlugin.getWorkspace().getRoot(),
+					metaModelDescriptor);
+			if (editingDomain != null) {
+				editingDomain.removeResourceSetListener(resourceProblemListener);
+			}
+		}
+	}
+
+	public void addReferenceWorkspaceChangeListener(ReferenceWorkspaceChangeListener referenceWorkspaceChangeListener) {
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(referenceWorkspaceChangeListener);
+	}
+
+	public void removeReferenceWorkspaceChangeListener(ReferenceWorkspaceChangeListener referenceWorkspaceChangeListener) {
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(referenceWorkspaceChangeListener);
+	}
+
+	public ReferenceEditingDomainDescriptor getReferenceEditingDomainDescriptor(IMetaModelDescriptor metaModeldescriptor) {
+		if (referenceEditingDomainsDescriptors != null && metaModeldescriptor != null) {
+			return referenceEditingDomainsDescriptors.get(metaModeldescriptor);
+		}
+		return null;
+	}
+
+	public Map<IMetaModelDescriptor, ReferenceEditingDomainDescriptor> getReferenceEditingDomainDescritpors() {
+		return referenceEditingDomainsDescriptors;
+	}
+
+	/**
+	 * return the first editing domain descriptor of the list corresponding to the given MetaModelDescriptor
+	 */
+
+	public int getInitialReferenceEditingDomainsCount() {
+		if (referenceEditingDomainsDescriptors != null) {
+			return referenceEditingDomainsDescriptors.size();
+		}
+		return 0;
+	}
+
+	public int getInitialResourcesInReferenceEditingDomainCount(IMetaModelDescriptor metaModeldescriptor) {
+		ReferenceEditingDomainDescriptor referenceEditingDomainDescriptor = getReferenceEditingDomainDescriptor(metaModeldescriptor);
+		if (referenceEditingDomainDescriptor != null) {
+			return referenceEditingDomainDescriptor.getResourceURIs().size();
+		}
+		return 0;
+	}
+
+	public int getInitialResourcesInAllReferenceEditingDomainsCount() {
+		int count = 0;
+		if (referenceEditingDomainsDescriptors != null) {
+			for (IMetaModelDescriptor metaModelDescriptor : referenceEditingDomainsDescriptors.keySet()) {
+				count += getInitialResourcesInReferenceEditingDomainCount(metaModelDescriptor);
+			}
+		}
+		return count;
+	}
+
+	public Set<IFile> getAllReferenceFiles() {
+		Assert.isNotNull(referenceProjectDescriptors);
+
+		Set<IFile> results = new HashSet<IFile>();
+		for (ReferenceProjectDescriptor referenceProjectDescriptor : referenceProjectDescriptors) {
+			if (referenceProjectDescriptor != null) {
+				results.addAll(referenceProjectDescriptor.getAllFiles());
+			}
+		}
+		return results;
+	}
+
+	public Set<IFile> getReferenceFiles(IMetaModelDescriptor metaModelDescriptor) {
+		Assert.isNotNull(referenceProjectDescriptors);
+
+		Set<IFile> results = new HashSet<IFile>();
+		for (ReferenceProjectDescriptor referenceProjectDescriptor : referenceProjectDescriptors) {
+			if (referenceProjectDescriptor != null) {
+				results.addAll(referenceProjectDescriptor.getFiles(metaModelDescriptor));
+			}
+		}
+		return results;
+	}
+
+	public Set<String> getReferenceFileNames(IMetaModelDescriptor metaModelDescriptor) {
+		Assert.isNotNull(referenceProjectDescriptors);
+
+		Set<String> results = new HashSet<String>();
+		for (ReferenceProjectDescriptor referenceProjectDescriptor : referenceProjectDescriptors) {
+			if (referenceProjectDescriptor != null) {
+				for (IFile file : referenceProjectDescriptor.getFiles(metaModelDescriptor)) {
+					results.add(file.getName());
+				}
+			}
+		}
+		return results;
+	}
+
+	public Set<IFile> getReferenceFiles(String projectName) {
+		ReferenceProjectDescriptor referenceProjectdescriptor = getReferenceProjectDescriptor(projectName);
+		if (referenceProjectdescriptor != null) {
+			return referenceProjectdescriptor.getAllFiles();
+		}
+		return new HashSet<IFile>();
+	}
+
+	public Set<IFile> getReferenceFiles(String projectName, IMetaModelDescriptor metaModelDescriptor) {
+		ReferenceProjectDescriptor referenceProjectdescriptor = getReferenceProjectDescriptor(projectName);
+		if (referenceProjectdescriptor != null) {
+			return referenceProjectdescriptor.getFiles(metaModelDescriptor);
+		}
+		return new HashSet<IFile>();
+	}
+
+	// TODO reduce API to only use IPath
+	public IFile getReferenceFile(String projectName, String fileName) {
+		ReferenceProjectDescriptor referenceProjectDescriptor = getReferenceProjectDescriptor(projectName);
+		if (referenceProjectDescriptor != null) {
+			return referenceProjectDescriptor.getFile(fileName);
+		}
+		return null;
+	}
+
+	public IFile getReferenceFile(IPath filePath) {
+		return ResourcesPlugin.getWorkspace().getRoot().getFile(filePath);
+	}
+
+	protected abstract String[] getReferenceProjectsNames();
+
+	public IProject getReferenceProject(String projectName) {
+		ReferenceProjectDescriptor referenceProjectdescriptor = getReferenceProjectDescriptor(projectName);
+		if (referenceProjectdescriptor != null) {
+			return referenceProjectdescriptor.getProject();
+		}
+		return null;
+	}
+
+	public List<String> getReferenceFileNames(String projectName, IMetaModelDescriptor metaModelDescriptor) {
+		ReferenceProjectDescriptor referenceProjectDescriptor = getReferenceProjectDescriptor(projectName);
+		if (referenceProjectDescriptor != null) {
+			return referenceProjectDescriptor.getFileNames(metaModelDescriptor);
+		}
+		return new ArrayList<String>();
+	}
+
+	public List<String> getReferenceFileNames(String projectName) {
+		ReferenceProjectDescriptor referenceProjectDescriptor = getReferenceProjectDescriptor(projectName);
+		if (referenceProjectDescriptor != null) {
+			return referenceProjectDescriptor.getAllFileNames();
+		}
+		return new ArrayList<String>();
+	}
+
+	public ReferenceProjectDescriptor getReferenceProjectDescriptor(String projectName) {
+		Assert.isNotNull(referenceProjectDescriptors);
+
+		for (ReferenceProjectDescriptor projectDescriptor : referenceProjectDescriptors) {
+			if (projectDescriptor.getProjectName().equals(projectName)) {
+				return projectDescriptor;
+			}
+		}
+		return null;
+	}
+
+	public Map<String, IProject> getReferenceProjectAccessors() {
+		Assert.isNotNull(referenceProjectDescriptors);
+
+		Map<String, IProject> projects = new HashMap<String, IProject>();
+		for (ReferenceProjectDescriptor projcetDescriptor : referenceProjectDescriptors) {
+			projects.put(projcetDescriptor.getProjectName(), projcetDescriptor.getProject());
+		}
+		return projects;
+	}
+
+	public Set<ReferenceProjectDescriptor> getReferenceProjectDescriptors() {
+		return referenceProjectDescriptors;
+	}
+
+	/**
+	 * Create an empty eclipse project.
+	 * 
+	 * @param project
+	 * @throws CoreException
+	 */
+	protected final IProject createSimpleProject(final String projectName) throws CoreException {
+		final IProject[] project = new IProject[1];
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				project[0] = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+				if (!project[0].exists()) {
+					project[0].create(null);
+					project[0].open(null);
+				}
+			}
+		};
+		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, null);
+		return project[0];
+	}
+}

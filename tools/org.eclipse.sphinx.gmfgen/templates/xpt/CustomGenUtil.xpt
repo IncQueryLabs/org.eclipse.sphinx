@@ -1,0 +1,20 @@
+﻿/*
+ * Copyright (c) 2006, 2009 Borland Software Corporation
+ * 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Dmitry Stadnik (Borland) - initial API and implementation
+ */
+
+«IMPORT 'http://www.eclipse.org/gmf/2009/GenModel'»
+«EXTENSION xpt::CustomGenUtil»
+
+«DEFINE getSaveOptions FOR gmfgen::GenDiagram»org.eclipse.sphinx.gmf.workspace.util.GMFResourceUtil.getSaveOptions(«editorGen.modelID».INSTANCE)«ENDDEFINE»
+
+«DEFINE gmfResourceContentType FOR gmfgen::GenDiagram»org.eclipse.sphinx.gmf.workspace.util.GMFResourceUtil.eCONTENT_TYPE«ENDDEFINE»
+
+«DEFINE domainModelContentType FOR gmfgen::GenDiagram»«getContentTypeIdentifier(editorGen.domainGenModel)»«ENDDEFINE»

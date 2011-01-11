@@ -1,0 +1,106 @@
+<project name="org.eclipse.sphinx.releng.builds" default="update.site">
+	
+	<property file="${user.home}/sphinx/build.properties"/>
+	
+	<property name="eclipse.mirror" value="http://ftp-stud.fht-esslingen.de/pub/Mirrors/eclipse"/>
+	<property name="eclipse.director.url" value="${eclipse.mirror}/tools/buckminster/products/director_latest.zip"/>
+	
+	<property name="buckminster.home" value="${basedir}/buckminster"/>
+	
+	<target name="clean.downloads">
+		<delete dir="downloads"/>
+	</target>
+	
+	<target name="clean.setup">
+		<delete dir="director"/>
+		<delete dir="buckminster"/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="workspace"/>
+		<delete dir="temp"/>
+		<delete dir="output"/>
+		<delete dir="junit-workspace"/>
+	</target>
+	
+	<target name="clean.all" depends="clean, clean.setup, clean.downloads">
+		<delete dir="workspace"/>
+		<delete dir="temp"/>
+		<delete dir="output"/>
+		<delete dir="junit-workspace"/>
+	</target>
+	
+	<target name="setup.check">
+		<available property="director.present" value="true" file="director"/>
+		<available property="buckminster.present" value="true" file="buckminster"/>
+	</target>
+	
+	<target name="setup.director" unless="director.present">
+		<!--
+		Use this if this Ant script is ran outside of the Eclipse VM.
+		<property name="eclipse.home" value="C:/eclipse"/>
+		<path id="equinox.launcher.path">
+			<fileset dir="${eclipse.home}/plugins" includes="org.eclipse.equinox.launcher_*.jar"/>
+		</path>
+		<property name="director.launcher" refid="equinox.launcher.path"/>
+		-->
+		<!--
+		Use this if this Ant script is ran inside of the Eclipse VM.
+		<property name="director.launcher" value="${java.class.path}"/>
+		-->
+		<!--
+		Use this if no Eclipse is available at all.
+		-->
+		<mkdir dir="downloads"/>
+		<get src="${eclipse.director.url}" dest="downloads/director_latest.zip" usetimestamp="true"/>
+		<unzip src="downloads/director_latest.zip" dest="${basedir}"/>
+	</target>
+	
+	<target name="resolve.director.launcher" unless="setup.director">
+		<path id="director.launcher.path">
+			<fileset dir="${basedir}/director/plugins" includes="org.eclipse.equinox.launcher_*.jar"/>
+		</path>
+		<property name="director.launcher" refid="director.launcher.path"/>
+	</target>
+	
+	<target name="setup.buckminster" depends="setup.director" unless="buckminster.present">
+		<java jar="${director.launcher}" fork="true" failonerror="true" jvm="${java.home}/bin/java">
+			<arg line="-application org.eclipse.equinox.p2.director"/>
+			<arg line="-repository http://download.eclipse.org/tools/buckminster/headless-3.6/"/>
+			<arg line="-destination ${buckminster.home}"/>
+			<arg line="-profile Buckminster"/>
+			<arg line="-installIU org.eclipse.buckminster.cmdline.product,org.eclipse.buckminster.pde.headless.feature.feature.group"/>
+		</java>
+		<java jar="${director.launcher}" fork="true" failonerror="true" jvm="${java.home}/bin/java">
+			<arg line="-application org.eclipse.equinox.p2.director"/>
+			<arg line="-repository http://download.cloudsmith.com/buckminster/external-3.6/"/>
+			<arg line="-destination ${buckminster.home}"/>
+			<arg line="-profile Buckminster"/>
+			<arg line="-installIU org.eclipse.buckminster.subversive.headless.feature.feature.group"/>
+		</java>
+	</target>
+	
+	<target name="resolve.buckminster.launcher" unless="setup.buckminster">
+		<path id="buckminster.launcher.path">
+			<fileset dir="${buckminster.home}/plugins" includes="org.eclipse.equinox.launcher_*.jar"/>
+		</path>
+		<property name="buckminster.launcher" refid="buckminster.launcher.path"/>
+	</target>
+	
+	<target name="setup" depends="setup.check, setup.director, resolve.director.launcher, setup.buckminster, resolve.buckminster.launcher">
+	</target>
+	
+	<target name="update.site" depends="clean, setup">
+		<java jar="${buckminster.launcher}" fork="true" failonerror="true" clonevm="true" jvm="${java.home}/bin/java">
+			<jvmarg line="-Xms40m"/>
+			<jvmarg line="-Xmx256m"/>
+			
+			<sysproperty key="svn.username" value="${svn.username}"/>
+			<sysproperty key="svn.password" value="${svn.password}"/>
+			<sysproperty key="eclipse.targets" value="${eclipse.targets}"/>
+			
+			<arg line="-data workspace"/>
+			<arg line="--scriptfile ${basedir}/buckminster.script"/>
+		</java>
+	</target>
+</project>

@@ -1,0 +1,135 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2008-2010 BMW Car IT and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     BMW Car IT - Initial API and implementation
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.tests.emf.metamodel.mocks;
+
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.ecore.EAnnotation;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EFactory;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EOperation;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
+
+public class MockEFactory implements EFactory {
+
+	public String convertToString(EDataType dataType, Object instanceValue) {
+		return null;
+	}
+
+	public EObject create(EClass class1) {
+		return null;
+	}
+
+	public Object createFromString(EDataType dataType, String literalValue) {
+		return null;
+	}
+
+	public EPackage getEPackage() {
+		return null;
+	}
+
+	public void setEPackage(EPackage value) {
+	}
+
+	public EAnnotation getEAnnotation(String source) {
+		return null;
+	}
+
+	public EList<EAnnotation> getEAnnotations() {
+		return null;
+	}
+
+	public TreeIterator<EObject> eAllContents() {
+		return null;
+	}
+
+	public EClass eClass() {
+		return null;
+	}
+
+	public EObject eContainer() {
+		return null;
+	}
+
+	public EStructuralFeature eContainingFeature() {
+		return null;
+	}
+
+	public EReference eContainmentFeature() {
+		return null;
+	}
+
+	public EList<EObject> eContents() {
+		return null;
+	}
+
+	public EList<EObject> eCrossReferences() {
+		return null;
+	}
+
+	public Object eGet(EStructuralFeature feature) {
+		return null;
+	}
+
+	public Object eGet(EStructuralFeature feature, boolean resolve) {
+		return null;
+	}
+
+	public boolean eIsProxy() {
+		return false;
+	}
+
+	public boolean eIsSet(EStructuralFeature feature) {
+		return false;
+	}
+
+	public Resource eResource() {
+		return null;
+	}
+
+	public void eSet(EStructuralFeature feature, Object newValue) {
+	}
+
+	public void eUnset(EStructuralFeature feature) {
+	}
+
+	public EList<Adapter> eAdapters() {
+		return null;
+	}
+
+	public boolean eDeliver() {
+		return false;
+	}
+
+	public void eNotify(Notification notification) {
+
+	}
+
+	public void eSetDeliver(boolean deliver) {
+	}
+
+	public Object eInvoke(EOperation operation, EList<?> arguments) throws InvocationTargetException {
+		return null;
+	}
+}

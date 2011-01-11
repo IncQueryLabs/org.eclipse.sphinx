@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.sphinx.tests.platform;singleton:=true
+Bundle-Version: 0.7.0.qualifier
+Require-Bundle: org.junit,
+ org.eclipse.sphinx.testutils,
+ org.eclipse.sphinx.examples.hummingbird20
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.eclipse.sphinx.tests.platform.internal;x-internal:=true,
+ org.eclipse.sphinx.tests.platform.testsuite,
+ org.eclipse.sphinx.tests.platform.util
+Bundle-Localization: plugin
+Bundle-Vendor: %providerName
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.eclipse.sphinx.tests.platform.internal.Activator$Implementation
