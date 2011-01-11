@@ -1,0 +1,751 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2008-2010 See4sys, BMW Car IT and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     See4sys - Initial API and implementation
+ *     BMW Car IT - Added/Updated javadoc
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.emf.util;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.emf.common.util.AbstractTreeIterator;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EFactory;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.FeatureMap;
+import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.internal.messages.Messages;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.model.IModelDescriptor;
+import org.eclipse.sphinx.emf.resource.ExtendedResource;
+import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
+import org.eclipse.sphinx.emf.resource.ProxyURIIntegrityException;
+
+/**
+ * An utility class which provides various methods for accessing EObjects in an EMF model.
+ */
+public final class EObjectUtil {
+
+	// Prevent from instantiation
+	private EObjectUtil() {
+	}
+
+	/**
+	 * Depth constant (value 0) indicating this EObject, but not any of its members.
+	 */
+	public static final int DEPTH_ZERO = 0;
+
+	/**
+	 * Depth constant (value 1) indicating this EObject and its direct members.
+	 */
+	public static final int DEPTH_ONE = 1;
+
+	/**
+	 * Depth constant (value 2) indicating this EObject and its direct and indirect members at any depth.
+	 */
+	public static final int DEPTH_INFINITE = 2;
+
+	/**
+	 * Returns all instances of a certain type within a specified ResourceSet. The type of the EObjects to return is
+	 * derived from the provided EReference. All returned EObject will of the same type as the type the EReference
+	 * points to. The ResourceSet is calculated from an EObject. The method will resolve the ResourceSet to which the
+	 * EObject belongs.
+	 * 
+	 * @param contextObject
+	 *            The context object used to calculate the context inside which instances of the expected type must be
+	 *            returned.
+	 * @param eReference
+	 *            The eReference of objects that must be returned.
+	 * @param exactMatch
+	 *            The kind of search:
+	 *            <ul>
+	 *            <li><b><tt>true</tt>&nbsp;&nbsp;&nbsp;</b> if only specified type must be considered;<br>
+	 *            <li><b><tt>false</tt>&nbsp;</b> if objects of inherited types are also wanted.
+	 *            </ul>
+	 * @return All instances of the specified reference's type in the context of the given object.
+	 */
+	public static List<EObject> getAllInstancesOf(EObject contextObject, EReference eReference, boolean exactMatch) {
+		Assert.isNotNull(eReference);
+
+		Class<?> instanceClass = eReference.getEReferenceType().getInstanceClass();
+		@SuppressWarnings("unchecked")
+		List<EObject> instances = (List<EObject>) getAllInstancesOf(contextObject, instanceClass, exactMatch);
+		return instances;
+	}
+
+	/**
+	 * Returns all instances of a certain type within a specified ResourceSet. The ResourceSet is calculated from an
+	 * EObject. The method will resolve the ResourceSet to which the EObject belongs. In case, the contextObject without
+	 * Resource(stand alone), returns all instances of a certain type within contextObject's contents
+	 * 
+	 * @param contextObject
+	 *            The context EObject used to calculate the context inside which instances of the expected type must be
+	 *            returned.
+	 * @param type
+	 *            The expected type of objects that must be returned.
+	 * @param exactMatch
+	 *            The kind of search:
+	 *            <ul>
+	 *            <li><b><tt>true</tt>&nbsp;&nbsp;&nbsp;</b> if only specified type must be considered;<br>
+	 *            <li><b><tt>false</tt>&nbsp;</b> if objects of inherited types are also wanted.
+	 *            </ul>
+	 * @return All instances of the specified type in the context of the given object.
+	 */
+	public static <T> List<T> getAllInstancesOf(EObject contextObject, Class<T> type, boolean exactMatch) {
+		if (contextObject != null) {
+			Collection<Resource> resources = EcorePlatformUtil.getResourcesInModel(contextObject, true);
+			if (!resources.isEmpty()) {
+				return getAllInstancesOf(resources, type, exactMatch);
+			} else {
+				EObject rootContainer = EcoreUtil.getRootContainer(contextObject);
+				return getAllInstancesOf(getAllContentsIncludingRoot(rootContainer), type, exactMatch);
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * Returns all instances of a certain type within a specified ResourceSet. The ResourceSet is calculated from a
+	 * Resource. The method will resolve the ResourceSet to which the Resource belongs. In case Resource in ResourSet
+	 * without EditingDomain, all resources in the ResourceSet will be considered.
+	 * 
+	 * @param contextResource
+	 *            The context resource used to calculate the context inside which instances of the expected type must be
+	 *            returned.
+	 * @param type
+	 *            The expected type of objects that must be returned.
+	 * @param exactMatch
+	 *            The kind of search:
+	 *            <ul>
+	 *            <li><b><tt>true</tt>&nbsp;&nbsp;&nbsp;</b> if only specified type must be considered;<br>
+	 *            <li><b><tt>false</tt>&nbsp;</b> if objects of inherited types are also wanted.
+	 *            </ul>
+	 * @return All instances of the specified type in the context of the given resource.
+	 */
+	public static <T> List<T> getAllInstancesOf(Resource contextResource, Class<T> type, boolean exactMatch) {
+		Collection<Resource> resources = EcorePlatformUtil.getResourcesInModel(contextResource, true);
+		return getAllInstancesOf(resources, type, exactMatch);
+	}
+
+	/**
+	 * Returns all instances of a certain type within a specified ResourceSet. The ResourceSet is resolved from the
+	 * provided IModelDescriptor.
+	 * 
+	 * @param modelDescriptor
+	 *            The model descriptor used to calculate the context inside which instances of the expected type must be
+	 *            returned.
+	 * @param type
+	 *            The expected type of objects that must be returned.
+	 * @param exactMatch
+	 *            The kind of search:
+	 *            <ul>
+	 *            <li><b><tt>true</tt>&nbsp;&nbsp;&nbsp;</b> if only specified type must be considered;<br>
+	 *            <li><b><tt>false</tt>&nbsp;</b> if objects of inherited types are also wanted.
+	 *            </ul>
+	 * @return All instances of the specified type in the context of the given model descriptor.
+	 */
+	public static <T> List<T> getAllInstancesOf(IModelDescriptor modelDescriptor, Class<T> type, boolean exactMatch) {
+		Collection<Resource> resources = EcorePlatformUtil.getResourcesInModel(modelDescriptor, true);
+		return getAllInstancesOf(resources, type, exactMatch);
+	}
+
+	/**
+	 * Returns all instances of a certain type within a specified set of Resources.
+	 * 
+	 * @param resources
+	 *            The list of resources inside which instances of the expected type must be returned.
+	 * @param type
+	 *            The expected type of objects that must be returned.
+	 * @param exactMatch
+	 *            The kind of search:
+	 *            <ul>
+	 *            <li><b><tt>true</tt>&nbsp;&nbsp;&nbsp;</b> if only specified type must be considered;<br>
+	 *            <li><b><tt>false</tt>&nbsp;</b> if objects of inherited types are also wanted.
+	 *            </ul>
+	 * @return All instances of the specified type in the given list of resources.
+	 */
+	public static <T> List<T> getAllInstancesOf(Collection<Resource> resources, Class<T> type, boolean exactMatch) {
+		Assert.isNotNull(resources);
+		Assert.isNotNull(type);
+
+		List<T> instances = new ArrayList<T>();
+		for (Resource resource : resources) {
+			instances.addAll(getAllInstancesOf(resource.getAllContents(), type, exactMatch));
+		}
+		return instances;
+	}
+
+	/**
+	 * Return all instance of reference objects (which is many) of the given object
+	 * 
+	 * @param owner
+	 *            The given object to get referenced instances.
+	 * @param reference
+	 *            The reference to get.
+	 * @param type
+	 *            The expected type of objects to return
+	 * @param exactMatch
+	 *            The kind of search:
+	 *            <ul>
+	 *            <li><b><tt>true</tt>&nbsp;&nbsp;&nbsp;</b> if only specified type must be considered;<br>
+	 *            <li><b><tt>false</tt>&nbsp;</b> if objects of inherited types are also wanted.
+	 *            </ul>
+	 * @return All instance of the specified type that are references of <code> owner</code> object. Or an empty list if
+	 *         the owner doesn't have the reference as required
+	 */
+	public static <T> List<T> getReferencedInstancesOf(EObject owner, EReference reference, Class<T> type, boolean exactMatch) {
+		Assert.isNotNull(owner);
+		Assert.isNotNull(reference);
+		Assert.isNotNull(type);
+
+		List<T> instances = new ArrayList<T>();
+		if (reference.isMany()) {
+			@SuppressWarnings("unchecked")
+			EList<EObject> values = (EList<EObject>) owner.eGet(reference);
+			for (EObject value : values) {
+				if (isInstanceOf(value, type, exactMatch)) {
+					instances.add(type.cast(value));
+				}
+			}
+		}
+		return instances;
+	}
+
+	private static AbstractTreeIterator<EObject> getAllContentsIncludingRoot(EObject contextObject) {
+		AbstractTreeIterator<EObject> allContents = new AbstractTreeIterator<EObject>(contextObject, true) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Iterator<EObject> getChildren(Object object) {
+				return ((EObject) object).eContents().iterator();
+			}
+		};
+		return allContents;
+	}
+
+	/**
+	 * Return all instances of a certain type within the provided {@link TreeIterator}
+	 * 
+	 * @param allContents
+	 *            The {@link TreeIterator} which instances of the expected type must be returned.
+	 * @param type
+	 *            The expected type of objects to return
+	 * @param The
+	 *            kind of search:
+	 *            <ul>
+	 *            <li><b><tt>true</tt>&nbsp;&nbsp;&nbsp;</b> if only specified type must be considered;<br>
+	 *            <li><b><tt>false</tt>&nbsp;</b> if objects of inherited types are also wanted.
+	 *            </ul>
+	 * @return All instances of the specified type in the given list {@link TreeIterator}. Or an empty list if there
+	 *         isn't any instances of the specified type in the Tree.
+	 */
+	private static <T> List<T> getAllInstancesOf(TreeIterator<EObject> allContents, Class<T> type, boolean exactMatch) {
+		List<T> instances = new ArrayList<T>();
+		for (TreeIterator<EObject> iter = allContents; iter.hasNext();) {
+			EObject eObject = iter.next();
+			if (isInstanceOf(eObject, type, exactMatch)) {
+				instances.add(type.cast(eObject));
+			}
+		}
+		return instances;
+	}
+
+	private static <T> boolean isInstanceOf(EObject eObject, Class<T> type, boolean exactMatch) {
+		if (type.isInstance(eObject)) {
+			if (!exactMatch || eObject.getClass() == type || eObject.eClass().getInstanceClass() == type) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Return the EClassifier in the given EPakcage by Class
+	 * 
+	 * @param rootEPackage
+	 *            The package container of return EClassifiers
+	 * @param type
+	 *            The specified class to find
+	 * @return <code><b>EClassifier</b></code> in the given rootPackage and its subPackages .
+	 *         <p>
+	 *         <code> null</code> if there isn't any EClassifier has the given <code><b>type</b></code>
+	 *         </p>
+	 */
+	public static EClassifier findEClassifier(EPackage rootEPackage, Class<?> type) {
+		Assert.isNotNull(type);
+
+		return findEClassifier(rootEPackage, type.getSimpleName());
+	}
+
+	/**
+	 * Return the EClassifier in the given EPackage by typeName
+	 * 
+	 * @param rootEPackage
+	 *            The package container of return EClassifiers
+	 * @param typeName
+	 *            The given name of the EClassifier to return
+	 * @return <code><b>EClassifier</b></code> in the given rootPackage and its subPackages .
+	 *         <p>
+	 *         <code> null</code> if there isn't any EClassifier has the given <code><b>typeName</b></code>
+	 *         </p>
+	 */
+	public static EClassifier findEClassifier(EPackage rootEPackage, String typeName) {
+		Assert.isNotNull(rootEPackage);
+
+		EClassifier eClassifier = rootEPackage.getEClassifier(typeName);
+		if (eClassifier != null) {
+			return eClassifier;
+		}
+		for (EPackage eSubPackage : rootEPackage.getESubpackages()) {
+			eClassifier = findEClassifier(eSubPackage, typeName);
+			if (eClassifier != null) {
+				return eClassifier;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns all EClasses which are derived from a given EClass.
+	 * 
+	 * @param eClass
+	 *            The EClass from which the returned EClasses have to be derived.
+	 * @param concreteTypesOnly
+	 *            If set to <tt>true</tt> only EClasses describing concrete classes will be returned. EClasses
+	 *            describing interfaces and abstract classes will be excluded from the result.
+	 * @return All EClasses which are derived from the provided <code>eClass</code>.
+	 */
+	public static List<EClass> findESubTypesOf(EClass eClass, boolean concreteTypesOnly) {
+		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(eClass);
+		EPackage ePackage = mmDescriptor.getEPackage();
+		if (ePackage != null) {
+			return findESubTypesOf(ePackage, eClass, concreteTypesOnly);
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * Return all EClasses which are derived from a given EClass in an EPackage and its SubPackages
+	 * 
+	 * @param ePackage
+	 *            The EPackage container of returned EClasses
+	 * @param eClass
+	 *            The EClass from which the returned EClasses have to derived
+	 * @param concreteTypesOnly
+	 *            If set to <tt>true</tt> only EClasses describing concrete classes will be returned. EClasses
+	 *            describing interfaces and abstract classes will be excluded from the result.
+	 * @return All EClasses which are derived from the provided <code>eClass</code>.
+	 */
+	private static List<EClass> findESubTypesOf(EPackage ePackage, EClass eClass, boolean concreteTypesOnly) {
+		Assert.isNotNull(ePackage);
+		Assert.isNotNull(eClass);
+
+		List<EClass> subTypes = new ArrayList<EClass>();
+		if (ePackage != null) {
+			for (EClassifier eClassifier : ePackage.getEClassifiers()) {
+				if (eClassifier instanceof EClass) {
+					EClass otherEClass = (EClass) eClassifier;
+					if (eClass.isSuperTypeOf(otherEClass) && eClass != otherEClass) {
+						if (!(otherEClass.isAbstract() || otherEClass.isInterface()) || !concreteTypesOnly) {
+							subTypes.add((EClass) eClassifier);
+						}
+					}
+				}
+			}
+			for (EPackage eSubPackage : ePackage.getESubpackages()) {
+				subTypes.addAll(findESubTypesOf(eSubPackage, eClass, concreteTypesOnly));
+			}
+		}
+		return subTypes;
+	}
+
+	/**
+	 * Tests if given EClass is assignment compatible with type with specified name, i.e. if it is equal to or a sub
+	 * type of type with specified name.
+	 * 
+	 * @param eClass
+	 *            the EClass to be tested.
+	 * @param typeName
+	 *            the name of the type.
+	 * @return true if given EClass is equal or a subtype of type with specified name, false otherwise.
+	 */
+	public static boolean isAssignableFrom(EClass eClass, String typeName) {
+		Assert.isNotNull(eClass);
+		Assert.isNotNull(typeName);
+
+		if (typeName.equals(EObject.class.getName()) || typeName.equals(EObject.class.getSimpleName())) {
+			return true;
+		}
+
+		// Test if given EClass directly matches type with specified name
+		if (eClass.getName().equals(typeName) || eClass.getInstanceClassName() != null && eClass.getInstanceClassName().equals(typeName)) {
+			return true;
+		}
+
+		// Test if one of the super types of given EClass match
+		for (EClass superType : eClass.getESuperTypes()) {
+			if (isAssignableFrom(superType, typeName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Return all EClassifiers that are containers and have a containment reference to the specified EClass
+	 * 
+	 * @param eClass
+	 *            The class whose container classifiers must be returned.
+	 * @return The set of EClassifiers that have a containment reference to the specified EClass.
+	 */
+	public static List<EClassifier> getEContainerClassifiers(EClass eClass) {
+		Assert.isNotNull(eClass);
+
+		List<EClassifier> containerClassifiers = new ArrayList<EClassifier>();
+		for (EReference reference : eClass.getEAllReferences()) {
+			if (reference.isContainer()) {
+				containerClassifiers.add(reference.getEType());
+			}
+		}
+		return containerClassifiers;
+	}
+
+	/**
+	 * @param ePackage
+	 *            The EPackage container of returned EClassifiers
+	 * @param annotationSource
+	 *            The full URI representing the type of an annotation to filter
+	 * @param detailKey
+	 *            The given key of the annotationSource to filter
+	 * @param detailValue
+	 *            The given value of specified key of the annotationSource to filter
+	 * @return The set of EClassifiers in the specified EPackage that: <li>the Annotation matches the given
+	 *         <code><i><b>annotationSource</b></i></code> and</li> <li>have a details with key is equals
+	 *         <code><i><b>detailKey</b></i></code> and</li> <li>value is equals <code><i><b>detailValue</b></i></code></li>
+	 */
+	public static List<EClassifier> getAnnotatedEClassifiers(EPackage ePackage, String annotationSource, String detailKey, String detailValue) {
+		Assert.isNotNull(ePackage);
+
+		List<EClassifier> classifiers = new ArrayList<EClassifier>();
+		for (EClassifier eClassifier : ePackage.getEClassifiers()) {
+			String value = EcoreUtil.getAnnotation(eClassifier, annotationSource, detailKey);
+			if (value != null && value.equalsIgnoreCase(detailValue)) {
+				classifiers.add(eClassifier);
+			}
+		}
+		return classifiers;
+	}
+
+	/**
+	 * Returns the EStructuralFeature specified by the <code>featureName</code>. The method will return the
+	 * EStructuralFeature if it exists for a given EClass or EObject. If the provided Object is not an EClass or an
+	 * EObject or the EStructuralFeature does not exist <code>null</code> is returned.
+	 * 
+	 * @param owner
+	 *            The EClass or EObject from which the EStructuralFeature is to be resolved.
+	 * @param featureName
+	 *            The name of the EStructuralFeature.
+	 * @return The EStructuralFeature if the provided <code>object</code> is an EClass or EObject and the
+	 *         EStructuralFeature exists, otherwise <code>null</code> is returned.
+	 */
+	public static EStructuralFeature getEStructuralFeature(Object owner, String featureName) {
+		if (owner instanceof EClass) {
+			return ((EClass) owner).getEStructuralFeature(featureName);
+		}
+		if (owner instanceof EObject) {
+			return ((EObject) owner).eClass().getEStructuralFeature(featureName);
+		}
+		return null;
+	}
+
+	/**
+	 * Returns all orphan objects referenced by specified source object via given reference. Orphan objects are target
+	 * objects where all references which are non-containment, non-container and not the reference going back to
+	 * specified owner object are unset. The owner object which may but does not have to be the container of the
+	 * target/orphan objects.
+	 * 
+	 * @param owner
+	 *            The owner object of the returned objects
+	 * @param reference
+	 *            The given Reference to find orphans
+	 * @return All orphan objects referenced by the specified owner via given EReference
+	 */
+	public static List<EObject> getOrphans(EObject owner, EReference reference) {
+		Assert.isNotNull(owner);
+		Assert.isNotNull(reference);
+
+		List<EObject> values = new ArrayList<EObject>();
+		if (reference.isMany()) {
+			@SuppressWarnings("unchecked")
+			List<EObject> valueObjects = (List<EObject>) owner.eGet(reference);
+			values.addAll(valueObjects);
+		} else {
+			values.add((EObject) owner.eGet(reference));
+		}
+
+		List<EObject> orphans = new ArrayList<EObject>();
+		for (EObject value : values) {
+			boolean orphan = true;
+			for (EReference valueReference : value.eClass().getEAllReferences()) {
+				if (!valueReference.isContainment() && !valueReference.isContainer() && valueReference.getEType() instanceof EClass) {
+					List<EObject> valuesOfValue = new ArrayList<EObject>();
+					if (valueReference.isMany()) {
+						@SuppressWarnings("unchecked")
+						List<EObject> valueObjectsOfValue = (List<EObject>) value.eGet(valueReference);
+						valuesOfValue.addAll(valueObjectsOfValue);
+					} else {
+						valuesOfValue.add((EObject) value.eGet(valueReference));
+					}
+					for (EObject valueOfValue : valuesOfValue) {
+						if (valueOfValue != null && valueOfValue != owner) {
+							orphan = false;
+							break;
+						}
+					}
+				}
+				if (!orphan) {
+					break;
+				}
+			}
+			if (orphan) {
+				orphans.add(value);
+			}
+		}
+		return orphans;
+	}
+
+	/**
+	 * Return mixedText of the given FeatureMap
+	 * 
+	 * @param mixed
+	 *            The given FeatureMap to get text
+	 * @return The text for the given FeatureMap.
+	 */
+	public static String getMixedText(FeatureMap mixed) {
+		Assert.isNotNull(mixed);
+
+		Object textObject = mixed.get(org.eclipse.emf.ecore.xml.type.XMLTypePackage.eINSTANCE.getXMLTypeDocumentRoot_Text(), true);
+		if (textObject instanceof FeatureMapUtil.FeatureEList<?>) {
+			FeatureMapUtil.FeatureEList<?> featureEList = (FeatureMapUtil.FeatureEList<?>) textObject;
+			if (featureEList.size() != 0) {
+				Object text = featureEList.get(0);
+				if (text instanceof String) {
+					return (String) text;
+				}
+			}
+		}
+		return ""; //$NON-NLS-1$
+	}
+
+	/**
+	 * Set mixed text of the given FeatureMap
+	 * 
+	 * @param mixed
+	 *            The given FeatureMap to set text
+	 * @param text
+	 *            The input text set to the FeatureMap
+	 */
+	public static void setMixedText(FeatureMap mixed, String text) {
+		Assert.isNotNull(mixed);
+
+		mixed.clear();
+		if (text != null) {
+			mixed.add(org.eclipse.emf.ecore.xml.type.XMLTypePackage.eINSTANCE.getXMLTypeDocumentRoot_Text(), text);
+		}
+	}
+
+	/**
+	 * Deletes the object from its {@linkplain org.eclipse.emf.ecore.EObject#eResource() containing} resource and/or its
+	 * {@linkplain EObject#eContainer containing} object. However, in contrast to what is done in
+	 * {@linkplain org.eclipse.emf.ecore.util.EcoreUtil#delete EcoreUtil#delete()}, the object is not removed from any
+	 * other feature that references it within the enclosing resource set, resource, or root object. Instead, the
+	 * deleted object and its directly and indirectly contained children are turned into proxy objects. This behavior
+	 * bears two major advantages:
+	 * <ul>
+	 * <li>After deletion, all concerned other features are still able to know that they were referencing the deleted
+	 * object or its contained children and can retrieve their URI e.g.</li>
+	 * <li>In big models, this way of proceeding yields significant performance benefits because an expensive search for
+	 * other features referencing the object under deletion or its contained children in the enclosing resource set,
+	 * resource, or root object (by applying a {@linkplain org.eclipse.emf.ecore.util.UsageCrossReferencer
+	 * UsageCrossReferencer}) is not necessary.</li>
+	 * </ul>
+	 * 
+	 * @param eObject
+	 *            The object to be delete and proxified.
+	 */
+	public static void delete(EObject eObject) {
+		Assert.isNotNull(eObject);
+		// Proxify object to be deleted itself
+		proxify(eObject.eContainer(), eObject.eContainingFeature(), eObject);
+
+		// Remove object from its containing resource or object
+		EcoreUtil.remove(eObject);
+	}
+
+	/**
+	 * Turns given EObject in to a proxy object using an URI composed of the URI of the resource the EObject is in plus
+	 * the URI fragment relative to that resource.
+	 * 
+	 * @param container
+	 *            The container of the EObject to be proxified
+	 * @param feature
+	 *            The containment reference of the EObject to be proxified
+	 * @param eObject
+	 *            The EObject to be proxified.
+	 * @return The provided <code>eObject</code> is returned. If the proxy could not be created <code>null</code> is
+	 *         returned.
+	 */
+	public static EObject proxify(EObject owner, EStructuralFeature feature, EObject eObject) {
+		if (eObject != null) {
+			Resource resource = eObject.eResource();
+			if (resource == null) {
+				resource = owner.eResource();
+			}
+			if (resource != null) {
+				// Proxify given EObject; use ExtendedResource for calculating proxy URI to enable metamodel-dependent
+				// URI formats to be used
+				if (!eObject.eIsProxy() && eObject instanceof InternalEObject) {
+					InternalEObject internalEObject = (InternalEObject) eObject;
+					URI uri;
+					ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
+					if (extendedResource != null) {
+						uri = extendedResource.createProxyURI(owner, feature, eObject);
+					} else {
+						uri = EcoreUtil.getURI(internalEObject);
+					}
+					internalEObject.eSetProxyURI(uri);
+				}
+
+				// Proxify contained children of given EObject
+				for (EObject child : eObject.eContents()) {
+					proxify(owner, feature, child);
+				}
+
+				return eObject;
+			} else {
+				// TODO Use URI fragment of eContainer as base and append URI fragment segment for eObject
+				return null;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Turns a given proxy EObject into a normal EObject. Only EObjects derived from InternalEObject will be effected.
+	 * If the provided EObject is an InternalEObject but not a proxy EObject the method has not effect on the provided
+	 * <code>eObject</code>.
+	 * 
+	 * @param eObject
+	 *            The proxy EObject.
+	 * @return The provided <code>eObject</code> is returned.
+	 */
+	public static EObject deproxify(EObject eObject) {
+		if (eObject != null) {
+			// Deproxify given EObject
+			if (eObject.eIsProxy() && eObject instanceof InternalEObject) {
+				((InternalEObject) eObject).eSetProxyURI(null);
+			}
+
+			// Deproxify contained children of given EObject
+			for (Iterator<EObject> iter = eObject.eAllContents(); iter.hasNext();) {
+				deproxify(iter.next());
+			}
+		}
+		return eObject;
+	}
+
+	/**
+	 * Creates a proxy representing given {@link EObject}. The given {@link EObject} is used as a template to create the
+	 * proxy, i.e. the resulting proxy will have the same type and a {@link URI proxy URI} which equals the given
+	 * {@link EObject}'s {@link URI} .
+	 * 
+	 * @param EObject
+	 *            The {@link EObject} for which the proxy is to be created.
+	 * @return The created proxy, or <code>null</code> if no such could be created.
+	 */
+	public static EObject createProxyFrom(EObject eObject) {
+		Assert.isNotNull(eObject);
+
+		EFactory eFactoryInstance = eObject.eClass().getEPackage().getEFactoryInstance();
+		InternalEObject proxy = (InternalEObject) eFactoryInstance.create(eObject.eClass());
+
+		URI uri;
+		Resource resource = eObject.eResource();
+		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
+		if (extendedResource != null) {
+			uri = extendedResource.createProxyURI((InternalEObject) eObject);
+		} else {
+			uri = EcoreUtil.getURI(eObject);
+		}
+		if (proxy != null && uri != null) {
+			proxy.eSetProxyURI(uri);
+			return proxy;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Visits all proxies in given {@link Resource resource} and tries to resolve them.
+	 * <p>
+	 * Does principally the same thing as {@link EcoreUtil#resolveAll(Resource)} but provides more robustness by
+	 * catching exceptions that are raised during proxy resolution and attaching them as errors on given
+	 * {@link Resource resource}.
+	 * </p>
+	 * 
+	 * @param resource
+	 *            The {@link Resource resource} to visit.
+	 * @see EcoreUtil#resolveAll(Resource)
+	 */
+	public static void resolveAll(Resource resource) {
+		for (Iterator<EObject> i = resource.getAllContents(); i.hasNext();) {
+			EObject eObject = i.next();
+			resolveCrossReferences(eObject);
+		}
+	}
+
+	private static void resolveCrossReferences(EObject eObject) {
+		try {
+			for (Iterator<EObject> i = eObject.eCrossReferences().iterator(); i.hasNext(); i.next()) {
+				// The loop resolves the cross references by visiting them
+			}
+		} catch (Exception ex) {
+			Resource resource = eObject.eResource();
+			if (resource != null) {
+				// Exception due to something different than that resource does not exist?
+				if (EcoreResourceUtil.exists(resource.getURI())) {
+					// Leave an error about what has happened on resource
+					resource.getErrors().add(
+							new ProxyURIIntegrityException(NLS.bind(Messages.error_problemOccurredWhenResolvingReferencesOfObject, eObject.eClass()
+									.getName()), ex));
+				}
+			}
+		}
+	}
+}

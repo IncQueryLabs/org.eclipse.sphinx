@@ -1,0 +1,49 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2008-2010 See4sys and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     See4sys - Initial API and implementation
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.gmf.workspace.metamodel;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.metamodel.ITargetMetaModelDescriptorProvider;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
+
+public class GMFTargetMetaModelDescriptorProvider implements ITargetMetaModelDescriptorProvider {
+
+	public IMetaModelDescriptor getDescriptor(IFile file) {
+		try {
+			String targetNamespace = EcorePlatformUtil.readTargetNamespace(file);
+			return MetaModelDescriptorRegistry.INSTANCE.getDescriptor(new URI(targetNamespace));
+		} catch (URISyntaxException ex) {
+			// Ignore exception, just return null
+		}
+		return null;
+	}
+
+	public IMetaModelDescriptor getDescriptor(Resource resource) {
+		try {
+			String targetNamespace = EcoreResourceUtil.readTargetNamespace(resource);
+			return MetaModelDescriptorRegistry.INSTANCE.getDescriptor(new URI(targetNamespace));
+		} catch (URISyntaxException ex) {
+			// Ignore exception, just return null
+		}
+		return null;
+	}
+}

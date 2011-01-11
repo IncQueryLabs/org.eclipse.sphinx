@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.5"?>
+
+<target name="Sphinx Eclipse 3.6">
+<locations>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\base" type="Profile"/>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\delta-pack" type="Profile"/>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\repos\emf-compare-SDK-1.1.0" type="Profile"/>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\repos\emf-query-SDK-1.4.0" type="Profile"/>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\repos\emf-transaction-SDK-1.4.0" type="Profile"/>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\repos\emf-validation-SDK-1.4.0" type="Profile"/>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\repos\emf-xsd-SDK-2.6.1" type="Profile"/>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\repos\GEF-ALL-3.6.1" type="Profile"/>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\repos\gmf-sdk-2.3.1" type="Profile"/>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\repos\m2m-qvtoml-SDK-3.0.1" type="Profile"/>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\repos\mdt-ocl-SDK-3.0.1" type="Profile"/>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\repos\mdt-uml2-SDK-3.1.1" type="Profile"/>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\repos\orbit-R20100519200754" type="Profile"/>
+<location path="${env_var:SPHINX_TARGETS}\target-3.6\repos\Subversive-incubation-0.7.9.I20100512-1900" type="Profile"/>
+</locations>
+<environment>
+<nl>en_EN</nl>
+</environment>
+<launcherArgs>
+<vmArgs>-Xms128m -Xmx768m -Xss4m -XX:MaxPermSize=256m</vmArgs>
+<programArgs>--launcher.XXMaxPermSize 256m</programArgs>
+</launcherArgs>
+</target>

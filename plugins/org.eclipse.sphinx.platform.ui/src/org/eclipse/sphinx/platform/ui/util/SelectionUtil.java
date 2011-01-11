@@ -1,0 +1,64 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2008-2010 See4sys and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     See4sys - Initial API and implementation
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.platform.ui.util;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+
+public class SelectionUtil {
+
+	public static boolean containsOnlyProjects(IStructuredSelection selection) {
+		if (selection.isEmpty()) {
+			return false;
+		}
+		for (Object obj : selection.toList()) {
+			if (!isProject(obj)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static boolean isProject(Object element) {
+		return element instanceof IProject;
+	}
+
+	public static IStructuredSelection getStructuredSelection(ISelection selection) {
+		return selection instanceof IStructuredSelection ? (IStructuredSelection) selection : StructuredSelection.EMPTY;
+	}
+
+	public static boolean hasOnlyElementsOfSameType(ISelection selection) {
+		return hasOnlyElementsOfSameType(getStructuredSelection(selection));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static boolean hasOnlyElementsOfSameType(IStructuredSelection selection) {
+		if (selection.isEmpty()) {
+			return false;
+		}
+		List<Object> elements = selection.toList();
+		Set<String> classNameSet = new HashSet<String>();
+		for (Object obj : elements) {
+			classNameSet.add(obj.getClass().getName());
+		}
+		return classNameSet.size() == 1;
+	}
+}

@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.sphinx.examples.actions;singleton:=true
+Bundle-Version: 0.7.0.qualifier
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.sphinx.examples.common.ui;visibility:=reexport
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.eclipse.sphinx.examples.actions,
+ org.eclipse.sphinx.examples.actions.internal;x-internal:=true,
+ org.eclipse.sphinx.examples.actions.internal.messages;x-internal:=true,
+ org.eclipse.sphinx.examples.actions.providers
+Bundle-Activator: org.eclipse.sphinx.examples.actions.internal.Activator$Implementation
+Bundle-ActivationPolicy: lazy

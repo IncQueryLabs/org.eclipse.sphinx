@@ -1,0 +1,220 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2008-2010 See4sys and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     See4sys - Initial API and implementation
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.tests.emf.ui.integration.util;
+
+import junit.framework.ComparisonFailure;
+
+import org.eclipse.emf.common.ui.URIEditorInput;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
+import org.eclipse.sphinx.examples.hummingbird10.Interface;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
+import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
+import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
+import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
+import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
+import org.eclipse.ui.IEditorDescriptor;
+
+@SuppressWarnings("nls")
+public class EcoreUIUtilTest extends DefaultIntegrationTestCase {
+
+	@Override
+	protected String[] getProjectsToLoad() {
+		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A };
+	}
+
+	/**
+	 * Test method for {@link EcoreEditorUtil#createURIEditorInput(Object object) } .
+	 */
+	public void testCreateURIEditorInput() {
+		Resource resource20_1 = refWks.editingDomain20.getResourceSet().getResource(
+				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+		Resource resource20_2 = refWks.editingDomain20.getResourceSet().getResource(
+				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
+		Resource resource20_3 = refWks.editingDomain20.getResourceSet().getResource(
+				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, false), false);
+		assertNotNull(resource20_1);
+		assertFalse(resource20_1.getContents().isEmpty());
+		assertNotNull(resource20_2);
+		assertFalse(resource20_2.getContents().isEmpty());
+		assertNotNull(resource20_3);
+		assertFalse(resource20_3.getContents().isEmpty());
+
+		Resource resource10_1 = refWks.editingDomain10.getResourceSet().getResource(
+				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+		Resource resource10_2 = refWks.editingDomain10.getResourceSet().getResource(
+				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_2, false), false);
+		Resource resource10_3 = refWks.editingDomain10.getResourceSet().getResource(
+				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_3, false), false);
+		assertNotNull(resource10_1);
+		assertFalse(resource10_1.getContents().isEmpty());
+		assertNotNull(resource10_2);
+		assertFalse(resource10_2.getContents().isEmpty());
+		assertNotNull(resource10_3);
+		assertFalse(resource10_3.getContents().isEmpty());
+
+		EObject eobject = resource20_1.getContents().get(0);
+
+		URIEditorInput editor = EcoreUIUtil.createURIEditorInput(eobject);
+		assertNotNull(editor);
+		assertEquals(EcoreUtil.getURI(eobject).toString(), editor.getURI().toString());
+		assertEquals(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, editor.getName());
+
+		eobject = resource20_2.getContents().get(0);
+
+		editor = EcoreUIUtil.createURIEditorInput(eobject);
+		assertNotNull(editor);
+		assertEquals(EcoreUtil.getURI(eobject).toString(), editor.getURI().toString());
+		assertEquals(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, editor.getName());
+
+		eobject = resource20_3.getContents().get(0);
+
+		editor = EcoreUIUtil.createURIEditorInput(eobject);
+		assertNotNull(editor);
+		assertEquals(EcoreUtil.getURI(eobject).toString(), editor.getURI().toString());
+		assertEquals(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, editor.getName());
+
+		eobject = resource10_1.getContents().get(0);
+
+		editor = EcoreUIUtil.createURIEditorInput(eobject);
+		assertNotNull(editor);
+		assertEquals(EcoreUtil.getURI(eobject).toString(), editor.getURI().toString());
+		assertEquals(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, editor.getName());
+
+		eobject = resource10_2.getContents().get(0);
+
+		editor = EcoreUIUtil.createURIEditorInput(eobject);
+		assertNotNull(editor);
+		assertEquals(EcoreUtil.getURI(eobject).toString(), editor.getURI().toString());
+		assertEquals(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_2, editor.getName());
+
+		eobject = resource10_3.getContents().get(0);
+
+		editor = EcoreUIUtil.createURIEditorInput(eobject);
+		assertNotNull(editor);
+		assertEquals(EcoreUtil.getURI(eobject).toString(), editor.getURI().toString());
+		assertEquals(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_3, editor.getName());
+	}
+
+	/**
+	 * Test method for {@link EcoreEditorUtil#findMatchingEditorId(Object object) } .
+	 */
+	public void testGetDefaultEditorClass() {
+
+		IEditorDescriptor editorDescriptor1 = EcoreUIUtil.getDefaultEditor(Component.class);
+		assertNotNull(editorDescriptor1);
+		assertEquals(editorDescriptor1.getId(), "org.eclipse.sphinx.tests.emf.ui.integration.util.editors.ComponentHb20TestEditor", editorDescriptor1.getId());
+
+		IEditorDescriptor editorDescriptor2 = EcoreUIUtil.getDefaultEditor(ComponentType.class);
+		assertNotNull(editorDescriptor2);
+		// The default editor provided by the tests and the one provide by the
+		// Hummingbird example are both accepted.
+		String actualId = editorDescriptor2.getId();
+		if (actualId == null
+				|| !(actualId.equals("org.eclipse.sphinx.tests.emf.ui.integration.util.editors.IdentifiableHb20TestEditor") || actualId
+						.equals("org.eclipse.sphinx.examples.hummingbird.ide.ui.editors.hummingbird"))) {
+			throw new ComparisonFailure(
+					actualId,
+					"org.eclipse.sphinx.tests.emf.ui.integration.util.editors.IdentifiableHb20TestEditor or org.eclipse.sphinx.examples.hummingbird.ide.ui.editors.hummingbird",
+					actualId);
+		}
+
+		IEditorDescriptor editorDescriptor3 = EcoreUIUtil.getDefaultEditor(org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface.class);
+		assertNotNull(editorDescriptor3);
+		assertEquals(editorDescriptor3.getId(), "org.eclipse.sphinx.tests.emf.ui.integration.util.editors.InterfaceHb20TestEditor", editorDescriptor3.getId());
+
+		IEditorDescriptor editorDescriptor4 = EcoreUIUtil.getDefaultEditor(org.eclipse.sphinx.examples.hummingbird10.Component.class);
+		assertNotNull(editorDescriptor4);
+		assertEquals(editorDescriptor4.getId(), "org.eclipse.sphinx.tests.emf.ui.integration.util.editors.ComponentHb10TestEditor", editorDescriptor4.getId());
+
+		IEditorDescriptor editorDescriptor5 = EcoreUIUtil.getDefaultEditor(org.eclipse.sphinx.examples.hummingbird10.Interface.class);
+		assertNotNull(editorDescriptor5);
+		assertEquals(editorDescriptor5.getId(), "org.eclipse.sphinx.tests.emf.ui.integration.util.editors.InterfaceHb10TestEditor", editorDescriptor5.getId());
+	}
+
+	public void testGetDefaultEditorObject() {
+
+		Resource resource20 = refWks.editingDomain20.getResourceSet().getResource(
+				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+		assertNotNull(resource20);
+		assertFalse(resource20.getContents().isEmpty());
+		Application hb20App = (Application) resource20.getContents().get(0);
+		assertNotNull(hb20App);
+		assertFalse(hb20App.getComponents().isEmpty());
+		Component component = hb20App.getComponents().get(0);
+
+		IEditorDescriptor editorDescriptor1 = EcoreUIUtil.getDefaultEditor(component);
+		assertNotNull(editorDescriptor1);
+		assertEquals(editorDescriptor1.getId(), "org.eclipse.sphinx.tests.emf.ui.integration.util.editors.ComponentHb20TestEditor", editorDescriptor1.getId());
+		// ----------------------------
+		resource20 = refWks.editingDomain20.getResourceSet().getResource(
+				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
+		assertNotNull(resource20);
+		assertFalse(resource20.getContents().isEmpty());
+		Platform hb20Platform = (Platform) resource20.getContents().get(0);
+		assertNotNull(hb20Platform);
+		assertFalse(hb20Platform.getComponentTypes().isEmpty());
+		ComponentType componentType = hb20Platform.getComponentTypes().get(0);
+		IEditorDescriptor editorDescriptor2 = EcoreUIUtil.getDefaultEditor(componentType);
+
+		assertNotNull(editorDescriptor2);
+		// The default editor provided by the tests and the one provide by the
+		// Hummingbird example are both accepted.
+		String actualId = editorDescriptor2.getId();
+		if (actualId == null
+				|| !(actualId.equals("org.eclipse.sphinx.tests.emf.ui.integration.util.editors.IdentifiableHb20TestEditor") || actualId
+						.equals("org.eclipse.sphinx.examples.hummingbird.ide.ui.editors.hummingbird"))) {
+			throw new ComparisonFailure(
+					actualId,
+					"org.eclipse.sphinx.tests.emf.ui.integration.util.editors.IdentifiableHb20TestEditor or org.eclipse.sphinx.examples.hummingbird.ide.ui.editors.hummingbird",
+					actualId);
+		}
+
+		// ===================================
+		// HB10 Resource
+		Resource resource10 = refWks.editingDomain10.getResourceSet().getResource(
+				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+		assertNotNull(resource10);
+		assertFalse(resource10.getContents().isEmpty());
+		org.eclipse.sphinx.examples.hummingbird10.Application hb10App = (org.eclipse.sphinx.examples.hummingbird10.Application) resource10.getContents().get(0);
+		assertFalse(hb10App.getComponents().isEmpty());
+		org.eclipse.sphinx.examples.hummingbird10.Component hb10Component = hb10App.getComponents().get(0);
+
+		IEditorDescriptor editorDescriptor4 = EcoreUIUtil.getDefaultEditor(hb10Component);
+		assertNotNull(editorDescriptor4);
+		assertEquals(editorDescriptor4.getId(), "org.eclipse.sphinx.tests.emf.ui.integration.util.editors.ComponentHb10TestEditor", editorDescriptor4.getId());
+
+		assertFalse(hb10App.getInterfaces().isEmpty());
+		Interface hb10Interface = hb10App.getInterfaces().get(0);
+
+		IEditorDescriptor editorDescriptor5 = EcoreUIUtil.getDefaultEditor(hb10Interface);
+		assertNotNull(editorDescriptor5);
+		assertEquals(editorDescriptor5.getId(), "org.eclipse.sphinx.tests.emf.ui.integration.util.editors.InterfaceHb10TestEditor", editorDescriptor5.getId());
+
+	}
+}

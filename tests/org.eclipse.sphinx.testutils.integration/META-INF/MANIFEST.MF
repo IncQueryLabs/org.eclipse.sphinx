@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.sphinx.testutils.integration;singleton:=true
+Bundle-Version: 0.7.0.qualifier
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.junit,
+ org.apache.ant,
+ org.eclipse.ui.workbench,
+ org.eclipse.sphinx.emf;visibility:=reexport,
+ org.eclipse.sphinx.emf.workspace;visibility:=reexport,
+ org.eclipse.sphinx.testutils;visibility:=reexport
+Export-Package: org.eclipse.sphinx.testutils.integration,
+ org.eclipse.sphinx.testutils.integration.internal;x-internal:=true
+Bundle-Vendor: %providerName
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.eclipse.sphinx.testutils.integration.internal.Activator$Implementation
