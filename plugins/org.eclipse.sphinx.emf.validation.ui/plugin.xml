@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+
+<!--
+<copyright>
+
+Copyright (c) 2008-2010 See4sys and others.
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+which accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html
+ 
+Contributors: 
+    See4sys - Initial API and implementation
+
+</copyright>
+-->
+
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            class="org.eclipse.sphinx.emf.validation.ui.decorators.BasicLightweightValidationDecorator"
+            id="org.eclipse.sphinx.emf.validation.ui.decorator"
+            label="%ValidationDecorator.label"
+            lightweight="true"
+            state="true">          
+           <description>%ValidationDecorator.desc</description>
+            <enablement>
+               <or>
+                  <objectClass
+                        name="org.eclipse.emf.common.notify.Notifier">
+                  </objectClass>
+                  <objectClass
+                        name="org.eclipse.core.resources.IResource">
+                  </objectClass>
+               </or>
+            </enablement>        
+      </decorator>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.ide.markerSupport">
+      <markerGroupingEntry
+            id="org.eclipse.sphinx.emf.validation.markerErrorGroupingEntry"
+            label="Errors"
+            markerGrouping="org.eclipse.ui.ide.severity"
+            priority="2">
+      </markerGroupingEntry>
+      <markerGroupingEntry
+            id="org.eclipse.sphinx.emf.validation.markerWarningGroupingEntry"
+            label="Warnings"
+            markerGrouping="org.eclipse.ui.ide.severity"
+            priority="1">
+      </markerGroupingEntry>
+      <markerGroupingEntry
+            id="org.eclipse.sphinx.emf.validation.markerInfoGroupingEntry"
+            label="Infos"
+            markerGrouping="org.eclipse.ui.ide.severity"
+            priority="0">
+      </markerGroupingEntry>
+      <markerAttributeGrouping
+            attribute="severity"
+            markerType="sphinx.emf.validation.problem.marker">
+         <markerAttributeMapping
+               markerGroupingEntry="org.eclipse.sphinx.emf.validation.markerErrorGroupingEntry"
+               value="2">
+         </markerAttributeMapping>
+         <markerAttributeMapping
+               markerGroupingEntry="org.eclipse.sphinx.emf.validation.markerWarningGroupingEntry"
+               value="1">
+         </markerAttributeMapping>
+         <markerAttributeMapping
+               markerGroupingEntry="org.eclipse.sphinx.emf.validation.markerInfoGroupingEntry"
+               value="0">
+         </markerAttributeMapping>
+      </markerAttributeGrouping>
+      <markerAttributeGrouping
+            attribute="severity"
+            markerType="org.eclipse.sphinx.emf.xmlwellformednessproblemmarker">
+         <markerAttributeMapping
+               markerGroupingEntry="org.eclipse.sphinx.emf.validation.markerErrorGroupingEntry"
+               value="2">
+         </markerAttributeMapping>
+         <markerAttributeMapping
+               markerGroupingEntry="org.eclipse.sphinx.emf.validation.markerWarningGroupingEntry"
+               value="1">
+         </markerAttributeMapping>
+         <markerAttributeMapping
+               markerGroupingEntry="org.eclipse.sphinx.emf.validation.markerInfoGroupingEntry"
+               value="0">
+         </markerAttributeMapping>
+      </markerAttributeGrouping>
+      <markerAttributeGrouping
+            attribute="severity"
+            markerType="org.eclipse.sphinx.emf.xmlvalidityproblemmarker">
+         <markerAttributeMapping
+               markerGroupingEntry="org.eclipse.sphinx.emf.validation.markerErrorGroupingEntry"
+               value="2">
+         </markerAttributeMapping>
+         <markerAttributeMapping
+               markerGroupingEntry="org.eclipse.sphinx.emf.validation.markerWarningGroupingEntry"
+               value="1">
+         </markerAttributeMapping>
+         <markerAttributeMapping
+               markerGroupingEntry="org.eclipse.sphinx.emf.validation.markerInfoGroupingEntry"
+               value="0">
+         </markerAttributeMapping>
+      </markerAttributeGrouping>
+      <markerAttributeGrouping
+            attribute="severity"
+            markerType="org.eclipse.sphinx.emf.xmlintegrityproblemmarker">
+         <markerAttributeMapping
+               markerGroupingEntry="org.eclipse.sphinx.emf.validation.markerErrorGroupingEntry"
+               value="2">
+         </markerAttributeMapping>
+         <markerAttributeMapping
+               markerGroupingEntry="org.eclipse.sphinx.emf.validation.markerWarningGroupingEntry"
+               value="1">
+         </markerAttributeMapping>
+         <markerAttributeMapping
+               markerGroupingEntry="org.eclipse.sphinx.emf.validation.markerInfoGroupingEntry"
+               value="0">
+         </markerAttributeMapping>
+      </markerAttributeGrouping>
+   </extension>
+</plugin>

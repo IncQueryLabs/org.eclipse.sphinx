@@ -1,0 +1,9 @@
+ 
+ 
+org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/ApplyContraints=true
+org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/UpdateProblemMarkers=true
+org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/LabelDecoration=true
+org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/ApplyContraints/timeOutValue=700
+org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/UpdateProblemMarkers/timeOutValue=700
+org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/LabelDecoration/timeOutValue=700
+ 
