@@ -581,79 +581,58 @@ public final class EObjectUtil {
 	}
 
 	/**
-	 * Deletes the object from its {@linkplain org.eclipse.emf.ecore.EObject#eResource() containing} resource and/or its
-	 * {@linkplain EObject#eContainer containing} object. However, in contrast to what is done in
-	 * {@linkplain org.eclipse.emf.ecore.util.EcoreUtil#delete EcoreUtil#delete()}, the object is not removed from any
-	 * other feature that references it within the enclosing resource set, resource, or root object. Instead, the
-	 * deleted object and its directly and indirectly contained children are turned into proxy objects. This behavior
-	 * bears two major advantages:
-	 * <ul>
-	 * <li>After deletion, all concerned other features are still able to know that they were referencing the deleted
-	 * object or its contained children and can retrieve their URI e.g.</li>
-	 * <li>In big models, this way of proceeding yields significant performance benefits because an expensive search for
-	 * other features referencing the object under deletion or its contained children in the enclosing resource set,
-	 * resource, or root object (by applying a {@linkplain org.eclipse.emf.ecore.util.UsageCrossReferencer
-	 * UsageCrossReferencer}) is not necessary.</li>
-	 * </ul>
+	 * Turns given {@link EObject} in to a proxy object using an {@link URI} composed of the URI of the resource the
+	 * EObject is in plus the URI fragment relative to that resource.
 	 * 
 	 * @param eObject
-	 *            The object to be delete and proxified.
+	 *            The {@link EObject} to be proxified.
+	 * @return The provided <code>eObject</code> is returned. If the proxy could not be created the given
+	 *         {@link EObject} itself is returned.
 	 */
-	public static void delete(EObject eObject) {
-		Assert.isNotNull(eObject);
-		// Proxify object to be deleted itself
-		proxify(eObject.eContainer(), eObject.eContainingFeature(), eObject);
-
-		// Remove object from its containing resource or object
-		EcoreUtil.remove(eObject);
+	public static EObject proxify(EObject eObject) {
+		return proxify(null, null, eObject);
 	}
 
 	/**
-	 * Turns given EObject in to a proxy object using an URI composed of the URI of the resource the EObject is in plus
-	 * the URI fragment relative to that resource.
+	 * Turns given {@link EObject} in to a proxy object using an {@link URI} composed of the URI of the resource the
+	 * EObject is in plus the URI fragment relative to that resource.
 	 * 
-	 * @param container
-	 *            The container of the EObject to be proxified
-	 * @param feature
-	 *            The containment reference of the EObject to be proxified
+	 * @param oldOwner
+	 *            The old owner of the {@link EObject} to be proxified
+	 * @param oldFeature
+	 *            The containment reference of the {@link EObject} to be proxified
 	 * @param eObject
-	 *            The EObject to be proxified.
-	 * @return The provided <code>eObject</code> is returned. If the proxy could not be created <code>null</code> is
-	 *         returned.
+	 *            The {@link EObject} to be proxified.
+	 * @return The provided <code>eObject</code> is returned. If the proxy could not be created the given
+	 *         {@link EObject} itself is returned.
 	 */
-	public static EObject proxify(EObject owner, EStructuralFeature feature, EObject eObject) {
+	public static EObject proxify(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
 		if (eObject != null) {
+			// Try to use the old owner's resource if given eObject itself is in no resource
 			Resource resource = eObject.eResource();
-			if (resource == null) {
-				resource = owner.eResource();
+			if (resource == null && oldOwner != null) {
+				resource = oldOwner.eResource();
 			}
-			if (resource != null) {
-				// Proxify given EObject; use ExtendedResource for calculating proxy URI to enable metamodel-dependent
-				// URI formats to be used
-				if (!eObject.eIsProxy() && eObject instanceof InternalEObject) {
-					InternalEObject internalEObject = (InternalEObject) eObject;
-					URI uri;
-					ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
-					if (extendedResource != null) {
-						uri = extendedResource.createProxyURI(owner, feature, eObject);
-					} else {
-						uri = EcoreUtil.getURI(internalEObject);
-					}
-					internalEObject.eSetProxyURI(uri);
-				}
 
-				// Proxify contained children of given EObject
-				for (EObject child : eObject.eContents()) {
-					proxify(owner, feature, child);
+			// Proxify given EObject; use ExtendedResource for calculating proxy URI to enable metamodel-dependent
+			// URI formats to be used
+			if (!eObject.eIsProxy()) {
+				URI uri;
+				ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
+				if (extendedResource != null) {
+					uri = extendedResource.getURI(oldOwner, oldFeature, eObject);
+				} else {
+					uri = EcoreUtil.getURI(eObject);
 				}
+				((InternalEObject) eObject).eSetProxyURI(uri);
+			}
 
-				return eObject;
-			} else {
-				// TODO Use URI fragment of eContainer as base and append URI fragment segment for eObject
-				return null;
+			// Proxify contained children of given EObject
+			for (EObject child : eObject.eContents()) {
+				proxify(oldOwner, oldFeature, child);
 			}
 		}
-		return null;
+		return eObject;
 	}
 
 	/**
@@ -696,19 +675,15 @@ public final class EObjectUtil {
 		InternalEObject proxy = (InternalEObject) eFactoryInstance.create(eObject.eClass());
 
 		URI uri;
-		Resource resource = eObject.eResource();
-		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
+		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(eObject.eResource());
 		if (extendedResource != null) {
-			uri = extendedResource.createProxyURI((InternalEObject) eObject);
+			uri = extendedResource.getURI(eObject);
 		} else {
 			uri = EcoreUtil.getURI(eObject);
 		}
-		if (proxy != null && uri != null) {
-			proxy.eSetProxyURI(uri);
-			return proxy;
-		}
+		proxy.eSetProxyURI(uri);
 
-		return null;
+		return proxy;
 	}
 
 	/**

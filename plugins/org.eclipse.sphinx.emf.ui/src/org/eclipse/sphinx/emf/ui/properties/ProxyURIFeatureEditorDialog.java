@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4Sys.
+ * Copyright (c) 2008-2010 See4Sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -73,12 +73,23 @@ import org.eclipse.ui.dialogs.PatternFilter;
  * reference feature many.
  */
 public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
-	Object owner;
 
-	public ProxyURIFeatureEditorDialog(Shell shell, ILabelProvider editLabelProvider, Object owner, EClassifier eType, List<?> doGetValue,
-			String displayName, ArrayList<Object> arrayList, boolean b, boolean sortChoices, boolean unique) {
-		super(shell, editLabelProvider, owner, eType, doGetValue, displayName, arrayList, b, sortChoices, unique);
-		this.owner = owner;
+	protected Object owner;
+
+	// FIXME Use commented constructor once we don't need to support Eclipse 3.5 any longer. Modify
+	// org.eclipse.sphinx.emf.ui.properties.BasicTransactionalAdvancedPropertySection.createModelPropertySourceProvider(TransactionalEditingDomain)
+	// accordingly.
+	// public ProxyURIFeatureEditorDialog(Shell shell, ILabelProvider editLabelProvider, Object owner, EClassifier
+	// eType, List<?> doGetValue,
+	// String displayName, ArrayList<Object> arrayList, boolean b, boolean sortChoices, boolean unique) {
+	// super(shell, editLabelProvider, owner, eType, doGetValue, displayName, arrayList, b, sortChoices, unique);
+	//
+	// this.owner = owner;
+	// }
+	public ProxyURIFeatureEditorDialog(Shell parent, ILabelProvider labelProvider, Object object, EClassifier eClassifier, List<?> currentValues,
+			String displayName, List<?> choiceOfValues, boolean multiLine, boolean sortChoices) {
+		super(parent, labelProvider, object, eClassifier, currentValues, displayName, choiceOfValues, multiLine, sortChoices);
+		owner = object;
 	}
 
 	@Override
@@ -104,12 +115,12 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 
 		if (choiceOfValues != null) {
 			Group filterGroupComposite = new Group(contents, SWT.NONE);
-			filterGroupComposite.setText(EMFEditUIPlugin.INSTANCE.getString("_UI_Choices_pattern_group"));
+			filterGroupComposite.setText(EMFEditUIPlugin.INSTANCE.getString("_UI_Choices_pattern_group")); //$NON-NLS-1$
 			filterGroupComposite.setLayout(new GridLayout(2, false));
 			filterGroupComposite.setLayoutData(new GridData(SWT.FILL, SWT.DEFAULT, true, false, 3, 1));
 
 			Label label = new Label(filterGroupComposite, SWT.NONE);
-			label.setText(EMFEditUIPlugin.INSTANCE.getString("_UI_Choices_pattern_label"));
+			label.setText(EMFEditUIPlugin.INSTANCE.getString("_UI_Choices_pattern_label")); //$NON-NLS-1$
 
 			patternText = new Text(filterGroupComposite, SWT.BORDER);
 			patternText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -130,8 +141,8 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 		}
 
 		Label choiceLabel = new Label(choiceComposite, SWT.NONE);
-		choiceLabel.setText(choiceOfValues == null ? EMFEditUIPlugin.INSTANCE.getString("_UI_Value_label") : EMFEditUIPlugin.INSTANCE
-				.getString("_UI_Choices_label"));
+		choiceLabel.setText(choiceOfValues == null ? EMFEditUIPlugin.INSTANCE.getString("_UI_Value_label") : EMFEditUIPlugin.INSTANCE //$NON-NLS-1$
+				.getString("_UI_Choices_label")); //$NON-NLS-1$
 		GridData choiceLabelGridData = new GridData();
 		choiceLabelGridData.verticalAlignment = SWT.FILL;
 		choiceLabelGridData.horizontalAlignment = SWT.FILL;
@@ -296,14 +307,14 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 						try {
 							Object value = EcoreUtil.createFromString((EDataType) eClassifier, choiceText.getText());
 							values.getChildren().add(value);
-							choiceText.setText("");
+							choiceText.setText(""); //$NON-NLS-1$
 							featureTableViewer.setSelection(new StructuredSelection(value));
 							event.doit = false;
 						} catch (RuntimeException exception) {
 							// Ignore
 						}
 					} else if (event.character == '\33') {
-						choiceText.setText("");
+						choiceText.setText(""); //$NON-NLS-1$
 						event.doit = false;
 					}
 				}
@@ -344,7 +355,9 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 					IStructuredSelection selection = (IStructuredSelection) choiceTableViewer.getSelection();
 					for (Iterator<?> i = selection.iterator(); i.hasNext();) {
 						Object value = i.next();
-						if (!unique || !values.getChildren().contains(value)) {
+						// FIXME Use commented code once we don't need to support Eclipse 3.5 any longer
+						// if (!unique || !values.getChildren().contains(value)) {
+						if (!values.getChildren().contains(value)) {
 							values.getChildren().add(value);
 						}
 					}
@@ -352,9 +365,11 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 				} else if (choiceText != null) {
 					try {
 						Object value = EcoreUtil.createFromString((EDataType) eClassifier, choiceText.getText());
-						if (!unique || !values.getChildren().contains(value)) {
+						// FIXME Use commented code once we don't need to support Eclipse 3.5 any longer
+						// if (!unique || !values.getChildren().contains(value)) {
+						if (!values.getChildren().contains(value)) {
 							values.getChildren().add(value);
-							choiceText.setText("");
+							choiceText.setText(""); //$NON-NLS-1$
 						}
 						featureTableViewer.setSelection(new StructuredSelection(value));
 					} catch (RuntimeException exception) {

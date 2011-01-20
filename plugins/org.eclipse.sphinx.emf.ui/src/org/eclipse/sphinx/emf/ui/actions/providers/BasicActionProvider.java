@@ -338,7 +338,7 @@ public class BasicActionProvider extends CommonActionProvider {
 					if (st.countTokens() == 2) {
 						String text = st.nextToken().trim();
 						IStructuredSelection structuredSelection = SelectionUtil.getStructuredSelection(selection);
-						if (structuredSelection.getFirstElement() instanceof TransientItemProvider) {
+						if (isTransient(structuredSelection.getFirstElement())) {
 							// Suppress submenus if we are on an intermediate category node
 							action.setText(st.nextToken().trim());
 						} else {
@@ -356,5 +356,19 @@ public class BasicActionProvider extends CommonActionProvider {
 			}
 		}
 		return createSubmenuActions;
+	}
+
+	/**
+	 * Returns true if the given object is a transient item provider i.e. an intermediary node, false else.
+	 * 
+	 * @param object
+	 *            an object.
+	 * @return true if the given object is a transient item provider i.e. an intermediary node, false else.
+	 */
+	protected boolean isTransient(Object object) {
+		if (object instanceof TransientItemProvider) {
+			return true;
+		}
+		return false;
 	}
 }

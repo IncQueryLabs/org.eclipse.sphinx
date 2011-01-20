@@ -43,7 +43,7 @@ import org.eclipse.sphinx.platform.util.ReflectUtil;
  */
 public abstract class AbstractMetaModelDescriptor extends PlatformObject implements IMetaModelDescriptor {
 
-	protected static final String URI_SEPARATOR = "/"; //$NON-NLS-1$
+	protected static final String URI_SEGMENT_SEPARATOR = "/"; //$NON-NLS-1$
 
 	private String fIdentifier;
 	protected URI fBaseNamespaceURI;
@@ -137,7 +137,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	protected void initNamespace() {
 		StringBuilder namespace = new StringBuilder(fBaseNamespaceURI.toString());
 		if (fVersionData != null && fVersionData.getNsPostfix() != null && fVersionData.getNsPostfix().length() > 0) {
-			namespace.append(URI_SEPARATOR);
+			namespace.append(URI_SEGMENT_SEPARATOR);
 			namespace.append(fVersionData.getNsPostfix());
 		}
 		try {
@@ -217,7 +217,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	protected void initEPackageNsURIPattern() {
 		StringBuilder buffer = new StringBuilder(fBaseNamespaceURI.toString());
 		if (fVersionData != null) {
-			buffer.append(URI_SEPARATOR);
+			buffer.append(URI_SEGMENT_SEPARATOR);
 			buffer.append(fVersionData.getEPackageNsURIPostfixPattern());
 		}
 		fEPackageNsURIPattern = buffer.toString();

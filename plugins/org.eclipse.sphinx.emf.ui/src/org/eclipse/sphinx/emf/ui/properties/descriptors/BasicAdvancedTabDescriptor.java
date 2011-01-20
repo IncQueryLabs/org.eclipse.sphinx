@@ -14,26 +14,27 @@
  */
 package org.eclipse.sphinx.emf.ui.properties.descriptors;
 
+import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.ui.views.properties.tabbed.AbstractTabDescriptor;
 
 public class BasicAdvancedTabDescriptor extends AbstractTabDescriptor {
 
 	private String id;
-
 	private String label;
-
 	private String category;
+	private AdapterFactory customAdapterFactory;
+
+	public BasicAdvancedTabDescriptor(String id, String label, String category) {
+		this(id, label, category, null);
+	}
 
 	@SuppressWarnings("unchecked")
-	public BasicAdvancedTabDescriptor(String id, String label, String category) {
+	public BasicAdvancedTabDescriptor(String id, String label, String category, AdapterFactory customAdapterFactory) {
 		this.id = id;
 		this.label = label;
 		this.category = category;
-		getSectionDescriptors().add(new BasicAdvancedSectionDescriptor(id + ".sectionDesc", id)); //$NON-NLS-1$
-	}
-
-	public String getCategory() {
-		return category;
+		this.customAdapterFactory = customAdapterFactory;
+		getSectionDescriptors().add(new BasicAdvancedSectionDescriptor(id + ".sectionDesc", id, customAdapterFactory)); //$NON-NLS-1$
 	}
 
 	public String getId() {
@@ -42,5 +43,13 @@ public class BasicAdvancedTabDescriptor extends AbstractTabDescriptor {
 
 	public String getLabel() {
 		return label;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public AdapterFactory getCustomAdapterFactory() {
+		return customAdapterFactory;
 	}
 }

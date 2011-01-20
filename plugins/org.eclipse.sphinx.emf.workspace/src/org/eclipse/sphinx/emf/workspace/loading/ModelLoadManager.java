@@ -786,6 +786,9 @@ public final class ModelLoadManager {
 
 						// Perform a performance-optimized resolution of fragment-based proxies
 						forceProxyResolution(loadedFiles, proxyHelper.getLookupResolver(), progress.newChild(15));
+
+						// Re-enable resolution of fragment-based proxies
+						proxyHelper.setIgnoreFragmentBasedProxies(false);
 					}
 				}
 			});

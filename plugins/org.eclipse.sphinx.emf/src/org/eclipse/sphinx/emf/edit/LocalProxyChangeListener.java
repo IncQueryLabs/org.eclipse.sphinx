@@ -14,7 +14,10 @@
  */
 package org.eclipse.sphinx.emf.edit;
 
+import java.util.List;
+
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.transaction.NotificationFilter;
@@ -47,7 +50,12 @@ public class LocalProxyChangeListener extends ResourceSetListenerImpl {
 	 * Default constructor.
 	 */
 	public LocalProxyChangeListener() {
-		super(NotificationFilter.createEventTypeFilter(Notification.SET).or(NotificationFilter.createEventTypeFilter(Notification.UNSET)));
+		super(NotificationFilter.createEventTypeFilter(Notification.ADD_MANY).or(
+				NotificationFilter.createEventTypeFilter(Notification.REMOVE_MANY).or(
+						NotificationFilter.createEventTypeFilter(Notification.ADD).or(
+								NotificationFilter.createEventTypeFilter(Notification.REMOVE).or(
+										NotificationFilter.createEventTypeFilter(Notification.SET).or(
+												NotificationFilter.createEventTypeFilter(Notification.UNSET)))))));
 	}
 
 	@Override
@@ -67,36 +75,94 @@ public class LocalProxyChangeListener extends ResourceSetListenerImpl {
 					 * applicable by the time the notification was created but does not necessarily correspond to the
 					 * current object's state.
 					 */
-					if (reference.isContainer() && object.eContainer() == null) {
+					switch (notification.getEventType()) {
+					case Notification.REMOVE:
 						// Convert removed object plus its directly and indirectly contained children into
 						// proxies
-						/*
-						 * !! Important Note !! In case that multiple notifications for the object's container feature
-						 * have been emitted make sure to take the one which is related to the removal of the object
-						 * from the model and has some old value different from null to offer.
-						 */
-						if (notification.getOldValue() != null) {
-							if (!object.eIsProxy()) {
-								EObjectUtil.proxify((EObject) notification.getOldValue(), reference, object);
+						if (reference.isContainment()) {
+							if (reference.isMany()) {
+								@SuppressWarnings("unchecked")
+								List<Object> values = (List<Object>) object.eGet(reference);
+								if (!values.contains(notification.getOldValue())) {
+									EObjectUtil.proxify(object, reference, (EObject) notification.getOldValue());
+								}
+							} else {
+								if (object.eGet(reference) == null) {
+									EObjectUtil.proxify(object, reference, (EObject) notification.getOldValue());
+								}
 							}
 						}
-					}
-
-					// Object being added to model (i.e. from its owner)?
-					/*
-					 * !! Important Note !! Don't use notification.getOldValue() == null to test if object has been
-					 * added to the model. The reason is that plenty of successive modifications and notifications for
-					 * the same object and feature might have happened before we get called here. Therefore the old
-					 * value of an arbitrary notification which we are dealing with here is the old value which was
-					 * applicable by the time the notification was created but does not necessarily correspond to the
-					 * current object's state.
-					 */
-					if (reference.isContainer() && object.eContainer() != null) {
-						// Convert added object plus its directly and indirectly contained children
-						// back into regular EObjects
-						if (object.eIsProxy()) {
-							EObjectUtil.deproxify(object);
+						break;
+					case Notification.REMOVE_MANY:
+						// Convert removed objects plus its directly and indirectly contained children into
+						// proxies
+						if (reference.isContainment()) {
+							@SuppressWarnings("unchecked")
+							List<Object> values = (List<Object>) object.eGet(reference);
+							@SuppressWarnings("unchecked")
+							List<Object> oldValues = (List<Object>) notification.getOldValue();
+							for (Object oldValue : oldValues) {
+								if (!values.contains(oldValue)) {
+									EObjectUtil.proxify(object, reference, (EObject) oldValue);
+								}
+							}
 						}
+						break;
+					case Notification.ADD:
+						if (reference.isContainment()) {
+							if (reference.isMany()) {
+								@SuppressWarnings("unchecked")
+								List<Object> references = (List<Object>) object.eGet(reference);
+								if (references.contains(notification.getNewValue())) {
+									EObjectUtil.deproxify((EObject) notification.getNewValue());
+								}
+							} else {
+								if (object.eGet(reference) != null) {
+									EObjectUtil.deproxify((EObject) notification.getNewValue());
+								}
+							}
+						}
+						break;
+					case Notification.ADD_MANY:
+						if (reference.isContainment()) {
+							@SuppressWarnings("unchecked")
+							List<Object> values = (List<Object>) object.eGet(reference);
+							@SuppressWarnings("unchecked")
+							List<Object> newValues = (List<Object>) notification.getNewValue();
+							for (Object newValue : newValues) {
+								if (values.contains(newValue)) {
+									EObjectUtil.deproxify((EObject) newValue);
+								}
+							}
+						}
+						break;
+					case Notification.SET:
+						// Object being added to model (i.e. from its owner)?
+						/*
+						 * !! Important Note !! Don't use notification.getOldValue() == null to test if object has been
+						 * added to the model. The reason is that plenty of successive modifications and notifications
+						 * for the same object and feature might have happened before we get called here. Therefore the
+						 * old value of an arbitrary notification which we are dealing with here is the old value which
+						 * was applicable by the time the notification was created but does not necessarily correspond
+						 * to the current object's state.
+						 */
+						if (reference.isContainer() && object.eContainer() != null) {
+							// Convert added object plus its directly and indirectly contained children
+							// back into regular EObjects
+							if (object.eIsProxy()) {
+								EObjectUtil.deproxify(object);
+							}
+						}
+						break;
+					case Notification.UNSET:
+						if (reference.isContainer() && object.eContainer() == null) {
+							if (notification.getOldValue() != null) {
+								if (!object.eIsProxy()) {
+									EObjectUtil.proxify((EObject) notification.getOldValue(), reference, object);
+								}
+							}
+						}
+						break;
 					}
 				}
 			}

@@ -27,9 +27,29 @@ Contributors:
             class="org.eclipse.sphinx.emf.ui.actions.providers.BasicEditorActionProvider"
             id="org.eclipse.sphinx.emf.ui.actions.editorActions">
          <enablement>
+            <or>
                <instanceof
                      value="org.eclipse.emf.ecore.EObject">
                </instanceof>
+               <instanceof
+                     value="org.eclipse.emf.edit.provider.IWrapperItemProvider">
+               </instanceof>
+            </or>
+         </enablement>
+      </actionProvider>
+      <actionProvider
+            class="org.eclipse.sphinx.emf.ui.actions.providers.BasicOpenWithMenuProvider"
+            id="org.eclipse.sphinx.emf.ui.actions.openWithActions"
+            priority="normal">
+         <enablement>
+            <or>
+               <instanceof
+                     value="org.eclipse.emf.ecore.EObject">
+               </instanceof>
+               <instanceof
+                     value="org.eclipse.emf.edit.provider.IWrapperItemProvider">
+               </instanceof>
+            </or>
          </enablement>
       </actionProvider> 
    </extension>

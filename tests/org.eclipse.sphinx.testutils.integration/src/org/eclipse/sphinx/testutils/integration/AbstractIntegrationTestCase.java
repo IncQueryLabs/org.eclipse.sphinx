@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -49,11 +51,13 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
@@ -71,10 +75,10 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
-import org.eclipse.sphinx.emf.workspace.internal.saving.ResourceSaveIndicator;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
@@ -379,12 +383,11 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(ResourcesPlugin.getWorkspace().getRoot(),
 					metaModelDescriptor);
 			if (editingDomain != null) {
-				ResourceSaveIndicator resourceSaveIndicator = new ResourceSaveIndicator(editingDomain);
-				Collection<Resource> dirtyResources = resourceSaveIndicator.getDirtyResources();
+				Collection<Resource> dirtyResources = SaveIndicatorUtil.getDirtyResources(editingDomain);
 				EcorePlatformUtil.unloadResources(editingDomain, dirtyResources, true, null);
+				waitForModelLoading();
 			}
 		}
-
 	}
 
 	/**
@@ -1379,13 +1382,17 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 								fail("Cannot create new folder in working workspace: " + targetLocation.toString() + " because of " + ex.getMessage());
 							}
 						}
-
 					}
 				}
 				for (String fileName : referenceFile.list()) {
 					importDirectoryToWorkspace(referenceFile + File.separator + fileName, targetLocation.append(fileName));
 				}
 			} else {
+				if (isProjectPath(targetLocation)) {
+					String[] segments = referenceSourceName.split(File.separator);
+					String fileName = segments[segments.length];
+					targetLocation = targetLocation.append(fileName);
+				}
 				IFile copiedFile = ResourcesPlugin.getWorkspace().getRoot().getFile(targetLocation);
 				InputStream sourceFileContents = null;
 				try {
@@ -1441,6 +1448,34 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				}
 			}
 		}
+	}
+
+	protected void importInputFileToWorkspace(final String inputFileName, final IPath targetLocation) throws IOException, CoreException {
+
+		final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				try {
+					IPath inputFilePath = new Path("resources/input/" + inputFileName);
+					URL fileUrl = FileLocator.find(getTestPlugin().getBundle(), inputFilePath, null);
+					String referenceSourceName = FileLocator.toFileURL(fileUrl).getPath();
+					IPath importedFilePath = targetLocation.append(inputFileName);
+					importDirectoryToWorkspace(referenceSourceName, importedFilePath);
+
+					IFile file = workspace.getRoot().getFile(importedFilePath);
+					assertNotNull(file);
+					assertTrue(file.isAccessible());
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					fail("Exception while importing input file to workspace because of :" + ex.getLocalizedMessage());
+				}
+
+			}
+		};
+		workspace.run(runnable, workspace.getRoot(), IWorkspace.AVOID_UPDATE, null);
+		waitForModelLoading();
+
 	}
 
 	private boolean isProjectPath(IPath targetLocation) {

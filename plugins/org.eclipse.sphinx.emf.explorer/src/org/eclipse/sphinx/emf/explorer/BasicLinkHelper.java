@@ -22,6 +22,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.explorer.internal.Activator;
 import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
@@ -37,7 +38,7 @@ public class BasicLinkHelper implements ILinkHelper {
 	public void activateEditor(IWorkbenchPage page, IStructuredSelection selection) {
 		if (selection != null && selection.size() == 1) {
 			Object selected = selection.getFirstElement();
-			if (!EcoreUIUtil.isVirtualElement(selected)) {
+			if (!isTransient(selected)) {
 				URIEditorInput input = EcoreUIUtil.createURIEditorInput(selected);
 				if (input != null) {
 					IEditorPart editor = page.findEditor(input);
@@ -79,5 +80,19 @@ public class BasicLinkHelper implements ILinkHelper {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Returns true if the given object is a transient item provider i.e. an intermediary node, false else.
+	 * 
+	 * @param object
+	 *            an object.
+	 * @return true if the given object is a transient item provider i.e. an intermediary node, false else.
+	 */
+	protected boolean isTransient(Object object) {
+		if (object instanceof TransientItemProvider) {
+			return true;
+		}
+		return false;
 	}
 }

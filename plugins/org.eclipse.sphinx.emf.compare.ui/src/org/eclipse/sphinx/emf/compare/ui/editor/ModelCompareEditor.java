@@ -230,9 +230,8 @@ public class ModelCompareEditor extends CompareEditor {
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Object getAdapter(Class key) {
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class key) {
 		if (key.equals(IUndoContext.class)) {
 			// Used by undo/redo actions to get their undo context
 			return getUndoContext();

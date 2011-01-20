@@ -29,12 +29,11 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
-import org.eclipse.emf.edit.provider.WrapperItemProvider;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.sphinx.emf.ui.actions.providers.ObjectOpenWithMenu;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
@@ -49,35 +48,6 @@ public class EcoreUIUtil {
 
 	// Prevent from instantiation
 	private EcoreUIUtil() {
-	}
-
-	/**
-	 * Tests if given object represents an intermediate category node i.e. a non-modeled object.
-	 */
-	public static boolean isVirtualElement(Object object) {
-		if (object instanceof WrapperItemProvider) {
-			WrapperItemProvider provider = (WrapperItemProvider) object;
-			if (provider.getOwner() instanceof WrapperItemProvider) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Tests if given {@link IStructuredSelection} selection contains at least one non-modeled object.
-	 * 
-	 * @param selection
-	 * @return
-	 */
-
-	public static boolean hasVirtualElements(IStructuredSelection selection) {
-		for (Object object : selection.toList()) {
-			if (isVirtualElement(object)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public static void openWizardDialog(final IWizard wizard) throws OperationCanceledException, ExecutionException {
@@ -159,6 +129,29 @@ public class EcoreUIUtil {
 		return null;
 	}
 
+	/**
+	 * A convenience method usually used to populate an {@linkplain ObjectOpenWithMenu}
+	 * 
+	 * @param object
+	 * @return
+	 */
+	public static IEditorDescriptor[] getEditors(Object object) {
+		// TODO aakar support other types
+		if (object instanceof EObject) {
+			return getEditors(object.getClass());
+		}
+		return null;
+	}
+
+	public static IEditorDescriptor[] getEditors(Class<?> type) {
+		return findEditorsForType(type);
+	}
+
+	public static String getDummyFileName(Class<?> objectType) {
+		String dummyFileName = "*." + objectType.getName(); //$NON-NLS-1$
+		return dummyFileName;
+	}
+
 	public static IEditorDescriptor getDefaultEditor(Class<?> type) {
 		IEditorDescriptor descriptor = findDefaultEditorForType(type);
 		if (descriptor == null) {
@@ -194,6 +187,21 @@ public class EcoreUIUtil {
 			return (IFile) editorInput.getAdapter(IFile.class);
 		}
 		return null;
+	}
+
+	private static IEditorDescriptor[] findEditorsForType(Class<?> objectType) {
+		Set<IEditorDescriptor> result = new HashSet<IEditorDescriptor>();
+		if (objectType != null) {
+			// Try to find editor registered with qualified or simple object type name
+			for (IEditorDescriptor descriptor : PlatformUI.getWorkbench().getEditorRegistry().getEditors(getDummyFileName(objectType))) {
+				if (!isInapplicableTextBasedEditor(objectType, descriptor)) {
+					result.add(descriptor);
+				}
+
+			}
+		}
+		result.add(findDefaultEditorForSuperType(objectType));
+		return result.toArray(new IEditorDescriptor[result.size()]);
 	}
 
 	private static IEditorDescriptor findDefaultEditorForSuperType(Class<?> objectType) {

@@ -325,7 +325,7 @@ public class DialogMarkerProperties extends TrayDialog {
 		if (initialAttributes.containsKey(IValidationMarker.RULE_ID_ATTRIBUTE)) {
 
 			createSeperator(composite);
-			crealeRuleInfoAera(composite);
+			createRuleInfoArea(composite);
 		}
 
 		updateDialogFromMarker();
@@ -339,7 +339,7 @@ public class DialogMarkerProperties extends TrayDialog {
 	/**
 	 * Creates the area for the RuleName field.
 	 */
-	private void crealeRuleInfoAera(Composite parent) {
+	private void createRuleInfoArea(Composite parent) {
 		Label label = new Label(parent, SWT.NONE);
 		label.setText(MarkerMessages.propertiesDialog_RuleInfo_text);
 		GridData gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
@@ -367,20 +367,7 @@ public class DialogMarkerProperties extends TrayDialog {
 
 		ruleActivatedToggleButton.setSelection(!EMFModelValidationPreferences.isConstraintDisabled(ruleId));
 
-		// ruleActivatedToggleButton.addSelectionListener(new SelectionListener() {
-		// @Override
-		// public void widgetDefaultSelected(SelectionEvent e) {
-		// }
-		//
-		// @Override
-		// public void widgetSelected(SelectionEvent e) {
-		//
-		// }
-		//
-		// });
-
 		ruleActivatedToggleButton.setLayoutData(gridData);
-
 	}
 
 	/**
@@ -585,8 +572,8 @@ public class DialogMarkerProperties extends TrayDialog {
 		}
 		if (op != null) {
 			try {
-				PlatformUI.getWorkbench().getOperationSupport().getOperationHistory().execute(op, null,
-						WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
+				PlatformUI.getWorkbench().getOperationSupport().getOperationHistory()
+						.execute(op, null, WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
 			} catch (ExecutionException e) {
 				if (e.getCause() instanceof CoreException) {
 					ErrorDialog.openError(getShell(), MarkerMessages.Error, null, ((CoreException) e.getCause()).getStatus());

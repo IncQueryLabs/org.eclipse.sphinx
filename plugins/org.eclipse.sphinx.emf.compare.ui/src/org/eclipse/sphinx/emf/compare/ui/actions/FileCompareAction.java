@@ -14,8 +14,11 @@
  */
 package org.eclipse.sphinx.emf.compare.ui.actions;
 
+import org.eclipse.compare.internal.CompareEditor;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.sphinx.emf.compare.ui.editor.ModelCompareEditor;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.ReflectUtil;

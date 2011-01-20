@@ -50,7 +50,6 @@ import org.eclipse.sphinx.emf.ui.actions.ExtendedCutAction;
 import org.eclipse.sphinx.emf.ui.actions.ExtendedDeleteAction;
 import org.eclipse.sphinx.emf.ui.actions.ExtendedPasteAction;
 import org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider;
-import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
@@ -229,7 +228,7 @@ public class BasicModelEditActionProvider extends BasicActionProvider {
 		Collection<?> newSiblingDescriptors = null;
 
 		IStructuredSelection structuredSelection = SelectionUtil.getStructuredSelection(selection);
-		if (editingDomain != null && structuredSelection.size() == 1 && !EcoreUIUtil.isVirtualElement(structuredSelection.getFirstElement())) {
+		if (editingDomain != null && structuredSelection.size() == 1 && shouldCreateCreateChildActions(structuredSelection.getFirstElement())) {
 			newChildDescriptors = getNewChildDescriptors(editingDomain, structuredSelection.getFirstElement(), null);
 			newSiblingDescriptors = getNewChildDescriptors(editingDomain, null, structuredSelection.getFirstElement());
 		}
@@ -239,6 +238,18 @@ public class BasicModelEditActionProvider extends BasicActionProvider {
 		createChildSubmenuActions = extractSubmenuActions(createChildActions, selection);
 		createSiblingActions = generateCreateSiblingActions(editingDomain, newSiblingDescriptors, selection);
 		createSiblingSubmenuActions = extractSubmenuActions(createSiblingActions, selection);
+	}
+
+	/**
+	 * Return true or false if create child action must be shown for the given object. This method return true by
+	 * default and should be overridden by subclasses.
+	 * 
+	 * @param object
+	 *            an object.
+	 * @return <code>true</code> or <code>false</code> if create child action must be shown for the given object
+	 */
+	protected boolean shouldCreateCreateChildActions(Object object) {
+		return true;
 	}
 
 	protected DeleteAction createDeleteAction() {

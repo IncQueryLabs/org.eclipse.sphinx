@@ -39,6 +39,7 @@ import org.eclipse.sphinx.emf.compare.ui.ModelElementCompareInput;
 import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.compare.ui.viewer.content.ModelElementContentMergeViewer;
+import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider;
@@ -60,9 +61,6 @@ public class ModelElementCompareEditorInput extends ModelCompareEditorInput impl
 	 * <code>modelRoots[1]</code> is the <b>right</b> model root object.
 	 */
 	private EObject[] modelRoots;
-
-	private static final char QUERY_SEPARATOR = '?';
-	private static final char FRAGMENT_SEPARATOR = '#';
 
 	protected SaveablesProvider modelSaveablesProvider;
 
@@ -226,8 +224,8 @@ public class ModelElementCompareEditorInput extends ModelCompareEditorInput impl
 		rightLabel = rightResource.getURI().toPlatformString(true);
 		if (rightRoot != rightModelRoot) {
 			String fragment = rightResource.getURIFragment(rightRoot);
-			fragment = fragment.lastIndexOf(QUERY_SEPARATOR) == -1 ? "" : fragment.substring(0, fragment.lastIndexOf(QUERY_SEPARATOR)); //$NON-NLS-1$
-			rightLabel = rightLabel.concat(FRAGMENT_SEPARATOR + fragment);
+			fragment = fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR) == -1 ? "" : fragment.substring(0, fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR)); //$NON-NLS-1$
+			rightLabel = rightLabel.concat(ExtendedResource.URI_FRAGMENT_SEPARATOR + fragment);
 		}
 		return rightLabel;
 	}
@@ -245,8 +243,8 @@ public class ModelElementCompareEditorInput extends ModelCompareEditorInput impl
 		leftLabel = leftResource.getURI().toPlatformString(true);
 		if (leftRoot != leftModelRoot) {
 			String fragment = leftResource.getURIFragment(leftRoot);
-			fragment = fragment.lastIndexOf(QUERY_SEPARATOR) == -1 ? "" : fragment.substring(0, fragment.lastIndexOf(QUERY_SEPARATOR)); //$NON-NLS-1$
-			leftLabel = leftLabel.concat(FRAGMENT_SEPARATOR + fragment);
+			fragment = fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR) == -1 ? "" : fragment.substring(0, fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR)); //$NON-NLS-1$
+			leftLabel = leftLabel.concat(ExtendedResource.URI_FRAGMENT_SEPARATOR + fragment);
 		}
 		return leftLabel;
 	}

@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.ui.internal.Activator;
 import org.eclipse.sphinx.emf.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
@@ -45,7 +46,7 @@ public class BasicOpenInEditorAction extends BaseSelectionListenerAction {
 		for (Object object : selection.toList()) {
 			// Disable action if one of the selected objects is an intermediate category and other non-model element
 			// node
-			if (EcoreUIUtil.isVirtualElement(object)) {
+			if (isTransient(object)) {
 				editorIdToEditorInputObjectsMap.clear();
 				return false;
 			}
@@ -68,6 +69,21 @@ public class BasicOpenInEditorAction extends BaseSelectionListenerAction {
 
 		// Enable action if a default editor for at least one of the selected objects has been found
 		return editorIdToEditorInputObjectsMap.keySet().size() > 0;
+	}
+
+	/**
+	 * Tests if given object represents an intermediate category node i.e. a non-modeled object. This returns true if
+	 * the given object is a transient item provider i.e. an intermediate node, false else.
+	 * 
+	 * @param object
+	 *            an object.
+	 * @return true if the given object is a transient item provider i.e. an intermediate node, false else.
+	 */
+	protected boolean isTransient(Object object) {
+		if (object instanceof TransientItemProvider) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override

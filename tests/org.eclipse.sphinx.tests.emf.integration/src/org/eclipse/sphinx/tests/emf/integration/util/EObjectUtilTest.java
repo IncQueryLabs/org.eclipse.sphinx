@@ -40,8 +40,6 @@ import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
-import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
-import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
@@ -292,7 +290,6 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 	/**
 	 * Test method for {@link EObjectUtil#getAllInstancesOf(EObject, Class, boolean)}
 	 */
-	@SuppressWarnings("unchecked")
 	public void testGetAllInstancesOf_EObject_Class() {
 
 		Resource resource20 = refWks.editingDomain20.getResourceSet().getResource(
@@ -422,7 +419,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// ==============================================================
 		// Given class is null
 		try {
-			Class nullClass = null;
+			Class<?> nullClass = null;
 			assertEquals(0, EObjectUtil.getAllInstancesOf(hb20ModelRoot, nullClass, true).size());
 		} catch (Exception ex) {
 			if (!(ex instanceof AssertionFailedException)) {
@@ -534,7 +531,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// ==============================================================
 		// Given class is null
 		try {
-			Class nullClass = null;
+			Class<?> nullClass = null;
 			assertEquals(0, EObjectUtil.getAllInstancesOf(resource20_A, nullClass, true).size());
 		} catch (Exception ex) {
 			if (!(ex instanceof AssertionFailedException)) {
@@ -819,12 +816,12 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// Port port1 = componentType1.getPorts().get(0);
 		// Port port2 = componentType1.getPorts().get(1);
 
-		final URI compTypeUri1 = URI.createURI("hb:/#//@componentTypes.0");
-		// final URI portUri1 = EcoreUtil.getURI(port1);
-		// final URI portUri2 = EcoreUtil.getURI(port2);
+		URI compTypeUri1 = URI.createURI("hb:/#//@componentTypes.0");
+		// URI portUri1 = EcoreUtil.getURI(port1);
+		// URI portUri2 = EcoreUtil.getURI(port2);
 
 		ComponentType componentType2 = hb20Platform_A_2.getComponentTypes().get(1);
-		final URI compTypeUri2 = URI.createURI("hb:/#//@componentTypes.1");
+		URI compTypeUri2 = URI.createURI("hb:/#//@componentTypes.1");
 
 		Interface interface1 = hb20Platform_A_2.getInterfaces().get(0);
 		Interface interface2 = hb20Platform_A_2.getInterfaces().get(1);
@@ -1039,181 +1036,6 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 	}
 
 	/**
-	 * Test method for {@link EObjectUtil#delete(EObject)}
-	 */
-	public void testDelete() {
-		Resource resource20_2 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
-
-		Resource resource20_3 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, false), false);
-
-		assertNotNull(resource20_2);
-		assertFalse(resource20_2.getContents().isEmpty());
-		assertEquals(1, resource20_2.getContents().size());
-		Platform hb20Platform_A_2 = (Platform) resource20_2.getContents().get(0);
-		assertNotNull(hb20Platform_A_2);
-		assertEquals(2, hb20Platform_A_2.getComponentTypes().size());
-		assertEquals(2, hb20Platform_A_2.getInterfaces().size());
-
-		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource20_2);
-
-		ComponentType componentType1 = hb20Platform_A_2.getComponentTypes().get(0);
-		final URI compTypeUri1 = extendedResource.createProxyURI((InternalEObject) componentType1);
-		Port port1 = componentType1.getPorts().get(0);
-		final URI portUri1 = extendedResource.createProxyURI((InternalEObject) port1);
-		Port port2 = componentType1.getPorts().get(1);
-		final URI portUri2 = extendedResource.createProxyURI((InternalEObject) port2);
-
-		ComponentType componentType2 = hb20Platform_A_2.getComponentTypes().get(1);
-		final URI compTypeUri2 = extendedResource.createProxyURI((InternalEObject) componentType2);
-
-		Interface interface1 = hb20Platform_A_2.getInterfaces().get(0);
-		Interface interface2 = hb20Platform_A_2.getInterfaces().get(1);
-
-		assertFalse(interface1.getProvidingComponentTypes().isEmpty());
-		for (ComponentType componentType : interface1.getProvidingComponentTypes()) {
-			assertFalse(componentType.eIsProxy());
-			assertTrue(hb20Platform_A_2.getComponentTypes().contains(componentType));
-		}
-
-		assertFalse(interface2.getRequiringPorts().isEmpty());
-		for (Port port : interface2.getRequiringPorts()) {
-			assertFalse(port.eIsProxy());
-			assertTrue(componentType1.getPorts().contains(port));
-		}
-
-		assertFalse(resource20_3.getContents().isEmpty());
-		Application hb20Application = (Application) resource20_3.getContents().get(0);
-		assertNotNull(hb20Application);
-		assertEquals(2, hb20Application.getComponents().size());
-		Component referringComponent_1 = hb20Application.getComponents().get(0);
-		assertNotNull(referringComponent_1.getType());
-		assertFalse(referringComponent_1.getType().eIsProxy());
-		assertTrue(hb20Platform_A_2.getComponentTypes().contains(referringComponent_1.getType()));
-
-		Component referringComponent_2 = hb20Application.getComponents().get(1);
-		assertNotNull(referringComponent_2.getType());
-		assertFalse(referringComponent_2.getType().eIsProxy());
-		assertTrue(hb20Platform_A_2.getComponentTypes().contains(referringComponent_2.getType()));
-
-		// Delete objects
-		final ComponentType deletedObject_1 = componentType1;
-		final ComponentType deletedObject_2 = componentType2;
-		try {
-			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, new Runnable() {
-				public void run() {
-					EObjectUtil.delete(deletedObject_1);
-					EObjectUtil.delete(deletedObject_2);
-
-				}
-			}, "Delete objects");
-		} catch (Exception e) {
-			fail(e.getLocalizedMessage());
-		}
-		// Verify that objects wrere deleted
-		assertNotNull(hb20Platform_A_2);
-		assertTrue("Objects were not deleted", hb20Platform_A_2.getComponentTypes().isEmpty());
-		assertEquals(2, hb20Platform_A_2.getInterfaces().size());
-
-		assertNotNull(hb20Application);
-		assertEquals(2, hb20Application.getComponents().size());
-
-		// Verify the references were proxified
-		assertNotNull(interface1);
-		assertFalse(interface1.getProvidingComponentTypes().isEmpty());
-		for (ComponentType componentType : interface1.getProvidingComponentTypes()) {
-			assertTrue(componentType.eIsProxy());
-			assertTrue(componentType instanceof InternalEObject);
-			URI proxyUri = ((InternalEObject) componentType).eProxyURI();
-			assertTrue(compTypeUri1.equals(proxyUri) || compTypeUri2.equals(proxyUri));
-		}
-
-		assertNotNull(interface2);
-		assertFalse(interface2.getRequiringPorts().isEmpty());
-		for (Port port : interface2.getRequiringPorts()) {
-			assertTrue(port.eIsProxy());
-			assertTrue(port instanceof InternalEObject);
-			URI proxyUri = ((InternalEObject) port).eProxyURI();
-			assertTrue(portUri1.equals(proxyUri) || portUri2.equals(proxyUri));
-		}
-
-		// Verify that references in other resource were proxified
-		assertNotNull(referringComponent_1);
-		assertNotNull(referringComponent_1.getType());
-		assertTrue(referringComponent_1.getType().eIsProxy());
-		assertTrue(referringComponent_1.getType() instanceof InternalEObject);
-		URI proxyUri = ((InternalEObject) referringComponent_1.getType()).eProxyURI();
-		assertTrue(compTypeUri1.equals(proxyUri) || compTypeUri2.equals(proxyUri));
-
-		assertNotNull(referringComponent_2);
-		assertNotNull(referringComponent_2.getType());
-		assertTrue(referringComponent_2.getType().eIsProxy());
-		proxyUri = ((InternalEObject) referringComponent_2.getType()).eProxyURI();
-		assertTrue(compTypeUri1.equals(proxyUri) || compTypeUri2.equals(proxyUri));
-
-		// Save Project
-		EcorePlatformUtil.saveProject(refWks.hbProject20_A, false, null);
-		// Reload Project and verify again references
-		ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject20_A, false, false, null);
-
-		resource20_2 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
-
-		resource20_3 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, false), false);
-
-		assertNotNull(resource20_2);
-		assertFalse(resource20_2.getContents().isEmpty());
-		assertEquals(1, resource20_2.getContents().size());
-		Platform retrievedHb20Platform_A_2 = (Platform) resource20_2.getContents().get(0);
-		assertNotNull(retrievedHb20Platform_A_2);
-		assertEquals(0, retrievedHb20Platform_A_2.getComponentTypes().size());
-		assertEquals(2, retrievedHb20Platform_A_2.getInterfaces().size());
-
-		Interface retrievedInterface1 = retrievedHb20Platform_A_2.getInterfaces().get(0);
-		Interface retrievedInterface2 = retrievedHb20Platform_A_2.getInterfaces().get(1);
-
-		assertFalse(retrievedInterface1.getProvidingComponentTypes().isEmpty());
-		for (ComponentType componentType : interface1.getProvidingComponentTypes()) {
-			assertTrue(componentType.eIsProxy());
-			assertTrue(componentType instanceof InternalEObject);
-			proxyUri = ((InternalEObject) componentType).eProxyURI();
-			assertTrue(compTypeUri1.equals(proxyUri) || compTypeUri2.equals(proxyUri));
-		}
-
-		assertFalse(retrievedInterface2.getRequiringPorts().isEmpty());
-		for (Port port : retrievedInterface2.getRequiringPorts()) {
-			assertTrue(port.eIsProxy());
-			assertTrue(port instanceof InternalEObject);
-			proxyUri = ((InternalEObject) port).eProxyURI();
-			assertTrue(portUri1.equals(proxyUri) || portUri2.equals(proxyUri));
-		}
-
-		assertFalse(resource20_3.getContents().isEmpty());
-		Application retrievedHb20Application = (Application) resource20_3.getContents().get(0);
-		assertNotNull(retrievedHb20Application);
-		assertEquals(2, retrievedHb20Application.getComponents().size());
-		Component retrivedReferringComponent_1 = retrievedHb20Application.getComponents().get(0);
-		assertNotNull(retrivedReferringComponent_1.getType());
-		assertTrue(retrivedReferringComponent_1.getType().eIsProxy());
-		assertTrue(retrivedReferringComponent_1.getType() instanceof InternalEObject);
-		proxyUri = ((InternalEObject) retrivedReferringComponent_1.getType()).eProxyURI();
-		assertTrue(compTypeUri1.equals(proxyUri) || compTypeUri2.equals(proxyUri));
-
-		Component retrivedReferringComponent_2 = retrievedHb20Application.getComponents().get(1);
-		assertNotNull(retrivedReferringComponent_2.getType());
-		assertTrue(retrivedReferringComponent_2.getType().eIsProxy());
-		assertTrue(retrivedReferringComponent_2.getType() instanceof InternalEObject);
-		proxyUri = ((InternalEObject) retrivedReferringComponent_2.getType()).eProxyURI();
-		assertTrue(compTypeUri1.equals(proxyUri) || compTypeUri2.equals(proxyUri));
-	}
-
-	/**
 	 * Test method for {@link EObjectUtil#proxify(EObject, EStructuralFeature, EObject)}
 	 */
 	public void testProxify() {
@@ -1236,14 +1058,14 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource20_2);
 
 		ComponentType componentType1 = hb20Platform_A_2.getComponentTypes().get(0);
-		final URI compTypeUri1 = extendedResource.createProxyURI((InternalEObject) componentType1);
+		URI compTypeUri1 = extendedResource.getURI(componentType1);
 		Port port1 = componentType1.getPorts().get(0);
-		final URI portUri1 = extendedResource.createProxyURI((InternalEObject) port1);
+		URI portUri1 = extendedResource.getURI(port1);
 		Port port2 = componentType1.getPorts().get(1);
-		final URI portUri2 = extendedResource.createProxyURI((InternalEObject) port2);
+		URI portUri2 = extendedResource.getURI(port2);
 
 		ComponentType componentType2 = hb20Platform_A_2.getComponentTypes().get(1);
-		final URI compTypeUri2 = extendedResource.createProxyURI((InternalEObject) componentType2);
+		URI compTypeUri2 = extendedResource.getURI(componentType2);
 
 		Interface interface1 = hb20Platform_A_2.getInterfaces().get(0);
 		Interface interface2 = hb20Platform_A_2.getInterfaces().get(1);
@@ -1275,8 +1097,12 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		assertTrue(hb20Platform_A_2.getComponentTypes().contains(referringComponent_2.getType()));
 
 		// Proxify ComponentType
-		assertNotNull(EObjectUtil.proxify(componentType1.eContainer(), componentType1.eContainmentFeature(), componentType1));
-		assertNotNull(EObjectUtil.proxify(componentType2.eContainer(), componentType2.eContainmentFeature(), componentType2));
+		EObject proxy = EObjectUtil.proxify(componentType1.eContainer(), componentType1.eContainmentFeature(), componentType1);
+		assertNotNull(proxy);
+		assertTrue(proxy.eIsProxy());
+		proxy = EObjectUtil.proxify(componentType2.eContainer(), componentType2.eContainmentFeature(), componentType2);
+		assertNotNull(proxy);
+		assertTrue(proxy.eIsProxy());
 
 		for (ComponentType componentType : interface1.getProvidingComponentTypes()) {
 			assertTrue(componentType.eIsProxy());
@@ -1306,20 +1132,26 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		assertTrue(proxyUri.toString(), compTypeUri1.equals(proxyUri) || compTypeUri2.equals(proxyUri));
 
 		// Context: container is Null
-		assertNotNull(EObjectUtil.proxify(null, componentType1.eContainingFeature(), componentType1));
+		proxy = EObjectUtil.proxify(null, componentType1.eContainingFeature(), componentType1);
+		assertNotNull(proxy);
+		assertTrue(proxy.eIsProxy());
 		// Context: feature is NULL
-		assertNotNull(EObjectUtil.proxify(hb20Platform_A_2, null, componentType2));
+		proxy = EObjectUtil.proxify(hb20Platform_A_2, null, componentType2);
+		assertNotNull(proxy);
+		assertTrue(proxy.eIsProxy());
 
 		// Proxify object with valid arguments
-		URI expectedUri = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource20_3).createProxyURI((InternalEObject) referringComponent_1);
-		assertNotNull(EObjectUtil.proxify(referringComponent_1.eContainer(), referringComponent_1.eContainingFeature(), referringComponent_1));
+		URI expectedUri = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource20_3).getURI(referringComponent_1);
+		proxy = EObjectUtil.proxify(referringComponent_1.eContainer(), referringComponent_1.eContainingFeature(), referringComponent_1);
+		assertNotNull(proxy);
+		assertTrue(proxy.eIsProxy());
 		assertTrue(referringComponent_1.eIsProxy());
 		proxyUri = ((InternalEObject) referringComponent_1).eProxyURI();
 		assertEquals(expectedUri, proxyUri);
 
 		// Context: eobject is null
-		assertNull(EObjectUtil.proxify(componentType2.eContainer(), componentType2.eContainmentFeature(), null));
-
+		proxy = EObjectUtil.proxify(componentType2.eContainer(), componentType2.eContainmentFeature(), null);
+		assertNull(proxy);
 	}
 
 	/**
@@ -1348,14 +1180,14 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource20_2);
 
 		ComponentType componentType1 = hb20Platform_A_2.getComponentTypes().get(0);
-		final URI compTypeUri1 = extendedResource.createProxyURI((InternalEObject) componentType1);
+		URI compTypeUri1 = extendedResource.getURI(componentType1);
 		Port port1 = componentType1.getPorts().get(0);
-		final URI portUri1 = extendedResource.createProxyURI((InternalEObject) port1);
+		URI portUri1 = extendedResource.getURI(port1);
 		Port port2 = componentType1.getPorts().get(1);
-		final URI portUri2 = extendedResource.createProxyURI((InternalEObject) port2);
+		URI portUri2 = extendedResource.getURI(port2);
 
 		ComponentType componentType2 = hb20Platform_A_2.getComponentTypes().get(1);
-		final URI compTypeUri2 = extendedResource.createProxyURI((InternalEObject) componentType2);
+		URI compTypeUri2 = extendedResource.getURI(componentType2);
 
 		Interface interface1 = hb20Platform_A_2.getInterfaces().get(0);
 		Interface interface2 = hb20Platform_A_2.getInterfaces().get(1);
@@ -1371,8 +1203,12 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		assertNotNull(referringComponent_2.getType());
 
 		// Proxify ComponentType
-		assertNotNull(EObjectUtil.proxify(componentType1.eContainer(), componentType1.eContainmentFeature(), componentType1));
-		assertNotNull(EObjectUtil.proxify(componentType2.eContainer(), componentType2.eContainmentFeature(), componentType2));
+		EObject proxy = EObjectUtil.proxify(componentType1.eContainer(), componentType1.eContainmentFeature(), componentType1);
+		assertNotNull(proxy);
+		assertTrue(proxy.eIsProxy());
+		proxy = EObjectUtil.proxify(componentType2.eContainer(), componentType2.eContainmentFeature(), componentType2);
+		assertNotNull(proxy);
+		assertTrue(proxy.eIsProxy());
 
 		for (ComponentType componentType : interface1.getProvidingComponentTypes()) {
 			assertTrue(componentType.eIsProxy());

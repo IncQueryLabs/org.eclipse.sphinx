@@ -1230,7 +1230,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 		assertEquals(resourceUml2InProject10_C, modelDescriptor10_C.getLoadedResources(false).size());
 
 		// Rename an HbFile in hbProject10C
-		String newName10 = "HbFile10.hummingbirf";
+		String newName10 = "HbFile10.hummingbird";
 		synchronizedRenameFile(hbFile10C_1, newName10);
 		waitForModelLoading();
 

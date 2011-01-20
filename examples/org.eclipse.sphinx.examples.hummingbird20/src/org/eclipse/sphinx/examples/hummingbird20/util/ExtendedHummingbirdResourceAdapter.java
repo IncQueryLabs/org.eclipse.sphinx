@@ -14,9 +14,11 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.util;
 
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapter;
 
 /**
@@ -30,30 +32,15 @@ public class ExtendedHummingbirdResourceAdapter extends ExtendedResourceAdapter 
 	 */
 	public static final String HB_SCHEME = "hb"; //$NON-NLS-1$
 
-	/**
-	 * Separator separating the scheme portion from the rest of an URI.
-	 */
-	public static final String SCHEME_SEPARATOR = ":"; //$NON-NLS-1$
-
-	/**
-	 * Separator separating individual segments within an URI.
-	 */
-	public static final String SEGMENT_SEPARATOR = "/"; //$NON-NLS-1$
-
-	/**
-	 * Separator separating the fragment from the segments portion within an URI.
-	 */
-	public static final String FRAGMENT_SEPARATOR = "#"; //$NON-NLS-1$
-
 	/*
-	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#createProxyURI(org.eclipse.emf.ecore.InternalEObject)
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResourceAdapter#getURI(org.eclipse.emf.ecore.EObject,
+	 * org.eclipse.emf.ecore.EStructuralFeature, org.eclipse.emf.ecore.EObject)
 	 */
 	@Override
-	public URI createProxyURI(InternalEObject internalEObject) {
+	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
+		URI uri = super.getURI(oldOwner, oldFeature, eObject);
 		// Make sure that cross-document references to Hummingbird 2.0 resources are fragment-based
-		Resource targetResource = (Resource) getTarget();
-		String uriFragment = targetResource.getURIFragment(internalEObject);
-		return createHummingbirdURI(uriFragment);
+		return createHummingbirdURI(uri.fragment());
 	}
 
 	/**
@@ -65,7 +52,7 @@ public class ExtendedHummingbirdResourceAdapter extends ExtendedResourceAdapter 
 	 */
 	protected static URI createHummingbirdURI(String uriFragment) {
 		if (uriFragment != null && uriFragment.length() > 0) {
-			return URI.createURI(HB_SCHEME + SCHEME_SEPARATOR + SEGMENT_SEPARATOR + FRAGMENT_SEPARATOR + uriFragment, true);
+			return URI.createURI(HB_SCHEME + URI_SCHEME_SEPARATOR + URI_SEGMENT_SEPARATOR + URI_FRAGMENT_SEPARATOR + uriFragment, true);
 		}
 		return null;
 	}

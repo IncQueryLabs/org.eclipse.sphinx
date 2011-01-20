@@ -36,6 +36,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.sphinx.emf.Activator;
+import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.messages.PlatformMessages;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
@@ -48,8 +49,6 @@ import org.osgi.framework.Bundle;
  * Note: This store does not support folder URI.
  */
 public class PlatformURIFileStore extends FileStore {
-
-	private static final String URI_SEGMENT_SEPARATOR = "/"; //$NON-NLS-1$
 
 	public static org.eclipse.emf.common.util.URI toEMFURI(URI uri) {
 		Assert.isNotNull(uri);
@@ -69,7 +68,7 @@ public class PlatformURIFileStore extends FileStore {
 			Bundle bundle = ExtendedPlatform.loadBundle(pluginId);
 			if (bundle != null) {
 				String pluginBasedPath = eURI.toPlatformString(true);
-				String pluginPath = URI_SEGMENT_SEPARATOR + pluginId + URI_SEGMENT_SEPARATOR;
+				String pluginPath = ExtendedResource.URI_SEGMENT_SEPARATOR + pluginId + ExtendedResource.URI_SEGMENT_SEPARATOR;
 				String pluginRelativePath = pluginBasedPath.replaceFirst(pluginPath, ""); //$NON-NLS-1$
 				return FileLocator.find(bundle, new Path(pluginRelativePath), null) != null;
 			}
@@ -129,7 +128,7 @@ public class PlatformURIFileStore extends FileStore {
 	@Override
 	public String getName() {
 		String path = uri.getPath();
-		int lastIndexOf = path.lastIndexOf(URI_SEGMENT_SEPARATOR);
+		int lastIndexOf = path.lastIndexOf(ExtendedResource.URI_SEGMENT_SEPARATOR);
 		if (lastIndexOf >= 0 && lastIndexOf < path.length() - 1) {
 			return path.substring(lastIndexOf + 1, path.length());
 		}

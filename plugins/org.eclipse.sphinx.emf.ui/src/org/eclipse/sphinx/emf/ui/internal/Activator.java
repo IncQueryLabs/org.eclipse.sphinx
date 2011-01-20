@@ -23,6 +23,9 @@ import org.eclipse.emf.common.util.ResourceLocator;
 import org.eclipse.emf.edit.ui.provider.ExtendedImageRegistry;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
+import org.eclipse.jface.resource.ResourceManager;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
@@ -46,6 +49,8 @@ public final class Activator extends EMFPlugin {
 	 */
 	private static Implementation plugin;
 
+	private ResourceManager resourceManager;
+
 	/**
 	 * Create the instance.
 	 */
@@ -61,6 +66,18 @@ public final class Activator extends EMFPlugin {
 	@Override
 	public ResourceLocator getPluginResourceLocator() {
 		return plugin;
+	}
+
+	/**
+	 * Return the resourceManager used by this plug-in.
+	 * 
+	 * @return
+	 */
+	public ResourceManager getResourceManager() {
+		if (resourceManager == null) {
+			resourceManager = new LocalResourceManager(JFaceResources.getResources());
+		}
+		return resourceManager;
 	}
 
 	/**

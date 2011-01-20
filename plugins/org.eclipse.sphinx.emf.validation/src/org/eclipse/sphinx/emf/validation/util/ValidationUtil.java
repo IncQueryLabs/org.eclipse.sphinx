@@ -21,11 +21,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.emf.validation.markers.ValidationMarkerManager;
-import org.eclipse.sphinx.emf.validation.stats.ValidationPerformanceStats;
-import org.eclipse.sphinx.platform.util.ExtendedPlatform;
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -51,9 +46,14 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.emf.validation.service.IConstraintFilter;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.validation.Activator;
 import org.eclipse.sphinx.emf.validation.diagnostic.ExtendedDiagnostician;
 import org.eclipse.sphinx.emf.validation.internal.messages.Messages;
+import org.eclipse.sphinx.emf.validation.markers.ValidationMarkerManager;
+import org.eclipse.sphinx.emf.validation.stats.ValidationPerformanceStats;
+import org.eclipse.sphinx.platform.util.ExtendedPlatform;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
  * useful utility methods.
@@ -117,7 +117,7 @@ public class ValidationUtil {
 		}
 
 		URI uri_ = getURI(eObject);
-		if (uri_.segmentCount() < 1) {
+		if (uri_ == null || uri_.segmentCount() < 1) {
 			return null;
 		}
 

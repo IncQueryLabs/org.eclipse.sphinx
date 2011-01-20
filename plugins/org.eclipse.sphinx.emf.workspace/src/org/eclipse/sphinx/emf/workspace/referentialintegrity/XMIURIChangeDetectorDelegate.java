@@ -102,7 +102,7 @@ public class XMIURIChangeDetectorDelegate implements IURIChangeDetectorDelegate 
 							Resource resource = eObject.eResource();
 							ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
 							if (extendedResource != null) {
-								setResult(extendedResource.createProxyURI((InternalEObject) eObject));
+								setResult(extendedResource.getURI(eObject));
 							} else {
 								setResult(EcoreUtil.getURI(eObject));
 							}

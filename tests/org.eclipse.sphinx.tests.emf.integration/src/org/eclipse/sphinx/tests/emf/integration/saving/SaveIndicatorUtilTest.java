@@ -33,7 +33,7 @@ import org.eclipse.sphinx.emf.workspace.internal.saving.ResourceSaveIndicator;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 
-@SuppressWarnings( { "nls", "restriction" })
+@SuppressWarnings({ "nls", "restriction" })
 public class SaveIndicatorUtilTest extends DefaultIntegrationTestCase {
 	private TestEditingDomainAdapterFactory testEditingDomainAdapterFactory;
 	IAdapterFactory defaultEditingDomain3xAdapterFactory;
@@ -121,8 +121,7 @@ public class SaveIndicatorUtilTest extends DefaultIntegrationTestCase {
 
 		TestResourceSaveIndicatorImpl testResourceSaveIndicatorImpl = new TestResourceSaveIndicatorImpl(testEditingDomain);
 
-		@SuppressWarnings("unchecked")
-		public Object getAdapter(final Object adaptableObject, Class adapterType) {
+		public Object getAdapter(final Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
 
 			// IResourceSaveIndicator adapter for TransactionalEditingDomain?
 			if (adapterType.equals(IResourceSaveIndicator.class) && adaptableObject instanceof TransactionalEditingDomain) {
@@ -132,7 +131,7 @@ public class SaveIndicatorUtilTest extends DefaultIntegrationTestCase {
 			return null;
 		}
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		public Class[] getAdapterList() {
 			return new Class<?>[] { IEditingDomainProvider.class, IResourceSaveIndicator.class };
 		}

@@ -65,7 +65,7 @@ import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 
-@SuppressWarnings({ "nls", "restriction" })
+@SuppressWarnings("nls")
 public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 	private static final String SAMPLE_RESOURCE_NAME = "sampleResource.uml";
 	private static final String SAMPLE_RESOURCE_URI_PLATFORM_META = "platform:/meta/" + Activator.getPlugin().getSymbolicName() + "/"

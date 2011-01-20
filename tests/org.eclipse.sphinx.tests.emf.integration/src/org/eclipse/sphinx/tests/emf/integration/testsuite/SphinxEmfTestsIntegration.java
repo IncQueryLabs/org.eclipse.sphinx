@@ -29,12 +29,12 @@ public class SphinxEmfTestsIntegration {
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.model.ModelDescriptorTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.resource.ModelConverterTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.resource.ScopingResourceSetTest.class);
+		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.resource.LocalProxifyMechanismTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.saving.SaveIndicatorUtilTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.util.EcorePlatformUtilTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.util.EcorePlatformUtilTest2.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.util.EcoreResourceUtilTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.util.EObjectUtilTest.class);
-		;
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.util.WorkspaceTransactionUtilTest.class);
 		// $JUnit-END$
 		return suite;

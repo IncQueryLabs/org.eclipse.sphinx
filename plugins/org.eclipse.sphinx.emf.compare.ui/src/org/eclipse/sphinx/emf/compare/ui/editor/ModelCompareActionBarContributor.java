@@ -35,6 +35,7 @@ import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.domain.WorkspaceEditingDomainManager;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorActionBarContributor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -139,6 +140,8 @@ public class ModelCompareActionBarContributor extends EditingDomainActionBarCont
 	 * 
 	 * @return The {@linkplain RedoAction} this action bar contributor must provide.
 	 */
+	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
+	// @Override
 	protected RedoAction createRedoAction() {
 		return new RedoActionWrapper();
 	}
@@ -150,6 +153,8 @@ public class ModelCompareActionBarContributor extends EditingDomainActionBarCont
 	 * 
 	 * @return The {@linkplain UndoAction} this action bar contributor must provide.
 	 */
+	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
+	// @Override
 	protected UndoAction createUndoAction() {
 		return new UndoActionWrapper();
 	}

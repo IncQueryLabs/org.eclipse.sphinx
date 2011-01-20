@@ -761,7 +761,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	public void gotoMarker(IMarker marker) {
 		try {
-			if (marker.getType().equals(EValidator.MARKER)) {
+			if (marker.isSubtypeOf(EValidator.MARKER)) {
 				final String uriAttribute = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
 				if (uriAttribute != null) {
 					Notifier notifier = getEObject(URI.createURI(uriAttribute, true));

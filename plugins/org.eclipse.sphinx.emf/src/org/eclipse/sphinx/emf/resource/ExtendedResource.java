@@ -35,6 +35,31 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 public interface ExtendedResource {
 
 	/**
+	 * Separator separating the scheme portion from the rest of a URI.
+	 */
+	String URI_SCHEME_SEPARATOR = ":"; //$NON-NLS-1$
+
+	/**
+	 * Separator separating individual segments within a URI.
+	 */
+	String URI_SEGMENT_SEPARATOR = "/"; //$NON-NLS-1$
+
+	/**
+	 * Separator separating a query within a URI.
+	 */
+	String URI_QUERY_SEPARATOR = "?"; //$NON-NLS-1$
+
+	/**
+	 * Separator separating a keys from values within the query portion of a URI.
+	 */
+	String URI_KEY_VALUE_SEPARATOR = "="; //$NON-NLS-1$
+
+	/**
+	 * Separator separating the fragment from the segments portion within a URI.
+	 */
+	String URI_FRAGMENT_SEPARATOR = "#"; //$NON-NLS-1$
+
+	/**
 	 * Specifies whether unloading of this resource is to be performed in a limiting but memory-optimized way. The
 	 * default is <code>Boolean.FALSE</code>.
 	 * <p>
@@ -128,44 +153,40 @@ public interface ExtendedResource {
 	 *            The {@link InternalEObject} that has just been removed from the resource and is to be further
 	 *            processed by this method.
 	 * @see #OPTION_UNLOAD_MEMORY_OPTIMIZED
-	 * @see #createProxyURI(InternalEObject)
+	 * @see #getURI(InternalEObject)
 	 */
-	void unloaded(InternalEObject internalEObject);
+	void unloaded(EObject eObject);
 
 	/**
-	 * Creates a proxy {@link URI} representing given {@link InternalEObject}. Clients may implement/override this
-	 * method when they require proxies to be created with custom URI formats.
+	 * Returns a {@link URI} representing given {@link InternalEObject}. Clients may implement/override this method when
+	 * they require URIs with custom formats to be created.
 	 * 
 	 * @param InternalEObject
-	 *            The {@link InternalEObject} for which the proxy URI is to be created.
-	 * @return The proxy URI for given {@link InternalEObject}, or <code>null</code> if no such could be created.
+	 *            The {@link InternalEObject} for which the URI is to be created.
+	 * @return The URI for given {@link InternalEObject}, or <code>null</code> if no such could be created.
 	 */
-	URI createProxyURI(InternalEObject internalEObject);
+	URI getURI(EObject eObject);
 
 	/**
-	 * Creates a proxy {@link URI} representing given {@link EObject eObject} owned by {@link EObject owner} through
-	 * provided {@link EStructuralFeature feature}.If the {@link EObject eObject} is stand-alone (i.e freshly removed
-	 * and without attached resource) the {@link URI} is determine using the {@link EObject owner} and the
+	 * Returns a {@link URI} representing given {@link EObject eObject} owned by {@link EObject owner} through provided
+	 * {@link EStructuralFeature feature}.If the {@link EObject eObject} is stand-alone (i.e freshly removed and without
+	 * attached resource) the {@link URI} is determine using the {@link EObject owner} and the
 	 * {@link EStructuralFeature feature}, if the {@link EObject eObject} is still attached to a {@link Resource} the
 	 * {@link URI} is calculated using same implementation as in {@link ResourceImpl#unload()} . Clients may
-	 * implement/override this method when they require proxies to be created with custom URI formats.
+	 * implement/override this method when they require URIs with custom formats to be created.
 	 * 
 	 * @param oldOwner
-	 *            The {@link EObject} onwning the {@link EObject} before it was deleted.
+	 *            The {@link EObject} owning the {@link EObject} before it was deleted.
 	 * @param oldFeature
 	 *            The {@link EStructuralFeature} of the owner containing the {@link EObject eObject} before it was
 	 *            deleted.
 	 * @param eObject
-	 *            The {@link EObject} for which the proxy URI is to be created.
-	 * @param oldIndex
-	 *            the index of the {@link EObject} within the {@link EObject owner}'s {@link EStructuralFeature feature}
-	 *            before it was deleted. If {@link EStructuralFeature feature} is many, or Notification.NO_INDEX if
-	 *            {@link EStructuralFeature feature} is single .
-	 * @return The proxy URI for given {@link EObject eObject}, or <code>null</code> if no such could be created.If the
+	 *            The {@link EObject} for which the URI is to be created.
+	 * @return The URI for given {@link EObject eObject}, or <code>null</code> if no such could be created.If the
 	 *         provided {@link EObject} has no {@link Resource eResource} and no {@link EObject owner}, the returned
 	 *         value is null.
 	 */
-	URI createProxyURI(EObject owner, EStructuralFeature feature, EObject eObject);
+	URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject);
 
 	/**
 	 * Determines whether or not the given string represents a valid URI.

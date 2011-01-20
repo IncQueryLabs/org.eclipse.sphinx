@@ -146,7 +146,7 @@ public class Hummingbird20ResourceImpl extends XMIResourceImpl {
 			protected URI getHREF(Resource otherResource, EObject obj) {
 				ExtendedResource otherExtendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(otherResource);
 				if (otherExtendedResource != null) {
-					return otherExtendedResource.createProxyURI((InternalEObject) obj);
+					return otherExtendedResource.getURI(obj);
 				} else {
 					return super.getHREF(otherResource, obj);
 				}

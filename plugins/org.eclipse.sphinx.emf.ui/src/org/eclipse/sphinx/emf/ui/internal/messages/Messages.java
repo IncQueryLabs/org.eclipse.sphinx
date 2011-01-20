@@ -30,6 +30,8 @@ public class Messages extends NLS {
 	public static String label_noObjectSelected;
 	public static String label_multiObjectSelected;
 
+	public static String label_openWithMenu;
+
 	public static String label_editProxyURI;
 	public static String message_proxyURIReferencesElementInList;
 

@@ -14,7 +14,9 @@
  */
 package org.eclipse.sphinx.emf.resource;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
@@ -98,7 +100,7 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#unloaded(org.eclipse.emf.ecore.InternalEObject)
 	 */
-	public void unloaded(InternalEObject internalEObject) {
+	public void unloaded(EObject eObject) {
 		// Memory-optimized unload to be performed?
 		if (getDefaultLoadOptions().get(ExtendedResource.OPTION_UNLOAD_MEMORY_OPTIMIZED) == Boolean.TRUE) {
 			/*
@@ -109,7 +111,7 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 
 			// Clear all fields on unloaded EObject to make sure that it gets garbage collected as fast as possible
 			try {
-				ReflectUtil.clearAllFields(internalEObject);
+				ReflectUtil.clearAllFields(eObject);
 			} catch (IllegalAccessException ex) {
 				// Ignore exceptions
 			}
@@ -118,21 +120,90 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 			// it happens that things like ECrossReferenceAdapter try to access the proxy URI of unloaded EObjects (see
 			// e.g., org.eclipse.emf.ecore.util.ECrossReferenceAdapter.InverseCrossReferencer.addProxy(EObject,
 			// EObject))
-			internalEObject.eSetProxyURI(URI.createURI("")); //$NON-NLS-1$
+			((InternalEObject) eObject).eSetProxyURI(URI.createURI("")); //$NON-NLS-1$
 		} else {
 			// Perform regular unload but enable proxy creation strategy to be overridden
-			if (!internalEObject.eIsProxy()) {
-				internalEObject.eSetProxyURI(createProxyURI(internalEObject));
+			if (!eObject.eIsProxy()) {
+				((InternalEObject) eObject).eSetProxyURI(getURI(eObject));
 			}
-			internalEObject.eAdapters().clear();
+			eObject.eAdapters().clear();
 		}
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#createProxyURI(org.eclipse.emf.ecore.InternalEObject)
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getURI(org.eclipse.emf.ecore.EObject)
 	 */
-	public URI createProxyURI(InternalEObject internalEObject) {
-		return createProxyURI(null, null, internalEObject);
+	public URI getURI(EObject eObject) {
+		return getURI(null, null, eObject);
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getURI(org.eclipse.emf.ecore.EObject,
+	 * org.eclipse.emf.ecore.EStructuralFeature, org.eclipse.emf.ecore.EObject)
+	 */
+	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
+		Resource resource = (Resource) getTarget();
+
+		// Has given eObject been removed or is it directly or indirectly contained by some other eObject that has been
+		// removed?
+		if (eObject.eResource() == null && oldOwner != null && oldFeature != null) {
+			// Has given eObject an ID?
+			String id = EcoreUtil.getID(eObject);
+			if (id != null) {
+				// Proceed as in EcoreUtil#getURI()/ResourceImpl#getURIFragment() and return a URI with object ID as
+				// fragment
+				return resource.getURI().appendFragment(id);
+			} else {
+				// Use provided oldOwner and oldFeature to calculate given eObject's old URI that it had prior to the
+				// removal
+
+				// Retrieve the oldOwner's URI fragment
+				URI oldOwnerURI = EcoreUtil.getURI(oldOwner);
+				String oldOwnerURIFragment = oldOwnerURI.fragment();
+
+				// Restore URI fragment segment that pointed from oldOwner to removed eObject (which may be the given
+				// eObject itself or some other eObject that directly or indirectly contains given eObject
+				EObject eObjectRootContainer = EcoreUtil.getRootContainer(eObject);
+				String eObjectRootContainerURIFragmentSegment = ((InternalEObject) oldOwner).eURIFragmentSegment(oldFeature, eObjectRootContainer);
+
+				// Calculate URI fragment segments for given eObject in case that it is an eObject that is directly or
+				// indirectly contained by the removed eObject
+				List<String> eObjectURIFragmentSegments = new ArrayList<String>();
+				InternalEObject internalEObject = (InternalEObject) eObject;
+				for (InternalEObject container = internalEObject.eInternalContainer(); container != null; container = internalEObject
+						.eInternalContainer()) {
+					eObjectURIFragmentSegments.add(container.eURIFragmentSegment(internalEObject.eContainingFeature(), internalEObject));
+					internalEObject = container;
+				}
+
+				// Compose and return the eObject' old URI
+				StringBuilder oldEObjectURIFragment = new StringBuilder();
+				oldEObjectURIFragment.append(oldOwnerURIFragment);
+				oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
+				oldEObjectURIFragment.append(eObjectRootContainerURIFragmentSegment);
+				for (int i = eObjectURIFragmentSegments.size() - 1; i >= 0; --i) {
+					oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
+					oldEObjectURIFragment.append(eObjectURIFragmentSegments.get(i));
+				}
+				return oldOwnerURI.trimFragment().appendFragment(oldEObjectURIFragment.toString());
+			}
+		}
+
+		// Calculate and return normal URI, i.e., same as EcoreUtil#getURI() would
+		return resource.getURI().appendFragment(resource.getURIFragment(eObject));
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#validateURI(java.lang.String)
+	 */
+	public Diagnostic validateURI(String uri) {
+		Assert.isNotNull(uri);
+		try {
+			URI.createURI(uri, true);
+		} catch (IllegalArgumentException ex) {
+			return new BasicDiagnostic(Activator.getPlugin().getSymbolicName(), Diagnostic.ERROR, ex.getMessage(), new Object[] {});
+		}
+		return Diagnostic.OK_INSTANCE;
 	}
 
 	/*
@@ -150,31 +221,5 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	public void setTarget(Notifier newTarget) {
 		Assert.isLegal(newTarget == null || newTarget instanceof Resource);
 		super.setTarget(newTarget);
-	}
-
-	/*
-	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#createProxyURI(org.eclipse.emf.ecore.EObject,
-	 * org.eclipse.emf.ecore.EStructuralFeature, org.eclipse.emf.ecore.EObject)
-	 */
-	public URI createProxyURI(EObject owner, EStructuralFeature feature, EObject eObject) {
-		Resource resource = (Resource) getTarget();
-		String eObjectURIFragment = resource.getURIFragment(eObject);
-		String eObjectURIFragmentSegment = ((InternalEObject) owner).eURIFragmentSegment(feature, eObject);
-		URI ownerURI = EcoreUtil.getURI(owner);
-		String uriFragment = ownerURI.fragment() + "/" + eObjectURIFragmentSegment + "/" + eObjectURIFragment; //$NON-NLS-1$ //$NON-NLS-2$
-		return ownerURI.trimFragment().appendFragment(uriFragment);
-	}
-
-	/*
-	 * @see org.artop.ecl.emf.resource.ExtendedResource#validateURI(java.lang.String)
-	 */
-	public Diagnostic validateURI(String uri) {
-		Assert.isNotNull(uri);
-		try {
-			URI.createURI(uri, true);
-		} catch (IllegalArgumentException ex) {
-			return new BasicDiagnostic(Activator.getPlugin().getSymbolicName(), Diagnostic.ERROR, ex.getMessage(), new Object[] {});
-		}
-		return Diagnostic.OK_INSTANCE;
 	}
 }

@@ -62,7 +62,7 @@ public class URIChangeNotification {
 		Resource resource = newEObject.eResource();
 		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
 		if (extendedResource != null) {
-			uri = extendedResource.createProxyURI((InternalEObject) newEObject);
+			uri = extendedResource.getURI(newEObject);
 		} else {
 			uri = EcoreUtil.getURI(newEObject);
 		}
