@@ -18,6 +18,7 @@ package org.eclipse.sphinx.emf.edit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.MissingResourceException;
@@ -234,8 +235,12 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 	}
 
 	/*
-	 * Overridden to add support for the case where collection objects of given command parameter have different
-	 * containers, or the same container but different features.
+	 * Overridden to add support for the case where: (1) collection objects of given command parameter have different
+	 * containers, or the same container but different features and (2) specified owner via CommandParameter
+	 * (commandParameter.getEOwner()) is no EObject. In this case, try to refer to parent or owner of specified owner.
+	 * @see
+	 * org.eclipse.emf.edit.provider.ItemProviderAdapter#factorRemoveCommand(org.eclipse.emf.edit.domain.EditingDomain,
+	 * org.eclipse.emf.edit.command.CommandParameter)
 	 */
 	@Override
 	protected Command factorRemoveCommand(EditingDomain domain, CommandParameter commandParameter) {
@@ -437,6 +442,144 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 			return removeCommand.unwrap();
 		} else {
 			removeCommand.dispose();
+			return UnexecutableCommand.INSTANCE;
+		}
+	}
+
+	/*
+	 * Overridden to support the case where specified owner via CommandParameter (commandParameter.getEOwner()) is no
+	 * EObject. In this case, try to refer to parent or owner of specified owner.
+	 * @see
+	 * org.eclipse.emf.edit.provider.ItemProviderAdapter#factorAddCommand(org.eclipse.emf.edit.domain.EditingDomain,
+	 * org.eclipse.emf.edit.command.CommandParameter)
+	 */
+	@Override
+	protected Command factorAddCommand(EditingDomain domain, CommandParameter commandParameter) {
+		if (commandParameter.getCollection() == null || commandParameter.getCollection().isEmpty()) {
+			return UnexecutableCommand.INSTANCE;
+		}
+
+		EObject eOwner = commandParameter.getEOwner();
+
+		// Try to refer to parent or owner in case that owner specified via CommandParameter is no EObject
+		if (eOwner == null) {
+			Object parentOfOwner = domain.getParent(commandParameter.getOwner());
+			if (parentOfOwner instanceof EObject) {
+				eOwner = (EObject) parentOfOwner;
+			}
+		}
+
+		final EObject eObject = eOwner;
+		final List<Object> list = new ArrayList<Object>(commandParameter.getCollection());
+		int index = commandParameter.getIndex();
+
+		CompoundCommand addCommand = new CompoundCommand(CompoundCommand.MERGE_COMMAND_ALL);
+
+		while (!list.isEmpty()) {
+			Iterator<Object> children = list.listIterator();
+			final Object firstChild = children.next();
+			EStructuralFeature childFeature = getChildFeature(eObject, firstChild);
+
+			if (childFeature == null) {
+				break;
+			}
+			// If it is a list type value...
+			//
+			else if (childFeature.isMany()) {
+				// Correct the index, if necessary.
+				//
+				if (index != CommandParameter.NO_INDEX) {
+					for (EStructuralFeature feature : getChildrenFeatures(commandParameter.getOwner())) {
+						if (feature == childFeature) {
+							break;
+						}
+
+						if (feature.isMany()) {
+							index -= ((List<?>) eObject.eGet(feature)).size();
+						} else if (eObject.eGet(feature) != null) {
+							index -= 1;
+						}
+					}
+					if (index < 0) {
+						break;
+					}
+				}
+
+				// These will be the children belonging to this feature.
+				//
+				Collection<Object> childrenOfThisFeature = new ArrayList<Object>();
+				childrenOfThisFeature.add(firstChild);
+				children.remove();
+
+				// Consume the rest of the appropriate children.
+				//
+				while (children.hasNext()) {
+					Object child = children.next();
+
+					// Is this child in this feature...
+					//
+					if (getChildFeature(eObject, child) == childFeature) {
+						// Add it to the list and remove it from the other list.
+						//
+						childrenOfThisFeature.add(child);
+						children.remove();
+					}
+				}
+
+				// Create a command for this feature,
+				//
+				addCommand.append(createAddCommand(domain, eObject, childFeature, childrenOfThisFeature, index));
+
+				if (index >= childrenOfThisFeature.size()) {
+					index -= childrenOfThisFeature.size();
+				} else {
+					index = CommandParameter.NO_INDEX;
+				}
+			} else if (eObject.eGet(childFeature) == null) {
+				Command setCommand = createSetCommand(domain, eObject, childFeature, firstChild);
+				addCommand.append(new CommandWrapper(setCommand) {
+					protected Collection<?> affected;
+
+					@Override
+					public void execute() {
+						super.execute();
+						affected = Collections.singleton(firstChild);
+					}
+
+					@Override
+					public void undo() {
+						super.undo();
+						affected = Collections.singleton(eObject);
+					}
+
+					@Override
+					public void redo() {
+						super.redo();
+						affected = Collections.singleton(firstChild);
+					}
+
+					@Override
+					public Collection<?> getResult() {
+						return Collections.singleton(firstChild);
+					}
+
+					@Override
+					public Collection<?> getAffectedObjects() {
+						return affected;
+					}
+				});
+				children.remove();
+			} else {
+				break;
+			}
+		}
+
+		// If all the objects aren't used up by the above, then we can't do the command.
+		//
+		if (list.isEmpty()) {
+			return addCommand.unwrap();
+		} else {
+			addCommand.dispose();
 			return UnexecutableCommand.INSTANCE;
 		}
 	}
