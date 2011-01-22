@@ -28,10 +28,8 @@ import org.eclipse.emf.common.command.CommandWrapper;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.common.util.ResourceLocator;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.UniqueEList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EDataType;
@@ -51,15 +49,11 @@ import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.ComposedImage;
-import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.ecore.DefaultEcoreTraversalHelper;
 import org.eclipse.sphinx.emf.ecore.EcoreTraversalHelper;
-import org.eclipse.sphinx.emf.internal.EcorePerformanceStats;
-import org.eclipse.sphinx.emf.internal.messages.Messages;
 
 /**
  * Extension of the default {@linkplain ItemProviderAdapter item provider adapter} implementation provided by EMF Edit.
@@ -81,111 +75,15 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 	protected ItemPropertyDescriptor createItemPropertyDescriptor(AdapterFactory adapterFactory, ResourceLocator resourceLocator, String displayName,
 			String description, EStructuralFeature feature, boolean isSettable, boolean multiLine, boolean sortChoices, Object staticImage,
 			String category, String[] filterFlags) {
-		return new ItemPropertyDescriptor(adapterFactory, resourceLocator, displayName, description, feature, isSettable, multiLine, sortChoices,
-				staticImage, category, filterFlags) {
-			/*
-			 * Overridden for overloading default IItemLabelProvider getText() method behavior to avoid that proxy
-			 * EObject would be displayed using their label feature value, in case one is set, or their type name,
-			 * otherwise. All proxies (in simple reference or multiple reference) will be displayed using the proxy URI.
-			 * @see org.eclipse.emf.edit.provider.ItemPropertyDescriptor#getLabelProvider(java.lang.Object)
-			 */
-			@Override
-			public IItemLabelProvider getLabelProvider(Object object) {
-				final IItemLabelProvider itemLabelProvider = super.getLabelProvider(object);
-				return new IItemLabelProvider() {
-					public String getText(Object object) {
-						if (object instanceof EObject) {
-							EObject eObject = (EObject) object;
-							if (eObject.eIsProxy()) {
-								URI proxyUri = EcoreUtil.getURI(eObject);
-								if (proxyUri != null) {
-									return proxyUri.toString();
-								} else {
-									return Messages.label_unknownProxyURI;
-								}
-
-							}
-						} else if (object instanceof EList<?>) {
-							StringBuffer result = new StringBuffer();
-							for (Object child : (List<?>) object) {
-								if (result.length() != 0) {
-									result.append(", "); //$NON-NLS-1$
-								}
-								result.append(getText(child));
-							}
-							return result.toString();
-						}
-						return itemLabelProvider.getText(object);
-					}
-
-					public Object getImage(Object object) {
-						return itemLabelProvider.getImage(object);
-					}
-				};
-
-			}
-
-			/*
-			 * Overridden for avoiding that default values for unset attributes are displayed.
-			 * @see org.eclipse.emf.edit.provider.ItemPropertyDescriptor#getValue(org.eclipse.emf.ecore.EObject,
-			 * org.eclipse.emf.ecore.EStructuralFeature)
-			 */
-			@Override
-			protected Object getValue(EObject object, EStructuralFeature feature) {
-				if (!(feature instanceof EAttribute) || object.eIsSet(feature)) {
-					return super.getValue(object, feature);
-				}
-				return null;
-			}
-
-			/*
-			 * Overridden for adding a postfix to the property description which indicates the property's data type and
-			 * default value in case that the property represents a non string attribute.
-			 * @see org.eclipse.emf.edit.provider.ItemPropertyDescriptor#getDescription(java.lang.Object)
-			 */
-			@Override
-			public String getDescription(Object object) {
-				StringBuilder description = new StringBuilder(super.getDescription(object));
-
-				Object feature = getFeature(object);
-				if (feature instanceof EAttribute) {
-					EAttribute attribute = (EAttribute) feature;
-					Class<?> instanceClass = attribute.getEType().getInstanceClass();
-					if (String.class != instanceClass) {
-						description.append(" "); //$NON-NLS-1$
-						if (attribute.getDefaultValueLiteral() != null && attribute.getDefaultValueLiteral().length() > 0) {
-							description.append(NLS.bind(Messages.propertyDescriptionPostfix_mustBeADataTypeEgDefaultValue,
-									instanceClass.getSimpleName(), attribute.getDefaultValueLiteral()));
-						} else {
-							description.append(NLS.bind(Messages.propertyDescriptionPostfix_mustBeADataType, instanceClass.getSimpleName()));
-						}
-					}
-				}
-				return description.toString();
-			}
-
-			/*
-			 * @see org.eclipse.emf.edit.provider.ItemPropertyDescriptor#getChoiceOfValues(java.lang.Object)
-			 */
-			@Override
-			public Collection<?> getChoiceOfValues(Object object) {
-				Collection<?> result;
-				// Starts profiling
-				EcorePerformanceStats.INSTANCE.startEvent(EcorePerformanceStats.EcoreEvent.EVENT_CHOICES_OF_VALUES, object);
-				// Collects the choices of values for the specified feature of the given object
-				result = ExtendedItemProviderAdapter.this.getChoiceOfValues(object, parentReferences, feature);
-				// Ends profiling
-				EcorePerformanceStats.INSTANCE.endEvent(EcorePerformanceStats.EcoreEvent.EVENT_CHOICES_OF_VALUES, object);
-				return result;
-			}
-		};
+		return new ExtendedItemPropertyDescriptor(adapterFactory, resourceLocator, displayName, description, feature, isSettable, multiLine,
+				sortChoices, staticImage, category, filterFlags);
 	}
 
 	/*
 	 * Overridden for delegating retrieval of reachable objects to EcoreTraveralHelper.
 	 * @see org.eclipse.sphinx.emf.ecore.EcoreTraversalHelper
 	 */
-	protected Collection<?> getChoiceOfValues(Object object, EReference[] parentReferences, EStructuralFeature feature) {
+	public Collection<?> getChoiceOfValues(Object object, EReference[] parentReferences, EStructuralFeature feature) {
 		if (object instanceof EObject) {
 			EObject eObject = (EObject) object;
 			if (parentReferences != null) {

@@ -26,7 +26,6 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.command.CommandParameter;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
@@ -59,10 +58,11 @@ import org.eclipse.ui.actions.BaseSelectionListenerAction;
  */
 public class BasicRenameAction extends BaseSelectionListenerAction {
 
+	private static final String NAME = "name"; //$NON-NLS-1$
+	private static final String ID = "id"; //$NON-NLS-1$
+
 	private TreeViewer viewer;
-	private Map<EClass, NameAttributeInfo> fNameAttributeCache = new WeakHashMap<EClass, NameAttributeInfo>();
-	private final String NAME = "name"; //$NON-NLS-1$
-	private final String ID = "id"; //$NON-NLS-1$
+	private Map<EClass, NameAttributeInfo> nameAttributeCache = new WeakHashMap<EClass, NameAttributeInfo>();
 	private Composite textEditorParent;
 	private Text textEditor;
 	private TreeEditor treeEditor;
@@ -146,53 +146,56 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 		eTypes.add(object.eClass());
 		eTypes.addAll(object.eClass().getEAllSuperTypes());
 		for (EClass eType : eTypes) {
-			if (fNameAttributeCache.containsKey(eType)) {
-				NameAttributeInfo nameAttributeInfo = fNameAttributeCache.get(eType);
-				if (!nameAttributeInfo.isFallback()) {
-					return nameAttributeInfo.getEAttribute();
+			if (nameAttributeCache.containsKey(eType)) {
+				NameAttributeInfo info = nameAttributeCache.get(eType);
+				if (!info.isFallback()) {
+					return info.getEAttribute();
 				}
 			}
 		}
-		NameAttributeInfo nameAttribute = getNameAttribute(object.eClass().getEAllAttributes());
-		if (!fNameAttributeCache.containsKey(nameAttribute.getEAttribute().getEContainingClass())) {
-			fNameAttributeCache.put(nameAttribute.getEAttribute().getEContainingClass(), nameAttribute);
-		}
-		return nameAttribute.getEAttribute();
 
+		NameAttributeInfo info = getNameAttribute(object.eClass().getEAllAttributes());
+		if (info != null) {
+			if (!nameAttributeCache.containsKey(info.getEAttribute().getEContainingClass())) {
+				nameAttributeCache.put(info.getEAttribute().getEContainingClass(), info);
+			}
+			return info.getEAttribute();
+		}
+		return null;
 	}
 
 	protected NameAttributeInfo getNameAttribute(List<EAttribute> nameAttributeCandidates) {
 		EAttribute nameAttribute = null;
 		boolean isFallback = true;
-		for (EAttribute feature : nameAttributeCandidates) {
-			String featureName = feature.getName();
-			if (featureName != null) {
-				if (featureName.equalsIgnoreCase(NAME)) {
-					nameAttribute = feature;
+		for (EAttribute attribute : nameAttributeCandidates) {
+			String attributeName = attribute.getName();
+			if (attributeName != null) {
+				if (attributeName.equalsIgnoreCase(NAME)) {
+					nameAttribute = attribute;
 					isFallback = false;
-				} else if (featureName.equalsIgnoreCase(ID)) {
+				} else if (attributeName.equalsIgnoreCase(ID)) {
 					if (nameAttribute == null || !nameAttribute.getName().toLowerCase().endsWith(NAME)) {
-						nameAttribute = feature;
+						nameAttribute = attribute;
 						isFallback = false;
 					}
-				} else if (featureName.toLowerCase().endsWith(NAME)) {
+				} else if (attributeName.toLowerCase().endsWith(NAME)) {
 					if (nameAttribute == null || !nameAttribute.getName().toLowerCase().endsWith(NAME)
 							&& !nameAttribute.getName().equalsIgnoreCase(ID)) {
-						nameAttribute = feature;
+						nameAttribute = attribute;
 						isFallback = false;
 					}
-				} else if (featureName.toLowerCase().indexOf(NAME) != -1) {
+				} else if (attributeName.toLowerCase().indexOf(NAME) != -1) {
 					if (nameAttribute == null || nameAttribute.getName().toLowerCase().indexOf(NAME) == -1
 							&& !nameAttribute.getName().equalsIgnoreCase(ID)) {
-						nameAttribute = feature;
+						nameAttribute = attribute;
 						isFallback = false;
 					}
 				} else if (nameAttribute == null) {
-					nameAttribute = feature;
+					nameAttribute = attribute;
 				}
 			}
 		}
-		return new NameAttributeInfo(nameAttribute, isFallback);
+		return nameAttribute != null ? new NameAttributeInfo(nameAttribute, isFallback) : null;
 	}
 
 	protected boolean hasNameAttribute(EObject object) {
@@ -201,10 +204,10 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 
 	protected void execRename(EObject objectToRename, String newName) {
 		TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(objectToRename);
-		EStructuralFeature feature = getNameAttribute(objectToRename);
-		Command cmd = editingDomain.createCommand(SetCommand.class, new CommandParameter(objectToRename, feature, newName));
-		if (cmd.canExecute()) {
-			editingDomain.getCommandStack().execute(cmd);
+		EAttribute attribute = getNameAttribute(objectToRename);
+		Command command = editingDomain.createCommand(SetCommand.class, new CommandParameter(objectToRename, attribute, newName));
+		if (command.canExecute()) {
+			editingDomain.getCommandStack().execute(command);
 		}
 	}
 
@@ -370,8 +373,8 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 	}
 
 	protected EAttribute cacheAttribute(NameAttributeInfo nameAttribute) {
-		if (!fNameAttributeCache.containsKey(nameAttribute.getEAttribute().getEContainingClass())) {
-			fNameAttributeCache.put(nameAttribute.getEAttribute().getEContainingClass(), nameAttribute);
+		if (!nameAttributeCache.containsKey(nameAttribute.getEAttribute().getEContainingClass())) {
+			nameAttributeCache.put(nameAttribute.getEAttribute().getEContainingClass(), nameAttribute);
 		}
 		return nameAttribute.getEAttribute();
 	}
@@ -388,6 +391,7 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 	}
 
 	private class NameAttributeInfo {
+
 		private WeakReference<EAttribute> eAttribute;
 		private boolean isFallback;
 
