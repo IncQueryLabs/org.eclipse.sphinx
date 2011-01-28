@@ -28,6 +28,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
+import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.edit.ui.provider.PropertyDescriptor;
 import org.eclipse.emf.edit.ui.provider.PropertySource;
 import org.eclipse.emf.transaction.NotificationFilter;
@@ -44,6 +45,7 @@ import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbenchPart;
@@ -221,6 +223,10 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 
 		AdapterFactory adapterFactory = getAdapterFactory(editingDomain);
 		return new TransactionalAdapterFactoryContentProvider(editingDomain, adapterFactory) {
+			/**
+			 * Overridden to enable implantation of custom cell editor that will be used to edit the value of the given
+			 * property.
+			 */
 			@Override
 			protected IPropertySource createPropertySource(Object object, IItemPropertySource itemPropertySource) {
 				return new PropertySource(object, itemPropertySource) {
@@ -229,59 +235,81 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 						return new PropertyDescriptor(object, itemPropertyDescriptor) {
 							@Override
 							public CellEditor createPropertyEditor(final Composite composite) {
-								if (object instanceof EObject) {
-									Object feature = itemPropertyDescriptor.getFeature(object);
-									if (feature instanceof EReference) {
-										final EReference reference = (EReference) feature;
-										InternalEObject internalEObject = (InternalEObject) object;
-										if (!reference.isMany()) {
-											EObject value = (EObject) internalEObject.eGet(reference);
-											if (value != null && value.eIsProxy()) {
-												return new ProxyURICellEditor(composite, (EObject) object, (InternalEObject) value);
-											}
-										} else {
-											@SuppressWarnings("unchecked")
-											List<EObject> values = (List<EObject>) internalEObject.eGet(reference);
-											for (EObject value : values) {
-												if (value.eIsProxy()) {
-													final ILabelProvider editLabelProvider = getEditLabelProvider();
-													final Collection<?> choiceOfValues = itemPropertyDescriptor.getChoiceOfValues(object);
-													return new ExtendedDialogCellEditor(composite, editLabelProvider) {
-														@Override
-														protected Object openDialogBox(Control cellEditorWindow) {
-															// FIXME Use commented code once we don't need to support
-															// Eclipse 3.5 any longer
-															// ProxyURIFeatureEditorDialog dialog = new
-															// ProxyURIFeatureEditorDialog(
-															// cellEditorWindow.getShell(), editLabelProvider, object,
-															// reference.getEType(),
-															// (List<?>) doGetValue(), getDisplayName(), new
-															// ArrayList<Object>(choiceOfValues),
-															// false, itemPropertyDescriptor.isSortChoices(object),
-															// reference.isUnique());
-															ProxyURIFeatureEditorDialog dialog = new ProxyURIFeatureEditorDialog(
-																	cellEditorWindow.getShell(), editLabelProvider, object, reference.getEType(),
-																	(List<?>) doGetValue(), getDisplayName(), new ArrayList<Object>(choiceOfValues),
-																	false, itemPropertyDescriptor.isSortChoices(object));
-															dialog.open();
-															return dialog.getResult();
-														}
-													};
-												}
-
-											}
-
-										}
-									}
+								CellEditor editor = BasicTransactionalAdvancedPropertySection.this.createPropertyEditor(composite, object,
+										itemPropertyDescriptor, this);
+								if (editor != null) {
+									return editor;
 								}
 								return super.createPropertyEditor(composite);
 							}
 						};
 					}
 				};
-
 			}
 		};
+	}
+
+	/**
+	 * Return a custom {@link CellEditor cell editor} to be used for editing the value of given property.
+	 * 
+	 * @param composite
+	 *            The parent control of the {@link CellEditor cell editor} to be created.
+	 * @param object
+	 *            The owner of the {@link IItemPropertyDescriptor property} to be edited.
+	 * @param itemPropertyDescriptor
+	 *            The {@link IItemPropertyDescriptor item descriptor} of the property to be edited.
+	 * @param propertyDescriptor
+	 *            The {@link PropertyDescriptor descriptor} of the property to be edited.
+	 * @return A newly created custom {@link CellEditor cell editor} to be used or <code>null</code> to indicate that
+	 *         default {@link CellEditor cell editor} created by EMF.Edit should be used.
+	 */
+	protected CellEditor createPropertyEditor(Composite composite, final Object object, final IItemPropertyDescriptor itemPropertyDescriptor,
+			final PropertyDescriptor propertyDescriptor) {
+		if (object instanceof EObject) {
+			Object feature = itemPropertyDescriptor.getFeature(object);
+			if (feature instanceof EReference) {
+				final EReference reference = (EReference) feature;
+				InternalEObject internalEObject = (InternalEObject) object;
+				if (!reference.isMany()) {
+					EObject value = (EObject) internalEObject.eGet(reference);
+					if (value != null && value.eIsProxy()) {
+						return new ProxyURICellEditor(composite, (EObject) object, (InternalEObject) value);
+					}
+				} else {
+					@SuppressWarnings("unchecked")
+					List<EObject> values = (List<EObject>) internalEObject.eGet(reference);
+					for (EObject value : values) {
+						if (value.eIsProxy()) {
+							final ILabelProvider editLabelProvider = propertyDescriptor.getLabelProvider();
+							final Collection<?> choiceOfValues = itemPropertyDescriptor.getChoiceOfValues(object);
+							return new ExtendedDialogCellEditor(composite, editLabelProvider) {
+								@Override
+								protected Object openDialogBox(Control cellEditorWindow) {
+									// FIXME Use commented code once we don't need to support
+									// Eclipse 3.5 any longer
+									// ProxyURIFeatureEditorDialog dialog = new
+									// ProxyURIFeatureEditorDialog(
+									// cellEditorWindow.getShell(), editLabelProvider, object,
+									// reference.getEType(),
+									// (List<?>) doGetValue(), getDisplayName(), new
+									// ArrayList<Object>(choiceOfValues),
+									// false, itemPropertyDescriptor.isSortChoices(object),
+									// reference.isUnique());
+									ProxyURIFeatureEditorDialog dialog = new ProxyURIFeatureEditorDialog(cellEditorWindow.getShell(),
+											editLabelProvider, object, reference.getEType(), (List<?>) doGetValue(),
+											propertyDescriptor.getDisplayName(), new ArrayList<Object>(choiceOfValues), false,
+											itemPropertyDescriptor.isSortChoices(object));
+									dialog.open();
+									return dialog.getResult();
+								}
+							};
+						}
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**

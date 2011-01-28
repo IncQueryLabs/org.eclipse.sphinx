@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.platform.ui.util;
 
+import java.io.PrintStream;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.Assert;
@@ -22,6 +23,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.platform.messages.PlatformMessages;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
@@ -43,6 +45,8 @@ import org.eclipse.ui.part.ISetSelectionTarget;
  * 
  */
 public final class ExtendedPlatformUI {
+
+	public static final String SYSTEM_CONSOLE_NAME = "System Console"; //$NON-NLS-1$
 
 	// Prevent from instantiation
 	private ExtendedPlatformUI() {
@@ -191,5 +195,30 @@ public final class ExtendedPlatformUI {
 				}
 			}
 		}
+	}
+
+	public static void showSystemConsole() {
+		// Try to retrieve already existing system console
+		MessageConsole systemConsole = null;
+		for (IConsole console : ConsolePlugin.getDefault().getConsoleManager().getConsoles()) {
+			if (SYSTEM_CONSOLE_NAME.equals(console.getName())) {
+				systemConsole = (MessageConsole) console;
+				break;
+			}
+		}
+		if (systemConsole == null) {
+			// Create new system console
+			systemConsole = new MessageConsole(SYSTEM_CONSOLE_NAME, null);
+			ConsolePlugin.getDefault().getConsoleManager().addConsoles(new IConsole[] { systemConsole });
+
+			// Redirect system output and error streams to system console
+			MessageConsoleStream systemOutStream = systemConsole.newMessageStream();
+			MessageConsoleStream systemErrStream = systemConsole.newMessageStream();
+			systemErrStream.setColor(new Color(PlatformUI.getWorkbench().getDisplay(), 255, 0, 0));
+			System.setOut(new PrintStream(systemOutStream));
+			System.setErr(new PrintStream(systemErrStream));
+		}
+		// Show system console
+		ConsolePlugin.getDefault().getConsoleManager().showConsoleView(systemConsole);
 	}
 }
