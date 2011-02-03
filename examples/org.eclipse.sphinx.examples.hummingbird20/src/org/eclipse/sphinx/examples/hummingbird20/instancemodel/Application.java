@@ -16,6 +16,8 @@ package org.eclipse.sphinx.examples.hummingbird20.instancemodel;
 
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
+
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 
@@ -29,6 +31,7 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application#getComponents <em>Components</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application#getMixed <em>Mixed</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application#getXSISchemaLocation <em>XSI Schema Location</em>}</li>
  * </ul>
  * </p>
  *
@@ -69,5 +72,23 @@ public interface Application extends Identifiable {
 	 * @generated
 	 */
 	FeatureMap getMixed();
+
+	/**
+	 * Returns the value of the '<em><b>XSI Schema Location</b></em>' map.
+	 * The key is of type {@link java.lang.String},
+	 * and the value is of type {@link java.lang.String},
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>XSI Schema Location</em>' map isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>XSI Schema Location</em>' map.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getApplication_XSISchemaLocation()
+	 * @model mapType="org.eclipse.emf.ecore.EStringToStringMapEntry<org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EString>" transient="true"
+	 *        extendedMetaData="name='xsi:schemaLocation'"
+	 * @generated
+	 */
+	EMap<String, String> getXSISchemaLocation();
 
 } // Application

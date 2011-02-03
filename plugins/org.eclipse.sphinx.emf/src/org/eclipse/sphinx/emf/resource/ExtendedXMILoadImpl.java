@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2002-2006 IBM Corporation, See4sys and others.
+ * Copyright (c) 2002-2011 IBM Corporation, Geensys, and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,11 +19,13 @@ package org.eclipse.sphinx.emf.resource;
 
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.impl.SAXXMIHandler;
+import org.eclipse.emf.ecore.xmi.impl.XMILoadImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * This class is an exact copy of {@link XMILoadImpl} except that it extends {@link ExtendedXMLLoadImpl} instead of
- * {@link XMLLoadImpl}.
+ * This class is a replacement for {@link XMILoadImpl}. It extends {@link ExtendedXMLLoadImpl} instead of
+ * {@link XMLLoadImpl} and creates an {@link ExtendedSAXXMIHandler} rather than a {@link SAXXMIHandler}.
  */
 public class ExtendedXMILoadImpl extends ExtendedXMLLoadImpl {
 
@@ -36,6 +38,6 @@ public class ExtendedXMILoadImpl extends ExtendedXMLLoadImpl {
 
 	@Override
 	protected DefaultHandler makeDefaultHandler() {
-		return new SAXXMIHandler(resource, helper, options);
+		return new ExtendedSAXXMIHandler(resource, helper, options);
 	}
 }

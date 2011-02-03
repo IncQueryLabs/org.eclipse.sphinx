@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xsd:schema xmlns:cn="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.0/common" xmlns:im="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.0/instancemodel" xmlns:tm="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.0/typemodel" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.0/instancemodel">
-  <xsd:import namespace="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.0/typemodel" schemaLocation="typemodel.xsd"/>
-  <xsd:import namespace="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.0/common" schemaLocation="common.xsd"/>
+  <xsd:import namespace="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.0/typemodel" schemaLocation="TypeModel200XMI.xsd"/>
+  <xsd:import namespace="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.0/common" schemaLocation="Common200XMI.xsd"/>
   <xsd:complexType name="Application">
     <xsd:complexContent>
       <xsd:extension base="cn:Identifiable">

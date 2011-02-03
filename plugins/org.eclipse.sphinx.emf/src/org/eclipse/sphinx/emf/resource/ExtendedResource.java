@@ -126,6 +126,8 @@ public interface ExtendedResource {
 	 */
 	String OPTION_XML_VALIDITY_PROBLEM_SEVERITY = "XML_VALIDITY_PROBLEM_SEVERITY"; //$NON-NLS-1$
 
+	String OPTION_SCHEMA_LOCATION_CATALOG = "SCHEMA_LOCATION_CATALOG"; //$NON-NLS-1$
+
 	/**
 	 * Returns the map of options that, in addition to the overriding options specified during load, are used to to
 	 * control load behavior.

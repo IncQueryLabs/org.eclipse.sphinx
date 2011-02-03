@@ -18,21 +18,19 @@ import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 
-public class Hummingbird20MMDescriptorItemProviderAdapterFactory implements
-		IAdapterFactory {
+public class Hummingbird20MMDescriptorItemProviderAdapterFactory implements IAdapterFactory {
 
-	@SuppressWarnings("unchecked")
-	public Object getAdapter(Object adaptableObject, Class adapterType) {
-	    if (adapterType.equals(IItemLabelProvider.class)) {
-	        if (adaptableObject instanceof Hummingbird20MMDescriptor) {
-	          return new Hummingbird20MMDescriptorItemLabelProvider();
-	        }
-	      }  
-	      return null;
+	public Object getAdapter(Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
+		if (adapterType.equals(IItemLabelProvider.class)) {
+			if (adaptableObject instanceof Hummingbird20MMDescriptor) {
+				return new Hummingbird20MMDescriptorItemLabelProvider();
+			}
+		}
+		return null;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Class[] getAdapterList() {
-	    return new Class<?>[] { IItemLabelProvider.class };
+		return new Class<?>[] { IItemLabelProvider.class };
 	}
 }

@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import javax.xml.validation.Schema;
 
 import org.apache.xerces.impl.Constants;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -30,6 +29,7 @@ import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.xmi.XMIException;
 import org.eclipse.emf.ecore.xmi.XMLDefaultHandler;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
+import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLParserPool;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
@@ -39,30 +39,19 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * An extended {@link XMLLoad} implementation that provides support for on-the-fly validation of {@link XMLResource
- * resource}s against a {@link Schema schema} and on-the-fly migration of older {@link XMLResource resource}s to
- * instances of newer metamodel implementations using {@link IModelConverter model converter}s.
- * <p>
- * The {@link Schema schema} to be used for on-the-fly validation must be added as
- * <code>http://java.sun.com/xml/jaxp/properties/schemaSource</code> entry to the
- * {@link XMLResource#OPTION_PARSER_PROPERTIES parser properties option} of the affected {@link XMLResource resource}.
- * Example:
- * 
- * <pre>
- * Schema schema = ... // instance of javax.xml.validation.Schema
- * XMLResource resource = ... // instance of org.eclipse.emf.ecore.xmi.XMLResource
- * Map&lt;String, Object&gt; parserProperties = new HashMap&lt;String, Object&gt;();
- * parserProperties.put(Constants.JAXP_PROPERTY_PREFIX + Constants.SCHEMA_SOURCE, schema);
- * resource.getDefaultLoadOptions().put(XMLResource.OPTION_PARSER_PROPERTIES, parserProperties);
- * </pre>
- * 
- * </p>
+ * An extended {@link XMLLoad} implementation that provides support for on-the-fly migration of older
+ * {@link XMLResource resource}s to instances of newer metamodel implementations using {@link IModelConverter model
+ * converter}s.
  * <p>
  * The {@link IModelConverter model converter} to be used for on-the-fly resource migration must be contributed to the
  * <code>org.eclipse.sphinx.emf.modelConverters</code> extension point.
  * </p>
  */
 public class ExtendedXMLLoadImpl extends XMLLoadImpl {
+
+	protected SAXParser parser = null;
+	protected IModelConverter converter = null;
+	protected boolean didConvert = false;
 
 	/*
 	 * @see XMLLoadImpl#XMLLoadImpl(XMLHelper)
@@ -104,10 +93,6 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 		parserFeatures = parserFeatures == null ? new HashMap<String, Boolean>() : parserFeatures;
 		parserProperties = parserProperties == null ? new HashMap<String, Object>() : parserProperties;
 
-		// TODO Make sure that non-validating parsing is performed when a model converter is used
-		// parserFeatures.remove(Constants.SAX_FEATURE_PREFIX + Constants.VALIDATION_FEATURE, true);
-		// parserFeatures.remove(Constants.XERCES_FEATURE_PREFIX + Constants.SCHEMA_VALIDATION_FEATURE, true);
-
 		// Use custom extended error handler wrapper enabling concise distinction between well-formedness, validity and
 		// integrity problems
 		/*
@@ -122,31 +107,41 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 			resource.setEncoding(encoding);
 		}
 
-		SAXParser parser = null;
+		// If an applicable model converter is around let it migrate the document prior to parsing it
+		InputSource inputSource = null;
+		converter = ModelConverterRegistry.INSTANCE.getLoadConverter(resource, options);
+		didConvert = false;
+		if (converter != null) {
+			try {
+				inputSource = converter.convertLoad(resource, is, options);
+				didConvert = true;
+			} catch (Exception ex) {
+				XMIException exception = new XMIException(ex);
+				resource.getErrors().add(exception);
+			} finally {
+				converter.dispose();
+			}
+		}
+
+		if (inputSource == null) {
+			inputSource = new InputSource(is);
+		}
+		if (resource.getURI() != null) {
+			String resourceURI = resource.getURI().toString();
+			inputSource.setPublicId(resourceURI);
+			inputSource.setSystemId(resourceURI);
+			inputSource.setEncoding(encoding);
+		}
+
 		DefaultHandler handler = null;
 		try {
 			if (pool != null) {
-				// Remove 'http://java.sun.com/xml/jaxp/properties/schemaSource' property since it is only used for
-				// making a new parser and otherwise would cause a {@link SAXException} to be raised (see
-				// javax.xml.parsers.SAXParserFactory.setSchema(Schema) for details)
-				parserProperties.remove(Constants.JAXP_PROPERTY_PREFIX + Constants.SCHEMA_SOURCE);
-
 				// Use the pool to retrieve the parser
 				parser = pool.get(parserFeatures, parserProperties, Boolean.TRUE.equals(options.get(XMLResource.OPTION_USE_LEXICAL_HANDLER)));
 				handler = (DefaultHandler) pool.getDefaultHandler(resource, this, helper, options);
 			} else {
-				Object schemaSource = parserProperties.get(Constants.JAXP_PROPERTY_PREFIX + Constants.SCHEMA_SOURCE);
-				if (schemaSource instanceof Schema) {
-					parser = makeParser((Schema) schemaSource);
-				} else {
-					parser = makeParser();
-				}
-				// Remove 'http://java.sun.com/xml/jaxp/properties/schemaSource' property since it is has accomplished
-				// its mission now and otherwise would cause a {@link SAXException} to be raised (see
-				// javax.xml.parsers.SAXParserFactory.setSchema(Schema) for details)
-				parserProperties.remove(Constants.JAXP_PROPERTY_PREFIX + Constants.SCHEMA_SOURCE);
-
-				handler = makeDefaultHandler(parser);
+				parser = makeParser();
+				handler = makeDefaultHandler();
 
 				// Set features and properties
 				if (parserFeatures != null) {
@@ -159,30 +154,6 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 						parser.getXMLReader().setProperty(property, parserProperties.get(property));
 					}
 				}
-			}
-
-			// If an applicable model converter is around let it migrate the document prior to parsing it
-			InputSource inputSource = null;
-			IModelConverter applicableConverter = ModelConverterRegistry.INSTANCE.getLoadConverter(resource, options);
-			if (applicableConverter != null) {
-				try {
-					inputSource = applicableConverter.convertLoad(resource, is, options);
-				} catch (Exception ex) {
-					XMIException exception = new XMIException(ex);
-					resource.getErrors().add(exception);
-				} finally {
-					applicableConverter.dispose();
-				}
-			}
-
-			if (inputSource == null) {
-				inputSource = new InputSource(is);
-			}
-			if (resource.getURI() != null) {
-				String resourceURI = resource.getURI().toString();
-				inputSource.setPublicId(resourceURI);
-				inputSource.setSystemId(resourceURI);
-				inputSource.setEncoding(encoding);
 			}
 
 			// Set lexical handler
@@ -217,6 +188,8 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 			}
 
 			helper = null;
+			parser = null;
+			converter = null;
 			handleErrors();
 		}
 	}
@@ -226,36 +199,34 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 	 */
 	@Override
 	protected SAXParser makeParser() throws ParserConfigurationException, SAXException {
-		/*
-		 * !! Important Note !! We must override makeParser() - even if we wouldn't have any functional changes to apply
-		 * - in order to make sure that SAXParserFactory.newInstance() gets invoked from this plug-in which has a
-		 * dependency to the org.apache.xerces plug-in and all its classes on the classpath. Otherwise we wouldn't
-		 * obtain an instance of org.apache.xerces.jaxp.SAXParserFactoryImpl as intended but fall back to the default
-		 * implementation com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl.
-		 */
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setNamespaceAware(true);
+
+		// Validate document only if it has not been migrated before; in this case the validation is subject to the
+		// applicable model converter
+		factory.setValidating(!didConvert && isValidating());
+
 		return factory.newSAXParser();
 	}
 
 	/**
-	 * Makes a validating {@link SAXParser parser} using specified {@link Schema schema}.
+	 * Specifies if the {@link SAXParser parser} used by this {@link XMLLoad XML deserializer} will validate documents
+	 * as they are parsed.
+	 * <p>
+	 * This implementation returns <code>true</code> by default. Clients may override this method and adapt its behavior
+	 * according to their needs.
+	 * </p>
 	 * 
-	 * @param schema
-	 *            The {@link Schema schema} against which parsed XML documents are to be validated.
-	 * @return The newly created validating {@link SAXParser parser}.
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
+	 * @return <code>true</code> if the {@link SAXParser parser} used by this {@link XMLLoad XML deserializer} will
+	 *         validate documents as they are parsed; <code>false</code> otherwise.
 	 */
-	protected SAXParser makeParser(Schema schema) throws ParserConfigurationException, SAXException {
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		factory.setNamespaceAware(true);
-		factory.setSchema(schema);
-		return factory.newSAXParser();
+	protected boolean isValidating() {
+		return true;
 	}
 
-	protected DefaultHandler makeDefaultHandler(SAXParser parser) {
-		return makeDefaultHandler();
+	@Override
+	protected DefaultHandler makeDefaultHandler() {
+		return new ExtendedSAXXMLHandler(resource, helper, options);
 	}
 
 	/*

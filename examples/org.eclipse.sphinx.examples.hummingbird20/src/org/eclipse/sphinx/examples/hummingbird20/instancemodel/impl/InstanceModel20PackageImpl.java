@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.Common20PackageImpl;
@@ -111,6 +112,9 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 
 		isInited = true;
 
+		// Initialize simple dependencies
+		EcorePackage.eINSTANCE.eClass();
+
 		// Obtain or create and register interdependencies
 		Common20PackageImpl theCommon20Package = (Common20PackageImpl)(EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI) instanceof Common20PackageImpl ? EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI) : Common20Package.eINSTANCE);
 		TypeModel20PackageImpl theTypeModel20Package = (TypeModel20PackageImpl)(EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI) instanceof TypeModel20PackageImpl ? EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI) : TypeModel20Package.eINSTANCE);
@@ -159,6 +163,15 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 */
 	public EAttribute getApplication_Mixed() {
 		return (EAttribute)applicationEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getApplication_XSISchemaLocation() {
+		return (EReference)applicationEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -300,6 +313,7 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 		applicationEClass = createEClass(APPLICATION);
 		createEReference(applicationEClass, APPLICATION__COMPONENTS);
 		createEAttribute(applicationEClass, APPLICATION__MIXED);
+		createEReference(applicationEClass, APPLICATION__XSI_SCHEMA_LOCATION);
 
 		componentEClass = createEClass(COMPONENT);
 		createEReference(componentEClass, COMPONENT__TYPE);
@@ -342,6 +356,7 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 
 		// Obtain other dependent packages
 		Common20Package theCommon20Package = (Common20Package)EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI);
+		EcorePackage theEcorePackage = (EcorePackage)EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
 		TypeModel20Package theTypeModel20Package = (TypeModel20Package)EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI);
 
 		// Create type parameters
@@ -358,6 +373,7 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 		initEClass(applicationEClass, Application.class, "Application", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 		initEReference(getApplication_Components(), this.getComponent(), null, "components", null, 1, -1, Application.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(getApplication_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, Application.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getApplication_XSISchemaLocation(), theEcorePackage.getEStringToStringMapEntry(), null, "xSISchemaLocation", null, 0, -1, Application.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(componentEClass, Component.class, "Component", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 		initEReference(getComponent_Type(), theTypeModel20Package.getComponentType(), null, "type", null, 0, 1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
@@ -402,6 +418,12 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 		   new String[] {
 			 "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
 			 "kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
+		   });		
+		addAnnotation
+		  (getApplication_XSISchemaLocation(), 
+		   source, 
+		   new String[] {
+			 "name", "xsi:schemaLocation" //$NON-NLS-1$ //$NON-NLS-2$
 		   });
 	}
 

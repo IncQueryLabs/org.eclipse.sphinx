@@ -29,44 +29,42 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
  * <li>and each data type</li>
  * </ul>
  * <!-- end-user-doc -->
- * 
  * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Factory
  * @model kind="package"
  * @generated
  */
 public interface TypeModel20Package extends EPackage {
 	/**
-	 * The package name. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The package name.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	String eNAME = "typemodel"; //$NON-NLS-1$
 
 	/**
-	 * The package namespace URI. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The package namespace URI.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	String eNS_URI = "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel"; //$NON-NLS-1$
 
 	/**
-	 * The package namespace name. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The package namespace name.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	String eNS_PREFIX = "tm"; //$NON-NLS-1$
 
 	/**
-	 * The singleton instance of the package. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The singleton instance of the package.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	TypeModel20Package eINSTANCE = org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20PackageImpl.init();
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PlatformImpl
-	 * <em>Platform</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PlatformImpl <em>Platform</em>}' class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PlatformImpl
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20PackageImpl#getPlatform()
 	 * @generated
@@ -74,60 +72,68 @@ public interface TypeModel20Package extends EPackage {
 	int PLATFORM = 0;
 
 	/**
-	 * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
 	int PLATFORM__NAME = Common20Package.IDENTIFIABLE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Description</b></em>' containment reference. <!-- begin-user-doc --> <!--
+	 * The feature id for the '<em><b>Description</b></em>' containment reference.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 * @ordered
 	 */
 	int PLATFORM__DESCRIPTION = Common20Package.IDENTIFIABLE__DESCRIPTION;
 
 	/**
-	 * The feature id for the '<em><b>Component Types</b></em>' containment reference list. <!-- begin-user-doc --> <!--
+	 * The feature id for the '<em><b>Component Types</b></em>' containment reference list.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 * @ordered
 	 */
 	int PLATFORM__COMPONENT_TYPES = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Interfaces</b></em>' containment reference list. <!-- begin-user-doc --> <!--
+	 * The feature id for the '<em><b>Interfaces</b></em>' containment reference list.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 * @ordered
 	 */
 	int PLATFORM__INTERFACES = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 1;
 
 	/**
-	 * The feature id for the '<em><b>Mixed</b></em>' attribute list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The feature id for the '<em><b>Mixed</b></em>' attribute list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
 	int PLATFORM__MIXED = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 2;
 
 	/**
-	 * The number of structural features of the '<em>Platform</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The feature id for the '<em><b>XSI Schema Location</b></em>' map.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PLATFORM_FEATURE_COUNT = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 3;
+	int PLATFORM__XSI_SCHEMA_LOCATION = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 3;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ComponentTypeImpl
-	 * <em>Component Type</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The number of structural features of the '<em>Platform</em>' class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PLATFORM_FEATURE_COUNT = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 4;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ComponentTypeImpl <em>Component Type</em>}' class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ComponentTypeImpl
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20PackageImpl#getComponentType()
 	 * @generated
@@ -135,62 +141,61 @@ public interface TypeModel20Package extends EPackage {
 	int COMPONENT_TYPE = 1;
 
 	/**
-	 * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
 	int COMPONENT_TYPE__NAME = Common20Package.IDENTIFIABLE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Description</b></em>' containment reference. <!-- begin-user-doc --> <!--
+	 * The feature id for the '<em><b>Description</b></em>' containment reference.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 * @ordered
 	 */
 	int COMPONENT_TYPE__DESCRIPTION = Common20Package.IDENTIFIABLE__DESCRIPTION;
 
 	/**
-	 * The feature id for the '<em><b>Provided Interfaces</b></em>' reference list. <!-- begin-user-doc --> <!--
+	 * The feature id for the '<em><b>Provided Interfaces</b></em>' reference list.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 * @ordered
 	 */
 	int COMPONENT_TYPE__PROVIDED_INTERFACES = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!--
+	 * The feature id for the '<em><b>Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 * @ordered
 	 */
 	int COMPONENT_TYPE__PORTS = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 1;
 
 	/**
-	 * The feature id for the '<em><b>Parameters</b></em>' containment reference list. <!-- begin-user-doc --> <!--
+	 * The feature id for the '<em><b>Parameters</b></em>' containment reference list.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 * @ordered
 	 */
 	int COMPONENT_TYPE__PARAMETERS = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 2;
 
 	/**
-	 * The number of structural features of the '<em>Component Type</em>' class. <!-- begin-user-doc --> <!--
+	 * The number of structural features of the '<em>Component Type</em>' class.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 * @ordered
 	 */
 	int COMPONENT_TYPE_FEATURE_COUNT = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 3;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PortImpl
-	 * <em>Port</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PortImpl <em>Port</em>}' class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PortImpl
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20PackageImpl#getPort()
 	 * @generated
@@ -198,25 +203,25 @@ public interface TypeModel20Package extends EPackage {
 	int PORT = 2;
 
 	/**
-	 * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
 	int PORT__NAME = Common20Package.IDENTIFIABLE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Description</b></em>' containment reference. <!-- begin-user-doc --> <!--
+	 * The feature id for the '<em><b>Description</b></em>' containment reference.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 * @ordered
 	 */
 	int PORT__DESCRIPTION = Common20Package.IDENTIFIABLE__DESCRIPTION;
 
 	/**
-	 * The feature id for the '<em><b>Owner</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The feature id for the '<em><b>Owner</b></em>' container reference.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
@@ -250,17 +255,16 @@ public interface TypeModel20Package extends EPackage {
 	int PORT__MAX_PROVIDER_COUNT = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 3;
 
 	/**
-	 * The number of structural features of the '<em>Port</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The number of structural features of the '<em>Port</em>' class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
 	int PORT_FEATURE_COUNT = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 4;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.InterfaceImpl
-	 * <em>Interface</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.InterfaceImpl <em>Interface</em>}' class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.InterfaceImpl
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20PackageImpl#getInterface()
 	 * @generated
@@ -268,35 +272,35 @@ public interface TypeModel20Package extends EPackage {
 	int INTERFACE = 3;
 
 	/**
-	 * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
 	int INTERFACE__NAME = Common20Package.IDENTIFIABLE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Description</b></em>' containment reference. <!-- begin-user-doc --> <!--
+	 * The feature id for the '<em><b>Description</b></em>' containment reference.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 * @ordered
 	 */
 	int INTERFACE__DESCRIPTION = Common20Package.IDENTIFIABLE__DESCRIPTION;
 
 	/**
-	 * The feature id for the '<em><b>Providing Component Types</b></em>' reference list. <!-- begin-user-doc --> <!--
+	 * The feature id for the '<em><b>Providing Component Types</b></em>' reference list.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 * @ordered
 	 */
 	int INTERFACE__PROVIDING_COMPONENT_TYPES = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Requiring Ports</b></em>' reference list. <!-- begin-user-doc --> <!--
+	 * The feature id for the '<em><b>Requiring Ports</b></em>' reference list.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 * @ordered
 	 */
@@ -312,9 +316,8 @@ public interface TypeModel20Package extends EPackage {
 	int INTERFACE_FEATURE_COUNT = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 2;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ParameterImpl
-	 * <em>Parameter</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ParameterImpl <em>Parameter</em>}' class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ParameterImpl
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20PackageImpl#getParameter()
 	 * @generated
@@ -322,33 +325,33 @@ public interface TypeModel20Package extends EPackage {
 	int PARAMETER = 4;
 
 	/**
-	 * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
 	int PARAMETER__NAME = Common20Package.IDENTIFIABLE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Description</b></em>' containment reference. <!-- begin-user-doc --> <!--
+	 * The feature id for the '<em><b>Description</b></em>' containment reference.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 * @ordered
 	 */
 	int PARAMETER__DESCRIPTION = Common20Package.IDENTIFIABLE__DESCRIPTION;
 
 	/**
-	 * The feature id for the '<em><b>Data Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The feature id for the '<em><b>Data Type</b></em>' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
 	int PARAMETER__DATA_TYPE = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Optional</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The feature id for the '<em><b>Optional</b></em>' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
@@ -364,9 +367,8 @@ public interface TypeModel20Package extends EPackage {
 	int PARAMETER_FEATURE_COUNT = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 2;
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform
-	 * <em>Platform</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform <em>Platform</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Platform</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform
 	 * @generated
@@ -374,10 +376,8 @@ public interface TypeModel20Package extends EPackage {
 	EClass getPlatform();
 
 	/**
-	 * Returns the meta object for the containment reference list '
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform#getComponentTypes <em>Component Types</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform#getComponentTypes <em>Component Types</em>}'.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @return the meta object for the containment reference list '<em>Component Types</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform#getComponentTypes()
 	 * @see #getPlatform()
@@ -410,9 +410,19 @@ public interface TypeModel20Package extends EPackage {
 	EAttribute getPlatform_Mixed();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType
-	 * <em>Component Type</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the meta object for the map '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform#getXSISchemaLocation <em>XSI Schema Location</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the map '<em>XSI Schema Location</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform#getXSISchemaLocation()
+	 * @see #getPlatform()
+	 * @generated
+	 */
+	EReference getPlatform_XSISchemaLocation();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType <em>Component Type</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Component Type</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType
 	 * @generated
@@ -420,10 +430,8 @@ public interface TypeModel20Package extends EPackage {
 	EClass getComponentType();
 
 	/**
-	 * Returns the meta object for the reference list '
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType#getProvidedInterfaces
-	 * <em>Provided Interfaces</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the meta object for the reference list '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType#getProvidedInterfaces <em>Provided Interfaces</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the meta object for the reference list '<em>Provided Interfaces</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType#getProvidedInterfaces()
 	 * @see #getComponentType()
@@ -444,10 +452,8 @@ public interface TypeModel20Package extends EPackage {
 	EReference getComponentType_Ports();
 
 	/**
-	 * Returns the meta object for the containment reference list '
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType#getParameters <em>Parameters</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType#getParameters <em>Parameters</em>}'.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @return the meta object for the containment reference list '<em>Parameters</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType#getParameters()
 	 * @see #getComponentType()
@@ -456,9 +462,8 @@ public interface TypeModel20Package extends EPackage {
 	EReference getComponentType_Parameters();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port <em>Port</em>}
-	 * '. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port <em>Port</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Port</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Port
 	 * @generated
@@ -466,10 +471,9 @@ public interface TypeModel20Package extends EPackage {
 	EClass getPort();
 
 	/**
-	 * Returns the meta object for the container reference '
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getOwner <em>Owner</em>}'. <!-- begin-user-doc
+	 * Returns the meta object for the container reference '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getOwner <em>Owner</em>}'.
+	 * <!-- begin-user-doc
 	 * --> <!-- end-user-doc -->
-	 * 
 	 * @return the meta object for the container reference '<em>Owner</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getOwner()
 	 * @see #getPort()
@@ -478,10 +482,8 @@ public interface TypeModel20Package extends EPackage {
 	EReference getPort_Owner();
 
 	/**
-	 * Returns the meta object for the reference '
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getRequiredInterface <em>Required Interface</em>}
-	 * '. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the meta object for the reference '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getRequiredInterface <em>Required Interface</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the meta object for the reference '<em>Required Interface</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getRequiredInterface()
 	 * @see #getPort()
@@ -490,10 +492,8 @@ public interface TypeModel20Package extends EPackage {
 	EReference getPort_RequiredInterface();
 
 	/**
-	 * Returns the meta object for the attribute '
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMinProviderCount <em>Min Provider Count</em>}
-	 * '. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the meta object for the attribute '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMinProviderCount <em>Min Provider Count</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Min Provider Count</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMinProviderCount()
 	 * @see #getPort()
@@ -502,10 +502,8 @@ public interface TypeModel20Package extends EPackage {
 	EAttribute getPort_MinProviderCount();
 
 	/**
-	 * Returns the meta object for the attribute '
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMaxProviderCount <em>Max Provider Count</em>}
-	 * '. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the meta object for the attribute '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMaxProviderCount <em>Max Provider Count</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Max Provider Count</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMaxProviderCount()
 	 * @see #getPort()
@@ -514,9 +512,8 @@ public interface TypeModel20Package extends EPackage {
 	EAttribute getPort_MaxProviderCount();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface
-	 * <em>Interface</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface <em>Interface</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Interface</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface
 	 * @generated
@@ -524,10 +521,8 @@ public interface TypeModel20Package extends EPackage {
 	EClass getInterface();
 
 	/**
-	 * Returns the meta object for the reference list '
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface#getProvidingComponentTypes
-	 * <em>Providing Component Types</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the meta object for the reference list '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface#getProvidingComponentTypes <em>Providing Component Types</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the meta object for the reference list '<em>Providing Component Types</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface#getProvidingComponentTypes()
 	 * @see #getInterface()
@@ -536,10 +531,8 @@ public interface TypeModel20Package extends EPackage {
 	EReference getInterface_ProvidingComponentTypes();
 
 	/**
-	 * Returns the meta object for the reference list '
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface#getRequiringPorts <em>Requiring Ports</em>}
-	 * '. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the meta object for the reference list '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface#getRequiringPorts <em>Requiring Ports</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the meta object for the reference list '<em>Requiring Ports</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface#getRequiringPorts()
 	 * @see #getInterface()
@@ -548,9 +541,8 @@ public interface TypeModel20Package extends EPackage {
 	EReference getInterface_RequiringPorts();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter
-	 * <em>Parameter</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter <em>Parameter</em>}'.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Parameter</em>'.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter
 	 * @generated
@@ -582,8 +574,8 @@ public interface TypeModel20Package extends EPackage {
 	EAttribute getParameter_Optional();
 
 	/**
-	 * Returns the factory that creates the instances of the model. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the factory that creates the instances of the model.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the factory that creates the instances of the model.
 	 * @generated
 	 */
@@ -598,7 +590,6 @@ public interface TypeModel20Package extends EPackage {
 	 * <li>and each data type</li>
 	 * </ul>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	interface Literals {
@@ -630,18 +621,24 @@ public interface TypeModel20Package extends EPackage {
 		EReference PLATFORM__INTERFACES = eINSTANCE.getPlatform_Interfaces();
 
 		/**
-		 * The meta object literal for the '<em><b>Mixed</b></em>' attribute list feature. <!-- begin-user-doc --> <!--
+		 * The meta object literal for the '<em><b>Mixed</b></em>' attribute list feature.
+		 * <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
-		 * 
 		 * @generated
 		 */
 		EAttribute PLATFORM__MIXED = eINSTANCE.getPlatform_Mixed();
 
 		/**
-		 * The meta object literal for the '
-		 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ComponentTypeImpl <em>Component Type</em>}'
-		 * class. <!-- begin-user-doc --> <!-- end-user-doc -->
-		 * 
+		 * The meta object literal for the '<em><b>XSI Schema Location</b></em>' map feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference PLATFORM__XSI_SCHEMA_LOCATION = eINSTANCE.getPlatform_XSISchemaLocation();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ComponentTypeImpl <em>Component Type</em>}' class.
+		 * <!-- begin-user-doc --> <!-- end-user-doc -->
 		 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ComponentTypeImpl
 		 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20PackageImpl#getComponentType()
 		 * @generated
@@ -673,9 +670,8 @@ public interface TypeModel20Package extends EPackage {
 		EReference COMPONENT_TYPE__PARAMETERS = eINSTANCE.getComponentType_Parameters();
 
 		/**
-		 * The meta object literal for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PortImpl
-		 * <em>Port</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-		 * 
+		 * The meta object literal for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PortImpl <em>Port</em>}' class.
+		 * <!-- begin-user-doc --> <!-- end-user-doc -->
 		 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PortImpl
 		 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20PackageImpl#getPort()
 		 * @generated
@@ -683,42 +679,40 @@ public interface TypeModel20Package extends EPackage {
 		EClass PORT = eINSTANCE.getPort();
 
 		/**
-		 * The meta object literal for the '<em><b>Owner</b></em>' container reference feature. <!-- begin-user-doc -->
+		 * The meta object literal for the '<em><b>Owner</b></em>' container reference feature.
+		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * 
 		 * @generated
 		 */
 		EReference PORT__OWNER = eINSTANCE.getPort_Owner();
 
 		/**
-		 * The meta object literal for the '<em><b>Required Interface</b></em>' reference feature. <!-- begin-user-doc
+		 * The meta object literal for the '<em><b>Required Interface</b></em>' reference feature.
+		 * <!-- begin-user-doc
 		 * --> <!-- end-user-doc -->
-		 * 
 		 * @generated
 		 */
 		EReference PORT__REQUIRED_INTERFACE = eINSTANCE.getPort_RequiredInterface();
 
 		/**
-		 * The meta object literal for the '<em><b>Min Provider Count</b></em>' attribute feature. <!-- begin-user-doc
+		 * The meta object literal for the '<em><b>Min Provider Count</b></em>' attribute feature.
+		 * <!-- begin-user-doc
 		 * --> <!-- end-user-doc -->
-		 * 
 		 * @generated
 		 */
 		EAttribute PORT__MIN_PROVIDER_COUNT = eINSTANCE.getPort_MinProviderCount();
 
 		/**
-		 * The meta object literal for the '<em><b>Max Provider Count</b></em>' attribute feature. <!-- begin-user-doc
+		 * The meta object literal for the '<em><b>Max Provider Count</b></em>' attribute feature.
+		 * <!-- begin-user-doc
 		 * --> <!-- end-user-doc -->
-		 * 
 		 * @generated
 		 */
 		EAttribute PORT__MAX_PROVIDER_COUNT = eINSTANCE.getPort_MaxProviderCount();
 
 		/**
-		 * The meta object literal for the '
-		 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.InterfaceImpl <em>Interface</em>}' class.
+		 * The meta object literal for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.InterfaceImpl <em>Interface</em>}' class.
 		 * <!-- begin-user-doc --> <!-- end-user-doc -->
-		 * 
 		 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.InterfaceImpl
 		 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20PackageImpl#getInterface()
 		 * @generated
@@ -734,18 +728,16 @@ public interface TypeModel20Package extends EPackage {
 		EReference INTERFACE__PROVIDING_COMPONENT_TYPES = eINSTANCE.getInterface_ProvidingComponentTypes();
 
 		/**
-		 * The meta object literal for the '<em><b>Requiring Ports</b></em>' reference list feature. <!-- begin-user-doc
+		 * The meta object literal for the '<em><b>Requiring Ports</b></em>' reference list feature.
+		 * <!-- begin-user-doc
 		 * --> <!-- end-user-doc -->
-		 * 
 		 * @generated
 		 */
 		EReference INTERFACE__REQUIRING_PORTS = eINSTANCE.getInterface_RequiringPorts();
 
 		/**
-		 * The meta object literal for the '
-		 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ParameterImpl <em>Parameter</em>}' class.
+		 * The meta object literal for the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ParameterImpl <em>Parameter</em>}' class.
 		 * <!-- begin-user-doc --> <!-- end-user-doc -->
-		 * 
 		 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ParameterImpl
 		 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20PackageImpl#getParameter()
 		 * @generated
@@ -753,17 +745,17 @@ public interface TypeModel20Package extends EPackage {
 		EClass PARAMETER = eINSTANCE.getParameter();
 
 		/**
-		 * The meta object literal for the '<em><b>Data Type</b></em>' attribute feature. <!-- begin-user-doc --> <!--
+		 * The meta object literal for the '<em><b>Data Type</b></em>' attribute feature.
+		 * <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
-		 * 
 		 * @generated
 		 */
 		EAttribute PARAMETER__DATA_TYPE = eINSTANCE.getParameter_DataType();
 
 		/**
-		 * The meta object literal for the '<em><b>Optional</b></em>' attribute feature. <!-- begin-user-doc --> <!--
+		 * The meta object literal for the '<em><b>Optional</b></em>' attribute feature.
+		 * <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
-		 * 
 		 * @generated
 		 */
 		EAttribute PARAMETER__OPTIONAL = eINSTANCE.getParameter_Optional();

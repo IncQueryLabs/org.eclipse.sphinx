@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.emf.internal.resource;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -516,7 +515,7 @@ public class ResourceProblemMarkerService {
 			XMIException xmiException = (XMIException) diagnostic;
 
 			// Handle XML well-formedness exceptions
-			if (xmiException.getCause() instanceof XMLWellformednessException || xmiException.getCause() instanceof IOException) {
+			if (xmiException.getCause() instanceof XMLWellformednessException) {
 				String format = extendedResource != null ? (String) extendedResource.getProblemHandlingOptions().get(
 						ExtendedResource.OPTION_XML_WELLFORMEDNESS_PROBLEM_FORMAT_STRING) : null;
 				attributes.put(IMarker.MESSAGE, createProblemMarkerMessage(format, xmiException));
@@ -622,7 +621,7 @@ public class ResourceProblemMarkerService {
 		Throwable cause = exception.getCause();
 		if (cause != null) {
 			String causeMsg = cause.getLocalizedMessage();
-			if (causeMsg != null && causeMsg.length() > 0 && !causeMsg.equals(msg)) {
+			if (causeMsg != null && causeMsg.length() > 0 && !msg.toString().contains(causeMsg)) {
 				msg.append(": "); //$NON-NLS-1$
 				msg.append(causeMsg);
 			}
@@ -633,17 +632,18 @@ public class ResourceProblemMarkerService {
 	protected String createProblemMarkerMessage(String format, Exception exception) {
 		Assert.isNotNull(exception);
 
+		String msg = createProblemMarkerMessage(exception);
 		if (format == null) {
-			return createProblemMarkerMessage(exception);
+			return msg;
 		}
 
 		if (format.contains("{0}")) { //$NON-NLS-1$
-			return NLS.bind(format, exception.getLocalizedMessage());
+			return NLS.bind(format, msg);
 		} else {
 			if (!format.endsWith(" ")) { //$NON-NLS-1$
 				format.concat(" "); //$NON-NLS-1$
 			}
-			return format.concat(exception.getLocalizedMessage());
+			return format.concat(msg);
 		}
 	}
 }

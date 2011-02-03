@@ -17,10 +17,9 @@ package org.eclipse.sphinx.examples.hummingbird20.edit;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 
-public class Hummingbird20MMDescriptorItemLabelProvider implements
-		IItemLabelProvider {
+public class Hummingbird20MMDescriptorItemLabelProvider implements IItemLabelProvider {
 
-	private static String IMG_OVR_HUMMINGBIRD20 = "full/ovr16/hummingbird20_ovr";
+	private static String IMG_OVR_HUMMINGBIRD20 = "full/ovr16/hummingbird20_ovr"; //$NON-NLS-1$
 
 	public Object getImage(Object object) {
 		if (object instanceof Hummingbird20MMDescriptor) {

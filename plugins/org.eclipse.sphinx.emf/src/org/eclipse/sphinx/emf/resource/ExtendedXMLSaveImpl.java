@@ -19,7 +19,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +27,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -39,11 +38,14 @@ import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.XMLSave;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.eclipse.emf.ecore.xml.namespace.XMLNamespacePackage;
 import org.eclipse.emf.ecore.xml.type.ProcessingInstruction;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.sphinx.emf.Activator;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.ReflectUtil;
 import org.w3c.dom.Element;
@@ -63,6 +65,8 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 	 * The save options.
 	 */
 	protected Map<?, ?> options;
+
+	protected IModelConverter converter;
 
 	/*
 	 * @see XMLSaveImpl#XMLSaveImpl(XMLHelper)
@@ -111,27 +115,28 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 		}
 		xmlResource = resource;
 		init(resource, options);
+		converter = ModelConverterRegistry.INSTANCE.getSaveConverter(xmlResource, options);
+
 		@SuppressWarnings("unchecked")
 		List<? extends EObject> contents = roots = (List<? extends EObject>) options.get(XMLResource.OPTION_ROOT_OBJECTS);
 		if (contents == null) {
 			contents = resource.getContents();
 		}
-		// FIXME File bug to EMF: NPE is raised when contents is empty
+		// TODO File bug to EMF: NPE is raised when contents is empty
 		if (contents.size() > 0) {
 			traverse(contents);
 		}
 
 		// If an applicable model converter is around let it migrate and save the document
 		boolean didConvert = false;
-		IModelConverter applicableConverter = ModelConverterRegistry.INSTANCE.getSaveConverter(xmlResource, options);
-		if (applicableConverter != null) {
+		if (converter != null) {
 			try {
-				applicableConverter.convertSave(doc, flushThreshold, xmlResource.getURI(), outputStream, encoding, helper, options);
+				converter.convertSave(doc, flushThreshold, xmlResource.getURI(), outputStream, encoding, helper, options);
 				didConvert = true;
 			} catch (Exception ex) {
 				PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 			} finally {
-				applicableConverter.dispose();
+				converter.dispose();
 			}
 		}
 
@@ -158,14 +163,11 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 		super.traverse(contents);
 
 		// If an applicable model converter is around let it complement the root element attributes
-		IModelConverter applicableConverter = ModelConverterRegistry.INSTANCE.getSaveConverter(xmlResource, options);
-		if (applicableConverter != null) {
+		if (converter != null) {
 			try {
-				applicableConverter.addExtraAttributesToSavedRootElement(doc, options);
+				converter.addExtraAttributesToSavedRootElement(doc, options);
 			} catch (Exception ex) {
 				PlatformLogUtil.logAsError(Activator.getDefault(), ex);
-			} finally {
-				applicableConverter.dispose();
 			}
 		}
 	}
@@ -185,33 +187,87 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 		StringBuffer xsiSchemaLocation = buffer;
 		String xsiNoNamespaceSchemaLocation = null;
 		if (declareSchemaLocation) {
-			Map<String, String> handledBySchemaLocationMap = Collections.emptyMap();
+			Map<String, String> handledBySchemaLocationMap = new HashMap<String, String>();
+			@SuppressWarnings("unchecked")
+			Map<String, String> schemaLocationCatalog = (Map<String, String>) options.get(ExtendedResource.OPTION_SCHEMA_LOCATION_CATALOG);
 
 			if (extendedMetaData != null) {
 				Resource resource = helper.getResource();
 				if (resource != null && resource.getContents().size() >= 1) {
-					EObject root = getSchemaLocationRoot(resource.getContents().get(0));
-					EClass eClass = root.eClass();
+					EObject schemaLocationRoot = getSchemaLocationRoot(resource.getContents().get(0));
+					declareXSI = true;
 
-					EReference xsiSchemaLocationMapFeature = extendedMetaData.getXSISchemaLocationMapFeature(eClass);
+					EReference xsiSchemaLocationMapFeature = extendedMetaData.getXSISchemaLocationMapFeature(schemaLocationRoot.eClass());
 					if (xsiSchemaLocationMapFeature != null) {
 						@SuppressWarnings("unchecked")
-						EMap<String, String> xsiSchemaLocationMap = (EMap<String, String>) root.eGet(xsiSchemaLocationMapFeature);
+						EMap<String, String> xsiSchemaLocationMap = (EMap<String, String>) schemaLocationRoot.eGet(xsiSchemaLocationMapFeature);
 						if (!xsiSchemaLocationMap.isEmpty()) {
-							handledBySchemaLocationMap = xsiSchemaLocationMap.map();
-							declareXSI = true;
+							// Write schema location value string from recorded schema location entries
+							handledBySchemaLocationMap = new HashMap<String, String>(xsiSchemaLocationMap.map());
 							for (Map.Entry<String, String> entry : xsiSchemaLocationMap.entrySet()) {
 								String namespace = entry.getKey();
-								URI location = URI.createURI(entry.getValue());
+								String location = entry.getValue();
+								URI locationURI = URI.createURI(location);
 								if (namespace == null) {
-									xsiNoNamespaceSchemaLocation = helper.deresolve(location).toString();
+									xsiNoNamespaceSchemaLocation = helper.deresolve(locationURI).toString();
 								} else {
-									if (xsiSchemaLocation.length() > 0) {
-										xsiSchemaLocation.append(' ');
+									// Need to adjust current schema namespace according to applicable model converter?
+									if (converter != null) {
+										String mmBaseNsURI = converter.getMetaModelVersionDescriptor().getNamespace();
+										String resourceBaseNsURI = converter.getResourceVersionDescriptor().getNamespace();
+										if (mmBaseNsURI != null && resourceBaseNsURI != null && namespace.startsWith(mmBaseNsURI)) {
+											// Substitute metamodel version in current schema namespace with
+											// resource version of applicable model converter
+											namespace = namespace.replace(mmBaseNsURI, resourceBaseNsURI);
+
+											// Retrieve schema location corresponding to adjusted schema namespace
+											// from schema location catalog
+											locationURI = null;
+											if (schemaLocationCatalog != null) {
+												location = schemaLocationCatalog.get(namespace);
+												if (location != null) {
+													locationURI = URI.createURI(location);
+												} else {
+													PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException(
+															"Schema location catalog entry for namespace '" + namespace + "' is missing")); //$NON-NLS-1$ //$NON-NLS-2$
+												}
+											} else {
+												PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException(
+														"Schema location catalog is missing")); //$NON-NLS-1$
+											}
+										}
+									} else {
+										// Current schema namespace corresponding to a metamodel version that is an
+										// older version of the metamodel behind schema location root?
+										IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(schemaLocationRoot);
+										if (mmDescriptor != null) {
+											boolean compatible = false;
+											for (java.net.URI compatibleNsURI : mmDescriptor.getCompatibleNamespaceURIs()) {
+												if (namespace.startsWith(compatibleNsURI.toString())) {
+													compatible = true;
+													break;
+												}
+											}
+											if (compatible) {
+												// Ignore corresponding recorded schema location entry; as no model
+												// converter is available the model will be serialized using the most
+												// recent metamodel namespace; we therefore must not write a schema
+												// location entry for the original old namespace but the most recent
+												// one; this is done below anyway, so we can simply skip the rest right
+												// here
+												continue;
+											}
+										}
 									}
-									xsiSchemaLocation.append(namespace);
-									xsiSchemaLocation.append(' ');
-									xsiSchemaLocation.append(helper.deresolve(location).toString());
+
+									if (locationURI != null) {
+										if (xsiSchemaLocation.length() > 0) {
+											xsiSchemaLocation.append(' ');
+										}
+										xsiSchemaLocation.append(namespace);
+										xsiSchemaLocation.append(' ');
+										xsiSchemaLocation.append(helper.deresolve(locationURI).toString());
+									}
 								}
 							}
 						}
@@ -219,6 +275,7 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 				}
 			}
 
+			// Complete schema location value string with calculated schema location entries
 			for (EPackage ePackage : packages) {
 				String javaImplementationLocation = null;
 				if (declareSchemaLocationImplementation) {
@@ -247,26 +304,58 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 				} else {
 					Resource resource = ePackage.eResource();
 					if (resource != null) {
-						String nsURI = extendedMetaData == null ? ePackage.getNsURI() : extendedMetaData.getNamespace(ePackage);
-						if (!handledBySchemaLocationMap.containsKey(nsURI)) {
-							URI uri = resource.getURI();
-							if (javaImplementationLocation != null || (uri == null ? nsURI != null : !uri.toString().equals(nsURI))) {
-								declareXSI = true;
-								if (xsiSchemaLocation.length() > 0) {
-									xsiSchemaLocation.append(' ');
-								}
-								xsiSchemaLocation.append(nsURI);
-								xsiSchemaLocation.append(' ');
+						String namespace = extendedMetaData == null ? ePackage.getNsURI() : extendedMetaData.getNamespace(ePackage);
 
-								String location = javaImplementationLocation == null ? helper.getHREF(ePackage) : javaImplementationLocation;
-								location = convertURI(location);
-								if (location.endsWith("#/")) { //$NON-NLS-1$
-									location = location.substring(0, location.length() - 2);
-									if (uri != null && uri.hasFragment()) {
-										location += "#" + uri.fragment(); //$NON-NLS-1$
+						// Need to adjust schema namespace according to applicable model converter?
+						if (converter != null) {
+							String mmBaseNsURI = converter.getMetaModelVersionDescriptor().getNamespace();
+							String resourceBaseNsURI = converter.getResourceVersionDescriptor().getNamespace();
+							if (mmBaseNsURI != null && resourceBaseNsURI != null && namespace.startsWith(mmBaseNsURI)) {
+								// Substitute metamodel version in schema namespace with resource
+								// version of applicable model converter
+								namespace = namespace.replace(mmBaseNsURI, resourceBaseNsURI);
+							}
+						}
+
+						if (!handledBySchemaLocationMap.containsKey(namespace)) {
+							URI uri = resource.getURI();
+							if (javaImplementationLocation != null || (uri == null ? namespace != null : !uri.toString().equals(namespace))) {
+								declareXSI = true;
+
+								String location = null;
+								if (javaImplementationLocation != null) {
+									location = javaImplementationLocation;
+								} else if (schemaLocationCatalog != null) {
+									// Retrieve schema location corresponding to schema namespace from schema location
+									// catalog
+									location = schemaLocationCatalog.get(namespace);
+									if (location == null) {
+										PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException(
+												"Schema location catalog entry for namespace '" + namespace + "' is missing")); //$NON-NLS-1$ //$NON-NLS-2$
 									}
+								} else {
+									location = helper.getHREF(ePackage);
 								}
-								xsiSchemaLocation.append(location);
+
+								if (location != null) {
+									location = convertURI(location);
+									if (location.endsWith("#/")) { //$NON-NLS-1$
+										location = location.substring(0, location.length() - 2);
+										if (uri != null && uri.hasFragment()) {
+											location += "#" + uri.fragment(); //$NON-NLS-1$
+										}
+									}
+
+									if (xsiSchemaLocation.length() > 0) {
+										xsiSchemaLocation.append(' ');
+									}
+									xsiSchemaLocation.append(namespace);
+									xsiSchemaLocation.append(' ');
+									xsiSchemaLocation.append(location);
+								}
+
+								// Avoid duplicate schema location entries
+								handledBySchemaLocationMap.put(namespace, location);
 							}
 						}
 					}
@@ -282,22 +371,6 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 			}
 		}
 
-		// If an applicable model converter is around use its resource version namespace for substituting the metamodel
-		// version namespace
-		String mmNsURIBase = null;
-		String resourceNsURIBase = null;
-		IModelConverter applicableConverter = ModelConverterRegistry.INSTANCE.getSaveConverter(xmlResource, options);
-		if (applicableConverter != null) {
-			try {
-				mmNsURIBase = applicableConverter.getMetaModelVersionDescriptor().getNamespace();
-				resourceNsURIBase = applicableConverter.getResourceVersionDescriptor().getNamespace();
-			} catch (Exception ex) {
-				PlatformLogUtil.logAsError(Activator.getDefault(), ex);
-			} finally {
-				applicableConverter.dispose();
-			}
-		}
-
 		for (EPackage package1 : packages) {
 			EPackage ePackage = package1;
 			if (ePackage != noNamespacePackage && ePackage != XMLNamespacePackage.eINSTANCE
@@ -307,11 +380,15 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 					nsURI = XMLResource.XML_SCHEMA_URI;
 				}
 				if (nsURI != null && !isDuplicateURI(nsURI)) {
-
-					// Substitute metamodel version in EPackage namespace with resource version of applicable model
-					// converter
-					if (mmNsURIBase != null && resourceNsURIBase != null && nsURI.startsWith(mmNsURIBase)) {
-						nsURI = nsURI.replace(mmNsURIBase, resourceNsURIBase);
+					// Need to adjust EPackage namespace according to applicable model converter?
+					if (converter != null) {
+						String mmBaseNsURI = converter.getMetaModelVersionDescriptor().getNamespace();
+						String resourceBaseNsURI = converter.getResourceVersionDescriptor().getNamespace();
+						if (mmBaseNsURI != null && resourceBaseNsURI != null && nsURI.startsWith(mmBaseNsURI)) {
+							// Substitute metamodel version in EPackage namespace with resource version of applicable
+							// model converter
+							nsURI = nsURI.replace(mmBaseNsURI, resourceBaseNsURI);
+						}
 					}
 
 					List<String> nsPrefixes = helper.getPrefixes(ePackage);

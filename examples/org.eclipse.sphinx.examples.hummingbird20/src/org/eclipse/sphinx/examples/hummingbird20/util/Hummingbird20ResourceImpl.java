@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.util;
 
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
@@ -21,12 +22,12 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLSave;
-import org.eclipse.emf.ecore.xmi.impl.SAXXMIHandler;
 import org.eclipse.emf.ecore.xmi.impl.XMIHelperImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapter;
 import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
+import org.eclipse.sphinx.emf.resource.ExtendedSAXXMIHandler;
 import org.eclipse.sphinx.emf.resource.ExtendedXMILoadImpl;
 import org.eclipse.sphinx.emf.resource.ExtendedXMISaveImpl;
 import org.xml.sax.helpers.DefaultHandler;
@@ -76,48 +77,12 @@ public class Hummingbird20ResourceImpl extends XMIResourceImpl {
 	 */
 	@Override
 	protected XMLLoad createXMLLoad() {
-		// Use extended XMLLoad implementation for XMI to include support for on-the-fly schema validation and resource
-		// migration
+		// Use extended XMILoad implementation for XMI to include support for on-the-fly resource migration,
+		// resource-centric problem handling, enhanced entity resolution and ignorable whitespace suppression
 		return new ExtendedXMILoadImpl(createXMLHelper()) {
 			@Override
 			protected DefaultHandler makeDefaultHandler() {
-				// Create custom default handler to prevent whitespace from being captured in mixed attributes
-				return new SAXXMIHandler(resource, helper, options) {
-					/*
-					 * @see org.eclipse.emf.ecore.xmi.impl.XMLHandler#characters(char[], int, int)
-					 */
-					@Override
-					public void characters(char[] ch, int start, int length) {
-						if (!isIgnorableWhitespace(ch, start, length) || text != null && text.length() > 0) {
-							super.characters(ch, start, length);
-						}
-					}
-
-					/**
-					 * Returns if the given chunk of character data consists of ignorable whitespace.
-					 * <p>
-					 * Can be used for filtering character data reported to
-					 * {@link SAXXMLHandler#characters(char[], int, int)}.
-					 * </p>
-					 * 
-					 * @param ch
-					 *            The characters from the XML document.
-					 * @param start
-					 *            The start position in the array.
-					 * @param length
-					 *            The number of characters to read from the array.
-					 * @return <code>true</code> if given chunk of character data consists of ignorable whitespace,
-					 *         <code>false</code> otherwise.
-					 */
-					protected boolean isIgnorableWhitespace(char[] ch, int start, int length) {
-						for (int i = start; i < start + length; i++) {
-							if (ch[i] != '\n' && ch[i] != '\r' && ch[i] != '\t' && ch[i] != ' ') {
-								return false;
-							}
-						}
-						return true;
-					}
-				};
+				return new ExtendedSAXXMIHandler(resource, helper, options);
 			}
 		};
 	}
@@ -127,7 +92,8 @@ public class Hummingbird20ResourceImpl extends XMIResourceImpl {
 	 */
 	@Override
 	protected XMLSave createXMLSave() {
-		// Use extended XMLSave implementation for XMI to include support for on-the-fly resource migration
+		// Use extended XMISave implementation for XMI to include support for on-the-fly resource migration and enhanced
+		// schema location support
 		return new ExtendedXMISaveImpl(createXMLHelper());
 	}
 

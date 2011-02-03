@@ -17,6 +17,8 @@ package org.eclipse.sphinx.examples.hummingbird20.edit;
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.util.ResourceLocator;
 
+import org.eclipse.emf.ecore.provider.EcoreEditPlugin;
+
 /**
  * This is the central singleton for the Hummingbird20 edit plugin.
  * <!-- begin-user-doc -->
@@ -49,6 +51,7 @@ public final class Activator extends EMFPlugin {
 	public Activator() {
 		super
 		  (new ResourceLocator [] {
+		     EcoreEditPlugin.INSTANCE,
 		   });
 	}
 

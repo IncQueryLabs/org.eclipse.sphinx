@@ -95,7 +95,8 @@ public class EObjectUtilTest extends AbstractTestCase {
 				EObjectUtil.isAssignableFrom(hb20ModelRoot.eClass(), hb20Component.eClass().getESuperTypes().get(0).getName()));
 		// --------
 		assertFalse(
-				"test " + hb20Component.eClass().getName() + " is assignable from " + org.eclipse.sphinx.examples.hummingbird10.Component.class.getName(),
+				"test " + hb20Component.eClass().getName() + " is assignable from "
+						+ org.eclipse.sphinx.examples.hummingbird10.Component.class.getName(),
 				EObjectUtil.isAssignableFrom(hb20Component.eClass(), org.eclipse.sphinx.examples.hummingbird10.Component.class.getName()));
 
 		assertFalse("test " + hb20ModelRoot.eClass().getName() + " is assignable from " + hb10Component.eClass().getName(),
@@ -106,18 +107,16 @@ public class EObjectUtilTest extends AbstractTestCase {
 
 		// ==================================
 
-		assertTrue(
-				"test " + hb10ModelRoot.eClass().getName() + " is not assignable from "
-						+ org.eclipse.sphinx.examples.hummingbird10.Application.class.getName(),
+		assertTrue("test " + hb10ModelRoot.eClass().getName() + " is not assignable from "
+				+ org.eclipse.sphinx.examples.hummingbird10.Application.class.getName(),
 				EObjectUtil.isAssignableFrom(hb10ModelRoot.eClass(), org.eclipse.sphinx.examples.hummingbird10.Application.class.getName()));
 
 		assertTrue("test " + hb10ModelRoot.eClass().getName() + " is not assignable from " + EObject.class.getName(),
 				EObjectUtil.isAssignableFrom(hb10ModelRoot.eClass(), EObject.class.getName()));
 
 		// --------------
-		assertTrue(
-				"test " + hb10Component.eClass().getName() + " is not assignable from "
-						+ org.eclipse.sphinx.examples.hummingbird10.Component.class.getName(),
+		assertTrue("test " + hb10Component.eClass().getName() + " is not assignable from "
+				+ org.eclipse.sphinx.examples.hummingbird10.Component.class.getName(),
 				EObjectUtil.isAssignableFrom(hb10Component.eClass(), org.eclipse.sphinx.examples.hummingbird10.Component.class.getName()));
 
 		assertTrue("test " + hb10Component.eClass().getName() + " is not assignable from " + EObject.class.getName(),
@@ -244,7 +243,8 @@ public class EObjectUtilTest extends AbstractTestCase {
 		assertNotNull(EObjectUtil.findEClassifier(InstanceModel20Package.eINSTANCE, Component.class.getSimpleName()));
 		assertNotNull(EObjectUtil.findEClassifier(Hummingbird10Package.eINSTANCE, Component.class.getSimpleName()));
 		assertNotNull(EObjectUtil.findEClassifier(Hummingbird10Package.eINSTANCE, Application.class.getSimpleName()));
-		assertNotNull(EObjectUtil.findEClassifier(TypeModel20Package.eINSTANCE, org.eclipse.sphinx.examples.hummingbird10.Interface.class.getSimpleName()));
+		assertNotNull(EObjectUtil.findEClassifier(TypeModel20Package.eINSTANCE,
+				org.eclipse.sphinx.examples.hummingbird10.Interface.class.getSimpleName()));
 
 		assertNull(EObjectUtil.findEClassifier(Hummingbird10Package.eINSTANCE, Platform.class.getSimpleName()));
 		assertNull(EObjectUtil.findEClassifier(Hummingbird10Package.eINSTANCE, ComponentType.class.getSimpleName()));
@@ -534,8 +534,8 @@ public class EObjectUtilTest extends AbstractTestCase {
 
 		// Application hb20Application = (Application) loadInputFile("hbFile20_20A_1.instancemodel", fFileAccessor,
 		// new Hummingbird20ResourceFactoryImpl(), InstanceModel20Package.eINSTANCE);
-		URI uri = fFileAccessor.getInputFileURI("hbFile20.instancemodel");
-		org.eclipse.emf.common.util.URI emfUri = fFileAccessor.convertToEMFURI(uri);
+		URI uri = fileAccessor.getInputFileURI("hbFile20.instancemodel");
+		org.eclipse.emf.common.util.URI emfUri = fileAccessor.convertToEMFURI(uri);
 		Application hb20Application = (Application) EcoreResourceUtil.loadModelRoot(new ResourceSetImpl(), emfUri, null);
 		String mixedText = EObjectUtil.getMixedText(hb20Application.getMixed());
 		assertEquals("Mixed text", mixedText);
@@ -558,10 +558,10 @@ public class EObjectUtilTest extends AbstractTestCase {
 		assertEquals(newText, EObjectUtil.getMixedText(hb20Application.getMixed()));
 
 		// save file
-		saveWorkingFile(workingFileName, hb20Application, fFileAccessor, new Hummingbird20ResourceFactoryImpl());
+		saveWorkingFile(workingFileName, hb20Application, fileAccessor, new Hummingbird20ResourceFactoryImpl());
 
-		URI uri = fFileAccessor.getWorkingFileURI(workingFileName);
-		org.eclipse.emf.common.util.URI emfUri = fFileAccessor.convertToEMFURI(uri);
+		URI uri = fileAccessor.getWorkingFileURI(workingFileName);
+		org.eclipse.emf.common.util.URI emfUri = fileAccessor.convertToEMFURI(uri);
 		Application savedHb20Application = (Application) EcoreResourceUtil.loadModelRoot(new ResourceSetImpl(), emfUri, null);
 		assertNotNull(savedHb20Application);
 

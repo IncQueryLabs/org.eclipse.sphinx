@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
@@ -94,6 +95,9 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 		Common20PackageImpl theCommon20Package = (Common20PackageImpl)(EPackage.Registry.INSTANCE.get(eNS_URI) instanceof Common20PackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI) : new Common20PackageImpl());
 
 		isInited = true;
+
+		// Initialize simple dependencies
+		EcorePackage.eINSTANCE.eClass();
 
 		// Obtain or create and register interdependencies
 		TypeModel20PackageImpl theTypeModel20Package = (TypeModel20PackageImpl)(EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI) instanceof TypeModel20PackageImpl ? EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI) : TypeModel20Package.eINSTANCE);

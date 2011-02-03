@@ -19,37 +19,37 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
+import org.eclipse.sphinx.examples.hummingbird20.common.*;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
 import org.eclipse.sphinx.examples.hummingbird20.common.Description;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
- * 
  * @generated
  */
 public class Common20FactoryImpl extends EFactoryImpl implements Common20Factory {
 	/**
-	 * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Creates the default factory implementation.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public static Common20Factory init() {
 		try {
-			Common20Factory theCommon20Factory = (Common20Factory) EPackage.Registry.INSTANCE
-					.getEFactory("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common"); //$NON-NLS-1$ 
+			Common20Factory theCommon20Factory = (Common20Factory)EPackage.Registry.INSTANCE.getEFactory("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common"); //$NON-NLS-1$ 
 			if (theCommon20Factory != null) {
 				return theCommon20Factory;
 			}
-		} catch (Exception exception) {
+		}
+		catch (Exception exception) {
 			EcorePlugin.INSTANCE.log(exception);
 		}
 		return new Common20FactoryImpl();
 	}
 
 	/**
-	 * Creates an instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Creates an instance of the factory.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Common20FactoryImpl() {
@@ -58,22 +58,19 @@ public class Common20FactoryImpl extends EFactoryImpl implements Common20Factory
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-		case Common20Package.DESCRIPTION:
-			return createDescription();
-		default:
-			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
+			case Common20Package.DESCRIPTION: return createDescription();
+			default:
+				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Description createDescription() {
@@ -83,16 +80,14 @@ public class Common20FactoryImpl extends EFactoryImpl implements Common20Factory
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Common20Package getCommon20Package() {
-		return (Common20Package) getEPackage();
+		return (Common20Package)getEPackage();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @deprecated
 	 * @generated
 	 */

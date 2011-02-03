@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.*;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection;
@@ -28,31 +29,30 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
- * 
  * @generated
  */
 public class InstanceModel20FactoryImpl extends EFactoryImpl implements InstanceModel20Factory {
 	/**
-	 * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Creates the default factory implementation.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public static InstanceModel20Factory init() {
 		try {
-			InstanceModel20Factory theInstanceModel20Factory = (InstanceModel20Factory) EPackage.Registry.INSTANCE
-					.getEFactory("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel"); //$NON-NLS-1$ 
+			InstanceModel20Factory theInstanceModel20Factory = (InstanceModel20Factory)EPackage.Registry.INSTANCE.getEFactory("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel"); //$NON-NLS-1$ 
 			if (theInstanceModel20Factory != null) {
 				return theInstanceModel20Factory;
 			}
-		} catch (Exception exception) {
+		}
+		catch (Exception exception) {
 			EcorePlugin.INSTANCE.log(exception);
 		}
 		return new InstanceModel20FactoryImpl();
 	}
 
 	/**
-	 * Creates an instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Creates an instance of the factory.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public InstanceModel20FactoryImpl() {
@@ -61,28 +61,22 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-		case InstanceModel20Package.APPLICATION:
-			return createApplication();
-		case InstanceModel20Package.COMPONENT:
-			return createComponent();
-		case InstanceModel20Package.CONNECTION:
-			return createConnection();
-		case InstanceModel20Package.PARAMETER_VALUE:
-			return createParameterValue();
-		default:
-			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
+			case InstanceModel20Package.APPLICATION: return createApplication();
+			case InstanceModel20Package.COMPONENT: return createComponent();
+			case InstanceModel20Package.CONNECTION: return createConnection();
+			case InstanceModel20Package.PARAMETER_VALUE: return createParameterValue();
+			default:
+				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Application createApplication() {
@@ -92,7 +86,6 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Component createComponent() {
@@ -102,7 +95,6 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Connection createConnection() {
@@ -112,7 +104,6 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public ParameterValue createParameterValue() {
@@ -122,16 +113,14 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public InstanceModel20Package getInstanceModel20Package() {
-		return (InstanceModel20Package) getEPackage();
+		return (InstanceModel20Package)getEPackage();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @deprecated
 	 * @generated
 	 */

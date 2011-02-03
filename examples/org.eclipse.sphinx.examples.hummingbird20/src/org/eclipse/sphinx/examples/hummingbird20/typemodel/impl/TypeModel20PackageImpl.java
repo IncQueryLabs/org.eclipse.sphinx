@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.Common20PackageImpl;
@@ -119,6 +120,9 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 
 		isInited = true;
 
+		// Initialize simple dependencies
+		EcorePackage.eINSTANCE.eClass();
+
 		// Obtain or create and register interdependencies
 		Common20PackageImpl theCommon20Package = (Common20PackageImpl)(EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI) instanceof Common20PackageImpl ? EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI) : Common20Package.eINSTANCE);
 		InstanceModel20PackageImpl theInstanceModel20Package = (InstanceModel20PackageImpl)(EPackage.Registry.INSTANCE.getEPackage(InstanceModel20Package.eNS_URI) instanceof InstanceModel20PackageImpl ? EPackage.Registry.INSTANCE.getEPackage(InstanceModel20Package.eNS_URI) : InstanceModel20Package.eINSTANCE);
@@ -176,6 +180,15 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 */
 	public EAttribute getPlatform_Mixed() {
 		return (EAttribute)platformEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getPlatform_XSISchemaLocation() {
+		return (EReference)platformEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -345,6 +358,7 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 		createEReference(platformEClass, PLATFORM__COMPONENT_TYPES);
 		createEReference(platformEClass, PLATFORM__INTERFACES);
 		createEAttribute(platformEClass, PLATFORM__MIXED);
+		createEReference(platformEClass, PLATFORM__XSI_SCHEMA_LOCATION);
 
 		componentTypeEClass = createEClass(COMPONENT_TYPE);
 		createEReference(componentTypeEClass, COMPONENT_TYPE__PROVIDED_INTERFACES);
@@ -391,6 +405,7 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 
 		// Obtain other dependent packages
 		Common20Package theCommon20Package = (Common20Package)EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI);
+		EcorePackage theEcorePackage = (EcorePackage)EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
 
 		// Create type parameters
 
@@ -408,6 +423,7 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 		initEReference(getPlatform_ComponentTypes(), this.getComponentType(), null, "componentTypes", null, 1, -1, Platform.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEReference(getPlatform_Interfaces(), this.getInterface(), null, "interfaces", null, 0, -1, Platform.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(getPlatform_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, Platform.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getPlatform_XSISchemaLocation(), theEcorePackage.getEStringToStringMapEntry(), null, "xSISchemaLocation", null, 0, -1, Platform.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(componentTypeEClass, ComponentType.class, "ComponentType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 		initEReference(getComponentType_ProvidedInterfaces(), this.getInterface(), this.getInterface_ProvidingComponentTypes(), "providedInterfaces", null, 0, -1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
@@ -456,6 +472,12 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 		   new String[] {
 			 "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
 			 "kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
+		   });		
+		addAnnotation
+		  (getPlatform_XSISchemaLocation(), 
+		   source, 
+		   new String[] {
+			 "name", "xsi:schemaLocation" //$NON-NLS-1$ //$NON-NLS-2$
 		   });
 	}
 

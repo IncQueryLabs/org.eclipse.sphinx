@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <genmodel:GenModel xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="&lt;copyright>&#xD;&#xA;&#xD;&#xA;Copyright (c) 2008-2010 See4sys and others.&#xD;&#xA;All rights reserved. This program and the accompanying materials&#xD;&#xA;are made available under the terms of the Eclipse Public License v1.0&#xD;&#xA;which accompanies this distribution, and is available at&#xD;&#xA;http://www.eclipse.org/legal/epl-v10.html&#xD;&#xA;&#xD;&#xA;Contributors: &#xD;&#xA;    See4sys - Initial API and implementation&#xD;&#xA;&#xD;&#xA;&lt;/copyright>"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="&lt;copyright>&#xD;&#xA;&#xD;&#xA;Copyright (c) 2008-2011 See4sys and others.&#xD;&#xA;All rights reserved. This program and the accompanying materials&#xD;&#xA;are made available under the terms of the Eclipse Public License v1.0&#xD;&#xA;which accompanies this distribution, and is available at&#xD;&#xA;http://www.eclipse.org/legal/epl-v10.html&#xD;&#xA;&#xD;&#xA;Contributors: &#xD;&#xA;    See4sys - Initial API and implementation&#xD;&#xA;&#xD;&#xA;&lt;/copyright>"
     modelDirectory="/org.eclipse.sphinx.examples.hummingbird20/src" creationSubmenus="true"
     editDirectory="/org.eclipse.sphinx.examples.hummingbird20.edit/src" editorDirectory="/org.eclipse.sphinx.examples.hummingbird20.editor/src"
     modelPluginID="org.eclipse.sphinx.examples.hummingbird20" templateDirectory="/org.eclipse.sphinx.examples.hummingbird20/templates"
@@ -11,7 +11,8 @@
     rootImplementsInterface="" testsDirectory="" testSuiteClass="" importerID="org.eclipse.emf.importer.ecore"
     complianceLevel="5.0" copyrightFields="false" providerRootExtendsClass="org.eclipse.sphinx.emf.edit.ExtendedItemProviderAdapter"
     editPluginID="org.eclipse.sphinx.examples.hummingbird20.edit" editorPluginID="org.eclipse.sphinx.examples.hummingbird20.editor"
-    testsPluginID="org.eclipse.sphinx.examples.hummingbird20.editor" language="" classNamePattern="">
+    testsPluginID="org.eclipse.sphinx.examples.hummingbird20.editor" language="" usedGenPackages="platform:/plugin/org.eclipse.emf.ecore/model/Ecore.genmodel#//ecore"
+    classNamePattern="">
   <foreignModel>hummingbird20.ecore</foreignModel>
   <modelPluginVariables>org.eclipse.sphinx.emf</modelPluginVariables>
   <modelPluginVariables>org.eclipse.sphinx.examples.hummingbird.ide</modelPluginVariables>
@@ -35,6 +36,7 @@
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference hummingbird20.ecore#//typemodel/Platform/componentTypes"/>
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference hummingbird20.ecore#//typemodel/Platform/interfaces"/>
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute hummingbird20.ecore#//typemodel/Platform/mixed"/>
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference hummingbird20.ecore#//typemodel/Platform/xsiSchemaLocation"/>
       </genClasses>
       <genClasses ecoreClass="hummingbird20.ecore#//typemodel/ComponentType">
         <genFeatures notify="false" createChild="false" propertySortChoices="true"
@@ -65,6 +67,7 @@
       <genClasses ecoreClass="hummingbird20.ecore#//instancemodel/Application">
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference hummingbird20.ecore#//instancemodel/Application/components"/>
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute hummingbird20.ecore#//instancemodel/Application/mixed"/>
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference hummingbird20.ecore#//instancemodel/Application/xsiSchemaLocation"/>
       </genClasses>
       <genClasses ecoreClass="hummingbird20.ecore#//instancemodel/Component">
         <genFeatures notify="false" createChild="false" propertySortChoices="true"

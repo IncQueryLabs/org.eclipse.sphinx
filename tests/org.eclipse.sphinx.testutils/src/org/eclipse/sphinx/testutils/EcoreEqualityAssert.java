@@ -29,8 +29,10 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.EcoreEList;
 import org.eclipse.emf.ecore.util.EcoreUtil.EqualityHelper;
+import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.emf.validation.internal.modeled.model.validation.Feature;
 
 /**
  * This class is a copied and modified version of {@link EqualityHelper} and provides a set of equality assert methods
@@ -135,10 +137,10 @@ public class EcoreEqualityAssert extends Assert {
 		// Check all the values.
 		//
 		for (int i = 0, size = eClass.getFeatureCount(); i < size; ++i) {
-			// Ignore derived features.
+			// Ignore derived features and XML serialization-specific features
 			//
 			EStructuralFeature feature = eClass.getEStructuralFeature(i);
-			if (!feature.isDerived()) {
+			if (!feature.isDerived() && !isXMLSpecificFeature(feature)) {
 				assertEqualFeature(eObject1, eObject2, feature);
 			}
 		}
@@ -146,6 +148,25 @@ public class EcoreEqualityAssert extends Assert {
 		// There's no reason they aren't equal, so they are.
 		//
 		return;
+	}
+
+	/**
+	 * Tests if given {@link Feature feature} is dedicated to capturing XML serialization specific things and does not
+	 * represent any information that would be relevant from a domain (meta-model) point of view.
+	 * 
+	 * @param feature
+	 * @return <code>true</code> if given feature is XML serialization-specific, <code>false</code> otherwise.
+	 * @since 0.7.0
+	 */
+	protected static boolean isXMLSpecificFeature(EStructuralFeature feature) {
+		EClass eClass = feature.getEContainingClass();
+		if (feature == ExtendedMetaData.INSTANCE.getXSISchemaLocationMapFeature(eClass)) {
+			return true;
+		}
+		if (feature == ExtendedMetaData.INSTANCE.getXMLNSPrefixMapFeature(eClass)) {
+			return true;
+		}
+		return false;
 	}
 
 	/**

@@ -34,6 +34,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.XMLHelperImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLString;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
@@ -119,8 +120,10 @@ public abstract class AbstractModelConverter implements IModelConverter {
 
 	protected InputStream doConvertLoad(XMLResource resource, InputStream inputStream, Map<?, ?> options) {
 		try {
-			// Set features and properties
+			// Create SAX builder
 			SAXBuilder builder = new SAXBuilder(SAXParser.class.getName());
+
+			// Set features and properties
 			@SuppressWarnings("unchecked")
 			Map<String, Boolean> parserFeatures = (Map<String, Boolean>) options.get(XMLResource.OPTION_PARSER_FEATURES);
 			if (parserFeatures != null) {
@@ -135,6 +138,10 @@ public abstract class AbstractModelConverter implements IModelConverter {
 					builder.setProperty(property, parserProperties.get(property));
 				}
 			}
+
+			// Activate schema validation and schema location resolution
+			builder.setValidation(isValidating());
+			builder.setEntityResolver(new ExtendedSAXXMLHandler(resource, new XMLHelperImpl(), options));
 
 			// Use custom extended error handler wrapper enabling concise distinction between well-formedness, validity
 			// and integrity problems
@@ -188,6 +195,21 @@ public abstract class AbstractModelConverter implements IModelConverter {
 
 		// Try to survive without model conversion
 		return inputStream;
+	}
+
+	/**
+	 * Specifies if the {@link SAXBuilder builder} used by this {@link IModelConverter model converter} will validate
+	 * documents as they are parsed.
+	 * <p>
+	 * This implementation returns <code>true</code> by default. Clients may override this method and adapt its behavior
+	 * according to their needs.
+	 * </p>
+	 * 
+	 * @return <code>true</code> if the {@link SAXBuilder builder} used by this {@link IModelConverter model converter}
+	 *         will validate documents as they are parsed; <code>false</code> otherwise.
+	 */
+	protected boolean isValidating() {
+		return true;
 	}
 
 	protected abstract void convertLoadElement(Element element, Map<?, ?> options);

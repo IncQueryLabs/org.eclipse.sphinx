@@ -18,10 +18,15 @@ import java.util.Collection;
 
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.EStringToStringMapEntryImpl;
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EcoreEMap;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.IdentifiableImpl;
@@ -40,6 +45,7 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PlatformImpl#getComponentTypes <em>Component Types</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PlatformImpl#getInterfaces <em>Interfaces</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PlatformImpl#getMixed <em>Mixed</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PlatformImpl#getXSISchemaLocation <em>XSI Schema Location</em>}</li>
  * </ul>
  * </p>
  *
@@ -75,6 +81,16 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * @ordered
 	 */
 	protected FeatureMap mixed;
+
+	/**
+	 * The cached value of the '{@link #getXSISchemaLocation() <em>XSI Schema Location</em>}' map.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getXSISchemaLocation()
+	 * @generated
+	 * @ordered
+	 */
+	protected EMap<String, String> xSISchemaLocation;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -136,6 +152,18 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EMap<String, String> getXSISchemaLocation() {
+		if (xSISchemaLocation == null) {
+			xSISchemaLocation = new EcoreEMap<String,String>(EcorePackage.Literals.ESTRING_TO_STRING_MAP_ENTRY, EStringToStringMapEntryImpl.class, this, TypeModel20Package.PLATFORM__XSI_SCHEMA_LOCATION);
+		}
+		return xSISchemaLocation;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -145,6 +173,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 				return ((InternalEList<?>)getInterfaces()).basicRemove(otherEnd, msgs);
 			case TypeModel20Package.PLATFORM__MIXED:
 				return ((InternalEList<?>)getMixed()).basicRemove(otherEnd, msgs);
+			case TypeModel20Package.PLATFORM__XSI_SCHEMA_LOCATION:
+				return ((InternalEList<?>)getXSISchemaLocation()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -164,6 +194,9 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 			case TypeModel20Package.PLATFORM__MIXED:
 				if (coreType) return getMixed();
 				return ((FeatureMap.Internal)getMixed()).getWrapper();
+			case TypeModel20Package.PLATFORM__XSI_SCHEMA_LOCATION:
+				if (coreType) return getXSISchemaLocation();
+				else return getXSISchemaLocation().map();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -188,6 +221,9 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 			case TypeModel20Package.PLATFORM__MIXED:
 				((FeatureMap.Internal)getMixed()).set(newValue);
 				return;
+			case TypeModel20Package.PLATFORM__XSI_SCHEMA_LOCATION:
+				((EStructuralFeature.Setting)getXSISchemaLocation()).set(newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -209,6 +245,9 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 			case TypeModel20Package.PLATFORM__MIXED:
 				getMixed().clear();
 				return;
+			case TypeModel20Package.PLATFORM__XSI_SCHEMA_LOCATION:
+				getXSISchemaLocation().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -227,6 +266,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 				return interfaces != null && !interfaces.isEmpty();
 			case TypeModel20Package.PLATFORM__MIXED:
 				return mixed != null && !mixed.isEmpty();
+			case TypeModel20Package.PLATFORM__XSI_SCHEMA_LOCATION:
+				return xSISchemaLocation != null && !xSISchemaLocation.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

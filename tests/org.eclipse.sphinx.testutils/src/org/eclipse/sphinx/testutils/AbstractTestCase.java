@@ -14,149 +14,137 @@
  */
 package org.eclipse.sphinx.testutils;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.Resource.Diagnostic;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.emf.ecore.xmi.impl.XMLParserPoolImpl;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 
-/**
- * @param <T>
- */
-@SuppressWarnings("nls")
 public abstract class AbstractTestCase extends TestCase {
 
-	protected TestFileAccessor fFileAccessor = null;
+	protected TestFileAccessor fileAccessor = null;
 
-	protected final TestFileAccessor getTestFileAccessor() {
-		if (fFileAccessor == null) {
-			fFileAccessor = new TestFileAccessor(getTestPlugin());
+	private boolean ignoreLoadProblems;
+	private boolean ignoreSaveProblems;
+
+	@Override
+	protected void setUp() throws Exception {
+		if (fileAccessor == null) {
+			fileAccessor = new TestFileAccessor(getTestPlugin());
 		}
-		return fFileAccessor;
+		ignoreLoadProblems = false;
+		ignoreSaveProblems = false;
 	}
 
 	protected abstract Plugin getTestPlugin();
+
+	protected boolean isIgnoreLoadProblems() {
+		return ignoreLoadProblems;
+	}
+
+	public void setIgnoreLoadProblems(boolean ignoreLoadProblems) {
+		this.ignoreLoadProblems = ignoreLoadProblems;
+	}
+
+	protected boolean isIgnoreSaveProblems() {
+		return ignoreSaveProblems;
+	}
+
+	public void setIgnoreSaveProblems(boolean ignoreSaveProblems) {
+		this.ignoreSaveProblems = ignoreSaveProblems;
+	}
+
+	// TODO Remove fileAccessor from parameter list and use fFileAccessor instead
+	protected EObject loadInputFile(String inputFileName, TestFileAccessor fileAccessor, ResourceFactoryImpl resourceFactory, EPackage ePackage,
+			Map<?, ?> options) throws Exception {
+		return loadFile(fileAccessor.getInputFileURI(inputFileName), resourceFactory, ePackage, options);
+	}
+
+	// TODO Remove fileAccessor from parameter list and use fFileAccessor instead
+	protected EObject loadWorkingFile(String workingFileName, TestFileAccessor fileAccessor, ResourceFactoryImpl resourceFactory, EPackage ePackage,
+			Map<?, ?> options) throws Exception {
+		return loadFile(fileAccessor.getWorkingFileURI(workingFileName), resourceFactory, ePackage, options);
+	}
+
+	// TODO Enable external resourceSet to be handed in
+	private EObject loadFile(java.net.URI fileURI, ResourceFactoryImpl resourceFactory, EPackage ePackage, Map<?, ?> options) throws Exception {
+		URI emfURI = fileAccessor.convertToEMFURI(fileURI);
+		XMLResource resource = (XMLResource) resourceFactory.createResource(emfURI);
+		resource.load(options);
+
+		// TODO Check if this is still needed and remove ePackage from parameter list if not
+		ResourceSet resourceSet = createDefaultResourceSet();
+		resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
+		resourceSet.getResources().add(resource);
+
+		assertHasNoLoadProblems(resource);
+
+		return resource.getContents().get(0);
+	}
+
+	protected void saveWorkingFile(String fileName, EObject modelRoot, TestFileAccessor fileAccessor, ResourceFactoryImpl resourceFactory)
+			throws Exception {
+		saveFile(fileAccessor.getWorkingFileURI(fileName), modelRoot, resourceFactory, null);
+	}
+
+	// TODO Enable external resourceSet to be handed in
+	private void saveFile(java.net.URI fileURI, EObject modelRoot, ResourceFactoryImpl resourceFactory, Map<?, ?> options) throws Exception {
+		URI emfURI = fileAccessor.convertToEMFURI(fileURI);
+		XMLResource resource = (XMLResource) resourceFactory.createResource(emfURI);
+		resource.getContents().add(modelRoot);
+		resource.save(options);
+
+		assertHasNoSaveProblems(resource);
+	}
 
 	protected ScopingResourceSetImpl createDefaultResourceSet() {
 		return new ScopingResourceSetImpl();
 	}
 
-	/**
-	 * Sets up the test workspace by importing the reference workspace given in parameter.
-	 */
-	@Override
-	protected void setUp() throws Exception {
-		if (fFileAccessor == null) {
-			fFileAccessor = new TestFileAccessor(getTestPlugin());
+	public void assertEquals(EObject eObject1, EObject eObject2) {
+		EcoreEqualityAssert.assertEquals(eObject1, eObject2);
+	}
+
+	@SuppressWarnings("nls")
+	protected void assertHasNoLoadProblems(Resource resource) {
+		assertNotNull(resource);
+		if (!isIgnoreLoadProblems()) {
+			assertTrue("Errors encountered during resource loading: " + formatDiagnosticMessages(resource.getErrors()),
+					resource.getErrors().size() == 0);
+			assertTrue("Warnings encountered during resource loading: " + formatDiagnosticMessages(resource.getWarnings()), resource.getWarnings()
+					.size() == 0);
 		}
 	}
 
-	/**
-	 * Tears down the test workspace by deleting all projects.
-	 */
-	@Override
-	protected void tearDown() throws Exception {
+	@SuppressWarnings("nls")
+	protected void assertHasNoSaveProblems(Resource resource) {
+		assertNotNull(resource);
+		if (!isIgnoreSaveProblems()) {
+			assertTrue("Errors encountered during resource saving: " + formatDiagnosticMessages(resource.getErrors()),
+					resource.getErrors().size() == 0);
+			assertTrue("Warnings encountered during resource saving: " + formatDiagnosticMessages(resource.getWarnings()), resource.getWarnings()
+					.size() == 0);
+		}
 	}
 
-	protected EObject loadInputFile(String fileName, TestFileAccessor fFileAccessor, ResourceFactoryImpl resourceFactory, EPackage ePackage)
-			throws Exception {
-		ResourceSet resourceSet = createDefaultResourceSet();
-
-		// Register the package
-		resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
-
-		java.net.URI uri = fFileAccessor.getInputFileURI(fileName);
-		URI fileURI = fFileAccessor.convertToEMFURI(uri);
-		XMLResource resource = (XMLResource) resourceFactory.createResource(fileURI);
-
-		resource.load(null);
-		resourceSet.getResources().add(resource);
-
-		return resource.getContents().get(0);
-	}
-
-	protected EObject loadInputFile(String fileName, XMLParserPoolImpl parserPool, TestFileAccessor fFileAccessor,
-			ResourceFactoryImpl resourceFactory, EPackage ePackage) throws Exception {
-		ResourceSet resourceSet = createDefaultResourceSet();
-
-		// Register the package
-		resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
-
-		java.net.URI uri = fFileAccessor.getInputFileURI(fileName);
-		URI fileURI = fFileAccessor.convertToEMFURI(uri);
-		XMLResource resource = (XMLResource) resourceFactory.createResource(fileURI);
-
-		Map<String, Object> options = new HashMap<String, Object>();
-		options.put(XMLResource.OPTION_USE_PARSER_POOL, parserPool);
-		resource.load(options);
-
-		return resource.getContents().get(0);
-	}
-
-	protected EObject loadWorkingFile(String fileName, TestFileAccessor fFileAccessor, ResourceFactoryImpl arResourceFactory, EPackage ePackage)
-			throws Exception {
-		ResourceSet resourceSet = createDefaultResourceSet();
-
-		// Register the package
-		resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
-
-		java.net.URI uri = fFileAccessor.getWorkingFileURI(fileName);
-		URI fileURI = fFileAccessor.convertToEMFURI(uri);
-		XMLResource resource = (XMLResource) arResourceFactory.createResource(fileURI);
-
-		resource.load(null);
-		resourceSet.getResources().add(resource);
-
-		return resource.getContents().get(0);
-	}
-
-	protected EObject loadWorkingFile(String fileName, XMLParserPoolImpl parserPool, ResourceFactoryImpl resourceFactory, EPackage ePackage)
-			throws Exception {
-		ResourceSet resourceSet = createDefaultResourceSet();
-
-		// Register the package
-		resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
-
-		java.net.URI uri = fFileAccessor.getWorkingFileURI(fileName);
-		URI fileURI = fFileAccessor.convertToEMFURI(uri);
-		XMLResource resource = (XMLResource) resourceFactory.createResource(fileURI);
-
-		Map<String, Object> options = new HashMap<String, Object>();
-		options.put(XMLResource.OPTION_USE_PARSER_POOL, parserPool);
-		resource.load(options);
-
-		return resource.getContents().get(0);
-	}
-
-	protected void saveInputFile(String fileName, EObject modelRoot, ResourceFactoryImpl resourceFactory) throws Exception {
-		java.net.URI uri = fFileAccessor.getInputFileURI(fileName);
-		URI emfURI = fFileAccessor.convertToEMFURI(uri);
-		XMLResource resource = (XMLResource) resourceFactory.createResource(emfURI);
-		resource.getContents().add(modelRoot);
-		resource.save(null);
-	}
-
-	protected void saveWorkingFile(String fileName, EObject modelRoot, TestFileAccessor fileAccessor, ResourceFactoryImpl resourceFactory)
-			throws Exception {
-		java.net.URI uri = fileAccessor.getWorkingFileURI(fileName);
-		URI emfURI = fileAccessor.convertToEMFURI(uri);
-		XMLResource resource = (XMLResource) resourceFactory.createResource(emfURI);
-		resource.getContents().add(modelRoot);
-		EcoreResourceUtil.readModelNamespace(resource);
-		resource.save(null);
-	}
-
-	public void assertEquals(EObject eObject1, EObject eObject2) {
-		EcoreEqualityAssert.assertEquals(eObject1, eObject2);
+	protected String formatDiagnosticMessages(EList<Diagnostic> diagnostics) {
+		StringBuilder msg = new StringBuilder();
+		for (Diagnostic diagnostic : diagnostics) {
+			if (msg.length() > 0) {
+				msg.append("; "); //$NON-NLS-1$
+			}
+			msg.append(diagnostic.getMessage());
+		}
+		return msg.toString();
 	}
 }

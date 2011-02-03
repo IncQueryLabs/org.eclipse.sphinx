@@ -143,13 +143,14 @@ public class ExtendedItemPropertyDescriptor extends ItemPropertyDescriptor {
 	}
 
 	/*
-	 * Overridden for avoiding that default values for unset attributes are displayed.
+	 * Overridden to avoid that default values for unsettable attributes are displayed unless they have been explicitly
+	 * set.
 	 * @see org.eclipse.emf.edit.provider.ItemPropertyDescriptor#getValue(org.eclipse.emf.ecore.EObject,
 	 * org.eclipse.emf.ecore.EStructuralFeature)
 	 */
 	@Override
 	protected Object getValue(EObject object, EStructuralFeature feature) {
-		if (!(feature instanceof EAttribute) || object.eIsSet(feature)) {
+		if (!(feature instanceof EAttribute) || !feature.isUnsettable() || object.eIsSet(feature)) {
 			return super.getValue(object, feature);
 		}
 		return null;

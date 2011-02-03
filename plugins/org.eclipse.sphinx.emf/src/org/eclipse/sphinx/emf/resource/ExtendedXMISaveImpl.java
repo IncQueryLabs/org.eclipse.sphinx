@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2002-2006 IBM Corporation, See4sys and others.
+ * Copyright (c) 2002-2011 IBM Corporation, Geensys, and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,8 +32,8 @@ import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.w3c.dom.Element;
 
 /**
- * This class is an exact copy of {@link XMISaveImpl} except that it extends {@link ExtendedXMLSaveImpl} instead of
- * {@link XMLSaveImpl}.
+ * This class is a replacement for {@link XMISaveImpl}. It an exact copy of {@link XMISaveImpl} except for that extends
+ * {@link ExtendedXMLSaveImpl} instead of {@link XMLSaveImpl}.
  */
 public class ExtendedXMISaveImpl extends ExtendedXMLSaveImpl {
 
