@@ -17,9 +17,6 @@ package org.eclipse.sphinx.examples.hummingbird20.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.XMLConstants;
-
-import org.apache.xerces.impl.Constants;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EPackageRegistryImpl;
@@ -57,16 +54,24 @@ public class Hummingbird20ResourceFactoryImpl extends ResourceFactoryImpl {
 	 * @generated NOT
 	 */
 	public Hummingbird20ResourceFactoryImpl() {
-		// Configure on-the-fly schema validation during resource loading
+		// Create and initialize schema location catalog, i.e., a map providing namespace and system identifier pairs
+		// that are allowed to be written in the resource's xsi:schemaLocation/xsi:noNamespaceSchemaLocation during
+		// saving
 		schemaLocationCatalog = new HashMap<String, String>();
+
+		// Register schema files for current metamodel version
 		schemaLocationCatalog.put(Common20Package.eNS_URI, "Common20XMI.xsd"); //$NON-NLS-1$
 		schemaLocationCatalog.put(TypeModel20Package.eNS_URI, "TypeModel20XMI.xsd"); //$NON-NLS-1$
 		schemaLocationCatalog.put(InstanceModel20Package.eNS_URI, "InstanceModel20XMI.xsd"); //$NON-NLS-1$
 		schemaLocationCatalog.put(XMIResource.XMI_URI, "XMI.xsd"); //$NON-NLS-1$
+
+		// Register schema files for compatible metamodel versions
 		schemaLocationCatalog.put(HummingbirdMMDescriptor.BASE_NAMESPACE + "/2.0.0/common", "Common200XMI.xsd"); //$NON-NLS-1$ //$NON-NLS-2$
 		schemaLocationCatalog.put(HummingbirdMMDescriptor.BASE_NAMESPACE + "/2.0.0/typemodel", "TypeModel200XMI.xsd"); //$NON-NLS-1$ //$NON-NLS-2$
 		schemaLocationCatalog.put(HummingbirdMMDescriptor.BASE_NAMESPACE + "/2.0.0/instancemodel", "InstanceModel200XMI.xsd"); //$NON-NLS-1$ //$NON-NLS-2$
 
+		// Create and initialize schema location URI handler enabling schema locations to be resolved to schema files
+		// during loading and schema files to be deresolved to schema locations during saving
 		schemaLocationURIHandler = new SchemaLocationURIHandler();
 		schemaLocationURIHandler.addSchemaLocationBaseURI(Activator.getPlugin(), "model"); //$NON-NLS-1$
 		schemaLocationURIHandler.addSchemaLocationBaseURI(Activator.getPlugin(), "model/archive"); //$NON-NLS-1$ 
@@ -103,9 +108,7 @@ public class Hummingbird20ResourceFactoryImpl extends ResourceFactoryImpl {
 		result.getDefaultLoadOptions().put(XMLResource.OPTION_URI_HANDLER, schemaLocationURIHandler);
 		result.getDefaultSaveOptions().put(XMLResource.OPTION_URI_HANDLER, schemaLocationURIHandler);
 
-		Map<String, Object> parserProperties = new HashMap<String, Object>();
-		parserProperties.put(Constants.JAXP_PROPERTY_PREFIX + Constants.SCHEMA_LANGUAGE, XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		result.getDefaultLoadOptions().put(XMLResource.OPTION_PARSER_PROPERTIES, parserProperties);
+		result.getDefaultLoadOptions().put(ExtendedResource.OPTION_ENABLE_SCHEMA_VALIDATION, Boolean.TRUE);
 
 		return result;
 	}

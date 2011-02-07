@@ -21,6 +21,7 @@
 		<delete dir="temp"/>
 		<delete dir="output"/>
 		<delete dir="junit-workspace"/>
+		<delete file="junit-output.xml"/>
 	</target>
 	
 	<target name="clean.all" depends="clean, clean.setup, clean.downloads">

@@ -81,7 +81,6 @@ public class ExtendedErrorHandlerWrapper extends ErrorHandlerWrapper {
 				throw createXNIException(e);
 			}
 		}
-
 	}
 
 	/*
@@ -101,7 +100,6 @@ public class ExtendedErrorHandlerWrapper extends ErrorHandlerWrapper {
 				throw createXNIException(e);
 			}
 		}
-
 	}
 
 	/**
@@ -122,7 +120,6 @@ public class ExtendedErrorHandlerWrapper extends ErrorHandlerWrapper {
 	protected SAXParseException createXMLWellformednessException(XMLParseException exception) {
 		return new XMLWellformednessException(exception.getMessage(), exception.getPublicId(), exception.getExpandedSystemId(),
 				exception.getLineNumber(), exception.getColumnNumber(), exception.getException());
-
 	}
 
 	/**
@@ -131,6 +128,5 @@ public class ExtendedErrorHandlerWrapper extends ErrorHandlerWrapper {
 	protected SAXParseException createXMLValidityException(XMLParseException exception) {
 		return new XMLValidityException(exception.getMessage(), exception.getPublicId(), exception.getExpandedSystemId(), exception.getLineNumber(),
 				exception.getColumnNumber(), exception.getException());
-
 	}
 }

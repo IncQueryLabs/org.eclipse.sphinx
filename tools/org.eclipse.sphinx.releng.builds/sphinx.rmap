@@ -27,5 +27,20 @@
 				<bc:propertyRef key="buckminster.component"/>
 			</rm:uri>
 		</rm:provider>
+		<rm:provider componentTypes="osgi.bundle" readerType="svn">
+			<rm:uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/plugins/{0}?moduleAfterTag&amp;moduleAfterBranch">
+				<bc:propertyRef key="buckminster.component"/>
+			</rm:uri>
+		</rm:provider>
+		<rm:provider componentTypes="osgi.bundle" readerType="svn">
+			<rm:uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/examples/{0}?moduleAfterTag&amp;moduleAfterBranch">
+				<bc:propertyRef key="buckminster.component"/>
+			</rm:uri>
+		</rm:provider>
+		<rm:provider componentTypes="osgi.bundle" readerType="svn">
+			<rm:uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/docs/{0}?moduleAfterTag&amp;moduleAfterBranch">
+				<bc:propertyRef key="buckminster.component"/>
+			</rm:uri>
+		</rm:provider>
 	</rm:searchPath>
 </rm:rmap>

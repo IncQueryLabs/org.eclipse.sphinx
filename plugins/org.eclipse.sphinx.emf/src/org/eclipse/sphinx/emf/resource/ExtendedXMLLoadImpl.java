@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -26,16 +27,17 @@ import javax.xml.parsers.SAXParserFactory;
 import org.apache.xerces.impl.Constants;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.URIConverter;
-import org.eclipse.emf.ecore.xmi.XMIException;
 import org.eclipse.emf.ecore.xmi.XMLDefaultHandler;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLParserPool;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
+import org.eclipse.sphinx.emf.Activator;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -49,6 +51,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 
+	protected boolean enableSchemaValidation;
 	protected SAXParser parser = null;
 	protected IModelConverter converter = null;
 	protected boolean didConvert = false;
@@ -85,27 +88,7 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 		this.resource = resource;
 		is = inputStream;
 		this.options = options;
-		XMLParserPool pool = (XMLParserPool) options.get(XMLResource.OPTION_USE_PARSER_POOL);
-		@SuppressWarnings("unchecked")
-		Map<String, Boolean> parserFeatures = (Map<String, Boolean>) options.get(XMLResource.OPTION_PARSER_FEATURES);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> parserProperties = (Map<String, Object>) options.get(XMLResource.OPTION_PARSER_PROPERTIES);
-		parserFeatures = parserFeatures == null ? new HashMap<String, Boolean>() : parserFeatures;
-		parserProperties = parserProperties == null ? new HashMap<String, Object>() : parserProperties;
-
-		// Use custom extended error handler wrapper enabling concise distinction between well-formedness, validity and
-		// integrity problems
-		/*
-		 * !! Important Note !! Requires org.apache.xerces parser (but not com.sun.org.apache.xerces parser) to be used.
-		 */
-		parserProperties.put(Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_HANDLER_PROPERTY, new ExtendedErrorHandlerWrapper());
-
-		// HACK: reading encoding
-		String encoding = null;
-		if (!Boolean.FALSE.equals(options.get(XMLResource.OPTION_USE_DEPRECATED_METHODS))) {
-			encoding = getEncoding();
-			resource.setEncoding(encoding);
-		}
+		enableSchemaValidation = Boolean.TRUE.equals(options.get(ExtendedResource.OPTION_ENABLE_SCHEMA_VALIDATION));
 
 		// If an applicable model converter is around let it migrate the document prior to parsing it
 		InputSource inputSource = null;
@@ -116,11 +99,21 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 				inputSource = converter.convertLoad(resource, is, options);
 				didConvert = true;
 			} catch (Exception ex) {
-				XMIException exception = new XMIException(ex);
-				resource.getErrors().add(exception);
+				PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 			} finally {
 				converter.dispose();
+
+				// Renew input stream as current one has been consumed by the model converter
+				URIConverter uriConverter = EcoreResourceUtil.getURIConverter(resource.getResourceSet());
+				is = uriConverter.createInputStream(resource.getURI(), options);
 			}
+		}
+
+		// HACK: reading encoding
+		String encoding = null;
+		if (!Boolean.FALSE.equals(options.get(XMLResource.OPTION_USE_DEPRECATED_METHODS))) {
+			encoding = getEncoding();
+			resource.setEncoding(encoding);
 		}
 
 		if (inputSource == null) {
@@ -133,7 +126,46 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 			inputSource.setEncoding(encoding);
 		}
 
+		// Retrieve application-defined XMLReader features (see http://xerces.apache.org/xerces2-j/features.html for
+		// available features and their details)
+		@SuppressWarnings("unchecked")
+		Map<String, Boolean> parserFeatures = (Map<String, Boolean>) options.get(XMLResource.OPTION_PARSER_FEATURES);
+		parserFeatures = parserFeatures == null ? new HashMap<String, Boolean>() : parserFeatures;
+
+		// Retrieve application-defined XMLReader properties (see http://xerces.apache.org/xerces2-j/properties.html
+		// for available properties and their details)
+		@SuppressWarnings("unchecked")
+		Map<String, Object> parserProperties = (Map<String, Object>) options.get(XMLResource.OPTION_PARSER_PROPERTIES);
+		parserProperties = parserProperties == null ? new HashMap<String, Object>() : parserProperties;
+
+		// Perform namespace processing (prefixes will be stripped off element and attribute names and replaced with the
+		// corresponding namespace URIs) but do not report attributes used for namespace declarations, and do not report
+		// original prefixed names
+		parserFeatures.put(Constants.SAX_FEATURE_PREFIX + Constants.NAMESPACES_FEATURE, true);
+		parserFeatures.put(Constants.SAX_FEATURE_PREFIX + Constants.NAMESPACE_PREFIXES_FEATURE, false);
+
+		// Optionally enable schema validation unless document has been migrated before; in this case schema validation
+		// is subject to the applicable model converter
+		if (enableSchemaValidation && !didConvert) {
+			parserFeatures.put(Constants.SAX_FEATURE_PREFIX + Constants.VALIDATION_FEATURE, true);
+			parserFeatures.put(Constants.XERCES_FEATURE_PREFIX + Constants.SCHEMA_VALIDATION_FEATURE, true);
+			parserProperties.put(Constants.JAXP_PROPERTY_PREFIX + Constants.SCHEMA_LANGUAGE, XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		}
+
+		// Make sure that parsing is continued even in case of fatal errors (typically XML well-formedness problems);
+		// the idea is to always load XML documents as far as possible rather than not loading the entire document just
+		// because a potentially small part of it is not good
+		parserFeatures.put(Constants.XERCES_FEATURE_PREFIX + Constants.CONTINUE_AFTER_FATAL_ERROR_FEATURE, true);
+
+		// Use custom extended error handler wrapper enabling concise distinction between well-formedness, validity and
+		// integrity problems
+		/*
+		 * !! Important Note !! Requires org.apache.xerces parser (but not com.sun.org.apache.xerces parser) to be used.
+		 */
+		parserProperties.put(Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_HANDLER_PROPERTY, new ExtendedErrorHandlerWrapper());
+
 		DefaultHandler handler = null;
+		XMLParserPool pool = (XMLParserPool) options.get(XMLResource.OPTION_USE_PARSER_POOL);
 		try {
 			if (pool != null) {
 				// Use the pool to retrieve the parser
@@ -165,14 +197,10 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 
 			parser.parse(inputSource, handler);
 		} catch (SAXException exception) {
-			// Ignore SAXParseExceptions; they indicate XML well-formedness and validity problems in resource to be
-			// loaded and therefore should be handled in handleErrors() rather than giving raise to exceptions
-			if (!(exception instanceof SAXParseException)) {
-				if (exception.getException() != null) {
-					throw new Resource.IOWrappedException(exception.getException());
-				} else {
-					throw new Resource.IOWrappedException(exception);
-				}
+			if (exception.getException() != null) {
+				throw new Resource.IOWrappedException(exception.getException());
+			} else {
+				throw new Resource.IOWrappedException(exception);
 			}
 		} catch (ParserConfigurationException exception) {
 			throw new Resource.IOWrappedException(exception);
@@ -199,29 +227,16 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 	 */
 	@Override
 	protected SAXParser makeParser() throws ParserConfigurationException, SAXException {
+		// Create an instance of org.apache.xerces.parsers.SAXParser
+		/*
+		 * !! Important Note !! We must override makeParser() - even if we wouldn't have any functional changes to apply
+		 * - in order to make sure that SAXParserFactory.newInstance() gets invoked from this plug-in which has a
+		 * dependency to the org.apache.xerces plug-in and all its classes on the classpath. Otherwise we wouldn't
+		 * obtain an instance of org.apache.xerces.jaxp.SAXParserFactoryImpl as intended but fall back to the default
+		 * implementation com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl.
+		 */
 		SAXParserFactory factory = SAXParserFactory.newInstance();
-		factory.setNamespaceAware(true);
-
-		// Validate document only if it has not been migrated before; in this case the validation is subject to the
-		// applicable model converter
-		factory.setValidating(!didConvert && isValidating());
-
 		return factory.newSAXParser();
-	}
-
-	/**
-	 * Specifies if the {@link SAXParser parser} used by this {@link XMLLoad XML deserializer} will validate documents
-	 * as they are parsed.
-	 * <p>
-	 * This implementation returns <code>true</code> by default. Clients may override this method and adapt its behavior
-	 * according to their needs.
-	 * </p>
-	 * 
-	 * @return <code>true</code> if the {@link SAXParser parser} used by this {@link XMLLoad XML deserializer} will
-	 *         validate documents as they are parsed; <code>false</code> otherwise.
-	 */
-	protected boolean isValidating() {
-		return true;
 	}
 
 	@Override

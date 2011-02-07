@@ -36,7 +36,7 @@
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference hummingbird20.ecore#//typemodel/Platform/componentTypes"/>
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference hummingbird20.ecore#//typemodel/Platform/interfaces"/>
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute hummingbird20.ecore#//typemodel/Platform/mixed"/>
-        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference hummingbird20.ecore#//typemodel/Platform/xsiSchemaLocation"/>
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference hummingbird20.ecore#//typemodel/Platform/xSISchemaLocation"/>
       </genClasses>
       <genClasses ecoreClass="hummingbird20.ecore#//typemodel/ComponentType">
         <genFeatures notify="false" createChild="false" propertySortChoices="true"
@@ -67,7 +67,7 @@
       <genClasses ecoreClass="hummingbird20.ecore#//instancemodel/Application">
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference hummingbird20.ecore#//instancemodel/Application/components"/>
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute hummingbird20.ecore#//instancemodel/Application/mixed"/>
-        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference hummingbird20.ecore#//instancemodel/Application/xsiSchemaLocation"/>
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference hummingbird20.ecore#//instancemodel/Application/xSISchemaLocation"/>
       </genClasses>
       <genClasses ecoreClass="hummingbird20.ecore#//instancemodel/Component">
         <genFeatures notify="false" createChild="false" propertySortChoices="true"

@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
 
+import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -26,6 +27,8 @@ import junit.framework.TestSuite;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sphinx.testutils.internal.Activator;
 import org.eclipse.ui.PlatformUI;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.model.InitializationError;
 import org.osgi.framework.Bundle;
 
 @SuppressWarnings({ "nls" })
@@ -81,7 +84,10 @@ public class AutoTestSuite {
 
 				try {
 					Class<?> c = loadClass(plugin, classname);
-					if (isInstantiableTest(c)) {
+
+					if (isJUnit4Test(c)) {
+						ts.addTest(new JUnit4TestAdapter(c));
+					} else if (isInstantiableTest(c)) {
 						ts.addTestSuite((Class<? extends TestCase>) c);
 						i++;
 					}
@@ -108,6 +114,18 @@ public class AutoTestSuite {
 
 	private static boolean isWorkbenchRunning() {
 		return PlatformUI.isWorkbenchRunning();
+	}
+
+	private static boolean isJUnit4Test(Class<?> c) {
+		try {
+			new BlockJUnit4ClassRunner(c);
+
+			return true;
+		} catch (InitializationError e) {
+			return false;
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
 	}
 
 	private static boolean isInstantiableTest(Class<?> testCandidate) {

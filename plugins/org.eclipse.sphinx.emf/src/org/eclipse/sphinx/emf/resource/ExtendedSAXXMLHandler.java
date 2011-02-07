@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMLHandler;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 public class ExtendedSAXXMLHandler extends SAXXMLHandler {
 
@@ -108,5 +109,20 @@ public class ExtendedSAXXMLHandler extends SAXXMLHandler {
 			}
 		}
 		return true;
+	}
+
+	/*
+	 * Overridden to make sure that parsing is continued even in case of fatal errors (typically XML well-formedness
+	 * problems). The idea is to always load XML documents as far as possible rather than not loading the entire
+	 * document just because a potentially small part of it is not good.
+	 * @see org.eclipse.emf.ecore.xmi.impl.XMLHandler#fatalError(org.xml.sax.SAXParseException)
+	 */
+	@Override
+	public void fatalError(SAXParseException e) throws SAXException {
+		try {
+			super.fatalError(e);
+		} catch (SAXException ex) {
+			// Ignore exception
+		}
 	}
 }

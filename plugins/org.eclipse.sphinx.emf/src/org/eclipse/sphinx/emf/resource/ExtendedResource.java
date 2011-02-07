@@ -25,6 +25,8 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 
@@ -60,10 +62,18 @@ public interface ExtendedResource {
 	String URI_FRAGMENT_SEPARATOR = "#"; //$NON-NLS-1$
 
 	/**
-	 * Specifies whether unloading of this resource is to be performed in a limiting but memory-optimized way. The
-	 * default is <code>Boolean.FALSE</code>.
+	 * TODO JavaDoc
+	 */
+	String OPTION_RESOURCE_VERSION_DESCRIPTOR = "RESOURCE_VERSION_DESCRIPTOR"; //$NON-NLS-1$
+
+	/**
+	 * Specifies whether unloading of this resource is to be performed in a limited but memory-optimized way. Requires
+	 * that the resource's {@link ResourceImpl#unloaded(InternalEObject) unloaded(InternalEObject)} method is overridden
+	 * and delegates to {@link ExtendedResourceAdapter#unloaded(EObject)}. The default of this option is
+	 * <code>Boolean.FALSE</code>.
 	 * <p>
-	 * This option involves the following implications:
+	 * This option involves the following behavioral modifications wrt to regular
+	 * {@link ResourceImpl#unloaded(InternalEObject) unload strategy}:
 	 * <ul>
 	 * <li>Suppression of proxy creation for unloaded {@link EObject}s (for saving non negligible amounts of memory
 	 * consumption for proxy URIs required otherwise)</li>
@@ -79,6 +89,8 @@ public interface ExtendedResource {
 	 * when a project or the entire workbench is closed), proxies are not needed and not creating them can reduce memory
 	 * consumption quite dramatically.
 	 * <p>
+	 * 
+	 * @see ResourceImpl#unloaded()
 	 */
 	String OPTION_UNLOAD_MEMORY_OPTIMIZED = "UNLOAD_MEMORY_OPTIMIZED"; //$NON-NLS-1$
 
@@ -126,6 +138,38 @@ public interface ExtendedResource {
 	 */
 	String OPTION_XML_VALIDITY_PROBLEM_SEVERITY = "XML_VALIDITY_PROBLEM_SEVERITY"; //$NON-NLS-1$
 
+	/**
+	 * Specifies weather the resource should be validated with a schema during loading. Requires that
+	 * {@link ExtendedXMLLoadImpl} or {@link ExtendedXMILoadImpl}, or a subtype of them, is used as
+	 * {@link XMLResourceImpl#createXMLLoad() loader} for this resource. The default of this option is
+	 * <code>Boolean.FALSE</code>.
+	 * <p>
+	 * The schema used for validation is expected to be defined by a xsi:schemaLocation or xsi:noNamespaceSchemaLocation
+	 * attribute on the resource's root element. The default strategy for retrieving the schema is to resolve the schema
+	 * location system identifier relative to the resource's URI. Other resolution strategies can be supported by
+	 * providing a {@link SchemaLocationURIHandler} as {@link XMLResource#OPTION_URI_HANDLER}.
+	 * </p>
+	 * 
+	 * @see XMLResource#OPTION_URI_HANDLER
+	 * @see SchemaLocationURIHandler
+	 * @see XMLResourceImpl#createXMLLoad()
+	 * @see ExtendedXMLLoadImpl
+	 * @see ExtendedXMILoadImpl
+	 */
+	String OPTION_ENABLE_SCHEMA_VALIDATION = "ENABLE_SCHEMA_VALIDATION"; //$NON-NLS-1$
+
+	/**
+	 * Specifies a string to string map with namespace and system identifier pairs that are allowed to be written in the
+	 * resource's xsi:schemaLocation/xsi:noNamespaceSchemaLocation during saving. Implies that
+	 * {@link XMLResource#OPTION_SCHEMA_LOCATION} is enabled and requires that {@link ExtendedXMLSaveImpl} or
+	 * {@link ExtendedXMISaveImpl}, or a subtype of them, is used as {@link XMLResourceImpl#createXMLSave() serializer}
+	 * for this resource.
+	 * 
+	 * @see XMLResource#OPTION_SCHEMA_LOCATION
+	 * @see XMLResourceImpl#createXMLSave()
+	 * @see ExtendedXMLSaveImpl#addNamespaceDeclarations()
+	 * @see ExtendedXMISaveImpl
+	 */
 	String OPTION_SCHEMA_LOCATION_CATALOG = "SCHEMA_LOCATION_CATALOG"; //$NON-NLS-1$
 
 	/**

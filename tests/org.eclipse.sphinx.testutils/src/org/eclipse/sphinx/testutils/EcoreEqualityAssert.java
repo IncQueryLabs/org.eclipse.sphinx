@@ -32,7 +32,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil.EqualityHelper;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
-import org.eclipse.emf.validation.internal.modeled.model.validation.Feature;
 
 /**
  * This class is a copied and modified version of {@link EqualityHelper} and provides a set of equality assert methods

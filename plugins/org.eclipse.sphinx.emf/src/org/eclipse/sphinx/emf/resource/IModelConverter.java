@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.emf.resource;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
@@ -81,8 +82,9 @@ public interface IModelConverter {
 	 * @param options
 	 *            The load options.
 	 * @return An {@link InputSource} that may be later processed by the parser.
+	 * @throws IOException
 	 */
-	public InputSource convertLoad(XMLResource resource, InputStream inputStream, Map<?, ?> options);
+	public InputSource convertLoad(XMLResource resource, InputStream inputStream, Map<?, ?> options) throws IOException;
 
 	/**
 	 * During a save operation, writes to given {@link OutputStream} with specified encoding the content of given
@@ -103,11 +105,10 @@ public interface IModelConverter {
 	 * @param options
 	 *            The save options.
 	 * @see java.io.PipedOutputStream
-	 * @throws Exception
-	 *             Any exception raised.
+	 * @throws IOException
 	 */
 	public void convertSave(XMLString xml, int flushThreshold, URI uri, OutputStream outputStream, String encoding, XMLHelper helper,
-			Map<?, ?> options) throws Exception;
+			Map<?, ?> options) throws IOException;
 
 	/**
 	 * Provides a hook for adding additional attributes to the model root element during the save operation for

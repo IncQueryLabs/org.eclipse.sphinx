@@ -27,11 +27,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
+
 import org.apache.xerces.impl.Constants;
-import org.apache.xerces.parsers.SAXParser;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.xmi.XMIException;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLHelperImpl;
@@ -44,10 +47,12 @@ import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.xml.sax.InputSource;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * A base implementation which provides default implementations of the IModelConverter methods.
@@ -109,114 +114,133 @@ public abstract class AbstractModelConverter implements IModelConverter {
 		return true;
 	}
 
-	public InputSource convertLoad(XMLResource resource, InputStream inputStream, Map<?, ?> options) {
-		InputStream converted = doConvertLoad(resource, inputStream, options);
-		if (converted != inputStream) {
-			// This save option will enable us to detect that we have to convert back to another version
-			resource.getDefaultSaveOptions().put(OPTION_RESOURCE_VERSION_DESCRIPTOR, getResourceVersionDescriptor());
-		}
-		return new InputSource(converted);
+	protected XMIException toXMIException(Resource resource, Exception ex) {
+		String location = resource.getURI() == null ? null : resource.getURI().toString();
+		return new XMIException(ex, location, 1, 1);
 	}
 
-	protected InputStream doConvertLoad(XMLResource resource, InputStream inputStream, Map<?, ?> options) {
+	public InputSource convertLoad(XMLResource resource, InputStream inputStream, Map<?, ?> options) throws IOException {
 		try {
-			// Create SAX builder
-			SAXBuilder builder = new SAXBuilder(SAXParser.class.getName());
+			InputStream converted = doConvertLoad(resource, inputStream, options);
 
-			// Set features and properties
-			@SuppressWarnings("unchecked")
-			Map<String, Boolean> parserFeatures = (Map<String, Boolean>) options.get(XMLResource.OPTION_PARSER_FEATURES);
-			if (parserFeatures != null) {
-				for (String feature : parserFeatures.keySet()) {
-					builder.setFeature(feature, parserFeatures.get(feature).booleanValue());
-				}
+			// This save option will enable us to detect that we have to convert back to some older version
+			resource.getDefaultSaveOptions().put(OPTION_RESOURCE_VERSION_DESCRIPTOR, getResourceVersionDescriptor());
+
+			return new InputSource(converted);
+		} catch (JDOMException ex) {
+			throw new Resource.IOWrappedException(ex);
+		}
+	}
+
+	protected InputStream doConvertLoad(XMLResource resource, InputStream inputStream, Map<?, ?> options) throws IOException, JDOMException {
+		// Create SAX builder and XML handler
+		SAXBuilder builder = makeBuilder();
+		DefaultHandler handler = makeDefaultHandler(resource, options);
+
+		// Retrieve and set application-defined XMLReader features (see http://xerces.apache.org/xerces2-j/features.html
+		// for available features and their details)
+		@SuppressWarnings("unchecked")
+		Map<String, Boolean> parserFeatures = (Map<String, Boolean>) options.get(XMLResource.OPTION_PARSER_FEATURES);
+		if (parserFeatures != null) {
+			for (String feature : parserFeatures.keySet()) {
+				builder.setFeature(feature, parserFeatures.get(feature).booleanValue());
 			}
-			@SuppressWarnings("unchecked")
-			Map<String, Object> parserProperties = (Map<String, Object>) options.get(XMLResource.OPTION_PARSER_PROPERTIES);
-			if (parserProperties != null) {
-				for (String property : parserProperties.keySet()) {
-					builder.setProperty(property, parserProperties.get(property));
-				}
+		}
+
+		// Retrieve and set application-defined XMLReader properties (see
+		// http://xerces.apache.org/xerces2-j/properties.html available properties and their details)
+		@SuppressWarnings("unchecked")
+		Map<String, Object> parserProperties = (Map<String, Object>) options.get(XMLResource.OPTION_PARSER_PROPERTIES);
+		if (parserProperties != null) {
+			for (String property : parserProperties.keySet()) {
+				builder.setProperty(property, parserProperties.get(property));
 			}
+		}
 
-			// Activate schema validation and schema location resolution
-			builder.setValidation(isValidating());
-			builder.setEntityResolver(new ExtendedSAXXMLHandler(resource, new XMLHelperImpl(), options));
+		// Optionally enable schema validation and register XML handler for resolving schema locations
+		if (Boolean.TRUE.equals(options.get(ExtendedResource.OPTION_ENABLE_SCHEMA_VALIDATION))) {
+			builder.setValidation(true);
+			builder.setFeature(Constants.XERCES_FEATURE_PREFIX + Constants.SCHEMA_VALIDATION_FEATURE, true);
+			builder.setProperty(Constants.JAXP_PROPERTY_PREFIX + Constants.SCHEMA_LANGUAGE, XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			builder.setEntityResolver(handler);
+		}
 
-			// Use custom extended error handler wrapper enabling concise distinction between well-formedness, validity
-			// and integrity problems
-			/*
-			 * !! Important Note !! Requires org.apache.xerces parser (but not com.sun.org.apache.xerces parser) to be
-			 * used.
-			 */
-			builder.setProperty(Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_HANDLER_PROPERTY, new ExtendedErrorHandlerWrapper());
+		// Make sure that parsing is continued even in case of fatal errors (typically XML well-formedness problems);
+		// the idea is to always load XML documents as far as possible rather than not loading the entire document just
+		// because a potentially small part of it is not good
+		builder.setFeature(Constants.XERCES_FEATURE_PREFIX + Constants.CONTINUE_AFTER_FATAL_ERROR_FEATURE, true);
 
-			// Use custom error handler enabling anomalies to be redirected to resource errors and warnings rather than
-			// ending up in exceptions being raised
-			builder.setErrorHandler(new ResourceErrorHandler(resource));
+		// Use custom extended error handler wrapper enabling concise distinction between well-formedness, validity
+		// and integrity problems
+		/*
+		 * !! Important Note !! Requires org.apache.xerces parser (but not com.sun.org.apache.xerces parser) to be used.
+		 */
+		builder.setProperty(Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_HANDLER_PROPERTY, new ExtendedErrorHandlerWrapper());
 
-			final Document document = builder.build(inputStream);
-			List<Element> elementsToConvert = new ArrayList<Element>();
-			for (Iterator<?> iterator = document.getRootElement().getDescendants(); iterator.hasNext();) {
-				Object next = iterator.next();
-				if (next instanceof Element) {
-					Element element = (Element) next;
-					elementsToConvert.add(element);
-				}
+		// Register XML handler for capturing anomalies encountered during parsing as errors and warnings on resource
+		builder.setErrorHandler(handler);
+
+		// Parse given XML input stream into DOM structure
+		final Document document = builder.build(inputStream);
+
+		// Iterate over all DOM elements and let them be converted
+		List<Element> elementsToConvert = new ArrayList<Element>();
+		for (Iterator<?> iterator = document.getRootElement().getDescendants(); iterator.hasNext();) {
+			Object next = iterator.next();
+			if (next instanceof Element) {
+				Element element = (Element) next;
+				elementsToConvert.add(element);
 			}
-			for (Element element : elementsToConvert) {
+		}
+		for (Element element : elementsToConvert) {
+			try {
 				convertLoadElement(element, options);
+			} catch (Exception ex) {
+				resource.getErrors().add(toXMIException(resource, ex));
 			}
+		}
 
-			PipedInputStream pipedInputStream = new PipedInputStream();
-			final PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream);
-			final XMLOutputter out = new XMLOutputter(Format.getPrettyFormat());
-			Thread thread = new Thread(new Runnable() {
-				public void run() {
+		// Write converted DOM structure into an output stream which is connected to a new input stream
+		PipedInputStream pipedInputStream = new PipedInputStream();
+		final PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream);
+		final XMLOutputter out = new XMLOutputter(Format.getPrettyFormat());
+		Thread thread = new Thread(new Runnable() {
+			public void run() {
+				try {
+					out.output(document, pipedOutputStream);
+				} catch (IOException ex) {
+					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+				} finally {
 					try {
-						out.output(document, pipedOutputStream);
+						pipedOutputStream.close();
 					} catch (IOException ex) {
-						PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-					} finally {
-						try {
-							pipedOutputStream.close();
-						} catch (IOException ex) {
-							PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
-						}
+						PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
 					}
 				}
-			}, "Converting " + resource.getURI().toString()); //$NON-NLS-1$
-			thread.start();
+			}
+		}, "Converting " + resource.getURI().toString()); //$NON-NLS-1$
+		thread.start();
 
-			return pipedInputStream;
-		} catch (Exception ex) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-		}
-
-		// Try to survive without model conversion
-		return inputStream;
+		// Return new input stream yielding converted XML document
+		return pipedInputStream;
 	}
 
-	/**
-	 * Specifies if the {@link SAXBuilder builder} used by this {@link IModelConverter model converter} will validate
-	 * documents as they are parsed.
-	 * <p>
-	 * This implementation returns <code>true</code> by default. Clients may override this method and adapt its behavior
-	 * according to their needs.
-	 * </p>
-	 * 
-	 * @return <code>true</code> if the {@link SAXBuilder builder} used by this {@link IModelConverter model converter}
-	 *         will validate documents as they are parsed; <code>false</code> otherwise.
-	 */
-	protected boolean isValidating() {
-		return true;
+	protected SAXBuilder makeBuilder() {
+		return new SAXBuilder(org.apache.xerces.parsers.SAXParser.class.getName());
 	}
 
+	protected DefaultHandler makeDefaultHandler(XMLResource resource, Map<?, ?> options) {
+		return new ExtendedSAXXMLHandler(resource, new XMLHelperImpl(), options);
+	}
+
+	// TODO Pass resource as additional parameter and add enable exceptions to added to the resource's error/warning
+	// lists rather than logging them in error log
 	protected abstract void convertLoadElement(Element element, Map<?, ?> options);
 
 	public void convertSave(final XMLString xml, final int flushThreshold, URI uri, OutputStream outputStream, final String encoding,
-			final XMLHelper helper, Map<?, ?> options) {
+			final XMLHelper helper, Map<?, ?> options) throws IOException {
 		try {
+			// Write given XML string into an output stream which is connected to a new input stream
 			PipedInputStream pipedInputStream = new PipedInputStream();
 			final PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream);
 			Thread thread = new Thread(new Runnable() {
@@ -243,7 +267,10 @@ public abstract class AbstractModelConverter implements IModelConverter {
 			}, "Converting " + uri.toString()); //$NON-NLS-1$
 			thread.start();
 
+			// Parser new XML input stream into DOM structure
 			final Document document = new SAXBuilder().build(pipedInputStream);
+
+			// Iterate over all DOM elements and let them be converted
 			List<Element> elementsToConvert = new ArrayList<Element>();
 			for (Iterator<?> iterator = document.getRootElement().getDescendants(); iterator.hasNext();) {
 				Object next = iterator.next();
@@ -253,14 +280,25 @@ public abstract class AbstractModelConverter implements IModelConverter {
 				}
 			}
 			for (Element element : elementsToConvert) {
-				convertSaveElement(element, options);
+				try {
+					convertSaveElement(element, options);
+				} catch (Exception ex) {
+					// TODO Pass resource rather than just URI to convertSave and add exception to the resource's error
+					// list rather than logging it in error log
+					// resource.getErrors().add(toXMIException(resource, ex));
+					PlatformLogUtil.logAsError(Activator.getDefault(), ex);
+				}
 			}
+
+			// Write converted DOM structure into given XML output stream
 			new XMLOutputter(Format.getPrettyFormat()).output(document, outputStream);
 		} catch (Exception ex) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			throw new Resource.IOWrappedException(ex);
 		}
 	}
 
+	// TODO Pass resource as additional parameter and add enable exceptions to added to the resource's error/warning
+	// lists rather than logging them in error log
 	protected abstract void convertSaveElement(Element element, Map<?, ?> options);
 
 	public void addExtraAttributesToSavedRootElement(XMLString rootElement, Map<?, ?> options) {
