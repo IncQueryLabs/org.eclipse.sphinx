@@ -18,6 +18,7 @@
 package org.eclipse.sphinx.emf.metamodel;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -833,7 +834,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	}
 
 	/**
-	 * @param wrapperItemProvider
+	 * @param transientItemProvider
 	 * @return
 	 */
 	public IMetaModelDescriptor getDescriptor(TransientItemProvider transientItemProvider) {
@@ -851,24 +852,24 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	public IMetaModelDescriptor getDescriptor(final URI namespaceURI) {
 		if (namespaceURI != null) {
 			synchronized (fMetaModelDescriptors) {
-				IMetaModelDescriptor descriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
-					public boolean accept(IMetaModelDescriptor descriptor) {
-						if (namespaceURI.toString().matches(descriptor.getNamespace())) {
+				IMetaModelDescriptor mmDescriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
+					public boolean accept(IMetaModelDescriptor mmDescriptor) {
+						if (namespaceURI.toString().matches(mmDescriptor.getNamespace())) {
 							return true;
 						}
-						if (namespaceURI.toString().matches(descriptor.getEPackageNsURIPattern())) {
+						if (namespaceURI.toString().matches(mmDescriptor.getEPackageNsURIPattern())) {
 							return true;
 						}
-						for (URI compatibleNamepaceURI : descriptor.getCompatibleNamespaceURIs()) {
+						for (URI compatibleNamepaceURI : mmDescriptor.getCompatibleNamespaceURIs()) {
 							if (namespaceURI.toString().matches(compatibleNamepaceURI.toString())) {
 								return true;
 							}
 						}
-						for (IMetaModelDescriptor compatibleDescriptor : descriptor.getCompatibleResourceVersionDescriptors()) {
-							if (namespaceURI.toString().matches(compatibleDescriptor.getNamespace())) {
+						for (IMetaModelDescriptor compatibleResourceVersionDescriptor : mmDescriptor.getCompatibleResourceVersionDescriptors()) {
+							if (namespaceURI.toString().matches(compatibleResourceVersionDescriptor.getNamespace())) {
 								return true;
 							}
-							if (namespaceURI.toString().matches(compatibleDescriptor.getEPackageNsURIPattern())) {
+							if (namespaceURI.toString().matches(compatibleResourceVersionDescriptor.getEPackageNsURIPattern())) {
 								return true;
 							}
 						}
@@ -877,16 +878,16 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 				});
 
 				// No static meta-model descriptor found?
-				if (descriptor == null) {
+				if (mmDescriptor == null) {
 					// Try to retrieve Ecore model behind given namespace and dynamically create a new meta-model
 					// descriptor
 					EPackage ePackage = EPackage.Registry.INSTANCE.getEPackage(namespaceURI.toString());
 					if (ePackage != null) {
-						descriptor = createDescriptor(ePackage);
-						addDescriptor(descriptor);
+						mmDescriptor = createDescriptor(ePackage);
+						addDescriptor(mmDescriptor);
 					}
 				}
-				return descriptor;
+				return mmDescriptor;
 			}
 		}
 		return null;
@@ -1035,6 +1036,50 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			descriptor = getDescriptor(resource);
 		}
 		return descriptor;
+	}
+
+	/**
+	 * Returns a {@link IMetaModelDescriptor descriptor} describing the version of specified {@link Resource resource}.
+	 * This is done by retrieving the resource's {@link EcoreResourceUtil#readModelNamespace(Resource) model namespace}
+	 * and finding a matching {@link IMetaModelDescriptor metamodel descriptor} or
+	 * {@link IMetaModelDescriptor#getCompatibleResourceVersionDescriptors() compatible resource version descriptor}.
+	 * 
+	 * @param resource
+	 *            The {@link Resource resource} whose version descriptor is to be retrieved.
+	 * @return The resource's {@link IMetaModelDescriptor version descriptor} or <code>null</code> if no such could be
+	 *         determined.
+	 * @see EcoreResourceUtil#readModelNamespace(Resource)
+	 * @see #getCompatibleResourceVersionDescriptors()
+	 */
+	public IMetaModelDescriptor getResourceVersionDescriptor(Resource resource) {
+		try {
+			String resourceNamespace = EcoreResourceUtil.readModelNamespace(resource);
+			if (resourceNamespace != null) {
+				IMetaModelDescriptor mmDescriptor = getDescriptor(new URI(resourceNamespace));
+				if (mmDescriptor != null) {
+					// Newly created resources typically match implemented metamodel version exactly
+					if (resourceNamespace.matches(mmDescriptor.getNamespace())) {
+						return mmDescriptor;
+					}
+					if (resourceNamespace.matches(mmDescriptor.getEPackageNsURIPattern())) {
+						return mmDescriptor;
+					}
+
+					// Resource version is older than but compatible with metamodel version
+					for (IMetaModelDescriptor compatibleResourceVersionDescriptor : mmDescriptor.getCompatibleResourceVersionDescriptors()) {
+						if (resourceNamespace.matches(compatibleResourceVersionDescriptor.getNamespace())) {
+							return compatibleResourceVersionDescriptor;
+						}
+						if (resourceNamespace.matches(compatibleResourceVersionDescriptor.getEPackageNsURIPattern())) {
+							return compatibleResourceVersionDescriptor;
+						}
+					}
+				}
+			}
+		} catch (URISyntaxException ex) {
+			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+		}
+		return null;
 	}
 
 	/**

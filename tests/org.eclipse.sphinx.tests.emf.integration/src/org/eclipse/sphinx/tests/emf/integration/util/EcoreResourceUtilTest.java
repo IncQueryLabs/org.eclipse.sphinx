@@ -112,7 +112,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 	@Override
 	protected void tearDown() throws Exception {
-		deleteExternalFile(SAMPLE_RESOURCE_URI_PLATFORM_META);
+		deleteExternalResource(SAMPLE_RESOURCE_URI_PLATFORM_META);
 
 		// Unload outside workspace resources manually (only resources inside workspace will be unloaded automatically)
 		if (retrievedOutsideWorkspaceHb20Root != null) {

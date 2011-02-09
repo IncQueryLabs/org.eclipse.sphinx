@@ -62,42 +62,55 @@ public interface ExtendedResource {
 	String URI_FRAGMENT_SEPARATOR = "#"; //$NON-NLS-1$
 
 	/**
-	 * TODO JavaDoc
+	 * Used for indicating the {@link IMetaModelDescriptor version} of specified {@link Resource resource}. Can be
+	 * either identical with the {@link IMetaModelDescriptor version} of the metamodel behind the resource content or
+	 * one of the {@link IMetaModelDescriptor#getCompatibleResourceVersionDescriptors() resource version descriptors
+	 * that are compatible with the metamodel version}.
 	 */
 	String OPTION_RESOURCE_VERSION_DESCRIPTOR = "RESOURCE_VERSION_DESCRIPTOR"; //$NON-NLS-1$
-
-	/**
-	 * Specifies whether unloading of this resource is to be performed in a limited but memory-optimized way. Requires
-	 * that the resource's {@link ResourceImpl#unloaded(InternalEObject) unloaded(InternalEObject)} method is overridden
-	 * and delegates to {@link ExtendedResourceAdapter#unloaded(EObject)}. The default of this option is
-	 * <code>Boolean.FALSE</code>.
-	 * <p>
-	 * This option involves the following behavioral modifications wrt to regular
-	 * {@link ResourceImpl#unloaded(InternalEObject) unload strategy}:
-	 * <ul>
-	 * <li>Suppression of proxy creation for unloaded {@link EObject}s (for saving non negligible amounts of memory
-	 * consumption for proxy URIs required otherwise)</li>
-	 * <li>Clearing all fields on unloaded {@link EObject}s (to make sure that they get garbage collected as fast as
-	 * possible)</li>
-	 * </ul>
-	 * </p>
-	 * <p>
-	 * Note that this kind of unload is not appropriate under all circumstances. More specifically, it must not be used
-	 * when a resource is to be reloaded (lazily or eagerly). In this case proxies are needed for being able to resolve
-	 * incoming cross-document references from other resources. However, when the complete ResourceSet is unloaded, or a
-	 * self-contained set of resources with no outgoing and incoming cross-document references (which typically happens
-	 * when a project or the entire workbench is closed), proxies are not needed and not creating them can reduce memory
-	 * consumption quite dramatically.
-	 * <p>
-	 * 
-	 * @see ResourceImpl#unloaded()
-	 */
-	String OPTION_UNLOAD_MEMORY_OPTIMIZED = "UNLOAD_MEMORY_OPTIMIZED"; //$NON-NLS-1$
 
 	/**
 	 * Specifies the target {@link IMetaModelDescriptor metamodel descriptor} identifier for this resource.
 	 */
 	String OPTION_TARGET_METAMODEL_DESCRIPTOR_ID = "TARGET_METAMODEL_DESCRIPTOR_ID"; //$NON-NLS-1$
+
+	/**
+	 * Specifies a string to string map with namespace and system identifier pairs that are allowed to be written in the
+	 * resource's xsi:schemaLocation/xsi:noNamespaceSchemaLocation during saving. Implies that
+	 * {@link XMLResource#OPTION_SCHEMA_LOCATION} is enabled and requires that {@link ExtendedXMLSaveImpl} or
+	 * {@link ExtendedXMISaveImpl}, or a subtype of them, is used as {@link XMLResourceImpl#createXMLSave() serializer}
+	 * for this resource.
+	 * 
+	 * @see XMLResource#OPTION_SCHEMA_LOCATION
+	 * @see XMLResourceImpl#createXMLSave()
+	 * @see ExtendedXMLSaveImpl#addNamespaceDeclarations()
+	 * @see ExtendedXMISaveImpl
+	 */
+	String OPTION_SCHEMA_LOCATION_CATALOG = "SCHEMA_LOCATION_CATALOG"; //$NON-NLS-1$
+
+	/**
+	 * Specifies weather the resource should be validated with a schema during loading. Requires that
+	 * {@link ExtendedXMLLoadImpl} or {@link ExtendedXMILoadImpl}, or a subtype of them, is used as
+	 * {@link XMLResourceImpl#createXMLLoad() loader} for this resource. The default of this option is
+	 * <code>Boolean.FALSE</code>.
+	 * <p>
+	 * The schema used for validation is expected to be defined by a xsi:schemaLocation or xsi:noNamespaceSchemaLocation
+	 * attribute on the resource's root element. The default strategy for retrieving the schema is to resolve the schema
+	 * location system identifier relative to the resource's URI. Other resolution strategies can be supported by
+	 * providing a {@link SchemaLocationURIHandler} as {@link XMLResource#OPTION_URI_HANDLER} as load option. In the
+	 * latter case it is recommended to provide an adequately initialized {@link #OPTION_RESOURCE_VERSION_DESCRIPTOR}
+	 * along with that. It enables the {@link SchemaLocationURIHandler} to resolve unknown schema location system
+	 * identifiers by falling back to a known system identifier corresponding to the resource's
+	 * {@link IMetaModelDescriptor#getNamespace() namespace}.
+	 * </p>
+	 * 
+	 * @see XMLResource#OPTION_URI_HANDLER
+	 * @see SchemaLocationURIHandler
+	 * @see XMLResourceImpl#createXMLLoad()
+	 * @see ExtendedXMLLoadImpl
+	 * @see ExtendedXMILoadImpl
+	 */
+	String OPTION_ENABLE_SCHEMA_VALIDATION = "ENABLE_SCHEMA_VALIDATION"; //$NON-NLS-1$
 
 	/**
 	 * Specifies the maximum number of errors and warnings that are to be converted to problem markers on underlying
@@ -139,38 +152,32 @@ public interface ExtendedResource {
 	String OPTION_XML_VALIDITY_PROBLEM_SEVERITY = "XML_VALIDITY_PROBLEM_SEVERITY"; //$NON-NLS-1$
 
 	/**
-	 * Specifies weather the resource should be validated with a schema during loading. Requires that
-	 * {@link ExtendedXMLLoadImpl} or {@link ExtendedXMILoadImpl}, or a subtype of them, is used as
-	 * {@link XMLResourceImpl#createXMLLoad() loader} for this resource. The default of this option is
+	 * Specifies whether unloading of this resource is to be performed in a limited but memory-optimized way. Requires
+	 * that the resource's {@link ResourceImpl#unloaded(InternalEObject) unloaded(InternalEObject)} method is overridden
+	 * and delegates to {@link ExtendedResourceAdapter#unloaded(EObject)}. The default of this option is
 	 * <code>Boolean.FALSE</code>.
 	 * <p>
-	 * The schema used for validation is expected to be defined by a xsi:schemaLocation or xsi:noNamespaceSchemaLocation
-	 * attribute on the resource's root element. The default strategy for retrieving the schema is to resolve the schema
-	 * location system identifier relative to the resource's URI. Other resolution strategies can be supported by
-	 * providing a {@link SchemaLocationURIHandler} as {@link XMLResource#OPTION_URI_HANDLER}.
+	 * This option involves the following behavioral modifications wrt to regular
+	 * {@link ResourceImpl#unloaded(InternalEObject) unload strategy}:
+	 * <ul>
+	 * <li>Suppression of proxy creation for unloaded {@link EObject}s (for saving non negligible amounts of memory
+	 * consumption for proxy URIs required otherwise)</li>
+	 * <li>Clearing all fields on unloaded {@link EObject}s (to make sure that they get garbage collected as fast as
+	 * possible)</li>
+	 * </ul>
 	 * </p>
+	 * <p>
+	 * Note that this kind of unload is not appropriate under all circumstances. More specifically, it must not be used
+	 * when a resource is to be reloaded (lazily or eagerly). In this case proxies are needed for being able to resolve
+	 * incoming cross-document references from other resources. However, when the complete ResourceSet is unloaded, or a
+	 * self-contained set of resources with no outgoing and incoming cross-document references (which typically happens
+	 * when a project or the entire workbench is closed), proxies are not needed and not creating them can reduce memory
+	 * consumption quite dramatically.
+	 * <p>
 	 * 
-	 * @see XMLResource#OPTION_URI_HANDLER
-	 * @see SchemaLocationURIHandler
-	 * @see XMLResourceImpl#createXMLLoad()
-	 * @see ExtendedXMLLoadImpl
-	 * @see ExtendedXMILoadImpl
+	 * @see ResourceImpl#unloaded()
 	 */
-	String OPTION_ENABLE_SCHEMA_VALIDATION = "ENABLE_SCHEMA_VALIDATION"; //$NON-NLS-1$
-
-	/**
-	 * Specifies a string to string map with namespace and system identifier pairs that are allowed to be written in the
-	 * resource's xsi:schemaLocation/xsi:noNamespaceSchemaLocation during saving. Implies that
-	 * {@link XMLResource#OPTION_SCHEMA_LOCATION} is enabled and requires that {@link ExtendedXMLSaveImpl} or
-	 * {@link ExtendedXMISaveImpl}, or a subtype of them, is used as {@link XMLResourceImpl#createXMLSave() serializer}
-	 * for this resource.
-	 * 
-	 * @see XMLResource#OPTION_SCHEMA_LOCATION
-	 * @see XMLResourceImpl#createXMLSave()
-	 * @see ExtendedXMLSaveImpl#addNamespaceDeclarations()
-	 * @see ExtendedXMISaveImpl
-	 */
-	String OPTION_SCHEMA_LOCATION_CATALOG = "SCHEMA_LOCATION_CATALOG"; //$NON-NLS-1$
+	String OPTION_UNLOAD_MEMORY_OPTIMIZED = "UNLOAD_MEMORY_OPTIMIZED"; //$NON-NLS-1$
 
 	/**
 	 * Returns the map of options that, in addition to the overriding options specified during load, are used to to

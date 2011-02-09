@@ -59,7 +59,7 @@ public class TestFileAccessor {
 		Path inputFilePath = new Path(INPUT_DIR + IPath.SEPARATOR + inputFileName);
 		URL url = FileLocator.find(targetPlugin.getBundle(), inputFilePath, null);
 		if (url == null) {
-			return null;
+			throw new FileNotFoundException(inputFileName);
 		}
 
 		if (fileScheme) {

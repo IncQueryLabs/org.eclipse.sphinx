@@ -195,7 +195,6 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 				Resource resource = helper.getResource();
 				if (resource != null && resource.getContents().size() >= 1) {
 					EObject schemaLocationRoot = getSchemaLocationRoot(resource.getContents().get(0));
-					declareXSI = true;
 
 					EReference xsiSchemaLocationMapFeature = extendedMetaData.getXSISchemaLocationMapFeature(schemaLocationRoot.eClass());
 					if (xsiSchemaLocationMapFeature != null) {
@@ -209,6 +208,8 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 								String location = entry.getValue();
 								URI locationURI = URI.createURI(location);
 								if (namespace == null) {
+									declareXSI = true;
+
 									xsiNoNamespaceSchemaLocation = helper.deresolve(locationURI).toString();
 								} else {
 									// Need to adjust current schema namespace according to applicable model converter?
@@ -261,6 +262,8 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 									}
 
 									if (locationURI != null) {
+										declareXSI = true;
+
 										if (xsiSchemaLocation.length() > 0) {
 											xsiSchemaLocation.append(' ');
 										}
@@ -291,72 +294,76 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 
 				if (noNamespacePackage == ePackage) {
 					if (ePackage.eResource() != null && !handledBySchemaLocationMap.containsKey(null)) {
-						declareXSI = true;
 						if (javaImplementationLocation != null) {
 							xsiNoNamespaceSchemaLocation = javaImplementationLocation;
+						} else if (schemaLocationCatalog != null) {
+							// Retrieve schema location corresponding to no namespace from schema location catalog
+							xsiNoNamespaceSchemaLocation = schemaLocationCatalog.get(null);
+							if (xsiNoNamespaceSchemaLocation == null) {
+								PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException(
+										"Schema location catalog entry for no namespace (null) is missing")); //$NON-NLS-1$ 
+							}
 						} else {
 							xsiNoNamespaceSchemaLocation = helper.getHREF(ePackage);
 							if (xsiNoNamespaceSchemaLocation != null && xsiNoNamespaceSchemaLocation.endsWith("#/")) { //$NON-NLS-1$
 								xsiNoNamespaceSchemaLocation = xsiNoNamespaceSchemaLocation.substring(0, xsiNoNamespaceSchemaLocation.length() - 2);
 							}
 						}
+
+						declareXSI = xsiNoNamespaceSchemaLocation != null;
 					}
 				} else {
-					Resource resource = ePackage.eResource();
-					if (resource != null) {
-						String namespace = extendedMetaData == null ? ePackage.getNsURI() : extendedMetaData.getNamespace(ePackage);
+					String namespace = extendedMetaData == null ? ePackage.getNsURI() : extendedMetaData.getNamespace(ePackage);
 
-						// Need to adjust schema namespace according to applicable model converter?
-						if (converter != null) {
-							String mmBaseNsURI = converter.getMetaModelVersionDescriptor().getNamespace();
-							String resourceBaseNsURI = converter.getResourceVersionDescriptor().getNamespace();
-							if (mmBaseNsURI != null && resourceBaseNsURI != null && namespace.startsWith(mmBaseNsURI)) {
-								// Substitute metamodel version in schema namespace with resource
-								// version of applicable model converter
-								namespace = namespace.replace(mmBaseNsURI, resourceBaseNsURI);
-							}
+					// Need to adjust schema namespace according to applicable model converter?
+					if (converter != null) {
+						String mmBaseNsURI = converter.getMetaModelVersionDescriptor().getNamespace();
+						String resourceBaseNsURI = converter.getResourceVersionDescriptor().getNamespace();
+						if (mmBaseNsURI != null && resourceBaseNsURI != null && namespace.startsWith(mmBaseNsURI)) {
+							// Substitute metamodel version in schema namespace with resource
+							// version of applicable model converter
+							namespace = namespace.replace(mmBaseNsURI, resourceBaseNsURI);
 						}
+					}
 
-						if (!handledBySchemaLocationMap.containsKey(namespace)) {
-							URI uri = resource.getURI();
-							if (javaImplementationLocation != null || (uri == null ? namespace != null : !uri.toString().equals(namespace))) {
+					if (!handledBySchemaLocationMap.containsKey(namespace)) {
+						if (javaImplementationLocation != null || namespace != null) {
+							String location = null;
+							if (javaImplementationLocation != null) {
+								location = javaImplementationLocation;
+							} else if (schemaLocationCatalog != null) {
+								// Retrieve schema location corresponding to schema namespace from schema location
+								// catalog
+								location = schemaLocationCatalog.get(namespace);
+								if (location == null) {
+									PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException(
+											"Schema location catalog entry for namespace '" + namespace + "' is missing")); //$NON-NLS-1$ //$NON-NLS-2$
+								}
+							} else {
+								location = helper.getHREF(ePackage);
+								location = convertURI(location);
+								if (location.endsWith("#/")) { //$NON-NLS-1$
+									location = location.substring(0, location.length() - 2);
+									URI uri = ePackage.eResource().getURI();
+									if (uri != null && uri.hasFragment()) {
+										location += "#" + uri.fragment(); //$NON-NLS-1$
+									}
+								}
+							}
+
+							if (location != null) {
 								declareXSI = true;
 
-								String location = null;
-								if (javaImplementationLocation != null) {
-									location = javaImplementationLocation;
-								} else if (schemaLocationCatalog != null) {
-									// Retrieve schema location corresponding to schema namespace from schema location
-									// catalog
-									location = schemaLocationCatalog.get(namespace);
-									if (location == null) {
-										PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException(
-												"Schema location catalog entry for namespace '" + namespace + "' is missing")); //$NON-NLS-1$ //$NON-NLS-2$
-									}
-								} else {
-									location = helper.getHREF(ePackage);
-								}
-
-								if (location != null) {
-									location = convertURI(location);
-									if (location.endsWith("#/")) { //$NON-NLS-1$
-										location = location.substring(0, location.length() - 2);
-										if (uri != null && uri.hasFragment()) {
-											location += "#" + uri.fragment(); //$NON-NLS-1$
-										}
-									}
-
-									if (xsiSchemaLocation.length() > 0) {
-										xsiSchemaLocation.append(' ');
-									}
-									xsiSchemaLocation.append(namespace);
+								if (xsiSchemaLocation.length() > 0) {
 									xsiSchemaLocation.append(' ');
-									xsiSchemaLocation.append(location);
 								}
-
-								// Avoid duplicate schema location entries
-								handledBySchemaLocationMap.put(namespace, location);
+								xsiSchemaLocation.append(namespace);
+								xsiSchemaLocation.append(' ');
+								xsiSchemaLocation.append(location);
 							}
+
+							// Avoid duplicate schema location entries
+							handledBySchemaLocationMap.put(namespace, location);
 						}
 					}
 				}

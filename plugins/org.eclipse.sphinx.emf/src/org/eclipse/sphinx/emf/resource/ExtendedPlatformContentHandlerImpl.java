@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.plugin.EcorePlugin;
 import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.impl.PlatformContentHandlerImpl;
 import org.eclipse.emf.ecore.resource.impl.PlatformResourceURIHandlerImpl;
@@ -41,11 +42,12 @@ public class ExtendedPlatformContentHandlerImpl extends PlatformContentHandlerIm
 	 * Performance optimization: This implementation delegates to the performance-optimized content type id detection
 	 * support provided by {@link ExtendedPlatform}. If and only if other properties are requested it delegates
 	 * additionally to the platform's (slow) native content description support just as the original super
-	 * implementation does.
+	 * implementation does all the time.
 	 */
 	@Override
 	public Map<String, Object> contentDescription(URI uri, InputStream inputStream, Map<?, ?> options, Map<Object, Object> context)
 			throws IOException {
+		IContentDescription contentDescription = null;
 		String contentTypeId = null;
 		if (uri.isPlatformResource()) {
 			try {
@@ -63,8 +65,7 @@ public class ExtendedPlatformContentHandlerImpl extends PlatformContentHandlerIm
 			 * got deleted prior to calling this method).
 			 */
 			if (inputStream.available() > 0) {
-				IContentDescription contentDescription = Platform.getContentTypeManager().getDescriptionFor(inputStream, uri.lastSegment(),
-						IContentDescription.ALL);
+				contentDescription = Platform.getContentTypeManager().getDescriptionFor(inputStream, uri.lastSegment(), IContentDescription.ALL);
 				if (contentDescription != null) {
 					IContentType contentType = contentDescription.getContentType();
 					if (contentType != null) {
@@ -75,30 +76,30 @@ public class ExtendedPlatformContentHandlerImpl extends PlatformContentHandlerIm
 		}
 
 		/*
-		 * !! Important Note !! Return valid content type description even if no content type could be established in
-		 * order to avoid that other content handlers (e.g., PlatformContentHandlerImpl) override result computed by
-		 * this one (see org.eclipse.emf.ecore.resource.impl.URIHandlerImpl#contentDescription(URI, Map<?, ?>) for
-		 * details).
+		 * !! Important Note !! Return valid content type description even if no content type could be established so as
+		 * to avoid that other content handlers (e.g., PlatformContentHandlerImpl) override the result computed by this
+		 * one (see org.eclipse.emf.ecore.resource.impl.URIHandlerImpl#contentDescription(URI, Map<?, ?>) for details).
 		 */
 		Map<String, Object> result = createContentDescription(ContentHandler.Validity.VALID);
 		result.put(ContentHandler.CONTENT_TYPE_PROPERTY, contentTypeId);
-		if (contentTypeId != null) {
-			Set<String> requestedProperties = getRequestedProperties(options);
-			if (requestedProperties != null) {
-				IContentDescription contentDescription;
-				if (uri.isPlatformResource()) {
+
+		// Retrieve properties other than content type is such are requested
+		Set<String> requestedProperties = getRequestedProperties(options);
+		if (requestedProperties != null) {
+			if (contentDescription == null) {
+				if (uri.isPlatformResource() && EcorePlugin.getWorkspaceRoot() != null) {
 					contentDescription = PlatformResourceURIHandlerImpl.WorkbenchHelper.getContentDescription(uri.toPlatformString(true), options);
 				} else {
 					contentDescription = Platform.getContentTypeManager().getDescriptionFor(inputStream, uri.lastSegment(), IContentDescription.ALL);
 				}
-				if (contentDescription == null) {
-					for (String property : requestedProperties) {
-						QualifiedName qualifiedName = getQualifiedName(property);
-						if (qualifiedName != null) {
-							Object value = getDescriptionValue(qualifiedName, contentDescription.getProperty(qualifiedName));
-							if (value != null) {
-								result.put(property, value);
-							}
+			}
+			if (contentDescription != null) {
+				for (String property : requestedProperties) {
+					QualifiedName qualifiedName = getQualifiedName(property);
+					if (qualifiedName != null) {
+						Object value = getDescriptionValue(qualifiedName, contentDescription.getProperty(qualifiedName));
+						if (value != null) {
+							result.put(property, value);
 						}
 					}
 				}

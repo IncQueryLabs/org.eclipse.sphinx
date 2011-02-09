@@ -326,8 +326,6 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 	public void contributeToMenu(IMenuManager menuManager) {
 		super.contributeToMenu(menuManager);
 
-		// FIXME Check if all goes well without editorID
-
 		IMenuManager submenuManager = new MenuManager(getStringFromKey("_UI_Editor_menu")); //$NON-NLS-1$
 		menuManager.insertAfter("additions", submenuManager); //$NON-NLS-1$
 		submenuManager.add(new Separator("settings")); //$NON-NLS-1$
@@ -575,7 +573,7 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 		List<IAction> actions = new ArrayList<IAction>();
 		if (descriptors != null) {
 			for (Object descriptor : descriptors) {
-				actions.add(new CreateChildAction(activeEditor, selection, descriptor));
+				actions.add(createCreateChildAction(activeEditor, selection, descriptor));
 			}
 			Collections.sort(actions, new Comparator<IAction>() {
 				public int compare(IAction a1, IAction a2) {
@@ -594,7 +592,7 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 		List<IAction> actions = new ArrayList<IAction>();
 		if (descriptors != null) {
 			for (Object descriptor : descriptors) {
-				actions.add(new CreateSiblingAction(activeEditor, selection, descriptor));
+				actions.add(createCreateSiblingAction(activeEditor, selection, descriptor));
 			}
 			Collections.sort(actions, new Comparator<IAction>() {
 				public int compare(IAction a1, IAction a2) {
@@ -737,5 +735,13 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 		}
 
 		super.addGlobalActions(menuManager);
+	}
+
+	protected CreateChildAction createCreateChildAction(IEditorPart editorPart, ISelection selection, Object descriptor) {
+		return new CreateChildAction(activeEditor, selection, descriptor);
+	}
+
+	protected CreateSiblingAction createCreateSiblingAction(IEditorPart editorPart, ISelection selection, Object descriptor) {
+		return new CreateSiblingAction(activeEditor, selection, descriptor);
 	}
 }

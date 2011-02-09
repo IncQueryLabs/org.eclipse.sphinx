@@ -72,7 +72,7 @@ public class Hummingbird20ResourceFactoryImpl extends ResourceFactoryImpl {
 
 		// Create and initialize schema location URI handler enabling schema locations to be resolved to schema files
 		// during loading and schema files to be deresolved to schema locations during saving
-		schemaLocationURIHandler = new SchemaLocationURIHandler();
+		schemaLocationURIHandler = new SchemaLocationURIHandler(schemaLocationCatalog);
 		schemaLocationURIHandler.addSchemaLocationBaseURI(Activator.getPlugin(), "model"); //$NON-NLS-1$
 		schemaLocationURIHandler.addSchemaLocationBaseURI(Activator.getPlugin(), "model/archive"); //$NON-NLS-1$ 
 

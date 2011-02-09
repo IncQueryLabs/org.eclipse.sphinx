@@ -1,4 +1,4 @@
-importtargetdefinition -A ${user.dir}/target/3.6-sp.target
+importtargetdefinition -A ${user.dir}/target/3.5-sp.target
 import sdk.cquery
 perform -P buckminster.properties org.eclipse.sphinx.sdk.parent#site.feature.exports org.eclipse.sphinx.sdk.parent#site.p2.zip
 import tests.cquery

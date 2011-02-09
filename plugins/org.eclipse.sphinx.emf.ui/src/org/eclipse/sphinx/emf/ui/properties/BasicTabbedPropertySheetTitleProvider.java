@@ -90,13 +90,23 @@ public class BasicTabbedPropertySheetTitleProvider extends LabelProvider {
 								}
 								case 1: {
 									Object object = collection.iterator().next();
-									return labelProvider.getText(object);
+									String text = labelProvider.getText(object);
+									if (text != null && text.length() > 0) {
+										return text;
+									}
+									// Don't return empty String because otherwise the tabbed property sheet's title bar
+									// looses its background color and becomes entirely blank
+									return " "; //$NON-NLS-1$
 								}
 								default: {
 									return NLS.bind(Messages.label_multiObjectSelected, Integer.toString(collection.size()));
 								}
 								}
 							} else {
+								String text = labelProvider.getText(anElement);
+								if (text != null && text.length() > 0) {
+									return text;
+								}
 								// Don't return empty String because otherwise the tabbed property sheet's title bar
 								// looses its background color and becomes entirely blank
 								return " "; //$NON-NLS-1$

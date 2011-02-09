@@ -23,6 +23,7 @@ import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.SAXXMLHandler;
 import org.eclipse.emf.ecore.xmi.impl.XMLHandler;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -30,8 +31,15 @@ import org.xml.sax.SAXParseException;
 
 public class ExtendedSAXXMLHandler extends SAXXMLHandler {
 
+	protected IMetaModelDescriptor resourceVersion = null;
+
 	public ExtendedSAXXMLHandler(XMLResource xmlResource, XMLHelper helper, Map<?, ?> options) {
 		super(xmlResource, helper, options);
+
+		Object value = options.get(ExtendedResource.OPTION_RESOURCE_VERSION_DESCRIPTOR);
+		if (value instanceof IMetaModelDescriptor) {
+			resourceVersion = (IMetaModelDescriptor) value;
+		}
 	}
 
 	/*
@@ -50,6 +58,28 @@ public class ExtendedSAXXMLHandler extends SAXXMLHandler {
 			if (lastSegment != null) {
 				try {
 					URI uri = URI.createURI(lastSegment);
+					uri = helper.resolve(uri, resourceURI);
+					InputStream inputStream;
+					inputStream = getURIConverter().createInputStream(uri, null);
+					InputSource result = new InputSource(inputStream);
+					result.setPublicId(publicId);
+					result.setSystemId(systemId);
+					return result;
+				} catch (Exception ex1) {
+					// Ignore exception
+				}
+			}
+
+			// Try to resolve by relying on resource namespace instead of system id
+			String resourceNamespace = null;
+			if (resourceVersion != null) {
+				resourceNamespace = resourceVersion.getNamespace();
+			} else {
+				resourceNamespace = EcoreResourceUtil.readModelNamespace(xmlResource);
+			}
+			if (resourceNamespace != null) {
+				try {
+					URI uri = URI.createURI(resourceNamespace);
 					uri = helper.resolve(uri, resourceURI);
 					InputStream inputStream;
 					inputStream = getURIConverter().createInputStream(uri, null);

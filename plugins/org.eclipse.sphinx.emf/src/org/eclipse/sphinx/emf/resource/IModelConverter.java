@@ -33,6 +33,10 @@ import org.xml.sax.InputSource;
  */
 public interface IModelConverter {
 
+	/**
+	 * @deprecated Use {@link ExtendedResource#OPTION_RESOURCE_VERSION_DESCRIPTOR} instead.
+	 */
+	@Deprecated
 	String OPTION_RESOURCE_VERSION_DESCRIPTOR = "RESOURCE_VERSION_DESCRIPTOR"; //$NON-NLS-1$
 
 	/**

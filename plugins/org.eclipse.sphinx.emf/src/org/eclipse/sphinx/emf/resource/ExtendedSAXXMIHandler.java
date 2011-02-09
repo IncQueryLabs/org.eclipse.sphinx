@@ -19,10 +19,12 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.URIConverter;
+import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.SAXXMIHandler;
 import org.eclipse.emf.ecore.xmi.impl.XMLHandler;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -30,8 +32,20 @@ import org.xml.sax.SAXParseException;
 
 public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 
+	protected IMetaModelDescriptor resourceVersion = null;
+
 	public ExtendedSAXXMIHandler(XMLResource xmiResource, XMLHelper helper, Map<?, ?> options) {
 		super(xmiResource, helper, options);
+
+		Object value = options.get(ExtendedResource.OPTION_RESOURCE_VERSION_DESCRIPTOR);
+		if (value instanceof IMetaModelDescriptor) {
+			resourceVersion = (IMetaModelDescriptor) value;
+		}
+
+		// Workaround for potential bug in org.apache.xerces.impl.xs.XMLSchemaValidator.addDefaultAttributes(QName,
+		// XMLAttributes, XSAttributeGroupDecl) (line 3027) which attempts to add xmi:version as default attribute if
+		// not present yet but misses to initialize the attribute's prefix field
+		notFeatures.add(XMIResource.VERSION_NAME);
 	}
 
 	/*
@@ -50,6 +64,28 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 			if (lastSegment != null) {
 				try {
 					URI uri = URI.createURI(lastSegment);
+					uri = helper.resolve(uri, resourceURI);
+					InputStream inputStream;
+					inputStream = getURIConverter().createInputStream(uri, null);
+					InputSource result = new InputSource(inputStream);
+					result.setPublicId(publicId);
+					result.setSystemId(systemId);
+					return result;
+				} catch (Exception ex1) {
+					// Ignore exception
+				}
+			}
+
+			// Try to resolve by relying on resource namespace instead of system id
+			String resourceNamespace = null;
+			if (resourceVersion != null) {
+				resourceNamespace = resourceVersion.getNamespace();
+			} else {
+				resourceNamespace = EcoreResourceUtil.readModelNamespace(xmlResource);
+			}
+			if (resourceNamespace != null) {
+				try {
+					URI uri = URI.createURI(resourceNamespace);
 					uri = helper.resolve(uri, resourceURI);
 					InputStream inputStream;
 					inputStream = getURIConverter().createInputStream(uri, null);

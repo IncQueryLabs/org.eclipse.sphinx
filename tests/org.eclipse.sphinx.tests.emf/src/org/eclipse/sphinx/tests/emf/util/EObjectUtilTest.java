@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.tests.emf.util;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,14 +25,14 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Factory;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
+import org.eclipse.sphinx.examples.hummingbird20.common.Common20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
+import org.eclipse.sphinx.examples.hummingbird20.common.Description;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
@@ -531,14 +530,14 @@ public class EObjectUtilTest extends AbstractTestCase {
 	 * @throws Exception
 	 */
 	public void testGetMixedText() throws Exception {
+		Application hb20Application = (Application) loadInputFile("hbFile20.instancemodel", fileAccessor, new Hummingbird20ResourceFactoryImpl(),
+				InstanceModel20Package.eINSTANCE, null);
+		assertNotNull(hb20Application);
+		Description description = hb20Application.getDescription();
+		assertNotNull(description);
 
-		// Application hb20Application = (Application) loadInputFile("hbFile20_20A_1.instancemodel", fFileAccessor,
-		// new Hummingbird20ResourceFactoryImpl(), InstanceModel20Package.eINSTANCE);
-		URI uri = fileAccessor.getInputFileURI("hbFile20.instancemodel");
-		org.eclipse.emf.common.util.URI emfUri = fileAccessor.convertToEMFURI(uri);
-		Application hb20Application = (Application) EcoreResourceUtil.loadModelRoot(new ResourceSetImpl(), emfUri, null);
-		String mixedText = EObjectUtil.getMixedText(hb20Application.getMixed());
-		assertEquals("Mixed text", mixedText);
+		String mixedText = EObjectUtil.getMixedText(description.getMixed());
+		assertEquals("DescriptionText", mixedText);
 
 	}
 
@@ -549,24 +548,26 @@ public class EObjectUtilTest extends AbstractTestCase {
 	 */
 	public void testSetMixedText() throws Exception {
 		String workingFileName = "hbFile20.instancemodel";
-		String newText = "New text for mixed text";
+		String hb20ApplicationName = "MyApp";
+		String newText = "NewDescriptionText";
 
 		Application hb20Application = InstanceModel20Factory.eINSTANCE.createApplication();
+		hb20Application.setName(hb20ApplicationName);
+		Description description = Common20Factory.eINSTANCE.createDescription();
+		EObjectUtil.setMixedText(description.getMixed(), newText);
+		assertEquals(newText, EObjectUtil.getMixedText(description.getMixed()));
+		hb20Application.setDescription(description);
 
-		EObjectUtil.setMixedText(hb20Application.getMixed(), newText);
-
-		assertEquals(newText, EObjectUtil.getMixedText(hb20Application.getMixed()));
-
-		// save file
 		saveWorkingFile(workingFileName, hb20Application, fileAccessor, new Hummingbird20ResourceFactoryImpl());
 
-		URI uri = fileAccessor.getWorkingFileURI(workingFileName);
-		org.eclipse.emf.common.util.URI emfUri = fileAccessor.convertToEMFURI(uri);
-		Application savedHb20Application = (Application) EcoreResourceUtil.loadModelRoot(new ResourceSetImpl(), emfUri, null);
+		Application savedHb20Application = (Application) loadWorkingFile(workingFileName, fileAccessor, new Hummingbird20ResourceFactoryImpl(),
+				InstanceModel20Package.eINSTANCE, null);
 		assertNotNull(savedHb20Application);
+		assertEquals(hb20ApplicationName, savedHb20Application.getName());
+		Description savedDescription = savedHb20Application.getDescription();
+		assertNotNull(savedDescription);
 
-		assertEquals(newText, EObjectUtil.getMixedText(savedHb20Application.getMixed()));
-
+		assertEquals(newText, EObjectUtil.getMixedText(savedDescription.getMixed()));
 	}
 
 	@Override

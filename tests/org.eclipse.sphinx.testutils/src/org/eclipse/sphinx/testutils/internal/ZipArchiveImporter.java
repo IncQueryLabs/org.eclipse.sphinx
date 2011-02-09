@@ -95,7 +95,7 @@ public class ZipArchiveImporter {
 	 * 
 	 * @throws CoreException
 	 */
-	public void unZipArchiveFile(final TestFileAccessor inputFileAccessor, final String inputFileName, final String targetLocation)
+	public void unzipArchiveFile(final TestFileAccessor inputFileAccessor, final String inputFileName, final String targetLocation)
 			throws CoreException {
 
 		ZipFile zipSourceFile = getZipSourceFile(inputFileAccessor, inputFileName);

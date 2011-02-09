@@ -51,8 +51,8 @@ public class PlatformURIFileStoreTest extends DefaultIntegrationTestCase {
 
 	@Override
 	protected void tearDown() throws Exception {
-		deleteExternalFile(SAMPLE_RESOURCE_URI_PLATFORM_META);
-		deleteExternalFile(SAMPLE_RESOURCE_URI_FILE);
+		deleteExternalResource(SAMPLE_RESOURCE_URI_PLATFORM_META);
+		deleteExternalResource(SAMPLE_RESOURCE_URI_FILE);
 
 		super.tearDown();
 	}

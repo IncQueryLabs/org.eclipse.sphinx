@@ -82,6 +82,7 @@ import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
+import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.testutils.TestFileAccessor;
 import org.eclipse.sphinx.testutils.integration.internal.Activator;
 import org.eclipse.sphinx.testutils.integration.internal.IInternalReferenceWorkspace;
@@ -108,21 +109,20 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	private ReferenceWorkspaceChangeListener referenceWorkspaceChangeListener = new ReferenceWorkspaceChangeListener();
 
-	private String referenceWorkspaceSourceDirectoryPath;
+	private File referenceWorkspaceTempDir;
 
 	private String referenceWorkspaceSourceRootDirectoryPath;
 
-	private final String REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PATH = "referenceWorkspaceSourceRootDirectory.properties";
+	private final String REFERENCE_WORKSPACE_PROPERTIES_FILE_NAME = "referenceWorkspaceSourceRootDirectory.properties";
 
-	private final String REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_KEY = "referenceWorksaceSourceDirectory";
+	private final String REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY = "referenceWorksaceSourceDirectory";
 
-	public AbstractIntegrationTestCase(String directoryName) {
-		String tempDirectoryPath = System.getProperty("java.io.tmpdir");
-		referenceWorkspaceSourceDirectoryPath = tempDirectoryPath.concat(File.separator).concat(directoryName);
-		referenceWorkspaceSourceDirectoryPath = referenceWorkspaceSourceDirectoryPath.replace(File.separator + File.separator, File.separator);
-		File referenceWorkspaceSourceDirectory = new File(referenceWorkspaceSourceDirectoryPath);
-		if (!referenceWorkspaceSourceDirectory.exists()) {
-			referenceWorkspaceSourceDirectory.mkdir();
+	public AbstractIntegrationTestCase(String referenceWorkspaceTempDirName) {
+		String tempDirPath = System.getProperty("java.io.tmpdir");
+		File tempDir = new File(tempDirPath);
+		referenceWorkspaceTempDir = new File(tempDir, referenceWorkspaceTempDirName);
+		if (!referenceWorkspaceTempDir.exists()) {
+			referenceWorkspaceTempDir.mkdir();
 		}
 	}
 
@@ -146,15 +146,18 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	protected void setUp() throws Exception {
 		waitForModelLoading();
 		Job.getJobManager().addJobChangeListener(modelLoadJobTracer);
+
 		// Create workspace
 		initReferenceWorkspace();
-		// Unzip reference of archive file. Incase it had been already unziped, read the reference workspace source root
-		// directory from properties file
+
+		// Unzip reference workspace from archive if needed
 		if (needToUnzipArchiveFile()) {
-			unzipArchiveFile(referenceWorkspaceSourceDirectoryPath);
+			deleteExternalResource(referenceWorkspaceTempDir);
+			unzipArchiveFile();
 		} else {
 			referenceWorkspaceSourceRootDirectoryPath = getReferenceWorkspaceSourceRootDictionaryPath();
 		}
+
 		// Delete un-used reference projects which imported for the previous test.
 		deleteUnusedReferenceProjects();
 
@@ -419,54 +422,51 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	/**
-	 * Check if it is necessary to unzip reference archive file
+	 * Checks if it is necessary to unzip reference workspace from archive.
 	 * 
-	 * @return <code><b>true</b></code> If the reference archive file was already unziped and reference workspace root
-	 *         directory's path were saved to readMe.properties. Otherwise, return <code><b>false</b></code>
+	 * @return <code>true</code> if the reference archive file was not already unzipped and reference workspace source
+	 *         root directory path was not already saved to the referenceWorkspaceSourceRootDirectory.properties file or
+	 *         if reference workspace archive is newer than existing unzipped reference workspace in temporary
+	 *         directory; <code>false</code> otherwise.
 	 */
-	boolean needToUnzipArchiveFile() {
-		// FIXME Don't check for non-existence only but also if reference workspace zip archive is newer than extracted
-		// reference workspace
-		File refernceDir = new File(referenceWorkspaceSourceDirectoryPath.toString());
-		File readMeFile = new File(referenceWorkspaceSourceDirectoryPath.toString() + File.separator + REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PATH);
-		return !(refernceDir.exists() && readMeFile.exists());
+	boolean needToUnzipArchiveFile() throws Exception {
+		TestFileAccessor refWksTestFileAccessor = new TestFileAccessor(internalRefWks.getReferenceWorkspacePlugin());
+		java.net.URI referenceWorkspaceInputFileURI = refWksTestFileAccessor.getInputFileURI(internalRefWks.getReferenceWorkspaceArchiveFileName(),
+				true);
+		File referenceWorkspaceArchive = null;
+		if (referenceWorkspaceInputFileURI != null) {
+			referenceWorkspaceArchive = new File(referenceWorkspaceInputFileURI);
+		}
+		File propertiesFile = new File(referenceWorkspaceTempDir, REFERENCE_WORKSPACE_PROPERTIES_FILE_NAME);
+		return !(referenceWorkspaceTempDir.exists() && propertiesFile.exists()) || referenceWorkspaceArchive != null
+				&& referenceWorkspaceArchive.lastModified() > referenceWorkspaceTempDir.lastModified();
 
 	}
 
 	/**
 	 * Save the reference workspace source root directory path to read
 	 * 
-	 * @param referenceWorkspaceSourceDirectoryRoot
-	 *            the
+	 * @throws IOException
 	 */
-	private void saveReferenceWorkspaceSourceRootDirectoryPath(String referenceWorkspaceSourceDirectoryRoot) {
+	private void saveReferenceWorkspaceSourceRootDirectoryPath() throws IOException {
 		Properties properties = new Properties();
-		properties.put(REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_KEY, referenceWorkspaceSourceDirectoryRoot);
-		try {
+		properties.put(REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY, referenceWorkspaceSourceRootDirectoryPath);
 
-			File proFile = new File(referenceWorkspaceSourceDirectoryPath + File.separator + REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PATH);
-			if (!proFile.exists()) {
-				proFile.createNewFile();
-			}
-
-			OutputStream outPropFile = new FileOutputStream(proFile);
-			properties.store(outPropFile, "Reference File Path Dictionary");
-			outPropFile.close();
-		} catch (IOException ex) {
-			fail("Cannot save source directory path to file at:" + referenceWorkspaceSourceDirectoryRoot + ":" + ex.getMessage());
+		File propertiesFile = new File(referenceWorkspaceTempDir, REFERENCE_WORKSPACE_PROPERTIES_FILE_NAME);
+		if (!propertiesFile.exists()) {
+			propertiesFile.createNewFile();
 		}
+		OutputStream out = new FileOutputStream(propertiesFile);
+		properties.store(out, "Reference File Path Dictionary");
+		out.close();
 	}
 
-	private String getReferenceWorkspaceSourceRootDictionaryPath() throws FileNotFoundException, IOException {
-
+	private String getReferenceWorkspaceSourceRootDictionaryPath() throws IOException {
 		Properties properties = new Properties();
-		// open stream of readMe.properties
-		InputStream filePathDictionaryInputStream = openFileInputStream(referenceWorkspaceSourceDirectoryPath.toString() + File.separator
-				+ REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PATH);
-		assertNotNull(filePathDictionaryInputStream);
-		properties.load(filePathDictionaryInputStream);
-		return properties.getProperty(REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_KEY);
-
+		File propertiesFile = new File(referenceWorkspaceTempDir, REFERENCE_WORKSPACE_PROPERTIES_FILE_NAME);
+		InputStream in = new FileInputStream(propertiesFile);
+		properties.load(in);
+		return properties.getProperty(REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY);
 	}
 
 	private void initReferenceWorkspace() {
@@ -554,21 +554,24 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		importFilesToWorkspace(missingReferenceFiles);
 	}
 
-	private void unzipArchiveFile(final String targetLocation) throws CoreException {
+	private void unzipArchiveFile() throws CoreException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-
 			public void run(IProgressMonitor monitor) throws CoreException {
 				ZipArchiveImporter zipArchiveImpoter = new ZipArchiveImporter();
-				zipArchiveImpoter.unZipArchiveFile(new TestFileAccessor(internalRefWks.getReferenceWorkspacePlugin()),
-						internalRefWks.getReferenceWorkspaceArchiveFileName(), targetLocation);
+				zipArchiveImpoter.unzipArchiveFile(new TestFileAccessor(internalRefWks.getReferenceWorkspacePlugin()),
+						internalRefWks.getReferenceWorkspaceArchiveFileName(), referenceWorkspaceTempDir.getPath());
+
 				referenceWorkspaceSourceRootDirectoryPath = zipArchiveImpoter.getDirectoryRoot();
-				saveReferenceWorkspaceSourceRootDirectoryPath(zipArchiveImpoter.getDirectoryRoot());
 
+				try {
+					saveReferenceWorkspaceSourceRootDirectoryPath();
+				} catch (Exception ex) {
+					IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
+					throw new CoreException(status);
+				}
 			}
-
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, null);
-
 	}
 
 	protected String[] getProjectsToLoad() {
@@ -995,13 +998,52 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	}
 
-	protected void deleteExternalFile(String path) {
+	/**
+	 * Deletes external file or directory with specified <code>path</code>. If external resource is a directory then all
+	 * files and subdirectories under this directory are deleted. If it is a file then only the file is deleted.
+	 * 
+	 * @param path
+	 *            The path of the file or directory to be deleted.
+	 * @throws IOException
+	 *             If a deletion of some file or directory fails; no attempts to delete remaining files or directories
+	 *             are made in this case.
+	 */
+	protected void deleteExternalResource(String path) throws IOException {
 		URI uri = URI.createURI(path, true);
 		URI fileURI = EcoreResourceUtil.convertToAbsoluteFileURI(uri);
 		File file = new File(fileURI.toFileString());
-		if (file.exists()) {
+		deleteExternalResource(file);
+	}
+
+	/**
+	 * Deletes specified external <code>file</code>. If external file is a directory then all files and subdirectories
+	 * under this directory are deleted. If it is a file then only the file is deleted.
+	 * 
+	 * @param path
+	 *            The file or directory to be deleted.
+	 * @throws IOException
+	 *             If a deletion of some file or directory fails; no attempts to delete remaining files or directories
+	 *             are made in this case.
+	 */
+	protected void deleteExternalResource(File file) throws IOException {
+		Assert.isNotNull(file);
+
+		if (file.isDirectory()) {
+			String[] children = file.list();
+			// Delete the files and directories in directory to be deleted
+			for (String child : children) {
+				deleteExternalResource(new File(file, child));
+			}
+
+			// The directory is now empty so delete it
 			if (!file.delete()) {
-				throw new RuntimeException("Unable to delete external file: " + path);
+				throw new IOException("Unable to delete external directory: '" + file.getPath() + "'");
+			}
+		} else {
+			if (file.exists()) {
+				if (!file.delete()) {
+					throw new IOException("Unable to delete external file: '" + file.getPath() + "'");
+				}
 			}
 		}
 	}

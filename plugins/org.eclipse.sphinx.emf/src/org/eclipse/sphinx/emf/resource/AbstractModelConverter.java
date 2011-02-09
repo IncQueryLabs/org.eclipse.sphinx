@@ -66,20 +66,28 @@ public abstract class AbstractModelConverter implements IModelConverter {
 			return false;
 		}
 
+		// Check if meta-model versions of this model converter and given resource match
 		IMetaModelDescriptor mmVersionDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource);
 		if (!getMetaModelVersionDescriptor().equals(mmVersionDescriptor)) {
 			return false;
 		}
 
+		// Check if resource version of this model converter matches resource version indicated by load options
+		Object value = options.get(ExtendedResource.OPTION_RESOURCE_VERSION_DESCRIPTOR);
+		if (value instanceof IMetaModelDescriptor) {
+			return getResourceVersionDescriptor().equals(value);
+		}
+
+		// Check if resource version matches the resource's namespace
 		String resourceNamespace = EcoreResourceUtil.readModelNamespace(resource);
-		if (resourceNamespace == null) {
-			return false;
+		boolean matching = false;
+		if (resourceNamespace != null) {
+			matching = resourceNamespace.matches(getResourceVersionDescriptor().getNamespace());
+			if (!matching) {
+				matching = resourceNamespace.matches(getResourceVersionDescriptor().getEPackageNsURIPattern());
+			}
 		}
-		boolean resourceNamespaceMatch = resourceNamespace.matches(getResourceVersionDescriptor().getNamespace());
-		if (!resourceNamespaceMatch) {
-			resourceNamespaceMatch = resourceNamespace.matches(getResourceVersionDescriptor().getEPackageNsURIPattern());
-		}
-		return resourceNamespaceMatch;
+		return matching;
 	}
 
 	public boolean isSaveConverterFor(XMLResource resource, Map<?, ?> options) {
@@ -87,31 +95,25 @@ public abstract class AbstractModelConverter implements IModelConverter {
 			return false;
 		}
 
-		// Check if meta-model version matches
+		// Check if meta-model versions of this model converter and given resource match
 		IMetaModelDescriptor mmVersionDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource);
 		if (!getMetaModelVersionDescriptor().equals(mmVersionDescriptor)) {
 			return false;
 		}
 
-		// Check if resource version is available in project properties or save options and matches; make sure that
-		// project property is given preference over resource save option
-		Object value = null;
+		// Check if resource version of this model converter matches resource version configured in project properties
+		// (which is given preference over resource version indicated by save options)
 		IFile file = EcorePlatformUtil.getFile(resource);
 		if (file != null) {
-			value = getResourceVersionFromPreferences(file.getProject());
-		}
-		if (!(value instanceof IMetaModelDescriptor)) {
-			value = options.get(OPTION_RESOURCE_VERSION_DESCRIPTOR);
-			if (!(value instanceof IMetaModelDescriptor)) {
-				return false;
+			Object value = getResourceVersionFromPreferences(file.getProject());
+			if (value instanceof IMetaModelDescriptor) {
+				return getResourceVersionDescriptor().equals(value);
 			}
 		}
-		IMetaModelDescriptor resourceVersionDescriptor = (IMetaModelDescriptor) value;
-		if (!getResourceVersionDescriptor().equals(resourceVersionDescriptor)) {
-			return false;
-		}
 
-		return true;
+		// Check if resource version of this model converter matches resource version indicated by save options
+		Object value = options.get(ExtendedResource.OPTION_RESOURCE_VERSION_DESCRIPTOR);
+		return getResourceVersionDescriptor().equals(value);
 	}
 
 	protected XMIException toXMIException(Resource resource, Exception ex) {
@@ -124,7 +126,7 @@ public abstract class AbstractModelConverter implements IModelConverter {
 			InputStream converted = doConvertLoad(resource, inputStream, options);
 
 			// This save option will enable us to detect that we have to convert back to some older version
-			resource.getDefaultSaveOptions().put(OPTION_RESOURCE_VERSION_DESCRIPTOR, getResourceVersionDescriptor());
+			resource.getDefaultSaveOptions().put(ExtendedResource.OPTION_RESOURCE_VERSION_DESCRIPTOR, getResourceVersionDescriptor());
 
 			return new InputSource(converted);
 		} catch (JDOMException ex) {
