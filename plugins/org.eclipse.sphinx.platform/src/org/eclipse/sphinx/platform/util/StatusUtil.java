@@ -62,6 +62,7 @@ public class StatusUtil {
 				exception);
 	}
 
+	// FIXME (aakar) createErrorStatus methods are ambiguous for the type StatusUtil when calling with null as plugin
 	public static IStatus createErrorStatus(Plugin plugin, Object object) {
 		return createErrorStatus(plugin != null ? plugin.getBundle() : null, object);
 	}

@@ -71,7 +71,7 @@ public abstract class AbstractWorkspacePreference<T> extends AbstractEclipsePref
 			String valueAsString = toString(valueAsObject);
 			IEclipsePreferences prefs = getWorkspacePreferences();
 			if (prefs != null) {
-				if (valueAsString != null) {
+				if (valueAsString != null && !valueAsString.equals(defaultValueAsString)) {
 					prefs.put(key, valueAsString);
 				} else {
 					prefs.remove(key);
@@ -84,6 +84,23 @@ public abstract class AbstractWorkspacePreference<T> extends AbstractEclipsePref
 			}
 		} catch (Exception ex) {
 			PlatformLogUtil.logAsWarning(Activator.getDefault(), ex);
+		}
+	}
+
+	/*
+	 * @see org.artop.ecl.platform.preferences.IWorkspacePreference#getDefaultValueAsObject()
+	 */
+	public T getDefaultValueAsObject() {
+		return toObject(defaultValueAsString);
+	}
+
+	/*
+	 * @see org.artop.ecl.platform.preferences.IWorkspacePreference#setToDefault()
+	 */
+	public void setToDefault() {
+		IEclipsePreferences prefs = getWorkspacePreferences();
+		if (prefs != null) {
+			prefs.remove(key);
 		}
 	}
 

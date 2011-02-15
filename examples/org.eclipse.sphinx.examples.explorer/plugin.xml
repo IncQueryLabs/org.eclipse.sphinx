@@ -49,6 +49,10 @@ Contributors:
         <actionExtension pattern="org.eclipse.sphinx.examples.*" />
       </includes>
     </viewerActionBinding>
+    <dragAssistant
+          class="org.eclipse.ui.navigator.resources.ResourceDragAdapterAssistant"
+          viewerId="org.eclipse.sphinx.examples.explorer.views.modelExplorer">
+    </dragAssistant>
   </extension>
   <extension point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
     <propertyContributor contributorId="org.eclipse.sphinx.examples.explorer.views.modelExplorer"

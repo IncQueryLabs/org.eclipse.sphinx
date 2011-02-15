@@ -16,12 +16,10 @@ package org.eclipse.sphinx.testutils.integration;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,13 +49,11 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
@@ -68,7 +64,6 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.plugin.EcorePlugin;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
@@ -117,9 +112,16 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	private final String REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY = "referenceWorksaceSourceDirectory";
 
-	public AbstractIntegrationTestCase(String referenceWorkspaceTempDirName) {
+	public AbstractIntegrationTestCase(String referenceWorkspaceTempDirBaseName) {
 		String tempDirPath = System.getProperty("java.io.tmpdir");
 		File tempDir = new File(tempDirPath);
+
+		// Complement name of temporary reference workspace directory with version suffix to avoid that reference
+		// workspaces originating from different development streams (i.e., platform versions) get mixed up in same
+		// temporary directory
+		String referenceWorkspaceTempDirName = referenceWorkspaceTempDirBaseName + "-"
+				+ Activator.getPlugin().getBundle().getVersion().toString().replaceFirst("\\.qualifier", "");
+
 		referenceWorkspaceTempDir = new File(tempDir, referenceWorkspaceTempDirName);
 		if (!referenceWorkspaceTempDir.exists()) {
 			referenceWorkspaceTempDir.mkdir();
@@ -159,7 +161,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		}
 
 		// Delete un-used reference projects which imported for the previous test.
-		deleteUnusedReferenceProjects();
+		synchronizedDeleteProjects(getUnusedReferenceProjects());
 
 		org.eclipse.sphinx.emf.workspace.Activator.getPlugin().stopWorkspaceSynchronizing();
 
@@ -205,7 +207,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		unloadDirtyResources();
 
 		// Projects which have been renamed will be deleted
-		deleteRenamedProjects();
+		synchronizedDeleteProjects(referenceWorkspaceChangeListener.getRenamedProjects());
 
 		// Open projects which has been changed during the test
 		synchronizedOpenProjects(detectProjectsToOpen());
@@ -236,38 +238,16 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	/**
-	 * Delete projects in workspace which are not used in the current test
-	 * 
-	 * @throws Exception
-	 */
-	private void deleteUnusedReferenceProjects() throws Exception {
-		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-			public void run(IProgressMonitor monitor) throws CoreException {
-				for (IProject project : getUnusedReferenceProjects()) {
-					try {
-						synchronizedDeleteProject(project);
-					} catch (Exception ex) {
-						fail("Exception while deleting unused projects." + ex.getMessage());
-					}
-				}
-			}
-		};
-		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, null);
-		waitForModelLoading();
-
-	}
-
-	/**
-	 * Detect projects that have resources changed during the test. If projects were closed in the test, we need to open
-	 * it to delete changed files or reset project description and settings
+	 * Detects projects that have resources changed during the test. If projects were closed in the test, we need to
+	 * open it to delete changed files or reset project description and settings
 	 * 
 	 * @return
 	 */
 	private Collection<IProject> detectProjectsToOpen() {
 		Set<IProject> projectsToOpen = new HashSet<IProject>();
 		if (!(referenceWorkspaceChangeListener.getAddedFiles().size() > 0 || referenceWorkspaceChangeListener.getChangedFiles().size() > 0
-				|| referenceWorkspaceChangeListener.getChangedDescriptionProjects().size() > 0 || referenceWorkspaceChangeListener
-				.getChangedSettingProjects().size() > 0)) {
+				|| referenceWorkspaceChangeListener.getProjectsWithChangedDescription().size() > 0 || referenceWorkspaceChangeListener
+				.getProjectsWithChangedSettings().size() > 0)) {
 			return Collections.emptySet();
 		}
 		for (IFile changedFile : referenceWorkspaceChangeListener.getChangedFiles()) {
@@ -285,14 +265,12 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				projectsToOpen.add(project);
 			}
 		}
-		for (String projectName : referenceWorkspaceChangeListener.getChangedDescriptionProjects()) {
-			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		for (IProject project : referenceWorkspaceChangeListener.getProjectsWithChangedDescription()) {
 			if (!(project == null || project.exists() || project.isOpen())) {
 				projectsToOpen.add(project);
 			}
 		}
-		for (String projectName : referenceWorkspaceChangeListener.getChangedSettingProjects().keySet()) {
-			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		for (IProject project : referenceWorkspaceChangeListener.getProjectsWithChangedSettings().keySet()) {
 			if (!(project == null || project.exists() || project.isOpen())) {
 				projectsToOpen.add(project);
 			}
@@ -302,7 +280,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	/**
-	 * Unload all resources created in the previous test. These resources were added to ResourceSets but were not saved
+	 * Unloads all resources created in the previous test. These resources were added to ResourceSets but were not saved
 	 * and not marked as dirty. So we need to detect and unload them
 	 */
 	private void unloadReourcesOutsideFileDescriptor() {
@@ -325,32 +303,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	/**
-	 * Delete all projects which were renamed during a test
-	 * 
-	 * @throws Exception
-	 */
-	private void deleteRenamedProjects() throws Exception {
-		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-			public void run(IProgressMonitor monitor) throws CoreException {
-				for (String projectName : referenceWorkspaceChangeListener.getRenamedProjects()) {
-					IProject project = EcorePlugin.getWorkspaceRoot().getProject(projectName);
-					if (project.exists()) {
-						try {
-							synchronizedDeleteProject(project);
-						} catch (Exception ex) {
-							fail("Exception while deleting renamed project(s):" + ex.getMessage());
-						}
-					}
-				}
-			}
-		};
-		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, null);
-		waitForModelLoading();
-
-	}
-
-	/**
-	 * Delete files which has been changed in the test. These files will be imported again in setUp() of next test if
+	 * Deletes files which has been changed in the test. These files will be imported again in setUp() of next test if
 	 * they are required for the test.
 	 * 
 	 * @throws Exception
@@ -364,7 +317,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	/**
-	 * Delete all new files which have been added during the test.
+	 * Deletes all new files which have been added during the test.
 	 * 
 	 * @throws Exception
 	 */
@@ -379,7 +332,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	/**
-	 * Unload all dirty resources in editingDomains
+	 * Unloads all dirty resources in editingDomains
 	 */
 	private void unloadDirtyResources() {
 		for (IMetaModelDescriptor metaModelDescriptor : internalRefWks.getReferenceEditingDomainDescritpors().keySet()) {
@@ -394,29 +347,33 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	/**
-	 * Reset description of projects which have been changed during the test by copying .project file from source
+	 * Resets description of projects which have been changed during the test by copying .project file from source
 	 * reference file
+	 * 
+	 * @throws Exception
 	 */
-	private void resetProjectsDescription() {
-		for (String projectName : referenceWorkspaceChangeListener.getChangedDescriptionProjects()) {
-			IProject project = EcorePlugin.getWorkspaceRoot().getProject(projectName);
+	private void resetProjectsDescription() throws Exception {
+		for (IProject project : referenceWorkspaceChangeListener.getProjectsWithChangedDescription()) {
 			if (project.exists()) {
 				assertTrue(project.isOpen());
-				copyProjectDecsription(projectName, project.getFullPath());
+				importReferenceResourceToWorkspace(getFullPathOfReferenceSourceFile(project.getName() + "/.project"),
+						project.getFullPath().append(".project"));
 			}
 		}
 	}
 
 	/**
-	 * Reset settings of projects which have been changed during the test by copying .settings folder from source
+	 * Resets settings of projects which have been changed during the test by copying .settings folder from source
 	 * reference directory
+	 * 
+	 * @throws Exception
 	 */
-	private void resetProjectsSettings() {
-		for (String projectName : referenceWorkspaceChangeListener.getChangedSettingProjects().keySet()) {
-			IProject prj = EcorePlugin.getWorkspaceRoot().getProject(projectName);
-			if (prj.exists()) {
-				assertTrue(prj.isOpen());
-				copyProjectSettings(projectName, prj.getFullPath());
+	private void resetProjectsSettings() throws Exception {
+		for (IProject project : referenceWorkspaceChangeListener.getProjectsWithChangedSettings().keySet()) {
+			if (project.exists()) {
+				assertTrue(project.isOpen());
+				importReferenceResourceToWorkspace(getFullPathOfReferenceSourceFile(project.getName() + "/.settings"),
+						project.getFullPath().append(".settings"));
 			}
 		}
 	}
@@ -477,11 +434,9 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		waitForModelLoading();
 	}
 
-	protected void importReferenceProjects() throws CoreException {
-
+	protected void importReferenceProjects() throws Exception {
 		Set<IProject> missingProjects = getMissingProjects();
-		importProjectsToWorkspace(missingProjects);
-
+		importReferenceProjectsToWorkspace(missingProjects);
 	}
 
 	private Set<IProject> getMissingProjects() {
@@ -503,15 +458,13 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	private Set<IProject> getUnusedReferenceProjects() {
-		IProject[] projects = EcorePlugin.getWorkspaceRoot().getProjects();
+		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		Set<IProject> unusedReferenceProjects = new HashSet<IProject>();
 		if (getProjectsToLoad() == null) {
 			return Collections.emptySet();
 		}
 		for (IProject project : projects) {
 			boolean used = false;
-			// Import all projects
-
 			for (String prjName : getProjectsToLoad()) {
 				if (prjName.equals(project.getName())) {
 					used = true;
@@ -521,7 +474,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				unusedReferenceProjects.add(project);
 			}
 		}
-
 		return unusedReferenceProjects;
 	}
 
@@ -535,7 +487,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		return missingReferenceFiles;
 	}
 
-	protected void importFilesToWorkspace(Set<IFile> missingFiles) throws CoreException {
+	protected void importFilesToWorkspace(Set<IFile> missingFiles) throws Exception {
 		for (IFile missingFile : missingFiles) {
 			IPath filePath = missingFile.getFullPath();
 			IProject project = missingFile.getProject();
@@ -545,11 +497,11 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			} else if (!project.isAccessible()) {
 				project.open(new NullProgressMonitor());
 			}
-			importDirectoryToWorkspace(getFullPathOfReferenceSourceFile(filePath.toString()), filePath);
+			importReferenceResourceToWorkspace(getFullPathOfReferenceSourceFile(filePath.toString()), filePath);
 		}
 	}
 
-	private void importMissingFiles() throws CoreException {
+	private void importMissingFiles() throws Exception {
 		Set<IFile> missingReferenceFiles = getMissingFile();
 		importFilesToWorkspace(missingReferenceFiles);
 	}
@@ -1134,7 +1086,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				if (errorStatus.getChildren().length > 0) {
 					throw new CoreException(errorStatus);
 				}
-				waitForModelLoading();
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
@@ -1184,7 +1135,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				if (errorStatus.getChildren().length > 0) {
 					throw new CoreException(errorStatus);
 				}
-				waitForModelLoading();
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
@@ -1198,6 +1148,31 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				safeDeleteProject(project, monitor);
+			}
+		};
+		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		waitForModelLoading();
+	}
+
+	protected void synchronizedDeleteProjects(final Collection<IProject> projects) throws Exception {
+		assertNotNull(projects);
+
+		waitForModelLoading();
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
+						"Problems encountered while closing projects.", new RuntimeException());
+				SubMonitor progress = SubMonitor.convert(monitor, projects.size());
+				for (IProject project : projects) {
+					try {
+						safeDeleteProject(project, progress.newChild(1));
+					} catch (CoreException ex) {
+						errorStatus.add(ex.getStatus());
+					}
+				}
+				if (errorStatus.getChildren().length > 0) {
+					throw new CoreException(errorStatus);
+				}
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
@@ -1392,27 +1367,15 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		}
 	}
 
-	/**
-	 * Get input stream from of a file with given location
-	 * 
-	 * @throws FileNotFoundException
-	 */
-	protected InputStream openFileInputStream(String referenceFilePath) throws FileNotFoundException {
-		File referenceFile = new File(referenceFilePath);
-		if (referenceFile.exists()) {
-			return new FileInputStream(referenceFile);
-		}
-		return null;
-	}
-
-	protected void importDirectoryToWorkspace(String referenceSourceName, IPath targetLocation) {
+	protected void importReferenceResourceToWorkspace(String referenceSourceName, IPath targetLocation) throws Exception {
 		assertNotNull(referenceSourceName);
+
 		File referenceFile = new File(referenceSourceName);
 		if (referenceFile.exists()) {
 			if (referenceFile.isDirectory()) {
 				// Copy files and folders inside the reference directory
 				if (!isProjectPath(targetLocation)) {
-					IFolder targetFolder = EcorePlugin.getWorkspaceRoot().getFolder(targetLocation);
+					IFolder targetFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(targetLocation);
 					if (!targetFolder.exists()) {
 						try {
 							targetFolder.create(true, true, null);
@@ -1421,13 +1384,13 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 							if (ex.getMessage().contains("already exists")) {
 								// Do nothing
 							} else {
-								fail("Cannot create new folder in working workspace: " + targetLocation.toString() + " because of " + ex.getMessage());
+								throw ex;
 							}
 						}
 					}
 				}
 				for (String fileName : referenceFile.list()) {
-					importDirectoryToWorkspace(referenceFile + File.separator + fileName, targetLocation.append(fileName));
+					importReferenceResourceToWorkspace(referenceFile + File.separator + fileName, targetLocation.append(fileName));
 				}
 			} else {
 				if (isProjectPath(targetLocation)) {
@@ -1435,124 +1398,68 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 					String fileName = segments[segments.length];
 					targetLocation = targetLocation.append(fileName);
 				}
-				IFile copiedFile = ResourcesPlugin.getWorkspace().getRoot().getFile(targetLocation);
-				InputStream sourceFileContents = null;
-				try {
-					sourceFileContents = openFileInputStream(referenceSourceName);
-				} catch (Exception ex) {
-					fail("Cannot open input stream from reference file:" + referenceSourceName + "because of " + ex.getMessage());
-				} finally {
-					// If container of file to import is not project
-					if (!isProjectPath(targetLocation.removeLastSegments(1))) {
-						IFolder container = EcorePlugin.getWorkspaceRoot().getFolder(targetLocation.removeLastSegments(1));
-						if (!container.exists()) {
-							try {
-								container.create(true, true, null);
-							} catch (Exception ex) {
-								if (ex.getMessage().contains("already exists")) {
-									// Do nothing
-								} else {
-									fail("Cannot create container for target file in workspace: " + targetLocation + " because of " + ex.getMessage());
-								}
-							}
 
+				// If container of file to import is not project
+				if (!isProjectPath(targetLocation.removeLastSegments(1))) {
+					IFolder container = ResourcesPlugin.getWorkspace().getRoot().getFolder(targetLocation.removeLastSegments(1));
+					if (!container.exists()) {
+						try {
+							container.create(true, true, null);
+						} catch (Exception ex) {
+							if (ex.getMessage().contains("already exists")) {
+								// Do nothing
+							} else {
+								throw ex;
+							}
 						}
 					}
-					if (copiedFile.exists()) {
-						// Overwrite old file's contents
-						try {
-							copiedFile.setContents(sourceFileContents, true, false, null);
-						} catch (Exception ex) {
-							fail("Cannot overwrite contents of file exisiting in working workspace:" + copiedFile.getFullPath().toString());
-						}
+				}
 
-					} else {
-						// create new file at the targetLocation
-						try {
-							copiedFile.create(sourceFileContents, true, null);
-						} catch (Exception ex2) {
-							// In case, there is an exception while creating new file because of target file some how
-							// was already exist, try to overwrite its contents
-							if (ex2.getMessage().contains("already exists")) {
-								// Overwrite old file's contents
-								try {
-									copiedFile.setContents(sourceFileContents, true, false, null);
-								} catch (Exception ex) {
-									fail("Cannot overwrite contents of file exisiting in working workspace:" + copiedFile.getFullPath().toString());
-								}
-							} else {
-								fail("Cannot create new file to working workspace:" + copiedFile.getFullPath().toString() + " because of "
-										+ ex2.getMessage());
-							}
+				IFile targetFile = ResourcesPlugin.getWorkspace().getRoot().getFile(targetLocation);
+				InputStream sourceFileContents = new FileInputStream(referenceFile);
+				if (targetFile.exists()) {
+					// Overwrite old file's contents
+					targetFile.setContents(sourceFileContents, true, false, null);
+				} else {
+					// create new file at the targetLocation
+					try {
+						targetFile.create(sourceFileContents, true, null);
+					} catch (Exception ex) {
+						// In case, there is an exception while creating new file because of target file some how
+						// was already exist, try to overwrite its contents
+						if (ex.getMessage().contains("already exists")) {
+							// Overwrite old file's contents
+							sourceFileContents = new FileInputStream(referenceFile);
+							targetFile.setContents(sourceFileContents, true, false, null);
+						} else {
+							throw ex;
 						}
-
 					}
 				}
 			}
 		}
-	}
-
-	protected void importInputFileToWorkspace(final String inputFileName, final IPath targetLocation) throws IOException, CoreException {
-
-		final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-			public void run(IProgressMonitor monitor) throws CoreException {
-				try {
-					IPath inputFilePath = new Path("resources/input/" + inputFileName);
-					URL fileUrl = FileLocator.find(getTestPlugin().getBundle(), inputFilePath, null);
-					String referenceSourceName = FileLocator.toFileURL(fileUrl).getPath();
-					IPath importedFilePath = targetLocation.append(inputFileName);
-					importDirectoryToWorkspace(referenceSourceName, importedFilePath);
-
-					IFile file = workspace.getRoot().getFile(importedFilePath);
-					assertNotNull(file);
-					assertTrue(file.isAccessible());
-
-				} catch (Exception ex) {
-					ex.printStackTrace();
-					fail("Exception while importing input file to workspace because of :" + ex.getLocalizedMessage());
-				}
-
-			}
-		};
-		workspace.run(runnable, workspace.getRoot(), IWorkspace.AVOID_UPDATE, null);
-		waitForModelLoading();
-
 	}
 
 	private boolean isProjectPath(IPath targetLocation) {
 		return targetLocation.segmentCount() == 1;
 	}
 
-	protected void copyProjectSettings(String projectName, IPath projectPath) {
-		importDirectoryToWorkspace(getFullPathOfReferenceSourceFile(projectName + "/.settings"), projectPath.append(".settings"));
-	}
-
-	protected void copyProjectDecsription(String projectName, IPath projectPath) {
-		importDirectoryToWorkspace(getFullPathOfReferenceSourceFile(projectName + "/.project"), projectPath.append(".project"));
-	}
-
-	protected void importProjectToWorkspace(String projectName) throws CoreException {
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-		importProjectToWorkspace(project);
-	}
-
-	protected void importProjectsToWorkspace(Set<IProject> missingReferenceProjects) throws CoreException {
-		for (IProject project : missingReferenceProjects) {
-			importProjectToWorkspace(project);
+	protected void importReferenceProjectsToWorkspace(Collection<IProject> projects) throws Exception {
+		for (IProject project : projects) {
+			importReferenceProjectToWorkspace(project);
 		}
 	}
 
-	protected void importProjectToWorkspace(IProject project) throws CoreException {
+	protected void importReferenceProjectToWorkspace(IProject project) throws Exception {
 		if (!project.exists()) {
 			project.create(new NullProgressMonitor());
 			project.open(new NullProgressMonitor());
 		} else if (!project.isAccessible()) {
 			project.open(new NullProgressMonitor());
 		}
-		// Copy/override project description and project setting
-		importDirectoryToWorkspace(getFullPathOfReferenceSourceFile(project.getName()), project.getFullPath());
 
+		// Copy/override project description and project setting
+		importReferenceResourceToWorkspace(getFullPathOfReferenceSourceFile(project.getName()), project.getFullPath());
 	}
 
 	protected String getFullPathOfReferenceSourceFile(String fileName) {

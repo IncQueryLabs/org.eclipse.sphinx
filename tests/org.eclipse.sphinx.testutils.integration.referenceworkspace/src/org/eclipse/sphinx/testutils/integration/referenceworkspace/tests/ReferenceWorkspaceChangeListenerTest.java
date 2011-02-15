@@ -16,7 +16,6 @@ package org.eclipse.sphinx.testutils.integration.referenceworkspace.tests;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -26,9 +25,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
-import org.eclipse.sphinx.emf.workspace.internal.saving.ResourceSaveIndicator;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.examples.hummingbird10.Application;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
@@ -86,7 +85,7 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 		assertNotNull(addedHbFile);
 		assertTrue(addedHbFile.isAccessible());
 		// Check that event creating new file was handled
-		Set<IFile> addedFiles = referenceWorkspaceChangeListener.getAddedFiles();
+		Collection<IFile> addedFiles = referenceWorkspaceChangeListener.getAddedFiles();
 		assertEquals(1, addedFiles.size());
 		assertTrue(addedFiles.contains(addedHbFile));
 
@@ -116,20 +115,20 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 		projectDesc.setReferencedProjects(new IProject[] {});
 		refWks.hbProject20_E.setDescription(projectDesc, null);
 
-		Set<String> changedDescriptionProjects = referenceWorkspaceChangeListener.getChangedDescriptionProjects();
-		assertEquals(1, changedDescriptionProjects.size());
-		assertTrue(changedDescriptionProjects.contains(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E));
+		Collection<IProject> projectsWithChangedDescriptions = referenceWorkspaceChangeListener.getProjectsWithChangedDescription();
+		assertEquals(1, projectsWithChangedDescriptions.size());
+		assertTrue(projectsWithChangedDescriptions.contains(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E));
 
 		// Add nature
 		String natureId = "org.eclipse.jdt.core.javanature";
 		ExtendedPlatform.addNature(refWks.hbProject10_A, natureId, null);
-		assertEquals(2, changedDescriptionProjects.size());
-		assertTrue(changedDescriptionProjects.contains(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A));
+		assertEquals(2, projectsWithChangedDescriptions.size());
+		assertTrue(projectsWithChangedDescriptions.contains(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A));
 
 		// Remove nature
 		ExtendedPlatform.removeNature(refWks.hbProject10_A, natureId, null);
-		assertEquals(2, changedDescriptionProjects.size());
-		assertTrue(changedDescriptionProjects.contains(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A));
+		assertEquals(2, projectsWithChangedDescriptions.size());
+		assertTrue(projectsWithChangedDescriptions.contains(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A));
 	}
 
 	// Project Setting change
@@ -144,9 +143,9 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 		// Set content in settingFile_hb10 to settingFile_hb20 to change metamodel vesion of hbProject10_A
 		settingFile_hb10.setContents(settingFile_hb20.getContents(), true, false, null);
 
-		Map<String, Collection<String>> changedSettingProjects = referenceWorkspaceChangeListener.getChangedSettingProjects();
-		assertTrue(changedSettingProjects.keySet().contains(refWks.hbProject10_A.getName()));
-		assertTrue(changedSettingProjects.get(refWks.hbProject10_A.getName()).contains("org.eclipse.sphinx.examples.hummingbird.ide.prefs"));
+		Map<IProject, Collection<String>> projectsWithChangedSettings = referenceWorkspaceChangeListener.getProjectsWithChangedSettings();
+		assertTrue(projectsWithChangedSettings.keySet().contains(refWks.hbProject10_A.getName()));
+		assertTrue(projectsWithChangedSettings.get(refWks.hbProject10_A.getName()).contains("org.eclipse.sphinx.examples.hummingbird.ide.prefs"));
 
 	}
 
@@ -166,17 +165,17 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 
 		settingFile_hb20.copy(refWks.hbProject10_A.getFullPath().append(".settings/newSettingfile.prefs"), true, null);
 
-		Map<String, Collection<String>> changedSettingProjects = referenceWorkspaceChangeListener.getChangedSettingProjects();
-		assertEquals(1, changedSettingProjects.size());
-		assertTrue(changedSettingProjects.keySet().contains(refWks.hbProject10_A.getName()));
-		assertTrue(changedSettingProjects.get(refWks.hbProject10_A.getName()).contains("newSettingfile.prefs"));
-		assertTrue(changedSettingProjects.get(refWks.hbProject10_A.getName()).contains("org.eclipse.sphinx.examples.hummingbird.ide.prefs"));
+		Map<IProject, Collection<String>> projectsWithChangedSettings = referenceWorkspaceChangeListener.getProjectsWithChangedSettings();
+		assertEquals(1, projectsWithChangedSettings.size());
+		assertTrue(projectsWithChangedSettings.keySet().contains(refWks.hbProject10_A.getName()));
+		assertTrue(projectsWithChangedSettings.get(refWks.hbProject10_A.getName()).contains("newSettingfile.prefs"));
+		assertTrue(projectsWithChangedSettings.get(refWks.hbProject10_A.getName()).contains("org.eclipse.sphinx.examples.hummingbird.ide.prefs"));
 		// -----------------------------
 		// Remove file
 		IFile copiedSettingFile = refWks.hbProject10_A.getFile(".settings/newSettingfile.prefs");
 		copiedSettingFile.delete(true, null);
-		assertTrue(changedSettingProjects.keySet().contains(refWks.hbProject10_A.getName()));
-		assertTrue(changedSettingProjects.get(refWks.hbProject10_A.getName()).contains("newSettingfile.prefs"));
+		assertTrue(projectsWithChangedSettings.keySet().contains(refWks.hbProject10_A.getName()));
+		assertTrue(projectsWithChangedSettings.get(refWks.hbProject10_A.getName()).contains("newSettingfile.prefs"));
 
 	}
 
@@ -190,7 +189,7 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 
 		hbFile_1.setContents(hbFile_2.getContents(), true, false, null);
 		waitForModelLoading();
-		Set<IFile> changedFiles = referenceWorkspaceChangeListener.getChangedFiles();
+		Collection<IFile> changedFiles = referenceWorkspaceChangeListener.getChangedFiles();
 		assertEquals(1, changedFiles.size());
 		assertTrue(changedFiles.contains(hbFile_1));
 
@@ -235,8 +234,7 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 		Resource hbResource20 = getProjectResource(refWks.hbProject20_D, DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1);
 		assertNotNull(hbResource20);
 
-		ResourceSaveIndicator resourceSaveIndicator = new ResourceSaveIndicator(refWks.editingDomain20);
-		assertFalse(resourceSaveIndicator.isDirty(hbResource20));
+		assertFalse(SaveIndicatorUtil.isDirty(refWks.editingDomain20, hbResource20));
 
 		assertFalse(hbResource20.getContents().isEmpty());
 		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application modelRoot20 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) hbResource20
@@ -255,7 +253,7 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 		} catch (Exception e) {
 			fail(e.getLocalizedMessage());
 		}
-		assertTrue(resourceSaveIndicator.isDirty(hbResource20));
+		assertTrue(SaveIndicatorUtil.isDirty(refWks.editingDomain20, hbResource20));
 
 		ModelSaveManager.INSTANCE.saveModel(hbResource20, false, null);
 
@@ -329,7 +327,7 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 		synchronizedMoveFile(hbFile_2, targetFilePath2);
 
 		// Verify the visitor
-		Set<IFile> movedFiles = referenceWorkspaceChangeListener.getAddedFiles();
+		Collection<IFile> movedFiles = referenceWorkspaceChangeListener.getAddedFiles();
 		IFile movedFile1 = EcorePlugin.getWorkspaceRoot().getFile(targetFilePath1);
 		assertNotNull(movedFile1);
 		assertTrue(movedFile1.isAccessible());
@@ -380,8 +378,8 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 	public void testProjectRenamed() throws Exception {
 		synchronizedRenameProject(refWks.hbProject10_A, "NewProject");
 
-		Set<String> getRenamedProjects = referenceWorkspaceChangeListener.getRenamedProjects();
-		assertTrue(getRenamedProjects.contains("NewProject"));
+		Collection<IProject> renamedProjects = referenceWorkspaceChangeListener.getRenamedProjects();
+		assertTrue(renamedProjects.contains("NewProject"));
 
 	}
 
@@ -390,8 +388,6 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 		// Hummingbird files
 		IFile hbFile_1 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
 		IFile hbFile_2 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_2);
-		IPath oldFilePath1 = hbFile_1.getFullPath();
-		IPath oldFilePath2 = hbFile_2.getFullPath();
 		String newFileName1 = hbFile_1.getName() + "_renamed";
 		String newFileName2 = hbFile_2.getName() + "_renamed";
 
@@ -408,7 +404,7 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 		assertTrue(renamedFile2.isAccessible());
 
 		// Verify the visitor
-		Set<IFile> addedFiles = referenceWorkspaceChangeListener.getAddedFiles();
+		Collection<IFile> addedFiles = referenceWorkspaceChangeListener.getAddedFiles();
 		assertEquals(2, addedFiles.size());
 		assertTrue(addedFiles.contains(renamedFile1));
 		assertTrue(addedFiles.contains(renamedFile2));
@@ -418,10 +414,6 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 		IFile uml2File_1 = refWks.hbProject20_E.getFile(DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1);
 		IFile uml2File_2 = refWks.hbProject20_E.getFile(DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_2);
 		IFile uml2File_3 = refWks.hbProject20_E.getFile(DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_3);
-
-		IPath oldUml2FilePath1 = uml2File_1.getFullPath();
-		IPath oldUml2FilePath2 = uml2File_2.getFullPath();
-		IPath oldUml2FilePath3 = uml2File_3.getFullPath();
 
 		String newUmlFileName1 = uml2File_1.getName() + "_renamed";
 		String newUmlFileName2 = uml2File_2.getName() + "_renamed";

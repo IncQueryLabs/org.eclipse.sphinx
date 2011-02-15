@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.platform.ui.internal.util;
 
+import org.eclipse.sphinx.platform.ui.util.SWTUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;

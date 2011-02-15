@@ -98,7 +98,7 @@ public abstract class AbstractProjectPreference<T> extends AbstractEclipsePrefer
 					String valueAsString = toString(project, valueAsObject);
 					IEclipsePreferences prefs = getProjectPreferences(project);
 					if (prefs != null) {
-						if (valueAsString != null) {
+						if (valueAsString != null && !valueAsString.equals(defaultValueAsString)) {
 							prefs.put(key, valueAsString);
 						} else {
 							prefs.remove(key);
@@ -113,6 +113,25 @@ public abstract class AbstractProjectPreference<T> extends AbstractEclipsePrefer
 			}
 		} catch (Exception ex) {
 			PlatformLogUtil.logAsWarning(Activator.getDefault(), ex);
+		}
+	}
+
+	/*
+	 * @see
+	 * org.artop.ecl.platform.preferences.IProjectPreference#getDefaultValueAsObject(org.eclipse.core.resources.IProject
+	 * )
+	 */
+	public T getDefaultValueAsObject(IProject project) {
+		return toObject(project, defaultValueAsString);
+	}
+
+	/*
+	 * @see org.artop.ecl.platform.preferences.IProjectPreference#setToDefault(org.eclipse.core.resources.IProject)
+	 */
+	public void setToDefault(IProject project) {
+		IEclipsePreferences prefs = getProjectPreferences(project);
+		if (prefs != null) {
+			prefs.remove(key);
 		}
 	}
 

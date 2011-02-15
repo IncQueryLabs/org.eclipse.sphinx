@@ -79,6 +79,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -109,6 +110,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
@@ -298,6 +300,17 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	public BasicTransactionalFormEditor() {
 		// Create undo context
 		undoContext = new ObjectUndoContext(this);
+
+		// Ensures that this editor will only display the page's tab area if there is more than one page
+		addPageChangedListener(new IPageChangedListener() {
+			public void pageChanged(PageChangedEvent event) {
+				if (getPageCount() <= 1) {
+					hideTabs();
+				} else {
+					showTabs();
+				}
+			}
+		});
 	}
 
 	/**
@@ -498,22 +511,38 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	}
 
 	protected String getEditorInputName() {
-		if (getEditorInput() instanceof IFileEditorInput) {
-			return getEditorInput().getName();
+		IEditorInput editorInput = getEditorInput();
+		if (editorInput instanceof IFileEditorInput) {
+			return editorInput.getName();
 		}
 
 		Object modelRoot = getModelRoot();
 		AdapterFactoryItemDelegator itemDelegator = getItemDelegator();
 		if (modelRoot != null && itemDelegator != null) {
-			// Return label of model root
+			// Return label of model object on which editor has been opened
 			return itemDelegator.getText(modelRoot);
 		}
 
-		return getAlternateEditorInputName();
+		return editorInput.getName();
 	}
 
-	protected String getAlternateEditorInputName() {
-		return getEditorInput().getName();
+	protected Image getEditorInputImage() {
+		IEditorInput editorInput = getEditorInput();
+		if (editorInput instanceof IFileEditorInput) {
+			ImageDescriptor imageDescriptor = editorInput.getImageDescriptor();
+			return ExtendedImageRegistry.getInstance().getImage(imageDescriptor);
+		}
+
+		Object modelRoot = getModelRoot();
+		AdapterFactoryItemDelegator itemDelegator = getItemDelegator();
+		if (modelRoot != null && itemDelegator != null) {
+			// Return icon of model object on which editor has been opened
+			Object imageURL = itemDelegator.getImage(modelRoot);
+			return ExtendedImageRegistry.getInstance().getImage(imageURL);
+		}
+
+		ImageDescriptor imageDescriptor = editorInput.getImageDescriptor();
+		return ExtendedImageRegistry.getInstance().getImage(imageDescriptor);
 	}
 
 	public IUndoContext getUndoContext() {
@@ -527,6 +556,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		if (getPageCount() <= 1) {
 			if (getContainer() instanceof CTabFolder) {
 				((CTabFolder) getContainer()).setTabHeight(0);
+				((CTabFolder) getContainer()).layout();
 			}
 		}
 	}
@@ -538,6 +568,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		if (getPageCount() > 1) {
 			if (getContainer() instanceof CTabFolder) {
 				((CTabFolder) getContainer()).setTabHeight(SWT.DEFAULT);
+				((CTabFolder) getContainer()).layout();
 			}
 		}
 	}
@@ -785,7 +816,10 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	public void init(IEditorSite site, IEditorInput editorInput) {
 		setSite(site);
 		setInputWithNotify(editorInput);
+
 		setPartName(getEditorInputName());
+		setTitleImage(getEditorInputImage());
+
 		site.setSelectionProvider(this);
 		site.getPage().addPartListener(partListener);
 		addTransactionalEditingDomainListeners((TransactionalEditingDomain) getEditingDomain());
@@ -1056,6 +1090,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 						// Update editor part name
 						setPartName(getEditorInputName());
+						setTitleImage(getEditorInputImage());
 
 						// Refresh editor if its currently active or schedule refresh when it gets
 						// activated next time
@@ -1278,6 +1313,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 						// Update editor part name
 						setPartName(getEditorInputName());
+						setTitleImage(getEditorInputImage());
 					}
 				});
 			}
@@ -1369,19 +1405,6 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			// Create editor pages normally
 			super.createPages();
 		}
-
-		// Ensures that this editor will only display the page's tab area if there is more than one page
-		addPageChangedListener(new IPageChangedListener() {
-			boolean guard = false;
-
-			public void pageChanged(PageChangedEvent event) {
-				if (!guard) {
-					guard = true;
-					hideTabs();
-					guard = false;
-				}
-			}
-		});
 	}
 
 	protected IFormPage createLoadingEditorInputPage() {
@@ -1402,21 +1425,18 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	protected synchronized void refreshActivePage() {
 		if (!isDisposed()) {
-			int index = getActivePage();
-			if (index != -1) {
-				// Loading editor input indication page present?
-				if (pages.get(index) == loadingEditorInputPage) {
-					// Remove loading editor input indication page and try to create actual pages
-					removePage(index);
-					loadingEditorInputPage = null;
-					createPages();
-					if (getActivePage() == -1) {
-						setActivePage(0);
-					}
-				} else {
-					// Refresh by reselecting previously active page
-					pageChange(index);
+			// Loading editor input indication page present?
+			if (loadingEditorInputPage != null) {
+				// Remove loading editor input indication page and try to create actual pages
+				removePage(loadingEditorInputPage.getIndex());
+				loadingEditorInputPage = null;
+				createPages();
+				if (getActivePage() == -1) {
+					setActivePage(0);
 				}
+			} else {
+				// Refresh by reselecting previously active page
+				pageChange(getActivePage());
 			}
 		}
 	}

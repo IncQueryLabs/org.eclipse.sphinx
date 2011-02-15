@@ -37,6 +37,7 @@ import javax.xml.validation.Validator;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.BasicEList;
@@ -112,18 +113,18 @@ public final class EcoreResourceUtil {
 		} else {
 			uriConverter = new ExtensibleURIConverterImpl();
 		}
+		if (Platform.isRunning()) {
+			// Initialize URI mappings
+			IPath workspaceRootPath = ResourcesPlugin.getWorkspace().getRoot().getFullPath().addTrailingSeparator();
+			URI workspaceRootURI = URI.createPlatformResourceURI(workspaceRootPath.toString(), true);
 
-		// Initialize URI mappings
-		IPath workspaceRootPath = ResourcesPlugin.getWorkspace().getRoot().getFullPath().addTrailingSeparator();
-		URI workspaceRootURI = URI.createPlatformResourceURI(workspaceRootPath.toString(), true);
+			IPath workspaceRootLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation().addTrailingSeparator();
+			URI workspaceRootLocationURI = URI.createURI(workspaceRootLocation.toString(), true);
+			URI workspaceRootLocationFileURI = URI.createFileURI(workspaceRootLocation.toString());
 
-		IPath workspaceRootLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation().addTrailingSeparator();
-		URI workspaceRootLocationURI = URI.createURI(workspaceRootLocation.toString(), true);
-		URI workspaceRootLocationFileURI = URI.createFileURI(workspaceRootLocation.toString());
-
-		uriConverter.getURIMap().put(workspaceRootLocationURI, workspaceRootURI);
-		uriConverter.getURIMap().put(workspaceRootLocationFileURI, workspaceRootURI);
-
+			uriConverter.getURIMap().put(workspaceRootLocationURI, workspaceRootURI);
+			uriConverter.getURIMap().put(workspaceRootLocationFileURI, workspaceRootURI);
+		}
 		return uriConverter;
 	}
 

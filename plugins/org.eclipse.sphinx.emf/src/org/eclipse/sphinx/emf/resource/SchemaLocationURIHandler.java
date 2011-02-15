@@ -39,17 +39,16 @@ public class SchemaLocationURIHandler extends PlatformSchemeAware {
 	}
 
 	public void addSchemaLocationBaseURI(Plugin plugin, String path) {
-		Assert.isNotNull(plugin);
-		Assert.isNotNull(path);
-
-		URI uri = URI.createPlatformPluginURI(plugin.getBundle().getSymbolicName() + ExtendedResource.URI_SEGMENT_SEPARATOR + path, true);
-		addSchemaLocationBaseURI(uri);
+		if (plugin != null) {
+			URI uri = URI.createPlatformPluginURI(plugin.getBundle().getSymbolicName() + ExtendedResource.URI_SEGMENT_SEPARATOR + path, true);
+			addSchemaLocationBaseURI(uri);
+		}
 	}
 
 	public void addSchemaLocationBaseURI(URI uri) {
-		Assert.isNotNull(uri);
-
-		schemaLocationBaseURIs.add(uri);
+		if (uri != null) {
+			schemaLocationBaseURIs.add(uri);
+		}
 	}
 
 	/*

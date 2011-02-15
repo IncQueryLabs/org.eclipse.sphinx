@@ -94,9 +94,7 @@ public class BasicTabbedPropertySheetTitleProvider extends LabelProvider {
 									if (text != null && text.length() > 0) {
 										return text;
 									}
-									// Don't return empty String because otherwise the tabbed property sheet's title bar
-									// looses its background color and becomes entirely blank
-									return " "; //$NON-NLS-1$
+									break;
 								}
 								default: {
 									return NLS.bind(Messages.label_multiObjectSelected, Integer.toString(collection.size()));
@@ -107,10 +105,11 @@ public class BasicTabbedPropertySheetTitleProvider extends LabelProvider {
 								if (text != null && text.length() > 0) {
 									return text;
 								}
-								// Don't return empty String because otherwise the tabbed property sheet's title bar
-								// looses its background color and becomes entirely blank
-								return " "; //$NON-NLS-1$
 							}
+
+							// Don't return empty String because otherwise the tabbed property sheet's title bar
+							// looses its background color and becomes entirely blank
+							return " "; //$NON-NLS-1$
 						}
 					};
 				}

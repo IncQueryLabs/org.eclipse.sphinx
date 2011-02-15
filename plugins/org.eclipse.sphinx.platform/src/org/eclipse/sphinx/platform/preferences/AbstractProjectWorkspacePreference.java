@@ -120,6 +120,13 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	}
 
 	/*
+	 * @see org.artop.ecl.platform.preferences.IProjectWorkspacePreference#getDefaultValueAsObject()
+	 */
+	public T getDefaultValueAsObject() {
+		return workspacePreference.getDefaultValueAsObject();
+	}
+
+	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IEclipsePreference#getDefaultValueAsString()
 	 */
 	public String getDefaultValueAsString() {
@@ -175,6 +182,15 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	}
 
 	/*
+	 * @see
+	 * org.artop.ecl.platform.preferences.IProjectWorkspacePreference#setToDefaultInProject(org.eclipse.core.resources
+	 * .IProject)
+	 */
+	public void setToDefaultInProject(IProject project) {
+		projectPreference.setToDefault(project);
+	}
+
+	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#getFromWorkspace()
 	 */
 	public T getFromWorkspace() {
@@ -186,6 +202,13 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	 */
 	public void setInWorkspace(T valueAsObject) {
 		workspacePreference.set(valueAsObject);
+	}
+
+	/*
+	 * @see org.artop.ecl.platform.preferences.IProjectWorkspacePreference#setToDefaultInWorkspace()
+	 */
+	public void setToDefaultInWorkspace() {
+		workspacePreference.setToDefault();
 	}
 
 	/**

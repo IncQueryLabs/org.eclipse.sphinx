@@ -40,4 +40,8 @@ public interface IWorkspacePreference<T> extends IEclipsePreference<T> {
 	 *            the new value of the preference
 	 */
 	void set(T valueAsObject);
+
+	T getDefaultValueAsObject();
+
+	void setToDefault();
 }

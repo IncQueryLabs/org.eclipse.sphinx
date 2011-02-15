@@ -46,6 +46,8 @@ public interface IProjectWorkspacePreference<T> extends IEclipsePreference<T> {
 	 */
 	T get(IProject project);
 
+	T getDefaultValueAsObject();
+
 	/**
 	 * Returns the value of the preference from the project. If the value does not exist yet in the Eclipse project
 	 * preferences mechanism, returns <code>null</code>. The behavior of this method may depend on the nature of the
@@ -70,6 +72,8 @@ public interface IProjectWorkspacePreference<T> extends IEclipsePreference<T> {
 	 */
 	void setInProject(IProject project, T valueAsObject);
 
+	void setToDefaultInProject(IProject project);
+
 	/**
 	 * Returns the value of the preference from the workspace. If the value does not exist yet in the Eclipse workspace
 	 * preferences mechanism, returns the default value.
@@ -87,4 +91,6 @@ public interface IProjectWorkspacePreference<T> extends IEclipsePreference<T> {
 	 * @see IWorkspacePreference#set(Object)
 	 */
 	void setInWorkspace(T valueAsObject);
+
+	void setToDefaultInWorkspace();
 }

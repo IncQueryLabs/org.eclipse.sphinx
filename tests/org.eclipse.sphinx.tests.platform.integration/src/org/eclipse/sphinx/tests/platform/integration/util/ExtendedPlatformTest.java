@@ -847,7 +847,7 @@ public class ExtendedPlatformTest extends DefaultIntegrationTestCase {
 	 * 
 	 * @throws CoreException
 	 */
-	public void testAddNature() throws CoreException {
+	public void testAddNature() throws Exception {
 		String pluginNature = "org.eclipse.pde.PluginNature";
 		String javaNaure = "org.eclipse.jdt.core.javanature";
 
@@ -859,12 +859,9 @@ public class ExtendedPlatformTest extends DefaultIntegrationTestCase {
 
 		assertEquals(1, prj20ADesc.getNatureIds().length);
 		String previousNature20_A = prj20ADesc.getNatureIds()[0];
-		try {
-			ExtendedPlatform.addNature(project20_A, pluginNature, null);
 
-		} catch (Exception ex) {
-			fail(ex.getClass().getName() + " " + ex.getMessage());
-		}
+		ExtendedPlatform.addNature(project20_A, pluginNature, null);
+
 		prj20ADesc = project20_A.getDescription();
 		assertEquals(2, prj20ADesc.getNatureIds().length);
 		assertEquals(previousNature20_A, prj20ADesc.getNatureIds()[0]);
@@ -878,22 +875,14 @@ public class ExtendedPlatformTest extends DefaultIntegrationTestCase {
 
 		assertEquals(1, prj10ADesc.getNatureIds().length);
 		String previousNature10_A = prj10ADesc.getNatureIds()[0];
-		try {
-			ExtendedPlatform.addNature(project10_A, javaNaure, null);
-		} catch (Exception ex) {
-			fail(ex.getClass().getName() + " " + ex.getMessage());
-		}
+		ExtendedPlatform.addNature(project10_A, javaNaure, null);
 		prj10ADesc = project10_A.getDescription();
 		assertEquals(2, prj10ADesc.getNatureIds().length);
 		assertEquals(previousNature10_A, prj10ADesc.getNatureIds()[0]);
 		assertEquals(javaNaure, prj10ADesc.getNatureIds()[1]);
 		// =====================================================
 		// Add existing nature
-		try {
-			ExtendedPlatform.addNature(project10_A, javaNaure, null);
-		} catch (Exception ex) {
-			fail(ex.getClass().getName() + " " + ex.getMessage());
-		}
+		ExtendedPlatform.addNature(project10_A, javaNaure, null);
 		prj10ADesc = project10_A.getDescription();
 		assertEquals(2, prj10ADesc.getNatureIds().length);
 		assertEquals(previousNature10_A, prj10ADesc.getNatureIds()[0]);
@@ -905,27 +894,19 @@ public class ExtendedPlatformTest extends DefaultIntegrationTestCase {
 			ExtendedPlatform.addNature(nullProject, pluginNature, null);
 		} catch (Exception ex) {
 			if (!(ex instanceof AssertionFailedException)) {
-				fail(ex.getMessage());
+				throw ex;
 			}
 		}
 		// =====================================================
 		// Add empty nature
-		try {
-			ExtendedPlatform.addNature(project20_A, "", null);
-		} catch (Exception ex) {
-			fail(ex.getClass().getName() + " " + ex.getMessage());
-		}
+		ExtendedPlatform.addNature(project20_A, "", null);
 		prj20ADesc = project20_A.getDescription();
 		assertEquals(2, prj20ADesc.getNatureIds().length);
 		assertEquals(previousNature20_A, prj20ADesc.getNatureIds()[0]);
 		assertEquals(pluginNature, prj20ADesc.getNatureIds()[1]);
 		// =====================================================
 		// Set null nature
-		try {
-			ExtendedPlatform.addNature(project10_A, null, null);
-		} catch (Exception ex) {
-			fail(ex.getClass().getName() + " " + ex.getMessage());
-		}
+		ExtendedPlatform.addNature(project10_A, null, null);
 		prj10ADesc = project10_A.getDescription();
 		assertEquals(2, prj10ADesc.getNatureIds().length);
 		assertEquals(previousNature10_A, prj10ADesc.getNatureIds()[0]);
@@ -938,7 +919,7 @@ public class ExtendedPlatformTest extends DefaultIntegrationTestCase {
 	 * 
 	 * @throws CoreException
 	 */
-	public void testRemoveNature() throws CoreException {
+	public void testRemoveNature() throws Exception {
 		String cNature = "org.eclipse.cdt.core.cnature";
 		String hummingbirdNature = "org.eclipse.sphinx.examples.hummingbird.ide.HummingbirdNature";
 		IProject project10F = refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_F);
@@ -976,7 +957,7 @@ public class ExtendedPlatformTest extends DefaultIntegrationTestCase {
 			ExtendedPlatform.removeNature(nullProject, cNature, null);
 		} catch (Exception ex) {
 			if (!(ex instanceof AssertionFailedException)) {
-				fail(ex.getMessage());
+				throw ex;
 			}
 		}
 

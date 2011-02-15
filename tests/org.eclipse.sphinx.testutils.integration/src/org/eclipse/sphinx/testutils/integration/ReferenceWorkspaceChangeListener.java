@@ -45,16 +45,9 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 public class ReferenceWorkspaceChangeListener implements IResourceChangeListener {
 	protected Set<IFile> changedFiles = new HashSet<IFile>();
 	protected Set<IFile> addedFiles = new HashSet<IFile>();
-	protected Set<String> changedDescriptionProjects = new HashSet<String>();
-	protected Set<String> renamedProjects = new HashSet<String>();
-	protected Map<String, Collection<String>> changedSettingProjects = new HashMap<String, Collection<String>>();
-
-	/**
-	 * Default constructor.
-	 */
-	public ReferenceWorkspaceChangeListener() {
-
-	}
+	protected Set<IProject> renamedProjects = new HashSet<IProject>();
+	protected Set<IProject> projectsWithChangedDescription = new HashSet<IProject>();
+	protected Map<IProject, Collection<String>> projectsWithChangedSettings = new HashMap<IProject, Collection<String>>();
 
 	/*
 	 * @see java.lang.Object#finalize()
@@ -75,16 +68,16 @@ public class ReferenceWorkspaceChangeListener implements IResourceChangeListener
 
 					@Override
 					public void handleProjectDescriptionChanged(int eventType, IProject project) {
-						changedDescriptionProjects.add(project.getName());
+						projectsWithChangedDescription.add(project);
 					}
 
 					@Override
 					public void handleProjectSettingsChanged(int eventType, IProject project, Collection<String> preferenceFileNames) {
-						if (changedSettingProjects.containsKey(project.getName())) {
-							changedSettingProjects.get(project.getName()).addAll(preferenceFileNames);
+						if (projectsWithChangedSettings.containsKey(project)) {
+							projectsWithChangedSettings.get(project).addAll(preferenceFileNames);
 
 						} else {
-							changedSettingProjects.put(project.getName(), preferenceFileNames);
+							projectsWithChangedSettings.put(project, preferenceFileNames);
 						}
 					}
 
@@ -104,49 +97,46 @@ public class ReferenceWorkspaceChangeListener implements IResourceChangeListener
 
 					@Override
 					public void handleProjectRenamed(int eventType, IProject oldProject, IProject newProject) {
-						renamedProjects.add(newProject.getName());
+						renamedProjects.add(newProject);
 					}
 
 					@Override
 					public void handleFileMoved(int eventType, IFile oldFile, IFile newFile) {
 						addedFiles.add(newFile);
 					}
-
 				});
 				delta.accept(visitor);
-
 			}
 		} catch (Exception ex) {
 			PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 		}
 	}
 
-	public Set<IFile> getChangedFiles() {
+	public Collection<IFile> getChangedFiles() {
 		return changedFiles;
 	}
 
-	public Set<IFile> getAddedFiles() {
+	public Collection<IFile> getAddedFiles() {
 		return addedFiles;
 	}
 
-	public Set<String> getChangedDescriptionProjects() {
-		return changedDescriptionProjects;
-	}
-
-	public Set<String> getRenamedProjects() {
+	public Collection<IProject> getRenamedProjects() {
 		return renamedProjects;
 	}
 
-	public Map<String, Collection<String>> getChangedSettingProjects() {
-		return changedSettingProjects;
+	public Collection<IProject> getProjectsWithChangedDescription() {
+		return projectsWithChangedDescription;
+	}
+
+	public Map<IProject, Collection<String>> getProjectsWithChangedSettings() {
+		return projectsWithChangedSettings;
 	}
 
 	public void clearHistory() {
 		changedFiles.clear();
 		addedFiles.clear();
 		renamedProjects.clear();
-		changedDescriptionProjects.clear();
-		changedSettingProjects.clear();
-
+		projectsWithChangedDescription.clear();
+		projectsWithChangedSettings.clear();
 	}
 }

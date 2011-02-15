@@ -57,4 +57,8 @@ public interface IProjectPreference<T> extends IEclipsePreference<T> {
 	 *            the new value of the preference
 	 */
 	void set(IProject project, T valueAsObject);
+
+	T getDefaultValueAsObject(IProject project);
+
+	void setToDefault(IProject project);
 }
