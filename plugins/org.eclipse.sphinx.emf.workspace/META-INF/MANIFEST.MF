@@ -19,7 +19,6 @@ Export-Package: org.eclipse.sphinx.emf.workspace,
  org.eclipse.sphinx.emf.workspace.internal.saving;x-internal:=true,
  org.eclipse.sphinx.emf.workspace.internal.syncing;x-internal:=true,
  org.eclipse.sphinx.emf.workspace.loading,
- org.eclipse.sphinx.emf.workspace.localproxies,
  org.eclipse.sphinx.emf.workspace.referentialintegrity,
  org.eclipse.sphinx.emf.workspace.saving,
  org.eclipse.sphinx.emf.workspace.syncing

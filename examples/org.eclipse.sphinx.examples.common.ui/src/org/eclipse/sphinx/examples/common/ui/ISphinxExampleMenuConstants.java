@@ -26,15 +26,15 @@ public interface ISphinxExampleMenuConstants {
 	/**
 	 * Identifier of the Sphinx Examples sub menu.
 	 */
-	public static final String MENU_SPHINX_EXAMPLES_ID = "sphinx.examples.menu";//$NON-NLS-1$
+	String MENU_SPHINX_EXAMPLES_ID = "sphinx.examples.menu";//$NON-NLS-1$
 
 	/**
 	 * Label of the Sphinx Examples sub menu.
 	 */
-	public static final String MENU_SPHINX_EXAMPLES_LABEL = Messages.menu_sphinxExamples_label;
+	String MENU_SPHINX_EXAMPLES_LABEL = Messages.menu_sphinxExamples_label;
 
 	/**
 	 * Identifier of the Sphinx Examples menu item group.
 	 */
-	public static final String GROUP_SPHINX_EXAMPLES = "sphinx.examples.group";//$NON-NLS-1$
+	String GROUP_SPHINX_EXAMPLES = "sphinx.examples.group";//$NON-NLS-1$
 }

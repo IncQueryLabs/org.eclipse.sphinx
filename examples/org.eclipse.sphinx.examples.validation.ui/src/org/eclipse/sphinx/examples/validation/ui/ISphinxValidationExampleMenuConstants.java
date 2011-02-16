@@ -17,17 +17,19 @@ package org.eclipse.sphinx.examples.validation.ui;
 import org.eclipse.sphinx.examples.validation.ui.internal.messages.Messages;
 
 /**
+ * Defines constants for Sphinx validation example menus and groups.
+ * 
  * @since 0.7.0
  */
-public interface IValidationExampleMenuConstants {
+public interface ISphinxValidationExampleMenuConstants {
 
 	/**
 	 * Identifier of the validation sub menu.
 	 */
-	public static final String MENU_VALIDATION_ID = "org.eclipse.sphinx.examples.validation.ui.menus.validation"; //$NON-NLS-1$
+	String MENU_VALIDATION_ID = "sphinx.validation.examples.menu"; //$NON-NLS-1$
 
 	/**
 	 * Label of the validation sub menu.
 	 */
-	public static final String MENU_VALIDATION_LABEL = Messages.menu_validation_label;
+	String MENU_VALIDATION_LABEL = Messages.menu_validation_label;
 }

@@ -19,9 +19,9 @@ package org.eclipse.sphinx.examples.common.ui.perspectives;
  */
 public interface ISphinxPerspectiveConstants {
 
-	public static String LEFT = "left"; //$NON-NLS-1$
-	public static String TOP_LEFT = "topLeft"; //$NON-NLS-1$
-	public static String BOTTOM_RIGHT = "bottomRight"; //$NON-NLS-1$
+	String LEFT = "left"; //$NON-NLS-1$
+	String TOP_LEFT = "topLeft"; //$NON-NLS-1$
+	String BOTTOM_RIGHT = "bottomRight"; //$NON-NLS-1$
 
 	/***************************
 	 * --- Perspective IDs --- *
@@ -30,99 +30,99 @@ public interface ISphinxPerspectiveConstants {
 	/**
 	 * The id for the Sphinx perspective.
 	 */
-	public static String ID_SPHINX_PERSPECTIVE = "org.eclipse.sphinx.examples.common.ui.perspectives.sphinx"; //$NON-NLS-1$
+	String ID_SPHINX_PERSPECTIVE = "org.eclipse.sphinx.examples.common.ui.perspectives.sphinx"; //$NON-NLS-1$
 
 	/**
-	 * The id for the Resource perspective.
+	 * The id for the Eclipse Resource perspective.
 	 */
-	public static String ID_RESOURCE_PERSPECTIVE = "org.eclipse.ui.resourcePerspective"; //$NON-NLS-1$
+	String ID_RESOURCE_PERSPECTIVE = "org.eclipse.ui.resourcePerspective"; //$NON-NLS-1$
 
 	/*********************
 	 * --- Views IDs --- *
 	 *********************/
 
 	/**
-	 * The view id for the Problem view.
+	 * The view id for the Eclipse Problems view.
 	 */
-	public static String ID_PROBLEM_VIEW = "org.eclipse.ui.views.ProblemView";//$NON-NLS-1$
+	String ID_PROBLEMS_VIEW = "org.eclipse.ui.views.ProblemView";//$NON-NLS-1$
 
 	/**
-	 * The view id for the Log view.
+	 * The view id for the Eclipse Error Log view.
 	 */
-	public static String ID_LOG_VIEW = "org.eclipse.pde.runtime.LogView"; //$NON-NLS-1$
+	String ID_ERROR_LOG_VIEW = "org.eclipse.pde.runtime.LogView"; //$NON-NLS-1$
 
 	/**
-	 * The view id for the Console view.
+	 * The view id for the Eclipse Console view.
 	 */
-	public static String ID_CONSOLE_VIEW = "org.eclipse.ui.console.ConsoleView"; //$NON-NLS-1$
+	String ID_CONSOLE_VIEW = "org.eclipse.ui.console.ConsoleView"; //$NON-NLS-1$
 
 	/**
-	 * The view id for the Model Explorer view.
+	 * The view id for the Sphinx Model Explorer view.
 	 */
-	public static String ID_MODEL_EXPLORER = "org.eclipse.sphinx.examples.explorer.views.modelExplorer"; //$NON-NLS-1$
+	String ID_MODEL_EXPLORER = "org.eclipse.sphinx.examples.explorer.views.modelExplorer"; //$NON-NLS-1$
 
 	/**
-	 * The view id for the Validation view.
+	 * The view id for the Sphinx Validation view.
 	 */
-	public static String ID_VALIDATION_VIEW = "org.eclipse.sphinx.examples.validation.ui.views.validation"; //$NON-NLS-1$
+	String ID_VALIDATION_VIEW = "org.eclipse.sphinx.examples.validation.ui.views.validation"; //$NON-NLS-1$
 
 	/***********************
 	 * --- Wizards IDs --- *
 	 ***********************/
 
 	/**
-	 * The wizard id for the Hummingbird new project.
+	 * The wizard id for the Sphinx new Hummingbird project wizard.
 	 */
-	public static String ID_HUMMINGBIRD_NEW_PROJECT = "org.eclipse.sphinx.examples.hummingbird.ide.ui.newWizards.hummingbirdProject"; //$NON-NLS-1$
+	String ID_HUMMINGBIRD_NEW_PROJECT = "org.eclipse.sphinx.examples.hummingbird.ide.ui.newWizards.hummingbirdProject"; //$NON-NLS-1$
 
 	/**
-	 * The wizard id for the Hummingbird 1.0 new model.
+	 * The wizard id for the Sphinx new Hummingbird 1.0 model wizard.
 	 */
-	public static String ID_HUMMINGBIRD10_NEW_MODEL = "org.eclipse.sphinx.examples.hummingbird10.editor.Hummingbird10ModelWizardID"; //$NON-NLS-1$
+	String ID_HUMMINGBIRD10_NEW_MODEL = "org.eclipse.sphinx.examples.hummingbird10.editor.Hummingbird10ModelWizardID"; //$NON-NLS-1$
 
 	/**
-	 * The wizard id for the Hummingbird 2.0 new type model.
+	 * The wizard id for the Sphinx new Hummingbird 2.0 type model wizard.
 	 */
-	public static String ID_HUMMINGBIRD20_NEW_TYPE_MODEL = "org.eclipse.sphinx.examples.hummingbird20.typemodel.editor.TypeModel20ModelWizardID"; //$NON-NLS-1$
+	String ID_HUMMINGBIRD20_NEW_TYPE_MODEL = "org.eclipse.sphinx.examples.hummingbird20.typemodel.editor.TypeModel20ModelWizardID"; //$NON-NLS-1$
 
 	/**
-	 * The wizard id for the Hummingbird 2.0 new instance model.
+	 * The wizard id for the Sphinx new Hummingbird 2.0 instance model wizard.
 	 */
-	public static String ID_HUMMINGBIRD20_NEW_INSTANCE_MODEL = "org.eclipse.sphinx.examples.hummingbird20.instancemodel.editor.InstanceModel20ModelWizardID"; //$NON-NLS-1$
+	String ID_HUMMINGBIRD20_NEW_INSTANCE_MODEL = "org.eclipse.sphinx.examples.hummingbird20.instancemodel.editor.InstanceModel20ModelWizardID"; //$NON-NLS-1$
 
 	/**
-	 * The wizard id for the Hummingbird new file.
+	 * The wizard id for the Sphinx new Hummingbird file wizard.
 	 */
-	public static String ID_HUMMINGBIRD_NEW_FILE = "org.eclipse.sphinx.examples.common.ui.newWizards.hummingbirdFile"; //$NON-NLS-1$
+	String ID_HUMMINGBIRD_NEW_FILE = "org.eclipse.sphinx.examples.common.ui.newWizards.hummingbirdFile"; //$NON-NLS-1$
 
 	/**
-	 * The wizard id for the new linked file.
+	 * The wizard id for the Sphinx new linked file wizard.
 	 */
-	public static String ID_NEW_LINKED_FILE = "org.eclipse.sphinx.examples.common.ui.newWizards.linkedFile";//$NON-NLS-1$
+	String ID_NEW_LINKED_FILE = "org.eclipse.sphinx.examples.common.ui.newWizards.linkedFile";//$NON-NLS-1$
 
 	/**
-	 * The wizard id for the new linked folder.
+	 * The wizard id for the Sphinx new linked folder wizard.
 	 */
-	public static String ID_NEW_LINKED_FOLDER = "org.eclipse.sphinx.examples.common.ui.newWizards.linkedFolder";//$NON-NLS-1$
+	String ID_NEW_LINKED_FOLDER = "org.eclipse.sphinx.examples.common.ui.newWizards.linkedFolder";//$NON-NLS-1$
 
 	/**
-	 * The wizard id for the new file.
+	 * The wizard id for the Eclipse new file wizard.
 	 */
-	public static String ID_ECLIPSE_NEW_FILE = "org.eclipse.ui.wizards.new.file"; //$NON-NLS-1$
+	String ID_ECLIPSE_NEW_FILE = "org.eclipse.ui.wizards.new.file"; //$NON-NLS-1$
 
 	/**
-	 * The wizard id for the new folder.
+	 * The wizard id for the Eclipse new folder wizard.
 	 */
-	public static String ID_ECLIPSE_NEW_FOLDER = "org.eclipse.ui.wizards.new.folder"; //$NON-NLS-1$
+	String ID_ECLIPSE_NEW_FOLDER = "org.eclipse.ui.wizards.new.folder"; //$NON-NLS-1$
 
 	/**************************
 	 * --- ActionSets IDs --- *
 	 **************************/
-	public static String ID_TEAM_ACTIONSET = "org.eclipse.team.ui.actionSet";//$NON-NLS-1$
-	public static String ID_LAUNCH_ACTIONSET = "org.eclipse.debug.ui.launchActionSet";//$NON-NLS-1$
+	String ID_TEAM_ACTIONSET = "org.eclipse.team.ui.actionSet";//$NON-NLS-1$
+	String ID_LAUNCH_ACTIONSET = "org.eclipse.debug.ui.launchActionSet";//$NON-NLS-1$
 
 	/**************************
 	 * --- Preference IDs --- *
 	 **************************/
-	public static String ID_HUMMINGBIRD_PREFERENCE_PAGE = "org.eclipse.sphinx.workspace.ui.preferences.hummingbird"; //$NON-NLS-1$
+	String ID_HUMMINGBIRD_PREFERENCE_PAGE = "org.eclipse.sphinx.workspace.ui.preferences.hummingbird"; //$NON-NLS-1$
 }

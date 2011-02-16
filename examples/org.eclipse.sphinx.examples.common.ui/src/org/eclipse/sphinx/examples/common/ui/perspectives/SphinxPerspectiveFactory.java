@@ -55,7 +55,7 @@ public class SphinxPerspectiveFactory implements IPerspectiveFactory {
 		IFolderLayout bottomRight = layout.createFolder(ISphinxPerspectiveConstants.BOTTOM_RIGHT, relativePos, 0.65f, editorArea);
 		bottomRight.addView(IPageLayout.ID_PROP_SHEET);
 		bottomRight.addView(ISphinxPerspectiveConstants.ID_VALIDATION_VIEW);
-		bottomRight.addView(ISphinxPerspectiveConstants.ID_LOG_VIEW);
+		bottomRight.addView(ISphinxPerspectiveConstants.ID_ERROR_LOG_VIEW);
 		bottomRight.addPlaceholder(IPageLayout.ID_PROBLEM_VIEW);
 		bottomRight.addPlaceholder(ISphinxPerspectiveConstants.ID_CONSOLE_VIEW);
 	}
@@ -80,7 +80,7 @@ public class SphinxPerspectiveFactory implements IPerspectiveFactory {
 		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
 		layout.addShowViewShortcut(ISphinxPerspectiveConstants.ID_VALIDATION_VIEW);
-		layout.addShowViewShortcut(ISphinxPerspectiveConstants.ID_LOG_VIEW);
+		layout.addShowViewShortcut(ISphinxPerspectiveConstants.ID_ERROR_LOG_VIEW);
 		layout.addShowViewShortcut(IPageLayout.ID_PROBLEM_VIEW);
 		layout.addShowViewShortcut(ISphinxPerspectiveConstants.ID_CONSOLE_VIEW);
 	}

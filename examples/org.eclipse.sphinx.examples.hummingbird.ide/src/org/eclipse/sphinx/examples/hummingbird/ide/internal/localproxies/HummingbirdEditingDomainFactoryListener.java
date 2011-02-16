@@ -16,7 +16,7 @@ package org.eclipse.sphinx.examples.hummingbird.ide.internal.localproxies;
 
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener;
-import org.eclipse.sphinx.emf.workspace.localproxies.LocalProxyChangeListener;
+import org.eclipse.sphinx.emf.edit.LocalProxyChangeListener;
 
 /**
  * 

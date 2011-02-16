@@ -27,7 +27,7 @@ Contributors:
   </extension>
   <extension point="org.eclipse.ui.navigator.navigatorContent">
     <actionProvider id="org.eclipse.sphinx.examples.validation.ui.actions.basicValidationExampleActions"
-                    class="org.eclipse.sphinx.examples.validation.ui.actions.providers.BasicValidationExampleActionProvider">
+                    class="org.eclipse.sphinx.examples.validation.ui.actions.providers.SphinxValidationExampleActionProvider">
       <enablement>
         <or>
           <instanceof value="org.eclipse.core.resources.IResource" />

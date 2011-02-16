@@ -24,6 +24,15 @@ Contributors:
       </category>
    </extension>
    <extension point="org.eclipse.ui.newWizards">
+      <category
+            id="org.eclipse.sphinx.examples.common.ui.newWizards.category.sphinxExampleWizards"
+            name="%sphinx.examples.common.ui.newWizards.category.sphinxExampleWizards.name">
+      </category>
+      <category
+            id="org.eclipse.sphinx.examples.common.ui.newWizards.category.examples.sphinx"
+            name="%sphinx.examples.common.ui.newWizards.category.examples.sphinx"
+            parentCategory="org.eclipse.ui.Examples">
+      </category>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">

@@ -16,20 +16,17 @@ package org.eclipse.sphinx.examples.actions.providers;
 
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider;
 import org.eclipse.sphinx.examples.actions.ProjectStatisticsAction;
-import org.eclipse.sphinx.examples.common.ui.ISphinxExampleMenuConstants;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
-import org.eclipse.ui.navigator.ICommonMenuConstants;
 
 /**
- * Basic Action Provider for examples of Sphinx actions.
+ * {@link AbstractSphinxExampleActionProvider Provider} for Sphinx example actions.
+ * 
+ * @since 0.7.0
  */
-public class BasicExampleActionProvider extends BasicActionProvider {
+public class SphinxExampleActionProvider extends AbstractSphinxExampleActionProvider {
 
 	/**
 	 * The action responsible for creating a report on project's content (number of files, number of objects per type,
@@ -51,23 +48,6 @@ public class BasicExampleActionProvider extends BasicActionProvider {
 			IStructuredSelection structuredSelection = SelectionUtil.getStructuredSelection(selection);
 			projectStatisticsAction.updateSelection(structuredSelection);
 		}
-	}
-
-	/*
-	 * @see
-	 * org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider#addSubMenu(org.eclipse.jface.action.IMenuManager)
-	 */
-	@Override
-	protected IMenuManager addSubMenu(IMenuManager contextMenuManager) {
-		IMenuManager subMenuManager = contextMenuManager.findMenuUsingPath(ISphinxExampleMenuConstants.MENU_SPHINX_EXAMPLES_ID);
-		if (subMenuManager == null) {
-			subMenuManager = new MenuManager(ISphinxExampleMenuConstants.MENU_SPHINX_EXAMPLES_LABEL,
-					ISphinxExampleMenuConstants.MENU_SPHINX_EXAMPLES_ID);
-			contextMenuManager.appendToGroup(ICommonMenuConstants.GROUP_ADDITIONS, subMenuManager);
-
-			subMenuManager.add(new Separator(ISphinxExampleMenuConstants.GROUP_SPHINX_EXAMPLES));
-		}
-		return subMenuManager;
 	}
 
 	/*
