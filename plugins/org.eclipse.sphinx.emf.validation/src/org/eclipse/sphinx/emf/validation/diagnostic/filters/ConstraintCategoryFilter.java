@@ -21,22 +21,22 @@ import org.eclipse.emf.validation.service.IConstraintDescriptor;
 import org.eclipse.emf.validation.service.IConstraintFilter;
 
 /**
- * Constraint filter whose criteria is the constraint category. This filter only accepts constraints whose category
- * matches the one given in the constructor.
+ * Constraint filter whose criteria is the constraint category id pattern. This filter only accepts constraints whose
+ * category id matches the pattern passed to the constructor.
  */
 public class ConstraintCategoryFilter implements IConstraintFilter {
 
-	private String categoryId;
+	private String categoryIdPattern;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param categoryId
-	 *            The identifier of the expected category.
+	 * @param categoryIdPattern
+	 *            A regular expression for the ids of the constraint categories which make it through this filter.
 	 */
-	public ConstraintCategoryFilter(String categoryId) {
-		Assert.isNotNull(categoryId);
-		this.categoryId = categoryId;
+	public ConstraintCategoryFilter(String categoryIdPattern) {
+		Assert.isNotNull(categoryIdPattern);
+		this.categoryIdPattern = categoryIdPattern;
 	}
 
 	public boolean accept(IConstraintDescriptor constraint, EObject target) {
@@ -44,7 +44,7 @@ public class ConstraintCategoryFilter implements IConstraintFilter {
 			for (Category category : constraint.getCategories()) {
 				// Iterate over category and its ancestors
 				while (category != null) {
-					if (categoryId.equals(category.getId())) {
+					if (category.getId().matches(categoryIdPattern)) {
 						return true;
 					}
 					// Get the parent category

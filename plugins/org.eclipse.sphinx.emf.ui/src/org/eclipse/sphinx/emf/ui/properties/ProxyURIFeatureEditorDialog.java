@@ -14,17 +14,20 @@
  */
 package org.eclipse.sphinx.emf.ui.properties;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.provider.ItemProvider;
 import org.eclipse.emf.edit.ui.EMFEditUIPlugin;
@@ -44,7 +47,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.ui.internal.messages.Messages;
-import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -74,22 +76,18 @@ import org.eclipse.ui.dialogs.PatternFilter;
  */
 public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 
-	protected Object owner;
+	protected EStructuralFeature feature;
+	protected List<?> currentValues;
 
-	// FIXME Use commented constructor once we don't need to support Eclipse 3.5 any longer. Modify
-	// org.eclipse.sphinx.emf.ui.properties.BasicTransactionalAdvancedPropertySection.createModelPropertySourceProvider(TransactionalEditingDomain)
-	// accordingly.
-	// public ProxyURIFeatureEditorDialog(Shell shell, ILabelProvider editLabelProvider, Object owner, EClassifier
-	// eType, List<?> doGetValue,
-	// String displayName, ArrayList<Object> arrayList, boolean b, boolean sortChoices, boolean unique) {
-	// super(shell, editLabelProvider, owner, eType, doGetValue, displayName, arrayList, b, sortChoices, unique);
-	//
-	// this.owner = owner;
-	// }
-	public ProxyURIFeatureEditorDialog(Shell parent, ILabelProvider labelProvider, Object object, EClassifier eClassifier, List<?> currentValues,
-			String displayName, List<?> choiceOfValues, boolean multiLine, boolean sortChoices) {
-		super(parent, labelProvider, object, eClassifier, currentValues, displayName, choiceOfValues, multiLine, sortChoices);
-		owner = object;
+	public ProxyURIFeatureEditorDialog(Shell parent, ILabelProvider labelProvider, EObject owner, EStructuralFeature feature, String displayName,
+			List<?> choiceOfValues, boolean multiLine, boolean sortChoices) {
+		// FIXME Use commented constructor once we don't need to support Eclipse 3.5 any longer.
+		// super(parent, labelProvider, eObject, eStructuralFeature.getEType(), (List<?>)
+		// eObject.eGet(eStructuralFeature), displayName, choiceOfValues,
+		// multiLine, sortChoices, eStructuralFeature.isUnique());
+		super(parent, labelProvider, owner, feature.getEType(), (List<?>) owner.eGet(feature), displayName, choiceOfValues, multiLine, sortChoices);
+		this.feature = feature;
+		currentValues = (List<?>) owner.eGet(feature);
 	}
 
 	@Override
@@ -430,8 +428,8 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 			public void modifyText(ModifyEvent e) {
 				String text = proxyURIText.getText();
 				String errorMessage = null;
-				if (owner instanceof EObject) {
-					EObject eObject = (EObject) owner;
+				if (object instanceof EObject) {
+					EObject eObject = (EObject) object;
 					ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(eObject.eResource());
 					if (extendedResource != null) {
 						Diagnostic diagnostic = extendedResource.validateURI(text);
@@ -444,33 +442,66 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 
 					IStructuredSelection selection = (IStructuredSelection) featureTableViewer.getSelection();
 					if (selection != null) {
-						Object firstElement = selection.getFirstElement();
-						if (firstElement instanceof EObject) {
-							InternalEObject eObjectElement = (InternalEObject) firstElement;
-							if (eObjectElement.eIsProxy()) {
-								URI eProxyURI = eObjectElement.eProxyURI();
-								if (!text.equals(eProxyURI.toString())) {
-									eObjectElement.eSetProxyURI(URI.createURI(text.toString()));
-									InternalEObject resolvedEObject = (InternalEObject) EcoreUtil.resolve(eObjectElement, (EObject) owner);
-									boolean dirty = true;
-									if (!resolvedEObject.eIsProxy()) {
-										// Ensure that new object resolved is not already in the list
-										values.getChildren().remove(eObjectElement);
-										if (!values.getChildren().contains(resolvedEObject)) {
-											values.getChildren().add(resolvedEObject);
+						Object selected = selection.getFirstElement();
+						if (selected instanceof EObject) {
+							InternalEObject internalValue = (InternalEObject) selected;
+							if (internalValue.eIsProxy()) {
+								URI oldProxyURI = internalValue.eProxyURI();
+								if (!text.equals(oldProxyURI.toString())) {
+									URI newProxyURI = URI.createURI(text);
+									internalValue.eSetProxyURI(newProxyURI);
+									boolean didChangeProxyURI = true;
+
+									// Try to resolve value proxy
+									EObject newValue = EcoreUtil.resolve(internalValue, (EObject) object);
+
+									// Value proxy resolution successful?
+									if (!newValue.eIsProxy()) {
+										// Remove value proxy
+										values.getChildren().remove(internalValue);
+
+										// Resolved value not already contained in values list?
+										if (!values.getChildren().contains(newValue)) {
+											// Add resolved value
+											values.getChildren().add(newValue);
 										} else {
-											values.getChildren().add(eObjectElement);
-											eObjectElement.eSetProxyURI(eProxyURI);
+											// Restore value proxy with previous proxy URI
+											values.getChildren().add(internalValue);
+											internalValue.eSetProxyURI(oldProxyURI);
+											didChangeProxyURI = false;
+
 											proxyURIErrorText.setVisible(true);
 											proxyURIErrorText.setText(Messages.message_proxyURIReferencesElementInList);
-											dirty = false;
 										}
 									}
-									if (dirty && owner instanceof EObject) {
-										EObject eObject = (EObject) owner;
-										ModelSaveManager.INSTANCE.setDirty(eObject.eResource());
-										ModelSaveManager.INSTANCE.notifyDirtyChanged(eObject.eResource());
+
+									// Notify adapters about value change arising from value proxy URI change if
+									// required
+									/*
+									 * !! Important Note !! Don't raise notification with value object as notifier and
+									 * eProxyURI as "feature". The change of the value object's proxy URI is
+									 * semantically equivalent with removing the value object with the old proxy URI
+									 * from the owner and adding another value object with the new proxy URI. Therefore
+									 * notification must happen wrt owner object and feature of value object.
+									 */
+									InternalEObject internalOwner = (InternalEObject) object;
+									if (didChangeProxyURI && internalOwner.eNotificationRequired()) {
+										// Restore old value proxy
+										EFactory eFactoryInstance = newValue.eClass().getEPackage().getEFactoryInstance();
+										InternalEObject internalOldValue = (InternalEObject) eFactoryInstance.create(newValue.eClass());
+										internalOldValue.eSetProxyURI(oldProxyURI);
+
+										// Retrieve position of old and new value
+										int index = currentValues.indexOf(newValue);
+
+										// Deliver remove notification for old value proxy and add notification for new
+										// value
+										NotificationChain notifications = new ENotificationImpl(internalOwner, Notification.REMOVE, feature,
+												internalOldValue, null, index);
+										notifications.add(new ENotificationImpl(internalOwner, Notification.ADD, feature, null, newValue, index));
+										notifications.dispatch();
 									}
+
 									// Refresh the featureTableViewer to see new object appear in selections
 									featureTableViewer.refresh();
 								}

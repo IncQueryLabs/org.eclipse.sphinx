@@ -19,7 +19,7 @@ Contributors:
 <plugin>
   <extension point="org.eclipse.ui.navigator.navigatorContent">
     <actionProvider class="org.eclipse.sphinx.examples.actions.providers.SphinxExampleActionProvider"
-                    id="org.eclipse.sphinx.examples.actions.basicExampleActions">
+                    id="org.eclipse.sphinx.examples.actions.sphinxExampleActions">
       <enablement>
         <instanceof value="org.eclipse.core.resources.IProject">
         </instanceof>

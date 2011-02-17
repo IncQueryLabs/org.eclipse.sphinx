@@ -34,6 +34,7 @@ import org.eclipse.emf.edit.ui.provider.PropertySource;
 import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.ResourceSetChangeEvent;
 import org.eclipse.emf.transaction.ResourceSetListenerImpl;
+import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryContentProvider;
 import org.eclipse.emf.transaction.util.TransactionUtil;
@@ -228,23 +229,27 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 			 * property.
 			 */
 			@Override
-			protected IPropertySource createPropertySource(Object object, IItemPropertySource itemPropertySource) {
-				return new PropertySource(object, itemPropertySource) {
-					@Override
-					protected IPropertyDescriptor createPropertyDescriptor(IItemPropertyDescriptor itemPropertyDescriptor) {
-						return new PropertyDescriptor(object, itemPropertyDescriptor) {
+			protected IPropertySource createPropertySource(final Object object, final IItemPropertySource itemPropertySource) {
+				return wrap(run(new RunnableWithResult.Impl<IPropertySource>() {
+					public void run() {
+						setResult(new PropertySource(object, itemPropertySource) {
 							@Override
-							public CellEditor createPropertyEditor(final Composite composite) {
-								CellEditor editor = BasicTransactionalAdvancedPropertySection.this.createPropertyEditor(composite, object,
-										itemPropertyDescriptor, this);
-								if (editor != null) {
-									return editor;
-								}
-								return super.createPropertyEditor(composite);
+							protected IPropertyDescriptor createPropertyDescriptor(IItemPropertyDescriptor itemPropertyDescriptor) {
+								return new PropertyDescriptor(object, itemPropertyDescriptor) {
+									@Override
+									public CellEditor createPropertyEditor(final Composite composite) {
+										CellEditor editor = BasicTransactionalAdvancedPropertySection.this.createPropertyEditor(composite, object,
+												itemPropertyDescriptor, this);
+										if (editor != null) {
+											return editor;
+										}
+										return super.createPropertyEditor(composite);
+									}
+								};
 							}
-						};
+						});
 					}
-				};
+				}));
 			}
 		};
 	}
@@ -263,17 +268,18 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 	 * @return A newly created custom {@link CellEditor cell editor} to be used or <code>null</code> to indicate that
 	 *         default {@link CellEditor cell editor} created by EMF.Edit should be used.
 	 */
-	protected CellEditor createPropertyEditor(Composite composite, final Object object, final IItemPropertyDescriptor itemPropertyDescriptor,
+	protected CellEditor createPropertyEditor(Composite composite, Object object, final IItemPropertyDescriptor itemPropertyDescriptor,
 			final PropertyDescriptor propertyDescriptor) {
 		if (object instanceof EObject) {
-			Object feature = itemPropertyDescriptor.getFeature(object);
+			final EObject eObject = (EObject) object;
+			Object feature = itemPropertyDescriptor.getFeature(eObject);
 			if (feature instanceof EReference) {
 				final EReference reference = (EReference) feature;
-				InternalEObject internalEObject = (InternalEObject) object;
+				InternalEObject internalEObject = (InternalEObject) eObject;
 				if (!reference.isMany()) {
 					EObject value = (EObject) internalEObject.eGet(reference);
 					if (value != null && value.eIsProxy()) {
-						return new ProxyURICellEditor(composite, (EObject) object, (InternalEObject) value);
+						return new ProxyURICellEditor(composite, eObject, reference, value);
 					}
 				} else {
 					@SuppressWarnings("unchecked")
@@ -281,24 +287,13 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 					for (EObject value : values) {
 						if (value.eIsProxy()) {
 							final ILabelProvider editLabelProvider = propertyDescriptor.getLabelProvider();
-							final Collection<?> choiceOfValues = itemPropertyDescriptor.getChoiceOfValues(object);
+							final Collection<?> choiceOfValues = itemPropertyDescriptor.getChoiceOfValues(eObject);
 							return new ExtendedDialogCellEditor(composite, editLabelProvider) {
 								@Override
 								protected Object openDialogBox(Control cellEditorWindow) {
-									// FIXME Use commented code once we don't need to support
-									// Eclipse 3.5 any longer
-									// ProxyURIFeatureEditorDialog dialog = new
-									// ProxyURIFeatureEditorDialog(
-									// cellEditorWindow.getShell(), editLabelProvider, object,
-									// reference.getEType(),
-									// (List<?>) doGetValue(), getDisplayName(), new
-									// ArrayList<Object>(choiceOfValues),
-									// false, itemPropertyDescriptor.isSortChoices(object),
-									// reference.isUnique());
 									ProxyURIFeatureEditorDialog dialog = new ProxyURIFeatureEditorDialog(cellEditorWindow.getShell(),
-											editLabelProvider, object, reference.getEType(), (List<?>) doGetValue(),
-											propertyDescriptor.getDisplayName(), new ArrayList<Object>(choiceOfValues), false,
-											itemPropertyDescriptor.isSortChoices(object));
+											editLabelProvider, eObject, reference, propertyDescriptor.getDisplayName(), new ArrayList<Object>(
+													choiceOfValues), false, itemPropertyDescriptor.isSortChoices(eObject));
 									dialog.open();
 									return dialog.getResult();
 								}

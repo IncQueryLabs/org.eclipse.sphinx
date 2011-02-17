@@ -15,16 +15,19 @@
 package org.eclipse.sphinx.emf.ui.properties;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
-import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -35,13 +38,16 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class ProxyURICellEditor extends TextCellEditor {
 
-	public ProxyURICellEditor(Composite composite, final EObject owner, final InternalEObject value) {
+	public ProxyURICellEditor(Composite composite, EObject owner, final EStructuralFeature feature, EObject value) {
 		super(composite);
 		Assert.isNotNull(owner);
+		Assert.isNotNull(feature);
 		Assert.isNotNull(value);
 
-		URI proxyURI = value.eProxyURI();
-		setValue(proxyURI.toString());
+		final InternalEObject internalOwner = (InternalEObject) owner;
+		final InternalEObject internalValue = (InternalEObject) value;
+
+		setValue(internalValue.eProxyURI().toString());
 
 		addListener(new ICellEditorListener() {
 
@@ -53,19 +59,35 @@ public class ProxyURICellEditor extends TextCellEditor {
 
 			public void applyEditorValue() {
 				Object editorValue = getValue();
-				if (editorValue != null && value != null) {
-					value.eSetProxyURI(URI.createURI(editorValue.toString()));
-					ModelSaveManager.INSTANCE.setDirty(owner.eResource());
-					ModelSaveManager.INSTANCE.notifyDirtyChanged(owner.eResource());
+				if (editorValue != null && internalValue != null) {
+					URI newProxyURI = URI.createURI(editorValue.toString());
+					URI oldProxyURI = internalValue.eProxyURI();
+					internalValue.eSetProxyURI(newProxyURI);
 
+					// Notify adapters about value change arising from value proxy URI change if
+					// required
+					/*
+					 * !! Important Note !! Don't raise notification with value object as notifier and eProxyURI as
+					 * "feature". The change of the value object's proxy URI is semantically equivalent with replacing
+					 * the value object with the old proxy URI by another value object with the new proxy URI. Therefore
+					 * notification must happen wrt owner object and feature of value object.
+					 */
+					if (internalOwner.eNotificationRequired()) {
+						// Restore old value proxy
+						EFactory eFactoryInstance = internalValue.eClass().getEPackage().getEFactoryInstance();
+						InternalEObject internalOldValue = (InternalEObject) eFactoryInstance.create(internalValue.eClass());
+						internalOldValue.eSetProxyURI(oldProxyURI);
+
+						// Deliver set notification for replacement of old value proxy by new value proxy
+						internalOwner.eNotify(new ENotificationImpl(internalOwner, Notification.SET, feature, internalOldValue, internalValue));
+					}
 				}
-
 			}
 		});
 
 		setValidator(new ICellEditorValidator() {
 			public String isValid(Object editorValue) {
-				ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(owner.eResource());
+				ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(internalOwner.eResource());
 				if (extendedResource != null) {
 					if (editorValue instanceof String) {
 						Diagnostic diagnostic = extendedResource.validateURI((String) editorValue);
