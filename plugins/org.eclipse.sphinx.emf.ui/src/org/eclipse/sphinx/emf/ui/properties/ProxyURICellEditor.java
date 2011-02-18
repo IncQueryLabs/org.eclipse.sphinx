@@ -15,15 +15,12 @@
 package org.eclipse.sphinx.emf.ui.properties;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
@@ -38,79 +35,133 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class ProxyURICellEditor extends TextCellEditor {
 
-	public ProxyURICellEditor(Composite composite, EObject owner, final EStructuralFeature feature, EObject value) {
-		super(composite);
+	/**
+	 * A delegate for handling validation and conversion for proxy URIs.
+	 */
+	protected static class ProxyURIHandler implements ICellEditorValidator {
+
+		protected EObject owner;
+		protected EObject oldValue;
+
+		public ProxyURIHandler(EObject owner, EObject oldValue) {
+			Assert.isNotNull(owner);
+			Assert.isNotNull(oldValue);
+
+			this.owner = owner;
+			this.oldValue = oldValue;
+		}
+
+		public String isValid(Object value) {
+			System.out.println(value);
+			ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(owner.eResource());
+			if (extendedResource != null) {
+				if (value instanceof String) {
+					Diagnostic diagnostic = extendedResource.validateURI((String) value);
+					return Diagnostic.OK_INSTANCE == diagnostic ? null : diagnostic.getMessage();
+				}
+			}
+			return null;
+		}
+
+		public Object toValue(String valueAsString) {
+			URI proxyURI = URI.createURI(valueAsString);
+			if (!proxyURI.equals(((InternalEObject) oldValue).eProxyURI())) {
+				EFactory factory = oldValue.eClass().getEPackage().getEFactoryInstance();
+				EObject valueAsObject = factory.create(oldValue.eClass());
+				((InternalEObject) valueAsObject).eSetProxyURI(proxyURI);
+				return valueAsObject;
+			}
+			return oldValue;
+		}
+
+		public String toString(Object valueAsObject) {
+			if (valueAsObject instanceof String) {
+				return (String) valueAsObject;
+			} else {
+				if (valueAsObject instanceof EObject) {
+					InternalEObject internalValue = (InternalEObject) valueAsObject;
+					if (internalValue.eIsProxy()) {
+						return internalValue.eProxyURI().toString();
+					}
+				}
+			}
+			return ""; //$NON-NLS-1$
+		}
+	}
+
+	protected ProxyURIHandler valueHandler;
+
+	public ProxyURICellEditor(Composite parent, EObject owner, final EStructuralFeature feature, EObject value) {
+		super(parent);
 		Assert.isNotNull(owner);
 		Assert.isNotNull(feature);
 		Assert.isNotNull(value);
 
-		final InternalEObject internalOwner = (InternalEObject) owner;
-		final InternalEObject internalValue = (InternalEObject) value;
+		valueHandler = new ProxyURIHandler(owner, value);
+		setValidator(valueHandler);
 
-		setValue(internalValue.eProxyURI().toString());
+		// setValue(internalValue.eProxyURI().toString());
 
-		addListener(new ICellEditorListener() {
+		// addListener(new ICellEditorListener() {
+		//
+		// public void editorValueChanged(boolean oldValidState, boolean newValidState) {
+		// }
+		//
+		// public void cancelEditor() {
+		// }
+		//
+		// public void applyEditorValue() {
+		// Object editorValue = getValue();
+		// if (editorValue != null && internalValue != null) {
+		// URI newProxyURI = URI.createURI(editorValue.toString());
+		// URI oldProxyURI = internalValue.eProxyURI();
+		// internalValue.eSetProxyURI(newProxyURI);
+		//
+		// // Notify adapters about value change arising from value proxy URI change if
+		// // required
+		// /*
+		// * !! Important Note !! Don't raise notification with value object as notifier and eProxyURI as
+		// * "feature". The change of the value object's proxy URI is semantically equivalent with replacing
+		// * the value object with the old proxy URI by another value object with the new proxy URI. Therefore
+		// * notification must happen wrt owner object and feature of value object.
+		// */
+		// if (internalOwner.eNotificationRequired()) {
+		// // Restore old value proxy
+		// EFactory eFactoryInstance = internalValue.eClass().getEPackage().getEFactoryInstance();
+		// InternalEObject internalOldValue = (InternalEObject) eFactoryInstance.create(internalValue.eClass());
+		// internalOldValue.eSetProxyURI(oldProxyURI);
+		//
+		// // Deliver set notification for replacement of old value proxy by new value proxy
+		// internalOwner.eNotify(new ENotificationImpl(internalOwner, Notification.SET, feature, internalOldValue,
+		// internalValue));
+		// }
+		// }
+		// }
+		// });
 
-			public void editorValueChanged(boolean oldValidState, boolean newValidState) {
-			}
-
-			public void cancelEditor() {
-			}
-
-			public void applyEditorValue() {
-				Object editorValue = getValue();
-				if (editorValue != null && internalValue != null) {
-					URI newProxyURI = URI.createURI(editorValue.toString());
-					URI oldProxyURI = internalValue.eProxyURI();
-					internalValue.eSetProxyURI(newProxyURI);
-
-					// Notify adapters about value change arising from value proxy URI change if
-					// required
-					/*
-					 * !! Important Note !! Don't raise notification with value object as notifier and eProxyURI as
-					 * "feature". The change of the value object's proxy URI is semantically equivalent with replacing
-					 * the value object with the old proxy URI by another value object with the new proxy URI. Therefore
-					 * notification must happen wrt owner object and feature of value object.
-					 */
-					if (internalOwner.eNotificationRequired()) {
-						// Restore old value proxy
-						EFactory eFactoryInstance = internalValue.eClass().getEPackage().getEFactoryInstance();
-						InternalEObject internalOldValue = (InternalEObject) eFactoryInstance.create(internalValue.eClass());
-						internalOldValue.eSetProxyURI(oldProxyURI);
-
-						// Deliver set notification for replacement of old value proxy by new value proxy
-						internalOwner.eNotify(new ENotificationImpl(internalOwner, Notification.SET, feature, internalOldValue, internalValue));
-					}
-				}
-			}
-		});
-
-		setValidator(new ICellEditorValidator() {
-			public String isValid(Object editorValue) {
-				ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(internalOwner.eResource());
-				if (extendedResource != null) {
-					if (editorValue instanceof String) {
-						Diagnostic diagnostic = extendedResource.validateURI((String) editorValue);
-						return Diagnostic.OK_INSTANCE == diagnostic ? null : diagnostic.getMessage();
-					}
-				}
-				return null;
-			}
-		});
-
+		// setValidator(new ICellEditorValidator() {
+		// public String isValid(Object editorValue) {
+		// ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(internalOwner.eResource());
+		// if (extendedResource != null) {
+		// if (editorValue instanceof String) {
+		// Diagnostic diagnostic = extendedResource.validateURI((String) editorValue);
+		// return Diagnostic.OK_INSTANCE == diagnostic ? null : diagnostic.getMessage();
+		// }
+		// }
+		// return null;
+		// }
+		// });
 	}
 
 	@Override
-	protected void doSetValue(Object editorValue) {
-		if (editorValue instanceof String) {
-			super.doSetValue(editorValue);
-		} else {
-			if (editorValue instanceof EObject) {
-				InternalEObject eEditorValue = (InternalEObject) editorValue;
-				if (eEditorValue.eIsProxy()) {
-					super.doSetValue(eEditorValue.eProxyURI().toString());
-				}
-			}
-		}
+	public Object doGetValue() {
+		String valueAsString = (String) super.doGetValue();
+		return valueHandler.toValue(valueAsString);
+	}
+
+	@Override
+	public void doSetValue(Object value) {
+		String valueAsString = valueHandler.toString(value);
+		super.doSetValue(valueAsString);
 	}
 }
