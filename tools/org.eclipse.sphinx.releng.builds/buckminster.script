@@ -2,5 +2,6 @@ importtargetdefinition -A ${user.dir}/target/3.5-sp.target
 import sdk.cquery
 perform -P buckminster.properties org.eclipse.sphinx.sdk.parent#site.feature.exports org.eclipse.sphinx.sdk.parent#site.p2.zip
 import tests.cquery
+perform -P buckminster.properties org.eclipse.sphinx.tests.parent#site.feature.exports org.eclipse.sphinx.tests.parent#site.p2.zip
 build
 junit -P buckminster.properties -l org.eclipse.sphinx.testutils/launch/AutoTestSuite.launch -o junit-output.xml --stdout
