@@ -4,7 +4,6 @@ Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.sphinx.tests.emf.workspace.integration
 Bundle-Version: 0.7.0.qualifier
 Require-Bundle: org.eclipse.ui,
- org.junit,
  org.eclipse.core.runtime,
  org.eclipse.sphinx.testutils.integration.referenceworkspace
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

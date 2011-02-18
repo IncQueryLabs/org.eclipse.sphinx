@@ -4,7 +4,6 @@ Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.sphinx.tests.emf.integration;singleton:=true
 Bundle-Version: 0.7.0.qualifier
 Require-Bundle: org.eclipse.ui,
- org.junit,
  org.eclipse.core.runtime,
  org.jdom,
  org.eclipse.sphinx.testutils.integration.referenceworkspace

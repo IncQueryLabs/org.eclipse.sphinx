@@ -5,8 +5,7 @@ Bundle-SymbolicName: org.eclipse.sphinx.tests.emf;singleton:=true
 Bundle-Version: 0.7.0.qualifier
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Require-Bundle: org.junit,
- org.eclipse.core.expressions,
+Require-Bundle: org.eclipse.core.expressions,
  org.eclipse.sphinx.testutils,
  org.eclipse.sphinx.examples.hummingbird10,
  org.eclipse.sphinx.examples.hummingbird20,

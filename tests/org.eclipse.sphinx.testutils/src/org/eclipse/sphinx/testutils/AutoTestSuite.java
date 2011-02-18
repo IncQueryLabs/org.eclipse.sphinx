@@ -27,11 +27,14 @@ import junit.framework.TestSuite;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sphinx.testutils.internal.Activator;
 import org.eclipse.ui.PlatformUI;
-import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.model.InitializationError;
+import org.junit.internal.runners.ErrorReportingRunner;
+import org.junit.runner.Request;
+import org.junit.runner.Runner;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Suite;
 import org.osgi.framework.Bundle;
 
-@SuppressWarnings({ "nls" })
+@SuppressWarnings("nls")
 public class AutoTestSuite {
 
 	public static Test suite() {
@@ -85,12 +88,20 @@ public class AutoTestSuite {
 				try {
 					Class<?> c = loadClass(plugin, classname);
 
-					if (isJUnit4Test(c)) {
-						ts.addTest(new JUnit4TestAdapter(c));
-					} else if (isInstantiableTest(c)) {
-						ts.addTestSuite((Class<? extends TestCase>) c);
-						i++;
+					Test test;
+
+					if (isAbstract(c)) {
+						continue;
+					} else if (isTestCase(c)) {
+						test = new TestSuite(c);
+					} else if (isJUnit4Test(c)) {
+						test = new JUnit4TestAdapter(c);
+					} else {
+						continue;
 					}
+
+					ts.addTest(test);
+					i++;
 				} catch (ClassNotFoundException e) {
 					throw new RuntimeException(e);
 				}
@@ -117,33 +128,35 @@ public class AutoTestSuite {
 	}
 
 	private static boolean isJUnit4Test(Class<?> c) {
-		try {
-			new BlockJUnit4ClassRunner(c);
+		Runner runner = Request.classWithoutSuiteMethod(c).getRunner();
 
-			return true;
-		} catch (InitializationError e) {
-			return false;
-		} catch (IllegalArgumentException e) {
+		if (runner == null) {
 			return false;
 		}
+
+		if (runner instanceof ErrorReportingRunner) {
+			return false;
+		}
+
+		if (runner instanceof Parameterized) {
+			// only allow the Parameterized suite, all other suites are excluded below
+			return true;
+		}
+
+		if (runner instanceof Suite) {
+			return false;
+		}
+
+		return true;
 	}
 
-	private static boolean isInstantiableTest(Class<?> testCandidate) {
-		return isNotAbstract(testCandidate) && isNoInterface(testCandidate) && isTestCase(testCandidate);
+	private static boolean isTestCase(Class<?> c) {
+		return TestCase.class.isAssignableFrom(c);
 	}
 
-	private static boolean isTestCase(Class<?> testCandidate) {
-		return TestCase.class.isAssignableFrom(testCandidate);
-	}
-
-	private static boolean isNotAbstract(Class<?> testCandidate) {
-		int modifiers = testCandidate.getModifiers();
-		return !((modifiers & Modifier.ABSTRACT) > 0);
-	}
-
-	private static boolean isNoInterface(Class<?> testCandidate) {
-		int modifiers = testCandidate.getModifiers();
-		return !((modifiers & Modifier.INTERFACE) > 0);
+	private static boolean isAbstract(Class<?> c) {
+		int modifiers = c.getModifiers();
+		return (modifiers & Modifier.ABSTRACT) > 0;
 	}
 
 	private static void log(String message) {
