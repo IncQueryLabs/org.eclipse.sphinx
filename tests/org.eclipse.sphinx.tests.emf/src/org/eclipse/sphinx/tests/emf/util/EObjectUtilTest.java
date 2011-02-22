@@ -252,7 +252,7 @@ public class EObjectUtilTest extends AbstractTestCase {
 		try {
 			EObjectUtil.findEClassifier(null, Platform.class);
 			EObjectUtil.findEClassifier(null, Platform.class.getSimpleName());
-			Class testClass = null;
+			Class<?> testClass = null;
 			assertNull(EObjectUtil.findEClassifier(TypeModel20Package.eINSTANCE, testClass));
 		} catch (AssertionFailedException e) {
 			flag = true;

@@ -30,8 +30,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
-import org.eclipse.sphinx.examples.hummingbird10.Component;
-import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Factory;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
@@ -398,7 +396,7 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		assertNotNull(resource10_withoutSchema);
 		assertNotNull(resource20_withSchema);
 
-		String schemaLocation = "http://www.artop.org/hummingbird/2.0.1/instancemodel";
+		String schemaLocation = "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel";
 		String xsd = "InstanceModel20XMI.xsd";
 		// =====================================================
 		// Resource with SchemaLocation - Result: NOT NULL
