@@ -1,14 +1,14 @@
-org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/ApplyContraints=true
-org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/UpdateProblemMarkers=true
-org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/LabelDecoration=true
+org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/ApplyContraints=false
+org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/UpdateProblemMarkers=false
+org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/LabelDecoration=false
 org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/ApplyContraints/timeOutValue=700
 org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/UpdateProblemMarkers/timeOutValue=700
 org.eclipse.sphinx.emf.validation/perf/eventOptions/ValidationPerformanceStats/LabelDecoration/timeOutValue=700
 
-org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/readContributedModelLoaders=true
-org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/loadFile=true
-org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/detectFilesToLoad=true
-org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/resolveProxies=true
+org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/readContributedModelLoaders=false
+org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/loadFile=false
+org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/detectFilesToLoad=false
+org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/resolveProxies=false
 org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/loadFile/timeOutValue=700
 org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/resolveProxies/timeOutValue=700
 org.eclipse.sphinx.emf.workspace/perf/eventOptions/ModelLoadingPerformanceStats/readContributedModelLoaders/timeOutValue=700
