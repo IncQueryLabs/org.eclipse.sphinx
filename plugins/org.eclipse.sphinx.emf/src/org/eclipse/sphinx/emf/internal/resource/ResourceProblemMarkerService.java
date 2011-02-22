@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.emf.internal.resource;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -453,7 +454,8 @@ public class ResourceProblemMarkerService {
 							int count = 0;
 
 							// Handle errors
-							for (Iterator<Diagnostic> iter = resource.getErrors().iterator(); iter.hasNext() && count != maxCount; count++) {
+							ArrayList<Diagnostic> safeErrors = new ArrayList<Diagnostic>(resource.getErrors());
+							for (Iterator<Diagnostic> iter = safeErrors.iterator(); iter.hasNext() && count != maxCount; count++) {
 								try {
 									createProblemMarkerForDiagnostic(file, extendedResource, iter.next(), IMarker.SEVERITY_ERROR);
 								} catch (Exception ex) {
@@ -462,7 +464,8 @@ public class ResourceProblemMarkerService {
 							}
 
 							// Handle warnings
-							for (Iterator<Diagnostic> iter = resource.getWarnings().iterator(); iter.hasNext() && count != maxCount; count++) {
+							ArrayList<Diagnostic> safeWarnings = new ArrayList<Diagnostic>(resource.getWarnings());
+							for (Iterator<Diagnostic> iter = safeWarnings.iterator(); iter.hasNext() && count != maxCount; count++) {
 								try {
 									createProblemMarkerForDiagnostic(file, extendedResource, iter.next(), IMarker.SEVERITY_WARNING);
 								} catch (Exception ex) {

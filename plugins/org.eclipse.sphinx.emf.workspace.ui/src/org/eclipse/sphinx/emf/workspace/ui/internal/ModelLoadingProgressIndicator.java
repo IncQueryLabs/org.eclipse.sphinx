@@ -96,12 +96,4 @@ public class ModelLoadingProgressIndicator extends JobChangeAdapter {
 			});
 		}
 	}
-
-	@Override
-	public void done(IJobChangeEvent event) {
-		if (isModelLoadingJob(event)) {
-			// TODO Surround with appropriate tracing option
-			// System.out.println("Model loading job '" + event.getJob().getName() + "' -> DONE");
-		}
-	}
 }
