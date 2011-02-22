@@ -53,6 +53,7 @@ public class EMFObjectPropertyTester extends PropertyTester {
 	private static final String PARENT_CLASS_NAME_MATCHES = "parentClassNameMatches";//$NON-NLS-1$
 
 	public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
+		// parentClassNameMatches property
 		if (receiver instanceof TransientItemProvider && PARENT_CLASS_NAME_MATCHES.equals(property)) {
 			TransientItemProvider provider = (TransientItemProvider) receiver;
 			Notifier target = provider.getTarget();
@@ -62,10 +63,35 @@ public class EMFObjectPropertyTester extends PropertyTester {
 			return false;
 		}
 
+		// ownerClassNameMatches property
 		if (receiver instanceof IWrapperItemProvider && OWNER_CLASS_NAME_MATCHES.equals(property)) {
 			IWrapperItemProvider provider = (IWrapperItemProvider) receiver;
+
+			// Retrieve owner behind given IWrapperItemProvider
 			Object owner = provider.getOwner();
 			if (owner != null) {
+				// If owner is again an IWrapperItemProvider, we must look at it's value
+				if (owner instanceof IWrapperItemProvider && ((IWrapperItemProvider) owner).getValue() != null) {
+					Object value = ((IWrapperItemProvider) owner).getValue();
+
+					// If value is a TransientItemProvider, i.e., an intermediate category node, we must look at
+					// the parent of the latter
+					if (value instanceof TransientItemProvider && ((TransientItemProvider) value).getTarget() != null) {
+						// Test if the parent's class name matches
+						return ((TransientItemProvider) value).getTarget().getClass().getName().matches(expectedValue.toString());
+					}
+
+					// Test if the value's class name matches
+					return value.getClass().getName().matches(expectedValue.toString());
+				}
+
+				// If owner is a TransientItemProvider, i.e., an intermediate category node, we must look at it's parent
+				else if (owner instanceof TransientItemProvider && ((TransientItemProvider) owner).getTarget() != null) {
+					// Test if the parent's class name matches
+					return ((TransientItemProvider) owner).getTarget().getClass().getName().matches(expectedValue.toString());
+				}
+
+				// Test if the owner's class name matches
 				return owner.getClass().getName().matches(expectedValue.toString());
 			}
 			return false;
