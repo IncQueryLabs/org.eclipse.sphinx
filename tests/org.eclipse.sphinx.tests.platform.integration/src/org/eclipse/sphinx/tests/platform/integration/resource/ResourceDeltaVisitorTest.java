@@ -104,13 +104,7 @@ public class ResourceDeltaVisitorTest extends DefaultIntegrationTestCase {
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, null);
 		waitForModelLoading();
 
-		// When setting up, projects and files are created and import to runtime workspace
-		for (ResourceHandled res : resourcesHandled) {
-			System.out.println(res.getResourceChangedPath().toString() + " " + res.getEventType());
-		}
-
 		assertTrue(resourcesHandled.contains(new ResourceHandled(new Path("/NewProject"), MockResourceChangedHandler.ADD_PROJECT)));
-
 	}
 
 	// Create new Folder
@@ -572,9 +566,6 @@ public class ResourceDeltaVisitorTest extends DefaultIntegrationTestCase {
 		synchronizedRenameProject(refWks.hbProject10_A, "NewProject");
 
 		List<ResourceHandled> resourcesHandled = handler.getResourcesHandled();
-		for (ResourceHandled res : resourcesHandled) {
-			System.out.println(res.getResourceChangedPath().toString() + " : " + res.getEventType());
-		}
 		assertTrue(resourcesHandled.contains(new ResourceHandled(refWks.hbProject10_A.getFullPath(),
 				MockResourceChangedHandler.CHANGED_PROJECT_RENAMED)));
 		assertTrue(resourcesHandled.contains(new ResourceHandled(refWks.hbProject10_A.getFullPath().append(

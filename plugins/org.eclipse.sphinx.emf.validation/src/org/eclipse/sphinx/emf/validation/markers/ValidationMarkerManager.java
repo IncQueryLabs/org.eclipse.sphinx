@@ -380,45 +380,48 @@ public class ValidationMarkerManager {
 	 * @throws CoreException
 	 */
 	public void updateMarkersURI(IResource resource) throws CoreException {
-		ValidationPerformanceStats.INSTANCE.startNewEvent(ValidationPerformanceStats.ValidationEvent.EVENT_UPDATE_PROBLEM_MARKERS,
-				resource.getFullPath());
-		IMarker[] markers = resource.findMarkers(IValidationMarker.MODEL_VALIDATION_PROBLEM, true, IResource.DEPTH_INFINITE);
+		if (resource.isAccessible()) {
+			ValidationPerformanceStats.INSTANCE.startNewEvent(ValidationPerformanceStats.ValidationEvent.EVENT_UPDATE_PROBLEM_MARKERS,
+					resource.getFullPath());
+			IMarker[] markers = resource.findMarkers(IValidationMarker.MODEL_VALIDATION_PROBLEM, true, IResource.DEPTH_INFINITE);
 
-		String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
+			String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
 
-		String currentUri = null;
-		String fragment = null;
+			String currentUri = null;
+			String fragment = null;
 
-		String newURIPath = resource.getLocation().toString().replace(workspacePath, "platform:/resource"); //$NON-NLS-1$
+			String newURIPath = resource.getLocation().toString().replace(workspacePath, "platform:/resource"); //$NON-NLS-1$
 
-		// final ISchedulingRule rule = workspace.getRuleFactory().markerRule(resource);
-		final ISchedulingRule rule = ResourcesPlugin.getWorkspace().getRuleFactory().modifyRule(resource);
+			// final ISchedulingRule rule = workspace.getRuleFactory().markerRule(resource);
+			final ISchedulingRule rule = ResourcesPlugin.getWorkspace().getRuleFactory().modifyRule(resource);
 
-		Workspace workspace = (Workspace) resource.getWorkspace();
-		try {
-
-			workspace.prepareOperation(rule, null);
-			// ResourceInfo info = workspace.getResourceInfo(resource.getFullPath(), false, false);
-			workspace.beginOperation(true);
-
-			for (IMarker marker : markers) {
-				currentUri = marker.getAttribute(EValidator.URI_ATTRIBUTE, "#"); //$NON-NLS-1$
-				fragment = currentUri.substring(currentUri.lastIndexOf("#")); //$NON-NLS-1$
-				marker.setAttribute(EValidator.URI_ATTRIBUTE, newURIPath + fragment);
-			}
-		} catch (CoreException ex) {
-			PlatformLogUtil.logAsWarning(Activator.getDefault(),
-					NLS.bind(Messages.warningProblemWithMarkerOperationOnResource, resource.getLocationURI().toString()));
-		}
-
-		finally {
+			Workspace workspace = (Workspace) resource.getWorkspace();
 			try {
-				workspace.endOperation(rule, false, null);
+
+				workspace.prepareOperation(rule, null);
+				// ResourceInfo info = workspace.getResourceInfo(resource.getFullPath(), false, false);
+				workspace.beginOperation(true);
+
+				for (IMarker marker : markers) {
+					currentUri = marker.getAttribute(EValidator.URI_ATTRIBUTE, "#"); //$NON-NLS-1$
+					fragment = currentUri.substring(currentUri.lastIndexOf("#")); //$NON-NLS-1$
+					marker.setAttribute(EValidator.URI_ATTRIBUTE, newURIPath + fragment);
+				}
 			} catch (CoreException ex) {
-				PlatformLogUtil.logAsWarning(Activator.getDefault(), Messages.warningProblemWithWorkspaceOperation);
+				PlatformLogUtil.logAsWarning(Activator.getDefault(),
+						NLS.bind(Messages.warningProblemWithMarkerOperationOnResource, resource.getLocationURI().toString()));
 			}
+
+			finally {
+				try {
+					workspace.endOperation(rule, false, null);
+				} catch (CoreException ex) {
+					PlatformLogUtil.logAsWarning(Activator.getDefault(), Messages.warningProblemWithWorkspaceOperation);
+				}
+			}
+			ValidationPerformanceStats.INSTANCE.endEvent(ValidationPerformanceStats.ValidationEvent.EVENT_UPDATE_PROBLEM_MARKERS,
+					resource.getFullPath());
 		}
-		ValidationPerformanceStats.INSTANCE.endEvent(ValidationPerformanceStats.ValidationEvent.EVENT_UPDATE_PROBLEM_MARKERS, resource.getFullPath());
 	}
 
 	/**
