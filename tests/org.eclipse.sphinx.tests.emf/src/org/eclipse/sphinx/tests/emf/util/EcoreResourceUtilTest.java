@@ -378,30 +378,26 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		// Resource is NULL
 		assertNotNull(EcoreResourceUtil.readSchemaLocationEntries(null));
 		assertTrue(EcoreResourceUtil.readSchemaLocationEntries(null).isEmpty());
-		final String hbFile20 = "hbFile20.instancemodel";
-		final String hbFile10 = "hbFile10.hummingbird";
 
 		// Read Model Name space from Resource
 		// HB Resource
 		Hummingbird20ResourceFactoryImpl hb20ResourceFactory = new Hummingbird20ResourceFactoryImpl();
-		EObject modelRoot = loadInputFile(hbFile20, fileAccessor, hb20ResourceFactory, InstanceModel20Package.eINSTANCE, null);
+		EObject modelRoot = loadInputFile("hbFile20.instancemodel", fileAccessor, hb20ResourceFactory, InstanceModel20Package.eINSTANCE, null);
 		assertNotNull(modelRoot);
 		Resource resource20_withSchema = modelRoot.eResource();
 
 		XMIResourceFactoryImpl hb10ResourceFactory = new XMIResourceFactoryImpl();
-		modelRoot = loadInputFile(hbFile10, fileAccessor, hb10ResourceFactory, Hummingbird10Package.eINSTANCE, null);
+		modelRoot = loadInputFile("hbFile10.hummingbird", fileAccessor, hb10ResourceFactory, Hummingbird10Package.eINSTANCE, null);
 		assertNotNull(modelRoot);
 		Resource resource10_withoutSchema = modelRoot.eResource();
 
 		assertNotNull(resource10_withoutSchema);
 		assertNotNull(resource20_withSchema);
 
-		String schemaLocation = "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel";
-		String xsd = "InstanceModel20XMI.xsd";
 		// =====================================================
 		// Resource with SchemaLocation - Result: NOT NULL
 		assertEquals(1, EcoreResourceUtil.readSchemaLocationEntries(resource20_withSchema).size());
-		assertEquals(xsd, EcoreResourceUtil.readSchemaLocationEntries(resource20_withSchema).get(schemaLocation));
+		assertEquals("InstanceModel20XMI.xsd", EcoreResourceUtil.readSchemaLocationEntries(resource20_withSchema).get(InstanceModel20Package.eNS_URI));
 		// =====================================================
 		// Resource without SchemaLocation- Result: NULL
 		assertEquals(0, EcoreResourceUtil.readSchemaLocationEntries(resource10_withoutSchema).size());
