@@ -223,9 +223,6 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			IProject contextProject = refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E);
 
 			List<Resource> resourcesInModel10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInModel(contextProject);
-			for (Resource res : resourcesInModel10) {
-				System.out.println(res.getURI().lastSegment());
-			}
 			assertEquals(NLS.bind(message, contextProject.getFullPath()), (resources10FromHbProject10_E + resources10FromHbProject10_D),
 					resourcesInModel10.size());
 
