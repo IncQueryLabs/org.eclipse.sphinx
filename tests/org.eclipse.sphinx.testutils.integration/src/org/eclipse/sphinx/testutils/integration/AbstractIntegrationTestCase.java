@@ -59,6 +59,8 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
@@ -84,12 +86,9 @@ import org.eclipse.sphinx.testutils.integration.internal.IInternalReferenceWorks
 import org.eclipse.sphinx.testutils.integration.internal.ReferenceEditingDomainDescriptor;
 import org.eclipse.sphinx.testutils.integration.internal.ReferenceModelDescriptor;
 import org.eclipse.sphinx.testutils.integration.internal.ReferenceProjectDescriptor;
-import org.eclipse.sphinx.testutils.internal.ZipArchiveImporter;
+import org.eclipse.sphinx.testutils.integration.internal.ZipArchiveImporter;
 
-/**
- * @param <T>
- */
-@SuppressWarnings({ "nls", "restriction" })
+@SuppressWarnings("nls")
 public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace> extends TestCase {
 
 	private TestFileAccessor testFileAccessor = null;
@@ -146,6 +145,24 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 */
 	@Override
 	protected void setUp() throws Exception {
+
+		// HACK: Enable workspace preference Window > Preferences > General > Always run in background so as to avoid
+		// excessive creation of progress dialogs by
+		// org.eclipse.sphinx.emf.workspace.ui.internal.ModelLoadingProgressIndicator#aboutToRun(IJobChangeEvent) during
+		// testing.
+		/*
+		 * !! Important Note !! The ModelLoadingProgressIndicator is there for opening a dialog which shows the progress
+		 * of model loading jobs unless this has been deactivated by enabling above named workspace preference. The
+		 * problem is that org.eclipse.ui.progress.IProgressService#showInDialog(Shell, Job) used for that purpose
+		 * attempts to recreate a new progress dialog each time being invoked. This causes the platform to run out of
+		 * SWT handles when too many of such invocations come across within too short intervals (see
+		 * org.eclipse.ui.internal.progress.ProgressMonitorFocusJobDialog#show(Job, Shell) and
+		 * org.eclipse.jface.dialogs.ProgressMonitorDialog#aboutToRun() for details)
+		 */
+		InstanceScope instanceScope = new InstanceScope();
+		IEclipsePreferences workbenchPrefs = instanceScope.getNode("org.eclipse.ui.workbench");
+		workbenchPrefs.put("RUN_IN_BACKGROUND", Boolean.TRUE.toString());
+
 		waitForModelLoading();
 		Job.getJobManager().addJobChangeListener(modelLoadJobTracer);
 
@@ -187,10 +204,10 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			waitForModelLoading();
 			assertReferenceWorkspaceInitialized();
 		}
+
 		// Add ReferenceWorkspaceChangeListener to listening in workspace changes during the test.
 		internalRefWks.addReferenceWorkspaceChangeListener(referenceWorkspaceChangeListener);
 		org.eclipse.sphinx.emf.workspace.Activator.getPlugin().startWorkspaceSynchronizing();
-
 	}
 
 	/**

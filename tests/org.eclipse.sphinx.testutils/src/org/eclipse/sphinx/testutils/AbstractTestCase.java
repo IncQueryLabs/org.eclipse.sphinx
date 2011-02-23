@@ -19,6 +19,8 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -30,6 +32,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 
+@SuppressWarnings("nls")
 public abstract class AbstractTestCase extends TestCase {
 
 	protected TestFileAccessor fileAccessor = null;
@@ -39,6 +42,24 @@ public abstract class AbstractTestCase extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
+
+		// HACK: Enable workspace preference Window > Preferences > General > Always run in background so as to avoid
+		// excessive creation of progress dialogs by
+		// org.eclipse.sphinx.emf.workspace.ui.internal.ModelLoadingProgressIndicator#aboutToRun(IJobChangeEvent) during
+		// testing.
+		/*
+		 * !! Important Note !! The ModelLoadingProgressIndicator is there for opening a dialog which shows the progress
+		 * of model loading jobs unless this has been deactivated by enabling above named workspace preference. The
+		 * problem is that org.eclipse.ui.progress.IProgressService#showInDialog(Shell, Job) used for that purpose
+		 * attempts to recreate a new progress dialog each time being invoked. This causes the platform to run out of
+		 * SWT handles when too many of such invocations come across within too short intervals (see
+		 * org.eclipse.ui.internal.progress.ProgressMonitorFocusJobDialog#show(Job, Shell) and
+		 * org.eclipse.jface.dialogs.ProgressMonitorDialog#aboutToRun() for details)
+		 */
+		InstanceScope instanceScope = new InstanceScope();
+		IEclipsePreferences workbenchPrefs = instanceScope.getNode("org.eclipse.ui.workbench");
+		workbenchPrefs.put("RUN_IN_BACKGROUND", Boolean.TRUE.toString());
+
 		if (fileAccessor == null) {
 			fileAccessor = new TestFileAccessor(getTestPlugin());
 		}
@@ -115,7 +136,6 @@ public abstract class AbstractTestCase extends TestCase {
 		EcoreEqualityAssert.assertEquals(eObject1, eObject2);
 	}
 
-	@SuppressWarnings("nls")
 	protected void assertHasNoLoadProblems(Resource resource) {
 		assertNotNull(resource);
 		if (!isIgnoreLoadProblems()) {
@@ -126,7 +146,6 @@ public abstract class AbstractTestCase extends TestCase {
 		}
 	}
 
-	@SuppressWarnings("nls")
 	protected void assertHasNoSaveProblems(Resource resource) {
 		assertNotNull(resource);
 		if (!isIgnoreSaveProblems()) {

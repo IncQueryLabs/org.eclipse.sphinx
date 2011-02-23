@@ -6,8 +6,6 @@ Bundle-Version: 0.7.0.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.junit4;bundle-version="4.5.0";visibility:=reexport,
  org.junit;bundle-version="3.8.2";visibility:=reexport,
- org.apache.ant,
- org.eclipse.ui.workbench,
  org.eclipse.sphinx.emf;visibility:=reexport,
  org.eclipse.sphinx.emf.workspace;visibility:=reexport
 Export-Package: org.eclipse.sphinx.testutils,

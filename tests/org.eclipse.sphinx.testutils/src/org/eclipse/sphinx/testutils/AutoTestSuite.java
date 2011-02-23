@@ -26,7 +26,6 @@ import junit.framework.TestSuite;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sphinx.testutils.internal.Activator;
-import org.eclipse.ui.PlatformUI;
 import org.junit.internal.runners.ErrorReportingRunner;
 import org.junit.runner.Request;
 import org.junit.runner.Runner;
@@ -34,7 +33,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Suite;
 import org.osgi.framework.Bundle;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({ "nls", "restriction" })
 public class AutoTestSuite {
 
 	public static Test suite() {
@@ -81,10 +80,6 @@ public class AutoTestSuite {
 
 				String classname = path;
 
-				if (isUiTest(classname) && isWorkbenchRunning() == false) {
-					continue;
-				}
-
 				try {
 					Class<?> c = loadClass(plugin, classname);
 
@@ -117,14 +112,6 @@ public class AutoTestSuite {
 		} else {
 			return b.loadClass(classname);
 		}
-	}
-
-	private static boolean isUiTest(String classname) {
-		return classname.contains(".ui.");
-	}
-
-	private static boolean isWorkbenchRunning() {
-		return PlatformUI.isWorkbenchRunning();
 	}
 
 	private static boolean isJUnit4Test(Class<?> c) {

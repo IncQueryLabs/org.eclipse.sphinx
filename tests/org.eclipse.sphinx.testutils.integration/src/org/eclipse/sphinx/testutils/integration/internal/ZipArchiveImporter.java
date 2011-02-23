@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.testutils.internal;
+package org.eclipse.sphinx.testutils.integration.internal;
 
 import java.io.File;
 import java.io.FileOutputStream;
