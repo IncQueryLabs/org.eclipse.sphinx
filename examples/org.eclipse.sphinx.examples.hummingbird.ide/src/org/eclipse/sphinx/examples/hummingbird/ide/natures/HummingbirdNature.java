@@ -37,17 +37,6 @@ public class HummingbirdNature implements IProjectNature {
 	private IProject project;
 
 	/**
-	 * Creates an instance of this {@link IProjectNature project nature} and associates it with the given
-	 * {@link IProject project}.
-	 * 
-	 * @param project
-	 *            The {@link IProject project} to be handled.
-	 */
-	public HummingbirdNature(IProject project) {
-		setProject(project);
-	}
-
-	/**
 	 * Adds a {@link HummingbirdNature Hummingbird nature} to the given {@link IProject project}.
 	 * 
 	 * @param project
