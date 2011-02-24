@@ -17,15 +17,12 @@
       %license
    </license>
 
-   <plugin
-         id="org.eclipse.sphinx.tests.emf"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.sphinx.testutils"
+         version="0.0.0"/>
 
    <plugin
-         id="org.eclipse.sphinx.testutils"
+         id="org.eclipse.sphinx.tests.emf"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -75,13 +72,6 @@
 
    <plugin
          id="org.eclipse.sphinx.testutils.integration.referenceworkspace"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.testutils.integration"
          download-size="0"
          install-size="0"
          version="0.0.0"
