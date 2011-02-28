@@ -34,7 +34,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
-import org.eclipse.sphinx.xpand.ExecutionContextRequest;
+import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xpand.jobs.BasicM2TJob;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xpand.ui.wizards.M2TConfigurationWizard;
@@ -85,9 +85,9 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		return job;
 	}
 
-	protected Collection<ExecutionContextRequest> getExecutionContextRequests() {
-		List<ExecutionContextRequest> requests = new ArrayList<ExecutionContextRequest>();
-		requests.add(new ExecutionContextRequest(getDefinitionName(), getSelectedModelObject()));
+	protected Collection<XpandEvaluationRequest> getExecutionContextRequests() {
+		List<XpandEvaluationRequest> requests = new ArrayList<XpandEvaluationRequest>();
+		requests.add(new XpandEvaluationRequest(getDefinitionName(), getSelectedModelObject()));
 		return requests;
 	}
 

@@ -47,7 +47,7 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
-import org.eclipse.sphinx.xpand.ExecutionContextRequest;
+import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xpand.ui.internal.Activator;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.swt.SWT;
@@ -387,9 +387,9 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		return fQualifiedTemplateName;
 	}
 
-	public Collection<ExecutionContextRequest> getExecutionContextRequests() {
-		List<ExecutionContextRequest> requests = new ArrayList<ExecutionContextRequest>();
-		requests.add(new ExecutionContextRequest(getQualifiedTemplateName(), modelObject));
+	public Collection<XpandEvaluationRequest> getExecutionContextRequests() {
+		List<XpandEvaluationRequest> requests = new ArrayList<XpandEvaluationRequest>();
+		requests.add(new XpandEvaluationRequest(getQualifiedTemplateName(), modelObject));
 		return requests;
 	}
 
