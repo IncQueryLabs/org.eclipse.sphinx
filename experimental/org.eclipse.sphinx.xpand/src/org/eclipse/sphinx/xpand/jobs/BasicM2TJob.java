@@ -40,7 +40,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitorAdapter;
 import org.eclipse.emf.mwe.core.resources.ResourceLoaderFactory;
 import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
-import org.eclipse.sphinx.xpand.ExecutionContextRequest;
+import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xpand.internal.Activator;
 import org.eclipse.xpand2.XpandExecutionContextImpl;
 import org.eclipse.xpand2.XpandFacade;
@@ -59,9 +59,9 @@ public class BasicM2TJob extends WorkspaceJob {
 	private URI defaultOutletURI;
 	private Collection<Outlet> outlets;
 	protected IScopingResourceLoader scopingResourceLoader;
-	protected Collection<ExecutionContextRequest> executionContextRequests;
+	protected Collection<XpandEvaluationRequest> executionContextRequests;
 
-	public BasicM2TJob(String name, Collection<ExecutionContextRequest> executionContextRequests) {
+	public BasicM2TJob(String name, Collection<XpandEvaluationRequest> executionContextRequests) {
 		super(name);
 		this.executionContextRequests = executionContextRequests;
 	}
@@ -111,7 +111,7 @@ public class BasicM2TJob extends WorkspaceJob {
 			long startTime = System.currentTimeMillis();
 			model.getEditingDomain().runExclusive(new Runnable() {
 				public void run() {
-					for (ExecutionContextRequest request : executionContextRequests) {
+					for (XpandEvaluationRequest request : executionContextRequests) {
 						log.info("Generating code for " + request.getTargetObject() + " with '" + request.getDefinitionName()); //$NON-NLS-1$ //$NON-NLS-2$ //);
 						facade.evaluate(request.getDefinitionName(), request.getTargetObject(), request.getParameterList().toArray());
 					}

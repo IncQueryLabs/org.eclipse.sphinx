@@ -19,18 +19,17 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
-// TODO Rename to XPandEvaluationRequest
-public class ExecutionContextRequest {
+public class XpandEvaluationRequest {
 
 	private String definitionName;
 	private Object targetObject;
 	private List<Object> parameterList;
 
-	public ExecutionContextRequest(String definitionName, Object targetObject) {
+	public XpandEvaluationRequest(String definitionName, Object targetObject) {
 		this(definitionName, targetObject, Collections.emptyList());
 	}
 
-	public ExecutionContextRequest(String definitionName, Object targetObject, List<Object> parameterList) {
+	public XpandEvaluationRequest(String definitionName, Object targetObject, List<Object> parameterList) {
 		Assert.isNotNull(definitionName);
 		Assert.isTrue(definitionName.trim().length() != 0);
 		Assert.isNotNull(targetObject);
