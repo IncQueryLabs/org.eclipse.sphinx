@@ -18,6 +18,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.sphinx.platform.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.osgi.service.prefs.BackingStoreException;
@@ -132,6 +133,30 @@ public abstract class AbstractProjectPreference<T> extends AbstractEclipsePrefer
 		IEclipsePreferences prefs = getProjectPreferences(project);
 		if (prefs != null) {
 			prefs.remove(key);
+		}
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.sphinx.platform.preferences.IProjectPreference#addPreferenceChangeListener(org.eclipse.core.resources
+	 * .IProject, org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener)
+	 */
+	public void addPreferenceChangeListener(IProject project, IPreferenceChangeListener listener) {
+		IEclipsePreferences prefs = getProjectPreferences(project);
+		if (prefs != null) {
+			prefs.addPreferenceChangeListener(listener);
+		}
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.sphinx.platform.preferences.IProjectPreference#removePreferenceChangeListener(org.eclipse.core.resources
+	 * .IProject, org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener)
+	 */
+	public void removePreferenceChangeListener(IProject project, IPreferenceChangeListener listener) {
+		IEclipsePreferences prefs = getProjectPreferences(project);
+		if (prefs != null) {
+			prefs.removePreferenceChangeListener(listener);
 		}
 	}
 

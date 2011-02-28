@@ -16,6 +16,8 @@ package org.eclipse.sphinx.platform.preferences;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 
 /**
  * Interface enabling the retrieving and setting of one Eclipse preference that may be store both as a project
@@ -75,6 +77,34 @@ public interface IProjectWorkspacePreference<T> extends IEclipsePreference<T> {
 	void setToDefaultInProject(IProject project);
 
 	/**
+	 * Registers the given listener for notification of project-level changes of this preference in specified project.
+	 * Calling this method multiple times with the same listener has no effect. The given listener argument must not be
+	 * <code>null</code>.
+	 * 
+	 * @param project
+	 *            the project in which the changes of this preference are to be observed
+	 * @param listener
+	 *            the preference change listener to register
+	 * @see #removePreferenceChangeListener(IEclipsePreferences.IPreferenceChangeListener)
+	 * @see IEclipsePreferences.IPreferenceChangeListener
+	 */
+	void addPreferenceChangeListenerToProject(IProject project, IPreferenceChangeListener listener);
+
+	/**
+	 * Unregisters the given listener from receiving notification of project-level changes of this preference in
+	 * specified project. Calling this method multiple times with the same listener has no effect. The given listener
+	 * argument must not be <code>null</code>.
+	 * 
+	 * @param project
+	 *            the project in which the changes of this preference have been observed
+	 * @param listener
+	 *            the preference change listener to remove
+	 * @see #addPreferenceChangeListener(IEclipsePreferences.IPreferenceChangeListener)
+	 * @see IEclipsePreferences.IPreferenceChangeListener
+	 */
+	void removePreferenceChangeListenerFromProject(IProject project, IPreferenceChangeListener listener);
+
+	/**
 	 * Returns the value of the preference from the workspace. If the value does not exist yet in the Eclipse workspace
 	 * preferences mechanism, returns the default value.
 	 * 
@@ -93,4 +123,27 @@ public interface IProjectWorkspacePreference<T> extends IEclipsePreference<T> {
 	void setInWorkspace(T valueAsObject);
 
 	void setToDefaultInWorkspace();
+
+	/**
+	 * Registers the given listener for notification of workspace-level changes of this preference. Calling this method
+	 * multiple times with the same listener has no effect. The given listener argument must not be <code>null</code>.
+	 * 
+	 * @param listener
+	 *            the preference change listener to register
+	 * @see #removePreferenceChangeListener(IEclipsePreferences.IPreferenceChangeListener)
+	 * @see IEclipsePreferences.IPreferenceChangeListener
+	 */
+	void addPreferenceChangeListenerToWorkspace(IPreferenceChangeListener listener);
+
+	/**
+	 * Unregisters the given listener from receiving notification of workspace-level changes of this preference. Calling
+	 * this method multiple times with the same listener has no effect. The given listener argument must not be
+	 * <code>null</code>.
+	 * 
+	 * @param listener
+	 *            the preference change listener to remove
+	 * @see #addPreferenceChangeListener(IEclipsePreferences.IPreferenceChangeListener)
+	 * @see IEclipsePreferences.IPreferenceChangeListener
+	 */
+	void removePreferenceChangeListenerFromWorkspace(IPreferenceChangeListener listener);
 }

@@ -16,6 +16,7 @@ package org.eclipse.sphinx.platform.preferences;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.sphinx.platform.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -101,6 +102,30 @@ public abstract class AbstractWorkspacePreference<T> extends AbstractEclipsePref
 		IEclipsePreferences prefs = getWorkspacePreferences();
 		if (prefs != null) {
 			prefs.remove(key);
+		}
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.sphinx.platform.preferences.IWorkspacePreference#addPreferenceChangeListener(org.eclipse.core.runtime
+	 * .preferences.IEclipsePreferences.IPreferenceChangeListener)
+	 */
+	public void addPreferenceChangeListener(IPreferenceChangeListener listener) {
+		IEclipsePreferences prefs = getWorkspacePreferences();
+		if (prefs != null) {
+			prefs.addPreferenceChangeListener(listener);
+		}
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.sphinx.platform.preferences.IWorkspacePreference#removePreferenceChangeListener(org.eclipse.core.
+	 * runtime.preferences.IEclipsePreferences.IPreferenceChangeListener)
+	 */
+	public void removePreferenceChangeListener(IPreferenceChangeListener listener) {
+		IEclipsePreferences prefs = getWorkspacePreferences();
+		if (prefs != null) {
+			prefs.removePreferenceChangeListener(listener);
 		}
 	}
 
