@@ -76,22 +76,23 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 
 	// Dialog setting
 	protected static final String CODE_GEN_SECTION = Activator.getPlugin().getSymbolicName() + ".CODE_GEN_SECTION"; //$NON-NLS-1$
-	protected static final String STORE_TEMPLATE_PATH = "TEMPLATE_PAHT$"; //$NON-NLS-1$
+	protected static final String STORE_TEMPLATE_PATH = "TEMPLATE_PATH$"; //$NON-NLS-1$
 	protected static final String STORE_SELECTED_DEFINE_BLOCK = "SELECTED_DEFINE_BLOCK"; //$NON-NLS-1$
 
 	// Template Group
 	protected StringButtonField templatePathField;
 	protected ComboField defineBlockField;
-	protected StringField templateNameField;
+	protected StringField definitionNameField;
 
 	// Output Group
 	protected Button useDefaultPathButton;
 	protected StringButtonField genPathField;
 
 	protected EObject modelObject;
-	protected URI defaultOutletURI;
 	protected MetaModel metaModel;
-	protected String fQualifiedTemplateName;
+	protected URI defaultOutletURI;
+
+	private AbstractDefinition[] definitions;
 
 	public M2TConfigurationPage(String pageName) {
 		super(pageName);
@@ -170,8 +171,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 										null);
 							}
 						}
-						return new Status(IStatus.ERROR, pluginId, IStatus.ERROR, "An Xpand template file should be selected !", //$NON-NLS-1$
-								null);
+						return new Status(IStatus.ERROR, pluginId, IStatus.ERROR, "An Xpand template file should be selected !", null);
 					}
 				});
 				if (dialog.open() == IDialogConstants.OK_ID) {
@@ -183,8 +183,8 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 				}
 			}
 		});
-		templatePathField.setButtonLabel("Browse..."); //$NON-NLS-1$
-		templatePathField.setLabelText("Template path:"); //$NON-NLS-1$
+		templatePathField.setButtonLabel("Browse...");
+		templatePathField.setLabelText("Template path:");
 		templatePathField.fillIntoGrid(templateGroup, 3);
 		templatePathField.addFieldListener(new IFieldListener() {
 
@@ -208,58 +208,58 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		});
 
 		// Feedback
-		templateNameField = new StringField();
-		templateNameField.setLabelText(Messages.label_templateName);
-		templateNameField.setEditable(false);
-		templateNameField.fillIntoGrid(templateGroup, 3);
+		definitionNameField = new StringField();
+		definitionNameField.setLabelText(Messages.label_definitionName);
+		definitionNameField.setEditable(false);
+		definitionNameField.fillIntoGrid(templateGroup, 3);
 
 		// Load Dialog Settings
 		loadTemplateBlockSettings();
 	}
 
-	protected void updateFeedbackField() {
-		IResource templateFile = findMemberFromText(templatePathField.getText());
-		if (templateFile != null) {
-			fQualifiedTemplateName = templateFile.getProjectRelativePath().removeFileExtension().append(getSelectedDefineBlock()).toString()
-					.replaceAll("/", "::"); //$NON-NLS-1$//$NON-NLS-2$
-			templateNameField.setText(fQualifiedTemplateName);
-		} else {
-			templateNameField.setText("..."); //$NON-NLS-1$
-		}
-	}
-
-	protected String getSelectedDefineBlock() {
-		String[] items = defineBlockField.getItems();
-		String block = defineBlockField.getSelectionIndex() == -1 ? "" : items[defineBlockField.getSelectionIndex()]; //$NON-NLS-1$
-		return block;
-	}
-
-	protected String[] updateDefineBlockItems(IResource resource) {
-		String[] items = new String[0];
+	protected void updateDefineBlockItems(IResource resource) {
 		if (resource instanceof IFile) {
 			Template template = loadTemplate((IFile) resource);
 			if (template != null) {
-				AbstractDefinition[] allDefinitions = template.getAllDefinitions();
-				items = getDefineBlockItems(allDefinitions);
-				defineBlockField.setItems(items);
-				return items;
+				definitions = template.getAllDefinitions();
+				defineBlockField.setItems(createDefineBlockItems(definitions));
 			}
 		}
-		defineBlockField.setItems(items);
-		return items;
+		defineBlockField.setItems(new String[0]);
 	}
 
-	protected String[] getDefineBlockItems(AbstractDefinition[] allDefinitions) {
+	protected String[] createDefineBlockItems(AbstractDefinition[] definitions) {
 		List<String> result = new ArrayList<String>();
 		Type type = metaModel.getType(modelObject);
 		if (type != null) {
-			for (AbstractDefinition definition : allDefinitions) {
+			for (AbstractDefinition definition : definitions) {
 				if (type.getName().equals(definition.getTargetType())) {
 					result.add(definition.getName());
 				}
 			}
 		}
 		return result.toArray(new String[result.size()]);
+	}
+
+	protected String getDefinitionName() {
+		if (defineBlockField.getSelectionIndex() != -1) {
+			String definitionName = defineBlockField.getItems()[defineBlockField.getSelectionIndex()];
+			for (AbstractDefinition definition : definitions) {
+				if (definitionName.equals(definition.getName())) {
+					return definition.getQualifiedName();
+				}
+			}
+		}
+		return ""; //$NON-NLS-1$
+	}
+
+	protected void updateFeedbackField() {
+		IResource templateFile = findMemberFromText(templatePathField.getText());
+		if (templateFile != null) {
+			definitionNameField.setText(getDefinitionName());
+		} else {
+			definitionNameField.setText("..."); //$NON-NLS-1$
+		}
 	}
 
 	protected void createOutputBlock(Composite parent) {
@@ -369,8 +369,8 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		return null;
 	}
 
-	/*
-	 * Loads and Xpand resource.
+	/**
+	 * Loads an Xpand resource.
 	 */
 	protected Template loadTemplate(final IFile templateFile) {
 		if (templateFile.exists() && XpandUtil.TEMPLATE_EXTENSION.equals(templateFile.getFileExtension())) {
@@ -383,13 +383,9 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		return null;
 	}
 
-	public String getQualifiedTemplateName() {
-		return fQualifiedTemplateName;
-	}
-
-	public Collection<XpandEvaluationRequest> getExecutionContextRequests() {
+	public Collection<XpandEvaluationRequest> getXpandEvaluationRequests() {
 		List<XpandEvaluationRequest> requests = new ArrayList<XpandEvaluationRequest>();
-		requests.add(new XpandEvaluationRequest(getQualifiedTemplateName(), modelObject));
+		requests.add(new XpandEvaluationRequest(getDefinitionName(), modelObject));
 		return requests;
 	}
 

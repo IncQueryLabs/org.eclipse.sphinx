@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.xpand.preferences;
+package org.eclipse.sphinx.xpand.ui.providers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,20 +23,21 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
+import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
 import org.eclipse.xpand2.output.Outlet;
 
-public class OutletsProvider implements IPreferenceChangeListener {
+public class OutletProvider implements IPreferenceChangeListener {
 
 	private IProject project;
 	private OutletsPreference outletsPreference;
 	private List<ExtendedOutlet> allOutlets;
 	private List<ExtendedOutlet> unappliedOutlets;
 
-	public OutletsProvider(OutletsPreference outletPreference) {
+	public OutletProvider(OutletsPreference outletPreference) {
 		this(null, outletPreference);
 	}
 
-	public OutletsProvider(IProject project, OutletsPreference outletsPreference) {
+	public OutletProvider(IProject project, OutletsPreference outletsPreference) {
 		this.project = project;
 		this.outletsPreference = outletsPreference;
 

@@ -36,6 +36,7 @@ import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
 import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xpand.jobs.BasicM2TJob;
+import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xpand.ui.wizards.M2TConfigurationWizard;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
@@ -44,20 +45,39 @@ import org.eclipse.xpand2.output.Outlet;
 
 public class BasicM2TAction extends BaseSelectionListenerAction {
 
-	/** Path used when no default outlet provided. */
+	/** The path that is used when no default outlet is provided. */
 	public static final String DEFAULT_OUTLET_PATH = "gen"; //$NON-NLS-1$
 
-	public static final String DEFAULT_ROOT_DEFINE_NAME = "main"; //$NON-NLS-1$
+	public static final String DEFAULT_TEMPLATE_NAME = "main"; //$NON-NLS-1$
 
 	protected IScopingResourceLoader scopingResourceLoader;
+
+	private OutletsPreference outletsPreference;
 
 	public BasicM2TAction(String text) {
 		super(text);
 	}
 
+	public OutletsPreference getOutletsPreference() {
+		return outletsPreference;
+	}
+
+	public void setOutletsPreference(OutletsPreference outletsPreference) {
+		this.outletsPreference = outletsPreference;
+	}
+
+	protected EObject getSelectedModelObject() {
+		Object selected = getStructuredSelection().getFirstElement();
+		if (selected instanceof EObject) {
+			return (EObject) selected;
+		}
+		Resource resource = EcorePlatformUtil.getResource(selected);
+		return EcoreResourceUtil.getModelRoot(resource);
+	}
+
 	@Override
 	protected boolean updateSelection(IStructuredSelection selection) {
-		return selection.size() == 1 && getSelectedModelObject() != null && !getExecutionContextRequests().isEmpty();
+		return selection.size() == 1 && getSelectedModelObject() != null && !getXpandEvaluationRequests().isEmpty();
 	}
 
 	@Override
@@ -76,7 +96,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	}
 
 	protected BasicM2TJob createM2TJob() {
-		BasicM2TJob job = new BasicM2TJob(getM2TJobName(), getExecutionContextRequests());
+		BasicM2TJob job = new BasicM2TJob(getM2TJobName(), getXpandEvaluationRequests());
 		job.setScopingResourceLoader(getScopingResourceLoader());
 		job.setDefaultOutletURI(getDefaultOutletURI());
 		job.getOutlets().addAll(getOutlets());
@@ -85,10 +105,35 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		return job;
 	}
 
-	protected Collection<XpandEvaluationRequest> getExecutionContextRequests() {
+	protected String getM2TJobName() {
+		return Messages.job_generatingCode;
+	}
+
+	protected Collection<XpandEvaluationRequest> getXpandEvaluationRequests() {
 		List<XpandEvaluationRequest> requests = new ArrayList<XpandEvaluationRequest>();
 		requests.add(new XpandEvaluationRequest(getDefinitionName(), getSelectedModelObject()));
 		return requests;
+	}
+
+	protected String getDefinitionName() {
+		IFile templateFile = getTemplateFile();
+		if (templateFile != null) {
+			return getScopingResourceLoader().getDefinitionName(templateFile, getTemplateName());
+		}
+		return null;
+	}
+
+	protected IFile getTemplateFile() {
+		IFile moduleDefFile = EcorePlatformUtil.getFile(getSelectedModelObject());
+		if (moduleDefFile != null) {
+			IPath templatePath = moduleDefFile.getFullPath().removeFileExtension().addFileExtension(XpandUtil.TEMPLATE_EXTENSION);
+			return ResourcesPlugin.getWorkspace().getRoot().getFile(templatePath);
+		}
+		return null;
+	}
+
+	protected String getTemplateName() {
+		return DEFAULT_TEMPLATE_NAME;
 	}
 
 	protected IScopingResourceLoader getScopingResourceLoader() {
@@ -100,10 +145,6 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 
 	protected IScopingResourceLoader createScopingResourceLoader() {
 		return new BasicWorkspaceResourceLoader();
-	}
-
-	protected String getM2TJobName() {
-		return Messages.job_generatingCode;
 	}
 
 	protected URI getDefaultOutletURI() {
@@ -119,46 +160,13 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		return DEFAULT_OUTLET_PATH;
 	}
 
-	protected String getDefinitionName() {
-		IFile templateFile = getTemplateFile();
-		if (templateFile != null) {
-			return getScopingResourceLoader().getDefinitionName(templateFile, getRootDefineName());
-		}
-		return null;
-	}
-
-	protected String getRootDefineName() {
-		return DEFAULT_ROOT_DEFINE_NAME;
-	}
-
-	protected IFile getTemplateFile() {
-		IFile moduleDefFile = EcorePlatformUtil.getFile(getSelectedModelObject());
-		if (moduleDefFile != null) {
-			IPath templatePath = moduleDefFile.getFullPath().removeFileExtension().addFileExtension(XpandUtil.TEMPLATE_EXTENSION);
-			return ResourcesPlugin.getWorkspace().getRoot().getFile(templatePath);
-		}
-		return null;
-	}
-
-	protected EObject getSelectedModelObject() {
-		Object selected = getStructuredSelection().getFirstElement();
-		if (selected instanceof EObject) {
-			return (EObject) selected;
-		}
-		Resource resource = EcorePlatformUtil.getResource(selected);
-		return EcoreResourceUtil.getModelRoot(resource);
-	}
-
-	/**
-	 * This is a framework hook method for subclasses to add additional outlets to the {@link BasicM2TJob}. The default
-	 * implementation of this framework method simply return an empty collection, the {@link BasicM2TJob} will create a
-	 * default {@link Outlet} using the {@link BasicM2TJob#DEFAULT_OUTLET_PATH}.
-	 * 
-	 * @return as specified above
-	 * @see BasicM2TJob#getOutlets(Collection)
-	 * @see BasicM2TJob#runInWorkspace(Outlet)
-	 */
 	protected Collection<Outlet> getOutlets() {
+		if (outletsPreference != null) {
+			IFile file = EcorePlatformUtil.getFile(getSelectedModelObject());
+			if (file != null && file.getProject() != null) {
+				return new ArrayList<Outlet>(outletsPreference.get(file.getProject()));
+			}
+		}
 		return Collections.emptyList();
 	}
 }

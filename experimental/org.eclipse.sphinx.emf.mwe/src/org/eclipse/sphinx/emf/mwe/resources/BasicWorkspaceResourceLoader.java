@@ -30,6 +30,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.mwe.core.resources.AbstractResourceLoader;
@@ -268,11 +269,13 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 		return null;
 	}
 
-	public String getDefinitionName(IFile file, String defineBlockSegment) {
+	public String getDefinitionName(IFile file, String defineBlockName) {
+		Assert.isNotNull(file);
+
+		// Append the define block name if available
 		String path = null;
-		// Append the define block segment when it is not null
-		if (defineBlockSegment != null && !"".equals(defineBlockSegment)) { //$NON-NLS-1$
-			path = file.getProjectRelativePath().removeFileExtension().append(defineBlockSegment).toString();
+		if (defineBlockName != null && defineBlockName.length() > 0) {
+			path = file.getProjectRelativePath().removeFileExtension().append(defineBlockName).toString();
 		} else {
 			path = file.getProjectRelativePath().removeFileExtension().toString();
 		}

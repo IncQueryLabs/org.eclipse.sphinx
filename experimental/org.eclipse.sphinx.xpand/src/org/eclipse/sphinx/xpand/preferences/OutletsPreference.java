@@ -25,6 +25,8 @@ import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 
 public class OutletsPreference extends AbstractProjectWorkspacePreference<Collection<ExtendedOutlet>> {
 
+	public static final String XTEND_XPAND_NATURE_ID = "org.eclipse.xtend.shared.ui.xtendXPandNature"; //$NON-NLS-1$
+
 	public OutletsPreference(String requiredProjectNatureId, String qualifier, String key, String defaultValueAsString) {
 		super(requiredProjectNatureId, qualifier, key, defaultValueAsString);
 	}

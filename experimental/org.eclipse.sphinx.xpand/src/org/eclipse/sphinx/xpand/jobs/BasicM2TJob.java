@@ -55,28 +55,63 @@ public class BasicM2TJob extends WorkspaceJob {
 
 	protected static final Log log = LogFactory.getLog(BasicM2TJob.class);
 
+	protected Collection<XpandEvaluationRequest> xpandEvaluationRequests;
+
 	private MetaModel metaModel;
+	private IScopingResourceLoader scopingResourceLoader;
 	private URI defaultOutletURI;
 	private Collection<Outlet> outlets;
-	protected IScopingResourceLoader scopingResourceLoader;
-	protected Collection<XpandEvaluationRequest> executionContextRequests;
 
-	public BasicM2TJob(String name, Collection<XpandEvaluationRequest> executionContextRequests) {
+	public BasicM2TJob(String name, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
 		super(name);
-		this.executionContextRequests = executionContextRequests;
+		this.xpandEvaluationRequests = xpandEvaluationRequests;
+	}
+
+	protected MetaModel getMetaModel() {
+		if (metaModel == null) {
+			metaModel = createMetaModel();
+		}
+		return metaModel;
+	}
+
+	protected MetaModel createMetaModel() {
+		return new EmfRegistryMetaModel();
+	}
+
+	public void setMetaModel(MetaModel metaModel) {
+		this.metaModel = metaModel;
+	}
+
+	public void setScopingResourceLoader(IScopingResourceLoader resourceLoader) {
+		scopingResourceLoader = resourceLoader;
+	}
+
+	protected URI getDefaultOutletURI() {
+		return defaultOutletURI;
+	}
+
+	public void setDefaultOutletURI(URI defaultOutletURI) {
+		this.defaultOutletURI = defaultOutletURI;
+	}
+
+	public Collection<Outlet> getOutlets() {
+		if (outlets == null) {
+			outlets = new ArrayList<Outlet>();
+		}
+		return outlets;
 	}
 
 	@Override
 	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 		try {
-			Assert.isNotNull(executionContextRequests);
-			Assert.isTrue(!executionContextRequests.isEmpty());
+			Assert.isNotNull(xpandEvaluationRequests);
+			Assert.isTrue(!xpandEvaluationRequests.isEmpty());
 
 			// Log start of generation
 			log.info("Generating code started..."); //$NON-NLS-1$
 
 			// Set resource loader context to model behind current selection
-			IFile file = EcorePlatformUtil.getFile(executionContextRequests.iterator().next().getTargetObject());
+			IFile file = EcorePlatformUtil.getFile(xpandEvaluationRequests.iterator().next().getTargetObject());
 			IModelDescriptor model = ModelDescriptorRegistry.INSTANCE.getModel(file);
 			setResourceLoaderContext(model);
 
@@ -111,7 +146,7 @@ public class BasicM2TJob extends WorkspaceJob {
 			long startTime = System.currentTimeMillis();
 			model.getEditingDomain().runExclusive(new Runnable() {
 				public void run() {
-					for (XpandEvaluationRequest request : executionContextRequests) {
+					for (XpandEvaluationRequest request : xpandEvaluationRequests) {
 						log.info("Generating code for " + request.getTargetObject() + " with '" + request.getDefinitionName()); //$NON-NLS-1$ //$NON-NLS-2$ //);
 						facade.evaluate(request.getDefinitionName(), request.getTargetObject(), request.getParameterList().toArray());
 					}
@@ -160,10 +195,6 @@ public class BasicM2TJob extends WorkspaceJob {
 		ResourceLoaderFactory.setCurrentThreadResourceLoader(null);
 	}
 
-	public void setScopingResourceLoader(IScopingResourceLoader resourceLoader) {
-		scopingResourceLoader = resourceLoader;
-	}
-
 	protected boolean containsDefaultOutlet(Collection<Outlet> outlets) {
 		for (Outlet outlet : outlets) {
 			if (outlet.getName() == null) {
@@ -171,35 +202,5 @@ public class BasicM2TJob extends WorkspaceJob {
 			}
 		}
 		return false;
-	}
-
-	public MetaModel getMetaModel() {
-		if (metaModel == null) {
-			metaModel = createMetaModel();
-		}
-		return metaModel;
-	}
-
-	public void setMetaModel(MetaModel metaModel) {
-		this.metaModel = metaModel;
-	}
-
-	protected MetaModel createMetaModel() {
-		return new EmfRegistryMetaModel();
-	}
-
-	protected URI getDefaultOutletURI() {
-		return defaultOutletURI;
-	}
-
-	public void setDefaultOutletURI(URI defaultOutletURI) {
-		this.defaultOutletURI = defaultOutletURI;
-	}
-
-	public Collection<Outlet> getOutlets() {
-		if (outlets == null) {
-			outlets = new ArrayList<Outlet>();
-		}
-		return outlets;
 	}
 }

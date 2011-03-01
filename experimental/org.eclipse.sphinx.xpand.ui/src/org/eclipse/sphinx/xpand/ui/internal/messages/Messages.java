@@ -30,7 +30,7 @@ public class Messages extends NLS {
 	public static String label_path;
 	public static String label_browse;
 	public static String label_configPageName;
-	public static String label_templateName;
+	public static String label_definitionName;
 
 	public static String msg_chooseTemplate;
 	public static String desc_config;
