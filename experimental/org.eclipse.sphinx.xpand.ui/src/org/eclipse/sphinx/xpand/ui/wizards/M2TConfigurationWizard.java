@@ -28,7 +28,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
-import org.eclipse.sphinx.xpand.jobs.BasicM2TJob;
+import org.eclipse.sphinx.xpand.jobs.M2TJob;
 import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xpand.ui.internal.Activator;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
@@ -93,14 +93,14 @@ public class M2TConfigurationWizard extends AbstractWizard {
 
 	@Override
 	protected void doPerformFinish(IProgressMonitor monitor) throws CoreException {
-		BasicM2TJob job = createM2TJob();
+		M2TJob job = createM2TJob();
 		ExtendedPlatformUI.showSystemConsole();
 		job.schedule();
 		m2TConfigurationPage.finish();
 	}
 
-	protected BasicM2TJob createM2TJob() {
-		BasicM2TJob job = new BasicM2TJob(getM2TJobName(), m2TConfigurationPage.getXpandEvaluationRequests());
+	protected M2TJob createM2TJob() {
+		M2TJob job = new M2TJob(getM2TJobName(), m2TConfigurationPage.getXpandEvaluationRequests());
 		job.setScopingResourceLoader(scopingResourceLoader);
 		job.setDefaultOutletURI(defaultOutletURI);
 		job.getOutlets().addAll(getOutlets());

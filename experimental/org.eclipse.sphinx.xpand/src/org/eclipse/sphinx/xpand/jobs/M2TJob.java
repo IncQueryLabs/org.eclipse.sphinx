@@ -51,9 +51,9 @@ import org.eclipse.xtend.expression.Variable;
 import org.eclipse.xtend.typesystem.MetaModel;
 import org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel;
 
-public class BasicM2TJob extends WorkspaceJob {
+public class M2TJob extends WorkspaceJob {
 
-	protected static final Log log = LogFactory.getLog(BasicM2TJob.class);
+	protected static final Log log = LogFactory.getLog(M2TJob.class);
 
 	protected Collection<XpandEvaluationRequest> xpandEvaluationRequests;
 
@@ -62,7 +62,7 @@ public class BasicM2TJob extends WorkspaceJob {
 	private URI defaultOutletURI;
 	private Collection<Outlet> outlets;
 
-	public BasicM2TJob(String name, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
+	public M2TJob(String name, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
 		super(name);
 		this.xpandEvaluationRequests = xpandEvaluationRequests;
 	}
@@ -78,10 +78,17 @@ public class BasicM2TJob extends WorkspaceJob {
 		return new EmfRegistryMetaModel();
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.xpand.jobs.M2TJob#setMetaModel(org.eclipse.xtend.typesystem.MetaModel)
+	 */
 	public void setMetaModel(MetaModel metaModel) {
 		this.metaModel = metaModel;
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.xpand.jobs.M2TJob#setScopingResourceLoader(org.eclipse.sphinx.emf.mwe.resources.
+	 * IScopingResourceLoader)
+	 */
 	public void setScopingResourceLoader(IScopingResourceLoader resourceLoader) {
 		scopingResourceLoader = resourceLoader;
 	}
@@ -90,10 +97,16 @@ public class BasicM2TJob extends WorkspaceJob {
 		return defaultOutletURI;
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.xpand.jobs.M2TJob#setDefaultOutletURI(org.eclipse.emf.common.util.URI)
+	 */
 	public void setDefaultOutletURI(URI defaultOutletURI) {
 		this.defaultOutletURI = defaultOutletURI;
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.xpand.jobs.M2TJob#getOutlets()
+	 */
 	public Collection<Outlet> getOutlets() {
 		if (outlets == null) {
 			outlets = new ArrayList<Outlet>();
