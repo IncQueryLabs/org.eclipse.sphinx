@@ -34,6 +34,19 @@ import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
+/**
+ * A {@link Job job} that enables the {@link ModelDescriptorRegistry#INSTANCE} to be initialized with
+ * {@link IModelDescriptor)s according to the {@link IFile model files} that exist in the workspace.
+ * <p>
+ * The {@link ModelDescriptorRegistryInitializer} job typically needs to be executed only once after workbench startup.
+ * It is therefore automatically invoked when the
+ * {@link Activator.Implementation#start(org.osgi.framework.BundleContext) activator} of this plug-in is started. All
+ * subsequent synchronization of the {@link ModelDescriptorRegistry#INSTANCE} wrt resource changes in the workspace are
+ * handled by the {@link ModelDescriptorSynchronizer#INSTANCE}.
+ * </p>
+ * 
+ * @see ModelDescriptorSynchronizer
+ */
 public class ModelDescriptorRegistryInitializer extends Job {
 
 	public ModelDescriptorRegistryInitializer() {
@@ -60,7 +73,10 @@ public class ModelDescriptorRegistryInitializer extends Job {
 				for (IFile file : files) {
 					progress2.subTask(NLS.bind(Messages.subtask_analyzingFile, file.getFullPath().toString()));
 
-					ModelDescriptorRegistry.INSTANCE.addModel(file);
+					// Don't create model descriptors for files that do not exist at this point
+					if (file.isAccessible()) {
+						ModelDescriptorRegistry.INSTANCE.addModel(file);
+					}
 					analyzedFiles.add(file);
 
 					progress2.worked(1);
