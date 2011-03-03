@@ -22,12 +22,12 @@ import java.util.List;
 import org.artop.ecl.emf.util.EcorePlatformUtil;
 import org.artop.ecl.emf.util.EcoreResourceUtil;
 import org.artop.ecl.platform.ui.util.ExtendedPlatformUI;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -42,28 +42,20 @@ import org.eclipse.sphinx.xpand.ui.wizards.M2TConfigurationWizard;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
 import org.eclipse.xpand2.XpandUtil;
 import org.eclipse.xpand2.output.Outlet;
+import org.eclipse.xtend.typesystem.MetaModel;
+import org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel;
 
 public class BasicM2TAction extends BaseSelectionListenerAction {
 
-	/** The path that is used when no default outlet is provided. */
-	public static final String DEFAULT_OUTLET_PATH = "gen"; //$NON-NLS-1$
+	public static final String PROJECT_RELATIVE_DEFAULT_OUTLET_PATH = "gen"; //$NON-NLS-1$
 
 	public static final String DEFAULT_TEMPLATE_NAME = "main"; //$NON-NLS-1$
 
-	protected IScopingResourceLoader scopingResourceLoader;
-
-	private OutletsPreference outletsPreference;
+	private IScopingResourceLoader scopingResourceLoader;
+	private MetaModel metaModel;
 
 	public BasicM2TAction(String text) {
 		super(text);
-	}
-
-	public OutletsPreference getOutletsPreference() {
-		return outletsPreference;
-	}
-
-	public void setOutletsPreference(OutletsPreference outletsPreference) {
-		this.outletsPreference = outletsPreference;
 	}
 
 	protected EObject getSelectedModelObject() {
@@ -90,15 +82,18 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 			return;
 		}
 
-		M2TConfigurationWizard wizard = new M2TConfigurationWizard(getSelectedModelObject(), getScopingResourceLoader(), getDefaultOutletURI());
+		M2TConfigurationWizard wizard = new M2TConfigurationWizard(getSelectedModelObject(), getMetaModel());
+		wizard.setM2TJobName(getM2TJobName());
+		wizard.setScopingResourceLoader(getScopingResourceLoader());
+		wizard.setOutletsPreference(getOutletsPreference());
+		wizard.setDefaultOutlet(getDefaultOutlet());
 		WizardDialog wizardDialog = new WizardDialog(ExtendedPlatformUI.getDisplay().getActiveShell(), wizard);
 		wizardDialog.open();
 	}
 
 	protected M2TJob createM2TJob() {
-		M2TJob job = new M2TJob(getM2TJobName(), getXpandEvaluationRequests());
+		M2TJob job = new M2TJob(getM2TJobName(), getMetaModel(), getXpandEvaluationRequests());
 		job.setScopingResourceLoader(getScopingResourceLoader());
-		job.setDefaultOutletURI(getDefaultOutletURI());
 		job.getOutlets().addAll(getOutlets());
 		job.setPriority(Job.BUILD);
 		job.setRule(EcorePlatformUtil.getFile(getSelectedModelObject()).getProject());
@@ -107,6 +102,17 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 
 	protected String getM2TJobName() {
 		return Messages.job_generatingCode;
+	}
+
+	protected MetaModel getMetaModel() {
+		if (metaModel == null) {
+			metaModel = createMetaModel();
+		}
+		return metaModel;
+	}
+
+	protected MetaModel createMetaModel() {
+		return new EmfRegistryMetaModel();
 	}
 
 	protected Collection<XpandEvaluationRequest> getXpandEvaluationRequests() {
@@ -147,26 +153,42 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		return new BasicWorkspaceResourceLoader();
 	}
 
-	protected URI getDefaultOutletURI() {
-		IFile file = EcorePlatformUtil.getFile(getStructuredSelection().getFirstElement());
-		if (file != null) {
-			IProject project = file.getProject();
-			return EcorePlatformUtil.createURI(project.getFolder(getDefaultOutletPath()).getFullPath());
-		}
-		return null;
-	}
-
-	protected String getDefaultOutletPath() {
-		return DEFAULT_OUTLET_PATH;
-	}
-
 	protected Collection<Outlet> getOutlets() {
+		// Return outlets resulting outlets preference if available
+		OutletsPreference outletsPreference = getOutletsPreference();
 		if (outletsPreference != null) {
 			IFile file = EcorePlatformUtil.getFile(getSelectedModelObject());
 			if (file != null && file.getProject() != null) {
 				return new ArrayList<Outlet>(outletsPreference.get(file.getProject()));
 			}
 		}
-		return Collections.emptyList();
+
+		// Return default outlet otherwise
+		Outlet defaultOutlet = getDefaultOutlet();
+		return defaultOutlet != null ? Collections.singletonList(defaultOutlet) : Collections.<Outlet> emptyList();
+	}
+
+	protected OutletsPreference getOutletsPreference() {
+		return null;
+	}
+
+	protected Outlet getDefaultOutlet() {
+		IFile file = EcorePlatformUtil.getFile(getStructuredSelection().getFirstElement());
+		if (file != null) {
+			IProject project = file.getProject();
+			IContainer defaultOutletContainer;
+			String projectRelativeDefaultOutletPath = getProjectRelativeDefaultOutletPath();
+			if (projectRelativeDefaultOutletPath != null && projectRelativeDefaultOutletPath.length() > 0) {
+				defaultOutletContainer = project.getFolder(projectRelativeDefaultOutletPath);
+			} else {
+				defaultOutletContainer = project;
+			}
+			return new Outlet(defaultOutletContainer.getLocation().toFile().getAbsolutePath());
+		}
+		return null;
+	}
+
+	protected String getProjectRelativeDefaultOutletPath() {
+		return PROJECT_RELATIVE_DEFAULT_OUTLET_PATH;
 	}
 }

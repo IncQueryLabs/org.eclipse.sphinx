@@ -14,10 +14,6 @@
  */
 package org.eclipse.sphinx.xpand.ui.wizards;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
 import org.artop.ecl.emf.util.EcorePlatformUtil;
 import org.artop.ecl.platform.ui.util.ExtendedPlatformUI;
 import org.artop.ecl.platform.ui.wizards.AbstractWizard;
@@ -25,7 +21,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
 import org.eclipse.sphinx.xpand.jobs.M2TJob;
@@ -35,40 +30,44 @@ import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xpand.ui.wizards.pages.M2TConfigurationPage;
 import org.eclipse.xpand2.output.Outlet;
 import org.eclipse.xtend.typesystem.MetaModel;
-import org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel;
 
 public class M2TConfigurationWizard extends AbstractWizard {
 
 	protected EObject modelObject;
-	protected IScopingResourceLoader scopingResourceLoader;
-	protected URI defaultOutletURI;
+	protected MetaModel metaModel;
 
-	private MetaModel metaModel;
+	private String m2tJobName;
+	private IScopingResourceLoader scopingResourceLoader;
 	private OutletsPreference outletsPreference;
+	private Outlet defaultOutlet;
 
 	protected M2TConfigurationPage m2TConfigurationPage;
 
-	public M2TConfigurationWizard(EObject modelObject, IScopingResourceLoader scopingResourceLoader, URI defaultOutletURI) {
+	public M2TConfigurationWizard(EObject modelObject, MetaModel metaModel) {
 		setDialogSettings(Activator.getDefault().getDialogSettings());
 		setWindowTitle(Messages.title_codeGen);
 		this.modelObject = modelObject;
-		this.defaultOutletURI = defaultOutletURI;
-		this.scopingResourceLoader = scopingResourceLoader;
-	}
-
-	public MetaModel getMetaModel() {
-		if (metaModel == null) {
-			metaModel = createMetaModel();
-		}
-		return metaModel;
-	}
-
-	protected MetaModel createMetaModel() {
-		return new EmfRegistryMetaModel();
-	}
-
-	public void setMetaModel(MetaModel metaModel) {
 		this.metaModel = metaModel;
+	}
+
+	public String getM2TJobName() {
+		return m2tJobName != null ? m2tJobName : getDefaultM2TJobName();
+	}
+
+	protected String getDefaultM2TJobName() {
+		return Messages.job_generatingCode;
+	}
+
+	public void setM2TJobName(String m2tJobName) {
+		this.m2tJobName = m2tJobName;
+	}
+
+	public IScopingResourceLoader getScopingResourceLoader() {
+		return scopingResourceLoader;
+	}
+
+	public void setScopingResourceLoader(IScopingResourceLoader scopingResourceLoader) {
+		this.scopingResourceLoader = scopingResourceLoader;
 	}
 
 	public OutletsPreference getOutletsPreference() {
@@ -79,6 +78,14 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		this.outletsPreference = outletsPreference;
 	}
 
+	public Outlet getDefaultOutlet() {
+		return defaultOutlet;
+	}
+
+	public void setDefaultOutlet(Outlet defaultOutlet) {
+		this.defaultOutlet = defaultOutlet;
+	}
+
 	@Override
 	public void addPages() {
 		m2TConfigurationPage = createM2TConfigurationPage();
@@ -87,7 +94,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 
 	protected M2TConfigurationPage createM2TConfigurationPage() {
 		M2TConfigurationPage m2TPage = new M2TConfigurationPage(Messages.label_configPageName);
-		m2TPage.init(modelObject, getMetaModel(), defaultOutletURI);
+		m2TPage.init(modelObject, metaModel, getOutletsPreference(), getDefaultOutlet());
 		return m2TPage;
 	}
 
@@ -100,28 +107,15 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	}
 
 	protected M2TJob createM2TJob() {
-		M2TJob job = new M2TJob(getM2TJobName(), m2TConfigurationPage.getXpandEvaluationRequests());
-		job.setScopingResourceLoader(scopingResourceLoader);
-		job.setDefaultOutletURI(defaultOutletURI);
-		job.getOutlets().addAll(getOutlets());
-		job.setMetaModel(getMetaModel());
+		M2TJob job = new M2TJob(getM2TJobName(), metaModel, m2TConfigurationPage.getXpandEvaluationRequests());
+		job.setScopingResourceLoader(getScopingResourceLoader());
+		job.getOutlets().addAll(m2TConfigurationPage.getOutlets());
 		job.setPriority(Job.BUILD);
-		job.setRule(EcorePlatformUtil.getFile(modelObject).getProject());
-		return job;
-	}
-
-	protected String getM2TJobName() {
-		return Messages.job_generatingCode;
-	}
-
-	protected Collection<Outlet> getOutlets() {
-		if (outletsPreference != null) {
-			IFile file = EcorePlatformUtil.getFile(modelObject);
-			if (file != null && file.getProject() != null) {
-				return new ArrayList<Outlet>(outletsPreference.get(file.getProject()));
-			}
+		IFile file = EcorePlatformUtil.getFile(modelObject);
+		if (file != null) {
+			job.setRule(file.getProject());
 		}
-		return Collections.emptyList();
+		return job;
 	}
 
 	@Override

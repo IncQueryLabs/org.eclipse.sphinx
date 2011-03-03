@@ -31,12 +31,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitorAdapter;
 import org.eclipse.emf.mwe.core.resources.ResourceLoaderFactory;
 import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
@@ -49,64 +48,27 @@ import org.eclipse.xpand2.output.OutputImpl;
 import org.eclipse.xtend.expression.ResourceManagerDefaultImpl;
 import org.eclipse.xtend.expression.Variable;
 import org.eclipse.xtend.typesystem.MetaModel;
-import org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel;
 
 public class M2TJob extends WorkspaceJob {
 
 	protected static final Log log = LogFactory.getLog(M2TJob.class);
 
+	protected MetaModel metaModel;
 	protected Collection<XpandEvaluationRequest> xpandEvaluationRequests;
 
-	private MetaModel metaModel;
 	private IScopingResourceLoader scopingResourceLoader;
-	private URI defaultOutletURI;
 	private Collection<Outlet> outlets;
 
-	public M2TJob(String name, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
+	public M2TJob(String name, MetaModel metaModel, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
 		super(name);
+		this.metaModel = metaModel;
 		this.xpandEvaluationRequests = xpandEvaluationRequests;
 	}
 
-	protected MetaModel getMetaModel() {
-		if (metaModel == null) {
-			metaModel = createMetaModel();
-		}
-		return metaModel;
-	}
-
-	protected MetaModel createMetaModel() {
-		return new EmfRegistryMetaModel();
-	}
-
-	/*
-	 * @see org.eclipse.sphinx.xpand.jobs.M2TJob#setMetaModel(org.eclipse.xtend.typesystem.MetaModel)
-	 */
-	public void setMetaModel(MetaModel metaModel) {
-		this.metaModel = metaModel;
-	}
-
-	/*
-	 * @see org.eclipse.sphinx.xpand.jobs.M2TJob#setScopingResourceLoader(org.eclipse.sphinx.emf.mwe.resources.
-	 * IScopingResourceLoader)
-	 */
 	public void setScopingResourceLoader(IScopingResourceLoader resourceLoader) {
 		scopingResourceLoader = resourceLoader;
 	}
 
-	protected URI getDefaultOutletURI() {
-		return defaultOutletURI;
-	}
-
-	/*
-	 * @see org.eclipse.sphinx.xpand.jobs.M2TJob#setDefaultOutletURI(org.eclipse.emf.common.util.URI)
-	 */
-	public void setDefaultOutletURI(URI defaultOutletURI) {
-		this.defaultOutletURI = defaultOutletURI;
-	}
-
-	/*
-	 * @see org.eclipse.sphinx.xpand.jobs.M2TJob#getOutlets()
-	 */
 	public Collection<Outlet> getOutlets() {
 		if (outlets == null) {
 			outlets = new ArrayList<Outlet>();
@@ -117,8 +79,11 @@ public class M2TJob extends WorkspaceJob {
 	@Override
 	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 		try {
+			Assert.isNotNull(metaModel);
 			Assert.isNotNull(xpandEvaluationRequests);
-			Assert.isTrue(!xpandEvaluationRequests.isEmpty());
+			if (xpandEvaluationRequests.isEmpty()) {
+				return Status.CANCEL_STATUS;
+			}
 
 			// Log start of generation
 			log.info("Generating code started..."); //$NON-NLS-1$
@@ -130,16 +95,10 @@ public class M2TJob extends WorkspaceJob {
 
 			// Configure outlets
 			OutputImpl output = new OutputImpl();
+
 			// We should add at least one default outlet
 			if (!containsDefaultOutlet(getOutlets())) {
-				Outlet defaultOutlet;
-				if (getDefaultOutletURI() != null) {
-					IPath defaultOutletPath = EcorePlatformUtil.createAbsoluteFileLocation(getDefaultOutletURI());
-					defaultOutlet = new Outlet(defaultOutletPath.toFile().getAbsolutePath());
-				} else {
-					defaultOutlet = new Outlet();
-				}
-				getOutlets().add(defaultOutlet);
+				getOutlets().add(createDefaultOutlet());
 			}
 
 			for (Outlet outlet : getOutlets()) {
@@ -152,7 +111,7 @@ public class M2TJob extends WorkspaceJob {
 			Map<String, Variable> globalVarsMap = new HashMap<String, Variable>();
 			XpandExecutionContextImpl execCtx = new XpandExecutionContextImpl(new ResourceManagerDefaultImpl(), output, null, globalVarsMap,
 					new ProgressMonitorAdapter(monitor), null, null, null);
-			execCtx.registerMetaModel(getMetaModel());
+			execCtx.registerMetaModel(metaModel);
 
 			// Execute generation
 			final XpandFacade facade = XpandFacade.create(execCtx);
@@ -180,10 +139,12 @@ public class M2TJob extends WorkspaceJob {
 			}
 			log.info("Generation completed in " + duration + "ms!"); //$NON-NLS-1$ //$NON-NLS-2$
 
-			// Refresh outlet container if its in the workspace
-			IResource container = ResourcesPlugin.getWorkspace().getRoot().findMember(EcorePlatformUtil.createPath(getDefaultOutletURI()));
-			if (container != null && container.exists()) {
-				container.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+			// Refresh outlet containers if its in the workspace
+			for (Outlet outlet : getOutlets()) {
+				IResource container = ResourcesPlugin.getWorkspace().getRoot().getContainerForLocation(new Path(outlet.getPath()));
+				if (container != null && container.isAccessible()) {
+					container.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+				}
 			}
 			return Status.OK_STATUS;
 		} catch (OperationCanceledException exception) {
@@ -215,5 +176,9 @@ public class M2TJob extends WorkspaceJob {
 			}
 		}
 		return false;
+	}
+
+	protected Outlet createDefaultOutlet() {
+		return new Outlet();
 	}
 }

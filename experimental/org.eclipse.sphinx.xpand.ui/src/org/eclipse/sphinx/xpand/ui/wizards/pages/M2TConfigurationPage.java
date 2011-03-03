@@ -16,6 +16,7 @@ package org.eclipse.sphinx.xpand.ui.wizards.pages;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.MissingResourceException;
 
@@ -30,14 +31,12 @@ import org.artop.ecl.platform.ui.wizards.pages.AbstractWizardPage;
 import org.artop.ecl.platform.util.ExtendedPlatform;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.internal.xpand2.ast.AbstractDefinition;
 import org.eclipse.internal.xpand2.ast.Template;
@@ -48,6 +47,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
+import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xpand.ui.internal.Activator;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.swt.SWT;
@@ -65,6 +65,7 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.eclipse.xpand2.XpandUtil;
+import org.eclipse.xpand2.output.Outlet;
 import org.eclipse.xtend.shared.ui.core.IXtendXpandProject;
 import org.eclipse.xtend.shared.ui.core.IXtendXpandResource;
 import org.eclipse.xtend.typesystem.MetaModel;
@@ -86,11 +87,12 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 
 	// Output Group
 	protected Button useDefaultPathButton;
-	protected StringButtonField genPathField;
+	protected StringButtonField outputPathField;
 
 	protected EObject modelObject;
 	protected MetaModel metaModel;
-	protected URI defaultOutletURI;
+	protected OutletsPreference outletsPreference;
+	protected Outlet defaultOutlet;
 
 	private AbstractDefinition[] definitions;
 
@@ -98,10 +100,11 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		super(pageName);
 	}
 
-	public void init(EObject modelObject, MetaModel metaModel, URI defaultOutletURI) {
+	public void init(EObject modelObject, MetaModel metaModel, OutletsPreference outletsPreference, Outlet defaultOutlet) {
 		this.modelObject = modelObject;
 		this.metaModel = metaModel;
-		this.defaultOutletURI = defaultOutletURI;
+		this.outletsPreference = outletsPreference;
+		this.defaultOutlet = defaultOutlet;
 	}
 
 	@Override
@@ -143,7 +146,10 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 				dialog.setTitle(Messages.label_templateSelection);
 				dialog.setMessage(Messages.msg_chooseTemplate);
 				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
-				dialog.setInitialSelection(EcorePlatformUtil.getFile(modelObject).getProject());
+				IFile modelFile = EcorePlatformUtil.getFile(modelObject);
+				if (modelFile != null) {
+					dialog.setInitialSelection(modelFile.getProject());
+				}
 				dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
 				dialog.setDialogBoundsSettings(getDialogBoundsSettings(WORKSPACE_SELECTION_DIALOG), Dialog.DIALOG_PERSISTSIZE);
 				dialog.addFilter(new ViewerFilter() {
@@ -190,7 +196,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 
 			public void dialogFieldChanged(IField field) {
 				updateDefineBlockItems(findMemberFromText(templatePathField.getText()));
-				updateFeedbackField();
+				updateDefinitionaNameField();
 				getWizard().getContainer().updateButtons();
 			}
 		});
@@ -202,7 +208,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		defineBlockField.addFieldListener(new IFieldListener() {
 
 			public void dialogFieldChanged(IField field) {
-				updateFeedbackField();
+				updateDefinitionaNameField();
 				getWizard().getContainer().updateButtons();
 			}
 		});
@@ -230,11 +236,13 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 
 	protected String[] createDefineBlockItems(AbstractDefinition[] definitions) {
 		List<String> result = new ArrayList<String>();
-		Type type = metaModel.getType(modelObject);
-		if (type != null) {
-			for (AbstractDefinition definition : definitions) {
-				if (type.getName().equals(definition.getTargetType())) {
-					result.add(definition.getName());
+		if (metaModel != null) {
+			Type type = metaModel.getType(modelObject);
+			if (type != null) {
+				for (AbstractDefinition definition : definitions) {
+					if (type.getName().equals(definition.getTargetType())) {
+						result.add(definition.getName());
+					}
 				}
 			}
 		}
@@ -253,7 +261,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		return ""; //$NON-NLS-1$
 	}
 
-	protected void updateFeedbackField() {
+	protected void updateDefinitionaNameField() {
 		IResource templateFile = findMemberFromText(templatePathField.getText());
 		if (templateFile != null) {
 			definitionNameField.setText(getDefinitionName());
@@ -262,6 +270,10 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		}
 	}
 
+	// TODO Create link to preference page if outlets preference is configured on wizard; pass outlet preference from
+	// wizard to constructor of page and pull the corresponding parts from
+	// org.artop.ecuc.gautosar.codegen.xpand.ui.wizards.pages.EcucM2TConfigurationPage.createOutputBlock(Composite)
+	// in here for that purpose
 	protected void createOutputBlock(Composite parent) {
 		Group outputGroup = new Group(parent, SWT.SHADOW_NONE);
 		outputGroup.setText(Messages.label_output);
@@ -285,7 +297,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 			}
 		});
 
-		genPathField = new StringButtonField(new IButtonAdapter() {
+		outputPathField = new StringButtonField(new IButtonAdapter() {
 
 			public void changeControlPressed(IField field) {
 				ContainerSelectionDialog dialog = new ContainerSelectionDialog(getControl().getShell(), ResourcesPlugin.getWorkspace().getRoot(),
@@ -296,15 +308,20 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 						return;
 					}
 					IPath path = (IPath) result[0];
-					genPathField.setText(path.makeRelative().toString());
+					outputPathField.setText(path.makeRelative().toString());
 				}
 			}
 		});
-		genPathField.setLabelText(Messages.label_path);
-		genPathField.setButtonLabel(Messages.label_browse);
-		genPathField.setText(EcorePlatformUtil.createPath(defaultOutletURI).makeRelative().toString());
-		genPathField.fillIntoGrid(outputGroup, 3);
-		genPathField.addFieldListener(new IFieldListener() {
+		outputPathField.setLabelText(Messages.label_path);
+		outputPathField.setButtonLabel(Messages.label_browse);
+		if (defaultOutlet != null) {
+			IContainer defaultOutletContainer = ResourcesPlugin.getWorkspace().getRoot().getContainerForLocation(new Path(defaultOutlet.getPath()));
+			if (defaultOutletContainer != null) {
+				outputPathField.setText(defaultOutletContainer.getFullPath().makeRelative().toString());
+			}
+		}
+		outputPathField.fillIntoGrid(outputGroup, 3);
+		outputPathField.addFieldListener(new IFieldListener() {
 
 			public void dialogFieldChanged(IField field) {
 				getWizard().getContainer().updateButtons();
@@ -314,7 +331,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 	}
 
 	protected void updateEnableState(boolean enabled) {
-		genPathField.setEnabled(enabled);
+		outputPathField.setEnabled(enabled);
 	}
 
 	protected IDialogSettings getDialogBoundsSettings(String id) {
@@ -358,7 +375,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 
 	protected boolean isOutputBlockComplete() {
 		if (!useDefaultPathButton.getSelection()) {
-			IResource resource = findMemberFromText(genPathField.getText());
+			IResource resource = findMemberFromText(outputPathField.getText());
 			return resource != null && resource instanceof IContainer;
 		}
 		return true;
@@ -385,18 +402,31 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 
 	public Collection<XpandEvaluationRequest> getXpandEvaluationRequests() {
 		List<XpandEvaluationRequest> requests = new ArrayList<XpandEvaluationRequest>();
-		requests.add(new XpandEvaluationRequest(getDefinitionName(), modelObject));
+		if (modelObject != null) {
+			requests.add(new XpandEvaluationRequest(getDefinitionName(), modelObject));
+		}
 		return requests;
 	}
 
-	protected IProject getContextProject() {
-		if (modelObject != null) {
+	public Collection<Outlet> getOutlets() {
+		if (outletsPreference != null) {
 			IFile file = EcorePlatformUtil.getFile(modelObject);
-			if (file != null) {
-				return file.getProject();
+			if (file != null && file.getProject() != null) {
+				return new ArrayList<Outlet>(outletsPreference.get(file.getProject()));
 			}
 		}
-		return null;
+
+		IResource defaultOutletContainer;
+		String defaultOutletPath = outputPathField.getText();
+		if (defaultOutletPath != null) {
+			defaultOutletContainer = ResourcesPlugin.getWorkspace().getRoot().findMember(defaultOutletPath);
+			if (defaultOutletContainer != null && defaultOutletContainer.isAccessible()) {
+				defaultOutlet = new Outlet(defaultOutletContainer.getLocation().toFile().getAbsolutePath());
+				return Collections.singletonList(defaultOutlet);
+			}
+		}
+
+		return Collections.<Outlet> emptyList();
 	}
 
 	public void finish() {
@@ -437,6 +467,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 	}
 
 	protected String getTemplatePathDialogSettingsKey() {
+		// FIXME modelObject may be null
 		return STORE_TEMPLATE_PATH + modelObject.eResource().getURIFragment(modelObject);
 	}
 }

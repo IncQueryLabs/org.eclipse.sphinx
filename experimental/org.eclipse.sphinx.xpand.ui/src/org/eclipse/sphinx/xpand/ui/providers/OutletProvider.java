@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
@@ -38,6 +39,8 @@ public class OutletProvider implements IPreferenceChangeListener {
 	}
 
 	public OutletProvider(IProject project, OutletsPreference outletsPreference) {
+		Assert.isNotNull(outletsPreference);
+
 		this.project = project;
 		this.outletsPreference = outletsPreference;
 
