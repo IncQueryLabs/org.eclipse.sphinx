@@ -12,7 +12,6 @@
  * 
  * </copyright>
  */
-
 package org.eclipse.sphinx.xpand.internal;
 
 import org.eclipse.emf.common.EMFPlugin;
