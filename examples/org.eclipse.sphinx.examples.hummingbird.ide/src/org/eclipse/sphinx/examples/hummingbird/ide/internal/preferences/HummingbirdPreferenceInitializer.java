@@ -60,8 +60,7 @@ public class HummingbirdPreferenceInitializer extends AbstractPreferenceInitiali
 	public void initializeDefaultPreferences() {
 		IEclipsePreferences defaultPreferences = getDefaultPreferences();
 		if (defaultPreferences == null) {
-			RuntimeException ex = new RuntimeException(
-					"Failed to retrieve default preferences for " + HummingbirdMMDescriptor.INSTANCE.getName() + "."); //$NON-NLS-1$ //$NON-NLS-2$
+			RuntimeException ex = new RuntimeException("Failed to retrieve default preferences for '" + QUALIFIER + "'."); //$NON-NLS-1$ //$NON-NLS-2$
 			PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
 		}
 
@@ -70,10 +69,11 @@ public class HummingbirdPreferenceInitializer extends AbstractPreferenceInitiali
 	}
 
 	/**
-	 * Returns the {@link IEclipsePreferences default preference} for Hummingbird.
+	 * Returns the {@link IEclipsePreferences default preference} for {@link HummingbirdPreferenceInitializer#QUALIFIER}
+	 * .
 	 * 
-	 * @return The {@link IEclipsePreferences default preferences} for Hummingbird or <code>null</code> if no such could
-	 *         be determined.
+	 * @return The {@link IEclipsePreferences default preferences} for
+	 *         {@link HummingbirdPreferenceInitializer#QUALIFIER} or <code>null</code> if no such could be determined.
 	 */
 	private IEclipsePreferences getDefaultPreferences() {
 		DefaultScope defaultScope = new DefaultScope();
