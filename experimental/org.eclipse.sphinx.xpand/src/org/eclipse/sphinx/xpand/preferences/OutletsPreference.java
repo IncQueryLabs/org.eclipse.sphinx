@@ -21,11 +21,18 @@ import java.util.List;
 
 import org.artop.ecl.platform.preferences.AbstractProjectWorkspacePreference;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.sphinx.xpand.internal.preferences.OutletsPreferenceInitializer;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 
 public class OutletsPreference extends AbstractProjectWorkspacePreference<Collection<ExtendedOutlet>> {
 
 	public static final String XTEND_XPAND_NATURE_ID = "org.eclipse.xtend.shared.ui.xtendXPandNature"; //$NON-NLS-1$
+
+	/**
+	 * Default instance of {@link OutletsPreference}.
+	 */
+	public static final OutletsPreference INSTANCE = new OutletsPreference(XTEND_XPAND_NATURE_ID, OutletsPreferenceInitializer.QUALIFIER,
+			OutletsPreferenceInitializer.PREF_OUTLETS, OutletsPreferenceInitializer.PREF_OUTLETS_DEFAULT);
 
 	public OutletsPreference(String requiredProjectNatureId, String qualifier, String key, String defaultValueAsString) {
 		super(requiredProjectNatureId, qualifier, key, defaultValueAsString);
