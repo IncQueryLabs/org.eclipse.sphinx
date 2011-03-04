@@ -14,9 +14,9 @@
  */
 package org.eclipse.sphinx.xpand.internal;
 
-import org.artop.ecl.emf.util.EcorePlatformUtil;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 
 public class EObjectAdapaterFactory implements IAdapterFactory {
 

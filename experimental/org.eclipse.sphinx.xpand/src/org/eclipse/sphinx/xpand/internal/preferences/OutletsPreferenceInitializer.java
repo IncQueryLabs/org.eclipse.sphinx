@@ -14,10 +14,10 @@
  */
 package org.eclipse.sphinx.xpand.internal.preferences;
 
-import org.artop.ecl.platform.util.PlatformLogUtil;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.xpand.internal.Activator;
 
 /**

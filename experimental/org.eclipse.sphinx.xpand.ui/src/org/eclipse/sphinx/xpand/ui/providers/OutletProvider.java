@@ -127,7 +127,7 @@ public class OutletProvider implements IPreferenceChangeListener {
 
 	public void dispose() {
 		if (project != null) {
-			outletsPreference.removePreferenceChangeListenerToProject(project, this);
+			outletsPreference.removePreferenceChangeListenerFromProject(project, this);
 		}
 		allOutlets.clear();
 		unappliedOutlets.clear();

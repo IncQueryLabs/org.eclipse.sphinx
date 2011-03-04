@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.artop.ecl.platform.preferences.AbstractProjectWorkspacePreference;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.sphinx.platform.preferences.AbstractProjectWorkspacePreference;
 import org.eclipse.sphinx.xpand.internal.preferences.OutletsPreferenceInitializer;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 

@@ -14,15 +14,15 @@
  */
 package org.eclipse.sphinx.xpand.ui.wizards;
 
-import org.artop.ecl.emf.util.EcorePlatformUtil;
-import org.artop.ecl.platform.ui.util.ExtendedPlatformUI;
-import org.artop.ecl.platform.ui.wizards.AbstractWizard;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
+import org.eclipse.sphinx.platform.ui.wizards.AbstractWizard;
 import org.eclipse.sphinx.xpand.jobs.M2TJob;
 import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xpand.ui.internal.Activator;

@@ -16,7 +16,6 @@ package org.eclipse.sphinx.xpand.outlet;
 
 import java.io.File;
 
-import org.artop.ecl.platform.util.PlatformLogUtil;
 import org.eclipse.core.internal.resources.projectvariables.ProjectLocationVariableResolver;
 import org.eclipse.core.internal.resources.projectvariables.WorkspaceLocationVariableResolver;
 import org.eclipse.core.resources.IResource;
@@ -30,6 +29,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.xpand.internal.Activator;
 import org.eclipse.sphinx.xpand.internal.EObjectAdapaterFactory;
 import org.eclipse.xpand2.output.Outlet;

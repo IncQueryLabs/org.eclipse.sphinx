@@ -21,8 +21,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.artop.ecl.emf.model.IModelDescriptor;
-import org.artop.ecl.emf.model.ModelDescriptorRegistry;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -37,6 +35,8 @@ import org.eclipse.emf.mwe.core.resources.AbstractResourceLoader;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.sphinx.emf.model.IModelDescriptor;
+import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.xpand2.XpandUtil;
 
 public class BasicWorkspaceResourceLoader extends AbstractResourceLoader implements IScopingResourceLoader {
@@ -63,7 +63,7 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 
 	public void setContextProject(IProject contextProject) {
 		resetContext();
-		this.contextProject = contextProject;
+		contextProject = contextProject;
 	}
 
 	public IModelDescriptor getContextModel() {
@@ -72,11 +72,11 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 
 	public void setContextModel(IModelDescriptor contextModel) {
 		resetContext();
-		this.contextModel = contextModel;
+		contextModel = contextModel;
 	}
 
 	public void setSearchArchives(boolean searchArchives) {
-		this.searchArchives = searchArchives;
+		searchArchives = searchArchives;
 	}
 
 	protected void resetContext() {

@@ -14,10 +14,10 @@
  */
 package org.eclipse.sphinx.emf.mwe.resources;
 
-import org.artop.ecl.emf.model.IModelDescriptor;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.mwe.core.resources.ResourceLoader;
+import org.eclipse.sphinx.emf.model.IModelDescriptor;
 
 public interface IScopingResourceLoader extends ResourceLoader {
 

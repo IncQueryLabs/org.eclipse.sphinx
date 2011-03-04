@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.xpand.ui.blocks;
 
-import org.artop.ecl.platform.ui.util.SWTUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -28,6 +27,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
+import org.eclipse.sphinx.platform.ui.util.SWTUtil;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xpand.ui.dialogs.EditOutletDialog;
 import org.eclipse.sphinx.xpand.ui.providers.OutletProvider;

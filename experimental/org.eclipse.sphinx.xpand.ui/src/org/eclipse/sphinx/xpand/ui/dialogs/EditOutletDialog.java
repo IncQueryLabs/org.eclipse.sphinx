@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.xpand.ui.dialogs;
 
-import org.artop.ecl.platform.util.StatusUtil;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -28,6 +27,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.jface.layout.PixelConverter;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xpand.ui.providers.OutletProvider;
 import org.eclipse.swt.SWT;

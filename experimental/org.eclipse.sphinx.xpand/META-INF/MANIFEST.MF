@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend;visibility:=reexport,
  org.eclipse.xtend.typesystem.emf;visibility:=reexport,
  org.apache.commons.logging;visibility:=reexport,
- org.artop.ecl.emf;visibility:=reexport,
+ org.eclipse.sphinx.emf,
  org.eclipse.sphinx.emf.mwe;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
