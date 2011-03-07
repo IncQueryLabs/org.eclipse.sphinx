@@ -1,0 +1,136 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2008-2010 See4sys and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     See4sys - Initial API and implementation
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.tests.emf.integration.internal.expressions;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.provider.IWrapperItemProvider;
+import org.eclipse.emf.edit.provider.WrapperItemProvider;
+import org.eclipse.sphinx.emf.edit.TransientItemProvider;
+import org.eclipse.sphinx.emf.internal.expressions.EMFObjectPropertyTester;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
+import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
+import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
+
+@SuppressWarnings({ "nls", "restriction" })
+public class EMFObjectPropertyTesterTest extends DefaultIntegrationTestCase {
+
+	private static final String OWNER_CLASS_NAME_MATCHES = "ownerClassNameMatches";
+	private static final String PARENT_CLASS_NAME_MATCHES = "parentClassNameMatches";
+
+	@Override
+	protected String[] getProjectsToLoad() {
+		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A };
+	}
+
+	public void testParentClassNameMatchesTest() {
+		IFile hbFile20_20A_1 = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
+		assertNotNull(hbFile20_20A_1);
+		assertTrue(hbFile20_20A_1.isAccessible());
+
+		Resource hb20Resource = EcorePlatformUtil.getResource(hbFile20_20A_1);
+		assertFalse(hb20Resource.getContents().isEmpty());
+		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application hb20Application = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) hb20Resource
+				.getContents().get(0);
+		assertNotNull(hb20Application);
+
+		assertFalse(hb20Application.getComponents().isEmpty());
+		Component component = hb20Application.getComponents().get(0);
+		assertFalse(component.getParameterValues().isEmpty());
+
+		IWrapperItemProvider wrapperItemProvider = new WrapperItemProvider(component, hb20Application,
+				InstanceModel20Package.eINSTANCE.getApplication_Components(), 1,
+				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory());
+
+		TransientItemProvider transientItemProvider = new TransientItemProvider(
+				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory(), component);
+
+		EMFObjectPropertyTester emfObjectProTester = new EMFObjectPropertyTester();
+		String property = PARENT_CLASS_NAME_MATCHES;
+		Object[] args = new Object[] {};
+
+		Object receiver = wrapperItemProvider;
+		assertFalse(emfObjectProTester.test(receiver, property, args, hb20Application.getClass().getName()));
+		assertFalse(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
+
+		receiver = transientItemProvider;
+		assertFalse(emfObjectProTester.test(receiver, property, args, hb20Application.getClass().getName()));
+		assertTrue(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
+	}
+
+	public void testOwnerClassnameMatchesTest() {
+		IFile hbFile20_20A_1 = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
+		assertNotNull(hbFile20_20A_1);
+		assertTrue(hbFile20_20A_1.isAccessible());
+
+		Resource hb20Resource = EcorePlatformUtil.getResource(hbFile20_20A_1);
+		assertFalse(hb20Resource.getContents().isEmpty());
+		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application hb20Application = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) hb20Resource
+				.getContents().get(0);
+		assertNotNull(hb20Application);
+
+		assertFalse(hb20Application.getComponents().isEmpty());
+		Component component = hb20Application.getComponents().get(0);
+		assertFalse(component.getParameterValues().isEmpty());
+		ParameterValue param = component.getParameterValues().get(0);
+
+		IWrapperItemProvider wrapperItemProvider1 = new WrapperItemProvider(component, hb20Application,
+				InstanceModel20Package.eINSTANCE.getApplication_Components(), 1,
+				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory());
+
+		IWrapperItemProvider wrapperItemProvider2 = new WrapperItemProvider(param, wrapperItemProvider1,
+				InstanceModel20Package.eINSTANCE.getComponent_ParameterValues(), 1,
+				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory());
+
+		IWrapperItemProvider wrapperItemProvider22 = new WrapperItemProvider(param, component,
+				InstanceModel20Package.eINSTANCE.getComponent_ParameterValues(), 1,
+				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory());
+
+		TransientItemProvider transientItemProvider = new TransientItemProvider(
+				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory(), component);
+
+		IWrapperItemProvider wrapperItemProvider3 = new WrapperItemProvider(param, transientItemProvider,
+				InstanceModel20Package.eINSTANCE.getComponent_ParameterValues(), 1,
+				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory());
+
+		EMFObjectPropertyTester emfObjectProTester = new EMFObjectPropertyTester();
+		String property = OWNER_CLASS_NAME_MATCHES;
+		Object[] args = new Object[] {};
+
+		// Onwer of given object is not an Item Provider
+		Object receiver = wrapperItemProvider1;
+		assertTrue(emfObjectProTester.test(receiver, property, args, hb20Application.getClass().getName()));
+		assertFalse(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
+
+		// Onwer of given object is WrapperItemProvider
+		receiver = wrapperItemProvider2;
+		assertTrue(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
+		assertFalse(emfObjectProTester.test(receiver, property, args, hb20Application.getClass().getName()));
+
+		receiver = wrapperItemProvider22;
+		assertTrue(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
+		assertFalse(emfObjectProTester.test(receiver, property, args, hb20Application.getClass().getName()));
+
+		receiver = wrapperItemProvider3;
+		assertTrue(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
+		assertFalse(emfObjectProTester.test(receiver, property, args, hb20Application.getClass().getName()));
+
+	}
+}

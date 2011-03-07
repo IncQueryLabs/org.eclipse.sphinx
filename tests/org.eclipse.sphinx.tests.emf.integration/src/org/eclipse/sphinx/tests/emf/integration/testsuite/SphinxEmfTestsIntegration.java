@@ -26,6 +26,7 @@ public class SphinxEmfTestsIntegration {
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.ModelManagementTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.internal.filessystem.PlatformURIFileStoreTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.internal.expressions.FilePropertyTesterTest.class);
+		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.internal.expressions.EMFObjectPropertyTesterTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.model.ModelDescriptorTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.resource.ModelConverterTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.integration.resource.ScopingResourceSetTest.class);
