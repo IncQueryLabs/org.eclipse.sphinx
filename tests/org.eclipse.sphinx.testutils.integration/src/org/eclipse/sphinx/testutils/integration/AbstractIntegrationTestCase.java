@@ -723,6 +723,54 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		assertTrue("Unexpected number of open project(s).", openProjects.size() == 0);
 	}
 
+	protected void assertStatusIsOK(IStatus status) {
+		if (status != null && !status.isOK()) {
+			if (status instanceof MultiStatus) {
+				MultiStatus multi = (MultiStatus) status;
+				for (IStatus child : multi.getChildren()) {
+					assertStatusIsOK(child);
+				}
+			}
+
+			Throwable throwable = status.getException();
+			if (throwable != null) {
+				fail(throwable);
+			}
+
+			String message = status.getMessage();
+			String severity;
+			switch (status.getSeverity()) {
+			case IStatus.ERROR:
+				severity = "ERROR";
+				break;
+			case IStatus.WARNING:
+				severity = "WARNING";
+				break;
+			case IStatus.INFO:
+				severity = "INFO";
+				break;
+			case IStatus.CANCEL:
+				severity = "CANCEL";
+				break;
+			default:
+				severity = "NON-OK";
+				break;
+			}
+
+			StringBuilder failureMessage = new StringBuilder();
+			if (message == null && message.length() == 0) {
+				failureMessage.append("Unspecified ");
+			}
+			failureMessage.append(severity);
+			failureMessage.append(" status encountered");
+			if (message != null && message.length() > 0) {
+				failureMessage.append(": ");
+				failureMessage.append(message);
+			}
+			fail(failureMessage.toString());
+		}
+	}
+
 	protected void assertEditingDomainResourcesSizeEquals(TransactionalEditingDomain editingDomain, int expected) {
 		assertNotNull(editingDomain);
 
