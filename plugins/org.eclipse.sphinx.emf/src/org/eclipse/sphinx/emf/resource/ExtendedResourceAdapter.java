@@ -109,17 +109,18 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 			 * cross-document references (which typically happens when a project or the entire workbench is closed).
 			 */
 
-			// Clear all fields on unloaded EObject to make sure that it gets garbage collected as fast as possible
+			// Clear all fields on unloaded EObject to make sure that it gets garbage collected as fast as possible;
+			// prevent MinimalEObjectImpl's internal fields from being cleared so as to make sure that unloaded EObject
+			// can still be identified as proxy
 			try {
-				ReflectUtil.clearAllFields(eObject);
+				ReflectUtil.clearAllFields(eObject, new String[] { "eFlags", "eStorage" }); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (IllegalAccessException ex) {
 				// Ignore exceptions
 			}
 
-			// Leave an as short as possible dummy URI in place; this is necessary to avoid NullPointerExceptions when
-			// it happens that things like ECrossReferenceAdapter try to access the proxy URI of unloaded EObjects (see
-			// e.g., org.eclipse.emf.ecore.util.ECrossReferenceAdapter.InverseCrossReferencer.addProxy(EObject,
-			// EObject))
+			// Leave an as short as possible dummy URI in place; this is necessary to make sure that clients which
+			// access the unloaded EObject subsequently consider it as proxy just as it would be the case after a
+			// regular unload
 			((InternalEObject) eObject).eSetProxyURI(URI.createURI("")); //$NON-NLS-1$
 		} else {
 			// Perform regular unload but enable proxy creation strategy to be overridden
