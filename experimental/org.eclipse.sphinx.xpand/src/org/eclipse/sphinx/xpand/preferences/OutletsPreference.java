@@ -52,7 +52,7 @@ public class OutletsPreference extends AbstractProjectWorkspacePreference<Collec
 
 	@Override
 	protected Collection<ExtendedOutlet> toObject(IProject project, String valueAsString) {
-		List<ExtendedOutlet> result = new ArrayList<ExtendedOutlet>();
+		List<ExtendedOutlet> outlets = new ArrayList<ExtendedOutlet>();
 		String[] values = valueAsString.split(File.pathSeparator);
 		for (String value : values) {
 			String[] args = value.split("@"); //$NON-NLS-1$
@@ -62,9 +62,9 @@ public class OutletsPreference extends AbstractProjectWorkspacePreference<Collec
 			if (name.length() > 0) {
 				outlet.setName(name);
 			}
-			result.add(outlet);
+			outlets.add(outlet);
 		}
-		return result;
+		return outlets;
 	}
 
 	public ExtendedOutlet getDefaultOutlet(IProject project) {
