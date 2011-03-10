@@ -50,6 +50,11 @@ public class ExtendedOutlet extends Outlet {
 		setPathExpression(pathExpression, resolve);
 	}
 
+	public ExtendedOutlet(String name, String pathExpression, boolean resolve) {
+		setName(name);
+		setPathExpression(pathExpression, resolve);
+	}
+
 	public ExtendedOutlet(boolean append, String encoding, String name, boolean overwrite, String pathExpression, boolean resolve) {
 		setAppend(append);
 		setFileEncoding(encoding);

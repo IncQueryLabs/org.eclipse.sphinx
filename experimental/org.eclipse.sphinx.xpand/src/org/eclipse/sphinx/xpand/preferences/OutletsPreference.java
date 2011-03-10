@@ -58,8 +58,7 @@ public class OutletsPreference extends AbstractProjectWorkspacePreference<Collec
 			String[] args = value.split("@"); //$NON-NLS-1$
 			String name = args[0];
 			String expression = args[1];
-			ExtendedOutlet outlet = new ExtendedOutlet();
-			outlet.setPathExpression(expression, project != null);
+			ExtendedOutlet outlet = new ExtendedOutlet(expression, project != null);
 			if (name.length() > 0) {
 				outlet.setName(name);
 			}
