@@ -27,10 +27,6 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator extends Plugin {
 
-	public static BundleContext getContext() {
-		return context;
-	}
-
 	/** The plug-in ID */
 	public static final String PLUGIN_ID = "org.eclipse.sphinx.platform"; //$NON-NLS-1$
 
@@ -40,42 +36,8 @@ public class Activator extends Plugin {
 	/** The bundle context */
 	private static BundleContext context;
 
-	private IResourceChangeListener contentTypeIdPropertyInvalidator;
-
 	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
-
-	/*
-	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
-	 */
-	@Override
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		plugin = this;
-
-		Activator.context = context;
-
-		System.setProperty(IExtendedPlatformConstants.SYSTEM_PROPERTY_PLATFORM_FEATURE_VERSION, ExtendedPlatform.getFeatureVersion());
-
-		contentTypeIdPropertyInvalidator = new ContentTypeIdCachePurger();
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(contentTypeIdPropertyInvalidator);
-	}
-
-	/*
-	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
-	 */
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(contentTypeIdPropertyInvalidator);
-		plugin = null;
-		super.stop(context);
-	}
-
-	/**
-	 * Returns the shared instance
+	 * Returns the shared instance.
 	 * 
 	 * @return the shared instance
 	 */
@@ -88,7 +50,38 @@ public class Activator extends Plugin {
 	 * 
 	 * @return the shared bundle context
 	 */
-	public static BundleContext getBundleContext() {
+	public static BundleContext getContext() {
 		return context;
+	}
+
+	private IResourceChangeListener contentTypeIdPropertyInvalidator;
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
+	 */
+	@Override
+	public void start(BundleContext bundleContext) throws Exception {
+		super.start(bundleContext);
+		plugin = this;
+		Activator.context = bundleContext;
+
+		System.setProperty(IExtendedPlatformConstants.SYSTEM_PROPERTY_PLATFORM_FEATURE_VERSION, ExtendedPlatform.getFeatureVersion());
+
+		contentTypeIdPropertyInvalidator = new ContentTypeIdCachePurger();
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(contentTypeIdPropertyInvalidator);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
+	 */
+	@Override
+	public void stop(BundleContext bundleContext) throws Exception {
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(contentTypeIdPropertyInvalidator);
+
+		plugin = null;
+		Activator.context = null;
+		super.stop(bundleContext);
 	}
 }
