@@ -13,6 +13,10 @@
       %copyright
    </copyright>
 
+   <includes
+         id="org.eclipse.jdt"
+         version="0.0.0"/>
+
    <license url="%licenseURL">
       %license
    </license>
