@@ -1,6 +1,6 @@
-importtargetdefinition -A ${user.dir}/target/3.5-sp.target
-import sdk.cquery
-import tests.cquery
-perform -P buckminster.properties org.eclipse.sphinx.sdk.parent#site.feature.exports org.eclipse.sphinx.sdk.parent#site.p2.zip org.eclipse.sphinx.testutils:eclipse.feature#feature.exports org.eclipse.sphinx.testutils:eclipse.feature#site.p2.zip
+setpreference targetPlatformPath=${user.dir}/tp
+import -P buckminster.properties sdk.cquery
+import -P buckminster.properties tests.cquery
 build
-junit -P buckminster.properties -l org.eclipse.sphinx.testutils/launch/AutoTestSuite.launch -o junit-output.xml --stdout
+perform -P buckminster.properties org.eclipse.sphinx.sdk.parent#site.feature.exports org.eclipse.sphinx.sdk.parent#site.p2.zip org.eclipse.sphinx.testutils:eclipse.feature#feature.exports org.eclipse.sphinx.testutils:eclipse.feature#site.p2.zip
+junit -P buckminster.properties -l org.eclipse.sphinx.testutils/launch/AutoTestSuite.launch -o junit-output.xml --stdout --flatXML

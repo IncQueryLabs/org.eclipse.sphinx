@@ -1,46 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rm:rmap xmlns:bc="http://www.eclipse.org/buckminster/Common-1.0" xmlns:rm="http://www.eclipse.org/buckminster/RMap-1.0">
-	<rm:locator pattern="^org\.eclipse\.sphinx(\..+)*" searchPathRef="org.eclipse.sphinx"/>
-	<rm:searchPath name="org.eclipse.sphinx">
-		<rm:provider componentTypes="osgi.bundle" readerType="svn">
-			<rm:uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/plugins/{0}?moduleAfterTag&amp;moduleAfterBranch">
+<rmap xmlns="http://www.eclipse.org/buckminster/RMap-1.0" xmlns:bc="http://www.eclipse.org/buckminster/Common-1.0">
+	<locator pattern="^org\.eclipse\.sphinx(\..+)*" searchPathRef="org.eclipse.sphinx"/>
+	<!-- Use Helios version of EMF Compare. -->
+	<locator searchPathRef="target.platform.helios" pattern="^org\.eclipse\.emf\.compare(\..+)*"/>
+	<locator searchPathRef="target.platform"/>
+	
+	<searchPath name="org.eclipse.sphinx">
+		<provider componentTypes="osgi.bundle" readerType="svn">
+			<uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/plugins/{0}?moduleAfterTag&amp;moduleAfterBranch">
 				<bc:propertyRef key="buckminster.component"/>
-			</rm:uri>
-		</rm:provider>
-		<rm:provider componentTypes="osgi.bundle" readerType="svn">
-			<rm:uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/examples/{0}?moduleAfterTag&amp;moduleAfterBranch">
+			</uri>
+		</provider>
+		<provider componentTypes="osgi.bundle" readerType="svn">
+			<uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/examples/{0}?moduleAfterTag&amp;moduleAfterBranch">
 				<bc:propertyRef key="buckminster.component"/>
-			</rm:uri>
-		</rm:provider>
-		<rm:provider componentTypes="osgi.bundle" readerType="svn">
-			<rm:uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/docs/{0}?moduleAfterTag&amp;moduleAfterBranch">
+			</uri>
+		</provider>
+		<provider componentTypes="osgi.bundle" readerType="svn">
+			<uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/docs/{0}?moduleAfterTag&amp;moduleAfterBranch">
 				<bc:propertyRef key="buckminster.component"/>
-			</rm:uri>
-		</rm:provider>
-		<rm:provider componentTypes="osgi.bundle" readerType="svn">
-			<rm:uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/tests/{0}?moduleAfterTag&amp;moduleAfterBranch">
+			</uri>
+		</provider>
+		<provider componentTypes="osgi.bundle" readerType="svn">
+			<uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/tests/{0}?moduleAfterTag&amp;moduleAfterBranch">
 				<bc:propertyRef key="buckminster.component"/>
-			</rm:uri>
-		</rm:provider>
-		<rm:provider componentTypes="eclipse.feature" readerType="svn">
-			<rm:uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/features/{0}-feature?moduleAfterTag&amp;moduleAfterBranch">
+			</uri>
+		</provider>
+		<provider componentTypes="eclipse.feature" readerType="svn">
+			<uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/features/{0}-feature?moduleAfterTag&amp;moduleAfterBranch">
 				<bc:propertyRef key="buckminster.component"/>
-			</rm:uri>
-		</rm:provider>
-		<rm:provider componentTypes="osgi.bundle" readerType="svn">
-			<rm:uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/plugins/{0}?moduleAfterTag&amp;moduleAfterBranch">
+			</uri>
+		</provider>
+		<provider componentTypes="osgi.bundle" readerType="svn">
+			<uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/plugins/{0}?moduleAfterTag&amp;moduleAfterBranch">
 				<bc:propertyRef key="buckminster.component"/>
-			</rm:uri>
-		</rm:provider>
-		<rm:provider componentTypes="osgi.bundle" readerType="svn">
-			<rm:uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/examples/{0}?moduleAfterTag&amp;moduleAfterBranch">
+			</uri>
+		</provider>
+		<provider componentTypes="osgi.bundle" readerType="svn">
+			<uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/examples/{0}?moduleAfterTag&amp;moduleAfterBranch">
 				<bc:propertyRef key="buckminster.component"/>
-			</rm:uri>
-		</rm:provider>
-		<rm:provider componentTypes="osgi.bundle" readerType="svn">
-			<rm:uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/docs/{0}?moduleAfterTag&amp;moduleAfterBranch">
+			</uri>
+		</provider>
+		<provider componentTypes="osgi.bundle" readerType="svn">
+			<uri format="svn://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx/trunk/docs/{0}?moduleAfterTag&amp;moduleAfterBranch">
 				<bc:propertyRef key="buckminster.component"/>
-			</rm:uri>
-		</rm:provider>
-	</rm:searchPath>
-</rm:rmap>
+			</uri>
+		</provider>
+	</searchPath>
+	
+	<searchPath name="target.platform.helios">
+		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)">
+			<uri format="{0}/releases/helios">
+				<bc:propertyRef key="eclipse.mirror"/>
+			</uri>
+		</provider>
+	</searchPath>
+	
+	<searchPath name="target.platform">
+		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)">
+			<uri format="{0}/releases/galileo">
+				<bc:propertyRef key="eclipse.mirror"/>
+			</uri>
+		</provider>
+		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)">
+			<uri format="{0}/eclipse/updates/3.5">
+				<bc:propertyRef key="eclipse.mirror"/>
+			</uri>
+		</provider>
+		<provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)">
+			<uri format="{0}/tools/orbit/downloads/drops/R20090529135407/updateSite">
+				<bc:propertyRef key="eclipse.mirror"/>
+			</uri>
+		</provider>
+	</searchPath>
+</rmap>
