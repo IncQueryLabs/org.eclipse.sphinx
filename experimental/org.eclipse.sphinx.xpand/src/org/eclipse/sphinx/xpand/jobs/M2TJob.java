@@ -16,6 +16,7 @@ package org.eclipse.sphinx.xpand.jobs;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,6 +59,10 @@ public class M2TJob extends WorkspaceJob {
 
 	private IScopingResourceLoader scopingResourceLoader;
 	private Collection<Outlet> outlets;
+
+	public M2TJob(String name, MetaModel metaModel, XpandEvaluationRequest xpandEvaluationRequest) {
+		this(name, metaModel, Collections.singleton(xpandEvaluationRequest));
+	}
 
 	public M2TJob(String name, MetaModel metaModel, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
 		super(name);
