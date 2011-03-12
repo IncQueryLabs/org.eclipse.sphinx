@@ -1,0 +1,8 @@
+«IMPORT sphinx»
+«EXTENSION org::embedded::sphinx::codegen::oaw::xpand::xtend::LogUtil»
+
+«DEFINE Root FOR SApplication»
+«log("Generating code for application "+name+"...")»
+«EXPAND ConfigH::File FOR this»
+«ENDDEFINE»
+

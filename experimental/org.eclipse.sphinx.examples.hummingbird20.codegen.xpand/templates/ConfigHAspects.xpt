@@ -1,0 +1,5 @@
+«IMPORT sphinx»
+
+«AROUND org::embedded::sphinx::codegen::oaw::xpand::ConfigH::Comment FOR SParameter-»
+«targetDef.proceed()-»
+«ENDAROUND»

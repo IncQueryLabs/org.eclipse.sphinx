@@ -1,0 +1,34 @@
+«IMPORT sphinx»
+
+«DEFINE File FOR SApplication»
+«FILE "Config.h"»
+/** 
+ * @file    Config.h
+ * @version $Revision: 1.1 $, $Date: 2007/05/21 08:54:08 $
+ * 
+ * @brief   System-related options and parameter settings, and inline 
+ *          invocation targets
+ */
+
+#ifndef _CONFIG_H
+#define _CONFIG_H
+«EXPAND ConfigEntry FOREACH components»
+#endif /* _CONFIG_H */
+«ENDFILE»
+«ENDDEFINE»
+
+
+«DEFINE ConfigEntry FOR SComponent»
+// Parameters of component «name»
+«EXPAND ConfigEntry FOREACH parameters-»
+«ENDDEFINE»
+
+
+«DEFINE ConfigEntry FOR SParameter-»
+«EXPAND Comment FOR this-»
+#define «name» «value»
+«ENDDEFINE»
+
+
+«DEFINE Comment FOR SParameter-»
+«ENDDEFINE»

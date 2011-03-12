@@ -1,0 +1,2 @@
+
+Void log (Object o) : JAVA org.embedded.sphinx.codegen.oaw.xpand.xtend.LogUtil.log(java.lang.Object);
