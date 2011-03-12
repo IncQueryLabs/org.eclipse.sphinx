@@ -57,8 +57,7 @@ public class Activator extends Plugin {
 	private IResourceChangeListener contentTypeIdPropertyInvalidator;
 
 	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
+	 * @see org.eclipse.core.runtime.Plugin#start(org.osgi.framework.BundleContext)
 	 */
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
@@ -73,8 +72,7 @@ public class Activator extends Plugin {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
+	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	@Override
 	public void stop(BundleContext bundleContext) throws Exception {
