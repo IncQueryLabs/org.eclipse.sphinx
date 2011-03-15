@@ -29,6 +29,7 @@ import org.eclipse.jface.layout.PixelConverter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
+import org.eclipse.sphinx.xpand.ui.internal.Activator;
 import org.eclipse.sphinx.xpand.ui.providers.OutletProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -195,14 +196,16 @@ public class EditOutletDialog extends StatusDialog {
 	protected IStatus validateOutletName() {
 		String name = nameText.getText();
 		if (name.trim().length() == 0) {
-			return StatusUtil.createStatus(IStatus.ERROR, IStatus.ERROR, "Outlet name must not be empty!", null, null);
+			return StatusUtil.createStatus(IStatus.ERROR, IStatus.ERROR, "Outlet name must not be empty!", Activator.getPlugin().getSymbolicName(),
+					null);
 		}
 		if (name.equals(initialOutletName)) {
 			return Status.OK_STATUS;
 		}
 		for (Outlet outlet : outletProvider.getOutlets()) {
 			if (name.equals(outlet.getName())) {
-				return StatusUtil.createStatus(IStatus.ERROR, IStatus.ERROR, "Outlet name already exists!", null, null);
+				return StatusUtil.createStatus(IStatus.ERROR, IStatus.ERROR, "Outlet name already exists!", Activator.getPlugin().getSymbolicName(),
+						null);
 			}
 		}
 		return Status.OK_STATUS;
@@ -218,7 +221,8 @@ public class EditOutletDialog extends StatusDialog {
 	protected IStatus validateOutletLocation() {
 		String location = locationText.getText();
 		if (location.trim().length() == 0) {
-			return StatusUtil.createStatus(IStatus.ERROR, IStatus.ERROR, "Outlet location must not be empty!", null, null);
+			return StatusUtil.createStatus(IStatus.ERROR, IStatus.ERROR, "Outlet location must not be empty!", Activator.getPlugin()
+					.getSymbolicName(), null);
 		}
 		return Status.OK_STATUS;
 	}
