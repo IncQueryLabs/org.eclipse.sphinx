@@ -17,6 +17,7 @@ package org.eclipse.sphinx.xpand.preferences;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -39,32 +40,42 @@ public class OutletsPreference extends AbstractProjectWorkspacePreference<Collec
 	}
 
 	@Override
-	protected String toString(IProject project, java.util.Collection<ExtendedOutlet> valueAsObject) {
-		StringBuilder builder = new StringBuilder();
-		for (ExtendedOutlet outlet : valueAsObject) {
-			builder.append(outlet.getName() != null ? outlet.getName() : ""); //$NON-NLS-1$
-			builder.append("@"); //$NON-NLS-1$
-			builder.append(outlet.getPathExpression());
-			builder.append(File.pathSeparator);
+	protected Collection<ExtendedOutlet> toObject(IProject project, String valueAsString) {
+		if (valueAsString != null) {
+			List<ExtendedOutlet> outlets = new ArrayList<ExtendedOutlet>();
+			String[] values = valueAsString.split(File.pathSeparator);
+			for (String value : values) {
+				String[] args = value.split("@"); //$NON-NLS-1$
+				String name = args[0];
+				String expression = args[1];
+				ExtendedOutlet outlet = new ExtendedOutlet(expression, project != null);
+				if (name.length() > 0) {
+					outlet.setName(name);
+				}
+				outlets.add(outlet);
+			}
+			return outlets;
 		}
-		return builder.substring(0, builder.lastIndexOf(File.pathSeparator));
+		return null;
 	}
 
 	@Override
-	protected Collection<ExtendedOutlet> toObject(IProject project, String valueAsString) {
-		List<ExtendedOutlet> outlets = new ArrayList<ExtendedOutlet>();
-		String[] values = valueAsString.split(File.pathSeparator);
-		for (String value : values) {
-			String[] args = value.split("@"); //$NON-NLS-1$
-			String name = args[0];
-			String expression = args[1];
-			ExtendedOutlet outlet = new ExtendedOutlet(expression, project != null);
-			if (name.length() > 0) {
-				outlet.setName(name);
+	protected String toString(IProject project, java.util.Collection<ExtendedOutlet> valueAsObject) {
+		if (valueAsObject != null) {
+			StringBuilder builder = new StringBuilder();
+			Iterator<ExtendedOutlet> iter = valueAsObject.iterator();
+			while (iter.hasNext()) {
+				ExtendedOutlet outlet = iter.next();
+				builder.append(outlet.getName() != null ? outlet.getName() : ""); //$NON-NLS-1$
+				builder.append("@"); //$NON-NLS-1$
+				builder.append(outlet.getPathExpression());
+				if (iter.hasNext()) {
+					builder.append(File.pathSeparator);
+				}
 			}
-			outlets.add(outlet);
+			return builder.toString();
 		}
-		return outlets;
+		return null;
 	}
 
 	public ExtendedOutlet getDefaultOutlet(IProject project) {
