@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: org.artop.ecuc.examples.gautosar.codegen.xpand.ui;singleton:=true
-Bundle-Version: 3.1.0.qualifier
+Bundle-SymbolicName: org.eclipse.sphinx.examples.codegen.xpand.ui;singleton:=true
+Bundle-Version: 0.7.0.qualifier
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

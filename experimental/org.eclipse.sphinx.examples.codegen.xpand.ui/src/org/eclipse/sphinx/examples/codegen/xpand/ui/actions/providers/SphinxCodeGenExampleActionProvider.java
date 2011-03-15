@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.examples.codegen.xpand.ui.internal;
+package org.eclipse.sphinx.examples.codegen.xpand.ui.actions.providers;
 
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;

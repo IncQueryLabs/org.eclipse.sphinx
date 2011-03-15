@@ -23,10 +23,20 @@ Contributors:
             viewerId="org.eclipse.sphinx.examples.explorer.views.modelExplorer">
          <includes>
             <actionExtension
-                  pattern="org.eclipse.sphinx.examples.codegen.xpand.ui.modelCodeGenActionProvider">
+                  pattern="org.eclipse.sphinx.examples.codegen.xpand.ui.codeGenExampleActions">
             </actionExtension>
          </includes>
       </viewerActionBinding>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <actionProvider
+            class="org.eclipse.sphinx.examples.codegen.xpand.ui.actions.providers.SphinxCodeGenExampleActionProvider"
+            id="org.eclipse.sphinx.examples.codegen.xpand.ui.codeGenExampleActions">
+         <enablement>
+	        <instanceof value="org.eclipse.emf.ecore.EObject" />
+         </enablement>
+      </actionProvider>
    </extension>
    <!--
    <extension
