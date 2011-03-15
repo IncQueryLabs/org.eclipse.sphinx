@@ -230,6 +230,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 			if (template != null) {
 				definitions = template.getAllDefinitions();
 				defineBlockField.setItems(createDefineBlockItems(definitions));
+				return;
 			}
 		}
 		defineBlockField.setItems(new String[0]);
