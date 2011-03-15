@@ -4,8 +4,7 @@ Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.sphinx.examples.hummingbird20.codegen.xpand;singleton:=true
 Bundle-Version: 0.7.0.qualifier
 Bundle-Vendor: %providerName
-Require-Bundle: org.eclipse.sphinx.emf,
- org.eclipse.emf.examples.library
+Require-Bundle: org.eclipse.sphinx.emf
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.sphinx.examples.hummingbird.codegen.xpand.extensions
