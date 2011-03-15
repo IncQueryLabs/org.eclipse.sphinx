@@ -103,6 +103,7 @@
 		<java jar="${buckminster.launcher}" fork="true" failonerror="true" clonevm="true" jvm="${java.home}/bin/java">
 			<jvmarg line="-Xms40m"/>
 			<jvmarg line="-Xmx256m"/>
+			<jvmarg value="-agentlib:jdwp=transport=dt_socket,address=2510,server=y,suspend=y"/>
 			
 			<sysproperty key="svn.username" value="${svn.username}"/>
 			<sysproperty key="svn.password" value="${svn.password}"/>
@@ -114,7 +115,7 @@
 			
 			<arg line="-data workspace"/>
 			<arg line="--loglevel ${buckminster.loglevel}"/>
-			<arg line="--scriptfile ${basedir}/buckminster.script"/>
+			<arg line="--scriptfile buckminster.script"/>
 		</java>
 	</target>
 </project>
