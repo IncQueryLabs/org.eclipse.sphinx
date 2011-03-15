@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.internal.xpand2.ast.AbstractDefinition;
 import org.eclipse.internal.xpand2.ast.Template;
+import org.eclipse.internal.xpand2.model.XpandDefinition;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -254,11 +255,23 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 			String definitionName = defineBlockField.getItems()[defineBlockField.getSelectionIndex()];
 			for (AbstractDefinition definition : definitions) {
 				if (definitionName.equals(definition.getName())) {
-					return definition.getQualifiedName();
+					return getQualifiedDefinitionName(definition);
 				}
 			}
 		}
 		return ""; //$NON-NLS-1$
+	}
+
+	protected String getQualifiedDefinitionName(XpandDefinition definition) {
+		String fileName = definition.getFileName();
+		if (fileName != null) {
+			String prefix = fileName.replaceAll("/", "::"); //$NON-NLS-1$ //$NON-NLS-2$
+			if (prefix.endsWith(XpandUtil.TEMPLATE_EXTENSION)) {
+				prefix = prefix.substring(0, prefix.length() - XpandUtil.TEMPLATE_EXTENSION.length());
+			}
+			return prefix + "::" + definition.getName(); //$NON-NLS-1$
+		}
+		return definition.getName();
 	}
 
 	protected void updateDefinitionaNameField() {
