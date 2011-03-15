@@ -262,6 +262,9 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		return ""; //$NON-NLS-1$
 	}
 
+	// TODO File bug to Xpand: org.eclipse.internal.xpand2.ast.AbstractDefinition#getQualifiedName() must not remove the
+	// 4 last characters of the definition's file name in hard-coded manner because it might yield the file's base name
+	// without extension only.
 	protected String getQualifiedDefinitionName(XpandDefinition definition) {
 		String fileName = definition.getFileName();
 		if (fileName != null) {
