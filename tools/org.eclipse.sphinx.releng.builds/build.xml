@@ -83,7 +83,7 @@
 			<arg line="-installIU org.eclipse.buckminster.subclipse.headless.feature.feature.group"/>
 			
 			<syspropertyset>
-				<syspropertyref prefix="http"/>
+				<propertyref prefix="http."/>
 			</syspropertyset>
 		</java>
 	</target>
