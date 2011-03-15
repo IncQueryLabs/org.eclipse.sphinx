@@ -63,7 +63,7 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 
 	public void setContextProject(IProject contextProject) {
 		resetContext();
-		contextProject = contextProject;
+		this.contextProject = contextProject;
 	}
 
 	public IModelDescriptor getContextModel() {
@@ -72,11 +72,11 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 
 	public void setContextModel(IModelDescriptor contextModel) {
 		resetContext();
-		contextModel = contextModel;
+		this.contextModel = contextModel;
 	}
 
 	public void setSearchArchives(boolean searchArchives) {
-		searchArchives = searchArchives;
+		this.searchArchives = searchArchives;
 	}
 
 	protected void resetContext() {
