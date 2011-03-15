@@ -6,6 +6,7 @@
 	<property name="eclipse.director.url" value="${eclipse.mirror}/tools/buckminster/products/director_latest.zip"/>
 	
 	<property name="buckminster.home" value="${basedir}/buckminster"/>
+	<property name="buckminster.loglevel" value="info"/>
 	
 	<target name="clean.downloads">
 		<delete dir="downloads"/>
@@ -112,6 +113,7 @@
 			<sysproperty key="eclipse.p2.mirrors" value="false"/>
 			
 			<arg line="-data workspace"/>
+			<arg line="--loglevel ${buckminster.loglevel}"/>
 			<arg line="--scriptfile ${basedir}/buckminster.script"/>
 		</java>
 	</target>
