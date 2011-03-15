@@ -2,7 +2,7 @@
 	
 	<property file="${user.home}/sphinx/build.properties"/>
 	
-	<property name="eclipse.mirror" value="http://download.eclipse.org"/>
+	<property name="eclipse.mirror" value="file:///home/data/httpd/download.eclipse.org"/>
 	<property name="eclipse.director.url" value="${eclipse.mirror}/tools/buckminster/products/director_latest.zip"/>
 	
 	<property name="buckminster.home" value="${basedir}/buckminster"/>
@@ -60,17 +60,17 @@
 		<unzip src="downloads/director_latest.zip" dest="${basedir}"/>
 	</target>
 	
-	<target name="resolve.director.launcher" unless="setup.director">
+	<target name="resolve.director.launcher" depends="setup.director">
 		<path id="director.launcher.path">
 			<fileset dir="${basedir}/director/plugins" includes="org.eclipse.equinox.launcher_*.jar"/>
 		</path>
 		<property name="director.launcher" refid="director.launcher.path"/>
 	</target>
 	
-	<target name="setup.buckminster" depends="setup.director" unless="buckminster.present">
+	<target name="setup.buckminster" depends="resolve.director.launcher" unless="buckminster.present">
 		<java jar="${director.launcher}" fork="true" failonerror="true" jvm="${java.home}/bin/java">
 			<arg line="-application org.eclipse.equinox.p2.director"/>
-			<arg line="-repository http://download.eclipse.org/tools/buckminster/headless-3.6/"/>
+			<arg line="-repository ${eclipse.mirror}/tools/buckminster/headless-3.6/"/>
 			<arg line="-destination ${buckminster.home}"/>
 			<arg line="-profile Buckminster"/>
 			<arg line="-installIU org.eclipse.buckminster.cmdline.product,org.eclipse.buckminster.pde.headless.feature.feature.group"/>
@@ -81,10 +81,14 @@
 			<arg line="-destination ${buckminster.home}"/>
 			<arg line="-profile Buckminster"/>
 			<arg line="-installIU org.eclipse.buckminster.subclipse.headless.feature.feature.group"/>
+			
+			<syspropertyset>
+				<syspropertyref prefix="http"/>
+			</syspropertyset>
 		</java>
 	</target>
 	
-	<target name="resolve.buckminster.launcher" unless="setup.buckminster">
+	<target name="resolve.buckminster.launcher" depends="setup.buckminster">
 		<path id="buckminster.launcher.path">
 			<fileset dir="${buckminster.home}/plugins" includes="org.eclipse.equinox.launcher_*.jar"/>
 		</path>
