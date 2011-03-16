@@ -1,6 +1,6 @@
-«IMPORT sphinx»
+«IMPORT hummingbird20::instancemodel»
 
-«AROUND org::embedded::sphinx::codegen::oaw::statdyn::xpand::ConfigH::comment FOR SParameter»
+«AROUND ConfigH::comment FOR ParameterValue»
 // Definition of parameter «name»
 «targetDef.proceed()»
 «ENDAROUND»

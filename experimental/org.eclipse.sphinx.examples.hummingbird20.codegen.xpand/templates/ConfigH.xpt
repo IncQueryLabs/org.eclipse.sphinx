@@ -1,6 +1,6 @@
-«IMPORT sphinx»
+«IMPORT hummingbird20::instancemodel»
 
-«DEFINE File FOR SApplication»
+«DEFINE main FOR hummingbird20::instancemodel::Application»
 «FILE "Config.h"»
 /** 
  * @file    Config.h
@@ -12,23 +12,23 @@
 
 #ifndef _CONFIG_H
 #define _CONFIG_H
-«EXPAND ConfigEntry FOREACH components»
+«EXPAND configEntry FOREACH components»
 #endif /* _CONFIG_H */
 «ENDFILE»
 «ENDDEFINE»
 
 
-«DEFINE ConfigEntry FOR SComponent»
+«DEFINE configEntry FOR Component»
 // Parameters of component «name»
-«EXPAND ConfigEntry FOREACH parameters-»
+«EXPAND configEntry FOREACH parameterValues-»
 «ENDDEFINE»
 
 
-«DEFINE ConfigEntry FOR SParameter-»
-«EXPAND Comment FOR this-»
+«DEFINE configEntry FOR ParameterValue-»
+«EXPAND comment FOR this-»
 #define «name» «value»
 «ENDDEFINE»
 
 
-«DEFINE Comment FOR SParameter-»
+«DEFINE comment FOR ParameterValue-»
 «ENDDEFINE»

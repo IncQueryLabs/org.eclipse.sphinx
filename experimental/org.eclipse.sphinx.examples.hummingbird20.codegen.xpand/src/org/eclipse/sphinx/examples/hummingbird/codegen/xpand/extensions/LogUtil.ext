@@ -1,2 +1,2 @@
 
-Void log (Object o) : JAVA org.embedded.sphinx.codegen.oaw.xpand.xtend.LogUtil.log(java.lang.Object);
+Void log (Object o) : JAVA org.eclipse.sphinx.examples.hummingbird.codegen.xpand.extensions.LogUtil.log(java.lang.Object);

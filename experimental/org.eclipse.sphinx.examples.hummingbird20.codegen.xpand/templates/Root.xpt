@@ -1,8 +1,7 @@
-«IMPORT sphinx»
-«EXTENSION org::embedded::sphinx::codegen::oaw::xpand::xtend::LogUtil»
+Â«EXTENSION org::eclipse::sphinx::examples::hummingbird::codegen::xpand::extensions::LogUtilÂ»
 
-«DEFINE Root FOR SApplication»
-«log("Generating code for application "+name+"...")»
-«EXPAND ConfigH::File FOR this»
-«ENDDEFINE»
+Â«DEFINE Root FOR hummingbird20::instancemodel::ApplicationÂ»
+Â«log("Generating code for application "+name+"...")Â»
+Â«EXPAND ConfigH::main FOR thisÂ»
+Â«ENDDEFINEÂ»
 
