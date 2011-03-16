@@ -119,15 +119,15 @@ public abstract class AbstractProjectPreference<T> extends AbstractEclipsePrefer
 
 	/*
 	 * @see
-	 * org.artop.ecl.platform.preferences.IProjectPreference#getDefaultValueAsObject(org.eclipse.core.resources.IProject
-	 * )
+	 * org.eclipse.sphinx.platform.preferences.IProjectPreference#getDefaultValueAsObject(org.eclipse.core.resources
+	 * .IProject)
 	 */
 	public T getDefaultValueAsObject(IProject project) {
 		return toObject(project, defaultValueAsString);
 	}
 
 	/*
-	 * @see org.artop.ecl.platform.preferences.IProjectPreference#setToDefault(org.eclipse.core.resources.IProject)
+	 * @see org.eclipse.sphinx.platform.preferences.IProjectPreference#setToDefault(org.eclipse.core.resources.IProject)
 	 */
 	public void setToDefault(IProject project) {
 		IEclipsePreferences prefs = getProjectPreferences(project);

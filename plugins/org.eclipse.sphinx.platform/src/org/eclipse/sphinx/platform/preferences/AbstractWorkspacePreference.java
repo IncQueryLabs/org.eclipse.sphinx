@@ -89,14 +89,14 @@ public abstract class AbstractWorkspacePreference<T> extends AbstractEclipsePref
 	}
 
 	/*
-	 * @see org.artop.ecl.platform.preferences.IWorkspacePreference#getDefaultValueAsObject()
+	 * @see org.eclipse.sphinx.platform.preferences.IWorkspacePreference#getDefaultValueAsObject()
 	 */
 	public T getDefaultValueAsObject() {
 		return toObject(defaultValueAsString);
 	}
 
 	/*
-	 * @see org.artop.ecl.platform.preferences.IWorkspacePreference#setToDefault()
+	 * @see org.eclipse.sphinx.platform.preferences.IWorkspacePreference#setToDefault()
 	 */
 	public void setToDefault() {
 		IEclipsePreferences prefs = getWorkspacePreferences();

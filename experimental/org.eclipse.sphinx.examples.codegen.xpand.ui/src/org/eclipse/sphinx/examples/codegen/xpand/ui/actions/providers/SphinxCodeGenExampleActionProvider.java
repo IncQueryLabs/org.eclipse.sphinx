@@ -50,8 +50,7 @@ public class SphinxCodeGenExampleActionProvider extends BasicActionProvider {
 
 	/*
 	 * @see
-	 * org.artop.ecl.emf.validation.ui.actions.providers.AbstractValidationActionProvider#addSubMenu(org.eclipse.jface
-	 * .action.IMenuManager)
+	 * org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider#addSubMenu(org.eclipse.jface.action.IMenuManager)
 	 */
 	@Override
 	protected IMenuManager addSubMenu(IMenuManager contextMenuManager) {

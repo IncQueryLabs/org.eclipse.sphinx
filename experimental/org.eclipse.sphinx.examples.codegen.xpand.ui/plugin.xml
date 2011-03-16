@@ -4,11 +4,11 @@
 <!--
 <copyright>
 
-Copyright (c) See4sys and others.
-All rights reserved. This program and the accompanying materials are made
-available under the terms of the Artop Software License Based on AUTOSAR
-Released Material (ASLR) which accompanies this distribution, and is
-available at http://www.artop.org/aslr.html
+Copyright (c) 2008-2010 See4sys and others.
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+which accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html
  
 Contributors: 
     See4sys - Initial API and implementation
@@ -38,32 +38,4 @@ Contributors:
          </enablement>
       </actionProvider>
    </extension>
-   <!--
-   <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            adaptable="false"
-            id="org.artop.ecuc.examples.gautosar.codegen.xpand.ui.convertToBSWPlatformProject"
-            objectClass="org.eclipse.core.resources.IProject">
-         <action
-               class="org.artop.ecuc.gautosar.codegen.xpand.ui.actions.ConvertToBSWPlatformProjectAction"
-               id="org.artop.ecuc.examples.gautosar.codegen.xpand.ui.popupMenuActions.convertToBSWPlatformProject"
-               label="%ecuc.examples.codegen.xpand.ui.popupMenuActions.convertToBSWPlatformProject.label">
-         </action>
-      </objectContribution>
-   </extension>
-   <extension
-         point="org.eclipse.ui.newWizards">
-          <wizard
-                category="org.artop.aal.workspace.ui.newWizards.category.autosar"
-                class="org.artop.ecuc.gautosar.codegen.xpand.ui.wizards.BSWPlatformProjectWizard"
-                finalPerspective="org.artop.aal.examples.common.ui.perspectives.artop"
-                icon="$nl$/icons/full/etool16/newbswpprj_wiz.gif"
-                id="org.artop.ecuc.examples.gautosar.codegen.xpand.ui.newWizards.bswPlatformProject"
-                name="%ecuc.examples.codegen.xpand.ui.newWizards.bswPlatformProject.name"
-                preferredPerspectives="org.artop.aal.examples.common.ui.perspectives.artop"
-                project="true">
-      </wizard>
-   </extension>
-   -->
 </plugin>
