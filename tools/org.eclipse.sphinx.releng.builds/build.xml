@@ -2,7 +2,8 @@
 	
 	<property file="${user.home}/sphinx/build.properties"/>
 	
-	<property name="eclipse.mirror" value="file:///home/data/httpd/download.eclipse.org"/>
+	<property name="eclipse.mirror" value="http://download.eclipse.org"/>
+	<property name="eclipse.svn" value="https://dev.eclipse.org/svnroot"/>
 	<property name="eclipse.director.url" value="${eclipse.mirror}/tools/buckminster/products/director_latest.zip"/>
 	
 	<property name="buckminster.home" value="${basedir}/buckminster"/>
@@ -109,6 +110,8 @@
 			<jvmarg line="${buckminster.jvmarg}"/>
 			
 			<sysproperty key="eclipse.mirror" value="${eclipse.mirror}"/>
+			<sysproperty key="eclipse.svn" value="${eclipse.svn}"/>
+			
 			<sysproperty key="tp.present" value="${tp.present}"/>
 			
 			<sysproperty key="eclipse.p2.MD5Check" value="false"/>
