@@ -6,7 +6,10 @@
 	<property name="eclipse.director.url" value="${eclipse.mirror}/tools/buckminster/products/director_latest.zip"/>
 	
 	<property name="buckminster.home" value="${basedir}/buckminster"/>
+	
 	<property name="buckminster.loglevel" value="info"/>
+	<property name="buckminster.jvmarg" value=""/>
+	<property name="buckminster.arg" value=""/>
 	
 	<target name="clean.downloads">
 		<delete dir="downloads"/>
@@ -103,10 +106,8 @@
 		<java jar="${buckminster.launcher}" fork="true" failonerror="true" clonevm="true" jvm="${java.home}/bin/java">
 			<jvmarg line="-Xms40m"/>
 			<jvmarg line="-Xmx256m"/>
-			<jvmarg value="-agentlib:jdwp=transport=dt_socket,address=2510,server=y,suspend=y"/>
+			<jvmarg line="${buckminster.jvmarg}"/>
 			
-			<sysproperty key="svn.username" value="${svn.username}"/>
-			<sysproperty key="svn.password" value="${svn.password}"/>
 			<sysproperty key="eclipse.mirror" value="${eclipse.mirror}"/>
 			<sysproperty key="tp.present" value="${tp.present}"/>
 			
@@ -116,6 +117,7 @@
 			<arg line="-data workspace"/>
 			<arg line="--loglevel ${buckminster.loglevel}"/>
 			<arg line="--scriptfile buckminster.script"/>
+			<arg line="${buckminster.arg}"/>
 		</java>
 	</target>
 </project>
