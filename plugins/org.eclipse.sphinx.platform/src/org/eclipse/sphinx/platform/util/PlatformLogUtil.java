@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.platform.util;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
 
@@ -50,8 +51,13 @@ public final class PlatformLogUtil {
 	}
 
 	private static void printStatus(IStatus status) {
+		Assert.isNotNull(status);
+
 		// TODO Provide a somehow more sophisticated implementation
 		System.out.println(status.getMessage());
-		status.getException().printStackTrace();
+		Throwable exception = status.getException();
+		if (exception != null) {
+			exception.printStackTrace();
+		}
 	}
 }
