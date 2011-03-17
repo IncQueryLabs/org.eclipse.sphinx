@@ -147,7 +147,7 @@ public class M2TJob extends WorkspaceJob {
 			// Refresh outlet containers if its in the workspace
 			for (Outlet outlet : getOutlets()) {
 				IResource container = ResourcesPlugin.getWorkspace().getRoot().getContainerForLocation(new Path(outlet.getPath()));
-				if (container != null && container.isAccessible()) {
+				if (container != null) {
 					container.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 				}
 			}
