@@ -39,6 +39,7 @@ import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xpand.internal.Activator;
@@ -185,5 +186,10 @@ public class M2TJob extends WorkspaceJob {
 
 	protected Outlet createDefaultOutlet() {
 		return new Outlet();
+	}
+
+	@Override
+	public boolean belongsTo(Object family) {
+		return IExtendedPlatformConstants.FAMILY_LONG_RUNNING.equals(family);
 	}
 }
