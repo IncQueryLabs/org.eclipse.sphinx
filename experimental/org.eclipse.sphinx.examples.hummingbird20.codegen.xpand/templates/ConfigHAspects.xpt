@@ -1,4 +1,4 @@
-«IMPORT hummingbird20::instancemodel»
+«IMPORT instancemodel»
 
 «AROUND ConfigH::comment FOR ParameterValue-»
 «targetDef.proceed()-»

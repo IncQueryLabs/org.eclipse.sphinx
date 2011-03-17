@@ -1,6 +1,6 @@
 «EXTENSION org::eclipse::sphinx::examples::hummingbird::codegen::xpand::extensions::LogUtil»
 
-«DEFINE Root FOR hummingbird20::instancemodel::Application»
+«DEFINE Root FOR instancemodel::Application»
 «log("Generating code for application "+name+"...")»
 «EXPAND ConfigH::main FOR this»
 «ENDDEFINE»

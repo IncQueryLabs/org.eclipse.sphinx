@@ -1,6 +1,6 @@
-«IMPORT hummingbird20::instancemodel»
+«IMPORT instancemodel»
 
-«DEFINE main FOR hummingbird20::instancemodel::Application»
+«DEFINE main FOR Application»
 «FILE "Config.h"»
 /** 
  * @file    Config.h
