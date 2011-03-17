@@ -17,7 +17,6 @@ package org.eclipse.sphinx.xpand.ui.actions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -69,7 +68,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 
 	@Override
 	protected boolean updateSelection(IStructuredSelection selection) {
-		return selection.size() == 1 && getSelectedModelObject() != null && !getXpandEvaluationRequests().isEmpty();
+		return selection.size() == 1 && getSelectedModelObject() != null;
 	}
 
 	@Override
@@ -116,9 +115,13 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	}
 
 	protected Collection<XpandEvaluationRequest> getXpandEvaluationRequests() {
-		List<XpandEvaluationRequest> requests = new ArrayList<XpandEvaluationRequest>();
-		requests.add(new XpandEvaluationRequest(getDefinitionName(), getSelectedModelObject()));
-		return requests;
+		String definitionName = getDefinitionName();
+		EObject selected = getSelectedModelObject();
+		if (definitionName != null && selected != null) {
+			XpandEvaluationRequest request = new XpandEvaluationRequest(definitionName, selected);
+			return Collections.singletonList(request);
+		}
+		return Collections.emptyList();
 	}
 
 	protected String getDefinitionName() {
@@ -130,9 +133,9 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	}
 
 	protected IFile getTemplateFile() {
-		IFile moduleDefFile = EcorePlatformUtil.getFile(getSelectedModelObject());
-		if (moduleDefFile != null) {
-			IPath templatePath = moduleDefFile.getFullPath().removeFileExtension().addFileExtension(XpandUtil.TEMPLATE_EXTENSION);
+		IFile modelFile = EcorePlatformUtil.getFile(getSelectedModelObject());
+		if (modelFile != null) {
+			IPath templatePath = modelFile.getFullPath().removeFileExtension().addFileExtension(XpandUtil.TEMPLATE_EXTENSION);
 			return ResourcesPlugin.getWorkspace().getRoot().getFile(templatePath);
 		}
 		return null;
