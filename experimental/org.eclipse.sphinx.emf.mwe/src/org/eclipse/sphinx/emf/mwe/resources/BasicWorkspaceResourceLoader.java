@@ -16,10 +16,11 @@ package org.eclipse.sphinx.emf.mwe.resources;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -47,7 +48,7 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 
 	protected static final String DEFAULT_EXTENSION_FOLDER_NAME = "extension"; //$NON-NLS-1$
 
-	protected static final Pattern patternSlash = Pattern.compile("/"); //$NON-NLS-1$
+	protected static final String NS_DELIMITER = "::"; //$NON-NLS-1$
 
 	protected IProject contextProject = null;
 	protected IModelDescriptor contextModel = null;
@@ -269,16 +270,25 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 		return null;
 	}
 
-	public String getDefinitionName(IFile file, String defineBlockName) {
-		Assert.isNotNull(file);
+	public String getDefinitionName(IFile templateFile, String templateName) {
+		Assert.isNotNull(templateFile);
 
-		// Append the define block name if available
-		String path = null;
-		if (defineBlockName != null && defineBlockName.length() > 0) {
-			path = file.getProjectRelativePath().removeFileExtension().append(defineBlockName).toString();
-		} else {
-			path = file.getProjectRelativePath().removeFileExtension().toString();
+		if (templateFile.exists()) {
+			StringBuilder path = new StringBuilder();
+			IPath templateNamespace = templateFile.getProjectRelativePath().removeFileExtension();
+			for (Iterator<String> iter = Arrays.asList(templateNamespace.segments()).iterator(); iter.hasNext();) {
+				String segment = iter.next();
+				path.append(segment);
+				if (iter.hasNext()) {
+					path.append(NS_DELIMITER);
+				}
+			}
+			if (templateName != null && templateName.length() > 0) {
+				path.append(NS_DELIMITER);
+				path.append(templateName);
+			}
+			return path.toString();
 		}
-		return patternSlash.matcher(path).replaceAll("::"); //$NON-NLS-1$
+		return null;
 	}
 }

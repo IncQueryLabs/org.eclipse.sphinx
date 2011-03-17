@@ -31,5 +31,5 @@ public interface IScopingResourceLoader extends ResourceLoader {
 
 	void setSearchArchives(boolean searchArchives);
 
-	String getDefinitionName(IFile file, String defineBlockSegment);
+	String getDefinitionName(IFile templateFile, String templateName);
 }
