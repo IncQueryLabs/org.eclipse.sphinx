@@ -196,7 +196,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		templatePathField.addFieldListener(new IFieldListener() {
 
 			public void dialogFieldChanged(IField field) {
-				updateDefineBlockItems(findMemberFromText(templatePathField.getText()));
+				updateDefineBlockItems(getFile(templatePathField.getText()));
 				updateDefinitionaNameField();
 				getWizard().getContainer().updateButtons();
 			}
@@ -224,14 +224,12 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		loadTemplateBlockSettings();
 	}
 
-	protected void updateDefineBlockItems(IResource resource) {
-		if (resource instanceof IFile) {
-			Template template = loadTemplate((IFile) resource);
-			if (template != null) {
-				definitions = template.getAllDefinitions();
-				defineBlockField.setItems(createDefineBlockItems(definitions));
-				return;
-			}
+	protected void updateDefineBlockItems(IFile templateFile) {
+		Template template = loadTemplate(templateFile);
+		if (template != null) {
+			definitions = template.getAllDefinitions();
+			defineBlockField.setItems(createDefineBlockItems(definitions));
+			return;
 		}
 		defineBlockField.setItems(new String[0]);
 	}
@@ -242,13 +240,21 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 			Type type = metaModel.getType(modelObject);
 			if (type != null) {
 				for (AbstractDefinition definition : definitions) {
-					if (type.getName().equals(definition.getTargetType())) {
+					if (type.getName().equals(definition.getTargetType()) || getSimpleTypeName(type).equals(definition.getTargetType())) {
 						result.add(definition.getName());
 					}
 				}
 			}
 		}
 		return result.toArray(new String[result.size()]);
+	}
+
+	protected String getSimpleTypeName(Type type) {
+		String typeName = type.getName();
+		// TODO Define constant in a central place and use it for replacing all occurrences of "::"
+		String namespaceDelimiter = "::"; //$NON-NLS-1$
+		int idx = typeName.lastIndexOf(namespaceDelimiter);
+		return idx != -1 && typeName.length() >= idx + namespaceDelimiter.length() ? typeName.substring(idx + namespaceDelimiter.length()) : typeName;
 	}
 
 	protected String getDefinitionName() {
@@ -279,7 +285,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 	}
 
 	protected void updateDefinitionaNameField() {
-		IResource templateFile = findMemberFromText(templatePathField.getText());
+		IFile templateFile = getFile(templatePathField.getText());
 		if (templateFile != null) {
 			definitionNameField.setText(getDefinitionName());
 		} else {
@@ -377,23 +383,41 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 	}
 
 	protected boolean isTemplateBlockComplete() {
-		IResource resource = findMemberFromText(templatePathField.getText());
-		return resource != null && resource instanceof IFile && defineBlockField.getSelectionIndex() != -1;
+		IFile templateFile = getFile(templatePathField.getText());
+		if (templateFile != null) {
+			return templateFile.exists() && defineBlockField.getSelectionIndex() != -1;
+		}
+		return false;
 	}
 
-	protected IResource findMemberFromText(String text) {
-		if (text != null) {
-			text = text.startsWith("/") ? text : "/".concat(text); //$NON-NLS-1$ //$NON-NLS-2$
-			IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(text));
-			return resource;
+	protected IFile getFile(String fullPath) {
+		if (fullPath != null && fullPath.length() > 0) {
+			Path path = new Path(fullPath);
+			if (path.segmentCount() > 1) {
+				return ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+			}
+		}
+		return null;
+	}
+
+	protected IContainer getContainer(String fullPath) {
+		if (fullPath != null && fullPath.length() > 0) {
+			IPath path = new Path(fullPath);
+			path.makeAbsolute();
+			IContainer container;
+			if (path.segmentCount() == 1) {
+				container = ResourcesPlugin.getWorkspace().getRoot().getProject(path.segment(0));
+			} else {
+				container = ResourcesPlugin.getWorkspace().getRoot().getFolder(path);
+			}
+			return container;
 		}
 		return null;
 	}
 
 	protected boolean isOutputBlockComplete() {
-		if (!useDefaultPathButton.getSelection()) {
-			IResource resource = findMemberFromText(outputPathField.getText());
-			return resource != null && resource instanceof IContainer;
+		if (useDefaultPathButton != null && !useDefaultPathButton.getSelection()) {
+			return getContainer(outputPathField.getText()) != null;
 		}
 		return true;
 	}
@@ -407,7 +431,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 	 * Loads an Xpand resource.
 	 */
 	protected Template loadTemplate(final IFile templateFile) {
-		if (templateFile.exists() && XpandUtil.TEMPLATE_EXTENSION.equals(templateFile.getFileExtension())) {
+		if (templateFile != null && templateFile.exists() && XpandUtil.TEMPLATE_EXTENSION.equals(templateFile.getFileExtension())) {
 			final IXtendXpandProject project = org.eclipse.xtend.shared.ui.Activator.getExtXptModelManager().findProject(templateFile);
 			if (project != null) {
 				final IXtendXpandResource resource = project.findXtendXpandResource(templateFile);
@@ -433,14 +457,10 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 			}
 		}
 
-		IResource defaultOutletContainer;
-		String defaultOutletPath = outputPathField.getText();
-		if (defaultOutletPath != null) {
-			defaultOutletContainer = ResourcesPlugin.getWorkspace().getRoot().findMember(defaultOutletPath);
-			if (defaultOutletContainer != null && defaultOutletContainer.isAccessible()) {
-				defaultOutlet = new Outlet(defaultOutletContainer.getLocation().toFile().getAbsolutePath());
-				return Collections.singletonList(defaultOutlet);
-			}
+		IContainer defaultOutletContainer = getContainer(outputPathField.getText());
+		if (defaultOutletContainer != null) {
+			defaultOutlet = new Outlet(defaultOutletContainer.getLocation().toFile().getAbsolutePath());
+			return Collections.singletonList(defaultOutlet);
 		}
 
 		return Collections.<Outlet> emptyList();
@@ -471,12 +491,12 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 	protected void loadTemplateBlockSettings() {
 		IDialogSettings section = getDialogSettings().getSection(CODE_GEN_SECTION);
 		if (section != null) {
-			String path = section.get(getTemplatePathDialogSettingsKey());
-			if (path != null) {
-				IResource template = findMemberFromText(path);
-				if (template != null) {
-					templatePathField.setText(path);
-					updateDefineBlockItems(template);
+			String templatePath = section.get(getTemplatePathDialogSettingsKey());
+			if (templatePath != null) {
+				IFile templateFile = getFile(templatePath);
+				if (templateFile != null && templateFile.exists()) {
+					templatePathField.setText(templatePath);
+					updateDefineBlockItems(templateFile);
 					defineBlockField.selectItem(section.get(STORE_SELECTED_DEFINE_BLOCK));
 				}
 			}
