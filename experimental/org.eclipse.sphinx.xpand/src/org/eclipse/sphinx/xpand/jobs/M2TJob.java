@@ -51,6 +51,7 @@ import org.eclipse.xtend.expression.ResourceManagerDefaultImpl;
 import org.eclipse.xtend.expression.Variable;
 import org.eclipse.xtend.typesystem.MetaModel;
 
+// TODO Rename to XpandJob
 public class M2TJob extends WorkspaceJob {
 
 	protected static final Log log = LogFactory.getLog(M2TJob.class);

@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.xpand2.output.Outlet;
 
+// TODO Rename to OutletsGroup
 public class OutletsBlock {
 
 	/** The table presenting the outlets. */

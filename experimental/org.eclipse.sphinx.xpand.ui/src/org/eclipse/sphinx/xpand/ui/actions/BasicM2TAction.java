@@ -111,6 +111,8 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	}
 
 	protected MetaModel createMetaModel() {
+		// TODO Override allPackages() and make sure that only EPackages of model behind selected model object get added
+		// (but not all EPackages in EPackage.Registry)
 		return new EmfRegistryMetaModel();
 	}
 

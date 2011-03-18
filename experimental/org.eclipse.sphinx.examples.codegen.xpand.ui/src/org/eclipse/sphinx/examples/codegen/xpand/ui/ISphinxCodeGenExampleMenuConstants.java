@@ -19,6 +19,8 @@ import org.eclipse.sphinx.examples.codegen.xpand.ui.internal.messages.Messages;
 
 public interface ISphinxCodeGenExampleMenuConstants {
 
+	// TODO Move this into Sphinx examples menu or to a non example plug-in
+
 	/**
 	 * Identifier of the Generate sub menu.
 	 */
