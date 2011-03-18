@@ -29,7 +29,7 @@ import org.eclipse.xtend.shared.ui.MetamodelContributor;
 import org.eclipse.xtend.typesystem.MetaModel;
 import org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel;
 
-public class EmfMetamodelContributor implements MetamodelContributor {
+public class SphinxManagedEmfMetamodelContributor implements MetamodelContributor {
 
 	public MetaModel[] getMetamodels(IJavaProject project, TypeSystem ctx) {
 		final Collection<EPackage> ePackages = getAllEPackages(project.getProject());

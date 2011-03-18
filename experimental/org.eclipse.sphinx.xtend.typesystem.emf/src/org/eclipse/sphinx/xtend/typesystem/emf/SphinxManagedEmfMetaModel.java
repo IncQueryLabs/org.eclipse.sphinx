@@ -15,7 +15,6 @@
 package org.eclipse.sphinx.xtend.typesystem.emf;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +24,8 @@ import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel;
 
+// TODO Consider renaming to something like ScopedEmfMetaModel
+// TODO Use SphinxManagedEmfMetaModel instead of  EmfRegistryMetaModel in BasicM2TAction
 public class SphinxManagedEmfMetaModel extends EmfRegistryMetaModel {
 
 	protected IProject contextProject = null;
@@ -38,21 +39,22 @@ public class SphinxManagedEmfMetaModel extends EmfRegistryMetaModel {
 		this.contextModel = contextModel;
 	}
 
-	private IModelDescriptor getModelsInContext() {
+	protected Collection<IModelDescriptor> getModelsInScope() {
+		Set<IModelDescriptor> modelsInScope = new HashSet<IModelDescriptor>();
+		if (contextModel != null) {
+			modelsInScope.add(contextModel);
+		} else if (contextProject != null) {
+			modelsInScope.addAll(ModelDescriptorRegistry.INSTANCE.getModels(contextProject));
+		}
+		return modelsInScope;
 	}
 
 	@Override
 	protected EPackage[] allPackages() {
-
-		final Collection<EPackage> ePackages = getAllEPackages(project.getProject());
-		return ePackages.toArray(new EPackage[ePackages.size()]);
-	}
-
-	protected Collection<EPackage> getAllEPackages(IProject project) {
 		Set<EPackage> allEPackages = new HashSet<EPackage>();
-		for (IModelDescriptor modelDescriptor : ModelDescriptorRegistry.INSTANCE.getModels(project)) {
+		for (IModelDescriptor modelDescriptor : getModelsInScope()) {
 			allEPackages.addAll(modelDescriptor.getMetaModelDescriptor().getEPackages());
 		}
-		return Collections.unmodifiableSet(allEPackages);
+		return allEPackages.toArray(new EPackage[allEPackages.size()]);
 	}
 }
