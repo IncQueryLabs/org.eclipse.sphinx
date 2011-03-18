@@ -114,7 +114,7 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 		return reachableProjects;
 	}
 
-	protected Collection<IModelDescriptor> getModelInScope() {
+	protected Collection<IModelDescriptor> getModelsInScope() {
 		Set<IModelDescriptor> modelsInScope = new HashSet<IModelDescriptor>();
 		if (contextModel != null) {
 			modelsInScope.add(contextModel);
@@ -252,7 +252,7 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 
 	protected URL resolveAgainstModelFilesInScope(String path) {
 		Set<IContainer> modelFileContainers = new HashSet<IContainer>();
-		for (IModelDescriptor model : getModelInScope()) {
+		for (IModelDescriptor model : getModelsInScope()) {
 			for (IFile modelFile : model.getPersistedFiles(true)) {
 				modelFileContainers.add(modelFile.getParent());
 			}
