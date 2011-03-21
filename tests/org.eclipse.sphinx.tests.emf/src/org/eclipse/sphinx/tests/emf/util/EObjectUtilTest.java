@@ -267,7 +267,6 @@ public class EObjectUtilTest extends AbstractTestCase {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	// TODO this tets have no data test
 	public void testFindESubTypeOf() throws InstantiationException, IllegalAccessException {
 		Application app = InstanceModel20Factory.eINSTANCE.createApplication();
 		Component component = InstanceModel20Factory.eINSTANCE.createComponent();
@@ -283,19 +282,18 @@ public class EObjectUtilTest extends AbstractTestCase {
 		EClass indefiableClass = Common20Package.eINSTANCE.getIdentifiable();
 		assertNotNull(indefiableClass);
 		try {
-			List<EClass> testList = EObjectUtil.findESubTypesOf(indefiableClass, false);
+			List<EClass> subTypes = EObjectUtil.findESubTypesOf(indefiableClass, false);
 
-			assertEquals(0, testList.size());
-			// assertTrue(testList.contains(app.eClass()));
-			// assertTrue(testList.contains(component.eClass()));
-			// assertTrue(testList.contains(componentType.eClass()));
-			// assertTrue(testList.contains(interface1.eClass()));
-			// assertTrue(testList.contains(platform.eClass()));
-			// assertTrue(testList.contains(port.eClass()));
-			// assertTrue(testList.contains(connection.eClass()));
-			// assertTrue(testList.contains(parameter.eClass()));
-			// assertTrue(testList.contains(parameterValue.eClass()));
-
+			assertEquals(9, subTypes.size());
+			assertTrue(subTypes.contains(app.eClass()));
+			assertTrue(subTypes.contains(component.eClass()));
+			assertTrue(subTypes.contains(componentType.eClass()));
+			assertTrue(subTypes.contains(interface1.eClass()));
+			assertTrue(subTypes.contains(platform.eClass()));
+			assertTrue(subTypes.contains(port.eClass()));
+			assertTrue(subTypes.contains(connection.eClass()));
+			assertTrue(subTypes.contains(parameter.eClass()));
+			assertTrue(subTypes.contains(parameterValue.eClass()));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			fail("Exception:" + ex.getLocalizedMessage() + " ");

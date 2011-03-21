@@ -123,7 +123,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 			return fVersionData.getName();
 		}
 
-		EPackage rootPackage = getEPackage();
+		EPackage rootPackage = getRootEPackage();
 		if (rootPackage != null) {
 			return rootPackage.getName();
 		}
@@ -209,7 +209,8 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	 */
 	public Collection<EPackage> getEPackages() {
 		Set<EPackage> ePackages = new HashSet<EPackage>();
-		for (String nsURI : getEPackageRegistry().keySet()) {
+		Set<String> safeNsURIs = new HashSet<String>(getEPackageRegistry().keySet());
+		for (String nsURI : safeNsURIs) {
 			if (nsURI.matches(getEPackageNsURIPattern())) {
 				ePackages.add(getEPackageRegistry().getEPackage(nsURI));
 			}
@@ -218,9 +219,9 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEPackage()
+	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getRootEPackage()
 	 */
-	public EPackage getEPackage() {
+	public EPackage getRootEPackage() {
 		EPackage ePackage = getEPackageRegistry().getEPackage(getNamespace());
 		if (ePackage == null) {
 			// FIXME Consider to remove this part. In case that an older metamodel version has had a root EPackage but
@@ -237,21 +238,38 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	}
 
 	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEPackage()
+	 */
+	@Deprecated
+	public EPackage getEPackage() {
+		return getRootEPackage();
+	}
+
+	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#isEPackageRegistered()
 	 */
+	@Deprecated
 	public boolean isEPackageRegistered() {
-		return getEPackage() != null;
+		return getRootEPackage() != null;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getRootEFactory()
+	 */
+	public EFactory getRootEFactory() {
+		EPackage ePackage = getRootEPackage();
+		if (ePackage != null) {
+			return ePackage.getEFactoryInstance();
+		}
+		return null;
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEFactory()
 	 */
+	@Deprecated
 	public EFactory getEFactory() {
-		EPackage ePackage = getEPackage();
-		if (ePackage != null) {
-			return ePackage.getEFactoryInstance();
-		}
-		return null;
+		return getRootEFactory();
 	}
 
 	public List<String> getContentTypeIds() {
@@ -281,7 +299,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 
 	protected String getRootEPackageContentTypeId() {
 		try {
-			EPackage rootPackage = getEPackage();
+			EPackage rootPackage = getRootEPackage();
 			if (rootPackage != null) {
 				Object contentTypeId = ReflectUtil.getFieldValue(rootPackage, "eCONTENT_TYPE"); //$NON-NLS-1$;
 				if (contentTypeId instanceof String) {

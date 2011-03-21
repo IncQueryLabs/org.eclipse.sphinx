@@ -16,8 +16,6 @@
  *******************************************************************************/
 package org.eclipse.sphinx.emf.validation.ui.views;
 
-import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
-import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.emf.ecore.EClass;
@@ -28,6 +26,8 @@ import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.ui.provider.ExtendedImageRegistry;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -101,7 +101,7 @@ public class FieldEObject extends AbstractField {
 		if (resource instanceof IFile) {
 			IMetaModelDescriptor descriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor((IFile) resource);
 			if (descriptor != null) {
-				EPackage ePackage = descriptor.getEPackage();
+				EPackage ePackage = descriptor.getRootEPackage();
 				if (ePackage != null) {
 					EClassifier eClassifier = ePackage.getEClassifier(marker.getEObjectType());
 					if (eClassifier != null && eClassifier instanceof EClass) {

@@ -113,21 +113,26 @@ public interface IMetaModelDescriptor {
 	String getEPackageNsURIPattern();
 
 	/**
-	 * TODO JavaDoc
+	 * Returns the set of {@link org.eclipse.emf.ecore.EPackage}s which are associated with the described
+	 * {@link IMetaModelDescriptor meta-model}.
 	 * 
-	 * @return
+	 * @return The EPackages associated with the described meta-model.
 	 */
 	Collection<EPackage> getEPackages();
 
 	/**
-	 * Returns the top-level {@link org.eclipse.emf.ecore.EPackage} which is associated with the described meta-model.
-	 * An EPackage is considered to be the top-level EPackage associated with the described meta-model if it has been
-	 * registered to the {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} with the namespace of the
-	 * described meta-model.
+	 * Returns the root {@link org.eclipse.emf.ecore.EPackage} which is associated with the described
+	 * {@link IMetaModelDescriptor meta-model}. An EPackage is considered to be a meta-model's root EPackage if it has
+	 * the same namespace as the latter.
 	 * 
-	 * @return The EPackage associated with the described meta-model.
+	 * @return The root EPackage associated with the described meta-model.
 	 * @since 0.7.0
-	 * @deprecated Use #getERootPackage() instead.
+	 */
+	EPackage getRootEPackage();
+
+	/**
+	 * @deprecated Use #getRootEPackage() instead. Rationale: This method has been renamed to the aforementioned name so
+	 *             as to indicate its purpose more clearly.
 	 */
 	@Deprecated
 	EPackage getEPackage();
@@ -139,19 +144,29 @@ public interface IMetaModelDescriptor {
 	 * 
 	 * @return <code>true</true> if the associated top-level EPackage is registered else <code>false</code>;
 	 * @since 0.7.0
-	 * @deprecated Use #getERootPackage() != null instead.
+	 * @deprecated Use #getERootPackage() and test if result is not <code>null</code> instead. Rationale: the added
+	 *             value of this method is not that significant. Furthermore, the current implementation seems not to be
+	 *             in sync with the behavior that is put forward in the JavaDoc. Clients should no longer make use of
+	 *             this method and directly implement the required behavior.
 	 */
 	@Deprecated
 	boolean isEPackageRegistered();
 
 	/**
-	 * Returns the {@link EFactory} which is associated with the described meta-model. An EFactory is considered to be
-	 * associated with the described meta-model if the {@link org.eclipse.emf.ecore.EPackage} it belongs to is
-	 * associated with the described meta-model (see {@link IMetaModelDescriptor#getERootPackage()}).
+	 * Returns the root {@link org.eclipse.emf.ecore.EFactory} which is associated with the described
+	 * {@link IMetaModelDescriptor meta-model}. An EFactory is considered to be a meta-model's root EFactory if the
+	 * {@link org.eclipse.emf.ecore.EPackage} it belongs to is the meta-model's {@link #getRootEPackage() root EPackage}
+	 * .
 	 * 
-	 * @return The EFactory associated with the described meta-model.
+	 * @return The root EFactory associated with the described meta-model.
 	 * @since 0.7.0
-	 * @deprecated Use #getERootFactory() instead.
+	 * @see #getRootEPackage()
+	 */
+	EFactory getRootEFactory();
+
+	/**
+	 * @deprecated Use #getRootEFactory() instead. Rationale: This method has been renamed to the aforementioned name so
+	 *             as to indicate its purpose more clearly.
 	 */
 	@Deprecated
 	EFactory getEFactory();

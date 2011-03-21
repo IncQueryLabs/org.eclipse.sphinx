@@ -83,7 +83,8 @@ public abstract class AbstractResourceScopeProvider implements IResourceScopePro
 			return true;
 		}
 
-		// Check if the given file's extension matches the default model file extension implied by these metamodels
+		// Check if the given file's extension matches one of the default model file extensions implied by these
+		// metamodels
 		/*
 		 * !! Important Note !! This is done in make sure that model files resulting from metamodels which have been
 		 * generated using EMF GenModel default settings (and therefore have no content type) get accepted without
@@ -91,9 +92,10 @@ public abstract class AbstractResourceScopeProvider implements IResourceScopePro
 		 * implementation for that purpose.
 		 */
 		for (IMetaModelDescriptor mmDescriptor : ResourceScopeProviderRegistry.INSTANCE.getMetaModelDescriptorsFor(this)) {
-			EPackage rootPackage = mmDescriptor.getEPackage();
-			if (rootPackage != null && rootPackage.getName().equals(extension)) {
-				return true;
+			for (EPackage ePackage : mmDescriptor.getEPackages()) {
+				if (ePackage.getName().equals(extension)) {
+					return true;
+				}
 			}
 		}
 

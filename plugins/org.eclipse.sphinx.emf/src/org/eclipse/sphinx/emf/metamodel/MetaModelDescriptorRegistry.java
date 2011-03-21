@@ -369,7 +369,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	public List<IMetaModelDescriptor> getResolvedDescriptors(IMetaModelDescriptor mmDescriptor) {
 		List<IMetaModelDescriptor> resolvedDescriptors = new ArrayList<IMetaModelDescriptor>();
 		for (IMetaModelDescriptor descriptor : getDescriptors(mmDescriptor)) {
-			if (descriptor.getEPackage() != null) {
+			if (descriptor.getRootEPackage() != null) {
 				resolvedDescriptors.add(descriptor);
 			}
 		}
@@ -901,7 +901,13 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		if (clazz != null) {
 			IMetaModelDescriptor descriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
 				public boolean accept(IMetaModelDescriptor descriptor) {
-					return clazz.getName().startsWith(descriptor.getEPackage().getClass().getName());
+					// Test if the class name of one of the metamodel's EPackages is the prefix of the given class' name
+					for (EPackage ePackage : descriptor.getEPackages()) {
+						if (clazz.getName().startsWith(ePackage.getClass().getName())) {
+							return true;
+						}
+					}
+					return false;
 				}
 			});
 			return descriptor;

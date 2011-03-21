@@ -16,6 +16,7 @@ package org.eclipse.sphinx.tests.emf.metamodel;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 
 import junit.framework.TestCase;
 
@@ -25,6 +26,12 @@ import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelVersionData;
+import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10MMDescriptor;
+import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
+import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
+import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
+import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
 import org.eclipse.sphinx.tests.emf.metamodel.descs.Test1MM;
 import org.eclipse.sphinx.tests.emf.metamodel.descs.Test1Release100;
 import org.eclipse.sphinx.tests.emf.metamodel.descs.Test1Release101;
@@ -137,23 +144,34 @@ public class MetaModelDescriptorTest extends TestCase {
 		assertTrue(Test1MM.INSTANCE.hashCode() == Test1MM.INSTANCE.hashCode());
 	}
 
-	public void testGetEPackage() {
-		assertNull(Test1Release100.INSTANCE.getEPackage());
+	public void testGetRootEPackage() {
+		assertNull(Test1Release100.INSTANCE.getRootEPackage());
 
 		MockEPkgRegistry ePkgRegistry = Test1MM.MOCK_EPKG_REGISTRY;
 		EPackage ePkg = new MockEPackage();
 		ePkgRegistry.registerEPackage(Test1Release100.INSTANCE.getNamespaceURI(), ePkg);
-		assertEquals(ePkg, Test1Release100.INSTANCE.getEPackage());
+		assertEquals(ePkg, Test1Release100.INSTANCE.getRootEPackage());
 		// Get EPackage from the compatible MetaModelDescriptors
-		assertEquals(ePkg, Test1Release101.INSTANCE.getEPackage());
+		assertEquals(ePkg, Test1Release101.INSTANCE.getRootEPackage());
 
-		assertNull(Test1MM.INSTANCE.getEPackage());
+		assertNull(Test1MM.INSTANCE.getRootEPackage());
 
 		ePkgRegistry = Test1MM.MOCK_EPKG_REGISTRY;
 		ePkg = new MockEPackage();
 		ePkgRegistry.registerEPackage(Test1MM.INSTANCE.getNamespaceURI(), ePkg);
-		assertEquals(ePkg, Test1MM.INSTANCE.getEPackage());
+		assertEquals(ePkg, Test1MM.INSTANCE.getRootEPackage());
+	}
 
+	public void testGetEPackages() {
+		Collection<EPackage> ePackages = Hummingbird10MMDescriptor.INSTANCE.getEPackages();
+		assertEquals(1, ePackages.size());
+		assertTrue(ePackages.contains(Hummingbird10Package.eINSTANCE));
+
+		ePackages = Hummingbird20MMDescriptor.INSTANCE.getEPackages();
+		assertEquals(3, ePackages.size());
+		assertTrue(ePackages.contains(Common20Package.eINSTANCE));
+		assertTrue(ePackages.contains(TypeModel20Package.eINSTANCE));
+		assertTrue(ePackages.contains(InstanceModel20Package.eINSTANCE));
 	}
 
 	public void testGetOrdinal() {
@@ -168,24 +186,24 @@ public class MetaModelDescriptorTest extends TestCase {
 		assertEquals(Test1MM.ID, Test1MM.INSTANCE.getName());
 	}
 
-	public void testGetEFactory() {
-		assertNull(Test1Release100.INSTANCE.getEFactory());
+	public void testGetRootEFactory() {
+		assertNull(Test1Release100.INSTANCE.getRootEFactory());
 
 		MockEPkgRegistry ePkgRegistry = Test1MM.MOCK_EPKG_REGISTRY;
 		EPackage ePkg = new MockEPackage();
 		EFactory eFactory = new MockEFactory();
 		ePkg.setEFactoryInstance(eFactory);
 		ePkgRegistry.registerEPackage(Test1Release100.INSTANCE.getNamespaceURI(), ePkg);
-		assertEquals(eFactory, Test1Release100.INSTANCE.getEFactory());
+		assertEquals(eFactory, Test1Release100.INSTANCE.getRootEFactory());
 
-		assertNull(Test1MM.INSTANCE.getEFactory());
+		assertNull(Test1MM.INSTANCE.getRootEFactory());
 
 		ePkgRegistry = Test1MM.MOCK_EPKG_REGISTRY;
 		ePkg = new MockEPackage();
 		eFactory = new MockEFactory();
 		ePkg.setEFactoryInstance(eFactory);
 		ePkgRegistry.registerEPackage(Test1MM.INSTANCE.getNamespaceURI(), ePkg);
-		assertEquals(eFactory, Test1MM.INSTANCE.getEFactory());
+		assertEquals(eFactory, Test1MM.INSTANCE.getRootEFactory());
 	}
 
 	public void testGetEPackageNsURIPattern() {

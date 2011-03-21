@@ -343,46 +343,23 @@ public final class EObjectUtil {
 	 */
 	public static List<EClass> findESubTypesOf(EClass eClass, boolean concreteTypesOnly) {
 		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(eClass);
-		EPackage ePackage = mmDescriptor.getEPackage();
-		if (ePackage != null) {
-			return findESubTypesOf(ePackage, eClass, concreteTypesOnly);
-		}
-		return Collections.emptyList();
-	}
-
-	/**
-	 * Return all EClasses which are derived from a given EClass in an EPackage and its SubPackages
-	 * 
-	 * @param ePackage
-	 *            The EPackage container of returned EClasses
-	 * @param eClass
-	 *            The EClass from which the returned EClasses have to derived
-	 * @param concreteTypesOnly
-	 *            If set to <tt>true</tt> only EClasses describing concrete classes will be returned. EClasses
-	 *            describing interfaces and abstract classes will be excluded from the result.
-	 * @return All EClasses which are derived from the provided <code>eClass</code>.
-	 */
-	private static List<EClass> findESubTypesOf(EPackage ePackage, EClass eClass, boolean concreteTypesOnly) {
-		Assert.isNotNull(ePackage);
-		Assert.isNotNull(eClass);
-
-		List<EClass> subTypes = new ArrayList<EClass>();
-		if (ePackage != null) {
-			for (EClassifier eClassifier : ePackage.getEClassifiers()) {
-				if (eClassifier instanceof EClass) {
-					EClass otherEClass = (EClass) eClassifier;
-					if (eClass.isSuperTypeOf(otherEClass) && eClass != otherEClass) {
-						if (!(otherEClass.isAbstract() || otherEClass.isInterface()) || !concreteTypesOnly) {
-							subTypes.add((EClass) eClassifier);
+		if (mmDescriptor != null) {
+			List<EClass> subTypes = new ArrayList<EClass>();
+			for (EPackage ePackage : mmDescriptor.getEPackages()) {
+				for (EClassifier eClassifier : ePackage.getEClassifiers()) {
+					if (eClassifier instanceof EClass) {
+						EClass otherEClass = (EClass) eClassifier;
+						if (eClass.isSuperTypeOf(otherEClass) && eClass != otherEClass) {
+							if (!(otherEClass.isAbstract() || otherEClass.isInterface()) || !concreteTypesOnly) {
+								subTypes.add((EClass) eClassifier);
+							}
 						}
 					}
 				}
 			}
-			for (EPackage eSubPackage : ePackage.getESubpackages()) {
-				subTypes.addAll(findESubTypesOf(eSubPackage, eClass, concreteTypesOnly));
-			}
+			return Collections.unmodifiableList(subTypes);
 		}
-		return subTypes;
+		return Collections.emptyList();
 	}
 
 	/**
