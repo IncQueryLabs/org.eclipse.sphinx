@@ -24,8 +24,6 @@ import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel;
 
-// TODO Consider renaming to something like ScopedEmfMetaModel
-// TODO Use SphinxManagedEmfMetaModel instead of  EmfRegistryMetaModel in BasicM2TAction
 public class SphinxManagedEmfMetaModel extends EmfRegistryMetaModel {
 
 	protected IProject contextProject = null;
