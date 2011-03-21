@@ -20,7 +20,7 @@ Contributors:
 
    <extension point="org.eclipse.emf.ecore.generated_package">
       <package
-            uri="http://www.eclipse.org/sphinx/examples/2.0.1/common"
+            uri="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common"
             class="org.eclipse.sphinx.examples.hummingbird20.common.Common20Package"
             genModel="model/hummingbird20.genmodel"/>
    </extension>
