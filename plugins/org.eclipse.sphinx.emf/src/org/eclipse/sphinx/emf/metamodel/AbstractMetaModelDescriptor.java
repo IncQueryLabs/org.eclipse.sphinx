@@ -54,6 +54,13 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 
 	private Registry fEPkgRegistry;
 
+	public Registry getEPackageRegistry() {
+		if (fEPkgRegistry == null) {
+			fEPkgRegistry = EPackage.Registry.INSTANCE;
+		}
+		return fEPkgRegistry;
+	}
+
 	// This method is only needed for testing the MetaModelDescriptor class
 	protected void setEPackageRegistry(EPackage.Registry ePkgRegistry) {
 		fEPkgRegistry = ePkgRegistry;
@@ -176,34 +183,8 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEPackage()
+	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEPackageNsURIPattern()
 	 */
-	// TODO Rename to getRootEPackage
-	public EPackage getEPackage() {
-		if (fEPkgRegistry == null) {
-			fEPkgRegistry = EPackage.Registry.INSTANCE;
-		}
-		EPackage ePackage = fEPkgRegistry.getEPackage(getNamespace());
-		if (ePackage == null) {
-			// Refer to compatible namespaces URI if no package can be found under native namespace URI
-			for (URI compatibleNamespaceURI : getCompatibleNamespaceURIs()) {
-				ePackage = fEPkgRegistry.getEPackage(compatibleNamespaceURI.toString());
-				if (ePackage != null) {
-					return ePackage;
-				}
-			}
-		}
-		return ePackage;
-	}
-
-	/*
-	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#isEPackageRegistered()
-	 */
-	// TODO Rename to hasRootEPackage()
-	public boolean isEPackageRegistered() {
-		return getEPackage() != null;
-	}
-
 	public String getEPackageNsURIPattern() {
 		if (fEPackageNsURIPattern == null) {
 			initEPackageNsURIPattern();
@@ -224,9 +205,47 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	}
 
 	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEPackages()
+	 */
+	public Collection<EPackage> getEPackages() {
+		Set<EPackage> ePackages = new HashSet<EPackage>();
+		for (String nsURI : getEPackageRegistry().keySet()) {
+			if (nsURI.matches(getEPackageNsURIPattern())) {
+				ePackages.add(getEPackageRegistry().getEPackage(nsURI));
+			}
+		}
+		return Collections.unmodifiableSet(ePackages);
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEPackage()
+	 */
+	public EPackage getEPackage() {
+		EPackage ePackage = getEPackageRegistry().getEPackage(getNamespace());
+		if (ePackage == null) {
+			// FIXME Consider to remove this part. In case that an older metamodel version has had a root EPackage but
+			// the latest metamodel version doesn't proceeding this way cannot be possibly a good thing
+			// Refer to compatible namespaces URI if no package can be found under native namespace URI
+			for (URI compatibleNamespaceURI : getCompatibleNamespaceURIs()) {
+				ePackage = getEPackageRegistry().getEPackage(compatibleNamespaceURI.toString());
+				if (ePackage != null) {
+					return ePackage;
+				}
+			}
+		}
+		return ePackage;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#isEPackageRegistered()
+	 */
+	public boolean isEPackageRegistered() {
+		return getEPackage() != null;
+	}
+
+	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEFactory()
 	 */
-	// TODO Rename to getRootEFactory
 	public EFactory getEFactory() {
 		EPackage ePackage = getEPackage();
 		if (ePackage != null) {

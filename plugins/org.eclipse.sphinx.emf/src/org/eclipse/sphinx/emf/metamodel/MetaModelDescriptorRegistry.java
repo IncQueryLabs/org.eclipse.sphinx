@@ -369,7 +369,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	public List<IMetaModelDescriptor> getResolvedDescriptors(IMetaModelDescriptor mmDescriptor) {
 		List<IMetaModelDescriptor> resolvedDescriptors = new ArrayList<IMetaModelDescriptor>();
 		for (IMetaModelDescriptor descriptor : getDescriptors(mmDescriptor)) {
-			if (descriptor.isEPackageRegistered()) {
+			if (descriptor.getEPackage() != null) {
 				resolvedDescriptors.add(descriptor);
 			}
 		}

@@ -103,27 +103,6 @@ public interface IMetaModelDescriptor {
 	int getOrdinal();
 
 	/**
-	 * Returns the top-level {@link org.eclipse.emf.ecore.EPackage} which is associated with the described meta-model.
-	 * An EPackage is considered to be the top-level EPackage associated with the described meta-model if it has been
-	 * registered to the {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} with the namespace of the
-	 * described meta-model.
-	 * 
-	 * @return The EPackage associated with the described meta-model.
-	 * @since 0.7.0
-	 */
-	EPackage getEPackage();
-
-	/**
-	 * Determines if the top-level {@link org.eclipse.emf.ecore.EPackage} associated with the described meta-model is
-	 * registered. The {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} is to be consolidated if the
-	 * top-level package is actually registered (see also {@link IMetaModelDescriptor#getEPackage()}).
-	 * 
-	 * @return <code>true</true> if the associated top-level EPackage is registered else <code>false</code>;
-	 * @since 0.7.0
-	 */
-	boolean isEPackageRegistered();
-
-	/**
 	 * Returns the namespace pattern for the EPackages associated of with the described meta-model. The pattern is used
 	 * to resolve the EPackages which are associated with the meta-model described. Any registered EPackage with a
 	 * namespace matching the pattern is considered to be associated with the described meta-model.
@@ -134,13 +113,47 @@ public interface IMetaModelDescriptor {
 	String getEPackageNsURIPattern();
 
 	/**
+	 * TODO JavaDoc
+	 * 
+	 * @return
+	 */
+	Collection<EPackage> getEPackages();
+
+	/**
+	 * Returns the top-level {@link org.eclipse.emf.ecore.EPackage} which is associated with the described meta-model.
+	 * An EPackage is considered to be the top-level EPackage associated with the described meta-model if it has been
+	 * registered to the {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} with the namespace of the
+	 * described meta-model.
+	 * 
+	 * @return The EPackage associated with the described meta-model.
+	 * @since 0.7.0
+	 * @deprecated Use #getERootPackage() instead.
+	 */
+	@Deprecated
+	EPackage getEPackage();
+
+	/**
+	 * Determines if the top-level {@link org.eclipse.emf.ecore.EPackage} associated with the described meta-model is
+	 * registered. The {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} is to be consolidated if the
+	 * top-level package is actually registered (see also {@link IMetaModelDescriptor#getRootEPackage()}).
+	 * 
+	 * @return <code>true</true> if the associated top-level EPackage is registered else <code>false</code>;
+	 * @since 0.7.0
+	 * @deprecated Use #getERootPackage() != null instead.
+	 */
+	@Deprecated
+	boolean isEPackageRegistered();
+
+	/**
 	 * Returns the {@link EFactory} which is associated with the described meta-model. An EFactory is considered to be
 	 * associated with the described meta-model if the {@link org.eclipse.emf.ecore.EPackage} it belongs to is
-	 * associated with the described meta-model (see {@link IMetaModelDescriptor#getEPackage()}).
+	 * associated with the described meta-model (see {@link IMetaModelDescriptor#getERootPackage()}).
 	 * 
 	 * @return The EFactory associated with the described meta-model.
 	 * @since 0.7.0
+	 * @deprecated Use #getERootFactory() instead.
 	 */
+	@Deprecated
 	EFactory getEFactory();
 
 	/**
@@ -157,14 +170,14 @@ public interface IMetaModelDescriptor {
 	 * described meta-model.
 	 * <p>
 	 * The default content type identifier typically is the content type identifier which has been specified in the
-	 * generator model options for the root {@link EPackage} of the described meta-model and is available on the root
-	 * {@link EPackage}'s static #eCONTENT_TYPE field.
+	 * generator model options for the {@link #getERootPackage root package} of the described meta-model and is
+	 * available on the {@link #getERootPackage root package}'s static #eCONTENT_TYPE field.
 	 * </p>
 	 * 
 	 * @return The identifier of the default content type for the described meta-model, or an empty string if no such is
 	 *         available.
 	 * @since 0.7.0
-	 * @see #getEPackage()
+	 * @see #getERootPackage()
 	 */
 	String getDefaultContentTypeId();
 

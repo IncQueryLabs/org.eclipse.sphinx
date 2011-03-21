@@ -156,19 +156,6 @@ public class MetaModelDescriptorTest extends TestCase {
 
 	}
 
-	public void testIsEPackageRegistered() {
-		assertFalse("EPackage could be resolved for the MatmodelRelease although no EPackage is registered.",
-				Test1Release100.INSTANCE.isEPackageRegistered());
-
-		MockEPkgRegistry ePkgRegistry = Test1MM.MOCK_EPKG_REGISTRY;
-		ePkgRegistry.registerEPackage(Test1Release100.INSTANCE.getNamespaceURI(), new MockEPackage());
-		assertTrue("Associated EPackage could not be resolved for the MetamodelRelease.", Test1Release100.INSTANCE.isEPackageRegistered());
-
-		ePkgRegistry = Test1MM.MOCK_EPKG_REGISTRY;
-		ePkgRegistry.registerEPackage(Test1MM.INSTANCE.getNamespaceURI(), new MockEPackage());
-		assertTrue("Associated EPackage could not be resolved for the MetamodelRelease.", Test1MM.INSTANCE.isEPackageRegistered());
-	}
-
 	public void testGetOrdinal() {
 		assertEquals(Test1Release100.ORDINAL, Test1Release100.INSTANCE.getOrdinal());
 		assertEquals(Test1Release200.ORDINAL, Test1Release200.INSTANCE.getOrdinal());
