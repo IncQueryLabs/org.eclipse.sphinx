@@ -76,7 +76,10 @@ public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICo
 		} else if (element instanceof EObject && ((EObject) element).eIsProxy()) {
 			// Use non-transactional adapter factory label provider to avoid that proxified EObjects end up being
 			// represented as empty tree nodes
-			return new AdapterFactoryLabelProvider(getAdapterFactory(editingDomain));
+			AdapterFactory adapterFactory = getAdapterFactory(editingDomain);
+			if (adapterFactory != null) {
+				return new AdapterFactoryLabelProvider(adapterFactory);
+			}
 		}
 		return null;
 	}
