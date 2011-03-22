@@ -48,6 +48,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
@@ -816,6 +817,33 @@ public final class ExtendedPlatform {
 			}
 		}
 		return projects;
+	}
+
+	/**
+	 * @param containerFullPath
+	 * @param tentativeFileName
+	 * @return
+	 */
+
+	public static String createUniqueFileName(IPath containerFullPath, String tentativeFileName) {
+		if (containerFullPath == null) {
+			containerFullPath = new Path(""); //$NON-NLS-1$
+		}
+		if (tentativeFileName == null || tentativeFileName.trim().length() == 0) {
+			tentativeFileName = "default"; //$NON-NLS-1$
+		}
+		IPath filePath = containerFullPath.append(tentativeFileName);
+		String extension = filePath.getFileExtension();
+		tentativeFileName = filePath.removeFileExtension().lastSegment();
+		int i = 1;
+		while (ResourcesPlugin.getWorkspace().getRoot().exists(filePath)) {
+			i++;
+			filePath = containerFullPath.append(tentativeFileName + i);
+			if (extension != null) {
+				filePath = filePath.addFileExtension(extension);
+			}
+		}
+		return filePath.lastSegment();
 	}
 
 	private static final String NO_CONTENT_TYPE_ID = "org.eclipse.sphinx.platform.noContentTypeId"; //$NON-NLS-1$
