@@ -118,6 +118,8 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 		throw new StopParsingException();
 	}
 
+	// TODO Avoid reflective accesses to internal fields by leveraging SAX parser feature
+	// http://xml.org/sax/features/namespace-prefixes; see http://xerces.apache.org/xerces-j/features.html for details
 	private String getTargetNamespaceFromDeclaredXMLNamespaces(String qName, Attributes attributes) {
 		try {
 			int separatorIndex = qName.indexOf(":");//$NON-NLS-1$
@@ -132,7 +134,7 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 					if (!ATTRIBUTE_NAME_XMI.equals(xQName.localpart) && !ATTRIBUTE_NAME_XSI.equals(xQName.localpart)) {
 						if (xQName.localpart != null) {
 							String value = (String) ReflectUtil.getInvisibleFieldValue(xmlAttribute, FIELD_NAME_VALUE);
-							if (!matchesAnyExcludedPatterns(value)) {
+							if (!isExcludedTargetNamespace(value)) {
 								return value;
 							}
 						}
@@ -145,10 +147,10 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 		return null;
 	}
 
-	protected boolean matchesAnyExcludedPatterns(String value) {
-		if (value != null && value.trim().length() != 0 && targetNamespaceExcludePatterns != null) {
-			for (String pattern : targetNamespaceExcludePatterns) {
-				if (value.matches(pattern)) {
+	protected boolean isExcludedTargetNamespace(String value) {
+		if (value != null && value.trim().length() > 0 && targetNamespaceExcludePatterns != null) {
+			for (String excludePattern : targetNamespaceExcludePatterns) {
+				if (value.matches(excludePattern)) {
 					return true;
 				}
 			}
