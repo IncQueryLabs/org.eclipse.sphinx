@@ -23,10 +23,10 @@ Contributors:
             category="org.artop.aal.examples.common.ui.newWizards.category.artopExampleWizards"
             class="org.eclipse.sphinx.graphiti.workspace.ui.wizards.CreateDiagramWizard"
             icon="icons/wizban/pid16.gif"
-            id="org.eclipse.sphinx.graphiti.workspace.ui.CreateDiagramWizard"
-            name="%sphinx.graphiti.workspace.ui.CreateDiagramWizard.name">
+            id="org.eclipse.sphinx.graphiti.workspace.ui.newWizards.graphitiDiagram"
+            name="%sphinx.graphiti.workspace.ui.newWizards.graphitiDiagram.name">
          <description>
-            %sphinx.graphiti.workspace.ui.CreateDiagramWizard.description
+            %sphinx.graphiti.workspace.ui.newWizards.graphitiDiagram.description
          </description>
          <selection
                class="org.eclipse.core.resources.IContainer">
@@ -41,10 +41,17 @@ Contributors:
             default="true"
             extensions="diag"
             icon="icons/diagram.gif"
-            id="org.eclipse.sphinx.graphiti.workspace.ui.BasicGraphitiDiagramEditor"
+            id="org.eclipse.sphinx.graphiti.workspace.ui.editors.graphitiDiagram"
             matchingStrategy="org.eclipse.graphiti.ui.editor.DiagramEditorFactory$DiagramEditorMatchingStrategy"
-            name="%sphinx.graphiti.workspace.ui.BasicGraphitiDiagramEditor.name">
+            name="%sphinx.graphiti.workspace.ui.editors.graphitiDiagram.name">
       </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.elementFactories">
+      <factory
+            class="org.eclipse.sphinx.graphiti.workspace.ui.BasicDiagramEditorFactory"
+            id="org.eclipse.sphinx.graphiti.workspace.ui.BasicDiagramEditorFactory">
+      </factory>
    </extension>
 
 </plugin>

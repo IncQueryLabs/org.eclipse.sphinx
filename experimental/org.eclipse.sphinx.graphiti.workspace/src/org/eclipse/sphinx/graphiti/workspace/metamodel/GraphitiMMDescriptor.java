@@ -39,7 +39,7 @@ public class GraphitiMMDescriptor extends AbstractMetaModelDescriptor {
 	/**
 	 * The default file extension for Graphiti diagram files: <tt>diagram</tt>.
 	 */
-	public static final String GRAPHITI_DIAGRAM_DEFAULT_FILE_EXTENSION = "diagram"; //$NON-NLS-1$
+	public static final String GRAPHITI_DIAGRAM_DEFAULT_FILE_EXTENSION = "diag"; //$NON-NLS-1$
 
 	/**
 	 * Constructor.

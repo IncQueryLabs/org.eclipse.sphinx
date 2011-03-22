@@ -39,6 +39,7 @@ import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.graphiti.workspace.metamodel.GraphitiMMDescriptor;
+import org.eclipse.sphinx.graphiti.workspace.ui.BasicDiagramEditorInput;
 import org.eclipse.sphinx.graphiti.workspace.ui.editors.BasicGraphitiDiagramEditor;
 import org.eclipse.sphinx.graphiti.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.graphiti.workspace.ui.internal.messages.Messages;
@@ -54,6 +55,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 /**
  * The Class CreateDiagramWizard.
  */
+// TODO (aakar)Make this wizard basic and just for one diagram type
 public class CreateDiagramWizard extends BasicNewResourceWizard {
 
 	private static final String WIZARD_WINDOW_TITLE = "New Diagram"; //$NON-NLS-1$
@@ -125,7 +127,7 @@ public class CreateDiagramWizard extends BasicNewResourceWizard {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
 		String providerId = GraphitiUi.getExtensionManager().getDiagramTypeProviderId(diagram.getDiagramTypeId());
-		DiagramEditorInput editorInput = new DiagramEditorInput(EcoreUtil.getURI(diagram), domain, providerId);
+		DiagramEditorInput editorInput = new BasicDiagramEditorInput(EcoreUtil.getURI(diagram), domain, providerId);
 
 		try {
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(editorInput, editorID);

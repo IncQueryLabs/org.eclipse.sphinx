@@ -42,7 +42,7 @@ Contributors:
          point="org.eclipse.core.contenttype.contentTypes">
       <content-type
             base-type="org.eclipse.core.runtime.xml"
-            file-extensions="diagram"
+            file-extensions="diag"
             id="org.eclipse.sphinx.graphiti.diagramFile"
             name="%sphinx.graphiti.diagramFile.name"
             priority="normal">

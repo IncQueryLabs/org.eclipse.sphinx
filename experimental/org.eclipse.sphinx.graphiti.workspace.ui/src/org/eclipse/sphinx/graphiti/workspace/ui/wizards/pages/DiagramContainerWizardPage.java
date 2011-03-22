@@ -42,7 +42,7 @@ public class DiagramContainerWizardPage extends WizardNewFileCreationPage {
 	@Override
 	public void createControl(Composite parent) {
 		super.createControl(parent);
-		setFileName(ExtendedPlatform.createUniqueFileName(getContainerFullPath(), getFileName() + "." + getExtension())); //$NON-NLS-1$
+		setFileName(ExtendedPlatform.createUniqueFileName(getContainerFullPath(), "default." + getExtension())); //$NON-NLS-1$
 		setPageComplete(validatePage());
 	}
 

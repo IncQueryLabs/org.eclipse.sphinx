@@ -14,21 +14,18 @@
  */
 package org.eclipse.sphinx.graphiti.workspace.ui.editors;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.common.ui.URIEditorInput;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.editor.IDiagramEditorBehavior;
-import org.eclipse.graphiti.ui.internal.services.GraphitiUiInternal;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
-import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
+import org.eclipse.sphinx.graphiti.workspace.ui.BasicDiagramEditorFactory;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -45,7 +42,7 @@ public class BasicGraphitiDiagramEditor extends DiagramEditor implements ISaveab
 	/**
 	 * The Constant DIAGRAM_EDITOR_ID.
 	 */
-	public static final String BASIC_DIAGRAM_EDITOR_ID = "org.eclipse.sphinx.graphiti.workspace.ui.BasicGraphitiDiagramEditor"; //$NON-NLS-1$
+	public static final String BASIC_DIAGRAM_EDITOR_ID = "org.eclipse.sphinx.graphiti.workspace.ui.editors.graphitiDiagram"; //$NON-NLS-1$
 
 	protected SaveablesProvider modelSaveablesProvider;
 
@@ -54,7 +51,7 @@ public class BasicGraphitiDiagramEditor extends DiagramEditor implements ISaveab
 		// Eclipse may call us with an IFileEditorInput when a file is to be
 		// opened. Try to convert this to a diagram input.
 		if (!(input instanceof DiagramEditorInput)) {
-			IEditorInput newInput = createEditorInput(input);
+			IEditorInput newInput = new BasicDiagramEditorFactory().createEditorInput(input);
 			if (!(newInput instanceof DiagramEditorInput)) {
 				// give up
 				throw new PartInitException("Unknown editor input: " + input); //$NON-NLS-1$
@@ -76,35 +73,6 @@ public class BasicGraphitiDiagramEditor extends DiagramEditor implements ISaveab
 
 		modelSaveablesProvider = createModelSaveablesProvider();
 		modelSaveablesProvider.init(createModelSaveablesLifecycleListener());
-	}
-
-	protected DiagramEditorInput createEditorInput(IEditorInput otherInput) {
-		if (otherInput instanceof DiagramEditorInput) {
-			return (DiagramEditorInput) otherInput;
-		}
-		if (otherInput instanceof IFileEditorInput) {
-			final IFileEditorInput fileInput = (IFileEditorInput) otherInput;
-			final IFile file = fileInput.getFile();
-			final TransactionalEditingDomain domain = WorkspaceEditingDomainUtil.getEditingDomain(file);
-			URI diagramFileUri = GraphitiUiInternal.getEmfService().getFileURI(file, domain.getResourceSet());
-			if (diagramFileUri != null) {
-				// the file has to contain one base node which has to be a diagram
-				diagramFileUri = GraphitiUiInternal.getEmfService().mapDiagramFileUriToDiagramUri(diagramFileUri);
-				return new DiagramEditorInput(diagramFileUri, domain, null, true);
-			}
-		}
-		if (otherInput instanceof URIEditorInput) {
-			final URIEditorInput uriInput = (URIEditorInput) otherInput;
-			final TransactionalEditingDomain domain = WorkspaceEditingDomainUtil.getEditingDomain(uriInput.getURI());
-			URI diagramFileUri = uriInput.getURI();
-			if (diagramFileUri != null) {
-				// the file has to contain one base node which has to be a diagram
-				diagramFileUri = GraphitiUiInternal.getEmfService().mapDiagramFileUriToDiagramUri(diagramFileUri);
-				return new DiagramEditorInput(diagramFileUri, domain, null, true);
-			}
-		}
-
-		return null;
 	}
 
 	public Saveable[] getActiveSaveables() {
