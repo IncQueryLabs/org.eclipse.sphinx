@@ -134,7 +134,7 @@ public abstract class AbstractResourceScopeProvider implements IResourceScopePro
 	public IResourceScope getScope(Resource resource) {
 		IFile file = EcorePlatformUtil.getFile(resource);
 		if (file != null) {
-			getScope(file);
+			return getScope(file);
 		}
 		return null;
 	}
