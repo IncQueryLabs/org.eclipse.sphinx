@@ -820,6 +820,8 @@ public final class ExtendedPlatform {
 	}
 
 	/**
+	 * Creates a unique file name inside the given container represented the containerFullPath.
+	 * 
 	 * @param containerFullPath
 	 * @param tentativeFileName
 	 * @return
