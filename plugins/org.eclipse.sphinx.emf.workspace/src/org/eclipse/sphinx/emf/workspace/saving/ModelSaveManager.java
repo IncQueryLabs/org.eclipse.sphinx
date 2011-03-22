@@ -16,7 +16,6 @@ package org.eclipse.sphinx.emf.workspace.saving;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,24 +27,20 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
+import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.Activator;
 import org.eclipse.sphinx.emf.workspace.internal.messages.Messages;
-import org.eclipse.sphinx.emf.workspace.referentialintegrity.ECrossReferenceAdapterFactory;
 import org.eclipse.sphinx.emf.workspace.referentialintegrity.IURIChangeListener;
 import org.eclipse.sphinx.emf.workspace.referentialintegrity.URIChangeEvent;
 import org.eclipse.sphinx.emf.workspace.referentialintegrity.URIChangeListenerRegistry;
@@ -77,7 +72,7 @@ public class ModelSaveManager {
 					List<URIChangeNotification> notifications = event.getNotifications();
 					for (URIChangeNotification notification : notifications) {
 						EObject newEObject = notification.getNewEObject();
-						Collection<Setting> inverseReferences = getInverseReferences(newEObject);
+						Collection<Setting> inverseReferences = EObjectUtil.getInverseReferences(newEObject, true);
 						for (Setting inverseReference : inverseReferences) {
 							Resource referringResource = inverseReference.getEObject().eResource();
 							if (!changedResource.equals(referringResource) && !dirtyResources.contains(referringResource)
@@ -89,31 +84,6 @@ public class ModelSaveManager {
 					}
 				}
 			}
-		}
-
-		protected Collection<Setting> getInverseReferences(EObject object) {
-			Notifier context = null;
-			EObject modelRoot = EcoreUtil.getRootContainer(object);
-			if (modelRoot != null) {
-				Resource resource = modelRoot.eResource();
-				if (resource != null) {
-					ResourceSet resourceSet = resource.getResourceSet();
-					if (resourceSet != null) {
-						context = resourceSet;
-					} else {
-						context = resource;
-					}
-				} else {
-					context = modelRoot;
-				}
-			}
-
-			ECrossReferenceAdapter adapter = ECrossReferenceAdapterFactory.INSTANCE.adapt(context);
-			if (adapter != null) {
-				return adapter.getInverseReferences(object, true);
-
-			}
-			return Collections.emptyList();
 		}
 	};
 

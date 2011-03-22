@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.AbstractTreeIterator;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -35,10 +36,13 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.ecore.ECrossReferenceAdapterFactory;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
@@ -283,6 +287,42 @@ public final class EObjectUtil {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Returns a collection of {@link EStructuralFeature.Setting settings} objects describing the inverse references of
+	 * given {@link EObject object}, i.e., the {@link EObject objects}s and {@link EStructuralFeature features}s that
+	 * reference given {@link EObject object}.
+	 * 
+	 * @param object
+	 *            The {@link EObject object} whose {@link EStructuralFeature.Setting inverse references} are to be
+	 * @param resolve
+	 *            Determines whether or not proxies should be resolved.
+	 * @return The collection of {@link EStructuralFeature.Setting inverse references} of given {@link EObject object}
+	 *         or and empty collection if no such could be found.
+	 */
+	public static Collection<EStructuralFeature.Setting> getInverseReferences(EObject object, boolean resolve) {
+		Notifier context = null;
+		EObject modelRoot = EcoreUtil.getRootContainer(object);
+		if (modelRoot != null) {
+			Resource resource = modelRoot.eResource();
+			if (resource != null) {
+				ResourceSet resourceSet = resource.getResourceSet();
+				if (resourceSet != null) {
+					context = resourceSet;
+				} else {
+					context = resource;
+				}
+			} else {
+				context = modelRoot;
+			}
+		}
+
+		ECrossReferenceAdapter adapter = ECrossReferenceAdapterFactory.INSTANCE.adapt(context);
+		if (adapter != null) {
+			return adapter.getInverseReferences(object, resolve);
+		}
+		return Collections.emptyList();
 	}
 
 	/**
