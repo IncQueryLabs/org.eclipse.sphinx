@@ -48,6 +48,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	private String fIdentifier;
 	protected URI fBaseNamespaceURI;
 	private URI fNamespaceURI;
+	private String fEPackageNsURIPostfixPattern;
 	private MetaModelVersionData fVersionData;
 	private String fEPackageNsURIPattern;
 	private List<String> fContentTypeIds;
@@ -69,7 +70,8 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/**
 	 * Creates a descriptor for a meta-model. This constructor is to be used if the descriptor shall describe an
 	 * abstract meta-model family (without an implementation backing it) or a meta-model (backed by an implementation)
-	 * where only one version exists.
+	 * where only one version exists. The {@link AbstractMetaModelDescriptor#getRootEPackage()} root EPackage should not
+	 * have any Sub-packages.
 	 * 
 	 * @param identifier
 	 *            The identifier of the described meta-model. A unique identifier used for referencing the meta-model
@@ -78,7 +80,36 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	 *            The namespace URI of the meta-model described.
 	 */
 	protected AbstractMetaModelDescriptor(String identifier, String namespace) {
-		this(identifier, namespace, null);
+		this(identifier, namespace, (MetaModelVersionData) null);
+	}
+
+	/**
+	 * Creates a descriptor for a meta-model. This constructor is to be used if the descriptor shall describe a
+	 * meta-model (backed by an implementation) where only one version exists. The
+	 * {@link AbstractMetaModelDescriptor#getRootEPackage()} root EPackage can have Sub-packages.
+	 * 
+	 * @param identifier
+	 *            The identifier of the described meta-model. A unique identifier used for referencing the meta-model
+	 *            from within an extension point.
+	 * @param baseNamespace
+	 *            Usually the namespace of the root EPackage.
+	 * @param ePackageNsURIPostfixPattern
+	 *            A regular expression when appended to the baseNamespace will match the namespace of the meta-model
+	 *            sub-packages.
+	 * @see #getRootEPackage()
+	 */
+	protected AbstractMetaModelDescriptor(String identifier, String baseNamespace, String ePackageNsURIPostfixPattern) {
+		Assert.isNotNull(identifier);
+		Assert.isNotNull(baseNamespace);
+
+		fIdentifier = identifier;
+		try {
+			fBaseNamespaceURI = new URI(baseNamespace);
+		} catch (URISyntaxException ex) {
+			throw new WrappedException(ex);
+		}
+		fEPackageNsURIPostfixPattern = ePackageNsURIPostfixPattern;
+		initNamespace(); // Not calculated lazily in order to detect malformed nsPostfixes
 	}
 
 	/**
@@ -197,7 +228,10 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	 */
 	protected void initEPackageNsURIPattern() {
 		StringBuilder buffer = new StringBuilder(fBaseNamespaceURI.toString());
-		if (fVersionData != null) {
+		if (fEPackageNsURIPostfixPattern != null) {
+			buffer.append(URI_SEGMENT_SEPARATOR);
+			buffer.append(fEPackageNsURIPostfixPattern);
+		} else if (fVersionData != null) {
 			buffer.append(URI_SEGMENT_SEPARATOR);
 			buffer.append(fVersionData.getEPackageNsURIPostfixPattern());
 		}
