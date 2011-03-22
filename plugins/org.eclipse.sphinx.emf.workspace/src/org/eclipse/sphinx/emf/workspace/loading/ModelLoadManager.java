@@ -1020,7 +1020,8 @@ public final class ModelLoadManager {
 
 		for (TransactionalEditingDomain editingDomain : resourcesToUnload.keySet()) {
 			Collection<Resource> resourcesToUnloadInEditingDomain = resourcesToUnload.get(editingDomain);
-			EcorePlatformUtil.unloadResources(editingDomain, resourcesToUnloadInEditingDomain, memoryOptimized, progress.newChild(resourcesToUnloadInEditingDomain.size()));
+			EcorePlatformUtil.unloadResources(editingDomain, resourcesToUnloadInEditingDomain, memoryOptimized,
+					progress.newChild(resourcesToUnloadInEditingDomain.size()));
 
 			if (progress.isCanceled()) {
 				throw new OperationCanceledException();
@@ -1527,8 +1528,8 @@ public final class ModelLoadManager {
 
 		for (IProject project : projects) {
 			Collection<IModelDescriptor> modelsInProject = ModelDescriptorRegistry.INSTANCE.getModels(project);
-			SubMonitor progress = SubMonitor.convert(monitor, Messages.task_unresolvingUnreachableCrossProjectReferencesInProject,
-					modelsInProject.size());
+			SubMonitor progress = SubMonitor.convert(monitor,
+					NLS.bind(Messages.task_unresolvingUnreachableCrossProjectReferencesInProject, project.getName()), modelsInProject.size());
 			if (progress.isCanceled()) {
 				throw new OperationCanceledException();
 			}
