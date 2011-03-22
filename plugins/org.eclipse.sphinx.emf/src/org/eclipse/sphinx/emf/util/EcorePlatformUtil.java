@@ -197,9 +197,18 @@ public final class EcorePlatformUtil {
 	 *         is either a not an XML file or an XML file which is not well-formed or has no target namespace.
 	 */
 	public static String readTargetNamespace(IFile file) {
+		return readTargetNamespace(file, (String[]) null);
+	}
+
+	/**
+	 * @param file
+	 * @param targetNamespaceExcludePatterns
+	 * @return
+	 */
+	public static String readTargetNamespace(IFile file, String... targetNamespaceExcludePatterns) {
 		if (file != null && file.isAccessible()) {
 			URI uri = createURI(file.getFullPath());
-			return EcoreResourceUtil.readTargetNamespace(null, uri);
+			return EcoreResourceUtil.readTargetNamespace(null, uri, targetNamespaceExcludePatterns);
 		}
 		return null;
 	}

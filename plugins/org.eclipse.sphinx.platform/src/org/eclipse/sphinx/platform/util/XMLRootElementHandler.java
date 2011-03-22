@@ -64,7 +64,6 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 	private static final String ATTRIBUTE_PREFIX_XMLNS = XMLConstants.XMLNS_ATTRIBUTE;
 	private static final String ATTRIBUTE_NAME_XMI = "xmi"; //$NON-NLS-1$
 	private static final String ATTRIBUTE_NAME_XSI = "xsi"; //$NON-NLS-1$
-	private static final String ATTRIBUTE_NAME_FRAGMENT_NOTATION = "notation"; //$NON-NLS-1$
 
 	private final String FIELD_NAME_ATTRIBUTES = "fAttributes"; //$NON-NLS-1$
 	private final String FIELD_NAME_NAME = "name"; //$NON-NLS-1$
@@ -76,6 +75,7 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 	private String targetNamespace = null;
 	private String xsiSchemaLocation = null;
 	private ArrayList<String> rootElementComments = new ArrayList<String>();
+	private String[] targetNamespaceExcludePatterns;
 
 	protected SAXParser getParser(boolean useLexicalHandler) throws ParserConfigurationException, SAXException {
 		if (parserFactory == null) {
@@ -88,7 +88,6 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 		if (useLexicalHandler) {
 			parser.setProperty(Constants.SAX_PROPERTY_PREFIX + Constants.LEXICAL_HANDLER_PROPERTY, this);
 		}
-
 		return parser;
 	}
 
@@ -128,10 +127,14 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 			Object[] xmlAttributesArray = (Object[]) ReflectUtil.getInvisibleFieldValue(xmlAttributesObject, FIELD_NAME_ATTRIBUTES);
 			for (Object xmlAttribute : xmlAttributesArray) {
 				org.apache.xerces.xni.QName xQName = (org.apache.xerces.xni.QName) ReflectUtil.getInvisibleFieldValue(xmlAttribute, FIELD_NAME_NAME);
-				if (ATTRIBUTE_PREFIX_XMLNS.equals(xQName.prefix) && !prefix.equals(xQName.localpart)) {
+				if ((ATTRIBUTE_PREFIX_XMLNS.equals(xQName.prefix) || ATTRIBUTE_PREFIX_XMLNS.equals(xQName.localpart))
+						&& !prefix.equals(xQName.localpart)) {
 					if (!ATTRIBUTE_NAME_XMI.equals(xQName.localpart) && !ATTRIBUTE_NAME_XSI.equals(xQName.localpart)) {
-						if (xQName.localpart != null && !xQName.localpart.contains(ATTRIBUTE_NAME_FRAGMENT_NOTATION)) {
-							return (String) ReflectUtil.getInvisibleFieldValue(xmlAttribute, FIELD_NAME_VALUE);
+						if (xQName.localpart != null) {
+							String value = (String) ReflectUtil.getInvisibleFieldValue(xmlAttribute, FIELD_NAME_VALUE);
+							if (!matchesAnyExcludedPatterns(value)) {
+								return value;
+							}
 						}
 					}
 				}
@@ -140,6 +143,17 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 			// Ignore exception, just return null
 		}
 		return null;
+	}
+
+	protected boolean matchesAnyExcludedPatterns(String value) {
+		if (value != null && value.trim().length() != 0 && targetNamespaceExcludePatterns != null) {
+			for (String pattern : targetNamespaceExcludePatterns) {
+				if (value.matches(pattern)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/*
@@ -246,5 +260,9 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 	 */
 	public Collection<String> getRootElementComments() {
 		return rootElementComments;
+	}
+
+	public void seTargetNamespaceExcludePatterns(String... targetNamespaceExcludePatterns) {
+		this.targetNamespaceExcludePatterns = targetNamespaceExcludePatterns;
 	}
 }

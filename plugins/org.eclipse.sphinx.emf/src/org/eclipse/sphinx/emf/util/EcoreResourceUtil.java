@@ -283,8 +283,12 @@ public final class EcoreResourceUtil {
 	 *         target namespace.
 	 */
 	public static String readTargetNamespace(Resource resource) {
+		return readTargetNamespace(resource, (String[]) null);
+	}
+
+	public static String readTargetNamespace(Resource resource, String... targetNamespaceExcludePatterns) {
 		if (resource != null) {
-			return readTargetNamespace(getURIConverter(resource.getResourceSet()), resource.getURI());
+			return readTargetNamespace(getURIConverter(resource.getResourceSet()), resource.getURI(), targetNamespaceExcludePatterns);
 		}
 		return null;
 	}
@@ -302,6 +306,10 @@ public final class EcoreResourceUtil {
 	 *         question is either a not an XML file or an XML file which is not well-formed or has no target namespace.
 	 */
 	public static String readTargetNamespace(URIConverter uriConverter, URI uri) {
+		return readTargetNamespace(uriConverter, uri, (String[]) null);
+	}
+
+	public static String readTargetNamespace(URIConverter uriConverter, URI uri, String... targetNamespaceExcludePatterns) {
 		String targetNamespace = null;
 		if (exists(uri)) {
 			InputStream inputStream = null;
@@ -309,6 +317,9 @@ public final class EcoreResourceUtil {
 				uriConverter = uriConverter != null ? uriConverter : new ExtensibleURIConverterImpl();
 				inputStream = uriConverter.createInputStream(uri);
 				XMLRootElementHandler handler = new XMLRootElementHandler();
+				if (targetNamespaceExcludePatterns != null) {
+					handler.seTargetNamespaceExcludePatterns(targetNamespaceExcludePatterns);
+				}
 				handler.parseContents(inputStream);
 				targetNamespace = handler.getTargetNamespace();
 			} catch (SAXException ex) {
