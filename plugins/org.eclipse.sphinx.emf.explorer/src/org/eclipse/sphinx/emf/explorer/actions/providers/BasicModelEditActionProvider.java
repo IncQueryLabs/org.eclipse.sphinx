@@ -315,10 +315,12 @@ public class BasicModelEditActionProvider extends BasicActionProvider {
 	 */
 	protected Collection<?> getNewChildDescriptors(TransactionalEditingDomain editingDomain, Object object, Object sibling) {
 		AdapterFactory adapterFactory = getAdapterFactory(editingDomain);
-		IEditingDomainItemProvider editingDomainItemProvider = (IEditingDomainItemProvider) adapterFactory.adapt(object,
-				IEditingDomainItemProvider.class);
-		if (editingDomainItemProvider != null) {
-			return editingDomainItemProvider.getNewChildDescriptors(object, editingDomain, sibling);
+		if (adapterFactory != null) {
+			IEditingDomainItemProvider editingDomainItemProvider = (IEditingDomainItemProvider) adapterFactory.adapt(object,
+					IEditingDomainItemProvider.class);
+			if (editingDomainItemProvider != null) {
+				return editingDomainItemProvider.getNewChildDescriptors(object, editingDomain, sibling);
+			}
 		}
 		return Collections.emptyList();
 	}
