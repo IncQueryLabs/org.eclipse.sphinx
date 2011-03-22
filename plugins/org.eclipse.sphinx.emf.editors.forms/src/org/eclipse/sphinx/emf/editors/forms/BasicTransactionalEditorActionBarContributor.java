@@ -268,42 +268,36 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 
 	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
 	// @Override
-	@Override
 	protected DeleteAction createDeleteAction() {
 		return new ExtendedDeleteAction(removeAllReferencesOnDelete(), getCustomAdapterFactory());
 	}
 
 	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
 	// @Override
-	@Override
 	protected PasteAction createPasteAction() {
 		return new ExtendedPasteAction(getCustomAdapterFactory());
 	}
 
 	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
 	// @Override
-	@Override
 	protected CopyAction createCopyAction() {
 		return new ExtendedCopyAction(getCustomAdapterFactory());
 	}
 
 	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
 	// @Override
-	@Override
 	protected CutAction createCutAction() {
 		return new ExtendedCutAction(getCustomAdapterFactory());
 	}
 
 	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
 	// @Override
-	@Override
 	protected RedoAction createRedoAction() {
 		return new RedoActionWrapper();
 	}
 
 	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
 	// @Override
-	@Override
 	protected UndoAction createUndoAction() {
 		return new UndoActionWrapper();
 	}
