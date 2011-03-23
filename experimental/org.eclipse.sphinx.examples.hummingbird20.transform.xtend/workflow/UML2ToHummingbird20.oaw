@@ -39,7 +39,7 @@
 	<component class="org.eclipse.xtend.XtendComponent">
 		<metaModel idRef="srcMetaModel"/>
 		<metaModel idRef="dstMetaModel"/>
-		<invoke value="org::eclipse::sphinx::examples::hummingbird::transform::xtend::UML2ToHummingbird20::transform(${srcModelSlot})"/>
+		<invoke value="org::eclipse::sphinx::examples::hummingbird20::transform::xtend::UML2ToHummingbird20::transform(${srcModelSlot})"/>
 		<outputSlot value="${dstModelSlot}" />
 	</component>
 
