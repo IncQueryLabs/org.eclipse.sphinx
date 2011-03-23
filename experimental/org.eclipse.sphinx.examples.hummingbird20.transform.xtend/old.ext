@@ -1,0 +1,23 @@
+/*
+MsrSw transform(SApplication application) : 
+	createMsrSw(application);
+
+create MsrSw createMsrSw(SApplication application) :
+	setShortName(application.name) ->
+	setSwSystem(createSwSystem(application)) ->
+	this;
+
+create SwSystem createSwSystem(SApplication application) :
+	setShortName(application.name) ->
+	setSwFeatures(application.components.createSwFeature()) ->
+	this;
+
+create SwFeature createSwFeature(SComponent component) :
+	setShortName(component.name) ->
+	setSwFeatureInterfaces(component.implementedInterfaces.collect(interface|createSwFeatureInterface(component, interface))) ->
+	this;
+	
+create SwFeatureInterface createSwFeatureInterface(SComponent component, SInterface interface) :
+	setShortName(interface.name) ->
+	this;
+*/

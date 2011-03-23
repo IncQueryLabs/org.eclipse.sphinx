@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.sphinx.examples.hummingbird20.transform.xtend;singleton:=true
+Bundle-Version: 0.7.0.qualifier
+Bundle-Vendor: %providerName
+Require-Bundle: org.apache.commons.logging,
+ org.antlr.runtime,
+ org.eclipse.uml2,
+ org.eclipse.xtend,
+ org.eclipse.xtend.typesystem.emf,
+ org.eclipse.xtend.typesystem.uml2,
+ org.eclipse.sphinx.examples.hummingbird20
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.eclipse.sphinx.examples.hummingbird.transform.xtend
+Bundle-Localization: plugin
