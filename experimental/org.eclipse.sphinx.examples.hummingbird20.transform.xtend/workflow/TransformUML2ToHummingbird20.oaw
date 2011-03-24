@@ -12,21 +12,20 @@
   </copyright>
  -->
 <workflow>
-	<property name="srcMetaModelPackage" value="org.eclipse.uml2.uml.UMLPackage"/>
+	<property name="srcMetaModelPackage" value="org.eclipse.uml2.uml.UMLPackage" />
 	<property name="srcModelFile" value="model/sample.uml" />
-	<property name="srcModelSlot" value="uml2Model"/>
+	<property name="srcModelSlot" value="uml2Model" />
 
-	<property name="dstMetaModelPackage" value="org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package"/>
+	<property name="dstMetaModelPackage" value="org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package" />
 	<property name="dstModelFile" value="model/sample.typemodel" />
-	<property name="dstModelSlot" value="hb20Model"/>
+	<property name="dstModelSlot" value="hb20Model" />
 
-    <bean class="org.eclipse.xtend.typesystem.uml2.Setup" standardUML2Setup="true"/> 
+    <bean class="org.eclipse.xtend.typesystem.uml2.Setup" standardUML2Setup="true" /> 
 
-	<bean id="srcMetaModel" class="org.eclipse.xtend.typesystem.uml2.UML2MetaModel">
-	</bean>
+	<bean id="srcMetaModel" class="org.eclipse.xtend.typesystem.uml2.UML2MetaModel" />
 
 	<bean id="dstMetaModel" class="org.eclipse.xtend.typesystem.emf.EmfMetaModel">
-		  <metaModelPackage value="${dstMetaModelPackage}"/> 
+		  <metaModelPackage value="${dstMetaModelPackage}" /> 
 	</bean>
 
 	<component class="org.eclipse.xtend.typesystem.emf.XmiReader">
@@ -37,9 +36,9 @@
 	</component>
 
 	<component class="org.eclipse.xtend.XtendComponent">
-		<metaModel idRef="srcMetaModel"/>
-		<metaModel idRef="dstMetaModel"/>
-		<invoke value="org::eclipse::sphinx::examples::hummingbird20::transform::xtend::UML2ToHummingbird20::transform(${srcModelSlot})"/>
+		<metaModel idRef="srcMetaModel" />
+		<metaModel idRef="dstMetaModel" />
+		<invoke value="extensions::UML2ToHummingbird20::transform(${srcModelSlot})" />
 		<outputSlot value="${dstModelSlot}" />
 	</component>
 
