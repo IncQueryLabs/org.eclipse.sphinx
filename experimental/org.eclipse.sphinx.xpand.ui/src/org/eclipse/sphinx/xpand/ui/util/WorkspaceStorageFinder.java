@@ -72,7 +72,17 @@ public class WorkspaceStorageFinder implements StorageFinder {
 	public IStorage findStorage(IJavaProject javaProject, ResourceID resourceID, boolean searchJars) {
 		workspaceResourceLoader.setContextProject(javaProject.getProject());
 		workspaceResourceLoader.setSearchArchives(searchJars);
-		URL resourceURL = workspaceResourceLoader.getResource(resourceID.toFileName());
+
+		// TODO File bug to Xtend: NPE is raised when ResourceID#toFileName() is called but underlying file has been
+		// deleted before
+		String fileName = null;
+		try {
+			fileName = resourceID.toFileName();
+		} catch (NullPointerException ex) {
+			return null;
+		}
+
+		URL resourceURL = workspaceResourceLoader.getResource(fileName);
 		if (resourceURL != null) {
 			try {
 				return ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(resourceURL.toURI().getPath()));
