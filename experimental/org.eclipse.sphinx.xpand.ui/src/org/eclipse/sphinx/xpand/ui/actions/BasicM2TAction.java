@@ -28,6 +28,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.sphinx.emf.model.IModelDescriptor;
+import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
@@ -38,11 +40,11 @@ import org.eclipse.sphinx.xpand.jobs.M2TJob;
 import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xpand.ui.wizards.M2TConfigurationWizard;
+import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
 import org.eclipse.xpand2.XpandUtil;
 import org.eclipse.xpand2.output.Outlet;
 import org.eclipse.xtend.typesystem.MetaModel;
-import org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel;
 
 public class BasicM2TAction extends BaseSelectionListenerAction {
 
@@ -111,12 +113,9 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	}
 
 	protected MetaModel createMetaModel() {
-		// TODO Remove following line, uncomment subsequent ones and add dependency to
-		// org.eclipse.sphinx.xtend.typesystem.emf
-		return new EmfRegistryMetaModel();
-		// IFile file = EcorePlatformUtil.getFile(getSelectedModelObject());
-		// IModelDescriptor model = ModelDescriptorRegistry.INSTANCE.getModel(file);
-		// return new SphinxManagedEmfMetaModel(model);
+		IFile file = EcorePlatformUtil.getFile(getSelectedModelObject());
+		IModelDescriptor model = ModelDescriptorRegistry.INSTANCE.getModel(file);
+		return new SphinxManagedEmfMetaModel(model);
 	}
 
 	protected Collection<XpandEvaluationRequest> getXpandEvaluationRequests() {

@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.shared.ui,
  org.eclipse.sphinx.platform.ui,
  org.eclipse.sphinx.emf,
- org.eclipse.sphinx.xpand;visibility:=reexport
+ org.eclipse.sphinx.xpand;visibility:=reexport,
+ org.eclipse.sphinx.xtend.typesystem.emf
 Export-Package: org.eclipse.sphinx.xpand.ui.actions,
  org.eclipse.sphinx.xpand.ui.blocks,
  org.eclipse.sphinx.xpand.ui.dialogs,
