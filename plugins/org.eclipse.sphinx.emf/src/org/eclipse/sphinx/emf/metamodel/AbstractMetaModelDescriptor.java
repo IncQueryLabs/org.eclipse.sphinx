@@ -51,6 +51,8 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	private String fEPackageNsURIPostfixPattern;
 	private MetaModelVersionData fVersionData;
 	private String fEPackageNsURIPattern;
+	private EPackage fRootEPackage = null;
+	private Collection<EPackage> fEPackages = null;
 	private List<String> fContentTypeIds;
 
 	private Registry fEPkgRegistry;
@@ -242,33 +244,43 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEPackages()
 	 */
 	public Collection<EPackage> getEPackages() {
-		Set<EPackage> ePackages = new HashSet<EPackage>();
-		Set<String> safeNsURIs = new HashSet<String>(getEPackageRegistry().keySet());
-		for (String nsURI : safeNsURIs) {
-			if (nsURI.matches(getEPackageNsURIPattern())) {
-				ePackages.add(getEPackageRegistry().getEPackage(nsURI));
+		synchronized (getEPackageRegistry()) {
+			if (fEPackages == null) {
+				Set<EPackage> ePackages = new HashSet<EPackage>();
+				Set<String> safeNsURIs = new HashSet<String>(getEPackageRegistry().keySet());
+				for (String nsURI : safeNsURIs) {
+					if (nsURI.matches(getEPackageNsURIPattern())) {
+						ePackages.add(getEPackageRegistry().getEPackage(nsURI));
+					}
+				}
+				fEPackages = Collections.unmodifiableSet(ePackages);
 			}
 		}
-		return Collections.unmodifiableSet(ePackages);
+		return fEPackages;
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getRootEPackage()
 	 */
 	public EPackage getRootEPackage() {
-		EPackage ePackage = getEPackageRegistry().getEPackage(getNamespace());
-		if (ePackage == null) {
-			// FIXME Consider to remove this part. In case that an older metamodel version has had a root EPackage but
-			// the latest metamodel version doesn't proceeding this way cannot be possibly a good thing
-			// Refer to compatible namespaces URI if no package can be found under native namespace URI
-			for (URI compatibleNamespaceURI : getCompatibleNamespaceURIs()) {
-				ePackage = getEPackageRegistry().getEPackage(compatibleNamespaceURI.toString());
-				if (ePackage != null) {
-					return ePackage;
+		synchronized (getEPackageRegistry()) {
+			if (fRootEPackage == null) {
+				fRootEPackage = getEPackageRegistry().getEPackage(getNamespace());
+				if (fRootEPackage == null) {
+					// FIXME Consider to remove this part. In case that an older metamodel version has had a root
+					// EPackage
+					// but the latest metamodel version doesn't proceeding this way cannot be possibly a good thing
+					// Refer to compatible namespaces URI if no package can be found under native namespace URI
+					for (URI compatibleNamespaceURI : getCompatibleNamespaceURIs()) {
+						fRootEPackage = getEPackageRegistry().getEPackage(compatibleNamespaceURI.toString());
+						if (fRootEPackage != null) {
+							break;
+						}
+					}
 				}
 			}
 		}
-		return ePackage;
+		return fRootEPackage;
 	}
 
 	/*
