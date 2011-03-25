@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.emf.validation.bridge.util;
 
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.emf.common.util.URI;
@@ -23,6 +22,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.validation.bridge.Activator;
 import org.eclipse.sphinx.emf.validation.bridge.extensions.RulesExtInternal;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public class RulesExtReader {
 
@@ -112,10 +112,11 @@ public class RulesExtReader {
 			}
 
 			// Let's check if the namespace is ok
-			EPackage ePackage = null;
+			Object ePackageOrDescriptor = null;
 			if (tgt.getNsURI() != null) {
 				try {
-					ePackage = EPackage.Registry.INSTANCE.getEPackage(tgt.getNsURI().toString());
+					// don't call getEPackage as this will trigger loading of the model plugins
+					ePackageOrDescriptor = EPackage.Registry.INSTANCE.get(tgt.getNsURI().toString());
 				} catch (WrappedException e) {
 					String msg = NLS.bind(Messages.errNsURIRootPackageObject, tgt.getNsURI());
 					logError(element, new WrappedException(msg, e));
@@ -128,7 +129,7 @@ public class RulesExtReader {
 			}
 
 			if (element.getAttribute(ATT_RULE_EXT_MODELCLASS) != null) {
-				if (ePackage != null) { // we can try to reach the root object eClass
+				if (ePackageOrDescriptor != null) { // we can try to reach the root object eClass
 					String value = element.getAttribute(ATT_RULE_EXT_MODELCLASS);
 					String separator = "."; //$NON-NLS-1$
 					String eclassifierName = value.contains(separator) ? value.substring(value.lastIndexOf(separator) + 1) : value;
@@ -179,8 +180,8 @@ public class RulesExtReader {
 
 		IExtension extension = element.getDeclaringExtension();
 		msg += "\n" //$NON-NLS-1$
-				+ NLS.bind(Messages.errOnExtensionIntro, new Object[] { extension.getContributor().getName(),
-						extension.getExtensionPointUniqueIdentifier() });
+				+ NLS.bind(Messages.errOnExtensionIntro,
+						new Object[] { extension.getContributor().getName(), extension.getExtensionPointUniqueIdentifier() });
 
 		// PlatformLogUtil.logAsError(Activator.getDefault(), new Exception(msg));
 
@@ -196,8 +197,8 @@ public class RulesExtReader {
 
 		IExtension extension = element.getDeclaringExtension();
 		msg += "\n" //$NON-NLS-1$
-				+ NLS.bind(Messages.errOnExtensionIntro, new Object[] { extension.getContributor().getName(),
-						extension.getExtensionPointUniqueIdentifier() });
+				+ NLS.bind(Messages.errOnExtensionIntro,
+						new Object[] { extension.getContributor().getName(), extension.getExtensionPointUniqueIdentifier() });
 
 		PlatformLogUtil.logAsError(Activator.getDefault(), new Exception(msg));
 

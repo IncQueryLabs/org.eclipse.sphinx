@@ -17,7 +17,6 @@ package org.eclipse.sphinx.emf.validation.bridge.extensions;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionDelta;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -27,7 +26,6 @@ import org.eclipse.core.runtime.IRegistryChangeListener;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sphinx.emf.validation.bridge.Activator;
 import org.eclipse.sphinx.emf.validation.bridge.util.RulesExtReader;
-import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 
 /**
  * This singleton is a cache in order to treat the extension contribution to org.eclipse.sphinx.emf.validation. It
@@ -142,11 +140,6 @@ public class RulesExtCache implements IRegistryChangeListener {
 
 		if (r != null) {
 			rulesExtInternal.put(r.getMarker(), r);
-		}
-
-		IContributor ic = ext.getContributor();
-		if (ic != null) {
-			ExtendedPlatform.loadBundle(ic.getName());
 		}
 
 		return;
