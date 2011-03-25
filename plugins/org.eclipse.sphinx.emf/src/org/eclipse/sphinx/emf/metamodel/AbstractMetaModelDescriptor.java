@@ -268,8 +268,8 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 				fRootEPackage = getEPackageRegistry().getEPackage(getNamespace());
 				if (fRootEPackage == null) {
 					// FIXME Consider to remove this part. In case that an older metamodel version has had a root
-					// EPackage
-					// but the latest metamodel version doesn't proceeding this way cannot be possibly a good thing
+					// EPackage but the latest metamodel version doesn't proceeding this way cannot be possibly a good
+					// thing
 					// Refer to compatible namespaces URI if no package can be found under native namespace URI
 					for (URI compatibleNamespaceURI : getCompatibleNamespaceURIs()) {
 						fRootEPackage = getEPackageRegistry().getEPackage(compatibleNamespaceURI.toString());
