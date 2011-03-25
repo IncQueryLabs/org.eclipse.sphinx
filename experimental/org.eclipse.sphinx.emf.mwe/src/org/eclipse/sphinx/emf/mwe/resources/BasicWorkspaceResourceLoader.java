@@ -48,6 +48,10 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 
 	protected static final String DEFAULT_EXTENSION_FOLDER_NAME = "extension"; //$NON-NLS-1$
 
+	protected static final String DEFAULT_CHECK_FOLDER_NAME = "check"; //$NON-NLS-1$
+
+	protected static final String CHECK_EXTENSION = "chk"; //$NON-NLS-1$
+
 	protected static final String NS_DELIMITER = "::"; //$NON-NLS-1$
 
 	protected IProject contextProject = null;
@@ -185,6 +189,12 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 				return url;
 			}
 		}
+		if (path.endsWith(CHECK_EXTENSION)) {
+			url = resolveAgainstSpecialFoldersInScope(getCheckFolderName(), path);
+			if (url != null) {
+				return url;
+			}
+		}
 		url = resolveAgainstWorkspaceClasspath(path);
 		if (url != null) {
 			return url;
@@ -236,6 +246,10 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 
 	protected String getExtensionFolderName() {
 		return DEFAULT_EXTENSION_FOLDER_NAME;
+	}
+
+	protected String getCheckFolderName() {
+		return DEFAULT_CHECK_FOLDER_NAME;
 	}
 
 	protected URL resolveAgainstWorkspaceClasspath(String path) {
