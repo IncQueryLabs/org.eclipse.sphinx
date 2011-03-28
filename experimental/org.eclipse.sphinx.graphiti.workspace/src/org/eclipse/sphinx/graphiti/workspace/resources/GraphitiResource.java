@@ -27,9 +27,4 @@ public class GraphitiResource extends XMIResourceImpl {
 	public GraphitiResource(URI uri) {
 		super(uri);
 	}
-
-	@Override
-	protected void doUnload() {
-		super.doUnload();
-	}
 }

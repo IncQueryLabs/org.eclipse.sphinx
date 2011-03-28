@@ -30,12 +30,6 @@ public class Messages extends NLS {
 	public static String DiagramTypeWizardPage_PageTitle;
 	public static String DiagramTypeWizardPage_PageDescription;
 	public static String DiagramTypeWizardPage_DiagramTypeField;
-	public static String DiagramTypeWizardPage_ErrorOccuredTitle;
-
-	public static String CreateDiagramWizard_NoContainerFoundErrorTitle;
-	public static String CreateDiagramWizard_NoAccessibleContainerFoundError;
-	public static String CreateDiagramWizard_SavingDiagramOperation;
-	public static String CreateDiagramWizard_OpeningEditorError;
 
 	static {
 		// initialize resource bundle
