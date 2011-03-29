@@ -27,7 +27,13 @@
 		<firstElementOnly value="true" />
 		<outputSlot value="${srcModelSlot}" />
 	</component>
-
+	
+	<component class="org.eclipse.xtend.check.CheckComponent">
+		<metaModel idRef="srcMetaModel"/>
+		<checkFile value="checks::InstanceModel"/>
+		<emfAllChildrenSlot value="${srcModelSlot}"/>
+	</component>
+	
 	<component class="org.eclipse.xpand2.Generator">
 		<skipOnErrors value="true" />
 		<metaModel idRef="srcMetaModel" />
