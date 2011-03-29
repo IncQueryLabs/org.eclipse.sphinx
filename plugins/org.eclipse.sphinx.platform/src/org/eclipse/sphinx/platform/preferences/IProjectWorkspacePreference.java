@@ -43,7 +43,7 @@ public interface IProjectWorkspacePreference<T> extends IEclipsePreference<T> {
 	 * as a parameter.
 	 * 
 	 * @param project
-	 *            the project for which the preference is retrieved
+	 *            the project for which the preference is to be retrieved
 	 * @return the value of the preference
 	 */
 	T get(IProject project);
@@ -52,11 +52,11 @@ public interface IProjectWorkspacePreference<T> extends IEclipsePreference<T> {
 
 	/**
 	 * Returns the value of the preference from the project. If the value does not exist yet in the Eclipse project
-	 * preferences mechanism, returns <code>null</code>. The behavior of this method may depend on the nature of the
+	 * preferences mechanism <code>null</code> is returned. The behavior of this method may depend on the nature of the
 	 * project that is provided as a parameter.
 	 * 
 	 * @param project
-	 *            the project for which the preference is retrieved
+	 *            the project for which the preference is to be retrieved
 	 * @return the value of the preference
 	 * @see IProjectPreference#get(IProject)
 	 */
@@ -67,7 +67,7 @@ public interface IProjectWorkspacePreference<T> extends IEclipsePreference<T> {
 	 * project that is provided as a parameter. The value is provided as an object.
 	 * 
 	 * @param project
-	 *            the project for which the preference is retrieved
+	 *            the project for which the preference is to be retrieved
 	 * @param valueAsObject
 	 *            the new value of the preference
 	 * @see IProjectPreference#set(IProject, Object)
@@ -106,7 +106,7 @@ public interface IProjectWorkspacePreference<T> extends IEclipsePreference<T> {
 
 	/**
 	 * Returns the value of the preference from the workspace. If the value does not exist yet in the Eclipse workspace
-	 * preferences mechanism, returns the default value.
+	 * preferences mechanism the default value is returned.
 	 * 
 	 * @return the value of the preference
 	 * @see IWorkspacePreference#get()
@@ -114,7 +114,20 @@ public interface IProjectWorkspacePreference<T> extends IEclipsePreference<T> {
 	T getFromWorkspace();
 
 	/**
-	 * Set the value of the preference in the workspace. The value is provided as an object.
+	 * Returns the value of the preference from the workspace. Enables the given project to be taken into account during
+	 * conversion of the preference's string value to the corresponding object value. If the value does not exist yet in
+	 * the Eclipse workspace preferences mechanism the default value is returned. The behavior of this method may depend
+	 * on the nature of the project that is provided as a parameter.
+	 * 
+	 * @param project
+	 *            the project for which the preference is to be retrieved
+	 * @return the value of the preference
+	 * @see IWorkspacePreference#get()
+	 */
+	T getFromWorkspaceForProject(IProject project);
+
+	/**
+	 * Sets the value of the preference in the workspace. The value is provided as an object.
 	 * 
 	 * @param valueAsObject
 	 *            the new value of the preference

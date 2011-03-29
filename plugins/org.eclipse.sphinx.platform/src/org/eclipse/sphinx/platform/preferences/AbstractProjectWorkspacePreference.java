@@ -16,6 +16,7 @@ package org.eclipse.sphinx.platform.preferences;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.sphinx.platform.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -144,11 +145,11 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 			if (project.isAccessible()) {
 				String natureId = projectPreference.getRequiredProjectNatureId();
 				if (natureId == null || project.hasNature(natureId)) {
-					T valueAsObject = projectPreference.get(project);
+					T valueAsObject = getFromProject(project);
 					if (valueAsObject != null) {
 						return valueAsObject;
 					}
-					return workspacePreference.get();
+					return getFromWorkspaceForProject(project);
 				}
 			}
 		} catch (Exception ex) {
@@ -216,6 +217,31 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	 */
 	public T getFromWorkspace() {
 		return workspacePreference.get();
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#getFromWorkspaceForProject(org.eclipse.core
+	 * .resources.IProject)
+	 */
+	public T getFromWorkspaceForProject(IProject project) {
+		try {
+			if (project.isAccessible()) {
+				String natureId = projectPreference.getRequiredProjectNatureId();
+				if (natureId == null || project.hasNature(natureId)) {
+					IEclipsePreferences prefs = workspacePreference.getWorkspacePreferences();
+					if (prefs != null) {
+						String valueAsString = prefs.get(workspacePreference.getKey(), workspacePreference.getDefaultValueAsString());
+						return toObject(project, valueAsString);
+					} else {
+						return toObject(project, workspacePreference.getDefaultValueAsString());
+					}
+				}
+			}
+		} catch (Exception ex) {
+			PlatformLogUtil.logAsWarning(Activator.getDefault(), ex);
+		}
+		return null;
 	}
 
 	/*
