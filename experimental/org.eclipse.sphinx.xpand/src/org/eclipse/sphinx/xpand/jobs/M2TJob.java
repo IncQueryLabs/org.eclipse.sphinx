@@ -146,7 +146,7 @@ public class M2TJob extends WorkspaceJob {
 			}
 			log.info("Generation completed in " + duration + "ms!"); //$NON-NLS-1$ //$NON-NLS-2$
 
-			// Refresh outlet containers if its in the workspace
+			// Refresh outlet containers if they are in the workspace
 			for (ExtendedOutlet outlet : getOutlets()) {
 				IContainer container = outlet.getContainer();
 				if (container != null) {
@@ -186,7 +186,7 @@ public class M2TJob extends WorkspaceJob {
 	}
 
 	protected ExtendedOutlet createDefaultOutlet() {
-		return new ExtendedOutlet();
+		return new ExtendedOutlet(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
 	}
 
 	@Override

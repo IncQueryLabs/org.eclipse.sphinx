@@ -24,6 +24,7 @@ public class Messages extends NLS {
 
 	public static String label_template;
 	public static String label_output;
+	public static String label_templatePath;
 	public static String label_templateSelection;
 	public static String label_defineBlock;
 	public static String label_useDefaultPath;
@@ -31,8 +32,12 @@ public class Messages extends NLS {
 	public static String label_browse;
 	public static String label_configPageName;
 	public static String label_definitionName;
+	public static String label_useCheckModelButton;
+	public static String label_checkModelBlock;
+	public static String label_checkFiles;
 
 	public static String msg_chooseTemplate;
+	public static String msg_chooseTemplateError;
 	public static String desc_config;
 	public static String title_launchGen;
 	public static String title_codeGen;

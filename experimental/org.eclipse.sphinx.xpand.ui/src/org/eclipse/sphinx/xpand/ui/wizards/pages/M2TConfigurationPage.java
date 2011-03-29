@@ -174,11 +174,10 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 						if (nSelected == 1 && selection[0] instanceof IFile) {
 							IFile selectedFile = (IFile) selection[0];
 							if (selectedFile.exists() && XpandUtil.TEMPLATE_EXTENSION.equals(selectedFile.getFileExtension())) {
-								return new Status(IStatus.OK, pluginId, IStatus.OK, "", //$NON-NLS-1$
-										null);
+								return Status.OK_STATUS;
 							}
 						}
-						return new Status(IStatus.ERROR, pluginId, IStatus.ERROR, "An Xpand template file should be selected !", null);
+						return new Status(IStatus.ERROR, pluginId, IStatus.ERROR, Messages.msg_chooseTemplateError, null);
 					}
 				});
 				if (dialog.open() == IDialogConstants.OK_ID) {
@@ -190,15 +189,14 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 				}
 			}
 		});
-		templatePathField.setButtonLabel("Browse...");
-		templatePathField.setLabelText("Template path:");
+		templatePathField.setButtonLabel(Messages.label_browse);
+		templatePathField.setLabelText(Messages.label_templatePath);
 		templatePathField.fillIntoGrid(templateGroup, 3);
 		templatePathField.addFieldListener(new IFieldListener() {
 
 			public void dialogFieldChanged(IField field) {
 				updateDefineBlockItems(getFile(templatePathField.getText()));
 				updateDefinitionaNameField();
-				getWizard().getContainer().updateButtons();
 			}
 		});
 
@@ -210,7 +208,6 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 
 			public void dialogFieldChanged(IField field) {
 				updateDefinitionaNameField();
-				getWizard().getContainer().updateButtons();
 			}
 		});
 

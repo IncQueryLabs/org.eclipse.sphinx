@@ -44,23 +44,31 @@ public class CheckEvaluationRequest {
 	private Collection<IFile> checkFiles;
 	private Collection<Object> modelObjects;
 
-	public CheckEvaluationRequest(Object modelRootObject, IFile checkFile) {
-		this(modelRootObject, Collections.singleton(checkFile));
+	public CheckEvaluationRequest(IFile checkFile, Object modelRootObject) {
+		this(Collections.singleton(checkFile), modelRootObject);
 	}
 
-	public CheckEvaluationRequest(Object modelRootObject, Collection<IFile> checkFiles) {
-		this(getAllContents(modelRootObject), checkFiles);
+	public CheckEvaluationRequest(Collection<IFile> checkFiles, Object modelRootObject) {
+		this(checkFiles, getAllContents(modelRootObject));
 	}
 
-	public CheckEvaluationRequest(Collection<Object> modelObjects, IFile checkFile) {
-		this(modelObjects, Collections.singleton(checkFile));
+	public CheckEvaluationRequest(IFile checkFile, Collection<Object> modelObjects) {
+		this(Collections.singleton(checkFile), modelObjects);
 	}
 
-	public CheckEvaluationRequest(Collection<Object> modelObjects, Collection<IFile> checkFiles) {
+	public CheckEvaluationRequest(Collection<IFile> checkFiles, Collection<Object> modelObjects) {
 		Assert.isNotNull(checkFiles);
 
-		this.modelObjects = modelObjects;
 		this.checkFiles = checkFiles;
+		this.modelObjects = modelObjects;
+	}
+
+	public Collection<IFile> getCheckFiles() {
+		return checkFiles;
+	}
+
+	public Collection<Object> getModelObjects() {
+		return modelObjects;
 	}
 
 	public Object getModelRootObject() {
@@ -71,13 +79,5 @@ public class CheckEvaluationRequest {
 			}
 		}
 		return null;
-	}
-
-	public Collection<Object> getModelObjects() {
-		return modelObjects;
-	}
-
-	public Collection<IFile> getCheckFiles() {
-		return checkFiles;
 	}
 }
