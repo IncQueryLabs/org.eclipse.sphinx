@@ -24,11 +24,11 @@ import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.ui.wizards.AbstractWizard;
 import org.eclipse.sphinx.xpand.jobs.M2TJob;
+import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xpand.ui.internal.Activator;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xpand.ui.wizards.pages.M2TConfigurationPage;
-import org.eclipse.xpand2.output.Outlet;
 import org.eclipse.xtend.typesystem.MetaModel;
 
 public class M2TConfigurationWizard extends AbstractWizard {
@@ -39,7 +39,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	private String m2tJobName;
 	private IScopingResourceLoader scopingResourceLoader;
 	private OutletsPreference outletsPreference;
-	private Outlet defaultOutlet;
+	private ExtendedOutlet defaultOutlet;
 
 	protected M2TConfigurationPage m2TConfigurationPage;
 
@@ -78,11 +78,11 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		this.outletsPreference = outletsPreference;
 	}
 
-	public Outlet getDefaultOutlet() {
+	public ExtendedOutlet getDefaultOutlet() {
 		return defaultOutlet;
 	}
 
-	public void setDefaultOutlet(Outlet defaultOutlet) {
+	public void setDefaultOutlet(ExtendedOutlet defaultOutlet) {
 		this.defaultOutlet = defaultOutlet;
 	}
 

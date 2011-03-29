@@ -17,6 +17,7 @@ package org.eclipse.sphinx.xpand.preferences;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,13 +49,13 @@ public class OutletsPreference extends AbstractProjectWorkspacePreference<Collec
 				String[] args = value.split("@"); //$NON-NLS-1$
 				String name = args[0];
 				String expression = args[1];
-				ExtendedOutlet outlet = new ExtendedOutlet(expression, project != null);
+				ExtendedOutlet outlet = new ExtendedOutlet(expression, project);
 				if (name.length() > 0) {
 					outlet.setName(name);
 				}
 				outlets.add(outlet);
 			}
-			return outlets;
+			return Collections.unmodifiableCollection(outlets);
 		}
 		return null;
 	}

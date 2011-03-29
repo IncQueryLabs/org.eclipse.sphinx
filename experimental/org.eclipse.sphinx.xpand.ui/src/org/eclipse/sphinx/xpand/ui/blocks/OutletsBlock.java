@@ -188,11 +188,11 @@ public class OutletsBlock {
 	protected void edit() {
 		IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
 		ExtendedOutlet selectedOutlet = (ExtendedOutlet) selection.getFirstElement();
-		ExtendedOutlet outletToEdit = new ExtendedOutlet(selectedOutlet.getPathExpression(), outletProvider.getProject() != null);
+		ExtendedOutlet outletToEdit = new ExtendedOutlet(selectedOutlet.getPathExpression(), outletProvider.getProject());
 		outletToEdit.setName(selectedOutlet.getName());
 		ExtendedOutlet editedOutlet = editOutlet(outletToEdit, true, selectedOutlet.getName() != null);
 		if (editedOutlet != null) {
-			selectedOutlet.setPathExpression(editedOutlet.getPathExpression(), outletProvider.getProject() != null);
+			selectedOutlet.setPathExpression(editedOutlet.getPathExpression(), outletProvider.getProject());
 			selectedOutlet.setName(editedOutlet.getName());
 			tableViewer.refresh();
 		}

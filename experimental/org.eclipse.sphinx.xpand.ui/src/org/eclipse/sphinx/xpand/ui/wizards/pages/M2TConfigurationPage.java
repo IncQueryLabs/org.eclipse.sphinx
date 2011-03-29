@@ -48,6 +48,7 @@ import org.eclipse.sphinx.platform.ui.fields.adapters.IButtonAdapter;
 import org.eclipse.sphinx.platform.ui.wizards.pages.AbstractWizardPage;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
+import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xpand.ui.internal.Activator;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
@@ -66,7 +67,6 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.eclipse.xpand2.XpandUtil;
-import org.eclipse.xpand2.output.Outlet;
 import org.eclipse.xtend.shared.ui.core.IXtendXpandProject;
 import org.eclipse.xtend.shared.ui.core.IXtendXpandResource;
 import org.eclipse.xtend.typesystem.MetaModel;
@@ -93,7 +93,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 	protected EObject modelObject;
 	protected MetaModel metaModel;
 	protected OutletsPreference outletsPreference;
-	protected Outlet defaultOutlet;
+	protected ExtendedOutlet defaultOutlet;
 
 	private AbstractDefinition[] definitions;
 
@@ -101,7 +101,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		super(pageName);
 	}
 
-	public void init(EObject modelObject, MetaModel metaModel, OutletsPreference outletsPreference, Outlet defaultOutlet) {
+	public void init(EObject modelObject, MetaModel metaModel, OutletsPreference outletsPreference, ExtendedOutlet defaultOutlet) {
 		this.modelObject = modelObject;
 		this.metaModel = metaModel;
 		this.outletsPreference = outletsPreference;
@@ -338,7 +338,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		outputPathField.setLabelText(Messages.label_path);
 		outputPathField.setButtonLabel(Messages.label_browse);
 		if (defaultOutlet != null) {
-			IContainer defaultOutletContainer = ResourcesPlugin.getWorkspace().getRoot().getContainerForLocation(new Path(defaultOutlet.getPath()));
+			IContainer defaultOutletContainer = defaultOutlet.getContainer();
 			if (defaultOutletContainer != null) {
 				outputPathField.setText(defaultOutletContainer.getFullPath().makeRelative().toString());
 			}
@@ -449,21 +449,21 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 		return requests;
 	}
 
-	public Collection<Outlet> getOutlets() {
+	public Collection<ExtendedOutlet> getOutlets() {
 		if (outletsPreference != null) {
 			IFile file = EcorePlatformUtil.getFile(modelObject);
 			if (file != null && file.getProject() != null) {
-				return new ArrayList<Outlet>(outletsPreference.get(file.getProject()));
+				return outletsPreference.get(file.getProject());
 			}
 		}
 
 		IContainer defaultOutletContainer = getContainer(outputPathField.getText());
 		if (defaultOutletContainer != null) {
-			defaultOutlet = new Outlet(defaultOutletContainer.getLocation().toFile().getAbsolutePath());
+			defaultOutlet = new ExtendedOutlet(defaultOutletContainer);
 			return Collections.singletonList(defaultOutlet);
 		}
 
-		return Collections.<Outlet> emptyList();
+		return Collections.<ExtendedOutlet> emptyList();
 	}
 
 	public void finish() {

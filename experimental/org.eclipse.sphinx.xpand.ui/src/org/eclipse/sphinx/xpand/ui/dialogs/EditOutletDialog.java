@@ -149,7 +149,7 @@ public class EditOutletDialog extends StatusDialog {
 		updateStatus(locationStatus);
 		if (locationStatus.isOK()) {
 			String location = locationText.getText();
-			outlet.setPathExpression(location, outletProvider.getProject() != null);
+			outlet.setPathExpression(location, outletProvider.getProject());
 		}
 	}
 

@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.xpand.ui.actions;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -37,13 +36,13 @@ import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xpand.jobs.M2TJob;
+import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xpand.ui.wizards.M2TConfigurationWizard;
 import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
 import org.eclipse.xpand2.XpandUtil;
-import org.eclipse.xpand2.output.Outlet;
 import org.eclipse.xtend.typesystem.MetaModel;
 
 public class BasicM2TAction extends BaseSelectionListenerAction {
@@ -160,26 +159,30 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		return new BasicWorkspaceResourceLoader();
 	}
 
-	protected Collection<Outlet> getOutlets() {
+	protected OutletsPreference getOutletsPreference() {
+		return null;
+	}
+
+	protected Collection<ExtendedOutlet> getOutlets() {
 		// Return outlets resulting outlets preference if available
 		OutletsPreference outletsPreference = getOutletsPreference();
 		if (outletsPreference != null) {
 			IFile file = EcorePlatformUtil.getFile(getSelectedModelObject());
 			if (file != null && file.getProject() != null) {
-				return new ArrayList<Outlet>(outletsPreference.get(file.getProject()));
+				return outletsPreference.get(file.getProject());
 			}
 		}
 
 		// Return default outlet otherwise
-		Outlet defaultOutlet = getDefaultOutlet();
-		return defaultOutlet != null ? Collections.singletonList(defaultOutlet) : Collections.<Outlet> emptyList();
+		ExtendedOutlet defaultOutlet = getDefaultOutlet();
+		if (defaultOutlet != null) {
+			return Collections.singletonList(defaultOutlet);
+		}
+
+		return Collections.<ExtendedOutlet> emptyList();
 	}
 
-	protected OutletsPreference getOutletsPreference() {
-		return null;
-	}
-
-	protected Outlet getDefaultOutlet() {
+	protected ExtendedOutlet getDefaultOutlet() {
 		IFile file = EcorePlatformUtil.getFile(getStructuredSelection().getFirstElement());
 		if (file != null) {
 			IProject project = file.getProject();
@@ -190,7 +193,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 			} else {
 				defaultOutletContainer = project;
 			}
-			return new Outlet(defaultOutletContainer.getLocation().toFile().getAbsolutePath());
+			return new ExtendedOutlet(defaultOutletContainer);
 		}
 		return null;
 	}

@@ -22,16 +22,15 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitorAdapter;
 import org.eclipse.emf.mwe.core.resources.ResourceLoaderFactory;
@@ -43,6 +42,7 @@ import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xpand.internal.Activator;
+import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.xpand2.XpandExecutionContextImpl;
 import org.eclipse.xpand2.XpandFacade;
 import org.eclipse.xpand2.output.Outlet;
@@ -60,7 +60,7 @@ public class M2TJob extends WorkspaceJob {
 	protected Collection<XpandEvaluationRequest> xpandEvaluationRequests;
 
 	private IScopingResourceLoader scopingResourceLoader;
-	private Collection<Outlet> outlets;
+	private Collection<ExtendedOutlet> outlets;
 
 	public M2TJob(String name, MetaModel metaModel, XpandEvaluationRequest xpandEvaluationRequest) {
 		this(name, metaModel, Collections.singleton(xpandEvaluationRequest));
@@ -76,9 +76,9 @@ public class M2TJob extends WorkspaceJob {
 		scopingResourceLoader = resourceLoader;
 	}
 
-	public Collection<Outlet> getOutlets() {
+	public Collection<ExtendedOutlet> getOutlets() {
 		if (outlets == null) {
-			outlets = new ArrayList<Outlet>();
+			outlets = new ArrayList<ExtendedOutlet>();
 		}
 		return outlets;
 	}
@@ -108,7 +108,7 @@ public class M2TJob extends WorkspaceJob {
 				getOutlets().add(createDefaultOutlet());
 			}
 
-			for (Outlet outlet : getOutlets()) {
+			for (ExtendedOutlet outlet : getOutlets()) {
 				// TODO (aakar) add an overwrite column to the table viewer (to be set by the user)
 				outlet.setOverwrite(true);
 				output.addOutlet(outlet);
@@ -134,7 +134,7 @@ public class M2TJob extends WorkspaceJob {
 			long duration = System.currentTimeMillis() - startTime;
 
 			// Log end of generation
-			for (Outlet outlet : getOutlets()) {
+			for (ExtendedOutlet outlet : getOutlets()) {
 				String outletLabel = (outlet.getName() == null ? "[default]" : outlet.getName()) + "(" + outlet.getPath() + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				if (outlet.getFilesWrittenAndClosed() > 0) {
 					log.info("Written " + outlet.getFilesWrittenAndClosed() + " files to outlet " + outletLabel); //$NON-NLS-1$ //$NON-NLS-2$
@@ -147,8 +147,8 @@ public class M2TJob extends WorkspaceJob {
 			log.info("Generation completed in " + duration + "ms!"); //$NON-NLS-1$ //$NON-NLS-2$
 
 			// Refresh outlet containers if its in the workspace
-			for (Outlet outlet : getOutlets()) {
-				IResource container = ResourcesPlugin.getWorkspace().getRoot().getContainerForLocation(new Path(outlet.getPath()));
+			for (ExtendedOutlet outlet : getOutlets()) {
+				IContainer container = outlet.getContainer();
 				if (container != null) {
 					container.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 				}
@@ -176,7 +176,7 @@ public class M2TJob extends WorkspaceJob {
 		ResourceLoaderFactory.setCurrentThreadResourceLoader(null);
 	}
 
-	protected boolean containsDefaultOutlet(Collection<Outlet> outlets) {
+	protected boolean containsDefaultOutlet(Collection<? extends Outlet> outlets) {
 		for (Outlet outlet : outlets) {
 			if (outlet.getName() == null) {
 				return true;
@@ -185,8 +185,8 @@ public class M2TJob extends WorkspaceJob {
 		return false;
 	}
 
-	protected Outlet createDefaultOutlet() {
-		return new Outlet();
+	protected ExtendedOutlet createDefaultOutlet() {
+		return new ExtendedOutlet();
 	}
 
 	@Override
