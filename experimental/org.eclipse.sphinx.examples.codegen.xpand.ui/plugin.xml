@@ -38,4 +38,17 @@ Contributors:
          </enablement>
       </actionProvider>
    </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            class="org.eclipse.sphinx.xpand.ui.decorators.BasicOutletFolderLabelDecorator"
+            id="org.eclipse.sphinx.examples.codegen.xpand.ui.decorators.outletFolder"
+            label="%sphinx.examples.codegen.xpand.ui.decorators.outletFolder.label"
+            lightweight="true"
+            state="true">
+         <description>
+            %sphinx.examples.codegen.xpand.ui.decorators.outletFolder.description
+         </description>
+      </decorator>
+   </extension>
 </plugin>
