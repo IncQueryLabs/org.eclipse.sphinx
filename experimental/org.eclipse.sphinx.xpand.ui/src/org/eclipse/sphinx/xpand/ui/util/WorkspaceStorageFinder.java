@@ -14,16 +14,12 @@
  */
 package org.eclipse.sphinx.xpand.ui.util;
 
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IStorage;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
@@ -82,15 +78,7 @@ public class WorkspaceStorageFinder implements StorageFinder {
 			return null;
 		}
 
-		URL resourceURL = workspaceResourceLoader.getResource(fileName);
-		if (resourceURL != null) {
-			try {
-				return ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(resourceURL.toURI().getPath()));
-			} catch (URISyntaxException ex) {
-				// Ignore exception
-			}
-		}
-		return null;
+		return workspaceResourceLoader.getUnderlyingFile(fileName);
 	}
 
 	public int getPriority() {
