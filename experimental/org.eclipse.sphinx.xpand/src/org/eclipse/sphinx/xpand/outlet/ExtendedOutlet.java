@@ -54,6 +54,15 @@ public class ExtendedOutlet extends Outlet {
 		setPath(container);
 	}
 
+	public ExtendedOutlet(String pathExpression) {
+		setPathExpression(pathExpression, null);
+	}
+
+	public ExtendedOutlet(String name, String pathExpression) {
+		setName(name);
+		setPathExpression(pathExpression, null);
+	}
+
 	public ExtendedOutlet(String pathExpression, IProject project) {
 		setPathExpression(pathExpression, project);
 	}
@@ -64,12 +73,21 @@ public class ExtendedOutlet extends Outlet {
 	}
 
 	public String getPathExpression() {
-		return pathExpression;
+		if (pathExpression != null) {
+			return pathExpression;
+		}
+		return getPath();
 	}
 
 	public void setPathExpression(String pathExpression, IProject project) {
-		this.pathExpression = pathExpression;
-		setPath(resolvePathExpression(pathExpression, project));
+		Assert.isNotNull(pathExpression);
+
+		String path = resolvePathExpression(pathExpression, project);
+		setPath(path);
+
+		if (!pathExpression.equals(path)) {
+			this.pathExpression = pathExpression;
+		}
 	}
 
 	protected String resolvePathExpression(String pathExpression, IProject project) {
