@@ -31,5 +31,7 @@ public interface IScopingResourceLoader extends ResourceLoader {
 
 	void setSearchArchives(boolean searchArchives);
 
-	String getDefinitionName(IFile templateFile, String templateName);
+	String getQualifiedName(IFile underlyingFile, String statementName);
+
+	IFile getUnderlyingFile(String qualifiedName);
 }

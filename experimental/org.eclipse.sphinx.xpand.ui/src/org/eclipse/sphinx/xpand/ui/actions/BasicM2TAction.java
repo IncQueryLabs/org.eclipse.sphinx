@@ -130,7 +130,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	protected String getDefinitionName() {
 		IFile templateFile = getTemplateFile();
 		if (templateFile != null) {
-			return getScopingResourceLoader().getDefinitionName(templateFile, getTemplateName());
+			return getScopingResourceLoader().getQualifiedName(templateFile, getTemplateName());
 		}
 		return null;
 	}

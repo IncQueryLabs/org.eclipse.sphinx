@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.emf.mwe.resources;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
@@ -38,21 +39,15 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
-import org.eclipse.xpand2.XpandUtil;
+import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
 
 public class BasicWorkspaceResourceLoader extends AbstractResourceLoader implements IScopingResourceLoader {
-
-	protected static final String EXTENSION_EXTENSION = "ext"; //$NON-NLS-1$
 
 	protected static final String DEFAULT_TEMPLATE_FOLDER_NAME = "template"; //$NON-NLS-1$
 
 	protected static final String DEFAULT_EXTENSION_FOLDER_NAME = "extension"; //$NON-NLS-1$
 
 	protected static final String DEFAULT_CHECK_FOLDER_NAME = "check"; //$NON-NLS-1$
-
-	protected static final String CHECK_EXTENSION = "chk"; //$NON-NLS-1$
-
-	protected static final String NS_DELIMITER = "::"; //$NON-NLS-1$
 
 	protected IProject contextProject = null;
 	protected IModelDescriptor contextModel = null;
@@ -177,19 +172,19 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 		if (url != null) {
 			return url;
 		}
-		if (path.endsWith(XpandUtil.TEMPLATE_EXTENSION)) {
+		if (path.endsWith(IXtendXpandConstants.TEMPLATE_EXTENSION)) {
 			url = resolveAgainstSpecialFoldersInScope(getTemplateFolderName(), path);
 			if (url != null) {
 				return url;
 			}
 		}
-		if (path.endsWith(EXTENSION_EXTENSION)) {
+		if (path.endsWith(IXtendXpandConstants.EXTENSION_EXTENSION)) {
 			url = resolveAgainstSpecialFoldersInScope(getExtensionFolderName(), path);
 			if (url != null) {
 				return url;
 			}
 		}
-		if (path.endsWith(CHECK_EXTENSION)) {
+		if (path.endsWith(IXtendXpandConstants.CHECK_EXTENSION)) {
 			url = resolveAgainstSpecialFoldersInScope(getCheckFolderName(), path);
 			if (url != null) {
 				return url;
@@ -284,24 +279,37 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 		return null;
 	}
 
-	public String getDefinitionName(IFile templateFile, String templateName) {
-		Assert.isNotNull(templateFile);
+	public String getQualifiedName(IFile underlyingFile, String statementName) {
+		Assert.isNotNull(underlyingFile);
 
-		if (templateFile.exists()) {
+		if (underlyingFile.exists()) {
 			StringBuilder path = new StringBuilder();
-			IPath templateNamespace = templateFile.getProjectRelativePath().removeFileExtension();
+			IPath templateNamespace = underlyingFile.getProjectRelativePath().removeFileExtension();
 			for (Iterator<String> iter = Arrays.asList(templateNamespace.segments()).iterator(); iter.hasNext();) {
 				String segment = iter.next();
 				path.append(segment);
 				if (iter.hasNext()) {
-					path.append(NS_DELIMITER);
+					path.append(IXtendXpandConstants.NS_DELIMITER);
 				}
 			}
-			if (templateName != null && templateName.length() > 0) {
-				path.append(NS_DELIMITER);
-				path.append(templateName);
+			if (statementName != null && statementName.length() > 0) {
+				path.append(IXtendXpandConstants.NS_DELIMITER);
+				path.append(statementName);
 			}
 			return path.toString();
+		}
+		return null;
+	}
+
+	public IFile getUnderlyingFile(String qualifiedName) {
+		URL resourceURL = getResource(qualifiedName);
+		if (resourceURL != null) {
+			try {
+				Path location = new Path(resourceURL.toURI().getPath());
+				return ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(location);
+			} catch (URISyntaxException ex) {
+				// Ignore exception
+			}
 		}
 		return null;
 	}

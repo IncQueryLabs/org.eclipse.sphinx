@@ -54,7 +54,7 @@ public class WorkspaceStorageFinder implements StorageFinder {
 			if (javaOutputPath != null && javaOutputPath.isPrefixOf(file.getFullPath())) {
 				return null;
 			}
-			return new ResourceID(workspaceResourceLoader.getDefinitionName(file, null), file.getFileExtension());
+			return new ResourceID(workspaceResourceLoader.getQualifiedName(file, null), file.getFileExtension());
 		}
 		return null;
 	}
