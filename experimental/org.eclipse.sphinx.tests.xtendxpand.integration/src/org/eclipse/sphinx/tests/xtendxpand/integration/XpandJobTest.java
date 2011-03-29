@@ -49,7 +49,7 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 	}
 
 	public void testHummingbird20Codegen() throws Exception {
-		// Load Hummingbird 2.0 instance model file.
+		// Load Hummingbird 2.0 instance model file
 		IFile hb20InstanceModelFile = refWks.codegenXpandProject
 				.getFile(XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_HB_INSTANCE_MODEL_PATH);
 		assertNotNull(hb20InstanceModelFile);
@@ -57,12 +57,12 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		Application application = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20InstanceModelFile);
 		assertNotNull(application);
 
-		// Load xpt resource.
+		// Load xpt resource
 		IFile xptFile = refWks.codegenXpandProject.getFile(XtendXpandTestReferenceWorkspace.CONFIGH_XPT_FILE_PATH);
 		assertNotNull(xptFile);
 		assertTrue(xptFile.exists());
 
-		// Xpand execution.
+		// Xpand execution
 		XpandEvaluationRequest xpandEvaluationRequest = new XpandEvaluationRequest(XtendXpandTestReferenceWorkspace.XPAND_CONFIGH_DEFINITION_NAME,
 				application);
 		M2TJob xpandJob = new M2TJob("Xpand Job", new SphinxManagedEmfMetaModel(hb20InstanceModelFile.getProject()), xpandEvaluationRequest); //$NON-NLS-1$
@@ -70,7 +70,7 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		IStatus xpandStatus = xpandJob.runInWorkspace(new NullProgressMonitor());
 		assertEquals(Status.OK_STATUS, xpandStatus);
 
-		// Load generated resource from java.io.tmpdir and verify its content.
+		// Load generated resource from java.io.tmpdir and verify its content
 		String defaultGenFilePath = System.getProperty("java.io.tmpdir").concat(XtendXpandTestReferenceWorkspace.CONFIGH_FILE_NAME); //$NON-NLS-1$
 		File file = new Path(defaultGenFilePath).toFile();
 		assertNotNull(file);
@@ -81,10 +81,10 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		assertTrue(contents.indexOf("#define ParamVal3 333") != -1); //$NON-NLS-1$
 
 		/*
-		 * Re-execute the xpand job and generate into 'HOUTLET' folder.
+		 * Re-execute the xpand job and generate into 'HOUTLET' folder
 		 */
 
-		// Load xpt resource.
+		// Load xpt resource
 		xptFile = refWks.codegenXpandProject.getFile(XtendXpandTestReferenceWorkspace.CONFIGH_TO_HOUTLET_XPT_FILE_PATH);
 		assertNotNull(xptFile);
 		assertTrue(xptFile.exists());
@@ -93,7 +93,7 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		xpandJob = new M2TJob("Xpand Job", new SphinxManagedEmfMetaModel(hb20InstanceModelFile.getProject()), xpandEvaluationRequest); //$NON-NLS-1$
 		xpandJob.setScopingResourceLoader(new BasicWorkspaceResourceLoader());
 
-		// Add an outlet named HOUTLET.
+		// Add an outlet named HOUTLET
 		ExtendedOutlet outlet = new ExtendedOutlet(XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_HOUTLET_FOLDER_NAME,
 				refWks.codegenXpandProject.getFolder(XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_HOUTLET_FOLDER_NAME));
 		outlet.setOverwrite(true);
@@ -102,7 +102,7 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		xpandStatus = xpandJob.runInWorkspace(new NullProgressMonitor());
 		assertEquals(Status.OK_STATUS, xpandStatus);
 
-		// Load generated resource from 'HOUTLET' folder and verify its content.
+		// Load generated resource from 'HOUTLET' folder and verify its content
 		IFile genFile = refWks.codegenXpandProject.getFile(XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_GEN_FILE_PATH);
 		assertNotNull(genFile);
 		assertTrue(genFile.exists());
@@ -133,5 +133,4 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 			inputStream.close();
 		}
 	}
-
 }
