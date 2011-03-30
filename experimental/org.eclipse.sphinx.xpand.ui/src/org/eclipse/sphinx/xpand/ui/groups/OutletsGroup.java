@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.xpand.ui.blocks;
+package org.eclipse.sphinx.xpand.ui.groups;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.Dialog;
@@ -30,6 +30,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.sphinx.platform.ui.util.SWTUtil;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xpand.ui.dialogs.EditOutletDialog;
+import org.eclipse.sphinx.xpand.ui.groups.messages.Messages;
 import org.eclipse.sphinx.xpand.ui.providers.OutletProvider;
 import org.eclipse.sphinx.xpand.ui.providers.OutletTableContentProvider;
 import org.eclipse.sphinx.xpand.ui.providers.OutletTableLabelProvider;
@@ -40,22 +41,42 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.xpand2.output.Outlet;
 
-// TODO Rename to OutletsGroup
-public class OutletsBlock {
+public class OutletsGroup {
 
-	/** The table presenting the outlets. */
+	/**
+	 * The name of the OutletsGroup.
+	 */
+	protected String groupName;
+
+	/**
+	 * The table presenting the outlets.
+	 */
 	private TableViewer tableViewer;
 
+	/**
+	 * The outlet provider.
+	 */
 	private OutletProvider outletProvider;
 
-	/** The buttons to add, edit and remove outlets. */
+	/**
+	 * The add outlets button. to add, edit and remove outlets.
+	 */
 	private Button addButton;
+
+	/**
+	 * The edit outlets button.
+	 */
 	private Button editButton;
+
+	/**
+	 * The remove outlets button.
+	 */
 	private Button removeButton;
 
 	private Listener listener = new Listener() {
@@ -71,18 +92,31 @@ public class OutletsBlock {
 		}
 	};
 
-	public OutletsBlock(Composite parent, OutletProvider outletProvider, boolean addButtons) {
-		this.outletProvider = outletProvider;
-		createContent(parent, addButtons);
+	public OutletsGroup(Composite parent, String groupName, OutletProvider outletProvider, int numColumns, boolean addButtons) {
+		this(groupName, outletProvider);
+		createContent(parent, numColumns, addButtons);
 	}
 
-	protected void createContent(Composite parent, boolean addButtons) {
+	private OutletsGroup(String groupName, OutletProvider outletProvider) {
+		this.groupName = groupName;
+		this.outletProvider = outletProvider;
+	}
+
+	protected void createContent(Composite parent, int numColumns, boolean addButtons) {
 		Assert.isNotNull(parent.getShell());
+
+		Group outletsGroup = new Group(parent, SWT.SHADOW_NONE);
+		outletsGroup.setText(groupName);
+		outletsGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+		GridLayout outletsGroupLayout = new GridLayout();
+		outletsGroupLayout.numColumns = numColumns;
+		outletsGroup.setLayout(outletsGroupLayout);
 
 		GC gc = new GC(parent.getShell());
 		gc.setFont(JFaceResources.getDialogFont());
 
-		Composite tableComposite = new Composite(parent, SWT.NONE);
+		Composite tableComposite = new Composite(outletsGroup, SWT.NONE);
 		GridData data = new GridData(GridData.FILL_BOTH);
 		data.widthHint = 360;
 		data.heightHint = convertHeightInCharsToPixels(10, gc);
@@ -95,13 +129,13 @@ public class OutletsBlock {
 		table.setLinesVisible(true);
 
 		TableColumn column1 = new TableColumn(table, SWT.NONE);
-		column1.setText("Name");
-		int minWidth = computeMinimumColumnWidth(gc, "Name");
+		column1.setText(Messages.label_OutletsGroup_TableColumn_Name);
+		int minWidth = computeMinimumColumnWidth(gc, Messages.label_OutletsGroup_TableColumn_Name);
 		columnLayout.setColumnData(column1, new ColumnWeightData(1, minWidth, true));
 
 		TableColumn column2 = new TableColumn(table, SWT.NONE);
-		column2.setText("Path");
-		minWidth = computeMinimumColumnWidth(gc, "Path");
+		column2.setText(Messages.label_OutletsGroup_TableColumn_Path);
+		minWidth = computeMinimumColumnWidth(gc, Messages.label_OutletsGroup_TableColumn_Path);
 		columnLayout.setColumnData(column2, new ColumnWeightData(3, minWidth, true));
 
 		gc.dispose();
@@ -113,7 +147,7 @@ public class OutletsBlock {
 
 		if (addButtons) {
 			addTableViewerListener();
-			addButtons(parent);
+			addButtons(outletsGroup);
 		}
 	}
 
@@ -139,13 +173,13 @@ public class OutletsBlock {
 		blayout.marginWidth = 0;
 		buttonsComposite.setLayout(blayout);
 
-		addButton = SWTUtil.createButton(buttonsComposite, "New...", SWT.PUSH);
+		addButton = SWTUtil.createButton(buttonsComposite, Messages.label_AddButton, SWT.PUSH);
 		addButton.addListener(SWT.Selection, listener);
 
-		editButton = SWTUtil.createButton(buttonsComposite, "Edit...", SWT.PUSH);
+		editButton = SWTUtil.createButton(buttonsComposite, Messages.label_EditButton, SWT.PUSH);
 		editButton.addListener(SWT.Selection, listener);
 
-		removeButton = SWTUtil.createButton(buttonsComposite, "Remove", SWT.PUSH);
+		removeButton = SWTUtil.createButton(buttonsComposite, Messages.label_RemoveButton, SWT.PUSH);
 		removeButton.addListener(SWT.Selection, listener);
 		updateButtons();
 	}
