@@ -19,6 +19,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10MMDescriptor;
@@ -111,7 +112,11 @@ public class MetaModelDescriptorRegistryTest extends TestCase {
 		resolvedReleases = fRegistryUT.getResolvedDescriptors(new Test1MM());
 		assertEmptyList(resolvedReleases);
 
-		Test1MM.MOCK_EPKG_REGISTRY.registerEPackage(Test1Release100.INSTANCE.getNamespaceURI(), new MockEPackage());
+		EPackage ePkg = Test1MM.MOCK_EPKG_REGISTRY.getEPackage(Test1Release100.INSTANCE.getNamespaceURI().toString());
+		if (ePkg == null) {
+			ePkg = new MockEPackage();
+			Test1MM.MOCK_EPKG_REGISTRY.registerEPackage(Test1Release100.INSTANCE.getNamespaceURI(), ePkg);
+		}
 		resolvedReleases = fRegistryUT.getResolvedDescriptors(new Test1MM());
 		assertNotNull(resolvedReleases);
 		assertEquals(1, resolvedReleases.size());

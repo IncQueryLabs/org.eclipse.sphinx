@@ -44,11 +44,6 @@ import org.eclipse.sphinx.tests.emf.metamodel.mocks.MockEPkgRegistry;
 @SuppressWarnings("nls")
 public class MetaModelDescriptorTest extends TestCase {
 
-	@Override
-	protected void tearDown() throws Exception {
-		Test1MM.MOCK_EPKG_REGISTRY.clear();
-	}
-
 	/**
 	 * Tests if the constructor for base descriptors (without MetaModelData) is implemented correctly. The correct
 	 * checking of the constructor's parameters is tested.
@@ -148,17 +143,22 @@ public class MetaModelDescriptorTest extends TestCase {
 		assertNull(Test1Release100.INSTANCE.getRootEPackage());
 
 		MockEPkgRegistry ePkgRegistry = Test1MM.MOCK_EPKG_REGISTRY;
-		EPackage ePkg = new MockEPackage();
-		ePkgRegistry.registerEPackage(Test1Release100.INSTANCE.getNamespaceURI(), ePkg);
+		EPackage ePkg = ePkgRegistry.getEPackage(Test1Release100.INSTANCE.getNamespaceURI().toString());
+		if (ePkg == null) {
+			ePkg = new MockEPackage();
+			ePkgRegistry.registerEPackage(Test1Release100.INSTANCE.getNamespaceURI(), ePkg);
+		}
 		assertEquals(ePkg, Test1Release100.INSTANCE.getRootEPackage());
 		// Get EPackage from the compatible MetaModelDescriptors
 		assertEquals(ePkg, Test1Release101.INSTANCE.getRootEPackage());
 
 		assertNull(Test1MM.INSTANCE.getRootEPackage());
 
-		ePkgRegistry = Test1MM.MOCK_EPKG_REGISTRY;
-		ePkg = new MockEPackage();
-		ePkgRegistry.registerEPackage(Test1MM.INSTANCE.getNamespaceURI(), ePkg);
+		ePkg = ePkgRegistry.getEPackage(Test1MM.INSTANCE.getNamespaceURI().toString());
+		if (ePkg == null) {
+			ePkg = new MockEPackage();
+			ePkgRegistry.registerEPackage(Test1MM.INSTANCE.getNamespaceURI(), ePkg);
+		}
 		assertEquals(ePkg, Test1MM.INSTANCE.getRootEPackage());
 	}
 
@@ -190,19 +190,25 @@ public class MetaModelDescriptorTest extends TestCase {
 		assertNull(Test1Release100.INSTANCE.getRootEFactory());
 
 		MockEPkgRegistry ePkgRegistry = Test1MM.MOCK_EPKG_REGISTRY;
-		EPackage ePkg = new MockEPackage();
+		EPackage ePkg = ePkgRegistry.getEPackage(Test1Release100.INSTANCE.getNamespaceURI().toString());
+		if (ePkg == null) {
+			ePkg = new MockEPackage();
+			ePkgRegistry.registerEPackage(Test1Release100.INSTANCE.getNamespaceURI(), ePkg);
+		}
 		EFactory eFactory = new MockEFactory();
 		ePkg.setEFactoryInstance(eFactory);
-		ePkgRegistry.registerEPackage(Test1Release100.INSTANCE.getNamespaceURI(), ePkg);
+		assertEquals(ePkg, Test1Release100.INSTANCE.getRootEPackage());
 		assertEquals(eFactory, Test1Release100.INSTANCE.getRootEFactory());
 
 		assertNull(Test1MM.INSTANCE.getRootEFactory());
 
-		ePkgRegistry = Test1MM.MOCK_EPKG_REGISTRY;
-		ePkg = new MockEPackage();
+		ePkg = ePkgRegistry.getEPackage(Test1MM.INSTANCE.getNamespaceURI().toString());
+		if (ePkg == null) {
+			ePkg = new MockEPackage();
+			ePkgRegistry.registerEPackage(Test1MM.INSTANCE.getNamespaceURI(), ePkg);
+		}
 		eFactory = new MockEFactory();
 		ePkg.setEFactoryInstance(eFactory);
-		ePkgRegistry.registerEPackage(Test1MM.INSTANCE.getNamespaceURI(), ePkg);
 		assertEquals(eFactory, Test1MM.INSTANCE.getRootEFactory());
 	}
 

@@ -155,12 +155,6 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 		if (fVersionData != null) {
 			return fVersionData.getName();
 		}
-
-		EPackage rootPackage = getRootEPackage();
-		if (rootPackage != null) {
-			return rootPackage.getName();
-		}
-
 		return getIdentifier();
 	}
 
