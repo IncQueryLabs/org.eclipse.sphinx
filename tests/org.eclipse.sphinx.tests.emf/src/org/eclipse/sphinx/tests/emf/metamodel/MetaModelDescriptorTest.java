@@ -140,11 +140,11 @@ public class MetaModelDescriptorTest extends TestCase {
 	}
 
 	public void testGetRootEPackage() {
-		assertNull(Test1Release100.INSTANCE.getRootEPackage());
-
 		MockEPkgRegistry ePkgRegistry = Test1MM.MOCK_EPKG_REGISTRY;
 		EPackage ePkg = ePkgRegistry.getEPackage(Test1Release100.INSTANCE.getNamespaceURI().toString());
 		if (ePkg == null) {
+			assertNull(Test1Release100.INSTANCE.getRootEPackage());
+
 			ePkg = new MockEPackage();
 			ePkgRegistry.registerEPackage(Test1Release100.INSTANCE.getNamespaceURI(), ePkg);
 		}
@@ -152,10 +152,10 @@ public class MetaModelDescriptorTest extends TestCase {
 		// Get EPackage from the compatible MetaModelDescriptors
 		assertEquals(ePkg, Test1Release101.INSTANCE.getRootEPackage());
 
-		assertNull(Test1MM.INSTANCE.getRootEPackage());
-
 		ePkg = ePkgRegistry.getEPackage(Test1MM.INSTANCE.getNamespaceURI().toString());
 		if (ePkg == null) {
+			assertNull(Test1MM.INSTANCE.getRootEPackage());
+
 			ePkg = new MockEPackage();
 			ePkgRegistry.registerEPackage(Test1MM.INSTANCE.getNamespaceURI(), ePkg);
 		}
@@ -187,23 +187,22 @@ public class MetaModelDescriptorTest extends TestCase {
 	}
 
 	public void testGetRootEFactory() {
-		assertNull(Test1Release100.INSTANCE.getRootEFactory());
-
 		MockEPkgRegistry ePkgRegistry = Test1MM.MOCK_EPKG_REGISTRY;
 		EPackage ePkg = ePkgRegistry.getEPackage(Test1Release100.INSTANCE.getNamespaceURI().toString());
 		if (ePkg == null) {
+			assertNull(Test1Release100.INSTANCE.getRootEFactory());
+
 			ePkg = new MockEPackage();
 			ePkgRegistry.registerEPackage(Test1Release100.INSTANCE.getNamespaceURI(), ePkg);
 		}
 		EFactory eFactory = new MockEFactory();
 		ePkg.setEFactoryInstance(eFactory);
-		assertEquals(ePkg, Test1Release100.INSTANCE.getRootEPackage());
 		assertEquals(eFactory, Test1Release100.INSTANCE.getRootEFactory());
-
-		assertNull(Test1MM.INSTANCE.getRootEFactory());
 
 		ePkg = ePkgRegistry.getEPackage(Test1MM.INSTANCE.getNamespaceURI().toString());
 		if (ePkg == null) {
+			assertNull(Test1MM.INSTANCE.getRootEFactory());
+
 			ePkg = new MockEPackage();
 			ePkgRegistry.registerEPackage(Test1MM.INSTANCE.getNamespaceURI(), ePkg);
 		}
