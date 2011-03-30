@@ -95,6 +95,7 @@ public class Messages extends NLS {
 	public static String error_generalProblemWhileParsingSchemaFileReferencedByXsiSchemaLocation;
 	public static String error_locatableProblemWhileParsingSchemaFileInPlugin;
 	public static String error_locatableProblemWhileParsingSchemaFileReferencedByXsiSchemaLocation;
+	public static String error_invalidEditingDomainFactoryListenerObject;
 
 	public static String label_unknownProxyURI;
 
