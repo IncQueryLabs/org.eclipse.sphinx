@@ -48,7 +48,7 @@ public class ProjectSelectionDialog extends SelectionStatusDialog {
 
 	// the visual selection widget group
 	private TableViewer fTableViewer;
-	private Set fProjectsWithSpecifics;
+	private Set<IProject> fProjectsWithSpecifics;
 
 	// sizing constants
 	private final static int SIZING_SELECTION_WIDGET_HEIGHT = 250;
