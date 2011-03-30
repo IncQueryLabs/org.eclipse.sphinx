@@ -16,7 +16,6 @@ package org.eclipse.sphinx.xpand.ui.wizards.pages;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.MissingResourceException;
 
@@ -78,10 +77,10 @@ public class CheckConfigurationPage extends AbstractWizardPage {
 	}
 
 	protected void createPageContent(Composite parent) {
-		createCheckModelBlock(parent);
+		createCheckGroup(parent);
 	}
 
-	protected void createCheckModelBlock(Composite parent) {
+	protected void createCheckGroup(Composite parent) {
 		IFile modelFile = EcorePlatformUtil.getFile(modelObject);
 		if (modelFile != null) {
 			checkGroup = new FileSelectionGroup(parent, Messages.label_checkModelBlock, Messages.label_useCheckModelButton,
@@ -126,9 +125,16 @@ public class CheckConfigurationPage extends AbstractWizardPage {
 	public Collection<CheckEvaluationRequest> getCheckEvaluationRequests() {
 		List<CheckEvaluationRequest> requests = new ArrayList<CheckEvaluationRequest>();
 		if (modelObject != null) {
-			requests.add(new CheckEvaluationRequest(getCheckFiles(), modelObject));
+			Collection<IFile> checkFiles = checkGroup.getFiles();
+			if (!checkFiles.isEmpty()) {
+				requests.add(new CheckEvaluationRequest(checkFiles, modelObject));
+			}
 		}
 		return requests;
+	}
+
+	public boolean isCheckEnabled() {
+		return checkGroup.getEnableButtonState();
 	}
 
 	public void finish() {
@@ -142,17 +148,15 @@ public class CheckConfigurationPage extends AbstractWizardPage {
 			if (section == null) {
 				section = settings.addNewSection(CODE_GEN_SECTION);
 			}
-			if (checkGroup != null) {
-				Collection<IFile> files = checkGroup.getFiles();
-				String[] items = new String[files.size()];
-				int i = 0;
-				for (IFile file : files) {
-					items[i] = file.getFullPath().makeRelative().toString();
-					i++;
-				}
-				section.put(STORE_SELECTED_CHECK_FILES, items);
-				section.put(STORE_ENABLE_BUTTON, checkGroup.getEnableButtonState());
+			Collection<IFile> files = checkGroup.getFiles();
+			String[] items = new String[files.size()];
+			int i = 0;
+			for (IFile file : files) {
+				items[i] = file.getFullPath().makeRelative().toString();
+				i++;
 			}
+			section.put(STORE_SELECTED_CHECK_FILES, items);
+			section.put(STORE_ENABLE_BUTTON, checkGroup.getEnableButtonState());
 		}
 	}
 
@@ -160,7 +164,7 @@ public class CheckConfigurationPage extends AbstractWizardPage {
 		IDialogSettings settings = getDialogSettings();
 		if (settings != null) {
 			IDialogSettings section = settings.getSection(CODE_GEN_SECTION);
-			if (section != null && checkGroup != null) {
+			if (section != null) {
 				String[] items = section.getArray(STORE_SELECTED_CHECK_FILES);
 				boolean enableCheck = section.getBoolean(STORE_ENABLE_BUTTON);
 				if (items != null) {
@@ -185,12 +189,5 @@ public class CheckConfigurationPage extends AbstractWizardPage {
 			}
 		}
 		return null;
-	}
-
-	protected Collection<IFile> getCheckFiles() {
-		if (checkGroup != null) {
-			return checkGroup.getFiles();
-		}
-		return new HashSet<IFile>();
 	}
 }

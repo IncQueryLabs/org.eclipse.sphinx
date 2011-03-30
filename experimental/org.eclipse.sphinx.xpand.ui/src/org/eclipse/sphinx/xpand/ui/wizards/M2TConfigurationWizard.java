@@ -118,6 +118,9 @@ public class M2TConfigurationWizard extends AbstractWizard {
 
 	@Override
 	protected void doPerformFinish(IProgressMonitor monitor) throws CoreException {
+		final CheckJob checkJob = isCheckRequired() ? createCheckJob() : null;
+		final M2TJob xpandJob = createM2TJob();
+
 		Job job = new WorkspaceJob(getM2TJobName()) {
 			@Override
 			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
@@ -127,16 +130,16 @@ public class M2TConfigurationWizard extends AbstractWizard {
 				}
 
 				try {
-					// Run check
-					CheckJob checkJob = createCheckJob();
-					IStatus status = checkJob.runInWorkspace(progress.newChild(50));
+					// Run check if required
+					if (checkJob != null) {
+						IStatus status = checkJob.runInWorkspace(progress.newChild(50));
 
-					if (!status.isOK() || progress.isCanceled()) {
-						throw new OperationCanceledException();
+						if (!status.isOK() || progress.isCanceled()) {
+							throw new OperationCanceledException();
+						}
 					}
 
 					// Run Xpand
-					M2TJob xpandJob = createM2TJob();
 					return xpandJob.runInWorkspace(progress.newChild(50));
 				} catch (OperationCanceledException ex) {
 					return Status.CANCEL_STATUS;
@@ -160,6 +163,10 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		ExtendedPlatformUI.showSystemConsole();
 		m2TConfigurationPage.finish();
 		checkConfigurationPage.finish();
+	}
+
+	protected boolean isCheckRequired() {
+		return checkConfigurationPage.isCheckEnabled() && !checkConfigurationPage.getCheckEvaluationRequests().isEmpty();
 	}
 
 	protected M2TJob createM2TJob() {

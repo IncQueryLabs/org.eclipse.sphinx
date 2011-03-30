@@ -125,11 +125,12 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 	}
 
 	protected void createPageContent(Composite parent) {
-		createTemplateBlock(parent);
-		createOutputBlock(parent);
+		// TODO Refactor groups into separate classes
+		createTemplateGroup(parent);
+		createOutputGroup(parent);
 	}
 
-	protected void createTemplateBlock(Composite parent) {
+	protected void createTemplateGroup(Composite parent) {
 		Group templateGroup = new Group(parent, SWT.SHADOW_NONE);
 		templateGroup.setText(Messages.label_template);
 		templateGroup.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
@@ -294,7 +295,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 	// wizard to constructor of page and pull the corresponding parts from
 	// org.artop.ecuc.gautosar.codegen.xpand.ui.wizards.pages.EcucM2TConfigurationPage.createOutputBlock(Composite)
 	// in here for that purpose
-	protected void createOutputBlock(Composite parent) {
+	protected void createOutputGroup(Composite parent) {
 		Group outputGroup = new Group(parent, SWT.SHADOW_NONE);
 		outputGroup.setText(Messages.label_output);
 		outputGroup.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
@@ -441,7 +442,10 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 	public Collection<XpandEvaluationRequest> getXpandEvaluationRequests() {
 		List<XpandEvaluationRequest> requests = new ArrayList<XpandEvaluationRequest>();
 		if (modelObject != null) {
-			requests.add(new XpandEvaluationRequest(getDefinitionName(), modelObject));
+			String definitionName = getDefinitionName();
+			if (definitionName != null && definitionName.length() > 0) {
+				requests.add(new XpandEvaluationRequest(definitionName, modelObject));
+			}
 		}
 		return requests;
 	}
@@ -474,7 +478,7 @@ public class M2TConfigurationPage extends AbstractWizardPage {
 			if (section == null) {
 				section = settings.addNewSection(CODE_GEN_SECTION);
 			}
-			if (templatePathField.getText().trim().length() != 0) {
+			if (templatePathField.getText().trim().length() > 0) {
 				section.put(getTemplatePathDialogSettingsKey(), templatePathField.getText());
 				String[] items = defineBlockField.getItems();
 				int selectionIndex = defineBlockField.getSelectionIndex();
