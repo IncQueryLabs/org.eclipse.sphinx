@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.xpand.ui.providers;
+package org.eclipse.sphinx.xpand.ui.outlet.providers;
 
 import java.util.ArrayList;
 import java.util.Collection;

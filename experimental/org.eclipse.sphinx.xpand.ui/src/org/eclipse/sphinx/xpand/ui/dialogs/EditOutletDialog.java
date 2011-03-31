@@ -30,7 +30,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xpand.ui.internal.Activator;
-import org.eclipse.sphinx.xpand.ui.providers.OutletProvider;
+import org.eclipse.sphinx.xpand.ui.outlet.providers.OutletProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;

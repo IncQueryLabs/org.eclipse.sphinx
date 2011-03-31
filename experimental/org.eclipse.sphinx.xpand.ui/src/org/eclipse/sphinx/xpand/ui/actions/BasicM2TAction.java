@@ -35,7 +35,7 @@ import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
-import org.eclipse.sphinx.xpand.jobs.M2TJob;
+import org.eclipse.sphinx.xpand.jobs.XpandJob;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
@@ -91,8 +91,8 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		wizardDialog.open();
 	}
 
-	protected M2TJob createM2TJob() {
-		M2TJob job = new M2TJob(getM2TJobName(), getMetaModel(), getXpandEvaluationRequests());
+	protected XpandJob createM2TJob() {
+		XpandJob job = new XpandJob(getM2TJobName(), getMetaModel(), getXpandEvaluationRequests());
 		job.setScopingResourceLoader(getScopingResourceLoader());
 		job.getOutlets().addAll(getOutlets());
 		job.setPriority(Job.BUILD);

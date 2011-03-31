@@ -30,13 +30,13 @@ import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.ui.wizards.AbstractWizard;
 import org.eclipse.sphinx.platform.util.StatusUtil;
-import org.eclipse.sphinx.xpand.jobs.M2TJob;
+import org.eclipse.sphinx.xpand.jobs.XpandJob;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xpand.ui.internal.Activator;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xpand.ui.wizards.pages.CheckConfigurationPage;
-import org.eclipse.sphinx.xpand.ui.wizards.pages.M2TConfigurationPage;
+import org.eclipse.sphinx.xpand.ui.wizards.pages.XpandConfigurationPage;
 import org.eclipse.sphinx.xtend.check.jobs.CheckJob;
 import org.eclipse.xtend.typesystem.MetaModel;
 
@@ -50,7 +50,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	private OutletsPreference outletsPreference;
 	private ExtendedOutlet defaultOutlet;
 
-	protected M2TConfigurationPage m2TConfigurationPage;
+	protected XpandConfigurationPage xpandConfigurationPage;
 	protected CheckConfigurationPage checkConfigurationPage;
 
 	public M2TConfigurationWizard(EObject modelObject, MetaModel metaModel) {
@@ -98,16 +98,16 @@ public class M2TConfigurationWizard extends AbstractWizard {
 
 	@Override
 	public void addPages() {
-		m2TConfigurationPage = createM2TConfigurationPage();
-		addPage(m2TConfigurationPage);
+		xpandConfigurationPage = createXpandConfigurationPage();
+		addPage(xpandConfigurationPage);
 		checkConfigurationPage = createCheckConfigurationPage();
 		addPage(checkConfigurationPage);
 	}
 
-	protected M2TConfigurationPage createM2TConfigurationPage() {
-		M2TConfigurationPage m2TPage = new M2TConfigurationPage(Messages.label_configPageName);
-		m2TPage.init(modelObject, metaModel, getOutletsPreference(), getDefaultOutlet());
-		return m2TPage;
+	protected XpandConfigurationPage createXpandConfigurationPage() {
+		XpandConfigurationPage xpandPage = new XpandConfigurationPage(Messages.label_configPageName);
+		xpandPage.init(modelObject, metaModel, getOutletsPreference(), getDefaultOutlet());
+		return xpandPage;
 	}
 
 	protected CheckConfigurationPage createCheckConfigurationPage() {
@@ -119,7 +119,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	@Override
 	protected void doPerformFinish(IProgressMonitor monitor) throws CoreException {
 		final CheckJob checkJob = isCheckRequired() ? createCheckJob() : null;
-		final M2TJob xpandJob = createM2TJob();
+		final XpandJob xpandJob = createXpandJob();
 
 		Job job = new WorkspaceJob(getM2TJobName()) {
 			@Override
@@ -161,7 +161,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		job.schedule();
 
 		ExtendedPlatformUI.showSystemConsole();
-		m2TConfigurationPage.finish();
+		xpandConfigurationPage.finish();
 		checkConfigurationPage.finish();
 	}
 
@@ -169,10 +169,10 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		return checkConfigurationPage.isCheckEnabled() && !checkConfigurationPage.getCheckEvaluationRequests().isEmpty();
 	}
 
-	protected M2TJob createM2TJob() {
-		M2TJob job = new M2TJob(getM2TJobName(), metaModel, m2TConfigurationPage.getXpandEvaluationRequests());
+	protected XpandJob createXpandJob() {
+		XpandJob job = new XpandJob(getM2TJobName(), metaModel, xpandConfigurationPage.getXpandEvaluationRequests());
 		job.setScopingResourceLoader(getScopingResourceLoader());
-		job.getOutlets().addAll(m2TConfigurationPage.getOutlets());
+		job.getOutlets().addAll(xpandConfigurationPage.getOutlets());
 		job.setPriority(Job.BUILD);
 		IFile file = EcorePlatformUtil.getFile(modelObject);
 		if (file != null) {

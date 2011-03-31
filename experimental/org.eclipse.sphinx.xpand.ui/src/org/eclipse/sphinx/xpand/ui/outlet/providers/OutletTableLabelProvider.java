@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.xpand.ui.providers;
+package org.eclipse.sphinx.xpand.ui.outlet.providers;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;

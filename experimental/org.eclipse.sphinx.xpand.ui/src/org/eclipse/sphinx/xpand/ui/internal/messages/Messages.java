@@ -35,6 +35,7 @@ public class Messages extends NLS {
 	public static String label_useCheckModelButton;
 	public static String label_checkModelBlock;
 	public static String label_checkFiles;
+	public static String label_configureProjectSpecificSettings;
 
 	public static String msg_chooseTemplate;
 	public static String msg_chooseTemplateError;
