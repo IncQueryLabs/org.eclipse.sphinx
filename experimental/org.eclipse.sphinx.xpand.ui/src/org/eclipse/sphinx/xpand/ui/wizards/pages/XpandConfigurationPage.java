@@ -29,16 +29,13 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.platform.ui.fields.ComboField;
 import org.eclipse.sphinx.platform.ui.fields.SelectionButtonField;
-import org.eclipse.sphinx.platform.ui.fields.StringButtonField;
 import org.eclipse.sphinx.platform.ui.wizards.pages.AbstractWizardPage;
 import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xpand.ui.groups.OutputGroup;
 import org.eclipse.sphinx.xpand.ui.groups.TemplateGroup;
-import org.eclipse.sphinx.xpand.ui.internal.Activator;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
@@ -47,11 +44,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.xtend.typesystem.MetaModel;
 
 public class XpandConfigurationPage extends AbstractWizardPage {
-
-	// Dialog setting
-	protected static final String CODE_GEN_SECTION = Activator.getPlugin().getSymbolicName() + ".CODE_GEN_SECTION"; //$NON-NLS-1$
-	protected static final String STORE_TEMPLATE_PATH = "TEMPLATE_PATH$"; //$NON-NLS-1$
-	protected static final String STORE_SELECTED_DEFINE_BLOCK = "SELECTED_DEFINE_BLOCK"; //$NON-NLS-1$
 
 	// Template Group
 	protected TemplateGroup templateGroup;
@@ -102,8 +94,14 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 	 * Creates the template group field and load dialog settings.
 	 */
 	protected void createTemplateGroup(Composite parent) {
-		templateGroup = new TemplateGroup(parent, Messages.label_template, 3, modelObject, metaModel);
-		loadTemplateGroupSettings();
+		templateGroup = new TemplateGroup(parent, Messages.label_template, 3, modelObject, metaModel) {
+			@Override
+			protected void groupChanged(Group group) {
+				getWizard().getContainer().updateButtons();
+			};
+		};
+		templateGroup.setDialogSettings(getDialogSettings());
+		templateGroup.loadGroupSettings();
 	}
 
 	/**
@@ -140,26 +138,8 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 
 	@Override
 	protected boolean doIsPageComplete() {
-		return isTemplateGroupComplete() && isOutputGroupComplete();
+		return templateGroup.isTemplateGroupComplete() && isOutputGroupComplete();
 
-	}
-
-	protected boolean isTemplateGroupComplete() {
-		IFile templateFile = getFile(templateGroup.getTemplatePathField().getText());
-		if (templateFile != null) {
-			return templateFile.exists() && templateGroup.getDefineBlockField().getSelectionIndex() != -1;
-		}
-		return false;
-	}
-
-	protected IFile getFile(String fullPath) {
-		if (fullPath != null && fullPath.length() > 0) {
-			Path path = new Path(fullPath);
-			if (path.segmentCount() > 1) {
-				return ResourcesPlugin.getWorkspace().getRoot().getFile(path);
-			}
-		}
-		return null;
 	}
 
 	protected IContainer getContainer(String fullPath) {
@@ -193,7 +173,7 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 	public Collection<XpandEvaluationRequest> getXpandEvaluationRequests() {
 		List<XpandEvaluationRequest> requests = new ArrayList<XpandEvaluationRequest>();
 		if (modelObject != null) {
-			String definitionName = templateGroup.getDefinitionName();
+			String definitionName = templateGroup.getQualifiedDefinitionName();
 			if (definitionName != null && definitionName.length() > 0) {
 				requests.add(new XpandEvaluationRequest(definitionName, modelObject));
 			}
@@ -219,48 +199,8 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 	}
 
 	public void finish() {
-		saveWidgetValues();
-	}
-
-	protected void saveWidgetValues() {
-		IDialogSettings settings = getDialogSettings();
-		if (settings != null) {
-			IDialogSettings section = settings.getSection(CODE_GEN_SECTION);
-			if (section == null) {
-				section = settings.addNewSection(CODE_GEN_SECTION);
-			}
-			StringButtonField templatePathField = templateGroup.getTemplatePathField();
-			if (templatePathField.getText().trim().length() > 0) {
-				section.put(getTemplatePathDialogSettingsKey(), templatePathField.getText());
-				ComboField defineBlockField = templateGroup.getDefineBlockField();
-				String[] items = defineBlockField.getItems();
-				int selectionIndex = defineBlockField.getSelectionIndex();
-				if (items.length > 0 && selectionIndex != -1) {
-					section.put(STORE_SELECTED_DEFINE_BLOCK, items[selectionIndex]);
-				}
-			}
+		if (templateGroup != null) {
+			templateGroup.saveGroupSettings();
 		}
-	}
-
-	protected void loadTemplateGroupSettings() {
-		IDialogSettings section = getDialogSettings().getSection(CODE_GEN_SECTION);
-		if (section != null) {
-			String templatePath = section.get(getTemplatePathDialogSettingsKey());
-			if (templatePath != null) {
-				IFile templateFile = getFile(templatePath);
-				if (templateFile != null && templateFile.exists()) {
-					StringButtonField templatePathField = templateGroup.getTemplatePathField();
-					templatePathField.setText(templatePath);
-					templateGroup.updateDefineBlockItems(templateFile);
-					ComboField defineBlockField = templateGroup.getDefineBlockField();
-					defineBlockField.selectItem(section.get(STORE_SELECTED_DEFINE_BLOCK));
-				}
-			}
-		}
-	}
-
-	protected String getTemplatePathDialogSettingsKey() {
-		// FIXME modelObject may be null
-		return STORE_TEMPLATE_PATH + modelObject.eResource().getURIFragment(modelObject);
 	}
 }

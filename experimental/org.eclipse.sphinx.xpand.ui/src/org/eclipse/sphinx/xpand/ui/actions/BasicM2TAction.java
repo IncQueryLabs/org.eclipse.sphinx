@@ -74,7 +74,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 
 	@Override
 	public void run() {
-		if (getDefinitionName() != null) {
+		if (getDefinitionName(getSelectedModelObject()) != null) {
 			Job job = createM2TJob();
 			// Show console and make sure that all system output produced during execution gets displayed there
 			ExtendedPlatformUI.showSystemConsole();
@@ -118,8 +118,8 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	}
 
 	protected Collection<XpandEvaluationRequest> getXpandEvaluationRequests() {
-		String definitionName = getDefinitionName();
 		EObject selected = getSelectedModelObject();
+		String definitionName = getDefinitionName(selected);
 		if (definitionName != null && selected != null) {
 			XpandEvaluationRequest request = new XpandEvaluationRequest(definitionName, selected);
 			return Collections.singletonList(request);
@@ -127,16 +127,16 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		return Collections.emptyList();
 	}
 
-	protected String getDefinitionName() {
-		IFile templateFile = getTemplateFile();
+	protected String getDefinitionName(EObject modelObject) {
+		IFile templateFile = getTemplateFile(modelObject);
 		if (templateFile != null) {
 			return getScopingResourceLoader().getQualifiedName(templateFile, getTemplateName());
 		}
 		return null;
 	}
 
-	protected IFile getTemplateFile() {
-		IFile modelFile = EcorePlatformUtil.getFile(getSelectedModelObject());
+	protected IFile getTemplateFile(EObject modelObject) {
+		IFile modelFile = EcorePlatformUtil.getFile(modelObject);
 		if (modelFile != null) {
 			IPath templatePath = modelFile.getFullPath().removeFileExtension().addFileExtension(XpandUtil.TEMPLATE_EXTENSION);
 			return ResourcesPlugin.getWorkspace().getRoot().getFile(templatePath);

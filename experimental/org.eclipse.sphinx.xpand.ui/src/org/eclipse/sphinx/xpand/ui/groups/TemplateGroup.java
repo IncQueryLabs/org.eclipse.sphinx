@@ -15,19 +15,24 @@
 package org.eclipse.sphinx.xpand.ui.groups;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.internal.xpand2.ast.AbstractDefinition;
 import org.eclipse.internal.xpand2.ast.Template;
-import org.eclipse.internal.xpand2.model.XpandDefinition;
+import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
@@ -59,6 +64,11 @@ import org.eclipse.xtend.typesystem.Type;
 
 public class TemplateGroup {
 
+	// Dialog setting
+	protected static final String CODE_GEN_SECTION = Activator.getPlugin().getSymbolicName() + ".CODE_GEN_SECTION"; //$NON-NLS-1$
+	public static final String STORE_TEMPLATE_PATH = "TEMPLATE_PATH$"; //$NON-NLS-1$
+	protected static final String STORE_SELECTED_DEFINE_BLOCK = "SELECTED_DEFINE_BLOCK"; //$NON-NLS-1$
+
 	/**
 	 * The name of the template group.
 	 */
@@ -72,7 +82,7 @@ public class TemplateGroup {
 	/**
 	 * The define block field.
 	 */
-	protected ComboField defineBlockField;
+	protected ComboField definitionComboField;
 
 	/**
 	 * The definition name field.
@@ -94,19 +104,24 @@ public class TemplateGroup {
 	 */
 	private AbstractDefinition[] definitions;
 
+	/**
+	 * The dialog settings for this group; <code>null</code> if none.
+	 */
+	private IDialogSettings dialogSettings = null;
+
 	public TemplateGroup(Composite parent, String groupName, int numColumns, EObject modelObject, MetaModel metaModel) {
 		this(groupName, modelObject, metaModel);
 		createContent(parent, numColumns);
 	}
 
-	private TemplateGroup(String groupName, EObject modelObject, MetaModel metaModel) {
+	public TemplateGroup(String groupName, EObject modelObject, MetaModel metaModel) {
 		this.groupName = groupName;
 		this.modelObject = modelObject;
 		this.metaModel = metaModel;
 	}
 
 	protected void createContent(final Composite parent, int numColumns) {
-		Group templateGroup = new Group(parent, SWT.SHADOW_NONE);
+		final Group templateGroup = new Group(parent, SWT.SHADOW_NONE);
 		templateGroup.setText(groupName);
 		templateGroup.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
 
@@ -159,7 +174,7 @@ public class TemplateGroup {
 					IFile file = (IFile) dialog.getFirstResult();
 					if (file != null) {
 						templatePathField.setText(file.getFullPath().makeRelative().toString());
-						updateDefineBlockItems(file);
+						updateDefinitionComboItems(file);
 					}
 				}
 			}
@@ -170,19 +185,21 @@ public class TemplateGroup {
 		templatePathField.addFieldListener(new IFieldListener() {
 
 			public void dialogFieldChanged(IField field) {
-				updateDefineBlockItems(getFile(templatePathField.getText()));
+				updateDefinitionComboItems(getFile(templatePathField.getText()));
 				updateDefinitionaNameField();
+				groupChanged(templateGroup);
 			}
 		});
 
-		// Define Block
-		defineBlockField = new ComboField(true);
-		defineBlockField.setLabelText(Messages.label_defineBlock);
-		defineBlockField.fillIntoGrid(templateGroup, numColumns);
-		defineBlockField.addFieldListener(new IFieldListener() {
+		// Definition Field
+		definitionComboField = new ComboField(true);
+		definitionComboField.setLabelText(Messages.label_defineBlock);
+		definitionComboField.fillIntoGrid(templateGroup, numColumns);
+		definitionComboField.addFieldListener(new IFieldListener() {
 
 			public void dialogFieldChanged(IField field) {
 				updateDefinitionaNameField();
+				groupChanged(templateGroup);
 			}
 		});
 
@@ -194,16 +211,24 @@ public class TemplateGroup {
 	}
 
 	/**
+	 * This method should be overriding for instance by wizards that contain the output group field for example to
+	 * adjust the enable state of the Back, Next, and Finish buttons wizard page.
+	 */
+	protected void groupChanged(Group group) {
+		// Do nothing by default.
+	}
+
+	/**
 	 * Updates items of define block field after loading selected template file.
 	 */
-	public void updateDefineBlockItems(IFile templateFile) {
+	public void updateDefinitionComboItems(IFile templateFile) {
 		Template template = loadTemplate(templateFile);
 		if (template != null) {
 			definitions = template.getAllDefinitions();
-			defineBlockField.setItems(createDefineBlockItems(definitions));
+			definitionComboField.setItems(createDefineBlockItems(definitions));
 			return;
 		}
-		defineBlockField.setItems(new String[0]);
+		definitionComboField.setItems(new String[0]);
 	}
 
 	/**
@@ -234,37 +259,44 @@ public class TemplateGroup {
 		return idx != -1 && typeName.length() >= idx + namespaceDelimiter.length() ? typeName.substring(idx + namespaceDelimiter.length()) : typeName;
 	}
 
-	public String getDefinitionName() {
-		if (defineBlockField.getSelectionIndex() != -1) {
-			String definitionName = defineBlockField.getItems()[defineBlockField.getSelectionIndex()];
-			for (AbstractDefinition definition : definitions) {
-				if (definitionName.equals(definition.getName())) {
-					return getQualifiedDefinitionName(definition);
-				}
-			}
+	// TODO File bug to Xpand: org.eclipse.internal.xpand2.ast.AbstractDefinition#getQualifiedName() must not remove the
+	// 4 last characters of the definition's file name in hard-coded manner because it might yield the file's base name
+	// without extension only.
+	public String getQualifiedDefinitionName() {
+		String selectedDefinitionName = getSelectedDefinitionComboItem();
+		if (selectedDefinitionName != null) {
+			return getQualifiedName(getFile(getTemplatePathField().getText()), selectedDefinitionName);
 		}
 		return ""; //$NON-NLS-1$
 	}
 
-	// TODO File bug to Xpand: org.eclipse.internal.xpand2.ast.AbstractDefinition#getQualifiedName() must not remove the
-	// 4 last characters of the definition's file name in hard-coded manner because it might yield the file's base name
-	// without extension only.
-	protected String getQualifiedDefinitionName(XpandDefinition definition) {
-		String fileName = definition.getFileName();
-		if (fileName != null) {
-			String prefix = fileName.replaceAll("/", IXtendXpandConstants.NS_DELIMITER); //$NON-NLS-1$ 
-			if (prefix.endsWith(XpandUtil.TEMPLATE_EXTENSION)) {
-				prefix = prefix.substring(0, prefix.length() - XpandUtil.TEMPLATE_EXTENSION.length());
+	// TODO (aakar) Move to an utility class, used also in IScopResourceLoader
+	protected String getQualifiedName(IFile underlyingFile, String statementName) {
+		Assert.isNotNull(underlyingFile);
+
+		if (underlyingFile.exists()) {
+			StringBuilder path = new StringBuilder();
+			IPath templateNamespace = underlyingFile.getProjectRelativePath().removeFileExtension();
+			for (Iterator<String> iter = Arrays.asList(templateNamespace.segments()).iterator(); iter.hasNext();) {
+				String segment = iter.next();
+				path.append(segment);
+				if (iter.hasNext()) {
+					path.append(IXtendXpandConstants.NS_DELIMITER);
+				}
 			}
-			return prefix + IXtendXpandConstants.NS_DELIMITER + definition.getName();
+			if (statementName != null && statementName.length() > 0) {
+				path.append(IXtendXpandConstants.NS_DELIMITER);
+				path.append(statementName);
+			}
+			return path.toString();
 		}
-		return definition.getName();
+		return null;
 	}
 
 	protected void updateDefinitionaNameField() {
 		IFile templateFile = getFile(templatePathField.getText());
 		if (templateFile != null) {
-			definitionNameField.setText(getDefinitionName());
+			definitionNameField.setText(getQualifiedDefinitionName());
 		} else {
 			definitionNameField.setText("..."); //$NON-NLS-1$
 		}
@@ -284,9 +316,18 @@ public class TemplateGroup {
 		return null;
 	}
 
+	public boolean isTemplateGroupComplete() {
+		IFile templateFile = getFile(getTemplatePathField().getText());
+		if (templateFile != null) {
+			return templateFile.exists() && getDefinitionComboField().getSelectionIndex() != -1;
+		}
+		return false;
+	}
+
 	/**
 	 * Gets the file located at the given full path or returns null.
 	 */
+	// TODO (aakar) Put this in ExtendedPlatform
 	protected IFile getFile(String fullPath) {
 		if (fullPath != null && fullPath.length() > 0) {
 			Path path = new Path(fullPath);
@@ -301,8 +342,19 @@ public class TemplateGroup {
 		return templatePathField;
 	}
 
-	public ComboField getDefineBlockField() {
-		return defineBlockField;
+	public ComboField getDefinitionComboField() {
+		return definitionComboField;
+	}
+
+	public String getSelectedDefinitionComboItem() {
+		if (definitionComboField != null && !definitionComboField.getComboControl().isDisposed()) {
+			String[] items = definitionComboField.getItems();
+			int selectionIndex = definitionComboField.getSelectionIndex();
+			if (items.length > 0 && selectionIndex != -1) {
+				return items[selectionIndex];
+			}
+		}
+		return null;
 	}
 
 	public StringField getDefinitionNameField() {
@@ -313,4 +365,111 @@ public class TemplateGroup {
 		return definitions;
 	}
 
+	/**
+	 * Loads the template path and the define block from the dialog settings. Must call
+	 * {@link #setDialogSettings(IDialogSettings)} before calling this method.
+	 */
+	public void loadGroupSettings() {
+		String templatePath = getTemplatePathFromDialogSettings();
+		if (templatePath != null) {
+			templatePathField.setText(templatePath);
+			updateDefinitionComboItems(getFile(templatePath));
+			String defineBlock = getDefinitionNameFromDialogSettings();
+			if (defineBlock != null) {
+				definitionComboField.selectItem(defineBlock);
+			}
+		}
+	}
+
+	public String getTemplatePathFromDialogSettings() {
+		String result = null;
+		String templatePathDialogSettingsKey = getTemplatePathDialogSettingsKey(modelObject);
+		IDialogSettings templatePathSection = getTemplatePathSection();
+		if (templatePathSection != null) {
+			String templatePath = templatePathSection.get(templatePathDialogSettingsKey);
+			if (templatePath != null) {
+				IFile templateFile = getFile(templatePath);
+				if (templateFile != null && templateFile.exists()) {
+					result = templatePath;
+				}
+			}
+		}
+		return result;
+	}
+
+	public String getDefinitionNameFromDialogSettings() {
+		String result = null;
+		IDialogSettings templatePathSection = getTemplatePathSection();
+		if (templatePathSection != null) {
+			result = templatePathSection.get(STORE_SELECTED_DEFINE_BLOCK);
+		}
+		return result;
+	}
+
+	protected IDialogSettings getTemplatePathSection() {
+		IDialogSettings result = null;
+		String templatePathDialogSettingsKey = getTemplatePathDialogSettingsKey(modelObject);
+		IDialogSettings section = getDialogSettings().getSection(CODE_GEN_SECTION);
+		if (section != null) {
+			result = section.getSection(templatePathDialogSettingsKey);
+		}
+		return result;
+	}
+
+	/**
+	 * Sets the dialog settings for this group.
+	 * <p>
+	 * The dialog settings is used to record state between group invocations (i.e. template path and the selected define
+	 * block inside this template)
+	 * </p>
+	 * 
+	 * @param settings
+	 *            the dialog settings, or <code>null</code> if none
+	 * @see #getDialogSettings
+	 */
+	public void setDialogSettings(IDialogSettings dialogSettings) {
+		this.dialogSettings = dialogSettings;
+	}
+
+	/**
+	 * Returns the dialog settings for this group.
+	 * 
+	 * @return the dialog settings, or <code>null</code> if none
+	 */
+	protected IDialogSettings getDialogSettings() {
+		return dialogSettings;
+	}
+
+	/**
+	 * Saves, using the {@link DialogSettings} dialogSettings, the state of the different fields of this group.
+	 * 
+	 * @param templatePathDialogSettingsKey
+	 * @see #setDialogSettings(IDialogSettings)
+	 */
+	public void saveGroupSettings() {
+		IDialogSettings settings = getDialogSettings();
+		String templatePathDialogSettingsKey = getTemplatePathDialogSettingsKey(modelObject);
+		if (settings != null) {
+			IDialogSettings topLevelSection = settings.getSection(CODE_GEN_SECTION);
+			if (topLevelSection == null) {
+				topLevelSection = settings.addNewSection(CODE_GEN_SECTION);
+			}
+			if (templatePathField.getText().trim().length() != 0) {
+				IDialogSettings templatePathSection = topLevelSection.getSection(templatePathDialogSettingsKey);
+				if (templatePathSection == null) {
+					templatePathSection = topLevelSection.addNewSection(templatePathDialogSettingsKey);
+				}
+				templatePathSection.put(templatePathDialogSettingsKey, templatePathField.getText());
+				String[] items = definitionComboField.getItems();
+				int selectionIndex = definitionComboField.getSelectionIndex();
+				if (items.length > 0 && selectionIndex != -1) {
+					templatePathSection.put(STORE_SELECTED_DEFINE_BLOCK, items[selectionIndex]);
+				}
+			}
+		}
+	}
+
+	protected String getTemplatePathDialogSettingsKey(EObject object) {
+		return TemplateGroup.STORE_TEMPLATE_PATH + object.eResource().getURIFragment(object);
+	}
 }
