@@ -51,10 +51,9 @@ import org.eclipse.xtend.expression.ResourceManagerDefaultImpl;
 import org.eclipse.xtend.expression.Variable;
 import org.eclipse.xtend.typesystem.MetaModel;
 
-// TODO Rename to XpandJob
-public class M2TJob extends WorkspaceJob {
+public class XpandJob extends WorkspaceJob {
 
-	protected static final Log log = LogFactory.getLog(M2TJob.class);
+	protected static final Log log = LogFactory.getLog(XpandJob.class);
 
 	protected MetaModel metaModel;
 	protected Collection<XpandEvaluationRequest> xpandEvaluationRequests;
@@ -62,11 +61,11 @@ public class M2TJob extends WorkspaceJob {
 	private IScopingResourceLoader scopingResourceLoader;
 	private Collection<ExtendedOutlet> outlets;
 
-	public M2TJob(String name, MetaModel metaModel, XpandEvaluationRequest xpandEvaluationRequest) {
+	public XpandJob(String name, MetaModel metaModel, XpandEvaluationRequest xpandEvaluationRequest) {
 		this(name, metaModel, Collections.singleton(xpandEvaluationRequest));
 	}
 
-	public M2TJob(String name, MetaModel metaModel, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
+	public XpandJob(String name, MetaModel metaModel, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
 		super(name);
 		this.metaModel = metaModel;
 		this.xpandEvaluationRequests = xpandEvaluationRequests;

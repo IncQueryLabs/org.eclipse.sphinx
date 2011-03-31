@@ -32,7 +32,7 @@ import org.eclipse.sphinx.tests.xtendxpand.integration.internal.Activator;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandTestReferenceWorkspace;
 import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
-import org.eclipse.sphinx.xpand.jobs.M2TJob;
+import org.eclipse.sphinx.xpand.jobs.XpandJob;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
 
@@ -65,7 +65,7 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		// Xpand execution
 		XpandEvaluationRequest xpandEvaluationRequest = new XpandEvaluationRequest(XtendXpandTestReferenceWorkspace.XPAND_CONFIGH_DEFINITION_NAME,
 				application);
-		M2TJob xpandJob = new M2TJob("Xpand Job", new SphinxManagedEmfMetaModel(hb20InstanceModelFile.getProject()), xpandEvaluationRequest); //$NON-NLS-1$
+		XpandJob xpandJob = new XpandJob("Xpand Job", new SphinxManagedEmfMetaModel(hb20InstanceModelFile.getProject()), xpandEvaluationRequest); //$NON-NLS-1$
 		xpandJob.setScopingResourceLoader(new BasicWorkspaceResourceLoader());
 		IStatus xpandStatus = xpandJob.runInWorkspace(new NullProgressMonitor());
 		assertEquals(Status.OK_STATUS, xpandStatus);
@@ -90,7 +90,7 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		assertTrue(xptFile.exists());
 
 		xpandEvaluationRequest = new XpandEvaluationRequest(XtendXpandTestReferenceWorkspace.XPAND_CONFIGH_TOHOUTLET_DEFINITION_NAME, application);
-		xpandJob = new M2TJob("Xpand Job", new SphinxManagedEmfMetaModel(hb20InstanceModelFile.getProject()), xpandEvaluationRequest); //$NON-NLS-1$
+		xpandJob = new XpandJob("Xpand Job", new SphinxManagedEmfMetaModel(hb20InstanceModelFile.getProject()), xpandEvaluationRequest); //$NON-NLS-1$
 		xpandJob.setScopingResourceLoader(new BasicWorkspaceResourceLoader());
 
 		// Add an outlet named HOUTLET
