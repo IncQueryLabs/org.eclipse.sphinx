@@ -66,12 +66,15 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 	private static final String NAME = "UML2"; //$NON-NLS-1$
 
 	/**
-	 * Default constructor.
+	 * Private default constructor for singleton pattern.
 	 */
-	public UML2MMDescriptor() {
+	private UML2MMDescriptor() {
 		super(ID, NAMESPACE, NAME);
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor#getCompatibleNamespaceURIs()
+	 */
 	@Override
 	public List<URI> getCompatibleNamespaceURIs() {
 		List<URI> namespaceURIs = new ArrayList<URI>();
@@ -84,11 +87,17 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 		return namespaceURIs;
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor#getDefaultContentTypeId()
+	 */
 	@Override
 	public String getDefaultContentTypeId() {
 		return XMI_CONTENT_TYPE_ID;
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor#getCompatibleContentTypeIds()
+	 */
 	@Override
 	public List<String> getCompatibleContentTypeIds() {
 		List<String> contentTypeIds = new ArrayList<String>();

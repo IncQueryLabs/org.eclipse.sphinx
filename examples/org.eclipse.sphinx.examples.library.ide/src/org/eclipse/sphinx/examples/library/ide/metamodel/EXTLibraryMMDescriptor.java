@@ -23,7 +23,7 @@ import org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor;
 public class EXTLibraryMMDescriptor extends AbstractMetaModelDescriptor {
 
 	/**
-	 * The id of the XMI file content type for the Extended Library metamodel.
+	 * The id of the content type for Extended Library XMI files.
 	 * <p>
 	 * Provides fix for wrong {@link EXTLibraryPackage#eCONTENT_TYPE} value which should be
 	 * <code>org.eclipse.emf.examples.library.extendedLibrary</code> but actually is <code>extendedLibrary</code>.
@@ -54,12 +54,15 @@ public class EXTLibraryMMDescriptor extends AbstractMetaModelDescriptor {
 	private static final String NAME = "Extended Library"; //$NON-NLS-1$
 
 	/**
-	 * Default constructor.
+	 * Private default constructor for singleton pattern.
 	 */
-	public EXTLibraryMMDescriptor() {
+	private EXTLibraryMMDescriptor() {
 		super(ID, NAMESPACE, NAME);
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor#getDefaultContentTypeId()
+	 */
 	@Override
 	public String getDefaultContentTypeId() {
 		return XMI_CONTENT_TYPE_ID;

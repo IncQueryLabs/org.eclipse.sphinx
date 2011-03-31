@@ -51,12 +51,15 @@ public class GraphitiMMDescriptor extends AbstractMetaModelDescriptor {
 	private static final String NAME = "Graphiti MetaModel"; //$NON-NLS-1$
 
 	/**
-	 * Default constructor.
+	 * Private default constructor for singleton pattern.
 	 */
-	public GraphitiMMDescriptor() {
+	private GraphitiMMDescriptor() {
 		super(ID, NAMESPACE, EPKG_NS_URI_POSTFIX_PATTERN, NAME);
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor#getDefaultContentTypeId()
+	 */
 	@Override
 	public String getDefaultContentTypeId() {
 		return GRAPHITI_DIAGRAM_CONTENT_TYPE_ID;

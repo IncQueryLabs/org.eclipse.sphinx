@@ -42,9 +42,9 @@ public class GMFNotationDescriptor extends AbstractMetaModelDescriptor {
 	private static final String NAME = "GMF Notation"; //$NON-NLS-1$
 
 	/**
-	 * Default constructor.
+	 * Private default constructor for singleton pattern.
 	 */
-	public GMFNotationDescriptor() {
+	private GMFNotationDescriptor() {
 		super(ID, NAMESPACE, NAME);
 	}
 

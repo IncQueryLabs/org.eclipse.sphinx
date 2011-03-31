@@ -23,6 +23,18 @@ import org.eclipse.sphinx.examples.hummingbird.ide.metamodel.HummingbirdMMDescri
  */
 public class Hummingbird10MMDescriptor extends HummingbirdMMDescriptor {
 
+	/**
+	 * The id of the content type for Hummingbird 1.0 XMI files.
+	 */
+	/*
+	 * Performance optimization: Don't retrieve content type id with Hummingbird10Package.eCONTENT_TYPE so as to avoid
+	 * unnecessary initialization of the Hummingbird 1.0 metamodel's EPackage. Clients may want to consult the
+	 * Hummingbird 1.0 metamodel descriptor even if no Hummingbird 1.0 XMI file actually exists, and the initialization
+	 * of the Hummingbird 1.0 metamodel's EPackage in such situations would entail useless runtime and memory
+	 * consumption overhead.
+	 */
+	public static final String XMI_CONTENT_TYPE_ID = "org.eclipse.sphinx.examples.hummingbird10.hummingbird10XMIFile"; //$NON-NLS-1$
+
 	private static final String ID = "org.eclipse.sphinx.examples.hummingbird10"; //$NON-NLS-1$
 	private static final String NS_POSTFIX = "1.0.0"; //$NON-NLS-1$
 	private static final String EPKG_NS_URI_POSTFIX_PATTERN = "1\\.0\\.0(/\\w+)*"; //$NON-NLS-1$
@@ -35,9 +47,17 @@ public class Hummingbird10MMDescriptor extends HummingbirdMMDescriptor {
 	public static final Hummingbird10MMDescriptor INSTANCE = new Hummingbird10MMDescriptor();
 
 	/**
-	 * Default constructor.
+	 * Private default constructor for singleton pattern.
 	 */
-	public Hummingbird10MMDescriptor() {
+	private Hummingbird10MMDescriptor() {
 		super(ID, new MetaModelVersionData(NS_POSTFIX, EPKG_NS_URI_POSTFIX_PATTERN, NAME, ORDINAL));
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.examples.hummingbird.ide.metamodel.HummingbirdMMDescriptor#getDefaultContentTypeId()
+	 */
+	@Override
+	public String getDefaultContentTypeId() {
+		return XMI_CONTENT_TYPE_ID;
 	}
 }

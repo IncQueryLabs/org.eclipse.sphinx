@@ -18,7 +18,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.util.Diagnostic;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
@@ -81,22 +80,6 @@ public abstract class AbstractResourceScopeProvider implements IResourceScopePro
 		 */
 		if (MetaModelDescriptorRegistry.INSTANCE.getFileExtensionsAssociatedWithTargetDescriptors().contains(extension)) {
 			return true;
-		}
-
-		// Check if the given file's extension matches one of the default model file extensions implied by these
-		// metamodels
-		/*
-		 * !! Important Note !! This is done in make sure that model files resulting from metamodels which have been
-		 * generated using EMF GenModel default settings (and therefore have no content type) get accepted without
-		 * requiring these metamodels to contribute a custom content type definition or resource scope provider
-		 * implementation for that purpose.
-		 */
-		for (IMetaModelDescriptor mmDescriptor : ResourceScopeProviderRegistry.INSTANCE.getMetaModelDescriptorsFor(this)) {
-			for (EPackage ePackage : mmDescriptor.getEPackages()) {
-				if (ePackage.getName().equals(extension)) {
-					return true;
-				}
-			}
 		}
 
 		return false;

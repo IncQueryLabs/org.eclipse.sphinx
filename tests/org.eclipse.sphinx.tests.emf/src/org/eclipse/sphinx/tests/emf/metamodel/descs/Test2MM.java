@@ -38,4 +38,8 @@ public class Test2MM extends AbstractMetaModelDescriptor {
 		setEPackageRegistry(MOCK_EPKG_REGISTRY);
 	}
 
+	@Override
+	public String getDefaultContentTypeId() {
+		return "";
+	}
 }

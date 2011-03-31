@@ -204,8 +204,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			id = id.substring(0, id.lastIndexOf(".")); //$NON-NLS-1$
 		}
 
-		return new AbstractMetaModelDescriptor(id, ePackage.getNsURI(), ePackage.getName()) {
-		};
+		return new DefaultMetaModelDescriptor(id, ePackage.getNsURI(), ePackage.getName());
 	}
 
 	/**
@@ -896,7 +895,14 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	/**
 	 * @param class
 	 * @return
+	 * @deprecated It is not recommended use this method because the {@link IMetaModelDescriptor metamodel descriptor}
+	 *             retrieval strategy implemented here has the side effect of that it triggers a full initialization of
+	 *             all {@link EPackage}s behind potentially all {@link IMetaModelDescriptor metamodel descriptor}s. This
+	 *             can have significant impact on runtime performance and may cause that the {@link EPackage}s of
+	 *             metamodels become initialized even though not a single instance of these metamodels exists in the
+	 *             workspace.
 	 */
+	@Deprecated
 	public IMetaModelDescriptor getDescriptor(final Class<?> clazz) {
 		if (clazz != null) {
 			IMetaModelDescriptor descriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
@@ -1219,14 +1225,29 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		}
 	}
 
-	private static final class AnyMetaModelDescriptor extends AbstractMetaModelDescriptor {
+	private static class DefaultMetaModelDescriptor extends AbstractMetaModelDescriptor {
+
+		protected DefaultMetaModelDescriptor(String identifier, String namespace, String name) {
+			super(identifier, namespace, name);
+		}
+
+		/*
+		 * @see org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor#getDefaultContentTypeId()
+		 */
+		@Override
+		public String getDefaultContentTypeId() {
+			return ""; //$NON-NLS-1$
+		}
+	}
+
+	private static final class AnyMetaModelDescriptor extends DefaultMetaModelDescriptor {
 
 		public AnyMetaModelDescriptor() {
 			super("org.eclipse.sphinx.emf.metamodel.any", "http://any.mm", "Any metamodel"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 
-	private static final class NoMetaModelDescriptor extends AbstractMetaModelDescriptor {
+	private static final class NoMetaModelDescriptor extends DefaultMetaModelDescriptor {
 
 		public NoMetaModelDescriptor() {
 			super("org.eclipse.sphinx.emf.metamodel.no", "http://no.mm", "No metamodel"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

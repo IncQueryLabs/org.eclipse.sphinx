@@ -357,10 +357,26 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 		fContentTypeIds = safeContentTypeIds;
 	}
 
-	public String getDefaultContentTypeId() {
-		return getRootEPackageContentTypeId();
-	}
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getDefaultContentTypeId()
+	 */
+	public abstract String getDefaultContentTypeId();
 
+	/**
+	 * Returns the content type identifier exposed on the metamodel's {@link #getRootEPackage() root EPackage}, if any.
+	 * 
+	 * @return The content type identifier of the metamodel's {@link #getRootEPackage() root EPackage}, or and empty
+	 *         string if no such is available.
+	 * @deprecated This method could be used to implement {@link #getDefaultContentTypeId()}. It is however not
+	 *             recommended to do so because the content type id retrieval strategy implemented here has the side
+	 *             effect of that it triggers a full initialization of the metamodel's root {@link EPackage} and all
+	 *             dependent {@link EPackage}s. This can have significant impact on runtime performance, e.g., in the UI
+	 *             when {@link IMetaModelDescriptor metamodel descriptor}s are used to determine if some common
+	 *             navigator content needs to be activated or not, and may cause that the {@link EPackage}s of a
+	 *             metamodel become initialized even though not a single instance of that metamodel exists in the
+	 *             workspace.
+	 */
+	@Deprecated
 	protected String getRootEPackageContentTypeId() {
 		try {
 			EPackage rootPackage = getRootEPackage();

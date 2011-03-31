@@ -63,4 +63,8 @@ public class Test1MM extends AbstractMetaModelDescriptor implements Comparable<T
 		return result;
 	}
 
+	@Override
+	public String getDefaultContentTypeId() {
+		return "";
+	}
 }

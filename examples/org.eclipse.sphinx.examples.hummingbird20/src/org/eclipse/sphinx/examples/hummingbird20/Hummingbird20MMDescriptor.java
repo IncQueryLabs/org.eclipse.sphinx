@@ -45,9 +45,9 @@ public class Hummingbird20MMDescriptor extends HummingbirdMMDescriptor {
 	public static final Hummingbird20MMDescriptor INSTANCE = new Hummingbird20MMDescriptor();
 
 	/**
-	 * Default constructor.
+	 * Private default constructor for singleton pattern.
 	 */
-	public Hummingbird20MMDescriptor() {
+	private Hummingbird20MMDescriptor() {
 		super(ID, new MetaModelVersionData(NS_POSTFIX, EPKG_NS_URI_POSTFIX_PATTERN, NAME, ORDINAL));
 	}
 

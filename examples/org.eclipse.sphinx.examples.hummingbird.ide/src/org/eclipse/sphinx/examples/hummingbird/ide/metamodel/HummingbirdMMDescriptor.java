@@ -42,7 +42,7 @@ public class HummingbirdMMDescriptor extends AbstractMetaModelDescriptor impleme
 	private static final String ID = "org.eclipse.sphinx.examples.hummingbird"; //$NON-NLS-1$
 
 	/**
-	 * Private default constructor.
+	 * Private default constructor for singleton pattern.
 	 */
 	private HummingbirdMMDescriptor() {
 		this(ID, null);
@@ -52,12 +52,17 @@ public class HummingbirdMMDescriptor extends AbstractMetaModelDescriptor impleme
 		super(identifier, BASE_NAMESPACE, versionData);
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor#getDefaultContentTypeId()
+	 */
 	@Override
 	public String getDefaultContentTypeId() {
 		return XMI_BASE_CONTENT_TYPE_ID;
 	}
 
-	/** {@inheritDoc} */
+	/*
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	public int compareTo(HummingbirdMMDescriptor otherMMDescriptor) {
 		Assert.isNotNull(otherMMDescriptor);
 		int result = 0;

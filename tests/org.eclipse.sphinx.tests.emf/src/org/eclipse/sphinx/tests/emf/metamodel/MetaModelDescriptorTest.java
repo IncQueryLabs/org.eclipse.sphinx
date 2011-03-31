@@ -223,6 +223,10 @@ public class MetaModelDescriptorTest extends TestCase {
 		public NewDescriptor(String identifier, String namespaceBase, MetaModelVersionData versionData) {
 			super(identifier, namespaceBase, versionData);
 		}
-	}
 
+		@Override
+		public String getDefaultContentTypeId() {
+			return "";
+		}
+	}
 }
