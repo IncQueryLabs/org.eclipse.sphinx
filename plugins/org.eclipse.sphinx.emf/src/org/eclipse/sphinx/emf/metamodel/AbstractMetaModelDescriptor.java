@@ -47,9 +47,11 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 
 	private String fIdentifier;
 	protected URI fBaseNamespaceURI;
-	private URI fNamespaceURI;
 	private String fEPackageNsURIPostfixPattern;
 	private MetaModelVersionData fVersionData;
+	private String fName = null;
+
+	private URI fNamespaceURI;
 	private String fEPackageNsURIPattern;
 	private EPackage fRootEPackage = null;
 	private Collection<EPackage> fEPackages = null;
@@ -72,35 +74,40 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/**
 	 * Creates a descriptor for a meta-model. This constructor is to be used if the descriptor shall describe an
 	 * abstract meta-model family (without an implementation backing it) or a meta-model (backed by an implementation)
-	 * where only one version exists. The {@link AbstractMetaModelDescriptor#getRootEPackage()} root EPackage should not
-	 * have any Sub-packages.
+	 * which exists only in one version and consists of only one {@link EPackage}, i.e., a
+	 * {@link AbstractMetaModelDescriptor#getRootEPackage() root EPackage} without sub-packages.
 	 * 
 	 * @param identifier
 	 *            The identifier of the described meta-model. A unique identifier used for referencing the meta-model
 	 *            from within an extension point.
 	 * @param namespace
-	 *            The namespace URI of the meta-model described.
+	 *            The namespace of the described meta-model.
+	 * @param name
+	 *            The name of the described meta-model.
+	 * @see #getRootEPackage()
 	 */
-	protected AbstractMetaModelDescriptor(String identifier, String namespace) {
-		this(identifier, namespace, (MetaModelVersionData) null);
+	protected AbstractMetaModelDescriptor(String identifier, String namespace, String name) {
+		this(identifier, namespace, null, name);
 	}
 
 	/**
 	 * Creates a descriptor for a meta-model. This constructor is to be used if the descriptor shall describe a
-	 * meta-model (backed by an implementation) where only one version exists. The
-	 * {@link AbstractMetaModelDescriptor#getRootEPackage()} root EPackage can have Sub-packages.
+	 * meta-model (backed by an implementation) which exists in only one version and consists of multiple
+	 * {@link EPackage}s.
 	 * 
 	 * @param identifier
 	 *            The identifier of the described meta-model. A unique identifier used for referencing the meta-model
 	 *            from within an extension point.
 	 * @param baseNamespace
-	 *            Usually the namespace of the root EPackage.
+	 *            Typically the namespace of the {@link AbstractMetaModelDescriptor#getRootEPackage() root EPackage}.
 	 * @param ePackageNsURIPostfixPattern
 	 *            A regular expression when appended to the baseNamespace will match the namespace of the meta-model
 	 *            sub-packages.
+	 * @param name
+	 *            The name of the described meta-model.
 	 * @see #getRootEPackage()
 	 */
-	protected AbstractMetaModelDescriptor(String identifier, String baseNamespace, String ePackageNsURIPostfixPattern) {
+	protected AbstractMetaModelDescriptor(String identifier, String baseNamespace, String ePackageNsURIPostfixPattern, String name) {
 		Assert.isNotNull(identifier);
 		Assert.isNotNull(baseNamespace);
 
@@ -112,6 +119,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 		}
 		fEPackageNsURIPostfixPattern = ePackageNsURIPostfixPattern;
 		initNamespace(); // Not calculated lazily in order to detect malformed nsPostfixes
+		fName = name;
 	}
 
 	/**
@@ -122,8 +130,8 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	 *            The identifier of the described meta-model. A unique identifier used for referencing the meta-model
 	 *            from within an extension point.
 	 * @param baseNamespace
-	 *            The (base) namespace URI of the meta-model described. Is equal to the full namespace URI if no version
-	 *            data is provided.
+	 *            The base namespace of the described meta-model. Is equal to the full namespace if no version data is
+	 *            provided.
 	 * @param versionData
 	 *            Data describing the meta-model version details.
 	 */
@@ -146,16 +154,6 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	 */
 	public String getIdentifier() {
 		return fIdentifier;
-	}
-
-	/*
-	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getName()
-	 */
-	public String getName() {
-		if (fVersionData != null) {
-			return fVersionData.getName();
-		}
-		return getIdentifier();
 	}
 
 	/*
@@ -200,6 +198,24 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	}
 
 	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getName()
+	 */
+	public String getName() {
+		if (fName == null) {
+			initName();
+		}
+		return fName;
+	}
+
+	protected void initName() {
+		if (fVersionData != null) {
+			fName = fVersionData.getName();
+		} else {
+			fName = getIdentifier();
+		}
+	}
+
+	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getOrdinal()
 	 */
 	public int getOrdinal() {
@@ -240,17 +256,21 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	public Collection<EPackage> getEPackages() {
 		synchronized (getEPackageRegistry()) {
 			if (fEPackages == null) {
-				Set<EPackage> ePackages = new HashSet<EPackage>();
-				Set<String> safeNsURIs = new HashSet<String>(getEPackageRegistry().keySet());
-				for (String nsURI : safeNsURIs) {
-					if (nsURI.matches(getEPackageNsURIPattern())) {
-						ePackages.add(getEPackageRegistry().getEPackage(nsURI));
-					}
-				}
-				fEPackages = Collections.unmodifiableSet(ePackages);
+				initEPackages();
 			}
 		}
 		return fEPackages;
+	}
+
+	protected void initEPackages() {
+		Set<EPackage> ePackages = new HashSet<EPackage>();
+		Set<String> safeNsURIs = new HashSet<String>(getEPackageRegistry().keySet());
+		for (String nsURI : safeNsURIs) {
+			if (nsURI.matches(getEPackageNsURIPattern())) {
+				ePackages.add(getEPackageRegistry().getEPackage(nsURI));
+			}
+		}
+		fEPackages = Collections.unmodifiableSet(ePackages);
 	}
 
 	/*
@@ -259,22 +279,26 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	public EPackage getRootEPackage() {
 		synchronized (getEPackageRegistry()) {
 			if (fRootEPackage == null) {
-				fRootEPackage = getEPackageRegistry().getEPackage(getNamespace());
-				if (fRootEPackage == null) {
-					// FIXME Consider to remove this part. In case that an older metamodel version has had a root
-					// EPackage but the latest metamodel version doesn't proceeding this way cannot be possibly a good
-					// thing
-					// Refer to compatible namespaces URI if no package can be found under native namespace URI
-					for (URI compatibleNamespaceURI : getCompatibleNamespaceURIs()) {
-						fRootEPackage = getEPackageRegistry().getEPackage(compatibleNamespaceURI.toString());
-						if (fRootEPackage != null) {
-							break;
-						}
-					}
-				}
+				initRootEPackage();
 			}
 		}
 		return fRootEPackage;
+	}
+
+	protected void initRootEPackage() {
+		fRootEPackage = getEPackageRegistry().getEPackage(getNamespace());
+		if (fRootEPackage == null) {
+			// FIXME Consider to remove this part. In case that an older metamodel version has had a root
+			// EPackage but the latest metamodel version doesn't proceeding this way cannot be possibly a good
+			// thing
+			// Refer to compatible namespaces URI if no package can be found under native namespace URI
+			for (URI compatibleNamespaceURI : getCompatibleNamespaceURIs()) {
+				fRootEPackage = getEPackageRegistry().getEPackage(compatibleNamespaceURI.toString());
+				if (fRootEPackage != null) {
+					break;
+				}
+			}
+		}
 	}
 
 	/*
@@ -357,7 +381,6 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 		for (IMetaModelDescriptor resourceVersionDescriptor : getCompatibleResourceVersionDescriptors()) {
 			if (resourceVersionDescriptor != this) {
 				compatibleContentTypeIds.addAll(resourceVersionDescriptor.getContentTypeIds());
-				compatibleContentTypeIds.addAll(resourceVersionDescriptor.getCompatibleContentTypeIds());
 			}
 		}
 		return Collections.unmodifiableList(new ArrayList<String>(compatibleContentTypeIds));
@@ -393,6 +416,6 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 
 	@Override
 	public String toString() {
-		return getIdentifier();
+		return getName();
 	}
 }

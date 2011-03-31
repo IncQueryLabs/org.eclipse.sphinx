@@ -204,7 +204,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			id = id.substring(0, id.lastIndexOf(".")); //$NON-NLS-1$
 		}
 
-		return new AbstractMetaModelDescriptor(id, ePackage.getNsURI()) {
+		return new AbstractMetaModelDescriptor(id, ePackage.getNsURI(), ePackage.getName()) {
 		};
 	}
 
@@ -1222,14 +1222,14 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	private static final class AnyMetaModelDescriptor extends AbstractMetaModelDescriptor {
 
 		public AnyMetaModelDescriptor() {
-			super("org.eclipse.sphinx.emf.metamodel.any", "http://any.mm"); //$NON-NLS-1$ //$NON-NLS-2$
+			super("org.eclipse.sphinx.emf.metamodel.any", "http://any.mm", "Any metamodel"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 
 	private static final class NoMetaModelDescriptor extends AbstractMetaModelDescriptor {
 
 		public NoMetaModelDescriptor() {
-			super("org.eclipse.sphinx.emf.metamodel.no", "http://no.mm"); //$NON-NLS-1$ //$NON-NLS-2$
+			super("org.eclipse.sphinx.emf.metamodel.no", "http://no.mm", "No metamodel"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 }

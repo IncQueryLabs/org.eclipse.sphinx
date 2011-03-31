@@ -18,28 +18,50 @@ import org.eclipse.emf.examples.extlibrary.EXTLibraryPackage;
 import org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor;
 
 /**
- * EXTLibrary metamodel descriptor.
+ * Extended Library metamodel descriptor.
  */
 public class EXTLibraryMMDescriptor extends AbstractMetaModelDescriptor {
+
+	/**
+	 * The id of the XMI file content type for the Extended Library metamodel.
+	 * <p>
+	 * Provides fix for wrong {@link EXTLibraryPackage#eCONTENT_TYPE} value which should be
+	 * <code>org.eclipse.emf.examples.library.extendedLibrary</code> but actually is <code>extendedLibrary</code>.
+	 * </p>
+	 */
+	/*
+	 * Performance optimization: Don't retrieve content type id with EXTLibraryPackage.eCONTENT_TYPE so as to avoid
+	 * unnecessary initialization of the Extended Library metamodel's EPackage. Clients may want to consult the Extended
+	 * Library metamodel descriptor even if no Extended Library XMI file actually exists, and the initialization of the
+	 * Extended Library metamodel's EPackage in such situations would entail useless runtime and memory consumption
+	 * overhead.
+	 */
+	public static final String XMI_CONTENT_TYPE_ID = "org.eclipse.emf.examples.library.extendedLibrary"; //$NON-NLS-1$
 
 	/**
 	 * Singleton instance.
 	 */
 	public static final EXTLibraryMMDescriptor INSTANCE = new EXTLibraryMMDescriptor();
 
+	private static final String ID = "org.eclipse.sphinx.examples.extlibrary"; //$NON-NLS-1$
+	/*
+	 * Performance optimization: Don't retrieve namespace with EXTLibraryPackage.eNS_URI so as to avoid unnecessary
+	 * initialization of the Extended Library metamodel's EPackage. Clients may want to consult the Extended Library
+	 * metamodel descriptor even if no Extended Library XMI file actually exists, and the initialization of the Extended
+	 * Library metamodel's EPackage in such situations would entail useless runtime and memory consumption overhead.
+	 */
+	private static final String NAMESPACE = "http:///org/eclipse/emf/examples/library/extlibrary.ecore/1.0.0"; //$NON-NLS-1$
+	private static final String NAME = "Extended Library"; //$NON-NLS-1$
+
 	/**
 	 * Default constructor.
 	 */
 	public EXTLibraryMMDescriptor() {
-		super("org.eclipse.sphinx.examples.extlibrary", EXTLibraryPackage.eNS_URI); //$NON-NLS-1$
+		super(ID, NAMESPACE, NAME);
 	}
 
-	/**
-	 * Overridden to provide fix wrong {@link EXTLibraryPackage#eCONTENT_TYPE} value. Should be
-	 * "org.eclipse.emf.examples.library.extendedLibrary" but actually is "extendedLibrary".
-	 */
 	@Override
-	protected String getRootEPackageContentTypeId() {
-		return "org.eclipse.emf.examples.library.extendedLibrary"; //$NON-NLS-1$
+	public String getDefaultContentTypeId() {
+		return XMI_CONTENT_TYPE_ID;
 	}
 }

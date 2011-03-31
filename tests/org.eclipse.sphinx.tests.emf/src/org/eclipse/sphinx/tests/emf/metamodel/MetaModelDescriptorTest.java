@@ -51,19 +51,19 @@ public class MetaModelDescriptorTest extends TestCase {
 	public void testBaseCreation() {
 		// Test exception throw on null identifier.
 		try {
-			new NewDescriptor(null, Test1MM.NS);
+			new NewDescriptor(null, Test1MM.NS, null);
 			fail("An AssertionFailedException was expected as the Identifier shall not be null.");
 		} catch (AssertionFailedException afe) {
 		}
 		// Test exception throw on null namespace.
 		try {
-			new NewDescriptor(Test1MM.ID, null);
+			new NewDescriptor(Test1MM.ID, null, null);
 			fail("An AssertionFailedException was expected as the namespace shall not be null.");
 		} catch (AssertionFailedException afe) {
 		}
 		// Test correct creation.
 		try {
-			new NewDescriptor(Test1MM.ID, Test1MM.NS);
+			new NewDescriptor(Test1MM.ID, Test1MM.NS, null);
 		} catch (Exception e) {
 			fail("No exception was expected.");
 		}
@@ -219,10 +219,6 @@ public class MetaModelDescriptorTest extends TestCase {
 	}
 
 	private class NewDescriptor extends AbstractMetaModelDescriptor {
-
-		public NewDescriptor(String identifier, String namespace) {
-			super(identifier, namespace);
-		}
 
 		public NewDescriptor(String identifier, String namespaceBase, MetaModelVersionData versionData) {
 			super(identifier, namespaceBase, versionData);

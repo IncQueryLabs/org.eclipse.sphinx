@@ -22,7 +22,6 @@ import java.util.List;
 import org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor;
 import org.eclipse.sphinx.examples.uml2.ide.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
-import org.eclipse.uml2.uml.UMLPackage;
 
 /**
  * UML2 metamodel descriptor.
@@ -38,7 +37,18 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 	 * The id of the base content type for the version-specific UML2 XMI file content types behind this and all earlier
 	 * UML2 metamodel implementations.
 	 */
-	public static final String XMI_BASE_CONTENT_TYPE_ID = UMLPackage.eCONTENT_TYPE;
+	/*
+	 * Performance optimization: Don't retrieve content type id with UMLPackage.eCONTENT_TYPE so as to avoid unnecessary
+	 * initialization of the UML2 metamodel's EPackage. Clients may want to consult the UML2 metamodel descriptor even
+	 * if no UML2 XMI file actually exists, and the initialization of the UML2 metamodel's EPackage in such situations
+	 * would entail useless runtime and memory consumption overhead.
+	 */
+	public static final String XMI_BASE_CONTENT_TYPE_ID = "org.eclipse.uml2.uml"; //$NON-NLS-1$
+
+	/**
+	 * The id of the XMI file content type behind the latest UML2 metamodel implementation.
+	 */
+	public static final String XMI_CONTENT_TYPE_ID = XMI_BASE_CONTENT_TYPE_ID + "_3_0_0"; //$NON-NLS-1$
 
 	/**
 	 * Singleton instance.
@@ -46,21 +56,20 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 	public static final UML2MMDescriptor INSTANCE = new UML2MMDescriptor();
 
 	private static final String ID = "org.eclipse.sphinx.examples.uml2"; //$NON-NLS-1$
+	/*
+	 * Performance optimization: Don't retrieve namespace with UMLPackage.eNS_URI so as to avoid unnecessary
+	 * initialization of the UML2 metamodel's EPackage. Clients may want to consult the UML2 metamodel descriptor even
+	 * if no UML2 XMI file actually exists, and the initialization of the UML2 metamodel's EPackage in such situations
+	 * would entail useless runtime and memory consumption overhead.
+	 */
+	private static final String NAMESPACE = BASE_NAMESPACE + "/3.0.0/UML"; //$NON-NLS-1$
+	private static final String NAME = "UML2"; //$NON-NLS-1$
 
 	/**
 	 * Default constructor.
 	 */
 	public UML2MMDescriptor() {
-		super(ID, UMLPackage.eNS_URI);
-	}
-
-	@Override
-	public List<String> getCompatibleContentTypeIds() {
-		List<String> contentTypeIds = new ArrayList<String>();
-		contentTypeIds.add(XMI_BASE_CONTENT_TYPE_ID + "_2_0_0"); //$NON-NLS-1$
-		contentTypeIds.add(XMI_BASE_CONTENT_TYPE_ID + "_2_1_0"); //$NON-NLS-1$
-		contentTypeIds.add(XMI_BASE_CONTENT_TYPE_ID + "_3_0_0"); //$NON-NLS-1$
-		return contentTypeIds;
+		super(ID, NAMESPACE, NAME);
 	}
 
 	@Override
@@ -73,5 +82,18 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
 		return namespaceURIs;
+	}
+
+	@Override
+	public String getDefaultContentTypeId() {
+		return XMI_CONTENT_TYPE_ID;
+	}
+
+	@Override
+	public List<String> getCompatibleContentTypeIds() {
+		List<String> contentTypeIds = new ArrayList<String>();
+		contentTypeIds.add(XMI_BASE_CONTENT_TYPE_ID + "_2_0_0"); //$NON-NLS-1$
+		contentTypeIds.add(XMI_BASE_CONTENT_TYPE_ID + "_2_1_0"); //$NON-NLS-1$
+		return contentTypeIds;
 	}
 }

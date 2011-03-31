@@ -40,12 +40,4 @@ public class Hummingbird10MMDescriptor extends HummingbirdMMDescriptor {
 	public Hummingbird10MMDescriptor() {
 		super(ID, new MetaModelVersionData(NS_POSTFIX, EPKG_NS_URI_POSTFIX_PATTERN, NAME, ORDINAL));
 	}
-
-	/*
-	 * @see org.eclipse.sphinx.examples.hummingbird.ide.metamodel.HummingbirdMMDescriptor#getDefaultContentTypeId()
-	 */
-	@Override
-	public String getDefaultContentTypeId() {
-		return getRootEPackageContentTypeId();
-	}
 }

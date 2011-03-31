@@ -14,42 +14,45 @@
  */
 package org.eclipse.sphinx.gmf.workspace.metamodel;
 
-import org.eclipse.gmf.runtime.notation.NotationPackage;
 import org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor;
-import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
-import org.eclipse.sphinx.gmf.workspace.internal.messages.Messages;
-import org.eclipse.sphinx.gmf.workspace.util.GMFResourceUtil;
 
 /**
- * Implementation of {@linkplain IMetaModelDescriptor} for meta-model GMF Notation that declares the descriptor
- * identifier and the name-space {@linkplain URI} describing the Notation meta-model.
+ * GMF Diagram Notation metamodel descriptor.
  */
 public class GMFNotationDescriptor extends AbstractMetaModelDescriptor {
+
+	/**
+	 * The id of the content type for GMF diagram files.
+	 */
+	public static final String GMF_DIAGRAM_CONTENT_TYPE_ID = "org.eclipse.sphinx.gmf.diagramFile"; //$NON-NLS-1$
 
 	/**
 	 * Singleton instance.
 	 */
 	public static final GMFNotationDescriptor INSTANCE = new GMFNotationDescriptor();
 
+	private static final String ID = "org.eclipse.gmf.runtime.notation"; //$NON-NLS-1$
+	/*
+	 * Performance optimization: Don't retrieve namespace with NotationPackage.eNS_URI so as to avoid unnecessary
+	 * initialization of the GMF Notation metamodel's EPackage. Clients may want to consult the GMF Notation metamodel
+	 * descriptor even if no GMF diagram file actually exists, and the initialization of the GMF Notation metamodel's
+	 * EPackage in such situations would entail useless runtime and memory consumption overhead.
+	 */
+	private static final String NAMESPACE = "http://www.eclipse.org/gmf/runtime/1.0.2/notation"; //$NON-NLS-1$
+	private static final String NAME = "GMF Notation"; //$NON-NLS-1$
+
 	/**
-	 * Constructor.
-	 * <p>
-	 * Set the identifier of this {@linkplain IMetaModelDescriptor descriptor}:
-	 * <code>org.eclipse.gmf.runtime.notation</code>.<br>
-	 * Set the package name-space URI of GMF Notation meta-model:
-	 * <code>http://www.eclipse.org/gmf/runtime/1.0.2/notation</code>.
+	 * Default constructor.
 	 */
 	public GMFNotationDescriptor() {
-		super("org.eclipse.gmf.runtime.notation", NotationPackage.eNS_URI); //$NON-NLS-1$ 
+		super(ID, NAMESPACE, NAME);
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor#getDefaultContentTypeId()
+	 */
 	@Override
 	public String getDefaultContentTypeId() {
-		return GMFResourceUtil.eCONTENT_TYPE;
-	}
-
-	@Override
-	public String getName() {
-		return Messages.label_GMFDiagramNotation;
+		return GMF_DIAGRAM_CONTENT_TYPE_ID;
 	}
 }

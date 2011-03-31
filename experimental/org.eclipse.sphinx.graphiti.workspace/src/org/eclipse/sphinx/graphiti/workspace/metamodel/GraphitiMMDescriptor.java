@@ -15,10 +15,8 @@
 package org.eclipse.sphinx.graphiti.workspace.metamodel;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.graphiti.mm.MmPackage;
 import org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
-import org.eclipse.sphinx.graphiti.workspace.internal.messages.Messages;
 
 /**
  * Implementation of {@linkplain IMetaModelDescriptor} for meta-model Graphiti Pictogram that declares the descriptor
@@ -27,37 +25,40 @@ import org.eclipse.sphinx.graphiti.workspace.internal.messages.Messages;
 public class GraphitiMMDescriptor extends AbstractMetaModelDescriptor {
 
 	/**
-	 * Singleton instance.
-	 */
-	public static final GraphitiMMDescriptor INSTANCE = new GraphitiMMDescriptor();
-
-	/**
-	 * The id of the content type for Graphiti diagram files: <tt>org.eclipse.sphinx.graphiti.diagramFile</tt>.
-	 */
-	public static final String GRAPHITI_DIAGRAM_CONTENT_TYPE_ID = "org.eclipse.sphinx.graphiti.diagramFile"; //$NON-NLS-1$
-
-	/**
-	 * The default file extension for Graphiti diagram files: <tt>diagram</tt>.
+	 * The default file extension for Graphiti diagram files.
 	 */
 	public static final String GRAPHITI_DIAGRAM_DEFAULT_FILE_EXTENSION = "diag"; //$NON-NLS-1$
 
 	/**
-	 * Constructor.
-	 * <p>
-	 * Set the identifier of this {@linkplain IMetaModelDescriptor descriptor}: <code>org.eclipse.graphiti.mm</code>.<br>
-	 * Set the package name-space URI of Graphiti Pictogram meta-model: <code>http://eclipse.org/graphiti/mm</code>.
+	 * The id of the content type for Graphiti diagram files.
+	 */
+	public static final String GRAPHITI_DIAGRAM_CONTENT_TYPE_ID = "org.eclipse.sphinx.graphiti.diagramFile"; //$NON-NLS-1$
+
+	/**
+	 * Singleton instance.
+	 */
+	public static final GraphitiMMDescriptor INSTANCE = new GraphitiMMDescriptor();
+
+	private static final String ID = "org.eclipse.graphiti.mm"; //$NON-NLS-1$
+	/*
+	 * Performance optimization: Don't retrieve namespace with MmPackage.eNS_URI so as to avoid unnecessary
+	 * initialization of the Graphiti MetaModel's EPackages. Clients may want to consult the Graphiti metamodel
+	 * descriptor even if no Graphiti diagram file actually exists, and the initialization of the Graphiti MetaModel's
+	 * EPackages in such situations would entail useless runtime and memory consumption overhead.
+	 */
+	private static final String NAMESPACE = "http://eclipse.org/graphiti/mm"; //$NON-NLS-1$
+	private static final String EPKG_NS_URI_POSTFIX_PATTERN = "(pictograms|algorithms)(/\\w)*"; //$NON-NLS-1$
+	private static final String NAME = "Graphiti MetaModel"; //$NON-NLS-1$
+
+	/**
+	 * Default constructor.
 	 */
 	public GraphitiMMDescriptor() {
-		super("org.eclipse.graphiti.mm", MmPackage.eNS_URI, "(pictograms|algorithms)(/\\w)*"); //$NON-NLS-1$ //$NON-NLS-2$ 
+		super(ID, NAMESPACE, EPKG_NS_URI_POSTFIX_PATTERN, NAME);
 	}
 
 	@Override
 	public String getDefaultContentTypeId() {
 		return GRAPHITI_DIAGRAM_CONTENT_TYPE_ID;
-	}
-
-	@Override
-	public String getName() {
-		return Messages.label_GraphitiPictogram;
 	}
 }

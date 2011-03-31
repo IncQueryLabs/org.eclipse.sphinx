@@ -62,15 +62,6 @@ public interface IMetaModelDescriptor {
 	String getIdentifier();
 
 	/**
-	 * Returns the name of the described meta-model. The name of the meta-model is a human readable identifier which can
-	 * be used for user interaction.
-	 * 
-	 * @return The name of the described meta-model.
-	 * @since 0.7.0
-	 */
-	String getName();
-
-	/**
 	 * Returns the namespace {@link URI} of the described meta-model. The namespace {@link URI} is a unique identifier
 	 * used to link the meta-model description to registered EMF artifacts like the root
 	 * {@link org.eclipse.emf.ecore.EPackage} and the {@link EFactory}.
@@ -89,6 +80,15 @@ public interface IMetaModelDescriptor {
 	 * @since 0.7.0
 	 */
 	String getNamespace();
+
+	/**
+	 * Returns the name of the described meta-model. The name of the meta-model is a human readable identifier which can
+	 * be used for user interaction.
+	 * 
+	 * @return The name of the described meta-model.
+	 * @since 0.7.0
+	 */
+	String getName();
 
 	/**
 	 * Returns the ordinal of the described meta-model. The ordinal is used for sorting IMetaModelDescriptors describing

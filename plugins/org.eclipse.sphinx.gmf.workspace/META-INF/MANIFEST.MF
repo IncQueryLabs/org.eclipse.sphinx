@@ -11,8 +11,6 @@ Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: dependent
 Export-Package: org.eclipse.sphinx.gmf.workspace.domain.factory,
  org.eclipse.sphinx.gmf.workspace.internal;x-internal:=true,
- org.eclipse.sphinx.gmf.workspace.internal.messages;x-internal:=true,
- org.eclipse.sphinx.gmf.workspace.metamodel,
- org.eclipse.sphinx.gmf.workspace.util
+ org.eclipse.sphinx.gmf.workspace.metamodel
 Bundle-Activator: org.eclipse.sphinx.gmf.workspace.internal.Activator$Implementation
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
