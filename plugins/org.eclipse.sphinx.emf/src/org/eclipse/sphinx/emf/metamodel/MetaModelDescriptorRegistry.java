@@ -396,8 +396,6 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			return getDescriptor((EClass) object);
 		} else if (object instanceof EPackage) {
 			return getDescriptor((EPackage) object);
-		} else if (object instanceof Class<?>) {
-			return getDescriptor((Class<?>) object);
 		}
 		return null;
 	}
