@@ -93,7 +93,7 @@ public class FileSelectionGroup {
 			enableButton.fillIntoGrid(fileSelectionGroup, numColumns);
 			enableButton.addFieldListener(new IFieldListener() {
 				public void dialogFieldChanged(IField field) {
-					updateFileSelectionEnableState(enableButton.getSelectionButton(fileSelectionGroup).getSelection());
+					updateFileSelectionEnableState(enableButton.isSelected());
 				}
 			});
 		}
@@ -198,7 +198,7 @@ public class FileSelectionGroup {
 
 	public boolean getEnableButtonState() {
 		if (enableButton != null) {
-			return enableButton.getSelectionButton(null).getSelection();
+			return enableButton.isSelected();
 		}
 		return false;
 	}
