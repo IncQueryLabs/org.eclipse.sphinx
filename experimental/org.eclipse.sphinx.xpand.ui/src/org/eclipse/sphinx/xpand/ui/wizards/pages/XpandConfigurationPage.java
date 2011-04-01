@@ -198,7 +198,6 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 		return Collections.<ExtendedOutlet> emptyList();
 	}
 
-	@Override
 	public void finish() {
 		if (templateGroup != null) {
 			templateGroup.saveGroupSettings();
