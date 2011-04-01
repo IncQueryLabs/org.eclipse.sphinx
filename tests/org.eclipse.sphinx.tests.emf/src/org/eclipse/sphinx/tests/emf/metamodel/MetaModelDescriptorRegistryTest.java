@@ -110,7 +110,13 @@ public class MetaModelDescriptorRegistryTest extends TestCase {
 
 		registerWithRegistryUT(Test1Release100.INSTANCE);
 		resolvedReleases = fRegistryUT.getResolvedDescriptors(new Test1MM());
-		assertEmptyList(resolvedReleases);
+		assertNotNull(resolvedReleases);
+		if (Test1Release100.INSTANCE.getRootEPackage() == null) {
+			assertEquals(0, resolvedReleases.size());
+		} else {
+			assertEquals(1, resolvedReleases.size());
+			assertTrue(resolvedReleases.contains(Test1Release100.INSTANCE));
+		}
 
 		EPackage ePkg = Test1MM.MOCK_EPKG_REGISTRY.getEPackage(Test1Release100.INSTANCE.getNamespaceURI().toString());
 		if (ePkg == null) {
