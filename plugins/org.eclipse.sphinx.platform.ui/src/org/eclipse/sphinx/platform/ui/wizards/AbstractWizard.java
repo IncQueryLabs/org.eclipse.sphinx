@@ -20,8 +20,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizard;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.sphinx.platform.ui.internal.Activator;
+import org.eclipse.sphinx.platform.ui.wizards.pages.AbstractWizardPage;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
@@ -35,6 +37,15 @@ public abstract class AbstractWizard extends Wizard implements IWizard {
 
 	@Override
 	public final boolean performFinish() {
+		for (IWizardPage page : getPages()) {
+			if (page instanceof AbstractWizardPage) {
+				try {
+					((AbstractWizardPage) page).finish();
+				} catch (Exception ex) {
+					PlatformLogUtil.logAsError(Activator.getDefault(), ex);
+				}
+			}
+		}
 		return performExit(getFinishRunnable());
 	}
 

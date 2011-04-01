@@ -109,18 +109,13 @@ public class TemplateGroup {
 	 */
 	private IDialogSettings dialogSettings = null;
 
-	public TemplateGroup(Composite parent, String groupName, int numColumns, EObject modelObject, MetaModel metaModel) {
-		this(groupName, modelObject, metaModel);
-		createContent(parent, numColumns);
-	}
-
 	public TemplateGroup(String groupName, EObject modelObject, MetaModel metaModel) {
 		this.groupName = groupName;
 		this.modelObject = modelObject;
 		this.metaModel = metaModel;
 	}
 
-	protected void createContent(final Composite parent, int numColumns) {
+	public void createContent(final Composite parent, int numColumns) {
 		final Group templateGroup = new Group(parent, SWT.SHADOW_NONE);
 		templateGroup.setText(groupName);
 		templateGroup.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
@@ -208,6 +203,8 @@ public class TemplateGroup {
 		definitionNameField.setLabelText(Messages.label_definitionName);
 		definitionNameField.setEditable(false);
 		definitionNameField.fillIntoGrid(templateGroup, numColumns);
+
+		loadGroupSettings();
 	}
 
 	/**
@@ -316,7 +313,7 @@ public class TemplateGroup {
 		return null;
 	}
 
-	public boolean isTemplateGroupComplete() {
+	public boolean isGroupComplete() {
 		IFile templateFile = getFile(getTemplatePathField().getText());
 		if (templateFile != null) {
 			return templateFile.exists() && getDefinitionComboField().getSelectionIndex() != -1;
@@ -369,7 +366,7 @@ public class TemplateGroup {
 	 * Loads the template path and the define block from the dialog settings. Must call
 	 * {@link #setDialogSettings(IDialogSettings)} before calling this method.
 	 */
-	public void loadGroupSettings() {
+	protected void loadGroupSettings() {
 		String templatePath = getTemplatePathFromDialogSettings();
 		if (templatePath != null) {
 			templatePathField.setText(templatePath);

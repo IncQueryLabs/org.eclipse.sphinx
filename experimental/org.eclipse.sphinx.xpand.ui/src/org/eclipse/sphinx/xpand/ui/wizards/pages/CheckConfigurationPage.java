@@ -137,6 +137,7 @@ public class CheckConfigurationPage extends AbstractWizardPage {
 		return checkGroup.getEnableButtonState();
 	}
 
+	@Override
 	public void finish() {
 		saveWidgetValues();
 	}

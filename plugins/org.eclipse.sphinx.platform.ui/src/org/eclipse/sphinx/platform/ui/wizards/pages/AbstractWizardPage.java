@@ -123,4 +123,12 @@ public abstract class AbstractWizardPage extends WizardPage implements IWizardPa
 	protected final void createSeparator(Composite composite, int nbCol) {
 		new Separator(SWT.SEPARATOR | SWT.HORIZONTAL).fillIntoGrid(composite, nbCol, convertHeightInCharsToPixels(1));
 	}
+
+	/**
+	 * Called when the wizard is closed by selecting the finish button. Implementers typically override this method to
+	 * store the page result.
+	 */
+	public void finish() {
+		// Do nothing by default.
+	}
 }

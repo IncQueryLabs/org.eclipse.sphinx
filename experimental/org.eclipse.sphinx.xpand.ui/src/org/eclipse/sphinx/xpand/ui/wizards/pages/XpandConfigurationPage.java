@@ -94,14 +94,14 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 	 * Creates the template group field and load dialog settings.
 	 */
 	protected void createTemplateGroup(Composite parent) {
-		templateGroup = new TemplateGroup(parent, Messages.label_template, 3, modelObject, metaModel) {
+		templateGroup = new TemplateGroup(Messages.label_template, modelObject, metaModel) {
 			@Override
 			protected void groupChanged(Group group) {
 				getWizard().getContainer().updateButtons();
 			};
 		};
 		templateGroup.setDialogSettings(getDialogSettings());
-		templateGroup.loadGroupSettings();
+		templateGroup.createContent(parent, 3);
 	}
 
 	/**
@@ -138,7 +138,7 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 
 	@Override
 	protected boolean doIsPageComplete() {
-		return templateGroup.isTemplateGroupComplete() && isOutputGroupComplete();
+		return templateGroup.isGroupComplete() && isOutputGroupComplete();
 
 	}
 
@@ -198,6 +198,7 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 		return Collections.<ExtendedOutlet> emptyList();
 	}
 
+	@Override
 	public void finish() {
 		if (templateGroup != null) {
 			templateGroup.saveGroupSettings();

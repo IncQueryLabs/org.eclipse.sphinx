@@ -161,8 +161,6 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		job.schedule();
 
 		ExtendedPlatformUI.showSystemConsole();
-		xpandConfigurationPage.finish();
-		checkConfigurationPage.finish();
 	}
 
 	protected boolean isCheckRequired() {
