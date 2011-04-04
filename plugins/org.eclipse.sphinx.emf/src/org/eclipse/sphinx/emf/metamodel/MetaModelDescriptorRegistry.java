@@ -512,7 +512,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * @return The meta-model descriptor of the specified resource.
 	 */
 	public IMetaModelDescriptor getDescriptor(final Resource resource) {
-		// Try to retrieve descriptor from model root object in resource
+		// Try to retrieve descriptor from model root object in given resource (applies to loaded resources)
 		EObject modelRoot = null;
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(resource);
 		if (editingDomain != null) {
@@ -529,12 +529,30 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			modelRoot = EcoreResourceUtil.getModelRoot(resource);
 		}
 		if (modelRoot != null) {
-			return getDescriptor(modelRoot);
-		} else {
-			// Try to retrieve descriptor from underlying file otherwise
-			IFile file = EcorePlatformUtil.getFile(resource);
-			return getDescriptor(file);
+			IMetaModelDescriptor mmDescriptor = getDescriptor(modelRoot);
+			if (mmDescriptor != null) {
+				return mmDescriptor;
+			}
 		}
+
+		// Try to retrieve descriptor from content type id behind given resource (applies to resources that have been
+		// created but not loaded - and therefore no EObject content - yet)
+		final String contentTypeId = EcoreResourceUtil.getContentTypeId(resource.getURI());
+		if (contentTypeId != null) {
+			return getDescriptor(ANY_MM, new IDescriptorFilter() {
+				public boolean accept(IMetaModelDescriptor descriptor) {
+					if (descriptor.getContentTypeIds().contains(contentTypeId)) {
+						return true;
+					}
+					if (descriptor.getCompatibleContentTypeIds().contains(contentTypeId)) {
+						return true;
+					}
+					return false;
+				}
+			});
+		}
+
+		return null;
 	}
 
 	/**

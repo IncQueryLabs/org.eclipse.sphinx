@@ -27,6 +27,7 @@ public class SphinxEmfTestsSuite {
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.properties.PropertyFilterTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.internal.expressions.EMFObjectPropertyTesterTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.metamodel.MetaModelDescriptorRegistryTest.class);
+		suite.addTestSuite(org.eclipse.sphinx.tests.emf.metamodel.MetaModelDescriptorRegistryOutsideWorkspaceTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.metamodel.MetaModelDescriptorTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.metamodel.MetaModelVersionDataTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.emf.util.EObjectUtilTest.class);
