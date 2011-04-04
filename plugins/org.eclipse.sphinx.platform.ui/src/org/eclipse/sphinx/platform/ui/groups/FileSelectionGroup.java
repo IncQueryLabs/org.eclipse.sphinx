@@ -24,8 +24,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -50,33 +52,38 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 
-public class FileSelectionGroup {
+public class FileSelectionGroup extends AbstractGroup {
+
+	// Dialog setting
+	protected static final String SECTION_NAME = Activator.getDefault().getBundle().getSymbolicName() + ".SECTION"; //$NON-NLS-1$
+	protected static final String STORE_SELECTED_CHECK_FILES = "SELECTED_CHECK_FILES"; //$NON-NLS-1$
+	protected static final String STORE_ENABLE_BUTTON = "ENABLEG_BUTTON"; //$NON-NLS-1$
 
 	protected ListButtonsField fileListField;
 	protected SelectionButtonField enableButton;
 	protected Set<IFile> selectedFiles = new HashSet<IFile>();
 
-	protected String groupName;
 	protected String enableText;
 	protected String fileListLabel;
 	protected String fileExtension;
 	protected IProject project;
 
-	public FileSelectionGroup(Composite parent, String groupName, String enableText, String fileListLabel, int numColumns, String fileExtension,
-			IProject project) {
-		this(groupName, enableText, fileListLabel, numColumns, fileExtension, project);
-		createContent(parent, numColumns);
+	public FileSelectionGroup(String groupName, String enableText, String fileListLabel, String fileExtension, IProject project) {
+		this(groupName, enableText, fileListLabel, fileExtension, project, null);
 	}
 
-	private FileSelectionGroup(String groupName, String enableText, String fileListLabel, int numColumns, String fileExtension, IProject project) {
-		this.project = project;
-		this.groupName = groupName;
+	public FileSelectionGroup(String groupName, String enableText, String fileListLabel, String fileExtension, IProject project,
+			IDialogSettings dialogSettings) {
+		super(groupName, dialogSettings);
+
 		this.enableText = enableText;
 		this.fileListLabel = fileListLabel;
 		this.fileExtension = fileExtension;
+		this.project = project;
 	}
 
-	protected void createContent(Composite parent, final int numColumns) {
+	@Override
+	protected void doCreateContent(Composite parent, final int numColumns) {
 		final Group fileSelectionGroup = new Group(parent, SWT.SHADOW_NONE);
 		fileSelectionGroup.setText(groupName);
 		fileSelectionGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -112,6 +119,9 @@ public class FileSelectionGroup {
 			fileListField.setLabelText(fileListLabel);
 			updateFileSelectionEnableState(true);
 		}
+
+		// Load Dialog Settings
+		loadGroupSettings();
 	}
 
 	public void updateFileSelectionEnableState(boolean enabled) {
@@ -190,6 +200,58 @@ public class FileSelectionGroup {
 			selectedFiles.add(file);
 			fileListField.addElement(file.getName());
 		}
+	}
+
+	@Override
+	public void saveGroupSettings() {
+		IDialogSettings settings = getDialogSettings();
+		if (settings != null) {
+			IDialogSettings section = settings.getSection(SECTION_NAME);
+			if (section == null) {
+				section = settings.addNewSection(SECTION_NAME);
+			}
+			Collection<IFile> files = getFiles();
+			String[] items = new String[files.size()];
+			int i = 0;
+			for (IFile file : files) {
+				items[i] = file.getFullPath().makeRelative().toString();
+				i++;
+			}
+			section.put(STORE_SELECTED_CHECK_FILES, items);
+			section.put(STORE_ENABLE_BUTTON, getEnableButtonState());
+		}
+	}
+
+	@Override
+	protected void loadGroupSettings() {
+		IDialogSettings settings = getDialogSettings();
+		if (settings != null) {
+			IDialogSettings section = settings.getSection(SECTION_NAME);
+			if (section != null) {
+				String[] items = section.getArray(STORE_SELECTED_CHECK_FILES);
+				boolean enableCheck = section.getBoolean(STORE_ENABLE_BUTTON);
+				if (items != null) {
+					setEnabledButtonSelection(enableCheck);
+					for (String fullPath : items) {
+						IFile file = getFile(fullPath);
+						if (file != null) {
+							addFile(file);
+						}
+					}
+					updateFileSelectionEnableState(enableCheck);
+				}
+			}
+		}
+	}
+
+	protected IFile getFile(String fullPath) {
+		if (fullPath != null && fullPath.length() > 0) {
+			Path path = new Path(fullPath);
+			if (path.segmentCount() > 1) {
+				return ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+			}
+		}
+		return null;
 	}
 
 	public Collection<IFile> getFiles() {
