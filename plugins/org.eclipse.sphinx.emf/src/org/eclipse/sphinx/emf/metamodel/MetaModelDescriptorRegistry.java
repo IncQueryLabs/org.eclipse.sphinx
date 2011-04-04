@@ -556,19 +556,21 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 		// Try to retrieve descriptor from content type id behind given resource (applies to resources that have been
 		// created but not loaded - and therefore no EObject content - yet and are located outside the workspace)
-		final String contentTypeId = EcoreResourceUtil.getContentTypeId(resource.getURI());
-		if (contentTypeId != null) {
-			return getDescriptor(ANY_MM, new IDescriptorFilter() {
-				public boolean accept(IMetaModelDescriptor descriptor) {
-					if (descriptor.getContentTypeIds().contains(contentTypeId)) {
-						return true;
+		if (resource != null) {
+			final String contentTypeId = EcoreResourceUtil.getContentTypeId(resource.getURI());
+			if (contentTypeId != null) {
+				return getDescriptor(ANY_MM, new IDescriptorFilter() {
+					public boolean accept(IMetaModelDescriptor descriptor) {
+						if (descriptor.getContentTypeIds().contains(contentTypeId)) {
+							return true;
+						}
+						if (descriptor.getCompatibleContentTypeIds().contains(contentTypeId)) {
+							return true;
+						}
+						return false;
 					}
-					if (descriptor.getCompatibleContentTypeIds().contains(contentTypeId)) {
-						return true;
-					}
-					return false;
-				}
-			});
+				});
+			}
 		}
 
 		return null;
