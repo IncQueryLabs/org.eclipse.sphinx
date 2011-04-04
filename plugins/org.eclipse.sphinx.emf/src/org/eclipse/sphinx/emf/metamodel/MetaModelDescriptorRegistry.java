@@ -512,6 +512,18 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * @return The meta-model descriptor of the specified resource.
 	 */
 	public IMetaModelDescriptor getDescriptor(final Resource resource) {
+		/*
+		 * Performance optimization: Theoretically we could just all the time rely on the id of the content type behind
+		 * given file and retrieve the metamodel descriptor from there. However, keeping in mind that content type
+		 * detection is an incredibly slow affair we must not do that but proceed in the following order: For loaded
+		 * resources the fastest option is to retrieve the metamodel descriptor from the nsURI of the EPackage behind
+		 * the root EObject in the resource. For resources that have just been created but not loaded (and therefore no
+		 * EObject content) yet we try to retrieve the metamodel descriptor from the underlying workspace file so as to
+		 * benefit from metamodel descriptor that potentially has already been cached for the same. At last, we rely on
+		 * the resource's content type which enables us to determine the metamodel descriptors of files that are not
+		 * loaded yet and located outside the workspace.
+		 */
+
 		// Try to retrieve descriptor from model root object in given resource (applies to loaded resources)
 		EObject modelRoot = null;
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(resource);
@@ -535,8 +547,15 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			}
 		}
 
+		// Try to retrieve descriptor from underlying workspace file (applies to resources that have been
+		// created but not loaded - and therefore no EObject content - yet and are located inside the workspace)
+		IFile file = EcorePlatformUtil.getFile(resource);
+		if (file != null) {
+			return getDescriptor(file);
+		}
+
 		// Try to retrieve descriptor from content type id behind given resource (applies to resources that have been
-		// created but not loaded - and therefore no EObject content - yet)
+		// created but not loaded - and therefore no EObject content - yet and are located outside the workspace)
 		final String contentTypeId = EcoreResourceUtil.getContentTypeId(resource.getURI());
 		if (contentTypeId != null) {
 			return getDescriptor(ANY_MM, new IDescriptorFilter() {
