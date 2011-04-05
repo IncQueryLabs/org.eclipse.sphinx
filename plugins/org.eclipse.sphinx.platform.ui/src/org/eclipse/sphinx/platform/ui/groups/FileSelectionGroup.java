@@ -56,7 +56,7 @@ public class FileSelectionGroup extends AbstractGroup {
 
 	// Dialog setting
 	protected static final String SECTION_NAME = Activator.getDefault().getBundle().getSymbolicName() + ".SECTION"; //$NON-NLS-1$
-	protected static final String STORE_SELECTED_CHECK_FILES = "SELECTED_CHECK_FILES"; //$NON-NLS-1$
+	protected static final String STORE_SELECTED_FILES = "SELECTED_FILES"; //$NON-NLS-1$
 	protected static final String STORE_ENABLE_BUTTON = "ENABLE_BUTTON"; //$NON-NLS-1$
 
 	protected ListButtonsField fileListField;
@@ -217,7 +217,7 @@ public class FileSelectionGroup extends AbstractGroup {
 				items[i] = file.getFullPath().makeRelative().toString();
 				i++;
 			}
-			section.put(STORE_SELECTED_CHECK_FILES, items);
+			section.put(STORE_SELECTED_FILES, items);
 			section.put(STORE_ENABLE_BUTTON, getEnableButtonState());
 		}
 	}
@@ -228,7 +228,7 @@ public class FileSelectionGroup extends AbstractGroup {
 		if (settings != null) {
 			IDialogSettings section = settings.getSection(SECTION_NAME);
 			if (section != null) {
-				String[] items = section.getArray(STORE_SELECTED_CHECK_FILES);
+				String[] items = section.getArray(STORE_SELECTED_FILES);
 				boolean enableCheck = section.getBoolean(STORE_ENABLE_BUTTON);
 				if (items != null) {
 					setEnabledButtonSelection(enableCheck);
