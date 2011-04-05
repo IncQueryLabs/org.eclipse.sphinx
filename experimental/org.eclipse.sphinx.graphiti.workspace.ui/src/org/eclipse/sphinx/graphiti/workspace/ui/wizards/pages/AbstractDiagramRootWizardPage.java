@@ -18,6 +18,7 @@ import java.util.Vector;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.graphiti.dt.IDiagramType;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -120,6 +121,10 @@ public abstract class AbstractDiagramRootWizardPage extends AbstractWizardPage {
 		}
 
 		return diagramIds.toArray(new String[] {});
+	}
+
+	protected IStatus createErrorStatus(String message) {
+		return new Status(IStatus.ERROR, "pluginId", message); //$NON-NLS-1$
 	}
 
 	public String getDiagramType() {

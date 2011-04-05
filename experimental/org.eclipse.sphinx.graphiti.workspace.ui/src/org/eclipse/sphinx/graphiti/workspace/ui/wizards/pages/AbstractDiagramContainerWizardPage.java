@@ -16,11 +16,11 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 
 public abstract class AbstractDiagramContainerWizardPage extends WizardNewFileCreationPage {
 
-	private String extension;
+	private String diagramFileExtension;
 
-	public AbstractDiagramContainerWizardPage(String pageName, IStructuredSelection selection, String extension) {
+	public AbstractDiagramContainerWizardPage(String pageName, IStructuredSelection selection, String diagramFileExtension) {
 		super(pageName, selection);
-		this.extension = extension;
+		this.diagramFileExtension = diagramFileExtension;
 		setTitle(getPageTitle());
 		setDescription(getPageDescription());
 	}
@@ -54,7 +54,7 @@ public abstract class AbstractDiagramContainerWizardPage extends WizardNewFileCr
 	}
 
 	protected String getExtension() {
-		return extension;
+		return diagramFileExtension;
 	}
 
 	protected IPath getFilePath() {
