@@ -13,6 +13,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.xerces,
  org.apache.commons.cli;bundle-version="1.0.0"
 Export-Package: org.eclipse.sphinx.platform,
+ org.eclipse.sphinx.platform.cli,
  org.eclipse.sphinx.platform.internal;x-internal:=true,
  org.eclipse.sphinx.platform.internal.expressions;x-internal:=true,
  org.eclipse.sphinx.platform.internal.messages;x-internal:=true,
