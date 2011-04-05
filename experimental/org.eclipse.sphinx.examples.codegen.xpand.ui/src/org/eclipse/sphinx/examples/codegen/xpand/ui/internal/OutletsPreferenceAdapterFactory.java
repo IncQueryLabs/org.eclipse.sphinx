@@ -1,0 +1,47 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2011 See4sys and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     See4sys - Initial API and implementation
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.examples.codegen.xpand.ui.internal;
+
+import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.sphinx.platform.ui.preferences.IPropertyPageIdProvider;
+import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
+import org.eclipse.sphinx.xpand.ui.preferences.XpandPreferencePage;
+
+public class OutletsPreferenceAdapterFactory implements IAdapterFactory {
+
+	/*
+	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
+	 */
+	public Object getAdapter(final Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
+		if (adapterType.equals(OutletsPreference.class)) {
+			if (adaptableObject instanceof IPropertyPageIdProvider) {
+				return new IPropertyPageIdProvider() {
+					public String getPropertyPageId() {
+						return XpandPreferencePage.PROP_PAGE_ID;
+					}
+				};
+			}
+		}
+		return null;
+	}
+
+	/*
+	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
+	 */
+	@SuppressWarnings("rawtypes")
+	public Class[] getAdapterList() {
+		return new Class<?>[] { IPropertyPageIdProvider.class };
+	}
+}

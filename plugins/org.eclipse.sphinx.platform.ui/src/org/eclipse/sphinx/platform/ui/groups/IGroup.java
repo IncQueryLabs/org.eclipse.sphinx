@@ -27,4 +27,20 @@ public interface IGroup {
 	 * Returns true or false if the group is complete or not.
 	 */
 	boolean isGroupComplete();
+
+	/**
+	 * Adds the given group listener in the listeners list of this group.
+	 * 
+	 * @param listener
+	 *            The group listener to add.
+	 */
+	void addGroupListener(IGroupListener listener);
+
+	/**
+	 * Removes the given group listener from the listeners list of this group.
+	 * 
+	 * @param listener
+	 *            The group listener to remove.
+	 */
+	void removeGroupListener(IGroupListener listener);
 }

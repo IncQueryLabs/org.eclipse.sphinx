@@ -57,7 +57,7 @@ public class FileSelectionGroup extends AbstractGroup {
 	// Dialog setting
 	protected static final String SECTION_NAME = Activator.getDefault().getBundle().getSymbolicName() + ".SECTION"; //$NON-NLS-1$
 	protected static final String STORE_SELECTED_CHECK_FILES = "SELECTED_CHECK_FILES"; //$NON-NLS-1$
-	protected static final String STORE_ENABLE_BUTTON = "ENABLEG_BUTTON"; //$NON-NLS-1$
+	protected static final String STORE_ENABLE_BUTTON = "ENABLE_BUTTON"; //$NON-NLS-1$
 
 	protected ListButtonsField fileListField;
 	protected SelectionButtonField enableButton;

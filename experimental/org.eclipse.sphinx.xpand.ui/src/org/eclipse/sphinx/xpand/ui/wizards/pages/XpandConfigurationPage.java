@@ -14,22 +14,13 @@
  */
 package org.eclipse.sphinx.xpand.ui.wizards.pages;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.MissingResourceException;
 
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.platform.ui.fields.SelectionButtonField;
+import org.eclipse.sphinx.platform.ui.fields.IField;
+import org.eclipse.sphinx.platform.ui.groups.IGroupListener;
 import org.eclipse.sphinx.platform.ui.wizards.pages.AbstractWizardPage;
 import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
@@ -40,7 +31,6 @@ import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.xtend.typesystem.MetaModel;
 
 public class XpandConfigurationPage extends AbstractWizardPage {
@@ -94,36 +84,28 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 	 * Creates the template group field and load dialog settings.
 	 */
 	protected void createTemplateGroup(Composite parent) {
-		templateGroup = new TemplateGroup(Messages.label_template, modelObject, metaModel) {
-			@Override
-			protected void groupChanged(Group group) {
-				getWizard().getContainer().updateButtons();
-			};
-		};
-		templateGroup.setDialogSettings(getDialogSettings());
+		templateGroup = new TemplateGroup(Messages.label_template, modelObject, metaModel, getDialogSettings());
 		templateGroup.createContent(parent, 3);
+		templateGroup.addGroupListener(new IGroupListener() {
+
+			public void groupChanged(IField field) {
+				getWizard().getContainer().updateButtons();
+			}
+		});
 	}
 
 	/**
 	 * Creates the output group field.
 	 */
 	protected void createOutputGroup(Composite parent) {
-		outputGroup = new OutputGroup(parent, Messages.label_output, 3, modelObject, outletsPreference) {
+		outputGroup = new OutputGroup(Messages.label_output, modelObject, outletsPreference);
+		outputGroup.createContent(parent, 3);
+		outputGroup.addGroupListener(new IGroupListener() {
 
-			@Override
-			protected void groupChanged(Group group) {
+			public void groupChanged(IField field) {
 				getWizard().getContainer().updateButtons();
-			};
-		};
-	}
-
-	protected IDialogSettings getDialogBoundsSettings(String id) {
-		IDialogSettings settings = getDialogSettings();
-		IDialogSettings section = settings.getSection(id);
-		if (section == null) {
-			section = settings.addNewSection(id);
-		}
-		return section;
+			}
+		});
 	}
 
 	@Override
@@ -138,31 +120,8 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 
 	@Override
 	protected boolean doIsPageComplete() {
-		return templateGroup.isGroupComplete() && isOutputGroupComplete();
+		return templateGroup.isGroupComplete() && outputGroup.isGroupComplete();
 
-	}
-
-	protected IContainer getContainer(String fullPath) {
-		if (fullPath != null && fullPath.length() > 0) {
-			IPath path = new Path(fullPath);
-			path.makeAbsolute();
-			IContainer container;
-			if (path.segmentCount() == 1) {
-				container = ResourcesPlugin.getWorkspace().getRoot().getProject(path.segment(0));
-			} else {
-				container = ResourcesPlugin.getWorkspace().getRoot().getFolder(path);
-			}
-			return container;
-		}
-		return null;
-	}
-
-	protected boolean isOutputGroupComplete() {
-		SelectionButtonField field = outputGroup.getUseDefaultPathButtonField();
-		if (field != null && !field.isSelected()) {
-			return getContainer(outputGroup.getOutputPathField().getText()) != null;
-		}
-		return true;
 	}
 
 	@Override
@@ -171,33 +130,14 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 	}
 
 	public Collection<XpandEvaluationRequest> getXpandEvaluationRequests() {
-		List<XpandEvaluationRequest> requests = new ArrayList<XpandEvaluationRequest>();
-		if (modelObject != null) {
-			String definitionName = templateGroup.getQualifiedDefinitionName();
-			if (definitionName != null && definitionName.length() > 0) {
-				requests.add(new XpandEvaluationRequest(definitionName, modelObject));
-			}
-		}
-		return requests;
+		return templateGroup.getXpandEvaluationRequests();
 	}
 
-	public Collection<ExtendedOutlet> getOutlets() {
-		if (outletsPreference != null) {
-			IFile file = EcorePlatformUtil.getFile(modelObject);
-			if (file != null && file.getProject() != null) {
-				return outletsPreference.get(file.getProject());
-			}
-		}
-
-		IContainer defaultOutletContainer = getContainer(outputGroup.getOutputPathField().getText());
-		if (defaultOutletContainer != null) {
-			defaultOutlet = new ExtendedOutlet(defaultOutletContainer);
-			return Collections.singletonList(defaultOutlet);
-		}
-
-		return Collections.<ExtendedOutlet> emptyList();
+	public Collection<? extends ExtendedOutlet> getOutlets() {
+		return outputGroup.getOutlets();
 	}
 
+	@Override
 	public void finish() {
 		if (templateGroup != null) {
 			templateGroup.saveGroupSettings();

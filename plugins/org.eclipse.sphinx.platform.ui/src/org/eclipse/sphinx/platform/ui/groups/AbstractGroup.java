@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.platform.ui.groups;
 
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.sphinx.platform.ui.fields.IField;
 import org.eclipse.swt.widgets.Composite;
@@ -29,6 +30,13 @@ public abstract class AbstractGroup implements IGroup {
 	 * The dialog settings for this group; <code>null</code> if none.
 	 */
 	private IDialogSettings dialogSettings = null;
+
+	/**
+	 * The listeners of this group. These listeners are notified when group changes append.
+	 * <p>
+	 * Listeners added to this list must be instances of {@link IGroupListener}.
+	 */
+	private ListenerList groupListeners = new ListenerList();
 
 	/**
 	 * This construct a group with <code>groupName</code> group name.
@@ -67,8 +75,12 @@ public abstract class AbstractGroup implements IGroup {
 	 * contain the output group field for example to adjust the enable state of the Back, Next, and Finish buttons
 	 * wizard page.
 	 */
-	protected void groupFieldChanged(IField field) {
-		// Do nothing by default.
+	protected void notifyGroupChanged(IField field) {
+		// Iterates over all listeners
+		for (Object listener : groupListeners.getListeners()) {
+			// Fires dialog group changed notification
+			((IGroupListener) listener).groupChanged(field);
+		}
 	}
 
 	/**
@@ -83,6 +95,24 @@ public abstract class AbstractGroup implements IGroup {
 	 */
 	public void saveGroupSettings() {
 		// Do nothing by default.
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.sphinx.platform.ui.groups.IGroup#addGroupListener(org.eclipse.sphinx.platform.ui.groups.IGroupListener
+	 * )
+	 */
+	public final void addGroupListener(IGroupListener listener) {
+		groupListeners.add(listener);
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.sphinx.platform.ui.groups.IGroup#removeGroupListener(org.eclipse.sphinx.platform.ui.groups.IGroupListener
+	 * )
+	 */
+	public void removeGroupListener(IGroupListener listener) {
+		groupListeners.remove(listener);
 	}
 
 	/**

@@ -161,9 +161,6 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		job.schedule();
 
 		ExtendedPlatformUI.showSystemConsole();
-		// TODO (aakar) Remove this on newer Sphinx release
-		checkConfigurationPage.finish();
-		xpandConfigurationPage.finish();
 	}
 
 	protected boolean isCheckRequired() {

@@ -14,6 +14,8 @@
  */
 package org.eclipse.sphinx.xpand.ui.groups;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +24,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
@@ -31,6 +35,7 @@ import org.eclipse.sphinx.platform.ui.fields.IFieldListener;
 import org.eclipse.sphinx.platform.ui.fields.SelectionButtonField;
 import org.eclipse.sphinx.platform.ui.fields.StringButtonField;
 import org.eclipse.sphinx.platform.ui.fields.adapters.IButtonAdapter;
+import org.eclipse.sphinx.platform.ui.groups.AbstractGroup;
 import org.eclipse.sphinx.platform.ui.preferences.AbstractPreferenceAndPropertyPage;
 import org.eclipse.sphinx.platform.ui.preferences.IPropertyPageIdProvider;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
@@ -48,12 +53,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
-public class OutputGroup {
-
-	/**
-	 * The name of the output group.
-	 */
-	protected String groupName;
+public class OutputGroup extends AbstractGroup {
 
 	/**
 	 * The use default output path button field.
@@ -80,14 +80,20 @@ public class OutputGroup {
 	 */
 	protected EObject modelObject;
 
-	public OutputGroup(Composite parent, String groupName, int numColumns, EObject modelObject, OutletsPreference outletsPreference) {
+	public OutputGroup(String groupName, EObject modelObject, OutletsPreference outletsPreference) {
+		this(groupName, modelObject, outletsPreference, null);
+	}
+
+	public OutputGroup(String groupName, EObject modelObject, OutletsPreference outletsPreference, IDialogSettings dialogSettings) {
+		super(groupName, dialogSettings);
+
 		this.groupName = groupName;
 		this.modelObject = modelObject;
 		this.outletsPreference = outletsPreference;
-		createContent(parent, numColumns);
 	}
 
-	protected void createContent(final Composite parent, int numColumns) {
+	@Override
+	protected void doCreateContent(final Composite parent, int numColumns) {
 		final Group outputGroup = new Group(parent, SWT.SHADOW_NONE);
 		outputGroup.setText(groupName);
 		outputGroup.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
@@ -141,19 +147,11 @@ public class OutputGroup {
 			outputPathField.addFieldListener(new IFieldListener() {
 
 				public void dialogFieldChanged(IField field) {
-					groupChanged(outputGroup);
+					notifyGroupChanged(outputPathField);
 				}
 			});
 			updateEnableState(!useDefaultPathButtonField.isSelected());
 		}
-	}
-
-	/**
-	 * This method should be overriding for instance by wizards that contain the output group field for example to
-	 * adjust the enable state of the Back, Next, and Finish buttons wizard page.
-	 */
-	protected void groupChanged(Group group) {
-		// Do nothing by default.
 	}
 
 	protected Link createLink(final Composite composite, String text) {
@@ -183,10 +181,7 @@ public class OutputGroup {
 
 	protected void openProjectProperties(Shell shell, IProject project, Object data) {
 		if (outletsPreference != null) {
-			// TODO: Add OutletsPreferenceAdapterFactory in example project.
-			// IPropertyPageIdProvider provider = (IPropertyPageIdProvider)
-			// outletsPreference.getAdapter(IPropertyPageIdProvider);
-			IPropertyPageIdProvider provider = null;
+			IPropertyPageIdProvider provider = (IPropertyPageIdProvider) outletsPreference.getAdapter(IPropertyPageIdProvider.class);
 			if (provider != null) {
 				String outletsPropertyPageId = provider.getPropertyPageId();
 				if (outletsPropertyPageId != null) {
@@ -208,5 +203,48 @@ public class OutputGroup {
 
 	public StringButtonField getOutputPathField() {
 		return outputPathField;
+	}
+
+	public Collection<ExtendedOutlet> getOutlets() {
+		if (outletsPreference != null) {
+			IFile file = EcorePlatformUtil.getFile(modelObject);
+			if (file != null && file.getProject() != null) {
+				return outletsPreference.get(file.getProject());
+			}
+		}
+
+		IContainer defaultOutletContainer = getContainer(outputPathField.getText());
+		if (defaultOutletContainer != null) {
+			defaultOutlet = new ExtendedOutlet(defaultOutletContainer);
+			return Collections.singletonList(defaultOutlet);
+		}
+
+		return Collections.<ExtendedOutlet> emptyList();
+	}
+
+	protected IContainer getContainer(String fullPath) {
+		if (fullPath != null && fullPath.length() > 0) {
+			IPath path = new Path(fullPath);
+			path.makeAbsolute();
+			if (path.segmentCount() == 1) {
+				return ResourcesPlugin.getWorkspace().getRoot().getProject(path.segment(0));
+			} else {
+				return ResourcesPlugin.getWorkspace().getRoot().getFolder(path);
+			}
+		}
+		return null;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.groups.AbstractGroup#isGroupComplete()
+	 */
+	@Override
+	public boolean isGroupComplete() {
+		if (outletsPreference == null) {
+			if (useDefaultPathButtonField != null && !useDefaultPathButtonField.isSelected()) {
+				return getContainer(outputPathField.getText()) != null;
+			}
+		}
+		return super.isGroupComplete();
 	}
 }

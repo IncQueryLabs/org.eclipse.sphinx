@@ -16,6 +16,7 @@ package org.eclipse.sphinx.xpand.ui.groups;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -27,6 +28,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
+import org.eclipse.sphinx.platform.ui.groups.AbstractGroup;
 import org.eclipse.sphinx.platform.ui.util.SWTUtil;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xpand.ui.dialogs.EditOutletDialog;
@@ -47,12 +49,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.xpand2.output.Outlet;
 
-public class OutletsGroup {
-
-	/**
-	 * The name of the OutletsGroup.
-	 */
-	protected String groupName;
+public class OutletsGroup extends AbstractGroup {
 
 	/**
 	 * The table presenting the outlets.
@@ -79,6 +76,8 @@ public class OutletsGroup {
 	 */
 	private Button removeButton;
 
+	private boolean addButtons = true;
+
 	private Listener listener = new Listener() {
 
 		public void handleEvent(Event event) {
@@ -92,17 +91,24 @@ public class OutletsGroup {
 		}
 	};
 
-	public OutletsGroup(Composite parent, String groupName, OutletProvider outletProvider, int numColumns, boolean addButtons) {
-		this(groupName, outletProvider);
-		createContent(parent, numColumns, addButtons);
+	public OutletsGroup(String groupName, OutletProvider outletProvider, boolean addButtons) {
+		this(groupName, outletProvider, addButtons, null);
 	}
 
-	private OutletsGroup(String groupName, OutletProvider outletProvider) {
+	public OutletsGroup(String groupName, OutletProvider outletProvider) {
+		this(groupName, outletProvider, true, null);
+	}
+
+	public OutletsGroup(String groupName, OutletProvider outletProvider, boolean addButtons, IDialogSettings dialogSettings) {
+		super(groupName, dialogSettings);
+
 		this.groupName = groupName;
 		this.outletProvider = outletProvider;
+		this.addButtons = addButtons;
 	}
 
-	protected void createContent(Composite parent, int numColumns, boolean addButtons) {
+	@Override
+	protected void doCreateContent(Composite parent, int numColumns) {
 		Assert.isNotNull(parent.getShell());
 
 		Group outletsGroup = new Group(parent, SWT.SHADOW_NONE);

@@ -29,6 +29,7 @@ Export-Package: org.eclipse.sphinx.xpand.ui.actions,
  org.eclipse.sphinx.xpand.ui.internal;x-internal:=true,
  org.eclipse.sphinx.xpand.ui.internal.messages;x-internal:=true,
  org.eclipse.sphinx.xpand.ui.outlet.providers,
+ org.eclipse.sphinx.xpand.ui.preferences,
  org.eclipse.sphinx.xpand.ui.util,
  org.eclipse.sphinx.xpand.ui.wizards,
  org.eclipse.sphinx.xpand.ui.wizards.pages

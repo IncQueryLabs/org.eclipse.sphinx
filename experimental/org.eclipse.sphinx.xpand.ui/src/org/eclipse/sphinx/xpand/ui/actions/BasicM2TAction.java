@@ -75,7 +75,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	@Override
 	public void run() {
 		if (getDefinitionName(getSelectedModelObject()) != null) {
-			Job job = createM2TJob();
+			Job job = createXpandJob();
 			// Show console and make sure that all system output produced during execution gets displayed there
 			ExtendedPlatformUI.showSystemConsole();
 			job.schedule();
@@ -91,7 +91,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		wizardDialog.open();
 	}
 
-	protected XpandJob createM2TJob() {
+	protected XpandJob createXpandJob() {
 		XpandJob job = new XpandJob(getM2TJobName(), getMetaModel(), getXpandEvaluationRequests());
 		job.setScopingResourceLoader(getScopingResourceLoader());
 		job.getOutlets().addAll(getOutlets());

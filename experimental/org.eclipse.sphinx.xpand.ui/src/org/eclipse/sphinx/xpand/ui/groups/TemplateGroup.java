@@ -16,6 +16,7 @@ package org.eclipse.sphinx.xpand.ui.groups;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,7 +28,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.internal.xpand2.ast.AbstractDefinition;
 import org.eclipse.internal.xpand2.ast.Template;
 import org.eclipse.jface.dialogs.DialogSettings;
@@ -36,6 +39,8 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
+import org.eclipse.sphinx.emf.resource.ExtendedResource;
+import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.ui.fields.ComboField;
 import org.eclipse.sphinx.platform.ui.fields.IField;
@@ -43,7 +48,9 @@ import org.eclipse.sphinx.platform.ui.fields.IFieldListener;
 import org.eclipse.sphinx.platform.ui.fields.StringButtonField;
 import org.eclipse.sphinx.platform.ui.fields.StringField;
 import org.eclipse.sphinx.platform.ui.fields.adapters.IButtonAdapter;
+import org.eclipse.sphinx.platform.ui.groups.AbstractGroup;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
+import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xpand.ui.internal.Activator;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.swt.SWT;
@@ -62,17 +69,12 @@ import org.eclipse.xtend.shared.ui.core.IXtendXpandResource;
 import org.eclipse.xtend.typesystem.MetaModel;
 import org.eclipse.xtend.typesystem.Type;
 
-public class TemplateGroup {
+public class TemplateGroup extends AbstractGroup {
 
-	// Dialog setting
+	// Dialog settings
 	protected static final String CODE_GEN_SECTION = Activator.getPlugin().getSymbolicName() + ".CODE_GEN_SECTION"; //$NON-NLS-1$
-	public static final String STORE_TEMPLATE_PATH = "TEMPLATE_PATH$"; //$NON-NLS-1$
+	protected static final String STORE_TEMPLATE_PATH = "TEMPLATE_PATH$"; //$NON-NLS-1$
 	protected static final String STORE_SELECTED_DEFINE_BLOCK = "SELECTED_DEFINE_BLOCK"; //$NON-NLS-1$
-
-	/**
-	 * The name of the template group.
-	 */
-	protected String groupName;
 
 	/**
 	 * The template file path field.
@@ -104,18 +106,19 @@ public class TemplateGroup {
 	 */
 	private AbstractDefinition[] definitions;
 
-	/**
-	 * The dialog settings for this group; <code>null</code> if none.
-	 */
-	private IDialogSettings dialogSettings = null;
-
 	public TemplateGroup(String groupName, EObject modelObject, MetaModel metaModel) {
-		this.groupName = groupName;
+		this(groupName, modelObject, metaModel, null);
+	}
+
+	public TemplateGroup(String groupName, EObject modelObject, MetaModel metaModel, IDialogSettings dialogSettings) {
+		super(groupName, dialogSettings);
+
 		this.modelObject = modelObject;
 		this.metaModel = metaModel;
 	}
 
-	public void createContent(final Composite parent, int numColumns) {
+	@Override
+	protected void doCreateContent(final Composite parent, int numColumns) {
 		final Group templateGroup = new Group(parent, SWT.SHADOW_NONE);
 		templateGroup.setText(groupName);
 		templateGroup.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
@@ -182,7 +185,7 @@ public class TemplateGroup {
 			public void dialogFieldChanged(IField field) {
 				updateDefinitionComboItems(getFile(templatePathField.getText()));
 				updateDefinitionaNameField();
-				groupChanged(templateGroup);
+				notifyGroupChanged(templatePathField);
 			}
 		});
 
@@ -194,7 +197,7 @@ public class TemplateGroup {
 
 			public void dialogFieldChanged(IField field) {
 				updateDefinitionaNameField();
-				groupChanged(templateGroup);
+				notifyGroupChanged(templatePathField);
 			}
 		});
 
@@ -204,15 +207,8 @@ public class TemplateGroup {
 		definitionNameField.setEditable(false);
 		definitionNameField.fillIntoGrid(templateGroup, numColumns);
 
+		// Load the group settings.
 		loadGroupSettings();
-	}
-
-	/**
-	 * This method should be overriding for instance by wizards that contain the output group field for example to
-	 * adjust the enable state of the Back, Next, and Finish buttons wizard page.
-	 */
-	protected void groupChanged(Group group) {
-		// Do nothing by default.
 	}
 
 	/**
@@ -222,7 +218,7 @@ public class TemplateGroup {
 		Template template = loadTemplate(templateFile);
 		if (template != null) {
 			definitions = template.getAllDefinitions();
-			definitionComboField.setItems(createDefineBlockItems(definitions));
+			definitionComboField.setItems(createDefinitionComboItems(definitions));
 			return;
 		}
 		definitionComboField.setItems(new String[0]);
@@ -231,7 +227,7 @@ public class TemplateGroup {
 	/**
 	 * Creates define block items.
 	 */
-	protected String[] createDefineBlockItems(AbstractDefinition[] definitions) {
+	protected String[] createDefinitionComboItems(AbstractDefinition[] definitions) {
 		List<String> result = new ArrayList<String>();
 		if (metaModel != null) {
 			Type type = metaModel.getType(modelObject);
@@ -259,7 +255,7 @@ public class TemplateGroup {
 	// TODO File bug to Xpand: org.eclipse.internal.xpand2.ast.AbstractDefinition#getQualifiedName() must not remove the
 	// 4 last characters of the definition's file name in hard-coded manner because it might yield the file's base name
 	// without extension only.
-	public String getQualifiedDefinitionName() {
+	public String getDefinitionName() {
 		String selectedDefinitionName = getSelectedDefinitionComboItem();
 		if (selectedDefinitionName != null) {
 			return getQualifiedName(getFile(getTemplatePathField().getText()), selectedDefinitionName);
@@ -293,7 +289,7 @@ public class TemplateGroup {
 	protected void updateDefinitionaNameField() {
 		IFile templateFile = getFile(templatePathField.getText());
 		if (templateFile != null) {
-			definitionNameField.setText(getQualifiedDefinitionName());
+			definitionNameField.setText(getDefinitionName());
 		} else {
 			definitionNameField.setText("..."); //$NON-NLS-1$
 		}
@@ -313,6 +309,7 @@ public class TemplateGroup {
 		return null;
 	}
 
+	@Override
 	public boolean isGroupComplete() {
 		IFile templateFile = getFile(getTemplatePathField().getText());
 		if (templateFile != null) {
@@ -362,10 +359,22 @@ public class TemplateGroup {
 		return definitions;
 	}
 
+	public Collection<XpandEvaluationRequest> getXpandEvaluationRequests() {
+		List<XpandEvaluationRequest> requests = new ArrayList<XpandEvaluationRequest>();
+		if (modelObject != null) {
+			String definitionName = getDefinitionName();
+			if (definitionName != null && definitionName.length() > 0) {
+				requests.add(new XpandEvaluationRequest(definitionName, modelObject));
+			}
+		}
+		return requests;
+	}
+
 	/**
 	 * Loads the template path and the define block from the dialog settings. Must call
 	 * {@link #setDialogSettings(IDialogSettings)} before calling this method.
 	 */
+	@Override
 	protected void loadGroupSettings() {
 		String templatePath = getTemplatePathFromDialogSettings();
 		if (templatePath != null) {
@@ -414,35 +423,12 @@ public class TemplateGroup {
 	}
 
 	/**
-	 * Sets the dialog settings for this group.
-	 * <p>
-	 * The dialog settings is used to record state between group invocations (i.e. template path and the selected define
-	 * block inside this template)
-	 * </p>
-	 * 
-	 * @param settings
-	 *            the dialog settings, or <code>null</code> if none
-	 * @see #getDialogSettings
-	 */
-	public void setDialogSettings(IDialogSettings dialogSettings) {
-		this.dialogSettings = dialogSettings;
-	}
-
-	/**
-	 * Returns the dialog settings for this group.
-	 * 
-	 * @return the dialog settings, or <code>null</code> if none
-	 */
-	protected IDialogSettings getDialogSettings() {
-		return dialogSettings;
-	}
-
-	/**
 	 * Saves, using the {@link DialogSettings} dialogSettings, the state of the different fields of this group.
 	 * 
 	 * @param templatePathDialogSettingsKey
 	 * @see #setDialogSettings(IDialogSettings)
 	 */
+	@Override
 	public void saveGroupSettings() {
 		IDialogSettings settings = getDialogSettings();
 		String templatePathDialogSettingsKey = getTemplatePathDialogSettingsKey(modelObject);
@@ -467,6 +453,16 @@ public class TemplateGroup {
 	}
 
 	protected String getTemplatePathDialogSettingsKey(EObject object) {
-		return TemplateGroup.STORE_TEMPLATE_PATH + object.eResource().getURIFragment(object);
+		Assert.isNotNull(object);
+
+		URI uri;
+		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(object.eResource());
+		if (extendedResource != null) {
+			uri = extendedResource.getURI(object);
+		} else {
+			uri = EcoreUtil.getURI(object);
+		}
+
+		return TemplateGroup.STORE_TEMPLATE_PATH + uri.toString();
 	}
 }

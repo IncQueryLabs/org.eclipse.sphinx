@@ -21,12 +21,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.sphinx.platform.preferences.AbstractProjectWorkspacePreference;
 import org.eclipse.sphinx.xpand.internal.preferences.OutletsPreferenceInitializer;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 
-public class OutletsPreference extends AbstractProjectWorkspacePreference<Collection<ExtendedOutlet>> {
+public class OutletsPreference extends AbstractProjectWorkspacePreference<Collection<ExtendedOutlet>> implements IAdaptable {
 
 	public static final String XTEND_XPAND_NATURE_ID = "org.eclipse.xtend.shared.ui.xtendXPandNature"; //$NON-NLS-1$
 
@@ -101,5 +103,25 @@ public class OutletsPreference extends AbstractProjectWorkspacePreference<Collec
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * Returns an object which is an instance of the given class associated with this object. Returns <code>null</code>
+	 * if no such object can be found.
+	 * <p>
+	 * This implementation of the method declared by <code>IAdaptable</code> passes the request along to the platform's
+	 * adapter manager; roughly <code>Platform.getAdapterManager().getAdapter(this, adapter)</code>. Subclasses may
+	 * override this method (however, if they do so, they should invoke the method on their superclass to ensure that
+	 * the Platform's adapter manager is consulted).
+	 * </p>
+	 * 
+	 * @param adapter
+	 *            the class to adapt to
+	 * @return the adapted object or <code>null</code>
+	 * @see IAdaptable#getAdapter(Class)
+	 */
+	@SuppressWarnings("restriction")
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+		return AdapterManager.getDefault().getAdapter(this, adapter);
 	}
 }
