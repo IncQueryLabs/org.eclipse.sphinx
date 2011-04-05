@@ -87,6 +87,8 @@ public class ExtendedOutlet extends Outlet {
 
 		if (!pathExpression.equals(path)) {
 			this.pathExpression = pathExpression;
+		} else {
+			this.pathExpression = null;
 		}
 	}
 
