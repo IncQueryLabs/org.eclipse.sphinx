@@ -23,13 +23,8 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.graphiti.workspace.ui.internal.messages.messages"; //$NON-NLS-1$
 
 	public static String DiagramContainerWizardPage_PageExtensionError;
-	public static String DiagramContainerWizardPage_PageName;
-	public static String DiagramContainerWizardPage_PageTitle;
-	public static String DiagramContainerWizardPage_PageDescription;
 
-	public static String DiagramTypeWizardPage_PageTitle;
-	public static String DiagramTypeWizardPage_PageDescription;
-	public static String DiagramTypeWizardPage_DiagramTypeField;
+	public static String DiagramRootWizardPage_DiagramTypeField;
 
 	static {
 		// initialize resource bundle

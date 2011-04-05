@@ -23,10 +23,8 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -34,19 +32,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.part.DrillDownComposite;
 
 /**
  * Workbench-level composite for choosing a container.
  */
 public class ElementTreeSelectionGroup extends Composite {
-	// The listener to notify of events
-	private Listener listener;
 
-	// a collection of the initially-selected elements
+	// A collection of the initially-selected elements
 	private List<Object> initialSelections = new ArrayList<Object>();
 
 	private TreeViewer treeViewer;
@@ -60,7 +54,7 @@ public class ElementTreeSelectionGroup extends Composite {
 
 	private static final String DEFAULT_MSG_SELECT_ONLY = "Select the element:"; //$NON-NLS-1$
 
-	// sizing constants
+	// Sizing constants
 	private static final int SIZING_SELECTION_PANE_WIDTH = 320;
 	private static final int SIZING_SELECTION_PANE_HEIGHT = 300;
 
@@ -70,36 +64,23 @@ public class ElementTreeSelectionGroup extends Composite {
 	 * @param labelProvider
 	 * @param listener
 	 */
-	public ElementTreeSelectionGroup(Composite parent, ITreeContentProvider contentProvider, ILabelProvider labelProvider, Listener listener) {
-		this(parent, contentProvider, labelProvider, listener, null);
+	public ElementTreeSelectionGroup(Composite parent, ITreeContentProvider contentProvider, ILabelProvider labelProvider) {
+		this(parent, contentProvider, labelProvider, null);
 	}
 
-	public ElementTreeSelectionGroup(Composite parent, ITreeContentProvider contentProvider, ILabelProvider labelProvider, Listener listener,
-			String message) {
-		this(parent, contentProvider, labelProvider, listener, message, SIZING_SELECTION_PANE_HEIGHT, SIZING_SELECTION_PANE_WIDTH);
+	public ElementTreeSelectionGroup(Composite parent, ITreeContentProvider contentProvider, ILabelProvider labelProvider, String message) {
+		this(parent, contentProvider, labelProvider, message, SIZING_SELECTION_PANE_HEIGHT, SIZING_SELECTION_PANE_WIDTH);
 	}
 
-	public ElementTreeSelectionGroup(Composite parent, ITreeContentProvider contentProvider, ILabelProvider labelProvider, Listener listener,
-			String message, int heightHint, int widthHint) {
+	public ElementTreeSelectionGroup(Composite parent, ITreeContentProvider contentProvider, ILabelProvider labelProvider, String message,
+			int heightHint, int widthHint) {
 		super(parent, SWT.NONE);
 		this.contentProvider = contentProvider;
 		this.labelProvider = labelProvider;
-		this.listener = listener;
 		if (message != null) {
 			createContents(message, heightHint, widthHint);
 		} else {
 			createContents(DEFAULT_MSG_SELECT_ONLY, heightHint, widthHint);
-		}
-	}
-
-	public void fireSelectionChanged(Object selection) {
-		// fire an event so the parent can update its controls
-		if (listener != null) {
-			Event changeEvent = new Event();
-			changeEvent.type = SWT.Selection;
-			changeEvent.data = selection;
-			changeEvent.widget = this;
-			listener.handleEvent(changeEvent);
 		}
 	}
 
@@ -137,12 +118,6 @@ public class ElementTreeSelectionGroup extends Composite {
 		treeViewer.setLabelProvider(labelProvider);
 		treeViewer.setComparator(comparator);
 		treeViewer.setUseHashlookup(true);
-		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-				fireSelectionChanged(selection.getFirstElement()); // allow null
-			}
-		});
 		treeViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				ISelection selection = event.getSelection();
@@ -225,5 +200,9 @@ public class ElementTreeSelectionGroup extends Composite {
 
 	public ISelection getSelection() {
 		return treeViewer.getSelection();
+	}
+
+	public TreeViewer getViewer() {
+		return treeViewer;
 	}
 }

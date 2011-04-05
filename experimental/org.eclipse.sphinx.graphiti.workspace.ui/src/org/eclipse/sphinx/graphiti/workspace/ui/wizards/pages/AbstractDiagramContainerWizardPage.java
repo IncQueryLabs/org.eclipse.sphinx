@@ -1,23 +1,53 @@
 package org.eclipse.sphinx.graphiti.workspace.ui.wizards.pages;
 
+import java.util.MissingResourceException;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.graphiti.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.graphiti.workspace.ui.internal.messages.Messages;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 
-public class DiagramContainerWizardPage extends WizardNewFileCreationPage {
+public abstract class AbstractDiagramContainerWizardPage extends WizardNewFileCreationPage {
 
 	private String extension;
 
-	public DiagramContainerWizardPage(String pageName, IStructuredSelection selection, String extension) {
+	public AbstractDiagramContainerWizardPage(String pageName, IStructuredSelection selection, String extension) {
 		super(pageName, selection);
 		this.extension = extension;
+		setTitle(getPageTitle());
+		setDescription(getPageDescription());
 	}
+
+	private String getPageTitle() {
+		String title = ""; //$NON-NLS-1$
+		try {
+			title = doGetTitle();
+		} catch (MissingResourceException e) {
+			PlatformLogUtil.logAsError(Activator.getDefault(), e);
+		}
+		return title;
+	}
+
+	protected abstract String doGetTitle() throws MissingResourceException;
+
+	private String getPageDescription() {
+		String description = ""; //$NON-NLS-1$
+		try {
+			description = doGetDescription();
+		} catch (MissingResourceException e) {
+			PlatformLogUtil.logAsError(Activator.getDefault(), e);
+		}
+		return description;
+	}
+
+	protected abstract String doGetDescription() throws MissingResourceException;
 
 	public URI getURI() {
 		return URI.createPlatformResourceURI(getFilePath().toString(), false);
