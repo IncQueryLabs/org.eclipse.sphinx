@@ -1,0 +1,42 @@
+package org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.wizards.pages;
+
+import java.util.MissingResourceException;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.internal.messages.Messages;
+import org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.providers.Hummingbird20PlatformDiagramTypeProvider;
+import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
+import org.eclipse.sphinx.graphiti.workspace.ui.wizards.pages.AbstractDiagramRootWizardPage;
+
+public class Hummingbird20PlatformDiagramRootWizardPage extends AbstractDiagramRootWizardPage {
+
+	public Hummingbird20PlatformDiagramRootWizardPage(String pageName) {
+		super(pageName, Hummingbird20PlatformDiagramTypeProvider.DIAGRAM_TYPE);
+	}
+
+	@Override
+	protected String doGetTitle() throws MissingResourceException {
+		return Hummingbird20PlatformDiagramTypeProvider.DIAGRAM_TYPE;
+	}
+
+	@Override
+	protected String doGetDescription() throws MissingResourceException {
+		return NLS.bind(Messages.Hummingbird20DiagramRootWizardPage_PageDescription, Hummingbird20PlatformDiagramTypeProvider.DIAGRAM_TYPE);
+	}
+
+	@Override
+	protected IStatus isValidRootDiagram(ISelection selectedRoot) {
+		if (!(selectedRoot instanceof IStructuredSelection) || ((IStructuredSelection) selectedRoot).isEmpty()) {
+			return createErrorStatus(Messages.Hummingbird20DiagramRootWizardPage_NoRootSelected);
+		}
+		IStructuredSelection selection = (IStructuredSelection) selectedRoot;
+		if (!(selection.getFirstElement() instanceof Platform)) {
+			return createErrorStatus(Messages.Hummingbird20DiagramRootWizardPage_PlatformIsExpected);
+		}
+		return Status.OK_STATUS;
+	}
+}

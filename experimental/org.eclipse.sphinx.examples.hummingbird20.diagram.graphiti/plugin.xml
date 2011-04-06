@@ -20,23 +20,34 @@ Contributors:
  <extension
       point="org.eclipse.graphiti.ui.diagramTypes">
     <diagramType
-      description="%sphinx.examples.hummingbird20.diagram.graphiti.diagramTypes.hummingbird20.description"
-      id="org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.diagramTypes.hummingbird20"
-      name="%sphinx.examples.hummingbird20.diagram.graphiti.diagramTypes.hummingbird20.name"
-      type="%sphinx.examples.hummingbird20.diagram.graphiti.diagramTypes.hummingbird20.type">
+      description="%sphinx.examples.hummingbird20.diagram.graphiti.diagramTypes.platform.description"
+      id="org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.diagramTypes.platform"
+      name="%sphinx.examples.hummingbird20.diagram.graphiti.diagramTypes.platform.name"
+      type="%sphinx.examples.hummingbird20.diagram.graphiti.diagramTypes.platform.type">
     </diagramType>
   </extension>
 
   <extension
       point="org.eclipse.graphiti.ui.diagramTypeProviders">
     <diagramTypeProvider
-      class="org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.Hummingbird20DiagramTypeProvider"
-      description="%sphinx.examples.hummingbird20.diagram.graphiti.diagramTypeProviders.hummingbird20.description"
-      id="org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.diagramTypeProviders.hummingbird20"
-      name="%sphinx.examples.hummingbird20.diagram.graphiti.diagramTypeProviders.hummingbird20.name">
+      class="org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.providers.Hummingbird20PlatformDiagramTypeProvider"
+      description="%sphinx.examples.hummingbird20.diagram.graphiti.diagramTypeProviders.platform.description"
+      id="org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.diagramTypeProviders.platform"
+      name="%sphinx.examples.hummingbird20.diagram.graphiti.diagramTypeProviders.platform.name">
       <diagramType
-        id="org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.diagramTypes.hummingbird20">
+        id="org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.diagramTypes.platform">
       </diagramType>
     </diagramTypeProvider>
+  </extension>
+  <extension
+        point="org.eclipse.ui.newWizards">
+     <wizard
+           category="org.eclipse.sphinx.examples.common.ui.newWizards.category.sphinxExampleWizards"
+           class="org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.wizards.Hummingbird20CreatePlatformDiagramWizard"
+           hasPages="true"
+           icon="icons/wizban16/CreateFile.png"
+           id="org.eclipse.sphinx.examples.hummingbird20.diagram.platform.newWizard"
+           name="Hummingbird20 Platform Diagram">
+     </wizard>
   </extension>
 </plugin>

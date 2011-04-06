@@ -12,10 +12,24 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features;
+package org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features.add;
 
-import java.awt.Shape;
-
+import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.impl.AbstractAddShapeFeature;
+import org.eclipse.graphiti.mm.algorithms.Polyline;
+import org.eclipse.graphiti.mm.algorithms.Rectangle;
+import org.eclipse.graphiti.mm.algorithms.Text;
+import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.services.IGaService;
+import org.eclipse.graphiti.services.IPeCreateService;
+import org.eclipse.graphiti.util.ColorConstant;
+import org.eclipse.graphiti.util.IColorConstant;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 
 /**
@@ -93,7 +107,7 @@ public class AddComponentTypeFeature extends AbstractAddShapeFeature {
 			Shape textShape = peCreateService.createShape(containerShape, false);
 
 			// Create and set text graphics algorithm
-			Text text = gaService.createDefaultText(textShape, componentTypeToAdd.getName());
+			Text text = gaService.createText(textShape, componentTypeToAdd.getName());
 			text.setForeground(manageColor(COMPONENT_TYPE_COLOR_TEXT_FOREGROUND));
 			text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
 			text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);

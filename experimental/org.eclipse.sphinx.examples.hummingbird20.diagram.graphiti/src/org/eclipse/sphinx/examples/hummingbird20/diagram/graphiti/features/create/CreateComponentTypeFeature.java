@@ -12,10 +12,14 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features;
+package org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features.create;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;

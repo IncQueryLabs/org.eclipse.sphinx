@@ -12,9 +12,12 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.views.properties.tabbed,
  org.eclipse.graphiti,
  org.eclipse.graphiti.ui,
+ org.eclipse.sphinx.graphiti.workspace.ui,
  org.eclipse.sphinx.examples.hummingbird20
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti;x-internal:=true,
- org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features
+ org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features.add,
+ org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features.create,
+ org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.providers
 Bundle-Localization: plugin
