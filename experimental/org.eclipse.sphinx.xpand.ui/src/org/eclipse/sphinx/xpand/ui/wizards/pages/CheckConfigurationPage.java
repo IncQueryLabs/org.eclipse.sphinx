@@ -76,7 +76,6 @@ public class CheckConfigurationPage extends AbstractWizardPage {
 			checkGroup = new FileSelectionGroup(Messages.label_checkModelBlock, Messages.label_useCheckModelButton, Messages.label_checkModelBlock,
 					IXtendXpandConstants.CHECK_EXTENSION, modelFile.getProject(), getDialogSettings());
 			checkGroup.createContent(parent, 3);
-			checkGroup.updateFileSelectionEnableState(false);
 		}
 	}
 

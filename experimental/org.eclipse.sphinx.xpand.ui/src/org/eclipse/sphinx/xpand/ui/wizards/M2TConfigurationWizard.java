@@ -118,6 +118,8 @@ public class M2TConfigurationWizard extends AbstractWizard {
 
 	@Override
 	protected void doPerformFinish(IProgressMonitor monitor) throws CoreException {
+		ExtendedPlatformUI.showSystemConsole();
+
 		final CheckJob checkJob = isCheckRequired() ? createCheckJob() : null;
 		final XpandJob xpandJob = createXpandJob();
 
@@ -160,7 +162,6 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		}
 		job.schedule();
 
-		ExtendedPlatformUI.showSystemConsole();
 	}
 
 	protected boolean isCheckRequired() {
