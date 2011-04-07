@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.sphinx.platform.ui.preferences.AbstractPreferenceAndPropertyPage;
 import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xpand.ui.groups.OutletsGroup;
+import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xpand.ui.outlet.providers.OutletProvider;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -66,7 +67,7 @@ public class XpandPreferencePage extends AbstractPreferenceAndPropertyPage {
 
 	protected void addOutletsGroup(Composite parent) {
 		outletProvider = new OutletProvider((IProject) getElement(), getOutletsPreference());
-		outletsGroup = new OutletsGroup("Outlets", outletProvider);
+		outletsGroup = new OutletsGroup(Messages.label_outletsGroupName, outletProvider);
 		outletsGroup.createContent(parent, 2);
 		tableViewer = outletsGroup.getTableViewer();
 		Dialog.applyDialogFont(parent);
