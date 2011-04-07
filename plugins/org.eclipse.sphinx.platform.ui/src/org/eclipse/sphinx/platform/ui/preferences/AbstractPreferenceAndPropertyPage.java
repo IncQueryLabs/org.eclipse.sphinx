@@ -165,6 +165,10 @@ public abstract class AbstractPreferenceAndPropertyPage extends FieldEditorPrefe
 				changeWorkspaceSettings = createLink(composite,
 						AbstractPreferenceAndPropertyMessages.AbstractPreferenceAndPropertyPage_configureWorkspaceSettings);
 				changeWorkspaceSettings.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
+				// Enable changeWorkspaceSettings field only if useProjectSettings is not selected.
+				if (useProjectSettings != null) {
+					enableProjectSpecificSettings(useProjectSettings.isSelected());
+				}
 			} else {
 				LayoutUtil.setHorizontalSpan(useProjectSettings.getSelectionButton(null), 2);
 			}
