@@ -54,14 +54,19 @@ public abstract class AbstractPreferenceAndPropertyPage extends FieldEditorPrefe
 	protected String requiredProjectNatureId;
 
 	/**
+	 * The parent composite of this preference or property page.
+	 */
+	private Composite parentComposite;
+
+	/**
 	 * The workspace settings link.
 	 */
-	private Link changeWorkspaceSettings;
+	private Link configureOtherSettingsLink;
 
 	/**
 	 * The project settings button.
 	 */
-	private SelectionButtonField useProjectSettings;
+	private SelectionButtonField enableProjectSpecificSettingsField;
 
 	/**
 	 * The project or null when used as preference page.
@@ -126,72 +131,85 @@ public abstract class AbstractPreferenceAndPropertyPage extends FieldEditorPrefe
 	 */
 	protected abstract void enablePreferenceContent(boolean useProjectSpecificSettings);
 
-	protected abstract String getPreferencePageID();
+	protected String getPreferencePageID() {
+		return null;
+	}
 
-	protected abstract String getPropertyPageID();
+	protected String getPropertyPageID() {
+		return null;
+	}
 
 	@Override
 	protected Label createDescriptionLabel(Composite parent) {
+		parentComposite = parent;
+
 		if (isProjectPreferencePage()) {
-			Composite composite = new Composite(parent, SWT.NONE);
-			composite.setFont(parent.getFont());
-			GridLayout layout = new GridLayout();
-			layout.marginHeight = 0;
-			layout.marginWidth = 0;
-			layout.numColumns = 2;
-			composite.setLayout(layout);
-			composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			if (supportsWorkspaceSpecificOptions()) {
+				Composite composite = new Composite(parent, SWT.NONE);
+				composite.setFont(parent.getFont());
+				GridLayout layout = new GridLayout();
+				layout.marginHeight = 0;
+				layout.marginWidth = 0;
+				layout.numColumns = 2;
+				composite.setLayout(layout);
+				composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-			IFieldListener listener = new IFieldListener() {
-				public void dialogFieldChanged(IField field) {
-					boolean enabled = ((SelectionButtonField) field).isSelected();
-					enableProjectSpecificSettings(enabled);
+				IFieldListener listener = new IFieldListener() {
+					public void dialogFieldChanged(IField field) {
+						boolean enabled = ((SelectionButtonField) field).isSelected();
+						enableProjectSpecificSettings(enabled);
 
-					if (enabled && getData() != null) {
-						applyData(getData());
+						if (enabled && getData() != null) {
+							applyData(getData());
+						}
 					}
-				}
-			};
+				};
 
-			useProjectSettings = new SelectionButtonField(SWT.CHECK);
-			useProjectSettings.addFieldListener(listener);
-			useProjectSettings.setLabelText(AbstractPreferenceAndPropertyMessages.AbstractPreferenceAndPropertyPage_enableProjectSpecificSettings);
-			useProjectSettings.fillIntoGrid(composite, 1);
-			useProjectSettings.setSelectionWithoutEvent(true);
-			LayoutUtil.setHorizontalGrabbing(useProjectSettings.getSelectionButton(null));
+				enableProjectSpecificSettingsField = new SelectionButtonField(SWT.CHECK);
+				enableProjectSpecificSettingsField.addFieldListener(listener);
+				enableProjectSpecificSettingsField
+						.setLabelText(AbstractPreferenceAndPropertyMessages.AbstractPreferenceAndPropertyPage_enableProjectSpecificSettings);
+				enableProjectSpecificSettingsField.fillIntoGrid(composite, 1);
+				enableProjectSpecificSettingsField.setSelectionWithoutEvent(true);
+				LayoutUtil.setHorizontalGrabbing(enableProjectSpecificSettingsField.getSelectionButton(null));
 
-			if (offerLink()) {
-				// Access the workspace settings.
-				changeWorkspaceSettings = createLink(composite,
-						AbstractPreferenceAndPropertyMessages.AbstractPreferenceAndPropertyPage_configureWorkspaceSettings);
-				changeWorkspaceSettings.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
-				// Enable changeWorkspaceSettings field only if useProjectSettings is not selected.
-				if (useProjectSettings != null) {
-					enableProjectSpecificSettings(useProjectSettings.isSelected());
+				if (offerLink()) {
+					// Access the workspace settings
+					configureOtherSettingsLink = createLink(composite,
+							AbstractPreferenceAndPropertyMessages.AbstractPreferenceAndPropertyPage_configureWorkspaceSettings);
+					configureOtherSettingsLink.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
+					// Enable changeWorkspaceSettings field only if useProjectSettings is not selected
+					if (enableProjectSpecificSettingsField != null) {
+						enableProjectSpecificSettings(enableProjectSpecificSettingsField.isSelected());
+					}
+				} else {
+					LayoutUtil.setHorizontalSpan(enableProjectSpecificSettingsField.getSelectionButton(null), 2);
 				}
-			} else {
-				LayoutUtil.setHorizontalSpan(useProjectSettings.getSelectionButton(null), 2);
+
+				Label horizontalLine = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+				horizontalLine.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 2, 1));
+				horizontalLine.setFont(composite.getFont());
 			}
-
-			Label horizontalLine = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-			horizontalLine.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 2, 1));
-			horizontalLine.setFont(composite.getFont());
 		} else if (supportsProjectSpecificOptions() && offerLink()) {
-			// Access the project settings.
-			changeWorkspaceSettings = createLink(parent,
+			// Access the project specific settings
+			configureOtherSettingsLink = createLink(parent,
 					AbstractPreferenceAndPropertyMessages.AbstractPreferenceAndPropertyPage_configureProjectSpecificSettings);
-			changeWorkspaceSettings.setLayoutData(new GridData(SWT.END, SWT.CENTER, true, false));
+			configureOtherSettingsLink.setLayoutData(new GridData(SWT.END, SWT.CENTER, true, false));
 		}
 
 		return super.createDescriptionLabel(parent);
 	}
 
-	protected boolean isProjectPreferencePage() {
-		return project != null;
+	protected boolean supportsWorkspaceSpecificOptions() {
+		return getPreferencePageID() != null;
 	}
 
 	protected boolean supportsProjectSpecificOptions() {
 		return getPropertyPageID() != null;
+	}
+
+	protected boolean isProjectPreferencePage() {
+		return project != null;
 	}
 
 	protected final void openWorkspacePreferences(Object data) {
@@ -207,7 +225,7 @@ public abstract class AbstractPreferenceAndPropertyPage extends FieldEditorPrefe
 	}
 
 	protected void enableProjectSpecificSettings(boolean useProjectSpecificSettings) {
-		useProjectSettings.setSelection(useProjectSpecificSettings);
+		enableProjectSpecificSettingsField.setSelection(useProjectSpecificSettings);
 		enablePreferenceContent(useProjectSpecificSettings);
 		updateLinkVisibility();
 	}
@@ -218,6 +236,12 @@ public abstract class AbstractPreferenceAndPropertyPage extends FieldEditorPrefe
 		if (data instanceof Map<?, ?>) {
 			this.data = (Map<String, Object>) data;
 		}
+		if (configureOtherSettingsLink != null) {
+			if (!offerLink()) {
+				configureOtherSettingsLink.dispose();
+				parentComposite.layout(true, true);
+			}
+		}
 	}
 
 	protected Map<String, Object> getData() {
@@ -225,7 +249,7 @@ public abstract class AbstractPreferenceAndPropertyPage extends FieldEditorPrefe
 	}
 
 	protected boolean useProjectSettings() {
-		return isProjectPreferencePage() && useProjectSettings != null && useProjectSettings.isSelected();
+		return isProjectPreferencePage() && enableProjectSpecificSettingsField != null && enableProjectSpecificSettingsField.isSelected();
 	}
 
 	protected boolean offerLink() {
@@ -249,8 +273,8 @@ public abstract class AbstractPreferenceAndPropertyPage extends FieldEditorPrefe
 			}
 			ProjectSelectionDialog dialog = new ProjectSelectionDialog(getShell(), projectsWithSpecifics);
 			if (dialog.open() == Window.OK) {
-				IProject res = (IProject) dialog.getFirstResult();
-				openProjectProperties(res.getProject(), data);
+				IProject project = (IProject) dialog.getFirstResult();
+				openProjectProperties(project, data);
 			}
 		}
 	}
@@ -272,12 +296,12 @@ public abstract class AbstractPreferenceAndPropertyPage extends FieldEditorPrefe
 	}
 
 	private void updateLinkVisibility() {
-		if (changeWorkspaceSettings == null || changeWorkspaceSettings.isDisposed()) {
+		if (configureOtherSettingsLink == null || configureOtherSettingsLink.isDisposed()) {
 			return;
 		}
 
 		if (isProjectPreferencePage()) {
-			changeWorkspaceSettings.setEnabled(!useProjectSettings());
+			configureOtherSettingsLink.setEnabled(!useProjectSettings());
 		}
 	}
 }
