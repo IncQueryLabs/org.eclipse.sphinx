@@ -21,9 +21,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.sphinx.platform.preferences.AbstractProjectWorkspacePreference;
 import org.eclipse.sphinx.xpand.internal.preferences.OutletsPreferenceInitializer;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
@@ -120,8 +120,7 @@ public class OutletsPreference extends AbstractProjectWorkspacePreference<Collec
 	 * @return the adapted object or <code>null</code>
 	 * @see IAdaptable#getAdapter(Class)
 	 */
-	@SuppressWarnings("restriction")
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
-		return AdapterManager.getDefault().getAdapter(this, adapter);
+		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}
 }
