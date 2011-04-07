@@ -30,6 +30,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xpand.ui.internal.Activator;
+import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xpand.ui.outlet.providers.OutletProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -70,7 +71,7 @@ public class EditOutletDialog extends StatusDialog {
 
 	public EditOutletDialog(Shell parent, ExtendedOutlet outlet, boolean edit, boolean editableName, OutletProvider outletProvider) {
 		super(parent);
-		String title = edit ? "Edit Outlet" : "New Outlet";
+		String title = edit ? Messages.title_editOutletDialog : Messages.title_newOutletDialog;
 		setTitle(title);
 		this.outlet = outlet;
 		this.editableName = editableName;
@@ -96,7 +97,7 @@ public class EditOutletDialog extends StatusDialog {
 		GridData layoutData = new GridData(GridData.FILL_BOTH);
 		parent.setLayoutData(layoutData);
 
-		createLabel(parent, "Name:", 1);
+		createLabel(parent, Messages.label_name, 1);
 		nameText = createText(parent, GridData.BEGINNING, 1);
 		nameText.setEditable(editableName);
 		if (editableName) {
@@ -105,10 +106,10 @@ public class EditOutletDialog extends StatusDialog {
 			}
 			nameText.addModifyListener(listener);
 		} else {
-			nameText.setText("<default>");
+			nameText.setText(Messages.label_default);
 		}
 
-		createLabel(parent, "Location:", 1);
+		createLabel(parent, Messages.label_location, 1);
 
 		locationText = createText(parent, GridData.FILL_HORIZONTAL, 1);
 		if (outlet.getPathExpression() != null) {
@@ -125,13 +126,13 @@ public class EditOutletDialog extends StatusDialog {
 		GridData bLayoutData = new GridData(GridData.HORIZONTAL_ALIGN_END);
 		buttonsParent.setLayoutData(bLayoutData);
 
-		workspaceBrowse = createPushButton(buttonsParent, "Workspace...", null);
+		workspaceBrowse = createPushButton(buttonsParent, Messages.label_workspaceBrowse, null);
 		workspaceBrowse.addSelectionListener(listener);
 
-		fileBrowse = createPushButton(buttonsParent, "File System...", null);
+		fileBrowse = createPushButton(buttonsParent, Messages.label_fileSystemBrowse, null);
 		fileBrowse.addSelectionListener(listener);
 
-		variables = createPushButton(buttonsParent, "Variables...", null);
+		variables = createPushButton(buttonsParent, Messages.label_variablesBrowse, null);
 		variables.addSelectionListener(listener);
 		return parent;
 	}
@@ -164,8 +165,8 @@ public class EditOutletDialog extends StatusDialog {
 
 	protected void handleBrowseWorkspace() {
 		ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new WorkbenchContentProvider());
-		dialog.setTitle("Container Selection");
-		dialog.setMessage("Select a container for the generated files:");
+		dialog.setTitle(Messages.title_containerSelection);
+		dialog.setMessage(Messages.msg_containerSelection);
 		dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
 		dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 		if (outletProvider.getProject() != null) {
@@ -190,22 +191,22 @@ public class EditOutletDialog extends StatusDialog {
 	}
 
 	protected void handleInsertVariable() {
-		MessageDialog.openWarning(getShell(), "Select Variable", "Not supported yet!");
+		MessageDialog.openWarning(getShell(), Messages.title_variableSelection, Messages.msg_variableSelectionWarning);
 	}
 
 	protected IStatus validateOutletName() {
 		String name = nameText.getText();
 		if (name.trim().length() == 0) {
-			return StatusUtil.createStatus(IStatus.ERROR, IStatus.ERROR, "Outlet name must not be empty!", Activator.getPlugin().getSymbolicName(),
-					null);
+			return StatusUtil.createStatus(IStatus.ERROR, IStatus.ERROR, Messages.msg_outletNameEmptyValidationError, Activator.getPlugin()
+					.getSymbolicName(), null);
 		}
 		if (name.equals(initialOutletName)) {
 			return Status.OK_STATUS;
 		}
 		for (Outlet outlet : outletProvider.getOutlets()) {
 			if (name.equals(outlet.getName())) {
-				return StatusUtil.createStatus(IStatus.ERROR, IStatus.ERROR, "Outlet name already exists!", Activator.getPlugin().getSymbolicName(),
-						null);
+				return StatusUtil.createStatus(IStatus.ERROR, IStatus.ERROR, Messages.msg_outletNameExistValidationError, Activator.getPlugin()
+						.getSymbolicName(), null);
 			}
 		}
 		return Status.OK_STATUS;
@@ -221,7 +222,7 @@ public class EditOutletDialog extends StatusDialog {
 	protected IStatus validateOutletLocation() {
 		String location = locationText.getText();
 		if (location.trim().length() == 0) {
-			return StatusUtil.createStatus(IStatus.ERROR, IStatus.ERROR, "Outlet location must not be empty!", Activator.getPlugin()
+			return StatusUtil.createStatus(IStatus.ERROR, IStatus.ERROR, Messages.msg_outletLocationEmptyValidationError, Activator.getPlugin()
 					.getSymbolicName(), null);
 		}
 		return Status.OK_STATUS;
