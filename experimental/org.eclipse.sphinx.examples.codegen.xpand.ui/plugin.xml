@@ -61,4 +61,40 @@ Contributors:
          </adapter>
       </factory>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.xtend.shared.ui.properties.MetamodelContributorsPropertyPage"
+            class="org.eclipse.sphinx.examples.codegen.xpand.ui.preferences.OutletsPreferencePage"
+            id="org.eclipse.sphinx.examples.codegen.xpand.ui.preferencePages.outlets"
+            name="%sphinx.examples.codegen.xpand.ui.preferencePages.outlets.name">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            category="org.eclipse.xtend.shared.ui.properties.MetamodelContributorsPropertyPage"
+            class="org.eclipse.sphinx.examples.codegen.xpand.ui.preferences.OutletsPreferencePage"
+            id="org.eclipse.sphinx.examples.codegen.xpand.ui.propertyPages.outlets"
+            name="%sphinx.examples.codegen.xpand.ui.propertyPages.outlets.name">
+         <enabledWhen>
+            <and>
+               <adapt
+                     type="org.eclipse.core.resources.IProject">
+                  <test
+                        property="org.eclipse.core.resources.projectNature"
+                        value="org.eclipse.jdt.core.javanature">
+                  </test>
+               </adapt>
+               <adapt
+                     type="org.eclipse.core.resources.IProject">
+                  <test
+                        property="org.eclipse.core.resources.projectNature"
+                        value="org.eclipse.xtend.shared.ui.xtendXPandNature">
+                  </test>
+               </adapt>
+            </and>
+         </enabledWhen>
+      </page>
+   </extension>
 </plugin>

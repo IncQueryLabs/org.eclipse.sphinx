@@ -11,3 +11,8 @@ Require-Bundle: org.eclipse.core.resources,
  org.eclipse.sphinx.emf.explorer,
  org.eclipse.sphinx.xpand.ui
 Bundle-Activator: org.eclipse.sphinx.examples.codegen.xpand.ui.internal.Activator$Implementation
+Export-Package: org.eclipse.sphinx.examples.codegen.xpand.ui,
+ org.eclipse.sphinx.examples.codegen.xpand.ui.actions.providers,
+ org.eclipse.sphinx.examples.codegen.xpand.ui.internal;x-internal:=true,
+ org.eclipse.sphinx.examples.codegen.xpand.ui.internal.messages;x-internal:=true,
+ org.eclipse.sphinx.examples.codegen.xpand.ui.preferences

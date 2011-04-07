@@ -15,9 +15,9 @@
 package org.eclipse.sphinx.examples.codegen.xpand.ui.internal;
 
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.sphinx.examples.codegen.xpand.ui.preferences.OutletsPreferencePage;
 import org.eclipse.sphinx.platform.ui.preferences.IPropertyPageIdProvider;
 import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
-import org.eclipse.sphinx.xpand.ui.preferences.XpandPreferencePage;
 
 public class OutletsPreferenceAdapterFactory implements IAdapterFactory {
 
@@ -29,7 +29,7 @@ public class OutletsPreferenceAdapterFactory implements IAdapterFactory {
 			if (adaptableObject instanceof IPropertyPageIdProvider) {
 				return new IPropertyPageIdProvider() {
 					public String getPropertyPageId() {
-						return XpandPreferencePage.PROP_PAGE_ID;
+						return OutletsPreferencePage.PROPERTY_PAGE_ID;
 					}
 				};
 			}

@@ -28,9 +28,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-public class XpandPreferencePage extends AbstractPreferenceAndPropertyPage {
-
-	public static final String PROP_PAGE_ID = "propertyPages.xpand"; //$NON-NLS-1$
+public abstract class AbstractOutletsPreferencePage extends AbstractPreferenceAndPropertyPage {
 
 	private OutletsGroup outletsGroup;
 
@@ -38,11 +36,11 @@ public class XpandPreferencePage extends AbstractPreferenceAndPropertyPage {
 
 	private OutletProvider outletProvider;
 
-	public XpandPreferencePage() {
+	public AbstractOutletsPreferencePage() {
 		super(OutletsPreference.XTEND_XPAND_NATURE_ID, GRID);
 	}
 
-	public XpandPreferencePage(String requiredProjectNatureId, int style) {
+	public AbstractOutletsPreferencePage(String requiredProjectNatureId, int style) {
 		super(requiredProjectNatureId, style);
 	}
 
@@ -76,16 +74,6 @@ public class XpandPreferencePage extends AbstractPreferenceAndPropertyPage {
 	@Override
 	protected void enablePreferenceContent(boolean useProjectSpecificSettings) {
 
-	}
-
-	@Override
-	protected String getPreferencePageID() {
-		return null;
-	}
-
-	@Override
-	protected String getPropertyPageID() {
-		return PROP_PAGE_ID;
 	}
 
 	@Override
