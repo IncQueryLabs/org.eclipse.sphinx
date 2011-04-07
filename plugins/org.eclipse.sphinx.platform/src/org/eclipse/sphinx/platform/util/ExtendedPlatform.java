@@ -796,16 +796,15 @@ public final class ExtendedPlatform {
 	}
 
 	/**
-	 * Returns the root projects in the workspace which have the given nature associated with them.
+	 * Returns the projects in the workspace which have the given nature associated with them.
 	 * 
 	 * @param natureId
-	 *            An identifier specifying the nature of the root projects to be returned.
+	 *            An identifier specifying the nature of the projects to be returned.
 	 * @return A collection of projects having the specified nature.
 	 */
 	public static Collection<IProject> getProjects(String natureId) {
 		Collection<IProject> projects = new ArrayList<IProject>();
-		Collection<IProject> rootProjects = getRootProjects();
-		for (IProject project : rootProjects) {
+		for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
 			if (project.isAccessible()) {
 				try {
 					if (project.hasNature(natureId)) {

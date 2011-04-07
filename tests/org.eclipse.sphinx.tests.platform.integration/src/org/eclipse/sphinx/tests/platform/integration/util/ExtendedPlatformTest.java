@@ -511,23 +511,29 @@ public class ExtendedPlatformTest extends DefaultIntegrationTestCase {
 	public void testGetProjectsFromNatureID() {
 
 		Collection<IProject> hbRootProjects = ExtendedPlatform.getProjects(HummingbirdNature.ID);
-		assertEquals(4, hbRootProjects.size());
+		assertEquals(7, hbRootProjects.size());
 		assertTrue(hbRootProjects.contains(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A)));
+		assertTrue(hbRootProjects.contains(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D)));
+		assertTrue(hbRootProjects.contains(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E)));
 		assertTrue(hbRootProjects.contains(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_F)));
 		assertTrue(hbRootProjects.contains(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A)));
+		assertTrue(hbRootProjects.contains(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D)));
 		assertTrue(hbRootProjects.contains(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E)));
+
 		try {
 			HummingbirdNature.removeFrom(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E), new NullProgressMonitor());
-			HummingbirdNature.removeFrom(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), new NullProgressMonitor());
 			HummingbirdNature.removeFrom(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_F), new NullProgressMonitor());
+			HummingbirdNature.removeFrom(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), new NullProgressMonitor());
 		} catch (CoreException e) {
 			return;
 		}
-		hbRootProjects = ExtendedPlatform.getProjects(HummingbirdNature.ID);
-		assertEquals(2, hbRootProjects.size());
-		assertTrue(hbRootProjects.contains(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A)));
-		assertTrue(hbRootProjects.contains(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A)));
 
+		hbRootProjects = ExtendedPlatform.getProjects(HummingbirdNature.ID);
+		assertEquals(4, hbRootProjects.size());
+		assertTrue(hbRootProjects.contains(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A)));
+		assertTrue(hbRootProjects.contains(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D)));
+		assertTrue(hbRootProjects.contains(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A)));
+		assertTrue(hbRootProjects.contains(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D)));
 	}
 
 	/**
