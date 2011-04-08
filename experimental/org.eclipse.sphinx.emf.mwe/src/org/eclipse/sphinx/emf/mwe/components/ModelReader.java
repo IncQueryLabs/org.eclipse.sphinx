@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.emf.mwe;
+package org.eclipse.sphinx.emf.mwe.components;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,13 +37,13 @@ import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 public class ModelReader extends WorkflowComponentWithModelSlot {
 
 	private String projectName;
-	private String metaModelId;
+	private String metaModelDescriptorId;
 
 	@Override
 	public void checkConfiguration(Issues issues) {
 		super.checkConfiguration(issues);
-		checkRequiredConfigProperty("projectName", projectName, issues); //$NON-NLS-1$
-		checkRequiredConfigProperty("metaModelId", metaModelId, issues); //$NON-NLS-1$
+		checkRequiredConfigProperty("project", projectName, issues); //$NON-NLS-1$
+		checkRequiredConfigProperty("metaModelDescriptorId", metaModelDescriptorId, issues); //$NON-NLS-1$
 	}
 
 	@Override
@@ -61,9 +61,9 @@ public class ModelReader extends WorkflowComponentWithModelSlot {
 		}
 
 		List<EObject> modelRoots = new ArrayList<EObject>();
-		IMetaModelDescriptor mmd = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(metaModelId);
+		IMetaModelDescriptor mmd = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(metaModelDescriptorId);
 		if (mmd == null) {
-			issues.addError("Model Descriptor '" + metaModelId + "' unknown"); //$NON-NLS-1$ //$NON-NLS-2$
+			issues.addError("Metamodel Descriptor '" + metaModelDescriptorId + "' unknown"); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
 		Collection<IModelDescriptor> models = ModelDescriptorRegistry.INSTANCE.getModels(project, mmd);
@@ -89,19 +89,19 @@ public class ModelReader extends WorkflowComponentWithModelSlot {
 		ctx.set(getModelSlot(), modelRoots);
 	}
 
-	public void setProjectName(String projectName) {
+	public void setProject(String projectName) {
 		this.projectName = projectName;
 	}
 
-	public String getProjectName() {
+	public String getProject() {
 		return projectName;
 	}
 
-	public void setMetaModelId(String metaModelId) {
-		this.metaModelId = metaModelId;
+	public void setMetaModelDescriptor(String metaModelDescriptorId) {
+		this.metaModelDescriptorId = metaModelDescriptorId;
 	}
 
-	public String getMetaModelId() {
-		return metaModelId;
+	public String getMetaModelDesriptor() {
+		return metaModelDescriptorId;
 	}
 }
