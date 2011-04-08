@@ -32,10 +32,23 @@ import org.eclipse.equinox.app.IApplicationContext;
 
 public abstract class AbstractCLIApplication implements IApplication {
 
-	public static final Object NO_ERROR = 0;
-	public static final Object UNSPECIFIED_ERROR = 1;
+	/**
+	 * Error code to indicate that everything is fine.
+	 */
+	public static final Object ERROR_NO = 0;
 
-	private static String HELP_OPTION = "help"; //$NON-NLS-1$
+	/**
+	 * General purpose error code used to indicate that something went wrong.
+	 * <p>
+	 * Clients typically define application-specific error codes with values greater than <code>1</code> to give a hint
+	 * at the cause that has led to a failure. Applications which do not require such sophisticated error handling may
+	 * rely on this error code instead.
+	 * </p>
+	 */
+	public static final Object ERROR_UNSPECIFIED = 1;
+
+	private static final String OPTION_HELP_NAME = "help"; //$NON-NLS-1$
+	private static final String OPTION_HELP_DESCRIPTION = "print help documentation"; //$NON-NLS-1$
 
 	private String[] applicationArgs;
 	private Options options = new Options();
@@ -43,10 +56,26 @@ public abstract class AbstractCLIApplication implements IApplication {
 	private CommandLine commandLine = null;
 
 	/**
-	 * @return application name used for display
+	 * Returns the name of this {@link AbstractCLIApplication application}.
+	 * 
+	 * @return The {@link AbstractCLIApplication application}'s name.
 	 */
 	protected abstract String getApplicationName();
 
+	/**
+	 * Returns a brief description of what this {@link AbstractCLIApplication application} is doing.
+	 * 
+	 * @return The {@link AbstractCLIApplication application}'s description.
+	 */
+	protected String getApplicationDescription() {
+		return null;
+	}
+
+	/**
+	 * Returns the list of arguments passed to this {@link AbstractCLIApplication application}.
+	 * 
+	 * @return The {@link AbstractCLIApplication application}'s argument list.
+	 */
 	protected String[] getApplicationArgs() {
 		return applicationArgs;
 	}
@@ -82,6 +111,7 @@ public abstract class AbstractCLIApplication implements IApplication {
 
 	public Object start(IApplicationContext context) {
 		try {
+			// Initialize application arguments
 			initApplicationArgs(context);
 
 			// Definition stage
@@ -125,7 +155,7 @@ public abstract class AbstractCLIApplication implements IApplication {
 	 * this method and call super.defineOptions() inside overloaded method.
 	 */
 	protected void defineOptions() {
-		addOption(new Option(HELP_OPTION, "print help documentation")); //$NON-NLS-1$
+		addOption(new Option(OPTION_HELP_NAME, OPTION_HELP_DESCRIPTION));
 	}
 
 	/**
@@ -168,27 +198,33 @@ public abstract class AbstractCLIApplication implements IApplication {
 	 */
 	protected Object interrogate() throws Throwable {
 		CommandLine commandLine = getCommandLine();
-		if (commandLine.hasOption(HELP_OPTION)) {
+		if (commandLine.getOptions().length == 0 || commandLine.hasOption(OPTION_HELP_NAME)) {
 			printHelp();
 			throw new OperationCanceledException();
 		}
-
-		return NO_ERROR;
+		return ERROR_NO;
 	}
 
 	/**
 	 * Default implementation of the default help option behavior.
 	 */
 	protected void printHelp() {
+		String description = getApplicationDescription();
+		if (description != null && description.length() > 0) {
+			System.out.println(description);
+			System.out.println();
+		}
+
 		HelpFormatter formatter = new HelpFormatter();
 		formatter.printHelp(getApplicationName(), getOptions());
 	}
 
 	protected Object handleError(Throwable t) {
-		if (!(t instanceof OperationCanceledException)) {
-			System.err.println(t.getMessage());
+		if (t instanceof OperationCanceledException) {
+			return ERROR_NO;
 		}
 
-		return UNSPECIFIED_ERROR;
+		System.err.println(t.getMessage());
+		return ERROR_UNSPECIFIED;
 	}
 }
