@@ -42,6 +42,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
@@ -491,7 +492,7 @@ public final class EcorePlatformUtil {
 	 * @return The file corresponding to the specified {@link URI uri}.
 	 */
 	public static IFile getFile(URI uri) {
-		if (uri != null) {
+		if (uri != null && Platform.isRunning()) {
 			try {
 				return (IFile) ReflectUtil.invokeInvisibleMethod(WorkspaceSynchronizer.class, "getFile", new Object[] { uri, //$NON-NLS-1$
 						EcoreResourceUtil.getURIConverter(), false });
@@ -511,7 +512,7 @@ public final class EcorePlatformUtil {
 	 * @return The file corresponding to the specified {@link Resource resource}.
 	 */
 	public static IFile getFile(final Resource resource) {
-		if (resource != null) {
+		if (resource != null && Platform.isRunning()) {
 			TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resource);
 			if (editingDomain != null) {
 				try {
@@ -525,7 +526,6 @@ public final class EcorePlatformUtil {
 				}
 			} else {
 				return WorkspaceSynchronizer.getFile(resource);
-
 			}
 		}
 		return null;
