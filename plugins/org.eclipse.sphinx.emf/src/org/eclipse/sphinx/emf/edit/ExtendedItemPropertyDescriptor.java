@@ -143,17 +143,17 @@ public class ExtendedItemPropertyDescriptor extends ItemPropertyDescriptor {
 	}
 
 	/*
-	 * Overridden to avoid that default values for unsettable attributes are displayed unless they have been explicitly
-	 * set.
+	 * Overridden to avoid that default values for unsettable single-valued attributes are displayed unless they have
+	 * been explicitly set.
 	 * @see org.eclipse.emf.edit.provider.ItemPropertyDescriptor#getValue(org.eclipse.emf.ecore.EObject,
 	 * org.eclipse.emf.ecore.EStructuralFeature)
 	 */
 	@Override
 	protected Object getValue(EObject object, EStructuralFeature feature) {
-		if (!(feature instanceof EAttribute) || !feature.isUnsettable() || object.eIsSet(feature)) {
-			return super.getValue(object, feature);
+		if (feature instanceof EAttribute && !feature.isMany() && feature.isUnsettable() && !object.eIsSet(feature)) {
+			return null;
 		}
-		return null;
+		return super.getValue(object, feature);
 	}
 
 	/*
@@ -187,12 +187,15 @@ public class ExtendedItemPropertyDescriptor extends ItemPropertyDescriptor {
 	@Override
 	public Collection<?> getChoiceOfValues(Object object) {
 		Collection<?> result;
-		// Starts profiling
+
+		// Start profiling
 		EcorePerformanceStats.INSTANCE.startEvent(EcorePerformanceStats.EcoreEvent.EVENT_CHOICES_OF_VALUES, object);
-		// Collects the choices of values for the specified feature of the given object
+
+		// Collect the choices of values for the specified feature of the given object
 		ExtendedItemProviderAdapter adapt = (ExtendedItemProviderAdapter) adapterFactory.adapt(object, IEditingDomainItemProvider.class);
 		result = adapt.getChoiceOfValues(object, parentReferences, feature);
-		// Ends profiling
+
+		// End profiling
 		EcorePerformanceStats.INSTANCE.endEvent(EcorePerformanceStats.EcoreEvent.EVENT_CHOICES_OF_VALUES, object);
 		return result;
 	}
