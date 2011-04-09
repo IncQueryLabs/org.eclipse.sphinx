@@ -22,9 +22,13 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
-import org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel;
 
-public class SphinxManagedEmfMetaModel extends EmfRegistryMetaModel {
+/**
+ * An EMF MetaModel that is based on the {@link EPackage}s behind a given {@link IModelDescriptor context model} or the
+ * {@link IModelDescriptor model}s in a given {@link IProject context project}.
+ */
+// TODO Rename to ContextBasedEmfMetaModel
+public class SphinxManagedEmfMetaModel extends ConfigurableEmfMetaModel {
 
 	protected IProject contextProject = null;
 	protected IModelDescriptor contextModel = null;
@@ -48,11 +52,10 @@ public class SphinxManagedEmfMetaModel extends EmfRegistryMetaModel {
 	}
 
 	@Override
-	protected EPackage[] allPackages() {
-		Set<EPackage> allEPackages = new HashSet<EPackage>();
+	protected Collection<EPackage> doAllPackages() {
 		for (IModelDescriptor modelDescriptor : getModelsInScope()) {
-			allEPackages.addAll(modelDescriptor.getMetaModelDescriptor().getEPackages());
+			addMetaModelDescriptor(modelDescriptor.getMetaModelDescriptor());
 		}
-		return allEPackages.toArray(new EPackage[allEPackages.size()]);
+		return super.doAllPackages();
 	}
 }
