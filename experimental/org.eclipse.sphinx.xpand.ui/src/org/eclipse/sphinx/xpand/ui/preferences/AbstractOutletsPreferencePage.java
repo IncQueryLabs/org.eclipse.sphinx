@@ -73,7 +73,9 @@ public abstract class AbstractOutletsPreferencePage extends AbstractPreferenceAn
 
 	@Override
 	protected void enablePreferenceContent(boolean useProjectSpecificSettings) {
-
+		if (outletsGroup != null) {
+			outletsGroup.setEnabled(useProjectSpecificSettings);
+		}
 	}
 
 	@Override
