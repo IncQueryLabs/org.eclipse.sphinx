@@ -554,22 +554,17 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			return getDescriptor(file);
 		}
 
-		// Try to retrieve descriptor from content type id behind given resource (applies to resources that have been
+		// Try to retrieve descriptor from model namespace of given resource (applies to resources that have been
 		// created but not loaded - and therefore no EObject content - yet and are located outside the workspace)
 		if (resource != null) {
-			final String contentTypeId = EcoreResourceUtil.getContentTypeId(resource.getURI());
-			if (contentTypeId != null) {
-				return getDescriptor(ANY_MM, new IDescriptorFilter() {
-					public boolean accept(IMetaModelDescriptor descriptor) {
-						if (descriptor.getContentTypeIds().contains(contentTypeId)) {
-							return true;
-						}
-						if (descriptor.getCompatibleContentTypeIds().contains(contentTypeId)) {
-							return true;
-						}
-						return false;
-					}
-				});
+			String namespace = EcoreResourceUtil.readModelNamespace(resource);
+			if (namespace != null) {
+				// Determine corresponding meta-model descriptor
+				try {
+					return getDescriptor(new URI(namespace));
+				} catch (URISyntaxException ex) {
+					// Ignore exception, just return null
+				}
 			}
 		}
 
