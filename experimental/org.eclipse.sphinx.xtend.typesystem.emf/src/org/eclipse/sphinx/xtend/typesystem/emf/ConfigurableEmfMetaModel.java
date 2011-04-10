@@ -18,9 +18,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel;
 
 /**
@@ -33,9 +33,22 @@ public class ConfigurableEmfMetaModel extends EmfRegistryMetaModel {
 
 	private Collection<EPackage> allEPackages = null;
 
+	/*
+	 * !! Important Note !! This method must be placed before #addMetaModelDescriptor(IMetaModelDescriptor) so as to
+	 * make sure that it can be found when ConfigurableEmfMetaModel is instantiated as bean in MWE workflows and
+	 * initialized with metamodel descriptor identifiers.
+	 */
+	public void addMetaModelDescriptor(String mmDescriptorId) {
+		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(mmDescriptorId);
+		if (mmDescriptor != null) {
+			metaModelDescriptors.add(mmDescriptor);
+		}
+	}
+
 	public void addMetaModelDescriptor(IMetaModelDescriptor mmDescriptor) {
-		Assert.isNotNull(mmDescriptor);
-		metaModelDescriptors.add(mmDescriptor);
+		if (mmDescriptor != null) {
+			metaModelDescriptors.add(mmDescriptor);
+		}
 	}
 
 	@Override
