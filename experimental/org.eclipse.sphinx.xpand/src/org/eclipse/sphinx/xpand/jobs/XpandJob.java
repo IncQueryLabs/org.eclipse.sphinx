@@ -240,8 +240,11 @@ public class XpandJob extends WorkspaceJob {
 		return false;
 	}
 
+	/**
+	 * Create a default outlet pointing at current working directory.
+	 */
 	protected ExtendedOutlet createDefaultOutlet() {
-		return new ExtendedOutlet(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
+		return new ExtendedOutlet();
 	}
 
 	@Override

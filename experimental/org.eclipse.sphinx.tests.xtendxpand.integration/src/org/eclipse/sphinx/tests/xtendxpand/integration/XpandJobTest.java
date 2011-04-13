@@ -22,7 +22,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
@@ -70,9 +69,8 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		IStatus xpandStatus = xpandJob.runInWorkspace(new NullProgressMonitor());
 		assertEquals(Status.OK_STATUS, xpandStatus);
 
-		// Load generated resource from java.io.tmpdir and verify its content
-		String defaultGenFilePath = System.getProperty("java.io.tmpdir").concat(XtendXpandTestReferenceWorkspace.CONFIGH_FILE_NAME); //$NON-NLS-1$
-		File file = new Path(defaultGenFilePath).toFile();
+		// Load generated resource from current working directory and verify its content
+		File file = new File(XtendXpandTestReferenceWorkspace.CONFIGH_FILE_NAME);
 		assertNotNull(file);
 		assertTrue(file.exists());
 		String contents = readAsString(file);
