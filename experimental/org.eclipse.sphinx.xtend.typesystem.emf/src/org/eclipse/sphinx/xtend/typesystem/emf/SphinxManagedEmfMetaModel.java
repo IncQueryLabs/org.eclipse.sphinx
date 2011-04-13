@@ -27,7 +27,7 @@ import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
  * An EMF MetaModel that is based on the {@link EPackage}s behind a given {@link IModelDescriptor context model} or the
  * {@link IModelDescriptor model}s in a given {@link IProject context project}.
  */
-// TODO Rename to ContextBasedEmfMetaModel
+// TODO Rename to WorkspaceEmfMetaModel
 public class SphinxManagedEmfMetaModel extends ConfigurableEmfMetaModel {
 
 	protected IProject contextProject = null;
