@@ -34,7 +34,9 @@ import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 
-public class ModelReader extends WorkflowComponentWithModelSlot {
+// TODO Create ModelSaver as counterpart which takes a collection of model objects and saves them using
+// org.eclipse.sphinx.emf.util.EcorePlatformUtil.saveNewModelResources(TransactionalEditingDomain, Collection<ModelResourceDescriptor>, boolean, IProgressMonitor)
+public class ModelLoader extends WorkflowComponentWithModelSlot {
 
 	private String projectName;
 	private String metaModelDescriptorId;
