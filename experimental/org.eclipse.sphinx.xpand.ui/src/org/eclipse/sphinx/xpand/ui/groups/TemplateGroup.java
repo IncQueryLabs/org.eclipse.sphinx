@@ -53,11 +53,8 @@ import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xpand.ui.internal.Activator;
 import org.eclipse.sphinx.xpand.ui.internal.messages.Messages;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
@@ -71,7 +68,9 @@ import org.eclipse.xtend.typesystem.Type;
 
 public class TemplateGroup extends AbstractGroup {
 
-	// Dialog settings
+	/**
+	 * The template group dialog settings.
+	 */
 	protected static final String CODE_GEN_SECTION = Activator.getPlugin().getSymbolicName() + ".CODE_GEN_SECTION"; //$NON-NLS-1$
 	protected static final String STORE_TEMPLATE_PATH = "TEMPLATE_PATH$"; //$NON-NLS-1$
 	protected static final String STORE_SELECTED_DEFINE_BLOCK = "SELECTED_DEFINE_BLOCK"; //$NON-NLS-1$
@@ -119,13 +118,7 @@ public class TemplateGroup extends AbstractGroup {
 
 	@Override
 	protected void doCreateContent(final Composite parent, int numColumns) {
-		final Group templateGroup = new Group(parent, SWT.SHADOW_NONE);
-		templateGroup.setText(groupName);
-		templateGroup.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
-
-		GridLayout templateGroupLayout = new GridLayout();
-		templateGroupLayout.numColumns = numColumns;
-		templateGroup.setLayout(templateGroupLayout);
+		parent.setLayout(new GridLayout(numColumns, false));
 
 		// Template File Path
 		templatePathField = new StringButtonField(new IButtonAdapter() {
@@ -179,7 +172,7 @@ public class TemplateGroup extends AbstractGroup {
 		});
 		templatePathField.setButtonLabel(Messages.label_browse);
 		templatePathField.setLabelText(Messages.label_templatePath);
-		templatePathField.fillIntoGrid(templateGroup, numColumns);
+		templatePathField.fillIntoGrid(parent, numColumns);
 		templatePathField.addFieldListener(new IFieldListener() {
 
 			public void dialogFieldChanged(IField field) {
@@ -192,7 +185,7 @@ public class TemplateGroup extends AbstractGroup {
 		// Definition Field
 		definitionComboField = new ComboField(true);
 		definitionComboField.setLabelText(Messages.label_defineBlock);
-		definitionComboField.fillIntoGrid(templateGroup, numColumns);
+		definitionComboField.fillIntoGrid(parent, numColumns);
 		definitionComboField.addFieldListener(new IFieldListener() {
 
 			public void dialogFieldChanged(IField field) {
@@ -205,7 +198,7 @@ public class TemplateGroup extends AbstractGroup {
 		definitionNameField = new StringField();
 		definitionNameField.setLabelText(Messages.label_definitionName);
 		definitionNameField.setEditable(false);
-		definitionNameField.fillIntoGrid(templateGroup, numColumns);
+		definitionNameField.fillIntoGrid(parent, numColumns);
 
 		// Load the group settings.
 		loadGroupSettings();

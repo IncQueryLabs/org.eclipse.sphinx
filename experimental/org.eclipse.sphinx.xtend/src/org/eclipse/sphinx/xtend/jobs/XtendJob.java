@@ -48,24 +48,67 @@ public class XtendJob extends WorkspaceJob {
 
 	protected static final Log log = LogFactory.getLog(XtendJob.class);
 
+	/**
+	 * The metamodel to be use for model transformation.
+	 */
 	protected MetaModel metaModel;
 
+	/**
+	 * A collection of Xtend evaluation request.
+	 * 
+	 * @see {@link XtendEvaluationRequest} class.
+	 */
 	protected Collection<XtendEvaluationRequest> xtendEvaluationRequests;
 
+	/**
+	 * The Xtend transformation result.
+	 */
 	protected Collection<Object> xtendResult = new ArrayList<Object>();
 
+	/**
+	 * The resource loader to be use when loading Xpand template files.
+	 */
 	private IScopingResourceLoader scopingResourceLoader;
 
-	public XtendJob(String name, MetaModel metaModel, XtendEvaluationRequest xtendEvaluationRequests) {
-		this(name, metaModel, Collections.singleton(xtendEvaluationRequests));
+	/**
+	 * Constructs an Xtend job for execution model transformation for the given <code>xtendEvaluationRequest</code>
+	 * using the <code>metaModel</code> metamodel.
+	 * 
+	 * @param name
+	 *            the name of the job.
+	 * @param metaModel
+	 *            the metamodel to be use.
+	 * @param xtendEvaluationRequest
+	 *            the Xtend evaluation request.
+	 * @see {@link MetaModel} and {@link XtendEvaluationRequest} classes.
+	 */
+	public XtendJob(String name, MetaModel metaModel, XtendEvaluationRequest xtendEvaluationRequest) {
+		this(name, metaModel, Collections.singleton(xtendEvaluationRequest));
 	}
 
+	/**
+	 * Constructs an Xtend job for execution model transformation for the given <code>xtendEvaluationRequests</code>
+	 * using the <code>metaModel</code> metamodel.
+	 * 
+	 * @param name
+	 *            the name of the job.
+	 * @param metaModel
+	 *            the metamodel to be use.
+	 * @param xtendEvaluationRequests
+	 *            a collection of Xtend evaluation request.
+	 */
 	public XtendJob(String name, MetaModel metaModel, Collection<XtendEvaluationRequest> xtendEvaluationRequests) {
 		super(name);
 		this.metaModel = metaModel;
 		this.xtendEvaluationRequests = xtendEvaluationRequests;
 	}
 
+	/**
+	 * Sets the Xpand resource loader.
+	 * 
+	 * @param resourceLoader
+	 *            the resource loader.
+	 */
 	public void setScopingResourceLoader(IScopingResourceLoader resourceLoader) {
 		scopingResourceLoader = resourceLoader;
 	}
@@ -75,19 +118,19 @@ public class XtendJob extends WorkspaceJob {
 		try {
 			Assert.isNotNull(metaModel);
 
-			// Log start of Xtend.
+			// Log start of Xtend
 			log.info("Xtend started..."); //$NON-NLS-1$
 
-			// Set resource loader context to model behind current selection.
+			// Set resource loader context to model behind current selection
 			IFile file = EcorePlatformUtil.getFile(xtendEvaluationRequests.iterator().next().getTargetObject());
 			IModelDescriptor model = ModelDescriptorRegistry.INSTANCE.getModel(file);
 			setResourceLoaderContext(model);
 
-			// Create execution context.
+			// Create execution context
 			final ExecutionContextImpl execCtx = new ExecutionContextImpl(new ResourceManagerDefaultImpl(), new TypeSystemImpl(), null);
 			execCtx.registerMetaModel(metaModel);
 
-			// Execute XTend.
+			// Execute Xtend
 			long startTime = System.currentTimeMillis();
 			model.getEditingDomain().runExclusive(new Runnable() {
 				public void run() {
@@ -105,7 +148,7 @@ public class XtendJob extends WorkspaceJob {
 				}
 			});
 			long duration = System.currentTimeMillis() - startTime;
-			// Log end of Xtend.
+			// Log end of Xtend
 			log.info("Xtend completed in " + duration + "ms!"); //$NON-NLS-1$ //$NON-NLS-2$
 			return Status.OK_STATUS;
 		} catch (OperationCanceledException exception) {
@@ -117,6 +160,10 @@ public class XtendJob extends WorkspaceJob {
 		}
 	}
 
+	/**
+	 * Gets the extension file base name computing from the given <code>extensionName</code>. All "::" characters are
+	 * replaced by "/".
+	 */
 	protected String getExtensionFileBaseName(String extensionName) {
 		Assert.isNotNull(extensionName);
 
@@ -128,6 +175,9 @@ public class XtendJob extends WorkspaceJob {
 		return null;
 	}
 
+	/**
+	 * Gets the function name computed from the given <code>extensionName</code>
+	 */
 	protected String getFunctionName(String extensionName) {
 		Assert.isNotNull(extensionName);
 
@@ -138,6 +188,9 @@ public class XtendJob extends WorkspaceJob {
 		return null;
 	}
 
+	/**
+	 * Sets the resource loader context to the given <code>contextModel</code>.
+	 */
 	protected void setResourceLoaderContext(IModelDescriptor contextModel) {
 		if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IScopingResourceLoader) {
 			scopingResourceLoader = (IScopingResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
@@ -147,10 +200,16 @@ public class XtendJob extends WorkspaceJob {
 		scopingResourceLoader.setContextModel(contextModel);
 	}
 
+	/**
+	 * Unsets the resource loader context.
+	 */
 	protected void unsetResourceLoaderContext() {
 		ResourceLoaderFactory.setCurrentThreadResourceLoader(null);
 	}
 
+	/**
+	 * Gets the Xtend model transformation result.
+	 */
 	public Collection<Object> getXtendResult() {
 		return xtendResult;
 	}

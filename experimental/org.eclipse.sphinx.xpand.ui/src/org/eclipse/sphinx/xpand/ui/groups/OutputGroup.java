@@ -47,7 +47,6 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
@@ -94,22 +93,16 @@ public class OutputGroup extends AbstractGroup {
 
 	@Override
 	protected void doCreateContent(final Composite parent, int numColumns) {
-		final Group outputGroup = new Group(parent, SWT.SHADOW_NONE);
-		outputGroup.setText(groupName);
-		outputGroup.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
-
-		GridLayout outputGroupLayout = new GridLayout();
-		outputGroupLayout.numColumns = numColumns;
-		outputGroup.setLayout(outputGroupLayout);
+		parent.setLayout(new GridLayout(numColumns, false));
 
 		// if outlets preference is not null then create a link toward this preference page.
 		if (outletsPreference != null) {
-			Link link = createLink(outputGroup, Messages.label_configureProjectSpecificSettings);
+			Link link = createLink(parent, Messages.label_configureProjectSpecificSettings);
 			link.setLayoutData(new GridData(GridData.END, GridData.END, true, true));
 		} else {
 			useDefaultPathButtonField = new SelectionButtonField(SWT.CHECK);
 			useDefaultPathButtonField.setLabelText(Messages.label_useDefaultPath);
-			useDefaultPathButtonField.fillIntoGrid(outputGroup, numColumns);
+			useDefaultPathButtonField.fillIntoGrid(parent, numColumns);
 			useDefaultPathButtonField.setSelection(true);
 
 			useDefaultPathButtonField.addFieldListener(new IFieldListener() {
@@ -143,7 +136,7 @@ public class OutputGroup extends AbstractGroup {
 					outputPathField.setText(defaultOutletContainer.getFullPath().makeRelative().toString());
 				}
 			}
-			outputPathField.fillIntoGrid(outputGroup, numColumns);
+			outputPathField.fillIntoGrid(parent, numColumns);
 			outputPathField.addFieldListener(new IFieldListener() {
 
 				public void dialogFieldChanged(IField field) {

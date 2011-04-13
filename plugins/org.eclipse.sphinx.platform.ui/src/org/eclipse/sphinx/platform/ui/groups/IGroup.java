@@ -24,6 +24,11 @@ public interface IGroup {
 	void createContent(Composite parent, int numColumns);
 
 	/**
+	 * Creates the content i.e., all necessary fields of the group.
+	 */
+	void createContent(Composite parent, int numColumns, boolean suppressGroupFrame);
+
+	/**
 	 * Returns true or false if the group is complete or not.
 	 */
 	boolean isGroupComplete();

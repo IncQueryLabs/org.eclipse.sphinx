@@ -52,22 +52,61 @@ public class CheckJob extends WorkspaceJob {
 
 	protected static final Log log = LogFactory.getLog(CheckJob.class);
 
+	/**
+	 * The metamodel to be use for checking model.
+	 */
 	protected MetaModel metaModel;
 
+	/**
+	 * A collection of Check evaluation request.
+	 * 
+	 * @see {@link CheckEvaluationRequest} class.
+	 */
 	protected Collection<CheckEvaluationRequest> checkEvaluationRequests;
 
+	/**
+	 * The resource loader to be use when loading check files.
+	 */
 	private IScopingResourceLoader scopingResourceLoader;
 
+	/**
+	 * Constructs a Check job for checking model for the given <code>checkEvaluationRequest</code> using the
+	 * <code>metaModel</code> metamodel.
+	 * 
+	 * @param name
+	 *            the name of the job.
+	 * @param metaModel
+	 *            the metamodel to be use.
+	 * @param checkEvaluationRequest
+	 *            the check evaluation request to be use.
+	 */
 	public CheckJob(String name, MetaModel metaModel, CheckEvaluationRequest checkEvaluationRequest) {
 		this(name, metaModel, Collections.singleton(checkEvaluationRequest));
 	}
 
+	/**
+	 * Constructs a Check job for checking model for the given <code>checkEvaluationRequests</code> using the
+	 * <code>metaModel</code> metamodel.
+	 * 
+	 * @param name
+	 *            the name of the job.
+	 * @param metaModel
+	 *            the metamodel to be use.
+	 * @param checkEvaluationRequests
+	 *            a collection of check evaluation requests to be use.
+	 */
 	public CheckJob(String name, MetaModel metaModel, Collection<CheckEvaluationRequest> checkEvaluationRequests) {
 		super(name);
 		this.metaModel = metaModel;
 		this.checkEvaluationRequests = checkEvaluationRequests;
 	}
 
+	/**
+	 * Sets the Xpand resource loader.
+	 * 
+	 * @param resourceLoader
+	 *            the resource loader.
+	 */
 	public void setScopingResourceLoader(IScopingResourceLoader resourceLoader) {
 		scopingResourceLoader = resourceLoader;
 	}
@@ -130,6 +169,9 @@ public class CheckJob extends WorkspaceJob {
 		}
 	}
 
+	/**
+	 * Sets the resource loader context to the given <code>contextModel</code>.
+	 */
 	protected void setResourceLoaderContext(IModelDescriptor contextModel) {
 		if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IScopingResourceLoader) {
 			scopingResourceLoader = (IScopingResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
@@ -139,6 +181,9 @@ public class CheckJob extends WorkspaceJob {
 		scopingResourceLoader.setContextModel(contextModel);
 	}
 
+	/**
+	 * Unsets the resource loader context.
+	 */
 	protected void unsetResourceLoaderContext() {
 		ResourceLoaderFactory.setCurrentThreadResourceLoader(null);
 	}

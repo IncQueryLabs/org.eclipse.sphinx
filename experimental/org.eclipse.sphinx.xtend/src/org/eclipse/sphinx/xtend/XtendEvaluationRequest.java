@@ -21,14 +21,43 @@ import org.eclipse.core.runtime.Assert;
 
 public class XtendEvaluationRequest {
 
+	/**
+	 * The Xtend extension name.
+	 */
 	private String extensionName;
+
+	/**
+	 * The parameters to be use.
+	 */
 	private List<Object> parameterList;
+
+	/**
+	 * The target model object for model transformation.
+	 */
 	private Object targetObject;
 
+	/**
+	 * Constructs an Xtend model transformation request.
+	 * 
+	 * @param extensionName
+	 *            the Xtend extension name to be use.
+	 * @param targetObject
+	 *            the target model object.
+	 */
 	public XtendEvaluationRequest(String extensionName, Object targetObject) {
 		this(extensionName, targetObject, Collections.emptyList());
 	}
 
+	/**
+	 * Constructs an Xtend model transformation request.
+	 * 
+	 * @param extensionName
+	 *            the Xtend extension name to be use.
+	 * @param targetObject
+	 *            the target model object.
+	 * @param parameterList
+	 *            a list of parameters to be use in model transformation.
+	 */
 	public XtendEvaluationRequest(String extensionName, Object targetObject, List<Object> parameterList) {
 		Assert.isNotNull(extensionName);
 		Assert.isNotNull(targetObject);
@@ -38,14 +67,23 @@ public class XtendEvaluationRequest {
 		this.parameterList = parameterList != null ? parameterList : Collections.emptyList();
 	}
 
+	/**
+	 * Gets the extension name used in model transformation.
+	 */
 	public String getExtensionName() {
 		return extensionName;
 	}
 
+	/**
+	 * Gets the target model object.
+	 */
 	public Object getTargetObject() {
 		return targetObject;
 	}
 
+	/**
+	 * Gets the list of parameters used in model transformation.
+	 */
 	public List<Object> getParameterList() {
 		return parameterList;
 	}

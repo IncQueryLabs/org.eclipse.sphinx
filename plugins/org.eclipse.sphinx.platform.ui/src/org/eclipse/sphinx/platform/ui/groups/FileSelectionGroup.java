@@ -42,10 +42,8 @@ import org.eclipse.sphinx.platform.ui.groups.messages.Messages;
 import org.eclipse.sphinx.platform.ui.internal.Activator;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
@@ -84,20 +82,15 @@ public class FileSelectionGroup extends AbstractGroup {
 
 	@Override
 	protected void doCreateContent(Composite parent, final int numColumns) {
-		final Group fileSelectionGroup = new Group(parent, SWT.SHADOW_NONE);
-		fileSelectionGroup.setText(groupName);
-		fileSelectionGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		parent.setLayout(new GridLayout(numColumns, false));
 
-		GridLayout fileSelectionGroupLayout = new GridLayout();
-		fileSelectionGroupLayout.numColumns = numColumns;
-		fileSelectionGroup.setLayout(fileSelectionGroupLayout);
 		if (enableText != null && enableText.length() > 0) {
 			enableButton = new SelectionButtonField(SWT.CHECK);
 		}
 		if (enableText != null && enableText.length() > 0) {
 			enableButton.setLabelText(enableText);
 			enableButton.setSelection(false);
-			enableButton.fillIntoGrid(fileSelectionGroup, numColumns);
+			enableButton.fillIntoGrid(parent, numColumns);
 			enableButton.addFieldListener(new IFieldListener() {
 				public void dialogFieldChanged(IField field) {
 					updateFileSelectionEnableState(enableButton.isSelected());
@@ -113,7 +106,7 @@ public class FileSelectionGroup extends AbstractGroup {
 			}
 		};
 		fileListField.setRemoveButtonIndex(1);
-		fileListField.fillIntoGrid(fileSelectionGroup, numColumns);
+		fileListField.fillIntoGrid(parent, numColumns);
 		// Add label to fileListField if no button
 		if (enableButton == null) {
 			fileListField.setLabelText(fileListLabel);

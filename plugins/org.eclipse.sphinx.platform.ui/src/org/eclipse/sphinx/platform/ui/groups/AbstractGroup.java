@@ -17,7 +17,10 @@ package org.eclipse.sphinx.platform.ui.groups;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.sphinx.platform.ui.fields.IField;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 
 public abstract class AbstractGroup implements IGroup {
 
@@ -62,7 +65,21 @@ public abstract class AbstractGroup implements IGroup {
 	}
 
 	public void createContent(Composite parent, int numColumns) {
-		doCreateContent(parent, numColumns);
+		createContent(parent, numColumns, false);
+	}
+
+	public void createContent(Composite parent, int numColumns, boolean suppressGroupFrame) {
+		Composite parentComposite;
+		if (suppressGroupFrame) {
+			parentComposite = new Composite(parent, SWT.SHADOW_NONE);
+		} else {
+			Group group = new Group(parent, SWT.SHADOW_NONE);
+			group.setText(groupName);
+			parentComposite = group;
+		}
+
+		parentComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		doCreateContent(parentComposite, numColumns);
 	}
 
 	/**
@@ -145,4 +162,5 @@ public abstract class AbstractGroup implements IGroup {
 	protected IDialogSettings getDialogSettings() {
 		return dialogSettings;
 	}
+
 }

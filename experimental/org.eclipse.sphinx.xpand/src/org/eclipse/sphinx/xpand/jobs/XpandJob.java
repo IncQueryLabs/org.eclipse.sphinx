@@ -55,26 +55,74 @@ public class XpandJob extends WorkspaceJob {
 
 	protected static final Log log = LogFactory.getLog(XpandJob.class);
 
+	/**
+	 * The metamodel to be use for code generation.
+	 */
 	protected MetaModel metaModel;
+
+	/**
+	 * A collection of Xpand evaluation request.
+	 * 
+	 * @see {@link XpandEvaluationRequest} class.
+	 */
 	protected Collection<XpandEvaluationRequest> xpandEvaluationRequests;
 
+	/**
+	 * The resource loader to be use when loading Xpand template file.
+	 */
 	private IScopingResourceLoader scopingResourceLoader;
+
+	/**
+	 * A collection of outlets to be use when code generation.
+	 */
 	private Collection<ExtendedOutlet> outlets;
 
+	/**
+	 * Constructs an Xpand job for execution code generation for the given <code>xpandEvaluationRequest</code> using the
+	 * <code>metaModel</code> metamodel.
+	 * 
+	 * @param name
+	 *            the name of the job.
+	 * @param metaModel
+	 *            the metamodel to be use.
+	 * @param xpandEvaluationRequest
+	 *            the Xpand evaluation request.
+	 * @see {@link MetaModel} and {@link XpandEvaluationRequest} classes.
+	 */
 	public XpandJob(String name, MetaModel metaModel, XpandEvaluationRequest xpandEvaluationRequest) {
 		this(name, metaModel, Collections.singleton(xpandEvaluationRequest));
 	}
 
+	/**
+	 * Constructs an Xpand job for execution code generation for the given <code>xpandEvaluationRequests</code> using
+	 * the <code>metaModel</code> metamodel.
+	 * 
+	 * @param name
+	 *            the name of the job.
+	 * @param metaModel
+	 *            the metamodel to be use.
+	 * @param xpandEvaluationRequests
+	 *            a collection of Xpand evaluation request.
+	 */
 	public XpandJob(String name, MetaModel metaModel, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
 		super(name);
 		this.metaModel = metaModel;
 		this.xpandEvaluationRequests = xpandEvaluationRequests;
 	}
 
+	/**
+	 * Sets the Xpand resource loader.
+	 * 
+	 * @param resourceLoader
+	 *            the resource loader.
+	 */
 	public void setScopingResourceLoader(IScopingResourceLoader resourceLoader) {
 		scopingResourceLoader = resourceLoader;
 	}
 
+	/**
+	 * Gets defined outlets.
+	 */
 	public Collection<ExtendedOutlet> getOutlets() {
 		if (outlets == null) {
 			outlets = new ArrayList<ExtendedOutlet>();
@@ -108,7 +156,6 @@ public class XpandJob extends WorkspaceJob {
 			}
 
 			for (ExtendedOutlet outlet : getOutlets()) {
-				// TODO (aakar) add an overwrite column to the table viewer (to be set by the user)
 				outlet.setOverwrite(true);
 				output.addOutlet(outlet);
 			}
@@ -162,6 +209,9 @@ public class XpandJob extends WorkspaceJob {
 		}
 	}
 
+	/**
+	 * Sets the resource loader context to the given <code>contextModel</code>.
+	 */
 	protected void setResourceLoaderContext(IModelDescriptor contextModel) {
 		if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IScopingResourceLoader) {
 			scopingResourceLoader = (IScopingResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
@@ -171,10 +221,16 @@ public class XpandJob extends WorkspaceJob {
 		scopingResourceLoader.setContextModel(contextModel);
 	}
 
+	/**
+	 * Unsets the resource loader context.
+	 */
 	protected void unsetResourceLoaderContext() {
 		ResourceLoaderFactory.setCurrentThreadResourceLoader(null);
 	}
 
+	/**
+	 * Returns true if default outlet is defined, else false.
+	 */
 	protected boolean containsDefaultOutlet(Collection<? extends Outlet> outlets) {
 		for (Outlet outlet : outlets) {
 			if (outlet.getName() == null) {

@@ -43,7 +43,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -76,6 +75,10 @@ public class OutletsGroup extends AbstractGroup {
 	 */
 	private Button removeButton;
 
+	/**
+	 * The boolean that indicates if add, edit and remove outlets button should be shown or not. These buttons are
+	 * displayed by default.
+	 */
 	private boolean addButtons = true;
 
 	private Listener listener = new Listener() {
@@ -111,18 +114,12 @@ public class OutletsGroup extends AbstractGroup {
 	protected void doCreateContent(Composite parent, int numColumns) {
 		Assert.isNotNull(parent.getShell());
 
-		Group outletsGroup = new Group(parent, SWT.SHADOW_NONE);
-		outletsGroup.setText(groupName);
-		outletsGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-
-		GridLayout outletsGroupLayout = new GridLayout();
-		outletsGroupLayout.numColumns = numColumns;
-		outletsGroup.setLayout(outletsGroupLayout);
+		parent.setLayout(new GridLayout(numColumns, false));
 
 		GC gc = new GC(parent.getShell());
 		gc.setFont(JFaceResources.getDialogFont());
 
-		Composite tableComposite = new Composite(outletsGroup, SWT.NONE);
+		Composite tableComposite = new Composite(parent, SWT.NONE);
 		GridData data = new GridData(GridData.FILL_BOTH);
 		data.widthHint = 360;
 		data.heightHint = convertHeightInCharsToPixels(10, gc);
@@ -153,7 +150,7 @@ public class OutletsGroup extends AbstractGroup {
 
 		if (addButtons) {
 			addTableViewerListener();
-			addButtons(outletsGroup);
+			addButtons(parent);
 		}
 	}
 
@@ -171,6 +168,9 @@ public class OutletsGroup extends AbstractGroup {
 		});
 	}
 
+	/**
+	 * Adds the add, edit and remove outlets buttons.
+	 */
 	protected void addButtons(Composite parent) {
 		Composite buttonsComposite = new Composite(parent, SWT.NONE);
 		buttonsComposite.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
@@ -254,6 +254,9 @@ public class OutletsGroup extends AbstractGroup {
 		return null;
 	}
 
+	/**
+	 * Verify if the selected element has an existing default outlet or not.
+	 */
 	protected boolean containsDefaultOutlet(IStructuredSelection selection) {
 		for (Object element : selection.toList()) {
 			if (((Outlet) element).getName() == null) {
