@@ -25,8 +25,8 @@ public class OutletsPreferenceAdapterFactory implements IAdapterFactory {
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
 	 */
 	public Object getAdapter(final Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
-		if (adapterType.equals(OutletsPreference.class)) {
-			if (adaptableObject instanceof IPropertyPageIdProvider) {
+		if (adapterType.equals(IPropertyPageIdProvider.class)) {
+			if (adaptableObject instanceof OutletsPreference) {
 				return new IPropertyPageIdProvider() {
 					public String getPropertyPageId() {
 						return OutletsPreferencePage.PROPERTY_PAGE_ID;
