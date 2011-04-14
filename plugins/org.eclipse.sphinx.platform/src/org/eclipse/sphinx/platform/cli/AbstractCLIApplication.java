@@ -216,6 +216,8 @@ public abstract class AbstractCLIApplication implements IApplication {
 		}
 
 		HelpFormatter formatter = new HelpFormatter();
+		// FIXME Provide complete command line syntax rather than just application name, e.g., "java " +
+		// WorkflowRunner.class.getName() + " some_workflow_file.mwe [options]"
 		formatter.printHelp(getApplicationName(), getOptions());
 	}
 
