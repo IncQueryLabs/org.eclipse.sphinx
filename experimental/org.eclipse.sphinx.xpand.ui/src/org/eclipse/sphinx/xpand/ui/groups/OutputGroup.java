@@ -25,6 +25,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.preference.PreferenceDialog;
@@ -174,7 +175,8 @@ public class OutputGroup extends AbstractGroup {
 
 	protected void openProjectProperties(Shell shell, IProject project, Object data) {
 		if (outletsPreference != null) {
-			IPropertyPageIdProvider provider = (IPropertyPageIdProvider) outletsPreference.getAdapter(IPropertyPageIdProvider.class);
+			IPropertyPageIdProvider provider = (IPropertyPageIdProvider) Platform.getAdapterManager().loadAdapter(outletsPreference,
+					IPropertyPageIdProvider.class.getName());
 			if (provider != null) {
 				String outletsPropertyPageId = provider.getPropertyPageId();
 				if (outletsPropertyPageId != null) {
