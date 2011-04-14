@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -34,6 +35,8 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitorAdapter;
 import org.eclipse.emf.mwe.core.resources.ResourceLoaderFactory;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
@@ -51,12 +54,13 @@ import org.eclipse.xtend.expression.ResourceManagerDefaultImpl;
 import org.eclipse.xtend.expression.Variable;
 import org.eclipse.xtend.typesystem.MetaModel;
 
+// TODO Add support for advices
 public class XpandJob extends WorkspaceJob {
 
 	protected static final Log log = LogFactory.getLog(XpandJob.class);
 
 	/**
-	 * The metamodel to be use for code generation.
+	 * The metamodel to be used for code generation.
 	 */
 	protected MetaModel metaModel;
 
@@ -68,12 +72,12 @@ public class XpandJob extends WorkspaceJob {
 	protected Collection<XpandEvaluationRequest> xpandEvaluationRequests;
 
 	/**
-	 * The resource loader to be use when loading Xpand template file.
+	 * The resource loader to be used for loading Xtend/Xpand/Check files.
 	 */
-	private IScopingResourceLoader scopingResourceLoader;
+	private IScopingResourceLoader scopingResourceLoader = null;
 
 	/**
-	 * A collection of outlets to be use when code generation.
+	 * A collection of outlets to be used as target for code generation.
 	 */
 	private Collection<ExtendedOutlet> outlets;
 
@@ -106,18 +110,36 @@ public class XpandJob extends WorkspaceJob {
 	 */
 	public XpandJob(String name, MetaModel metaModel, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
 		super(name);
+
+		Assert.isNotNull(metaModel);
+		Assert.isNotNull(xpandEvaluationRequests);
+
 		this.metaModel = metaModel;
 		this.xpandEvaluationRequests = xpandEvaluationRequests;
 	}
 
 	/**
-	 * Sets the Xpand resource loader.
+	 * Sets the {@link IScopingResourceLoader resource loader} for resolving resources referenced by Xpand templates.
 	 * 
 	 * @param resourceLoader
-	 *            the resource loader.
+	 *            The resource loader to be used.
 	 */
 	public void setScopingResourceLoader(IScopingResourceLoader resourceLoader) {
 		scopingResourceLoader = resourceLoader;
+	}
+
+	protected Map<TransactionalEditingDomain, Collection<XpandEvaluationRequest>> getXpandEvaluationRequests() {
+		Map<TransactionalEditingDomain, Collection<XpandEvaluationRequest>> requests = new HashMap<TransactionalEditingDomain, Collection<XpandEvaluationRequest>>();
+		for (XpandEvaluationRequest request : xpandEvaluationRequests) {
+			TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(request.getTargetObject());
+			Collection<XpandEvaluationRequest> requestsInEditingDomain = requests.get(editingDomain);
+			if (requestsInEditingDomain == null) {
+				requestsInEditingDomain = new HashSet<XpandEvaluationRequest>();
+				requests.put(editingDomain, requestsInEditingDomain);
+			}
+			requestsInEditingDomain.add(request);
+		}
+		return requests;
 	}
 
 	/**
@@ -133,8 +155,6 @@ public class XpandJob extends WorkspaceJob {
 	@Override
 	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 		try {
-			Assert.isNotNull(metaModel);
-			Assert.isNotNull(xpandEvaluationRequests);
 			if (xpandEvaluationRequests.isEmpty()) {
 				return Status.CANCEL_STATUS;
 			}
@@ -142,15 +162,13 @@ public class XpandJob extends WorkspaceJob {
 			// Log start of generation
 			log.info("Generating code started..."); //$NON-NLS-1$
 
-			// Set resource loader context to model behind current selection
-			IFile file = EcorePlatformUtil.getFile(xpandEvaluationRequests.iterator().next().getTargetObject());
-			IModelDescriptor model = ModelDescriptorRegistry.INSTANCE.getModel(file);
-			setResourceLoaderContext(model);
+			// Install resource loader
+			installResourceLoader();
 
 			// Configure outlets
 			OutputImpl output = new OutputImpl();
 
-			// We should add at least one default outlet
+			// Add at least one default outlet
 			if (!containsDefaultOutlet(getOutlets())) {
 				getOutlets().add(createDefaultOutlet());
 			}
@@ -167,16 +185,31 @@ public class XpandJob extends WorkspaceJob {
 			execCtx.registerMetaModel(metaModel);
 
 			// Execute generation
-			final XpandFacade facade = XpandFacade.create(execCtx);
 			long startTime = System.currentTimeMillis();
-			model.getEditingDomain().runExclusive(new Runnable() {
-				public void run() {
-					for (XpandEvaluationRequest request : xpandEvaluationRequests) {
-						log.info("Generating code for " + request.getTargetObject() + " with '" + request.getDefinitionName()); //$NON-NLS-1$ //$NON-NLS-2$ //);
-						facade.evaluate(request.getDefinitionName(), request.getTargetObject(), request.getParameterList().toArray());
+			final XpandFacade facade = XpandFacade.create(execCtx);
+			final Map<TransactionalEditingDomain, Collection<XpandEvaluationRequest>> requests = getXpandEvaluationRequests();
+			for (final TransactionalEditingDomain editingDomain : requests.keySet()) {
+
+				Runnable runnable = new Runnable() {
+					public void run() {
+						for (XpandEvaluationRequest request : requests.get(editingDomain)) {
+							log.info("Generating code for " + request.getTargetObject() + " with '" + request.getDefinitionName()); //$NON-NLS-1$ //$NON-NLS-2$ //);
+
+							// Update resource loader context
+							updateResourceLoaderContext(request.getTargetObject());
+
+							// Evaluate current request
+							facade.evaluate(request.getDefinitionName(), request.getTargetObject(), request.getParameterList().toArray());
+						}
 					}
+				};
+
+				if (editingDomain != null) {
+					editingDomain.runExclusive(runnable);
+				} else {
+					runnable.run();
 				}
-			});
+			}
 			long duration = System.currentTimeMillis() - startTime;
 
 			// Log end of generation
@@ -205,26 +238,42 @@ public class XpandJob extends WorkspaceJob {
 		} catch (Exception ex) {
 			return StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
 		} finally {
-			unsetResourceLoaderContext();
+			// Always uninstall resource loader again
+			uninstallResourceLoader();
 		}
 	}
 
 	/**
-	 * Sets the resource loader context to the given <code>contextModel</code>.
+	 * Installs a {@link IScopingResourceLoader resource loader}.
 	 */
-	protected void setResourceLoaderContext(IModelDescriptor contextModel) {
-		if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IScopingResourceLoader) {
-			scopingResourceLoader = (IScopingResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
+	protected void installResourceLoader() {
+		if (scopingResourceLoader == null) {
+			if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IScopingResourceLoader) {
+				scopingResourceLoader = (IScopingResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
+			}
 		} else {
 			ResourceLoaderFactory.setCurrentThreadResourceLoader(scopingResourceLoader);
 		}
-		scopingResourceLoader.setContextModel(contextModel);
 	}
 
 	/**
-	 * Unsets the resource loader context.
+	 * Updates context of current {@link IScopingResourceLoader resource loader} according to given
+	 * <code>contextObject</code>.
 	 */
-	protected void unsetResourceLoaderContext() {
+	protected void updateResourceLoaderContext(Object contextObject) {
+		if (scopingResourceLoader != null) {
+			IFile contextFile = EcorePlatformUtil.getFile(contextObject);
+			IModelDescriptor contextModel = ModelDescriptorRegistry.INSTANCE.getModel(contextFile);
+			if (contextModel != null) {
+				scopingResourceLoader.setContextModel(contextModel);
+			}
+		}
+	}
+
+	/**
+	 * Uninstalls current {@link IScopingResourceLoader resource loader}.
+	 */
+	protected void uninstallResourceLoader() {
 		ResourceLoaderFactory.setCurrentThreadResourceLoader(null);
 	}
 

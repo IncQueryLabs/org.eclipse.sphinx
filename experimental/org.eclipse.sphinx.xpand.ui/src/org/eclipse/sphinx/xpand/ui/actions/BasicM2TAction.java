@@ -83,7 +83,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		}
 
 		M2TConfigurationWizard wizard = new M2TConfigurationWizard(getSelectedModelObject(), getMetaModel());
-		wizard.setM2TJobName(getM2TJobName());
+		wizard.setM2TJobName(getXpandJobName());
 		wizard.setScopingResourceLoader(getScopingResourceLoader());
 		wizard.setOutletsPreference(getOutletsPreference());
 		wizard.setDefaultOutlet(getDefaultOutlet());
@@ -92,7 +92,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	}
 
 	protected XpandJob createXpandJob() {
-		XpandJob job = new XpandJob(getM2TJobName(), getMetaModel(), getXpandEvaluationRequests());
+		XpandJob job = new XpandJob(getXpandJobName(), getMetaModel(), getXpandEvaluationRequests());
 		job.setScopingResourceLoader(getScopingResourceLoader());
 		job.getOutlets().addAll(getOutlets());
 		job.setPriority(Job.BUILD);
@@ -100,7 +100,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		return job;
 	}
 
-	protected String getM2TJobName() {
+	protected String getXpandJobName() {
 		return Messages.job_generatingCode;
 	}
 

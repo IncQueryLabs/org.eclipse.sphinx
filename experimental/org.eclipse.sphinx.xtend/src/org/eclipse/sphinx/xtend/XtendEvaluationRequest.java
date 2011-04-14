@@ -56,7 +56,7 @@ public class XtendEvaluationRequest {
 	 * @param targetObject
 	 *            the target model object.
 	 * @param parameterList
-	 *            a list of parameters to be use in model transformation.
+	 *            a list of parameters to be used in model transformation.
 	 */
 	public XtendEvaluationRequest(String extensionName, Object targetObject, List<Object> parameterList) {
 		Assert.isNotNull(extensionName);

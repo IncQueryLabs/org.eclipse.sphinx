@@ -17,10 +17,14 @@ package org.eclipse.sphinx.xtend.jobs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.Assert;
@@ -30,11 +34,15 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.mwe.core.resources.ResourceLoaderFactory;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
 import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
+import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xtend.XtendEvaluationRequest;
 import org.eclipse.sphinx.xtend.internal.Activator;
@@ -49,7 +57,7 @@ public class XtendJob extends WorkspaceJob {
 	protected static final Log log = LogFactory.getLog(XtendJob.class);
 
 	/**
-	 * The metamodel to be use for model transformation.
+	 * The metamodel to be used for model transformation.
 	 */
 	protected MetaModel metaModel;
 
@@ -61,14 +69,20 @@ public class XtendJob extends WorkspaceJob {
 	protected Collection<XtendEvaluationRequest> xtendEvaluationRequests;
 
 	/**
-	 * The Xtend transformation result.
-	 */
-	protected Collection<Object> xtendResult = new ArrayList<Object>();
-
-	/**
-	 * The resource loader to be use when loading Xpand template files.
+	 * The resource loader to be used when loading Xpand template files.
 	 */
 	private IScopingResourceLoader scopingResourceLoader;
+
+	/**
+	 * The label for the {@link IUndoableOperation operation} in which the Xtend transformation is executed.
+	 */
+	private String operationLabel = null;
+
+	/**
+	 * The Xtend transformation result.
+	 */
+	// TODO Rename to result
+	protected Collection<Object> xtendResult = new ArrayList<Object>();
 
 	/**
 	 * Constructs an Xtend job for execution model transformation for the given <code>xtendEvaluationRequest</code>
@@ -99,56 +113,114 @@ public class XtendJob extends WorkspaceJob {
 	 */
 	public XtendJob(String name, MetaModel metaModel, Collection<XtendEvaluationRequest> xtendEvaluationRequests) {
 		super(name);
+
+		Assert.isNotNull(metaModel);
+		Assert.isNotNull(xtendEvaluationRequests);
+
 		this.metaModel = metaModel;
 		this.xtendEvaluationRequests = xtendEvaluationRequests;
 	}
 
 	/**
-	 * Sets the Xpand resource loader.
+	 * Sets the {@link IScopingResourceLoader resource loader} for resolving resources referenced by Xtend extensions.
 	 * 
 	 * @param resourceLoader
-	 *            the resource loader.
+	 *            The resource loader to be used.
 	 */
 	public void setScopingResourceLoader(IScopingResourceLoader resourceLoader) {
 		scopingResourceLoader = resourceLoader;
 	}
 
+	protected Map<TransactionalEditingDomain, Collection<XtendEvaluationRequest>> getXtendEvaluationRequests() {
+		Map<TransactionalEditingDomain, Collection<XtendEvaluationRequest>> requests = new HashMap<TransactionalEditingDomain, Collection<XtendEvaluationRequest>>();
+		for (XtendEvaluationRequest request : xtendEvaluationRequests) {
+			TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(request.getTargetObject());
+			Collection<XtendEvaluationRequest> requestsInEditingDomain = requests.get(editingDomain);
+			if (requestsInEditingDomain == null) {
+				requestsInEditingDomain = new HashSet<XtendEvaluationRequest>();
+				requests.put(editingDomain, requestsInEditingDomain);
+			}
+			requestsInEditingDomain.add(request);
+		}
+		return requests;
+	}
+
+	/**
+	 * Returns the label for the {@link IUndoableOperation operation} in which the Xtend transformation is executed.
+	 * 
+	 * @return The operation label for the Xtend transformation.
+	 * @see #setOperationLabel(String)
+	 */
+	protected String getOperationLabel() {
+		if (operationLabel == null) {
+			// Retrieve operation label from job name
+			operationLabel = getName();
+		}
+		return operationLabel;
+	}
+
+	/**
+	 * Sets the label for the {@link IUndoableOperation operation} in which the Xtend transformation is executed.
+	 * 
+	 * @param operationLabel
+	 *            The operation label for the Xtend transformation.
+	 */
+	public void setOperationLabel(String operationLabel) {
+		this.operationLabel = operationLabel;
+	}
+
 	@Override
 	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 		try {
-			Assert.isNotNull(metaModel);
+			if (xtendEvaluationRequests.isEmpty()) {
+				return Status.CANCEL_STATUS;
+			}
 
-			// Log start of Xtend
+			// Log start of transformation
 			log.info("Xtend started..."); //$NON-NLS-1$
 
-			// Set resource loader context to model behind current selection
-			IFile file = EcorePlatformUtil.getFile(xtendEvaluationRequests.iterator().next().getTargetObject());
-			IModelDescriptor model = ModelDescriptorRegistry.INSTANCE.getModel(file);
-			setResourceLoaderContext(model);
+			// Install resource loader
+			installResourceLoader();
 
 			// Create execution context
 			final ExecutionContextImpl execCtx = new ExecutionContextImpl(new ResourceManagerDefaultImpl(), new TypeSystemImpl(), null);
 			execCtx.registerMetaModel(metaModel);
 
-			// Execute Xtend
+			// Execute transformation
 			long startTime = System.currentTimeMillis();
-			model.getEditingDomain().runExclusive(new Runnable() {
-				public void run() {
-					for (final XtendEvaluationRequest request : xtendEvaluationRequests) {
-						log.info("Xtend transformation for " + request.getTargetObject() + " with '" + request.getExtensionName() + "'"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						final XtendFacade facade = XtendFacade.create(execCtx, getExtensionFileBaseName(request.getExtensionName()));
-						List<Object> parameterList = new ArrayList<Object>();
-						parameterList.add(request.getTargetObject());
-						parameterList.addAll(request.getParameterList());
-						Object result = facade.call(getFunctionName(request.getExtensionName()), parameterList);
-						if (result != null) {
-							xtendResult.add(result);
+			final Map<TransactionalEditingDomain, Collection<XtendEvaluationRequest>> requests = getXtendEvaluationRequests();
+			for (final TransactionalEditingDomain editingDomain : requests.keySet()) {
+
+				Runnable runnable = new Runnable() {
+					public void run() {
+						for (XtendEvaluationRequest request : requests.get(editingDomain)) {
+							log.info("Xtend transformation for " + request.getTargetObject() + " with '" + request.getExtensionName() + "'"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+							// Update resource loader context
+							updateResourceLoaderContext(request.getTargetObject());
+
+							// Evaluate current request
+							XtendFacade facade = XtendFacade.create(execCtx, getExtensionFileBaseName(request.getExtensionName()));
+							List<Object> parameterList = new ArrayList<Object>();
+							parameterList.add(request.getTargetObject());
+							parameterList.addAll(request.getParameterList());
+							Object result = facade.call(getFunctionName(request.getExtensionName()), parameterList);
+							if (result != null) {
+								xtendResult.add(result);
+							}
 						}
 					}
+				};
+
+				if (editingDomain != null) {
+					WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable, getOperationLabel());
+				} else {
+					runnable.run();
 				}
-			});
+			}
 			long duration = System.currentTimeMillis() - startTime;
-			// Log end of Xtend
+
+			// Log end of transformation
 			log.info("Xtend completed in " + duration + "ms!"); //$NON-NLS-1$ //$NON-NLS-2$
 			return Status.OK_STATUS;
 		} catch (OperationCanceledException exception) {
@@ -156,7 +228,8 @@ public class XtendJob extends WorkspaceJob {
 		} catch (Exception ex) {
 			return StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
 		} finally {
-			unsetResourceLoaderContext();
+			// Always uninstall resource loader again
+			uninstallResourceLoader();
 		}
 	}
 
@@ -189,29 +262,49 @@ public class XtendJob extends WorkspaceJob {
 	}
 
 	/**
-	 * Sets the resource loader context to the given <code>contextModel</code>.
+	 * Installs a {@link IScopingResourceLoader resource loader}.
 	 */
-	protected void setResourceLoaderContext(IModelDescriptor contextModel) {
-		if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IScopingResourceLoader) {
-			scopingResourceLoader = (IScopingResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
+	protected void installResourceLoader() {
+		if (scopingResourceLoader == null) {
+			if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IScopingResourceLoader) {
+				scopingResourceLoader = (IScopingResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
+			}
 		} else {
 			ResourceLoaderFactory.setCurrentThreadResourceLoader(scopingResourceLoader);
 		}
-		scopingResourceLoader.setContextModel(contextModel);
 	}
 
 	/**
-	 * Unsets the resource loader context.
+	 * Updates context of current {@link IScopingResourceLoader resource loader} according to given
+	 * <code>contextObject</code>.
 	 */
-	protected void unsetResourceLoaderContext() {
+	protected void updateResourceLoaderContext(Object contextObject) {
+		if (scopingResourceLoader != null) {
+			IFile contextFile = EcorePlatformUtil.getFile(contextObject);
+			IModelDescriptor contextModel = ModelDescriptorRegistry.INSTANCE.getModel(contextFile);
+			if (contextModel != null) {
+				scopingResourceLoader.setContextModel(contextModel);
+			}
+		}
+	}
+
+	/**
+	 * Uninstalls current {@link IScopingResourceLoader resource loader}.
+	 */
+	protected void uninstallResourceLoader() {
 		ResourceLoaderFactory.setCurrentThreadResourceLoader(null);
 	}
 
 	/**
 	 * Gets the Xtend model transformation result.
 	 */
+	// TODO Rename to getResult()
 	public Collection<Object> getXtendResult() {
 		return xtendResult;
 	}
 
+	@Override
+	public boolean belongsTo(Object family) {
+		return IExtendedPlatformConstants.FAMILY_LONG_RUNNING.equals(family);
+	}
 }

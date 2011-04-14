@@ -32,7 +32,7 @@ public class XpandEvaluationRequest {
 	private Object targetObject;
 
 	/**
-	 * A list of objects corresponding to the parameters to be use at code generation time.
+	 * A list of objects corresponding to the parameters to be used at code generation time.
 	 */
 	private List<Object> parameterList;
 
@@ -56,7 +56,7 @@ public class XpandEvaluationRequest {
 	 * @param targetObject
 	 *            the target object on with the code generation is applied.
 	 * @param parameterList
-	 *            a list of parameters to be use in code generation.
+	 *            a list of parameters to be used in code generation.
 	 */
 	public XpandEvaluationRequest(String definitionName, Object targetObject, List<Object> parameterList) {
 		Assert.isNotNull(definitionName);

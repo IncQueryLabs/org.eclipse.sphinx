@@ -51,7 +51,7 @@ public class CheckEvaluationRequest {
 	}
 
 	/**
-	 * The check files (with chk extention) to be use for checking models.
+	 * The check files (with chk extention) to be used for checking models.
 	 */
 	private Collection<IFile> checkFiles;
 
