@@ -89,6 +89,22 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 	List<String> hbProject20CResources20;
 	int resources20FromHbProject20_C;
 
+	ComponentType componentType20A_2_1;
+	ComponentType componentType20A_2_2;
+	Port port20A_2_1;
+	Port port20A_2_2;
+
+	Component component20A_3_1;
+	Component component20A_3_2;
+	Component component21A_4_1;
+
+	ComponentType componentType20D_2_1;
+	ComponentType componentType20D_2_2;
+	Port port20D_2_1;
+	Port port20D_2_2;
+	Component component20D_3_1;
+	Component component20E_1_1;
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -1274,27 +1290,11 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 	}
 
 	/**
-	 * Test method for {@link EObjectUtil#getInverseReferences(EObject, boolean)}
+	 * Test methods for {@link EObjectUtil#getInverseReferences(EObject, boolean)}
 	 * 
 	 * @throws ExecutionException
 	 * @throws OperationCanceledException
 	 */
-	ComponentType componentType20A_2_1;
-	ComponentType componentType20A_2_2;
-	Port port20A_2_1;
-	Port port20A_2_2;
-
-	Component component20A_3_1;
-	Component component20A_3_2;
-	Component component21A_4_1;
-
-	ComponentType componentType20D_2_1;
-	ComponentType componentType20D_2_2;
-	Port port20D_2_1;
-	Port port20D_2_2;
-	Component component20D_3_1;
-	Component component20E_1_1;
-
 	public void initTestData() {
 		Resource resource20A_2 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
@@ -1390,33 +1390,6 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		component20E_1_1 = application_20E_1.getComponents().get(0);
 	}
 
-	public void testGetInverseReferences_ProjectWithReferences() throws OperationCanceledException, ExecutionException {
-		initTestData();
-
-		Collection<EStructuralFeature.Setting> references;
-
-		references = EObjectUtil.getInverseReferences(componentType20D_2_1, true);
-		assertFalse(references.isEmpty());
-		List<EObject> objects = getEObjects(references);
-
-		assertFalse(objects.contains(componentType20D_2_2));
-
-		assertFalse(objects.contains(component21A_4_1));
-		assertFalse(objects.contains(component20A_3_1));
-		assertFalse(objects.contains(port20A_2_1));
-		assertFalse(objects.contains(port20A_2_2));
-
-		EObject container = componentType20D_2_1.eContainer();
-		assertNotNull(container);
-		assertTrue(objects.contains(container));
-		assertTrue(objects.contains(component20D_3_1));
-		assertTrue(objects.contains(component20E_1_1));
-		assertTrue(objects.contains(port20D_2_2));
-		assertTrue(objects.contains(port20D_2_1));
-		assertEquals(5, objects.size());
-
-	}
-
 	public void testGetInverseReferences_StandAloneProject() throws OperationCanceledException, ExecutionException {
 		initTestData();
 
@@ -1455,6 +1428,35 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		assertFalse(objects.contains(component20A_3_2));
 		assertFalse(objects.contains(port20A_2_1));
 		assertFalse(objects.contains(port20A_2_2));
+
+	}
+
+	public void testGetInverseReferences_ProjectWithReferences() throws OperationCanceledException, ExecutionException {
+		initTestData();
+		Collection<EStructuralFeature.Setting> references;
+
+		assertNotNull(componentType20D_2_1.eContainer());
+		assertNotNull(componentType20D_2_1.eResource());
+
+		references = EObjectUtil.getInverseReferences(componentType20D_2_1, true);
+		assertFalse(references.isEmpty());
+		List<EObject> objects = getEObjects(references);
+
+		assertFalse(objects.contains(componentType20D_2_2));
+
+		assertFalse(objects.contains(component21A_4_1));
+		assertFalse(objects.contains(component20A_3_1));
+		assertFalse(objects.contains(port20A_2_1));
+		assertFalse(objects.contains(port20A_2_2));
+
+		EObject container = componentType20D_2_1.eContainer();
+		assertNotNull(container);
+		assertTrue(objects.contains(container));
+		assertTrue(objects.contains(component20D_3_1));
+		assertTrue(objects.contains(component20E_1_1));
+		assertTrue(objects.contains(port20D_2_2));
+		assertTrue(objects.contains(port20D_2_1));
+		assertEquals(5, objects.size());
 
 	}
 
@@ -1588,6 +1590,11 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 	public void testGetInverseReferences_ModelRootIsNull() throws OperationCanceledException, ExecutionException {
 		initTestData();
 		Collection<EStructuralFeature.Setting> references;
+		Resource resource20D_2 = refWks.editingDomain20.getResourceSet().getResource(
+				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_2, false), false);
+
+		assertNotNull(resource20D_2);
 
 		// Context Object is NOT NULL. But Model Root is NULL;
 		final EObject modelRoot = componentType20D_2_1.eContainer();
@@ -1619,6 +1626,8 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		assertFalse(objects.contains(component20D_3_1));
 		assertFalse(objects.contains(componentType20D_2_2));
 		assertFalse(objects.contains(component20E_1_1));
+
+		EcoreResourceUtil.unloadResource(resource20D_2);
 
 	}
 
