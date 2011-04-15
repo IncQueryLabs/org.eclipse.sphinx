@@ -1435,8 +1435,9 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		initTestData();
 		Collection<EStructuralFeature.Setting> references;
 
-		assertNotNull(componentType20D_2_1.eContainer());
-		assertNotNull(componentType20D_2_1.eResource());
+		assertNotNull(EcoreUtil.getRootContainer(componentType20D_2_1));
+		assertNotNull(EcoreUtil.getRootContainer(componentType20D_2_1).eResource());
+		assertNotNull(EcoreUtil.getRootContainer(componentType20D_2_1).eResource().getResourceSet());
 
 		references = EObjectUtil.getInverseReferences(componentType20D_2_1, true);
 		assertFalse(references.isEmpty());
