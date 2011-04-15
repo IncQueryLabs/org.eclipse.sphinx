@@ -31,5 +31,4 @@ public class OutletsPreferencePage extends AbstractOutletsPreferencePage {
 	protected String getPropertyPageID() {
 		return PROPERTY_PAGE_ID;
 	}
-
 }
