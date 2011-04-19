@@ -30,7 +30,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
-import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
+import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
@@ -51,7 +51,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 
 	public static final String DEFAULT_TEMPLATE_NAME = "main"; //$NON-NLS-1$
 
-	private IScopingResourceLoader scopingResourceLoader;
+	private IWorkspaceResourceLoader scopingResourceLoader;
 	private MetaModel metaModel;
 
 	public BasicM2TAction(String text) {
@@ -148,14 +148,14 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		return DEFAULT_TEMPLATE_NAME;
 	}
 
-	protected IScopingResourceLoader getScopingResourceLoader() {
+	protected IWorkspaceResourceLoader getScopingResourceLoader() {
 		if (scopingResourceLoader == null) {
 			scopingResourceLoader = createScopingResourceLoader();
 		}
 		return scopingResourceLoader;
 	}
 
-	protected IScopingResourceLoader createScopingResourceLoader() {
+	protected IWorkspaceResourceLoader createScopingResourceLoader() {
 		return new BasicWorkspaceResourceLoader();
 	}
 

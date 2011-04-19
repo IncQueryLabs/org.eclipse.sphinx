@@ -24,13 +24,13 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
-import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
+import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
 import org.eclipse.xtend.shared.ui.StorageFinder;
 import org.eclipse.xtend.shared.ui.core.internal.ResourceID;
 
 public class WorkspaceStorageFinder implements StorageFinder {
 
-	protected IScopingResourceLoader workspaceResourceLoader;
+	protected IWorkspaceResourceLoader workspaceResourceLoader;
 
 	protected static final Pattern patternNamespace = Pattern.compile("::"); //$NON-NLS-1$
 	protected static final Pattern patternSlash = Pattern.compile("/"); //$NON-NLS-1$
@@ -85,7 +85,7 @@ public class WorkspaceStorageFinder implements StorageFinder {
 		return 1;
 	}
 
-	protected IScopingResourceLoader createScopingResourceLoader() {
+	protected IWorkspaceResourceLoader createScopingResourceLoader() {
 		return new BasicWorkspaceResourceLoader();
 	}
 }

@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
+import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
@@ -46,7 +46,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	protected MetaModel metaModel;
 
 	private String m2tJobName;
-	private IScopingResourceLoader scopingResourceLoader;
+	private IWorkspaceResourceLoader scopingResourceLoader;
 	private OutletsPreference outletsPreference;
 	private ExtendedOutlet defaultOutlet;
 
@@ -72,11 +72,11 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		this.m2tJobName = m2tJobName;
 	}
 
-	public IScopingResourceLoader getScopingResourceLoader() {
+	public IWorkspaceResourceLoader getScopingResourceLoader() {
 		return scopingResourceLoader;
 	}
 
-	public void setScopingResourceLoader(IScopingResourceLoader scopingResourceLoader) {
+	public void setScopingResourceLoader(IWorkspaceResourceLoader scopingResourceLoader) {
 		this.scopingResourceLoader = scopingResourceLoader;
 	}
 
