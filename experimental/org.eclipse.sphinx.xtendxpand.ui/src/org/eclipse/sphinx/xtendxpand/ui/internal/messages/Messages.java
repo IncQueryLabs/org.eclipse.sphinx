@@ -18,7 +18,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 
-	private static final String BUNDLE_NAME = "org.eclipse.sphinx.xpand.ui.internal.messages.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.eclipse.sphinx.xtendxpand.ui.internal.messages.messages"; //$NON-NLS-1$
 
 	public static String job_generatingCode;
 
