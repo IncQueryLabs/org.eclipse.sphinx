@@ -9,7 +9,7 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.sphinx.emf.explorer,
- org.eclipse.sphinx.xpand.ui
+ org.eclipse.sphinx.xtendxpand.ui
 Bundle-Activator: org.eclipse.sphinx.examples.codegen.xpand.ui.internal.Activator$Implementation
 Export-Package: org.eclipse.sphinx.examples.codegen.xpand.ui,
  org.eclipse.sphinx.examples.codegen.xpand.ui.actions.providers,

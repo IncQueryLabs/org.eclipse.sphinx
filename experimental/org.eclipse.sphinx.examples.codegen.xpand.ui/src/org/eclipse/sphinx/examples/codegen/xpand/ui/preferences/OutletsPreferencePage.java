@@ -14,7 +14,7 @@
  */
 package org.eclipse.sphinx.examples.codegen.xpand.ui.preferences;
 
-import org.eclipse.sphinx.xpand.ui.preferences.AbstractOutletsPreferencePage;
+import org.eclipse.sphinx.xtendxpand.ui.preferences.AbstractOutletsPreferencePage;
 
 public class OutletsPreferencePage extends AbstractOutletsPreferencePage {
 

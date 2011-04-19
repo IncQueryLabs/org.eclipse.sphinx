@@ -23,7 +23,7 @@ import org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider;
 import org.eclipse.sphinx.examples.codegen.xpand.ui.ISphinxCodeGenExampleMenuConstants;
 import org.eclipse.sphinx.examples.codegen.xpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
-import org.eclipse.sphinx.xpand.ui.actions.BasicM2TAction;
+import org.eclipse.sphinx.xtendxpand.ui.actions.BasicM2TAction;
 import org.eclipse.ui.navigator.ICommonMenuConstants;
 
 public class SphinxCodeGenExampleActionProvider extends BasicActionProvider {

@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: org.eclipse.sphinx.xpand.ui;singleton:=true
+Bundle-SymbolicName: org.eclipse.sphinx.xtendxpand.ui;singleton:=true
 Bundle-Version: 0.7.0.qualifier
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
@@ -24,17 +24,17 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sphinx.xpand;visibility:=reexport,
  org.eclipse.sphinx.xtend;visibility:=reexport,
  org.eclipse.sphinx.xtend.typesystem.emf
-Export-Package: org.eclipse.sphinx.xpand.ui.actions,
- org.eclipse.sphinx.xpand.ui.decorators,
- org.eclipse.sphinx.xpand.ui.dialogs,
- org.eclipse.sphinx.xpand.ui.groups,
- org.eclipse.sphinx.xpand.ui.groups.messages,
- org.eclipse.sphinx.xpand.ui.internal;x-internal:=true,
- org.eclipse.sphinx.xpand.ui.internal.messages;x-internal:=true,
- org.eclipse.sphinx.xpand.ui.outlet.providers,
- org.eclipse.sphinx.xpand.ui.preferences,
- org.eclipse.sphinx.xpand.ui.util,
- org.eclipse.sphinx.xpand.ui.wizards,
- org.eclipse.sphinx.xpand.ui.wizards.pages
-Bundle-Activator: org.eclipse.sphinx.xpand.ui.internal.Activator$Implementation
+Export-Package: org.eclipse.sphinx.xtendxpand.ui.actions,
+ org.eclipse.sphinx.xtendxpand.ui.decorators,
+ org.eclipse.sphinx.xtendxpand.ui.dialogs,
+ org.eclipse.sphinx.xtendxpand.ui.groups,
+ org.eclipse.sphinx.xtendxpand.ui.groups.messages,
+ org.eclipse.sphinx.xtendxpand.ui.internal;x-internal:=true,
+ org.eclipse.sphinx.xtendxpand.ui.internal.messages;x-internal:=true,
+ org.eclipse.sphinx.xtendxpand.ui.outlet.providers,
+ org.eclipse.sphinx.xtendxpand.ui.preferences,
+ org.eclipse.sphinx.xtendxpand.ui.util,
+ org.eclipse.sphinx.xtendxpand.ui.wizards,
+ org.eclipse.sphinx.xtendxpand.ui.wizards.pages
+Bundle-Activator: org.eclipse.sphinx.xtendxpand.ui.internal.Activator$Implementation
 Bundle-ActivationPolicy: lazy

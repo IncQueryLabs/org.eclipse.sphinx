@@ -17,7 +17,7 @@
    <extension
          point="org.eclipse.xtend.shared.ui.storageFinder">
       <storageFinder
-            class="org.eclipse.sphinx.xpand.ui.util.WorkspaceStorageFinder">
+            class="org.eclipse.sphinx.xtendxpand.ui.util.WorkspaceStorageFinder">
       </storageFinder>
    </extension>
 </plugin>

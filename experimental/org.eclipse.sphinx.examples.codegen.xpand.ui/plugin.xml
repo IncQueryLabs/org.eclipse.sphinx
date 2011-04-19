@@ -41,7 +41,7 @@ Contributors:
    <extension
          point="org.eclipse.ui.decorators">
       <decorator
-            class="org.eclipse.sphinx.xpand.ui.decorators.BasicOutletFolderLabelDecorator"
+            class="org.eclipse.sphinx.xtendxpand.ui.decorators.BasicOutletFolderLabelDecorator"
             id="org.eclipse.sphinx.examples.codegen.xpand.ui.decorators.outletFolder"
             label="%sphinx.examples.codegen.xpand.ui.decorators.outletFolder.label"
             lightweight="true"
