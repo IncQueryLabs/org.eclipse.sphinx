@@ -16,6 +16,7 @@ package org.eclipse.sphinx.platform.ui.groups;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -105,7 +106,6 @@ public class FileSelectionGroup extends AbstractGroup {
 				return numColumns;
 			}
 		};
-		fileListField.setRemoveButtonIndex(1);
 		fileListField.fillIntoGrid(parent, numColumns);
 		// Add label to fileListField if no button
 		if (enableButton == null) {
@@ -136,13 +136,16 @@ public class FileSelectionGroup extends AbstractGroup {
 
 			public void customButtonPressed(ListField field, int index) {
 				if (index == 0) {
-					selectCheckFiles(parent);
+					selectFiles(parent);
+				}
+				if (index == 1) {
+					removeFiles();
 				}
 			}
 		};
 	}
 
-	private void selectCheckFiles(Composite parent) {
+	private void selectFiles(Composite parent) {
 		ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(parent.getShell(), new WorkbenchLabelProvider(),
 				new WorkbenchContentProvider());
 		dialog.setTitle(Messages.title_fileSelection);
@@ -182,6 +185,26 @@ public class FileSelectionGroup extends AbstractGroup {
 		if (dialog.open() == IDialogConstants.OK_ID) {
 			for (Object object : dialog.getResult()) {
 				addFile((IFile) object);
+			}
+		}
+	}
+
+	private void removeFiles() {
+		if (fileListField != null) {
+			List<Object> selection = fileListField.getSelectedElements();
+			fileListField.removeElements(selection);
+			// remove the file in the 'selectedFiles'
+			for (Object element : selection) {
+				IFile fileToSuppress = null;
+				for (IFile file : selectedFiles) {
+					if (file.getName().equals(element.toString())) {
+						fileToSuppress = file;
+						break;
+					}
+				}
+				if (fileToSuppress != null) {
+					selectedFiles.remove(fileToSuppress);
+				}
 			}
 		}
 	}
