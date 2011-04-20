@@ -170,7 +170,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 
 	protected XpandJob createXpandJob() {
 		XpandJob job = new XpandJob(getM2TJobName(), metaModel, xpandConfigurationPage.getXpandEvaluationRequests());
-		job.setScopingResourceLoader(getScopingResourceLoader());
+		job.setWorkspaceResourceLoader(getScopingResourceLoader());
 		job.getOutlets().addAll(xpandConfigurationPage.getOutlets());
 		job.setPriority(Job.BUILD);
 		IFile file = EcorePlatformUtil.getFile(modelObject);

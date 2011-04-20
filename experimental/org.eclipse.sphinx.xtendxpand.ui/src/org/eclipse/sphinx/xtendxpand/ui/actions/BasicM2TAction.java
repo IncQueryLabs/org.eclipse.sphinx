@@ -93,7 +93,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 
 	protected XpandJob createXpandJob() {
 		XpandJob job = new XpandJob(getM2TJobName(), getMetaModel(), getXpandEvaluationRequests());
-		job.setScopingResourceLoader(getScopingResourceLoader());
+		job.setWorkspaceResourceLoader(getScopingResourceLoader());
 		job.getOutlets().addAll(getOutlets());
 		job.setPriority(Job.BUILD);
 		job.setRule(EcorePlatformUtil.getFile(getSelectedModelObject()).getProject());
