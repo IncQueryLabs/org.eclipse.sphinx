@@ -123,6 +123,9 @@ public class M2MConfigurationWizard extends AbstractWizard {
 
 					// Run Xtend
 					return xtendJob.runInWorkspace(progress.newChild(50));
+
+					// TODO Retrieve result from XtendJob and puts it on clipboard of shared editing domain for
+					// metamodel behind result objects
 				} catch (OperationCanceledException ex) {
 					return Status.CANCEL_STATUS;
 				} catch (Exception ex) {
