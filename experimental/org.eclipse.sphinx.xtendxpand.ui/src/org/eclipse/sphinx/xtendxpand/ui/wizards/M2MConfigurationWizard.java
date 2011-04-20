@@ -56,7 +56,7 @@ public class M2MConfigurationWizard extends AbstractWizard {
 		this.metaModel = metaModel;
 	}
 
-	public String getM2TMobName() {
+	public String getM2MJobName() {
 		return m2mJobName != null ? m2mJobName : getDefaultM2MJobName();
 	}
 
@@ -103,7 +103,7 @@ public class M2MConfigurationWizard extends AbstractWizard {
 		final CheckJob checkJob = isCheckRequired() ? createCheckJob() : null;
 		final XtendJob xtendJob = createXtendJob();
 
-		Job job = new WorkspaceJob(getM2TMobName()) {
+		Job job = new WorkspaceJob(getM2MJobName()) {
 			@Override
 			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 				SubMonitor progress = SubMonitor.convert(monitor, 100);
@@ -149,7 +149,7 @@ public class M2MConfigurationWizard extends AbstractWizard {
 	}
 
 	protected XtendJob createXtendJob() {
-		XtendJob job = new XtendJob(getM2TMobName(), metaModel, xtendConfigurationPage.getXtendEvaluationRequests());
+		XtendJob job = new XtendJob(getM2MJobName(), metaModel, xtendConfigurationPage.getXtendEvaluationRequests());
 		job.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		job.setPriority(Job.BUILD);
 		IFile file = EcorePlatformUtil.getFile(modelObject);
@@ -160,7 +160,7 @@ public class M2MConfigurationWizard extends AbstractWizard {
 	}
 
 	protected CheckJob createCheckJob() {
-		CheckJob checkJob = new CheckJob(getM2TMobName(), metaModel, checkConfigurationPage.getCheckEvaluationRequests());
+		CheckJob checkJob = new CheckJob(getM2MJobName(), metaModel, checkConfigurationPage.getCheckEvaluationRequests());
 		checkJob.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		checkJob.setPriority(Job.BUILD);
 		IFile file = EcorePlatformUtil.getFile(modelObject);
