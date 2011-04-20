@@ -41,7 +41,7 @@ import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
 
-public class BasicWorkspaceResourceLoader extends AbstractResourceLoader implements IScopingResourceLoader {
+public class BasicWorkspaceResourceLoader extends AbstractResourceLoader implements IWorkspaceResourceLoader {
 
 	protected static final String DEFAULT_TEMPLATE_FOLDER_NAME = "template"; //$NON-NLS-1$
 

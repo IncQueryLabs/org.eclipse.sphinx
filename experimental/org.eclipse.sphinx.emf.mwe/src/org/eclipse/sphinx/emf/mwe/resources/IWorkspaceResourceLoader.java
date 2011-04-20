@@ -19,9 +19,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.mwe.core.resources.ResourceLoader;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 
-// TODO Rename to IWorkspaceResourceLoader
-// TODO Rename also Xpand/Xtend/CheckJob#setScopingResourceLoader() etc.
-public interface IScopingResourceLoader extends ResourceLoader {
+public interface IWorkspaceResourceLoader extends ResourceLoader {
 
 	IProject getContextProject();
 
