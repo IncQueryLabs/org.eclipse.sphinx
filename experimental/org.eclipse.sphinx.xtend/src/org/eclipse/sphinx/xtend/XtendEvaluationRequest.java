@@ -46,7 +46,7 @@ public class XtendEvaluationRequest {
 	 *            the target model object.
 	 */
 	public XtendEvaluationRequest(String extensionName, Object targetObject) {
-		this(extensionName, targetObject, Collections.emptyList());
+		this(extensionName, targetObject, (Object[]) null);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class XtendEvaluationRequest {
 
 		this.extensionName = extensionName;
 		this.targetObject = targetObject;
-		parameterList = parameters != null ? Arrays.asList(parameters) : Collections.emptyList();
+		parameterList = parameters != null && parameters.length > 0 ? Arrays.asList(parameters) : Collections.emptyList();
 	}
 
 	/**
