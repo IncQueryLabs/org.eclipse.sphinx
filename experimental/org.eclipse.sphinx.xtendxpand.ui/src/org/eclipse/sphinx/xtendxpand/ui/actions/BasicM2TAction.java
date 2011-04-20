@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
@@ -42,7 +43,6 @@ import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.M2TConfigurationWizard;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
-import org.eclipse.xpand2.XpandUtil;
 import org.eclipse.xtend.typesystem.MetaModel;
 
 public class BasicM2TAction extends BaseSelectionListenerAction {
@@ -51,7 +51,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 
 	public static final String DEFAULT_TEMPLATE_NAME = "main"; //$NON-NLS-1$
 
-	private IWorkspaceResourceLoader scopingResourceLoader;
+	private IWorkspaceResourceLoader workspaceResourceLoader;
 	private MetaModel metaModel;
 
 	public BasicM2TAction(String text) {
@@ -84,7 +84,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 
 		M2TConfigurationWizard wizard = new M2TConfigurationWizard(getSelectedModelObject(), getMetaModel());
 		wizard.setM2TJobName(getM2TJobName());
-		wizard.setScopingResourceLoader(getScopingResourceLoader());
+		wizard.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		wizard.setOutletsPreference(getOutletsPreference());
 		wizard.setDefaultOutlet(getDefaultOutlet());
 		WizardDialog wizardDialog = new WizardDialog(ExtendedPlatformUI.getDisplay().getActiveShell(), wizard);
@@ -93,7 +93,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 
 	protected XpandJob createXpandJob() {
 		XpandJob job = new XpandJob(getM2TJobName(), getMetaModel(), getXpandEvaluationRequests());
-		job.setWorkspaceResourceLoader(getScopingResourceLoader());
+		job.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		job.getOutlets().addAll(getOutlets());
 		job.setPriority(Job.BUILD);
 		job.setRule(EcorePlatformUtil.getFile(getSelectedModelObject()).getProject());
@@ -130,7 +130,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	protected String getDefinitionName(EObject modelObject) {
 		IFile templateFile = getTemplateFile(modelObject);
 		if (templateFile != null) {
-			return getScopingResourceLoader().getQualifiedName(templateFile, getTemplateName());
+			return getWorkspaceResourceLoader().getQualifiedName(templateFile, getTemplateName());
 		}
 		return null;
 	}
@@ -138,7 +138,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	protected IFile getTemplateFile(EObject modelObject) {
 		IFile modelFile = EcorePlatformUtil.getFile(modelObject);
 		if (modelFile != null) {
-			IPath templatePath = modelFile.getFullPath().removeFileExtension().addFileExtension(XpandUtil.TEMPLATE_EXTENSION);
+			IPath templatePath = modelFile.getFullPath().removeFileExtension().addFileExtension(IXtendXpandConstants.TEMPLATE_EXTENSION);
 			return ResourcesPlugin.getWorkspace().getRoot().getFile(templatePath);
 		}
 		return null;
@@ -148,14 +148,14 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		return DEFAULT_TEMPLATE_NAME;
 	}
 
-	protected IWorkspaceResourceLoader getScopingResourceLoader() {
-		if (scopingResourceLoader == null) {
-			scopingResourceLoader = createScopingResourceLoader();
+	protected IWorkspaceResourceLoader getWorkspaceResourceLoader() {
+		if (workspaceResourceLoader == null) {
+			workspaceResourceLoader = createWorkspaceResourceLoader();
 		}
-		return scopingResourceLoader;
+		return workspaceResourceLoader;
 	}
 
-	protected IWorkspaceResourceLoader createScopingResourceLoader() {
+	protected IWorkspaceResourceLoader createWorkspaceResourceLoader() {
 		return new BasicWorkspaceResourceLoader();
 	}
 

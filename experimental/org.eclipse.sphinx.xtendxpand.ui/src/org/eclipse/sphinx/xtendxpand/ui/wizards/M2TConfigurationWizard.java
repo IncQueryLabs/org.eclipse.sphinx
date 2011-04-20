@@ -76,7 +76,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		return scopingResourceLoader;
 	}
 
-	public void setScopingResourceLoader(IWorkspaceResourceLoader scopingResourceLoader) {
+	public void setWorkspaceResourceLoader(IWorkspaceResourceLoader scopingResourceLoader) {
 		this.scopingResourceLoader = scopingResourceLoader;
 	}
 
