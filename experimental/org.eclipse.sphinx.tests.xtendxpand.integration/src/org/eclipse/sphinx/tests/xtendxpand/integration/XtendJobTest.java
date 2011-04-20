@@ -65,7 +65,7 @@ public class XtendJobTest extends XtendXpandIntegrationTestCase {
 		// Xtend execution
 		XtendEvaluationRequest xtendEvaluationRequest = new XtendEvaluationRequest(XtendXpandTestReferenceWorkspace.XTEND_EXTENSION_NAME, umlModel);
 		XtendJob xtendJob = new XtendJob("Xtend Job", new UML2MetaModel(), xtendEvaluationRequest); //$NON-NLS-1$
-		xtendJob.setScopingResourceLoader(new BasicWorkspaceResourceLoader());
+		xtendJob.setWorkspaceResourceLoader(new BasicWorkspaceResourceLoader());
 		IStatus xtendStatus = xtendJob.runInWorkspace(new NullProgressMonitor());
 		assertEquals(Status.OK_STATUS, xtendStatus);
 

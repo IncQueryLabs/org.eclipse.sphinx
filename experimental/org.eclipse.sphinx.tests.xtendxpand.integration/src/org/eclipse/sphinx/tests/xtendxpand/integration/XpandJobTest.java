@@ -65,7 +65,7 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		XpandEvaluationRequest xpandEvaluationRequest = new XpandEvaluationRequest(XtendXpandTestReferenceWorkspace.XPAND_CONFIGH_DEFINITION_NAME,
 				application);
 		XpandJob xpandJob = new XpandJob("Xpand Job", new SphinxManagedEmfMetaModel(hb20InstanceModelFile.getProject()), xpandEvaluationRequest); //$NON-NLS-1$
-		xpandJob.setScopingResourceLoader(new BasicWorkspaceResourceLoader());
+		xpandJob.setWorkspaceResourceLoader(new BasicWorkspaceResourceLoader());
 		IStatus xpandStatus = xpandJob.runInWorkspace(new NullProgressMonitor());
 		assertEquals(Status.OK_STATUS, xpandStatus);
 
@@ -89,7 +89,7 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 
 		xpandEvaluationRequest = new XpandEvaluationRequest(XtendXpandTestReferenceWorkspace.XPAND_CONFIGH_TOHOUTLET_DEFINITION_NAME, application);
 		xpandJob = new XpandJob("Xpand Job", new SphinxManagedEmfMetaModel(hb20InstanceModelFile.getProject()), xpandEvaluationRequest); //$NON-NLS-1$
-		xpandJob.setScopingResourceLoader(new BasicWorkspaceResourceLoader());
+		xpandJob.setWorkspaceResourceLoader(new BasicWorkspaceResourceLoader());
 
 		// Add an outlet named HOUTLET
 		ExtendedOutlet outlet = new ExtendedOutlet(XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_HOUTLET_FOLDER_NAME,
