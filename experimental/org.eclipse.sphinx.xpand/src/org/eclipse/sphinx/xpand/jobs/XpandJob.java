@@ -74,7 +74,7 @@ public class XpandJob extends WorkspaceJob {
 	/**
 	 * The resource loader to be used for loading Xtend/Xpand/Check files.
 	 */
-	private IWorkspaceResourceLoader scopingResourceLoader = null;
+	private IWorkspaceResourceLoader workspaceResourceLoader = null;
 
 	/**
 	 * A collection of outlets to be used as target for code generation.
@@ -124,8 +124,8 @@ public class XpandJob extends WorkspaceJob {
 	 * @param resourceLoader
 	 *            The resource loader to be used.
 	 */
-	public void setScopingResourceLoader(IWorkspaceResourceLoader resourceLoader) {
-		scopingResourceLoader = resourceLoader;
+	public void setWorkspaceResourceLoader(IWorkspaceResourceLoader resourceLoader) {
+		workspaceResourceLoader = resourceLoader;
 	}
 
 	protected Map<TransactionalEditingDomain, Collection<XpandEvaluationRequest>> getXpandEvaluationRequests() {
@@ -247,12 +247,12 @@ public class XpandJob extends WorkspaceJob {
 	 * Installs a {@link IWorkspaceResourceLoader resource loader}.
 	 */
 	protected void installResourceLoader() {
-		if (scopingResourceLoader == null) {
+		if (workspaceResourceLoader == null) {
 			if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IWorkspaceResourceLoader) {
-				scopingResourceLoader = (IWorkspaceResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
+				workspaceResourceLoader = (IWorkspaceResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
 			}
 		} else {
-			ResourceLoaderFactory.setCurrentThreadResourceLoader(scopingResourceLoader);
+			ResourceLoaderFactory.setCurrentThreadResourceLoader(workspaceResourceLoader);
 		}
 	}
 
@@ -261,11 +261,11 @@ public class XpandJob extends WorkspaceJob {
 	 * <code>contextObject</code>.
 	 */
 	protected void updateResourceLoaderContext(Object contextObject) {
-		if (scopingResourceLoader != null) {
+		if (workspaceResourceLoader != null) {
 			IFile contextFile = EcorePlatformUtil.getFile(contextObject);
 			IModelDescriptor contextModel = ModelDescriptorRegistry.INSTANCE.getModel(contextFile);
 			if (contextModel != null) {
-				scopingResourceLoader.setContextModel(contextModel);
+				workspaceResourceLoader.setContextModel(contextModel);
 			}
 		}
 	}

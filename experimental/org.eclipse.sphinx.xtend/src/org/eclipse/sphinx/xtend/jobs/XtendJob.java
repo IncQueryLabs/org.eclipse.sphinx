@@ -71,7 +71,7 @@ public class XtendJob extends WorkspaceJob {
 	/**
 	 * The resource loader to be used when loading Xpand template files.
 	 */
-	private IWorkspaceResourceLoader scopingResourceLoader;
+	private IWorkspaceResourceLoader workspaceResourceLoader;
 
 	/**
 	 * The label for the {@link IUndoableOperation operation} in which the Xtend transformation is executed.
@@ -127,8 +127,8 @@ public class XtendJob extends WorkspaceJob {
 	 * @param resourceLoader
 	 *            The resource loader to be used.
 	 */
-	public void setScopingResourceLoader(IWorkspaceResourceLoader resourceLoader) {
-		scopingResourceLoader = resourceLoader;
+	public void setWorkspaceResourceLoader(IWorkspaceResourceLoader resourceLoader) {
+		workspaceResourceLoader = resourceLoader;
 	}
 
 	protected Map<TransactionalEditingDomain, Collection<XtendEvaluationRequest>> getXtendEvaluationRequests() {
@@ -265,12 +265,12 @@ public class XtendJob extends WorkspaceJob {
 	 * Installs a {@link IWorkspaceResourceLoader resource loader}.
 	 */
 	protected void installResourceLoader() {
-		if (scopingResourceLoader == null) {
+		if (workspaceResourceLoader == null) {
 			if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IWorkspaceResourceLoader) {
-				scopingResourceLoader = (IWorkspaceResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
+				workspaceResourceLoader = (IWorkspaceResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
 			}
 		} else {
-			ResourceLoaderFactory.setCurrentThreadResourceLoader(scopingResourceLoader);
+			ResourceLoaderFactory.setCurrentThreadResourceLoader(workspaceResourceLoader);
 		}
 	}
 
@@ -279,11 +279,11 @@ public class XtendJob extends WorkspaceJob {
 	 * <code>contextObject</code>.
 	 */
 	protected void updateResourceLoaderContext(Object contextObject) {
-		if (scopingResourceLoader != null) {
+		if (workspaceResourceLoader != null) {
 			IFile contextFile = EcorePlatformUtil.getFile(contextObject);
 			IModelDescriptor contextModel = ModelDescriptorRegistry.INSTANCE.getModel(contextFile);
 			if (contextModel != null) {
-				scopingResourceLoader.setContextModel(contextModel);
+				workspaceResourceLoader.setContextModel(contextModel);
 			}
 		}
 	}
