@@ -21,18 +21,25 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.xtendxpand.ui.internal.messages.messages"; //$NON-NLS-1$
 
 	public static String job_generatingCode;
+	public static String job_modelTransformation;
 
 	public static String label_template;
+	public static String label_extension;
 	public static String label_output;
 	public static String label_templatePath;
+	public static String label_extensionPath;
 	public static String label_templateSelection;
+	public static String label_extensionSelection;
 	public static String label_defineBlock;
+	public static String label_extensionBlock;
 	public static String label_useDefaultPath;
 	public static String label_path;
 	public static String label_browse;
 	public static String label_name;
 	public static String label_configPageName;
+	public static String label_xtendPageName;
 	public static String label_definitionName;
+	public static String label_extensionName;
 	public static String label_useCheckModelButton;
 	public static String label_checkModelBlock;
 	public static String label_checkFiles;
@@ -43,9 +50,12 @@ public class Messages extends NLS {
 	public static String label_workspaceBrowse;
 	public static String label_fileSystemBrowse;
 	public static String label_variablesBrowse;
+	public static String label_restoreDefaultButtons;
 
 	public static String msg_chooseTemplate;
+	public static String msg_chooseExtension;
 	public static String msg_chooseTemplateError;
+	public static String msg_chooseExtensionError;
 	public static String msg_containerSelection;
 	public static String msg_variableSelectionWarning;
 	public static String msg_outletNameEmptyValidationError;
@@ -58,8 +68,20 @@ public class Messages extends NLS {
 	public static String title_newOutletDialog;
 	public static String title_containerSelection;
 	public static String title_variableSelection;
+	public static String title_modelTransformation;
+	public static String title_launchModelTransformation;
+	public static String title_outletConfigurationDialog;
 
 	public static String desc_config;
+	public static String desc_modelTransformation;
+	public static String desc_configOutlets;
+
+	public static String task_CreationOfSubpackageExtensions;
+	public static String task_AddPluginDependencies;
+	public static String task_AddXtendXpandNature;
+	public static String task_ConvertToJavaPluginProject;
+	public static String task_ConvertToBSWPlatformProject;
+	public static String task_AddMetamodelContributor;
 
 	static {
 		// Initialize resource bundle

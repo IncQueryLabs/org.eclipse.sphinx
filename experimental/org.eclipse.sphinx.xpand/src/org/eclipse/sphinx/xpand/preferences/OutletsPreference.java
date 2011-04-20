@@ -30,6 +30,7 @@ import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 
 public class OutletsPreference extends AbstractProjectWorkspacePreference<Collection<ExtendedOutlet>> implements IAdaptable {
 
+	// TODO Move this constant to XtendXpandUtil
 	public static final String XTEND_XPAND_NATURE_ID = "org.eclipse.xtend.shared.ui.xtendXPandNature"; //$NON-NLS-1$
 
 	/**

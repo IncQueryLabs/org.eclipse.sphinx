@@ -18,7 +18,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 
-	private static final String BUNDLE_NAME = "org.eclipse.sphinx.xpand.ui.groups.messages.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.eclipse.sphinx.xtendxpand.ui.groups.messages.messages"; //$NON-NLS-1$
 
 	public static String label_AddButton;
 	public static String label_EditButton;
