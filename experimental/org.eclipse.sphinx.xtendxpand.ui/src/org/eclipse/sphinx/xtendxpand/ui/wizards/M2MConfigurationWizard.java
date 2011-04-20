@@ -112,9 +112,11 @@ public class M2MConfigurationWizard extends AbstractWizard {
 				}
 
 				try {
+					IStatus status;
+
 					// Run check if required
 					if (checkJob != null) {
-						IStatus status = checkJob.runInWorkspace(progress.newChild(50));
+						status = checkJob.runInWorkspace(progress.newChild(50));
 
 						if (!status.isOK() || progress.isCanceled()) {
 							throw new OperationCanceledException();
@@ -122,10 +124,16 @@ public class M2MConfigurationWizard extends AbstractWizard {
 					}
 
 					// Run Xtend
-					return xtendJob.runInWorkspace(progress.newChild(50));
+					status = xtendJob.runInWorkspace(progress.newChild(50));
+
+					if (!status.isOK() || progress.isCanceled()) {
+						throw new OperationCanceledException();
+					}
 
 					// TODO Retrieve result from XtendJob and puts it on clipboard of shared editing domain for
 					// metamodel behind result objects
+					xtendJob.getResultObjects();
+					return status;
 				} catch (OperationCanceledException ex) {
 					return Status.CANCEL_STATUS;
 				} catch (Exception ex) {
