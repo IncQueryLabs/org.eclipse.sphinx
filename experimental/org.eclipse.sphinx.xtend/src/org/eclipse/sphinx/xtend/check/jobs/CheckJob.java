@@ -71,7 +71,7 @@ public class CheckJob extends WorkspaceJob {
 	/**
 	 * The resource loader to be used when loading check files.
 	 */
-	private IWorkspaceResourceLoader scopingResourceLoader;
+	private IWorkspaceResourceLoader workspaceResourceLoader;
 
 	/**
 	 * Constructs a Check job for checking model for the given <code>checkEvaluationRequest</code> using the
@@ -110,13 +110,14 @@ public class CheckJob extends WorkspaceJob {
 	}
 
 	/**
-	 * Sets the {@link IWorkspaceResourceLoader resource loader} for resolving resources referenced by Check constraints.
+	 * Sets the {@link IWorkspaceResourceLoader resource loader} for resolving resources referenced by Check
+	 * constraints.
 	 * 
 	 * @param resourceLoader
 	 *            The resource loader to be used.
 	 */
-	public void setScopingResourceLoader(IWorkspaceResourceLoader resourceLoader) {
-		scopingResourceLoader = resourceLoader;
+	public void setWorkspaceResourceLoader(IWorkspaceResourceLoader resourceLoader) {
+		workspaceResourceLoader = resourceLoader;
 	}
 
 	protected Map<TransactionalEditingDomain, Collection<CheckEvaluationRequest>> getCheckEvaluationRequests() {
@@ -180,17 +181,21 @@ public class CheckJob extends WorkspaceJob {
 			}
 			long duration = System.currentTimeMillis() - startTime;
 
-			// Log end of validation and return appropriate status
+			// Log errors and warnings encountered end of validation and return appropriate status
+			if (issues.hasWarnings()) {
+				for (MWEDiagnostic warning : issues.getWarnings()) {
+					log.warn(warning.getMessage());
+				}
+			}
 			if (issues.hasErrors()) {
 				log.error("Check model failed in " + duration + "ms!"); //$NON-NLS-1$ //$NON-NLS-2$
 				for (MWEDiagnostic error : issues.getErrors()) {
 					log.error(error.getMessage());
 				}
 				return StatusUtil.createErrorStatus(Activator.getPlugin(), "Check model failed"); //$NON-NLS-1$
-			} else {
-				log.info("Check model completed in " + duration + "ms!"); //$NON-NLS-1$ //$NON-NLS-2$
-				return Status.OK_STATUS;
 			}
+			log.info("Check model completed in " + duration + "ms!"); //$NON-NLS-1$ //$NON-NLS-2$
+			return Status.OK_STATUS;
 		} catch (OperationCanceledException exception) {
 			return Status.CANCEL_STATUS;
 		} catch (Exception ex) {
@@ -205,12 +210,12 @@ public class CheckJob extends WorkspaceJob {
 	 * Installs a {@link IWorkspaceResourceLoader resource loader}.
 	 */
 	protected void installResourceLoader() {
-		if (scopingResourceLoader == null) {
+		if (workspaceResourceLoader == null) {
 			if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IWorkspaceResourceLoader) {
-				scopingResourceLoader = (IWorkspaceResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
+				workspaceResourceLoader = (IWorkspaceResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
 			}
 		} else {
-			ResourceLoaderFactory.setCurrentThreadResourceLoader(scopingResourceLoader);
+			ResourceLoaderFactory.setCurrentThreadResourceLoader(workspaceResourceLoader);
 		}
 	}
 
@@ -219,11 +224,11 @@ public class CheckJob extends WorkspaceJob {
 	 * <code>contextObject</code>.
 	 */
 	protected void updateResourceLoaderContext(Object contextObject) {
-		if (scopingResourceLoader != null) {
+		if (workspaceResourceLoader != null) {
 			IFile contextFile = EcorePlatformUtil.getFile(contextObject);
 			IModelDescriptor contextModel = ModelDescriptorRegistry.INSTANCE.getModel(contextFile);
 			if (contextModel != null) {
-				scopingResourceLoader.setContextModel(contextModel);
+				workspaceResourceLoader.setContextModel(contextModel);
 			}
 		}
 	}

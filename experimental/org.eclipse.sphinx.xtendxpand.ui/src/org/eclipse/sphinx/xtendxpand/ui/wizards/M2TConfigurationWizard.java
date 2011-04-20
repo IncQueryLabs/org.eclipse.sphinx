@@ -182,7 +182,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 
 	protected CheckJob createCheckJob() {
 		CheckJob checkJob = new CheckJob(getM2TJobName(), metaModel, checkConfigurationPage.getCheckEvaluationRequests());
-		checkJob.setScopingResourceLoader(getScopingResourceLoader());
+		checkJob.setWorkspaceResourceLoader(getScopingResourceLoader());
 		checkJob.setPriority(Job.BUILD);
 		IFile file = EcorePlatformUtil.getFile(modelObject);
 		if (file != null) {
