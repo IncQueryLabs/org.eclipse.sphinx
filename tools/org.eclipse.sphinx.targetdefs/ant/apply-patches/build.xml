@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project" default="apply-patches">
+    <description>
+            Updates target platforms constituted with target definitions in this project with provided patched features and plug-ins. 
+    </description>
+
+   	<property name="eclipse.workspace.bundlepool" value="${eclipse.workspace.root}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool"/>
+	
+    <target name="copy-patches-to-bundle-pool" description="Copies patched features and plug-ins provided in this project to bundle pool in this workspace's .metadata.">
+        <copy todir="${eclipse.workspace.bundlepool}/plugins" overwrite="true" failonerror="false" verbose="true">
+            <fileset dir="./patches/plugins"/>
+        </copy>        
+        <copy todir="${eclipse.workspace.bundlepool}/features" overwrite="true" failonerror="false" verbose="true">
+            <fileset dir="./patches/features"/>
+        </copy>
+    </target>
+	
+	<target name="rebuild-workspace" description="Rebuilds the workspace.">
+		<echo message="Performing full workspace build..."/>
+    	<eclipse.incrementalBuild kind="full"/>
+		<echo message="Done."/>
+	</target>
+	
+	<target name="apply-patches" description="Applies patched features and plug-ins provided in this project to target platforms of this workspace.">
+		<antcall target="copy-patches-to-bundle-pool"/>
+		<antcall target="rebuild-workspace"/>
+		<!-- We could get this done without a workbench restart if we found a way to refresh the plug-ins that have been copied to the bundle pool; 
+		     right now, they somehow seem to be there but they are marked as out of sync in Plug-ins view and Required Plug-ins list of MANIFEST.MF files. -->
+		<echo message="You will need to restart the workbench for the target platform changes to take effect. You may try to go along without restarting, but this may cause errors."/>
+    </target>
+
+    <target name="debug">
+        <echo message="basedir=${basedir}"/>
+        <echo message="eclipse.workspace.root=${eclipse.workspace.root}"/>
+        <echo message="eclipse.workspace.bundlepool=${eclipse.workspace.bundlepool}"/>
+    </target>
+</project>

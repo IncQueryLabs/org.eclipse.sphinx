@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.ant.AntLaunchConfigurationType">
+<booleanAttribute key="org.eclipse.ant.ui.DEFAULT_VM_INSTALL" value="false"/>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/org.eclipse.sphinx.targetdefs/ant/apply-patches/build.xml"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.eclipse.sphinx.targetdefs"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
+<mapAttribute key="org.eclipse.ui.externaltools.ATTR_ANT_PROPERTIES">
+<mapEntry key="buckminster.pdetasks" value="D:\Helios\configuration\org.eclipse.osgi\bundles\747\1\.cp\org\eclipse\buckminster\pde\antscripts\build.xml"/>
+<mapEntry key="eclipse.home" value="D:\Helios"/>
+<mapEntry key="eclipse.pdebuild.home" value="/D:/Helios/plugins/org.eclipse.pde.build_3.6.2.R36x_20110203/./"/>
+<mapEntry key="eclipse.pdebuild.scripts" value="/D:/Helios/plugins/org.eclipse.pde.build_3.6.2.R36x_20110203/scripts/"/>
+<mapEntry key="eclipse.pdebuild.templates" value="/D:/Helios/plugins/org.eclipse.pde.build_3.6.2.R36x_20110203/templates/"/>
+<mapEntry key="eclipse.running" value="true"/>
+<mapEntry key="eclipse.workspace.root" value="${workspace_loc}"/>
+<mapEntry key="sphinx.targetdefs.project" value="${project_loc}"/>
+</mapAttribute>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_LAUNCH_CONFIGURATION_BUILD_SCOPE" value="${none}"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc:/org.eclipse.sphinx.targetdefs/ant/apply-patches/build.xml}"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="${workspace_loc:/org.eclipse.sphinx.targetdefs}"/>
+<stringAttribute key="process_factory_id" value="org.eclipse.ant.ui.remoteAntProcessFactory"/>
+</launchConfiguration>
