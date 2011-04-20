@@ -141,7 +141,6 @@ public class M2MConfigurationWizard extends AbstractWizard {
 			job.setRule(file.getProject());
 		}
 		job.schedule();
-
 	}
 
 	protected boolean isCheckRequired() {
