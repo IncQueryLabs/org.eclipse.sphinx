@@ -16,6 +16,7 @@ package org.eclipse.sphinx.xtendxpand.ui.actions;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -23,6 +24,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
@@ -39,6 +42,8 @@ import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.M2MConfigurationWizard;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
+import org.eclipse.xtend.shared.ui.MetamodelContributor;
+import org.eclipse.xtend.shared.ui.core.metamodel.MetamodelContributorRegistry;
 import org.eclipse.xtend.typesystem.MetaModel;
 
 public class BasicM2MAction extends BaseSelectionListenerAction {
@@ -98,6 +103,8 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 		return Messages.job_modelTransformation;
 	}
 
+	// TODO Support a collection of MetaModels rather than a single MetaModel
+	// TODO Do same thing in BasicM2TAction and XpandJob
 	protected MetaModel getMetaModel() {
 		if (metaModel == null) {
 			metaModel = createMetaModel();
@@ -107,6 +114,18 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 
 	protected MetaModel createMetaModel() {
 		IFile file = EcorePlatformUtil.getFile(getSelectedModelObject());
+
+		// Add metamodels defined by Xtend/Xpand preferences
+		IJavaProject javaProject = JavaCore.create(file.getProject());
+		List<? extends MetamodelContributor> contributors = MetamodelContributorRegistry.getActiveMetamodelContributors(javaProject);
+		for (MetamodelContributor contributor : contributors) {
+			for (MetaModel metaModel : contributor.getMetamodels(javaProject, null)) {
+				// TODO return list of MetaModels
+			}
+		}
+
+		// Add MetaModels resulting behind models in workspace if no metamodels defined by Xtend/Xpand preferences are
+		// available
 		IModelDescriptor model = ModelDescriptorRegistry.INSTANCE.getModel(file);
 		return new SphinxManagedEmfMetaModel(model);
 	}
