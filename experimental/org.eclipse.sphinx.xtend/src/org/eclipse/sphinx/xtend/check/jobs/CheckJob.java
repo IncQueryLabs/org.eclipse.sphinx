@@ -39,7 +39,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
+import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.StatusUtil;
@@ -71,7 +71,7 @@ public class CheckJob extends WorkspaceJob {
 	/**
 	 * The resource loader to be used when loading check files.
 	 */
-	private IScopingResourceLoader scopingResourceLoader;
+	private IWorkspaceResourceLoader scopingResourceLoader;
 
 	/**
 	 * Constructs a Check job for checking model for the given <code>checkEvaluationRequest</code> using the
@@ -110,12 +110,12 @@ public class CheckJob extends WorkspaceJob {
 	}
 
 	/**
-	 * Sets the {@link IScopingResourceLoader resource loader} for resolving resources referenced by Check constraints.
+	 * Sets the {@link IWorkspaceResourceLoader resource loader} for resolving resources referenced by Check constraints.
 	 * 
 	 * @param resourceLoader
 	 *            The resource loader to be used.
 	 */
-	public void setScopingResourceLoader(IScopingResourceLoader resourceLoader) {
+	public void setScopingResourceLoader(IWorkspaceResourceLoader resourceLoader) {
 		scopingResourceLoader = resourceLoader;
 	}
 
@@ -202,12 +202,12 @@ public class CheckJob extends WorkspaceJob {
 	}
 
 	/**
-	 * Installs a {@link IScopingResourceLoader resource loader}.
+	 * Installs a {@link IWorkspaceResourceLoader resource loader}.
 	 */
 	protected void installResourceLoader() {
 		if (scopingResourceLoader == null) {
-			if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IScopingResourceLoader) {
-				scopingResourceLoader = (IScopingResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
+			if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IWorkspaceResourceLoader) {
+				scopingResourceLoader = (IWorkspaceResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
 			}
 		} else {
 			ResourceLoaderFactory.setCurrentThreadResourceLoader(scopingResourceLoader);
@@ -215,7 +215,7 @@ public class CheckJob extends WorkspaceJob {
 	}
 
 	/**
-	 * Updates context of current {@link IScopingResourceLoader resource loader} according to given
+	 * Updates context of current {@link IWorkspaceResourceLoader resource loader} according to given
 	 * <code>contextObject</code>.
 	 */
 	protected void updateResourceLoaderContext(Object contextObject) {
@@ -229,7 +229,7 @@ public class CheckJob extends WorkspaceJob {
 	}
 
 	/**
-	 * Uninstalls current {@link IScopingResourceLoader resource loader}.
+	 * Uninstalls current {@link IWorkspaceResourceLoader resource loader}.
 	 */
 	protected void uninstallResourceLoader() {
 		ResourceLoaderFactory.setCurrentThreadResourceLoader(null);

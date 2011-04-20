@@ -39,7 +39,7 @@ import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
-import org.eclipse.sphinx.emf.mwe.resources.IScopingResourceLoader;
+import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
@@ -71,7 +71,7 @@ public class XtendJob extends WorkspaceJob {
 	/**
 	 * The resource loader to be used when loading Xpand template files.
 	 */
-	private IScopingResourceLoader scopingResourceLoader;
+	private IWorkspaceResourceLoader scopingResourceLoader;
 
 	/**
 	 * The label for the {@link IUndoableOperation operation} in which the Xtend transformation is executed.
@@ -122,12 +122,12 @@ public class XtendJob extends WorkspaceJob {
 	}
 
 	/**
-	 * Sets the {@link IScopingResourceLoader resource loader} for resolving resources referenced by Xtend extensions.
+	 * Sets the {@link IWorkspaceResourceLoader resource loader} for resolving resources referenced by Xtend extensions.
 	 * 
 	 * @param resourceLoader
 	 *            The resource loader to be used.
 	 */
-	public void setScopingResourceLoader(IScopingResourceLoader resourceLoader) {
+	public void setScopingResourceLoader(IWorkspaceResourceLoader resourceLoader) {
 		scopingResourceLoader = resourceLoader;
 	}
 
@@ -262,12 +262,12 @@ public class XtendJob extends WorkspaceJob {
 	}
 
 	/**
-	 * Installs a {@link IScopingResourceLoader resource loader}.
+	 * Installs a {@link IWorkspaceResourceLoader resource loader}.
 	 */
 	protected void installResourceLoader() {
 		if (scopingResourceLoader == null) {
-			if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IScopingResourceLoader) {
-				scopingResourceLoader = (IScopingResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
+			if (ResourceLoaderFactory.getCurrentThreadResourceLoader() instanceof IWorkspaceResourceLoader) {
+				scopingResourceLoader = (IWorkspaceResourceLoader) ResourceLoaderFactory.getCurrentThreadResourceLoader();
 			}
 		} else {
 			ResourceLoaderFactory.setCurrentThreadResourceLoader(scopingResourceLoader);
@@ -275,7 +275,7 @@ public class XtendJob extends WorkspaceJob {
 	}
 
 	/**
-	 * Updates context of current {@link IScopingResourceLoader resource loader} according to given
+	 * Updates context of current {@link IWorkspaceResourceLoader resource loader} according to given
 	 * <code>contextObject</code>.
 	 */
 	protected void updateResourceLoaderContext(Object contextObject) {
@@ -289,7 +289,7 @@ public class XtendJob extends WorkspaceJob {
 	}
 
 	/**
-	 * Uninstalls current {@link IScopingResourceLoader resource loader}.
+	 * Uninstalls current {@link IWorkspaceResourceLoader resource loader}.
 	 */
 	protected void uninstallResourceLoader() {
 		ResourceLoaderFactory.setCurrentThreadResourceLoader(null);
