@@ -31,7 +31,7 @@ public interface IWorkspaceResourceLoader extends ResourceLoader {
 
 	void setSearchArchives(boolean searchArchives);
 
-	String getQualifiedName(IFile underlyingFile, String statementName);
+	String getQualifiedName(IFile underlyingFile, String featureName);
 
 	IFile getUnderlyingFile(String qualifiedName);
 }

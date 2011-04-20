@@ -279,7 +279,7 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 		return null;
 	}
 
-	public String getQualifiedName(IFile underlyingFile, String statementName) {
+	public String getQualifiedName(IFile underlyingFile, String featureName) {
 		Assert.isNotNull(underlyingFile);
 
 		if (underlyingFile.exists()) {
@@ -292,9 +292,9 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 					path.append(IXtendXpandConstants.NS_DELIMITER);
 				}
 			}
-			if (statementName != null && statementName.length() > 0) {
+			if (featureName != null && featureName.length() > 0) {
 				path.append(IXtendXpandConstants.NS_DELIMITER);
-				path.append(statementName);
+				path.append(featureName);
 			}
 			return path.toString();
 		}
