@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.xtend;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,13 +59,13 @@ public class XtendEvaluationRequest {
 	 * @param parameterList
 	 *            a list of parameters to be used in model transformation.
 	 */
-	public XtendEvaluationRequest(String extensionName, Object targetObject, List<Object> parameterList) {
+	public XtendEvaluationRequest(String extensionName, Object targetObject, Object... parameters) {
 		Assert.isNotNull(extensionName);
 		Assert.isNotNull(targetObject);
 
 		this.extensionName = extensionName;
 		this.targetObject = targetObject;
-		this.parameterList = parameterList != null ? parameterList : Collections.emptyList();
+		parameterList = parameters != null ? Arrays.asList(parameters) : Collections.emptyList();
 	}
 
 	/**
@@ -87,5 +88,4 @@ public class XtendEvaluationRequest {
 	public List<Object> getParameterList() {
 		return parameterList;
 	}
-
 }

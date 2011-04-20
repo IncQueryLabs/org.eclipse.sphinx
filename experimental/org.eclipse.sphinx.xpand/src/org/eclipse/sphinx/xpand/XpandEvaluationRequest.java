@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.xpand;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,14 +59,14 @@ public class XpandEvaluationRequest {
 	 * @param parameterList
 	 *            a list of parameters to be used in code generation.
 	 */
-	public XpandEvaluationRequest(String definitionName, Object targetObject, List<Object> parameterList) {
+	public XpandEvaluationRequest(String definitionName, Object targetObject, Object... parameters) {
 		Assert.isNotNull(definitionName);
 		Assert.isTrue(definitionName.trim().length() != 0);
 		Assert.isNotNull(targetObject);
 
 		this.definitionName = definitionName;
 		this.targetObject = targetObject;
-		this.parameterList = parameterList != null ? parameterList : Collections.emptyList();
+		parameterList = parameters != null ? Arrays.asList(parameters) : Collections.emptyList();
 	}
 
 	/**
