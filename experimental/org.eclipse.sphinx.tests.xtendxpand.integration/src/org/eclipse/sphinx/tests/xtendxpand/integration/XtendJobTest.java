@@ -70,7 +70,7 @@ public class XtendJobTest extends XtendXpandIntegrationTestCase {
 		assertEquals(Status.OK_STATUS, xtendStatus);
 
 		// Xtend result verification
-		Collection<Object> xtendResult = xtendJob.getXtendResult();
+		Collection<Object> xtendResult = xtendJob.getResultObjects();
 		assertEquals(1, xtendResult.size());
 		Object object = xtendResult.iterator().next();
 		assertNotNull(object);

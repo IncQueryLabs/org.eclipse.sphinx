@@ -81,8 +81,7 @@ public class XtendJob extends WorkspaceJob {
 	/**
 	 * The Xtend transformation result.
 	 */
-	// TODO Rename to result
-	protected Collection<Object> xtendResult = new ArrayList<Object>();
+	protected Collection<Object> resultObjects = new ArrayList<Object>();
 
 	/**
 	 * Constructs an Xtend job for execution model transformation for the given <code>xtendEvaluationRequest</code>
@@ -206,7 +205,7 @@ public class XtendJob extends WorkspaceJob {
 							parameterList.addAll(request.getParameterList());
 							Object result = facade.call(getFunctionName(request.getExtensionName()), parameterList);
 							if (result != null) {
-								xtendResult.add(result);
+								resultObjects.add(result);
 							}
 						}
 					}
@@ -296,11 +295,10 @@ public class XtendJob extends WorkspaceJob {
 	}
 
 	/**
-	 * Gets the Xtend model transformation result.
+	 * Returns the collection of objects resulting from the Xtend model transformation.
 	 */
-	// TODO Rename to getResult()
-	public Collection<Object> getXtendResult() {
-		return xtendResult;
+	public Collection<Object> getResultObjects() {
+		return resultObjects;
 	}
 
 	@Override
