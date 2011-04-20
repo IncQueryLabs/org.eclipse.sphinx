@@ -46,7 +46,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	protected MetaModel metaModel;
 
 	private String m2tJobName;
-	private IWorkspaceResourceLoader scopingResourceLoader;
+	private IWorkspaceResourceLoader workspaceResourceLoader;
 	private OutletsPreference outletsPreference;
 	private ExtendedOutlet defaultOutlet;
 
@@ -72,12 +72,12 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		this.m2tJobName = m2tJobName;
 	}
 
-	public IWorkspaceResourceLoader getScopingResourceLoader() {
-		return scopingResourceLoader;
+	public IWorkspaceResourceLoader getWorkspaceResourceLoader() {
+		return workspaceResourceLoader;
 	}
 
-	public void setWorkspaceResourceLoader(IWorkspaceResourceLoader scopingResourceLoader) {
-		this.scopingResourceLoader = scopingResourceLoader;
+	public void setWorkspaceResourceLoader(IWorkspaceResourceLoader workspaceResourceLoader) {
+		this.workspaceResourceLoader = workspaceResourceLoader;
 	}
 
 	public OutletsPreference getOutletsPreference() {
@@ -170,7 +170,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 
 	protected XpandJob createXpandJob() {
 		XpandJob job = new XpandJob(getM2TJobName(), metaModel, xpandConfigurationPage.getXpandEvaluationRequests());
-		job.setWorkspaceResourceLoader(getScopingResourceLoader());
+		job.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		job.getOutlets().addAll(xpandConfigurationPage.getOutlets());
 		job.setPriority(Job.BUILD);
 		IFile file = EcorePlatformUtil.getFile(modelObject);
@@ -182,7 +182,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 
 	protected CheckJob createCheckJob() {
 		CheckJob checkJob = new CheckJob(getM2TJobName(), metaModel, checkConfigurationPage.getCheckEvaluationRequests());
-		checkJob.setWorkspaceResourceLoader(getScopingResourceLoader());
+		checkJob.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		checkJob.setPriority(Job.BUILD);
 		IFile file = EcorePlatformUtil.getFile(modelObject);
 		if (file != null) {

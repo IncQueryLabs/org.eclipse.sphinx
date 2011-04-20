@@ -14,6 +14,10 @@
  */
 package org.eclipse.sphinx.emf.mwe;
 
+// TODO Convert IXtendXpandConstants into XtendXpandUtil and move getQualifiedName() 
+// and getUnderlyingFile() from IWorkspaceResourceLoader/BasicWorkspaceResourceLoader to XtendXpandUtil;
+// use XpandXtendUtil in org.eclipse.sphinx.xtendxpand.ui.groups.TemplateGroup#getDefinitionName() and remove 
+// redundant method org.eclipse.sphinx.xtendxpand.ui.groups.TemplateGroup#getQualifiedName(IFile, String)
 public interface IXtendXpandConstants {
 
 	String NS_DELIMITER = "::"; //$NON-NLS-1$

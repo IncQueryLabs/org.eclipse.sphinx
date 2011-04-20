@@ -60,7 +60,6 @@ import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
-import org.eclipse.xpand2.XpandUtil;
 import org.eclipse.xtend.shared.ui.core.IXtendXpandProject;
 import org.eclipse.xtend.shared.ui.core.IXtendXpandResource;
 import org.eclipse.xtend.typesystem.MetaModel;
@@ -139,7 +138,7 @@ public class TemplateGroup extends AbstractGroup {
 					@Override
 					public boolean select(Viewer viewer, Object parentElement, Object element) {
 						if (element instanceof IFile) {
-							return XpandUtil.TEMPLATE_EXTENSION.equals(((IFile) element).getFileExtension());
+							return IXtendXpandConstants.TEMPLATE_EXTENSION.equals(((IFile) element).getFileExtension());
 						}
 						if (element instanceof IResource) {
 							return !ExtendedPlatform.isPlatformPrivateResource(((IResource) element));
@@ -154,7 +153,7 @@ public class TemplateGroup extends AbstractGroup {
 						String pluginId = Activator.getPlugin().getSymbolicName();
 						if (nSelected == 1 && selection[0] instanceof IFile) {
 							IFile selectedFile = (IFile) selection[0];
-							if (selectedFile.exists() && XpandUtil.TEMPLATE_EXTENSION.equals(selectedFile.getFileExtension())) {
+							if (selectedFile.exists() && IXtendXpandConstants.TEMPLATE_EXTENSION.equals(selectedFile.getFileExtension())) {
 								return Status.OK_STATUS;
 							}
 						}
@@ -245,9 +244,6 @@ public class TemplateGroup extends AbstractGroup {
 		return idx != -1 && typeName.length() >= idx + namespaceDelimiter.length() ? typeName.substring(idx + namespaceDelimiter.length()) : typeName;
 	}
 
-	// TODO File bug to Xpand: org.eclipse.internal.xpand2.ast.AbstractDefinition#getQualifiedName() must not remove the
-	// 4 last characters of the definition's file name in hard-coded manner because it might yield the file's base name
-	// without extension only.
 	public String getDefinitionName() {
 		String selectedDefinitionName = getSelectedDefinitionComboItem();
 		if (selectedDefinitionName != null) {
@@ -256,7 +252,7 @@ public class TemplateGroup extends AbstractGroup {
 		return ""; //$NON-NLS-1$
 	}
 
-	// TODO (aakar) Move to an utility class, used also in IScopResourceLoader
+	// TODO (aakar) Move to an utility class, used also in BasicWorkspaceResourceLoader
 	protected String getQualifiedName(IFile underlyingFile, String statementName) {
 		Assert.isNotNull(underlyingFile);
 
@@ -292,7 +288,7 @@ public class TemplateGroup extends AbstractGroup {
 	 * Loads an Xpand resource.
 	 */
 	protected Template loadTemplate(final IFile templateFile) {
-		if (templateFile != null && templateFile.exists() && XpandUtil.TEMPLATE_EXTENSION.equals(templateFile.getFileExtension())) {
+		if (templateFile != null && templateFile.exists() && IXtendXpandConstants.TEMPLATE_EXTENSION.equals(templateFile.getFileExtension())) {
 			final IXtendXpandProject project = org.eclipse.xtend.shared.ui.Activator.getExtXptModelManager().findProject(templateFile);
 			if (project != null) {
 				final IXtendXpandResource resource = project.findXtendXpandResource(templateFile);
@@ -314,7 +310,6 @@ public class TemplateGroup extends AbstractGroup {
 	/**
 	 * Gets the file located at the given full path or returns null.
 	 */
-	// TODO (aakar) Put this in ExtendedPlatform
 	protected IFile getFile(String fullPath) {
 		if (fullPath != null && fullPath.length() > 0) {
 			Path path = new Path(fullPath);
