@@ -45,7 +45,7 @@ public class SphinxCodeGenExampleActionProvider extends BasicActionProvider {
 	}
 
 	protected BasicM2TAction createLaunchCodeGenAction() {
-		return new BasicM2TAction(Messages.menuItem_launchCodeGen);
+		return new BasicM2TAction(Messages.menuItem_generate_codeUsingXpand);
 	}
 
 	/*

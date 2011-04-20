@@ -21,7 +21,7 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.examples.codegen.xpand.ui.internal.messages.messages"; //$NON-NLS-1$
 
 	public static String menu_generate;
-	public static String menuItem_launchCodeGen;
+	public static String menuItem_generate_codeUsingXpand;
 
 	static {
 		// Initialize resource bundle
