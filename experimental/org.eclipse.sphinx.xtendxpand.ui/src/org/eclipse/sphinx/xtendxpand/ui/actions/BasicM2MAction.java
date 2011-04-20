@@ -92,9 +92,9 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 	}
 
 	protected XtendJob createXtendJob() {
-		// TODO Create enclosing WorkspaceJob which retrieves result from XtendJob and puts it on clipboard of shared
-		// editing domain for metamodel behind result objects or saves it into a new file previously selected by the
-		// user
+		// TODO Enable to provide JobChangeAdapter that retrieves and handles result from XtendJob; provide default
+		// implementation that puts result objects on clipboard of shared editing domain for metamodel behind result
+		// objects or saves them into a new file
 		XtendJob job = new XtendJob(getM2MJobName(), getMetaModel(), getXtendEvaluationRequests());
 		job.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		job.setPriority(Job.BUILD);

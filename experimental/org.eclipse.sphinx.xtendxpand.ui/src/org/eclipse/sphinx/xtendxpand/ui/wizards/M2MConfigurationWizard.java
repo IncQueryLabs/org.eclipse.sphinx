@@ -130,8 +130,9 @@ public class M2MConfigurationWizard extends AbstractWizard {
 						throw new OperationCanceledException();
 					}
 
-					// TODO Retrieve result from XtendJob and puts it on clipboard of shared editing domain for
-					// metamodel behind result objects or saves it into a new file previously selected by the user
+					// TODO Enable to provide JobChangeAdapter that retrieves and handles result from XtendJob; provide
+					// default implementation that puts result objects on clipboard of shared editing domain for
+					// metamodel behind result objects or saves them into a new file previously selected by the user
 					xtendJob.getResultObjects();
 
 					return status;
