@@ -56,7 +56,7 @@ public class XtendEvaluationRequest {
 	 *            the Xtend extension name to be use.
 	 * @param targetObject
 	 *            the target model object.
-	 * @param parameterList
+	 * @param parameters
 	 *            a list of parameters to be used in model transformation.
 	 */
 	public XtendEvaluationRequest(String extensionName, Object targetObject, Object... parameters) {

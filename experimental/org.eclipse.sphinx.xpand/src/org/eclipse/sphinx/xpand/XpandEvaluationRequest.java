@@ -46,7 +46,7 @@ public class XpandEvaluationRequest {
 	 *            the target object on with the code generation is applied.
 	 */
 	public XpandEvaluationRequest(String definitionName, Object targetObject) {
-		this(definitionName, targetObject, Collections.emptyList());
+		this(definitionName, targetObject, (Object[]) null);
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class XpandEvaluationRequest {
 	 *            the Xpand definition name.
 	 * @param targetObject
 	 *            the target object on with the code generation is applied.
-	 * @param parameterList
+	 * @param parameters
 	 *            a list of parameters to be used in code generation.
 	 */
 	public XpandEvaluationRequest(String definitionName, Object targetObject, Object... parameters) {
@@ -66,7 +66,7 @@ public class XpandEvaluationRequest {
 
 		this.definitionName = definitionName;
 		this.targetObject = targetObject;
-		parameterList = parameters != null ? Arrays.asList(parameters) : Collections.emptyList();
+		parameterList = parameters != null && parameters.length > 0 ? Arrays.asList(parameters) : Collections.emptyList();
 	}
 
 	/**
