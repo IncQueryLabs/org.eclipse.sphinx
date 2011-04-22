@@ -12,15 +12,12 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.emf.mwe;
+package org.eclipse.sphinx.emf.ui;
 
-public interface IXtendXpandConstants {
+/**
+ * 
+ */
+public interface ICommonModelUIConstants {
 
-	String NS_DELIMITER = "::"; //$NON-NLS-1$
-
-	String TEMPLATE_EXTENSION = "xpt"; //$NON-NLS-1$
-
-	String EXTENSION_EXTENSION = "ext"; //$NON-NLS-1$
-
-	String CHECK_EXTENSION = "chk"; //$NON-NLS-1$
+	String VIEW_REFERENCES_ID = "org.eclipse.sphinx.emf.ui.views.references"; //$NON-NLS-1$
 }

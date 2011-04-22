@@ -38,7 +38,6 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
 import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
@@ -46,6 +45,7 @@ import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xtend.XtendEvaluationRequest;
 import org.eclipse.sphinx.xtend.internal.Activator;
+import org.eclipse.xpand2.XpandUtil;
 import org.eclipse.xtend.XtendFacade;
 import org.eclipse.xtend.expression.ExecutionContextImpl;
 import org.eclipse.xtend.expression.ResourceManagerDefaultImpl;
@@ -199,11 +199,11 @@ public class XtendJob extends WorkspaceJob {
 							updateResourceLoaderContext(request.getTargetObject());
 
 							// Evaluate current request
-							XtendFacade facade = XtendFacade.create(execCtx, getExtensionFileBaseName(request.getExtensionName()));
+							XtendFacade facade = XtendFacade.create(execCtx, XpandUtil.withoutLastSegment(request.getExtensionName()));
 							List<Object> parameterList = new ArrayList<Object>();
 							parameterList.add(request.getTargetObject());
 							parameterList.addAll(request.getParameterList());
-							Object result = facade.call(getFunctionName(request.getExtensionName()), parameterList);
+							Object result = facade.call(XpandUtil.getLastSegment(request.getExtensionName()), parameterList);
 							if (result != null) {
 								resultObjects.add(result);
 							}
@@ -230,34 +230,6 @@ public class XtendJob extends WorkspaceJob {
 			// Always uninstall resource loader again
 			uninstallResourceLoader();
 		}
-	}
-
-	/**
-	 * Gets the extension file base name computing from the given <code>extensionName</code>. All "::" characters are
-	 * replaced by "/".
-	 */
-	protected String getExtensionFileBaseName(String extensionName) {
-		Assert.isNotNull(extensionName);
-
-		int idx = extensionName.lastIndexOf(IXtendXpandConstants.NS_DELIMITER);
-		if (idx != -1) {
-			String extensionFileName = extensionName.substring(0, idx);
-			return extensionFileName.replaceAll(IXtendXpandConstants.NS_DELIMITER, "/"); //$NON-NLS-1$
-		}
-		return null;
-	}
-
-	/**
-	 * Gets the function name computed from the given <code>extensionName</code>
-	 */
-	protected String getFunctionName(String extensionName) {
-		Assert.isNotNull(extensionName);
-
-		int idx = extensionName.lastIndexOf(IXtendXpandConstants.NS_DELIMITER);
-		if (idx != -1 && extensionName.length() > idx + IXtendXpandConstants.NS_DELIMITER.length()) {
-			return extensionName.substring(idx + IXtendXpandConstants.NS_DELIMITER.length(), extensionName.length());
-		}
-		return null;
 	}
 
 	/**

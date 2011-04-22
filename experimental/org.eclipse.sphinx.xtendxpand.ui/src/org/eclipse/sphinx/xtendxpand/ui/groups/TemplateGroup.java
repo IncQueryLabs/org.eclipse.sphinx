@@ -17,14 +17,12 @@ package org.eclipse.sphinx.xtendxpand.ui.groups;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -51,6 +49,7 @@ import org.eclipse.sphinx.platform.ui.fields.adapters.IButtonAdapter;
 import org.eclipse.sphinx.platform.ui.groups.AbstractGroup;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
+import org.eclipse.sphinx.xpand.util.XtendXpandUtil;
 import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.swt.layout.GridLayout;
@@ -102,7 +101,7 @@ public class TemplateGroup extends AbstractGroup {
 	/**
 	 * Defined definitions in the template file.
 	 */
-	private AbstractDefinition[] definitions;
+	private List<AbstractDefinition> definitions;
 
 	public TemplateGroup(String groupName, EObject modelObject, MetaModel metaModel) {
 		this(groupName, modelObject, metaModel, null);
@@ -119,7 +118,8 @@ public class TemplateGroup extends AbstractGroup {
 	protected void doCreateContent(final Composite parent, int numColumns) {
 		parent.setLayout(new GridLayout(numColumns, false));
 
-		// Template File Path
+		// Template file field
+		// TODO Rename to templateFileField
 		templatePathField = new StringButtonField(new IButtonAdapter() {
 
 			public void changeControlPressed(IField field) {
@@ -181,7 +181,8 @@ public class TemplateGroup extends AbstractGroup {
 			}
 		});
 
-		// Definition Field
+		// Define block field
+		// TODO Rename to definitionField
 		definitionComboField = new ComboField(true);
 		definitionComboField.setLabelText(Messages.label_defineBlock);
 		definitionComboField.fillIntoGrid(parent, numColumns);
@@ -193,13 +194,13 @@ public class TemplateGroup extends AbstractGroup {
 			}
 		});
 
-		// Feedback
+		// Definition name field
 		definitionNameField = new StringField();
 		definitionNameField.setLabelText(Messages.label_definitionName);
 		definitionNameField.setEditable(false);
 		definitionNameField.fillIntoGrid(parent, numColumns);
 
-		// Load the group settings.
+		// Load the group settings
 		loadGroupSettings();
 	}
 
@@ -209,7 +210,7 @@ public class TemplateGroup extends AbstractGroup {
 	public void updateDefinitionComboItems(IFile templateFile) {
 		Template template = loadTemplate(templateFile);
 		if (template != null) {
-			definitions = template.getAllDefinitions();
+			definitions = Arrays.asList(template.getAllDefinitions());
 			definitionComboField.setItems(createDefinitionComboItems(definitions));
 			return;
 		}
@@ -219,18 +220,23 @@ public class TemplateGroup extends AbstractGroup {
 	/**
 	 * Creates define block items.
 	 */
-	protected String[] createDefinitionComboItems(AbstractDefinition[] definitions) {
+	protected String[] createDefinitionComboItems(List<AbstractDefinition> definitions) {
 		List<String> result = new ArrayList<String>();
 		if (metaModel != null) {
 			Type type = metaModel.getType(modelObject);
 			if (type != null) {
 				for (AbstractDefinition definition : definitions) {
+					// TODO Replace filtering based on target type names by one that takes inheritance hierarchy into
+					// account, just as org.eclipse.xpand2.XpandExecutionContextImpl.findDefinition(XpandDefinition[],
+					// String, Type, Type[], XpandExecutionContext) does; provide a new helper method similar to
+					// XtendXpandUtil.getFeatures() to XtendXpandUtil for that purpose
 					if (type.getName().equals(definition.getTargetType()) || getSimpleTypeName(type).equals(definition.getTargetType())) {
 						result.add(definition.getName());
 					}
 				}
 			}
 		}
+		// TODO Create an empty combo item if result is empty
 		return result.toArray(new String[result.size()]);
 	}
 
@@ -247,32 +253,9 @@ public class TemplateGroup extends AbstractGroup {
 	public String getDefinitionName() {
 		String selectedDefinitionName = getSelectedDefinitionComboItem();
 		if (selectedDefinitionName != null) {
-			return getQualifiedName(getFile(getTemplatePathField().getText()), selectedDefinitionName);
+			return XtendXpandUtil.getQualifiedName(getFile(getTemplatePathField().getText()), selectedDefinitionName);
 		}
 		return ""; //$NON-NLS-1$
-	}
-
-	// TODO (aakar) Move to an utility class, used also in BasicWorkspaceResourceLoader
-	protected String getQualifiedName(IFile underlyingFile, String statementName) {
-		Assert.isNotNull(underlyingFile);
-
-		if (underlyingFile.exists()) {
-			StringBuilder path = new StringBuilder();
-			IPath templateNamespace = underlyingFile.getProjectRelativePath().removeFileExtension();
-			for (Iterator<String> iter = Arrays.asList(templateNamespace.segments()).iterator(); iter.hasNext();) {
-				String segment = iter.next();
-				path.append(segment);
-				if (iter.hasNext()) {
-					path.append(IXtendXpandConstants.NS_DELIMITER);
-				}
-			}
-			if (statementName != null && statementName.length() > 0) {
-				path.append(IXtendXpandConstants.NS_DELIMITER);
-				path.append(statementName);
-			}
-			return path.toString();
-		}
-		return null;
 	}
 
 	protected void updateDefinitionaNameField() {
@@ -343,7 +326,7 @@ public class TemplateGroup extends AbstractGroup {
 		return definitionNameField;
 	}
 
-	public AbstractDefinition[] getDefinitions() {
+	public List<AbstractDefinition> getDefinitions() {
 		return definitions;
 	}
 

@@ -15,6 +15,7 @@
 package org.eclipse.sphinx.xtendxpand.ui.groups;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -46,6 +47,7 @@ import org.eclipse.sphinx.platform.ui.fields.StringButtonField;
 import org.eclipse.sphinx.platform.ui.fields.adapters.IButtonAdapter;
 import org.eclipse.sphinx.platform.ui.groups.AbstractGroup;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
+import org.eclipse.sphinx.xpand.util.XtendXpandUtil;
 import org.eclipse.sphinx.xtend.XtendEvaluationRequest;
 import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
@@ -58,6 +60,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.eclipse.xtend.shared.ui.core.IXtendXpandProject;
 import org.eclipse.xtend.shared.ui.core.IXtendXpandResource;
+import org.eclipse.xtend.typesystem.Callable;
 import org.eclipse.xtend.typesystem.MetaModel;
 import org.eclipse.xtend.typesystem.Type;
 
@@ -110,7 +113,8 @@ public class ExtensionGroup extends AbstractGroup {
 	protected void doCreateContent(final Composite parent, int numColumns) {
 		parent.setLayout(new GridLayout(numColumns, false));
 
-		// Extension File Path
+		// Extension file field
+		// TODO Rename to extension file field
 		extensionPathField = new StringButtonField(new IButtonAdapter() {
 
 			public void changeControlPressed(IField field) {
@@ -171,7 +175,8 @@ public class ExtensionGroup extends AbstractGroup {
 			}
 		});
 
-		// Extension Field
+		// Extension name field
+		// TODO Rename to functionField
 		extensionNameField = new ComboField(true);
 		extensionNameField.setLabelText(Messages.label_extensionName);
 		extensionNameField.fillIntoGrid(parent, numColumns);
@@ -182,7 +187,9 @@ public class ExtensionGroup extends AbstractGroup {
 			}
 		});
 
-		// Load the group settings.
+		// TODO Add extension name field
+
+		// Load the group settings
 		loadGroupSettings();
 	}
 
@@ -200,18 +207,19 @@ public class ExtensionGroup extends AbstractGroup {
 	}
 
 	/**
-	 * Creates extensions fields items.
+	 * Creates extension items.
 	 */
 	protected String[] createExtensionNameComboItems(List<Extension> extensions) {
 		List<String> result = new ArrayList<String>();
 		if (metaModel != null) {
 			Type type = metaModel.getType(modelObject);
 			if (type != null) {
-				for (Extension extension : extensions) {
-					result.add(extension.getQualifiedName());
+				for (Callable extension : XtendXpandUtil.getApplicableFeatures(extensions, Extension.class, null, Arrays.asList(type))) {
+					result.add(((Extension) extension).getQualifiedName());
 				}
 			}
 		}
+		// TODO Create an empty combo item if result is empty
 		return result.toArray(new String[result.size()]);
 	}
 

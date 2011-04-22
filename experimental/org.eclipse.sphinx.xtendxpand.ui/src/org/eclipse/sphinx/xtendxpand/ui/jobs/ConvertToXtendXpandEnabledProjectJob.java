@@ -80,6 +80,8 @@ public class ConvertToXtendXpandEnabledProjectJob extends WorkspaceJob {
 
 	private IProject project;
 
+	private static final String SEPARATOR_COMMA = ","; //$NON-NLS-1$
+
 	private Set<Class<? extends MetamodelContributor>> metaModelContributors;
 
 	public ConvertToXtendXpandEnabledProjectJob(String name, IProject project) {
@@ -254,8 +256,11 @@ public class ConvertToXtendXpandEnabledProjectJob extends WorkspaceJob {
 		IPreferenceStore store;
 		store = new ScopedPreferenceStore(new ProjectScope(project), org.eclipse.xtend.shared.ui.Activator.getId());
 		store.setValue(PreferenceConstants.PROJECT_SPECIFIC_METAMODEL, true);
-		// FIXME: what about this part of code when using several metamodel contributors
-		store.setValue(PreferenceConstants.METAMODELCONTRIBUTORS, getMetamodelContributors().iterator().next().getClass().getName());
+		String metaModelContribNames = new String();
+		for (Class<? extends MetamodelContributor> metaModelContributor : getMetamodelContributors()) {
+			metaModelContribNames = metaModelContribNames.concat(SEPARATOR_COMMA).concat(metaModelContributor.getClass().getName());
+		}
+		store.setValue(PreferenceConstants.METAMODELCONTRIBUTORS, metaModelContribNames);
 		progress.worked(1);
 		try {
 			((ScopedPreferenceStore) store).save();

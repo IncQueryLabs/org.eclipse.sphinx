@@ -20,7 +20,9 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.sphinx.xpand,
  org.eclipse.sphinx.xpand.internal;x-internal:=true,
+ org.eclipse.sphinx.xpand.internal.preferences;x-internal:=true,
  org.eclipse.sphinx.xpand.jobs,
  org.eclipse.sphinx.xpand.outlet,
- org.eclipse.sphinx.xpand.preferences
+ org.eclipse.sphinx.xpand.preferences,
+ org.eclipse.sphinx.xpand.util
 Bundle-Localization: plugin

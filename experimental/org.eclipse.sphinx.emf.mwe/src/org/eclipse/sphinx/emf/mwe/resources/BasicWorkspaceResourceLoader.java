@@ -14,13 +14,10 @@
  */
 package org.eclipse.sphinx.emf.mwe.resources;
 
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
@@ -30,7 +27,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.mwe.core.resources.AbstractResourceLoader;
@@ -274,41 +270,6 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 				} catch (Exception ex) {
 					// Ignore exception
 				}
-			}
-		}
-		return null;
-	}
-
-	public String getQualifiedName(IFile underlyingFile, String featureName) {
-		Assert.isNotNull(underlyingFile);
-
-		if (underlyingFile.exists()) {
-			StringBuilder path = new StringBuilder();
-			IPath templateNamespace = underlyingFile.getProjectRelativePath().removeFileExtension();
-			for (Iterator<String> iter = Arrays.asList(templateNamespace.segments()).iterator(); iter.hasNext();) {
-				String segment = iter.next();
-				path.append(segment);
-				if (iter.hasNext()) {
-					path.append(IXtendXpandConstants.NS_DELIMITER);
-				}
-			}
-			if (featureName != null && featureName.length() > 0) {
-				path.append(IXtendXpandConstants.NS_DELIMITER);
-				path.append(featureName);
-			}
-			return path.toString();
-		}
-		return null;
-	}
-
-	public IFile getUnderlyingFile(String qualifiedName) {
-		URL resourceURL = getResource(qualifiedName);
-		if (resourceURL != null) {
-			try {
-				Path location = new Path(resourceURL.toURI().getPath());
-				return ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(location);
-			} catch (URISyntaxException ex) {
-				// Ignore exception
 			}
 		}
 		return null;

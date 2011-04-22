@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.emf.mwe.resources;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.mwe.core.resources.ResourceLoader;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
@@ -30,8 +29,4 @@ public interface IWorkspaceResourceLoader extends ResourceLoader {
 	void setContextModel(IModelDescriptor contextModel);
 
 	void setSearchArchives(boolean searchArchives);
-
-	String getQualifiedName(IFile underlyingFile, String featureName);
-
-	IFile getUnderlyingFile(String qualifiedName);
 }

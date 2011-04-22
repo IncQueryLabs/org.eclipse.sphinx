@@ -21,6 +21,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.sphinx.platform.ui.preferences.AbstractPreferenceAndPropertyPage;
 import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
+import org.eclipse.sphinx.xpand.util.XtendXpandUtil;
 import org.eclipse.sphinx.xtendxpand.ui.groups.OutletsGroup;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.ui.outlet.providers.OutletProvider;
@@ -37,7 +38,7 @@ public abstract class AbstractOutletsPreferencePage extends AbstractPreferenceAn
 	private OutletProvider outletProvider;
 
 	public AbstractOutletsPreferencePage() {
-		super(OutletsPreference.XTEND_XPAND_NATURE_ID, GRID);
+		super(XtendXpandUtil.XTEND_XPAND_NATURE_ID, GRID);
 	}
 
 	public AbstractOutletsPreferencePage(String requiredProjectNatureId, int style) {

@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
+import org.eclipse.sphinx.xpand.util.XtendXpandUtil;
 import org.eclipse.xtend.shared.ui.StorageFinder;
 import org.eclipse.xtend.shared.ui.core.internal.ResourceID;
 
@@ -50,7 +51,7 @@ public class WorkspaceStorageFinder implements StorageFinder {
 			if (javaOutputPath != null && javaOutputPath.isPrefixOf(file.getFullPath())) {
 				return null;
 			}
-			return new ResourceID(workspaceResourceLoader.getQualifiedName(file, null), file.getFileExtension());
+			return new ResourceID(XtendXpandUtil.getQualifiedName(file, null), file.getFileExtension());
 		}
 		return null;
 	}
@@ -78,7 +79,7 @@ public class WorkspaceStorageFinder implements StorageFinder {
 			return null;
 		}
 
-		return workspaceResourceLoader.getUnderlyingFile(fileName);
+		return XtendXpandUtil.getUnderlyingFile(fileName, workspaceResourceLoader);
 	}
 
 	public int getPriority() {

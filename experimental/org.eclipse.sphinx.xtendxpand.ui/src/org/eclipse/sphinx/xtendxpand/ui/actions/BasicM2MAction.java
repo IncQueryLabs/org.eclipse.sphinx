@@ -36,6 +36,7 @@ import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
+import org.eclipse.sphinx.xpand.util.XtendXpandUtil;
 import org.eclipse.sphinx.xtend.XtendEvaluationRequest;
 import org.eclipse.sphinx.xtend.jobs.XtendJob;
 import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
@@ -147,7 +148,7 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 	protected String getExtensionName(EObject modelObject) {
 		IFile extensionFile = getExtensionFile(modelObject);
 		if (extensionFile != null) {
-			return getWorkspaceResourceLoader().getQualifiedName(extensionFile, getExtName());
+			return XtendXpandUtil.getQualifiedName(extensionFile, getExtName());
 		}
 		return null;
 	}

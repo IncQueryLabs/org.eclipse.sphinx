@@ -10,7 +10,9 @@ Require-Bundle: org.eclipse.ui.navigator;visibility:=reexport,
  org.eclipse.emf.transaction.ui;visibility:=reexport,
  org.eclipse.emf.workspace.ui;visibility:=reexport,
  org.eclipse.sphinx.platform.ui;visibility:=reexport,
- org.eclipse.sphinx.emf;visibility:=reexport
+ org.eclipse.sphinx.emf;visibility:=reexport,
+ org.eclipse.core.runtime,
+ org.eclipse.ui
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.emf.ui.internal.Activator$Implementation
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

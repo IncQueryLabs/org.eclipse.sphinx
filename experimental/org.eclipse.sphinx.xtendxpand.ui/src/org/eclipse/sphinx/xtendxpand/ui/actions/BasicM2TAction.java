@@ -39,6 +39,7 @@ import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xpand.jobs.XpandJob;
 import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
+import org.eclipse.sphinx.xpand.util.XtendXpandUtil;
 import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.M2TConfigurationWizard;
@@ -130,7 +131,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	protected String getDefinitionName(EObject modelObject) {
 		IFile templateFile = getTemplateFile(modelObject);
 		if (templateFile != null) {
-			return getWorkspaceResourceLoader().getQualifiedName(templateFile, getTemplateName());
+			return XtendXpandUtil.getQualifiedName(templateFile, getTemplateName());
 		}
 		return null;
 	}
