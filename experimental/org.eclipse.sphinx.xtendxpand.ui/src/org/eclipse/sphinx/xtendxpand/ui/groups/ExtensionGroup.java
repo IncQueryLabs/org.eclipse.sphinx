@@ -307,13 +307,13 @@ public class ExtensionGroup extends AbstractGroup {
 	 */
 	@Override
 	protected void loadGroupSettings() {
-		String templatePath = getExtensionPathFromDialogSettings();
-		if (templatePath != null) {
-			extensionPathField.setText(templatePath);
-			updateExtensionNameComboItems(getFile(templatePath));
-			String defineBlock = getExtensionNameFromDialogSettings();
-			if (defineBlock != null) {
-				extensionNameField.selectItem(defineBlock);
+		String extensionPath = getExtensionPathFromDialogSettings();
+		if (extensionPath != null) {
+			extensionPathField.setText(extensionPath);
+			updateExtensionNameComboItems(getFile(extensionPath));
+			String extensionName = getExtensionNameFromDialogSettings();
+			if (extensionName != null) {
+				extensionNameField.selectItem(extensionName);
 			}
 		}
 	}

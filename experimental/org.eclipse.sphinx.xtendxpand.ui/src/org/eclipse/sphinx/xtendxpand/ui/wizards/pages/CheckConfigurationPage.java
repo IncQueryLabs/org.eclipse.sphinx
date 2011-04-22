@@ -20,13 +20,19 @@ import java.util.List;
 import java.util.MissingResourceException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
+import org.eclipse.sphinx.emf.resource.ExtendedResource;
+import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.ui.groups.FileSelectionGroup;
 import org.eclipse.sphinx.platform.ui.wizards.pages.AbstractWizardPage;
 import org.eclipse.sphinx.xtend.check.CheckEvaluationRequest;
+import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
@@ -75,24 +81,37 @@ public class CheckConfigurationPage extends AbstractWizardPage {
 		if (modelFile != null) {
 			checkGroup = new FileSelectionGroup(Messages.label_checkModelBlock, Messages.label_useCheckModelButton, Messages.label_checkModelBlock,
 					IXtendXpandConstants.CHECK_EXTENSION, modelFile.getProject(), getDialogSettings());
+			checkGroup.setSectionName(getCheckFileSelectionSectionName(modelObject));
 			checkGroup.createContent(parent, 3);
 		}
 	}
 
+	protected String getCheckFileSelectionSectionName(EObject object) {
+		Assert.isNotNull(object);
+
+		URI uri;
+		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(object.eResource());
+		if (extendedResource != null) {
+			uri = extendedResource.getURI(object);
+		} else {
+			uri = EcoreUtil.getURI(object);
+		}
+		return Activator.getDefault().getBundle().getSymbolicName() + ".SECTION" + uri.toString(); //$NON-NLS-1$
+	}
+
 	@Override
 	protected String doGetDescription() throws MissingResourceException {
-		return Messages.desc_config;
+		return Messages.desc_checkConfigurationPage;
 	}
 
 	@Override
 	protected String doGetTitle() throws MissingResourceException {
-		return Messages.title_launchGen;
+		return Messages.title_checkConfigurationPage;
 	}
 
 	@Override
 	protected boolean doIsPageComplete() {
 		return true;
-
 	}
 
 	@Override

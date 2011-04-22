@@ -53,8 +53,8 @@ import org.eclipse.ui.views.navigator.ResourceComparator;
 
 public class FileSelectionGroup extends AbstractGroup {
 
-	// Dialog setting
-	protected static final String SECTION_NAME = Activator.getDefault().getBundle().getSymbolicName() + ".SECTION"; //$NON-NLS-1$
+	// Dialog settings
+	protected static final String DEFAULT_SECTION_NAME = Activator.getDefault().getBundle().getSymbolicName() + ".SECTION"; //$NON-NLS-1$
 	protected static final String STORE_SELECTED_FILES = "SELECTED_FILES"; //$NON-NLS-1$
 	protected static final String STORE_ENABLE_BUTTON = "ENABLE_BUTTON"; //$NON-NLS-1$
 
@@ -66,6 +66,8 @@ public class FileSelectionGroup extends AbstractGroup {
 	protected String fileListLabel;
 	protected String fileExtension;
 	protected IProject project;
+
+	private String sectionName = DEFAULT_SECTION_NAME;
 
 	public FileSelectionGroup(String groupName, String enableText, String fileListLabel, String fileExtension, IProject project) {
 		this(groupName, enableText, fileListLabel, fileExtension, project, null);
@@ -107,6 +109,7 @@ public class FileSelectionGroup extends AbstractGroup {
 			}
 		};
 		fileListField.fillIntoGrid(parent, numColumns);
+		updateFileSelectionEnableState(false);
 		// Add label to fileListField if no button
 		if (enableButton == null) {
 			fileListField.setLabelText(fileListLabel);
@@ -222,9 +225,9 @@ public class FileSelectionGroup extends AbstractGroup {
 	public void saveGroupSettings() {
 		IDialogSettings settings = getDialogSettings();
 		if (settings != null) {
-			IDialogSettings section = settings.getSection(SECTION_NAME);
+			IDialogSettings section = settings.getSection(getSectionName());
 			if (section == null) {
-				section = settings.addNewSection(SECTION_NAME);
+				section = settings.addNewSection(getSectionName());
 			}
 			Collection<IFile> files = getFiles();
 			String[] items = new String[files.size()];
@@ -242,7 +245,7 @@ public class FileSelectionGroup extends AbstractGroup {
 	protected void loadGroupSettings() {
 		IDialogSettings settings = getDialogSettings();
 		if (settings != null) {
-			IDialogSettings section = settings.getSection(SECTION_NAME);
+			IDialogSettings section = settings.getSection(getSectionName());
 			if (section != null) {
 				String[] items = section.getArray(STORE_SELECTED_FILES);
 				boolean enableCheck = section.getBoolean(STORE_ENABLE_BUTTON);
@@ -285,5 +288,13 @@ public class FileSelectionGroup extends AbstractGroup {
 		if (enableButton != null) {
 			enableButton.setSelection(selected);
 		}
+	}
+
+	public String getSectionName() {
+		return sectionName;
+	}
+
+	public void setSectionName(String sectionName) {
+		this.sectionName = sectionName;
 	}
 }

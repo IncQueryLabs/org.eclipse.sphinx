@@ -71,10 +71,12 @@ public class Messages extends NLS {
 	public static String title_modelTransformation;
 	public static String title_launchModelTransformation;
 	public static String title_outletConfigurationDialog;
+	public static String title_checkConfigurationPage;
 
 	public static String desc_config;
 	public static String desc_modelTransformation;
 	public static String desc_configOutlets;
+	public static String desc_checkConfigurationPage;
 
 	public static String task_CreationOfSubpackageExtensions;
 	public static String task_AddPluginDependencies;
