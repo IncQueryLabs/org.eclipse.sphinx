@@ -229,7 +229,7 @@ public class XpandJob extends WorkspaceJob {
 			for (ExtendedOutlet outlet : getOutlets()) {
 				IContainer container = outlet.getContainer();
 				if (container != null) {
-					container.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+					container.refreshLocal(IResource.DEPTH_INFINITE, null);
 				}
 			}
 			return Status.OK_STATUS;

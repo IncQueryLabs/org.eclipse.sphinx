@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -33,6 +34,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.mwe.core.monitor.ProgressMonitorAdapter;
 import org.eclipse.emf.mwe.core.resources.ResourceLoaderFactory;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
@@ -50,6 +52,7 @@ import org.eclipse.xtend.XtendFacade;
 import org.eclipse.xtend.expression.ExecutionContextImpl;
 import org.eclipse.xtend.expression.ResourceManagerDefaultImpl;
 import org.eclipse.xtend.expression.TypeSystemImpl;
+import org.eclipse.xtend.expression.Variable;
 import org.eclipse.xtend.typesystem.MetaModel;
 
 public class XtendJob extends WorkspaceJob {
@@ -77,6 +80,11 @@ public class XtendJob extends WorkspaceJob {
 	 * The label for the {@link IUndoableOperation operation} in which the Xtend transformation is executed.
 	 */
 	private String operationLabel = null;
+
+	/**
+	 * The options to set the Xtend transformation transaction.
+	 */
+	private Map<String, Object> transactionOptions = null;
 
 	/**
 	 * The Xtend transformation result.
@@ -120,16 +128,6 @@ public class XtendJob extends WorkspaceJob {
 		this.xtendEvaluationRequests = xtendEvaluationRequests;
 	}
 
-	/**
-	 * Sets the {@link IWorkspaceResourceLoader resource loader} for resolving resources referenced by Xtend extensions.
-	 * 
-	 * @param resourceLoader
-	 *            The resource loader to be used.
-	 */
-	public void setWorkspaceResourceLoader(IWorkspaceResourceLoader resourceLoader) {
-		workspaceResourceLoader = resourceLoader;
-	}
-
 	protected Map<TransactionalEditingDomain, Collection<XtendEvaluationRequest>> getXtendEvaluationRequests() {
 		Map<TransactionalEditingDomain, Collection<XtendEvaluationRequest>> requests = new HashMap<TransactionalEditingDomain, Collection<XtendEvaluationRequest>>();
 		for (XtendEvaluationRequest request : xtendEvaluationRequests) {
@@ -142,6 +140,16 @@ public class XtendJob extends WorkspaceJob {
 			requestsInEditingDomain.add(request);
 		}
 		return requests;
+	}
+
+	/**
+	 * Sets the {@link IWorkspaceResourceLoader resource loader} for resolving resources referenced by Xtend extensions.
+	 * 
+	 * @param resourceLoader
+	 *            The resource loader to be used.
+	 */
+	public void setWorkspaceResourceLoader(IWorkspaceResourceLoader resourceLoader) {
+		workspaceResourceLoader = resourceLoader;
 	}
 
 	/**
@@ -168,6 +176,41 @@ public class XtendJob extends WorkspaceJob {
 		this.operationLabel = operationLabel;
 	}
 
+	/**
+	 * Returns the IOperationHistory for the given <code>editingDomain</code>.
+	 * 
+	 * @param editingDomain
+	 *            The EditingDomain for which the {@link IOperationHistory operation history} is to be retrieved.
+	 * @return The {@link IOperationHistory operation history} of the given <code>editingDomain</code>.
+	 */
+	protected IOperationHistory getOperationHistory(TransactionalEditingDomain editingDomain) {
+		return WorkspaceTransactionUtil.getOperationHistory(editingDomain);
+	}
+
+	/**
+	 * Returns the options to use in the Xtend transformation transaction. If no transaction options are specified
+	 * {@link WorkspaceTransactionUtil#getDefaultTransactionOptions()} are used as default.
+	 * 
+	 * @return The options to use in the Xtend transformation transaction.
+	 * @see #setTransactionOptions(Map)
+	 */
+	protected Map<String, Object> getTransactionOptions() {
+		if (transactionOptions == null) {
+			transactionOptions = WorkspaceTransactionUtil.getDefaultTransactionOptions();
+		}
+		return transactionOptions;
+	}
+
+	/**
+	 * Sets the options to be used in the Xtend transformation transaction.
+	 * 
+	 * @param transactionOptions
+	 *            The transaction options to be used.
+	 */
+	public void setTransactionOptions(Map<String, Object> transactionOptions) {
+		this.transactionOptions = transactionOptions;
+	}
+
 	@Override
 	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 		try {
@@ -182,7 +225,10 @@ public class XtendJob extends WorkspaceJob {
 			installResourceLoader();
 
 			// Create execution context
-			final ExecutionContextImpl execCtx = new ExecutionContextImpl(new ResourceManagerDefaultImpl(), new TypeSystemImpl(), null);
+			Map<String, Variable> variables = new HashMap<String, Variable>();
+			Map<String, Variable> globalVarsMap = new HashMap<String, Variable>();
+			final ExecutionContextImpl execCtx = new ExecutionContextImpl(new ResourceManagerDefaultImpl(), null, new TypeSystemImpl(), variables,
+					globalVarsMap, new ProgressMonitorAdapter(monitor), null, null, null, null, null, null, null);
 			execCtx.registerMetaModel(metaModel);
 
 			// Execute transformation
@@ -212,7 +258,8 @@ public class XtendJob extends WorkspaceJob {
 				};
 
 				if (editingDomain != null) {
-					WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable, getOperationLabel());
+					WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable, getOperationLabel(),
+							getOperationHistory(editingDomain), getTransactionOptions(), null);
 				} else {
 					runnable.run();
 				}
