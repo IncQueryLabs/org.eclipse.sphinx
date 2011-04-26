@@ -425,7 +425,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 */
 	private void saveReferenceWorkspaceSourceDir() throws IOException {
 		Properties properties = new Properties();
-		properties.put(REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY, referenceWorkspaceSourceDir);
+		properties.put(REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY, referenceWorkspaceSourceDir.getAbsolutePath());
 
 		File propertiesFile = new File(referenceWorkspaceTempDir, REFERENCE_WORKSPACE_PROPERTIES_FILE_NAME);
 		if (!propertiesFile.exists()) {
