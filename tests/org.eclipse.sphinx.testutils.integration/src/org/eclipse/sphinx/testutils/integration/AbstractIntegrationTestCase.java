@@ -1507,8 +1507,9 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		}
 
 		if (container.getFullPath().segmentCount() > 1) {
+			IContainer parentContainer = project;
 			for (int i = 1; i < container.getFullPath().segmentCount(); i++) {
-				IFolder folder = project.getFolder(container.getFullPath().segment(i));
+				IFolder folder = parentContainer.getFolder(new Path(container.getFullPath().segment(i)));
 				if (!folder.exists()) {
 					try {
 						folder.create(true, true, null);
@@ -1520,6 +1521,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 						}
 					}
 				}
+				parentContainer = folder;
 			}
 		}
 	}
