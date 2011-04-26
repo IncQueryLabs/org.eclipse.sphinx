@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
@@ -32,7 +31,6 @@ import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.ui.wizards.AbstractWizard;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xtend.check.jobs.CheckJob;
-import org.eclipse.sphinx.xtend.jobs.SaveAsNewFileHandler;
 import org.eclipse.sphinx.xtend.jobs.XtendJob;
 import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
@@ -155,15 +153,22 @@ public class M2MConfigurationWizard extends AbstractWizard {
 		if (file != null) {
 			job.setRule(file.getProject());
 		}
-		IJobChangeListener handler = createResultObjectHandler();
-		if (handler != null) {
-			job.addJobChangeListener(handler);
-		}
 		job.schedule();
 	}
 
 	protected boolean isCheckRequired() {
 		return checkConfigurationPage.isCheckEnabled() && !checkConfigurationPage.getCheckEvaluationRequests().isEmpty();
+	}
+
+	protected XtendJob createXtendJob() {
+		XtendJob job = new XtendJob(getM2MJobName(), metaModel, xtendConfigurationPage.getXtendEvaluationRequests());
+		job.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
+		job.setPriority(Job.BUILD);
+		IFile file = EcorePlatformUtil.getFile(modelObject);
+		if (file != null) {
+			job.setRule(file.getProject());
+		}
+		return job;
 	}
 
 	protected CheckJob createCheckJob() {
@@ -175,21 +180,6 @@ public class M2MConfigurationWizard extends AbstractWizard {
 			checkJob.setRule(file.getProject());
 		}
 		return checkJob;
-	}
-
-	protected XtendJob createXtendJob() {
-		final XtendJob job = new XtendJob(getM2MJobName(), metaModel, xtendConfigurationPage.getXtendEvaluationRequests());
-		job.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
-		job.setPriority(Job.BUILD);
-		IFile file = EcorePlatformUtil.getFile(modelObject);
-		if (file != null) {
-			job.setRule(file.getProject());
-		}
-		return job;
-	}
-
-	protected IJobChangeListener createResultObjectHandler() {
-		return new SaveAsNewFileHandler();
 	}
 
 	@Override
