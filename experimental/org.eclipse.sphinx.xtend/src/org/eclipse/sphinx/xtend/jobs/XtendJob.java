@@ -15,6 +15,7 @@
 package org.eclipse.sphinx.xtend.jobs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -89,7 +90,7 @@ public class XtendJob extends WorkspaceJob {
 	/**
 	 * The Xtend transformation result.
 	 */
-	protected Collection<Object> resultObjects = new ArrayList<Object>();
+	protected Map<Object, Collection<?>> resultObjects = new HashMap<Object, Collection<?>>();
 
 	/**
 	 * Constructs an Xtend job for execution model transformation for the given <code>xtendEvaluationRequest</code>
@@ -251,7 +252,13 @@ public class XtendJob extends WorkspaceJob {
 							parameterList.addAll(request.getParameterList());
 							Object result = facade.call(XpandUtil.getLastSegment(request.getExtensionName()), parameterList);
 							if (result != null) {
-								resultObjects.add(result);
+								if (result instanceof Collection) {
+									resultObjects.put(request.getTargetObject(), (Collection<?>) result);
+								} else if (result instanceof Object[]) {
+									resultObjects.put(request.getTargetObject(), Arrays.asList((Object[]) result));
+								} else {
+									resultObjects.put(request.getTargetObject(), Collections.singleton(result));
+								}
 							}
 						}
 					}
@@ -314,9 +321,11 @@ public class XtendJob extends WorkspaceJob {
 	}
 
 	/**
-	 * Returns the collection of objects resulting from the Xtend model transformation.
+	 * Returns a map with the collections of objects resulting from the Xtend model transformation keyed by the target
+	 * objects from the {@link XtendEvaluationRequest evaluation requests} that have been provided as input for the
+	 * Xtend model transformation.
 	 */
-	public Collection<Object> getResultObjects() {
+	public Map<Object, Collection<?>> getResultObjects() {
 		return resultObjects;
 	}
 

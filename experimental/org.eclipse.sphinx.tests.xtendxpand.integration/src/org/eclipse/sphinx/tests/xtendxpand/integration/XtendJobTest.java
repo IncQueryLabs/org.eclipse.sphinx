@@ -15,6 +15,7 @@
 package org.eclipse.sphinx.tests.xtendxpand.integration;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
@@ -70,11 +71,14 @@ public class XtendJobTest extends XtendXpandIntegrationTestCase {
 		assertEquals(Status.OK_STATUS, xtendStatus);
 
 		// Xtend result verification
-		Collection<Object> xtendResult = xtendJob.getResultObjects();
-		assertEquals(1, xtendResult.size());
-		Object object = xtendResult.iterator().next();
-		assertNotNull(object);
-		assertTrue(object instanceof Platform);
-		assertEquals(fistPackage.getName(), ((Platform) object).getName());
+		Map<Object, Collection<?>> result = xtendJob.getResultObjects();
+		assertEquals(1, result.size());
+		Object inputObject = result.keySet().iterator().next();
+		assertEquals(umlModel, inputObject);
+		Collection<?> resultCollection = result.values().iterator().next();
+		assertEquals(1, resultCollection.size());
+		Object resultObject = resultCollection.iterator().next();
+		assertTrue(resultObject instanceof Platform);
+		assertEquals(fistPackage.getName(), ((Platform) resultObject).getName());
 	}
 }
