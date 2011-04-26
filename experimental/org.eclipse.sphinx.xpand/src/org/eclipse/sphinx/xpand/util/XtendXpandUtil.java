@@ -106,7 +106,9 @@ public final class XtendXpandUtil {
 			result.add(((Feature) feature).getOwner());
 		}
 		if (feature instanceof ParameterizedCallable) {
-			result.addAll(((ParameterizedCallable) feature).getParameterTypes());
+			if (((ParameterizedCallable) feature).getParameterTypes() != null) {
+				result.addAll(((ParameterizedCallable) feature).getParameterTypes());
+			}
 		}
 		return result;
 	}
