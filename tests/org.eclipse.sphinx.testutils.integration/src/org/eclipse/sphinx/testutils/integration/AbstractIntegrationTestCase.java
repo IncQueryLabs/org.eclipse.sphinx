@@ -54,6 +54,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
@@ -105,7 +106,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	private File referenceWorkspaceTempDir;
 
-	private String referenceWorkspaceSourceRootDirectoryPath;
+	private File referenceWorkspaceSourceDir;
 
 	private final String REFERENCE_WORKSPACE_PROPERTIES_FILE_NAME = "referenceWorkspaceSourceRootDirectory.properties";
 
@@ -174,7 +175,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			deleteExternalResource(referenceWorkspaceTempDir);
 			unzipArchiveFile();
 		} else {
-			referenceWorkspaceSourceRootDirectoryPath = getReferenceWorkspaceSourceRootDictionaryPath();
+			loadReferenceWorkspaceSourceDir();
 		}
 
 		// Delete un-used reference projects which imported for the previous test.
@@ -239,10 +240,10 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		unloadReourcesOutsideFileDescriptor();
 
 		// If existing Projects' description were changed, reset its by copying contents from reference file
-		resetProjectsDescription();
+		resetProjectDescriptions();
 
 		// If existing Projects' setting were changed, reset them by copying contents from reference file
-		resetProjectsSettings();
+		resetProjectSettings();
 
 		waitForModelLoading();
 
@@ -369,12 +370,12 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 * 
 	 * @throws Exception
 	 */
-	private void resetProjectsDescription() throws Exception {
+	private void resetProjectDescriptions() throws Exception {
 		for (IProject project : referenceWorkspaceChangeListener.getProjectsWithChangedDescription()) {
 			if (project.exists()) {
 				assertTrue(project.isOpen());
-				importReferenceResourceToWorkspace(getFullPathOfReferenceSourceFile(project.getName() + "/.project"),
-						project.getFullPath().append(".project"));
+				File projectSourceDir = new File(referenceWorkspaceSourceDir, project.getName());
+				importReferenceResourceToWorkspace(new File(projectSourceDir, ".project"), project);
 			}
 		}
 	}
@@ -385,12 +386,12 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 * 
 	 * @throws Exception
 	 */
-	private void resetProjectsSettings() throws Exception {
+	private void resetProjectSettings() throws Exception {
 		for (IProject project : referenceWorkspaceChangeListener.getProjectsWithChangedSettings().keySet()) {
 			if (project.exists()) {
 				assertTrue(project.isOpen());
-				importReferenceResourceToWorkspace(getFullPathOfReferenceSourceFile(project.getName() + "/.settings"),
-						project.getFullPath().append(".settings"));
+				File projectSourceDir = new File(referenceWorkspaceSourceDir, project.getName());
+				importReferenceResourceToWorkspace(new File(projectSourceDir + ".settings"), project.getFolder(".settings"));
 			}
 		}
 	}
@@ -418,29 +419,43 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	/**
-	 * Save the reference workspace source root directory path to read
+	 * Saves the reference workspace source directory to read
 	 * 
 	 * @throws IOException
 	 */
-	private void saveReferenceWorkspaceSourceRootDirectoryPath() throws IOException {
+	private void saveReferenceWorkspaceSourceDir() throws IOException {
 		Properties properties = new Properties();
-		properties.put(REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY, referenceWorkspaceSourceRootDirectoryPath);
+		properties.put(REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY, referenceWorkspaceSourceDir);
 
 		File propertiesFile = new File(referenceWorkspaceTempDir, REFERENCE_WORKSPACE_PROPERTIES_FILE_NAME);
 		if (!propertiesFile.exists()) {
 			propertiesFile.createNewFile();
 		}
-		OutputStream out = new FileOutputStream(propertiesFile);
-		properties.store(out, "Reference File Path Dictionary");
-		out.close();
+
+		OutputStream out = null;
+		try {
+			out = new FileOutputStream(propertiesFile);
+			properties.store(out, "Reference workspace source directory");
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
 	}
 
-	private String getReferenceWorkspaceSourceRootDictionaryPath() throws IOException {
+	private void loadReferenceWorkspaceSourceDir() throws IOException {
 		Properties properties = new Properties();
 		File propertiesFile = new File(referenceWorkspaceTempDir, REFERENCE_WORKSPACE_PROPERTIES_FILE_NAME);
+
 		InputStream in = new FileInputStream(propertiesFile);
 		properties.load(in);
-		return properties.getProperty(REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY);
+
+		String path = properties.getProperty(REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY);
+		if (path == null) {
+			throw new RuntimeException("No value for key '" + REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY
+					+ "' found in properties file '" + propertiesFile.getAbsolutePath() + "'");
+		}
+		referenceWorkspaceSourceDir = new File(path);
 	}
 
 	private void initReferenceWorkspace() {
@@ -506,15 +521,11 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	protected void importFilesToWorkspace(Set<IFile> missingFiles) throws Exception {
 		for (IFile missingFile : missingFiles) {
-			IPath filePath = missingFile.getFullPath();
-			IProject project = missingFile.getProject();
-			if (!project.exists()) {
-				project.create(new NullProgressMonitor());
-				project.open(new NullProgressMonitor());
-			} else if (!project.isAccessible()) {
-				project.open(new NullProgressMonitor());
+			File sourceFile = referenceWorkspaceSourceDir;
+			for (String segment : missingFile.getFullPath().segments()) {
+				sourceFile = new File(sourceFile, segment);
 			}
-			importReferenceResourceToWorkspace(getFullPathOfReferenceSourceFile(filePath.toString()), filePath);
+			importReferenceResourceToWorkspace(sourceFile, missingFile.getParent());
 		}
 	}
 
@@ -530,10 +541,10 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				zipArchiveImpoter.unzipArchiveFile(new TestFileAccessor(internalRefWks.getReferenceWorkspacePlugin()),
 						internalRefWks.getReferenceWorkspaceArchiveFileName(), referenceWorkspaceTempDir.getPath());
 
-				referenceWorkspaceSourceRootDirectoryPath = zipArchiveImpoter.getDirectoryRoot();
+				referenceWorkspaceSourceDir = new File(zipArchiveImpoter.getDirectoryRoot());
 
 				try {
-					saveReferenceWorkspaceSourceRootDirectoryPath();
+					saveReferenceWorkspaceSourceDir();
 				} catch (Exception ex) {
 					IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
 					throw new CoreException(status);
@@ -1432,56 +1443,28 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		}
 	}
 
-	protected void importReferenceResourceToWorkspace(String referenceSourceName, IPath targetLocation) throws Exception {
-		assertNotNull(referenceSourceName);
+	protected void importReferenceResourceToWorkspace(File referenceSource, IContainer targetContainer) throws Exception {
+		assertNotNull(referenceSource);
+		assertNotNull(targetContainer);
 
-		File referenceFile = new File(referenceSourceName);
-		if (referenceFile.exists()) {
-			if (referenceFile.isDirectory()) {
-				// Copy files and folders inside the reference directory
-				if (!isProjectPath(targetLocation)) {
-					IFolder targetFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(targetLocation);
-					if (!targetFolder.exists()) {
-						try {
-							targetFolder.create(true, true, null);
-						} catch (Exception ex) {
-							// In case exception because of target folder was already exist, just ignore it.
-							if (ex.getMessage().contains("already exists")) {
-								// Do nothing
-							} else {
-								throw ex;
-							}
-						}
+		if (referenceSource.exists()) {
+			if (referenceSource.isDirectory()) {
+				// Copy files and folders inside the reference source directory to target container
+				for (File file : referenceSource.listFiles()) {
+					if (file.isDirectory()) {
+						IFolder subFolder = targetContainer.getFolder(new Path(file.getName()));
+						importReferenceResourceToWorkspace(file, subFolder);
+					} else {
+						importReferenceResourceToWorkspace(file, targetContainer);
 					}
-				}
-				for (String fileName : referenceFile.list()) {
-					importReferenceResourceToWorkspace(referenceFile + File.separator + fileName, targetLocation.append(fileName));
 				}
 			} else {
-				if (isProjectPath(targetLocation)) {
-					String[] segments = referenceSourceName.split(File.separator);
-					String fileName = segments[segments.length];
-					targetLocation = targetLocation.append(fileName);
-				}
+				// Make sure that target container exists
+				createContainerTree(targetContainer);
 
-				// If container of file to import is not project
-				if (!isProjectPath(targetLocation.removeLastSegments(1))) {
-					IFolder container = ResourcesPlugin.getWorkspace().getRoot().getFolder(targetLocation.removeLastSegments(1));
-					if (!container.exists()) {
-						try {
-							container.create(true, true, null);
-						} catch (Exception ex) {
-							if (ex.getMessage().contains("already exists")) {
-								// Do nothing
-							} else {
-								throw ex;
-							}
-						}
-					}
-				}
-
-				IFile targetFile = ResourcesPlugin.getWorkspace().getRoot().getFile(targetLocation);
-				InputStream sourceFileContents = new FileInputStream(referenceFile);
+				// Copy reference source file to target container
+				IFile targetFile = targetContainer.getFile(new Path(referenceSource.getName()));
+				InputStream sourceFileContents = new FileInputStream(referenceSource);
 				if (targetFile.exists()) {
 					// Overwrite old file's contents
 					targetFile.setContents(sourceFileContents, true, false, null);
@@ -1494,7 +1477,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 						// was already exist, try to overwrite its contents
 						if (ex.getMessage().contains("already exists")) {
 							// Overwrite old file's contents
-							sourceFileContents = new FileInputStream(referenceFile);
+							sourceFileContents = new FileInputStream(referenceSource);
 							targetFile.setContents(sourceFileContents, true, false, null);
 						} else {
 							throw ex;
@@ -1505,8 +1488,40 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		}
 	}
 
-	private boolean isProjectPath(IPath targetLocation) {
-		return targetLocation.segmentCount() == 1;
+	/**
+	 * Creates project and/or any missing folders on path of given container.
+	 * 
+	 * @param container
+	 *            The container to be processed.
+	 * @throws Exception
+	 */
+	private void createContainerTree(IContainer container) throws Exception {
+		Assert.isNotNull(container);
+
+		IProject project = container.getProject();
+		if (!project.exists()) {
+			project.create(null);
+			project.open(null);
+		} else if (!project.isAccessible()) {
+			project.open(null);
+		}
+
+		if (container.getFullPath().segmentCount() > 1) {
+			for (int i = 1; i < container.getFullPath().segmentCount(); i++) {
+				IFolder folder = project.getFolder(container.getFullPath().segment(i));
+				if (!folder.exists()) {
+					try {
+						folder.create(true, true, null);
+					} catch (Exception ex) {
+						if (ex.getMessage().contains("already exists")) {
+							// Do nothing
+						} else {
+							throw ex;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	protected void importReferenceProjectsToWorkspace(Collection<IProject> projects) throws Exception {
@@ -1516,22 +1531,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	protected void importReferenceProjectToWorkspace(IProject project) throws Exception {
-		if (!project.exists()) {
-			project.create(new NullProgressMonitor());
-			project.open(new NullProgressMonitor());
-		} else if (!project.isAccessible()) {
-			project.open(new NullProgressMonitor());
-		}
-
-		// Copy/override project description and project setting
-		importReferenceResourceToWorkspace(getFullPathOfReferenceSourceFile(project.getName()), project.getFullPath());
-	}
-
-	protected String getFullPathOfReferenceSourceFile(String fileName) {
-		String result = referenceWorkspaceSourceRootDirectoryPath + File.separator + fileName;
-		result = result.replace("/", File.separator);
-		result = result.replace(File.separator + File.separator, File.separator);
-		return result;
+		importReferenceResourceToWorkspace(new File(referenceWorkspaceSourceDir, project.getName()), project);
 	}
 
 	public ReferenceWorkspaceChangeListener getReferenceWorkspaceChangeListener() {
