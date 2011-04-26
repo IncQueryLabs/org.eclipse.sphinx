@@ -70,18 +70,18 @@ public class TemplateGroup extends AbstractGroup {
 	 * The template group dialog settings.
 	 */
 	protected static final String CODE_GEN_SECTION = Activator.getPlugin().getSymbolicName() + ".CODE_GEN_SECTION"; //$NON-NLS-1$
-	protected static final String STORE_TEMPLATE_PATH = "TEMPLATE_PATH$"; //$NON-NLS-1$
-	protected static final String STORE_SELECTED_DEFINE_BLOCK = "SELECTED_DEFINE_BLOCK"; //$NON-NLS-1$
+	protected static final String STORE_TEMPLATE_FILE = "TEMPLATE_FILE$"; //$NON-NLS-1$
+	protected static final String STORE_SELECTED_DEFINITION = "SELECTED_DEFINITION"; //$NON-NLS-1$
 
 	/**
-	 * The template file path field.
+	 * The template file field.
 	 */
-	protected StringButtonField templatePathField;
+	protected StringButtonField templateFileField;
 
 	/**
-	 * The define block field.
+	 * The definition field.
 	 */
-	protected ComboField definitionComboField;
+	protected ComboField definitionField;
 
 	/**
 	 * The definition name field.
@@ -119,8 +119,7 @@ public class TemplateGroup extends AbstractGroup {
 		parent.setLayout(new GridLayout(numColumns, false));
 
 		// Template file field
-		// TODO Rename to templateFileField
-		templatePathField = new StringButtonField(new IButtonAdapter() {
+		templateFileField = new StringButtonField(new IButtonAdapter() {
 
 			public void changeControlPressed(IField field) {
 				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(parent.getShell(), new WorkbenchLabelProvider(),
@@ -163,34 +162,33 @@ public class TemplateGroup extends AbstractGroup {
 				if (dialog.open() == IDialogConstants.OK_ID) {
 					IFile file = (IFile) dialog.getFirstResult();
 					if (file != null) {
-						templatePathField.setText(file.getFullPath().makeRelative().toString());
-						updateDefinitionComboItems(file);
+						templateFileField.setText(file.getFullPath().makeRelative().toString());
+						updateDefinitionFieldItems(file);
 					}
 				}
 			}
 		});
-		templatePathField.setButtonLabel(Messages.label_browse);
-		templatePathField.setLabelText(Messages.label_templatePath);
-		templatePathField.fillIntoGrid(parent, numColumns);
-		templatePathField.addFieldListener(new IFieldListener() {
+		templateFileField.setButtonLabel(Messages.label_browse);
+		templateFileField.setLabelText(Messages.label_templateFile);
+		templateFileField.fillIntoGrid(parent, numColumns);
+		templateFileField.addFieldListener(new IFieldListener() {
 
 			public void dialogFieldChanged(IField field) {
-				updateDefinitionComboItems(getFile(templatePathField.getText()));
-				updateDefinitionaNameField();
-				notifyGroupChanged(templatePathField);
+				updateDefinitionFieldItems(getFile(templateFileField.getText()));
+				updateDefinitionNameField();
+				notifyGroupChanged(templateFileField);
 			}
 		});
 
 		// Define block field
-		// TODO Rename to definitionField
-		definitionComboField = new ComboField(true);
-		definitionComboField.setLabelText(Messages.label_defineBlock);
-		definitionComboField.fillIntoGrid(parent, numColumns);
-		definitionComboField.addFieldListener(new IFieldListener() {
+		definitionField = new ComboField(true);
+		definitionField.setLabelText(Messages.label_definition);
+		definitionField.fillIntoGrid(parent, numColumns);
+		definitionField.addFieldListener(new IFieldListener() {
 
 			public void dialogFieldChanged(IField field) {
-				updateDefinitionaNameField();
-				notifyGroupChanged(templatePathField);
+				updateDefinitionNameField();
+				notifyGroupChanged(templateFileField);
 			}
 		});
 
@@ -207,20 +205,20 @@ public class TemplateGroup extends AbstractGroup {
 	/**
 	 * Updates items of define block field after loading selected template file.
 	 */
-	public void updateDefinitionComboItems(IFile templateFile) {
+	public void updateDefinitionFieldItems(IFile templateFile) {
 		Template template = loadTemplate(templateFile);
 		if (template != null) {
 			definitions = Arrays.asList(template.getAllDefinitions());
-			definitionComboField.setItems(createDefinitionComboItems(definitions));
+			definitionField.setItems(createDefinitionFieldItems(definitions));
 			return;
 		}
-		definitionComboField.setItems(new String[0]);
+		definitionField.setItems(new String[0]);
 	}
 
 	/**
 	 * Creates define block items.
 	 */
-	protected String[] createDefinitionComboItems(List<AbstractDefinition> definitions) {
+	protected String[] createDefinitionFieldItems(List<AbstractDefinition> definitions) {
 		List<String> result = new ArrayList<String>();
 		if (metaModel != null) {
 			Type type = metaModel.getType(modelObject);
@@ -251,15 +249,15 @@ public class TemplateGroup extends AbstractGroup {
 	}
 
 	public String getDefinitionName() {
-		String selectedDefinitionName = getSelectedDefinitionComboItem();
+		String selectedDefinitionName = getSelectedDefinitionFieldItem();
 		if (selectedDefinitionName != null) {
-			return XtendXpandUtil.getQualifiedName(getFile(getTemplatePathField().getText()), selectedDefinitionName);
+			return XtendXpandUtil.getQualifiedName(getFile(getTemplateFileField().getText()), selectedDefinitionName);
 		}
 		return ""; //$NON-NLS-1$
 	}
 
-	protected void updateDefinitionaNameField() {
-		IFile templateFile = getFile(templatePathField.getText());
+	protected void updateDefinitionNameField() {
+		IFile templateFile = getFile(templateFileField.getText());
 		if (templateFile != null) {
 			definitionNameField.setText(getDefinitionName());
 		} else {
@@ -283,9 +281,9 @@ public class TemplateGroup extends AbstractGroup {
 
 	@Override
 	public boolean isGroupComplete() {
-		IFile templateFile = getFile(getTemplatePathField().getText());
+		IFile templateFile = getFile(getTemplateFileField().getText());
 		if (templateFile != null) {
-			return templateFile.exists() && getDefinitionComboField().getSelectionIndex() != -1;
+			return templateFile.exists() && getDefinitionField().getSelectionIndex() != -1;
 		}
 		return false;
 	}
@@ -303,18 +301,18 @@ public class TemplateGroup extends AbstractGroup {
 		return null;
 	}
 
-	public StringButtonField getTemplatePathField() {
-		return templatePathField;
+	public StringButtonField getTemplateFileField() {
+		return templateFileField;
 	}
 
-	public ComboField getDefinitionComboField() {
-		return definitionComboField;
+	public ComboField getDefinitionField() {
+		return definitionField;
 	}
 
-	public String getSelectedDefinitionComboItem() {
-		if (definitionComboField != null && !definitionComboField.getComboControl().isDisposed()) {
-			String[] items = definitionComboField.getItems();
-			int selectionIndex = definitionComboField.getSelectionIndex();
+	public String getSelectedDefinitionFieldItem() {
+		if (definitionField != null && !definitionField.getComboControl().isDisposed()) {
+			String[] items = definitionField.getItems();
+			int selectionIndex = definitionField.getSelectionIndex();
 			if (items.length > 0 && selectionIndex != -1) {
 				return items[selectionIndex];
 			}
@@ -347,27 +345,27 @@ public class TemplateGroup extends AbstractGroup {
 	 */
 	@Override
 	protected void loadGroupSettings() {
-		String templatePath = getTemplatePathFromDialogSettings();
-		if (templatePath != null) {
-			templatePathField.setText(templatePath);
-			updateDefinitionComboItems(getFile(templatePath));
-			String defineBlock = getDefinitionNameFromDialogSettings();
-			if (defineBlock != null) {
-				definitionComboField.selectItem(defineBlock);
+		String templateFile = getTemplateFileFromDialogSettings();
+		if (templateFile != null) {
+			templateFileField.setText(templateFile);
+			updateDefinitionFieldItems(getFile(templateFile));
+			String definition = getDefinitionNameFromDialogSettings();
+			if (definition != null) {
+				definitionField.selectItem(definition);
 			}
 		}
 	}
 
-	public String getTemplatePathFromDialogSettings() {
+	public String getTemplateFileFromDialogSettings() {
 		String result = null;
-		String templatePathDialogSettingsKey = getTemplatePathDialogSettingsKey(modelObject);
-		IDialogSettings templatePathSection = getTemplatePathSection();
-		if (templatePathSection != null) {
-			String templatePath = templatePathSection.get(templatePathDialogSettingsKey);
-			if (templatePath != null) {
-				IFile templateFile = getFile(templatePath);
+		String templateFileDialogSettingsKey = getTemplateFileDialogSettingsKey(modelObject);
+		IDialogSettings templateFileSection = getTemplateFileSection();
+		if (templateFileSection != null) {
+			String templateFilePath = templateFileSection.get(templateFileDialogSettingsKey);
+			if (templateFilePath != null) {
+				IFile templateFile = getFile(templateFilePath);
 				if (templateFile != null && templateFile.exists()) {
-					result = templatePath;
+					result = templateFilePath;
 				}
 			}
 		}
@@ -376,19 +374,19 @@ public class TemplateGroup extends AbstractGroup {
 
 	public String getDefinitionNameFromDialogSettings() {
 		String result = null;
-		IDialogSettings templatePathSection = getTemplatePathSection();
-		if (templatePathSection != null) {
-			result = templatePathSection.get(STORE_SELECTED_DEFINE_BLOCK);
+		IDialogSettings templateFileSection = getTemplateFileSection();
+		if (templateFileSection != null) {
+			result = templateFileSection.get(STORE_SELECTED_DEFINITION);
 		}
 		return result;
 	}
 
-	protected IDialogSettings getTemplatePathSection() {
+	protected IDialogSettings getTemplateFileSection() {
 		IDialogSettings result = null;
-		String templatePathDialogSettingsKey = getTemplatePathDialogSettingsKey(modelObject);
+		String templateFileDialogSettingsKey = getTemplateFileDialogSettingsKey(modelObject);
 		IDialogSettings section = getDialogSettings().getSection(CODE_GEN_SECTION);
 		if (section != null) {
-			result = section.getSection(templatePathDialogSettingsKey);
+			result = section.getSection(templateFileDialogSettingsKey);
 		}
 		return result;
 	}
@@ -402,28 +400,28 @@ public class TemplateGroup extends AbstractGroup {
 	@Override
 	public void saveGroupSettings() {
 		IDialogSettings settings = getDialogSettings();
-		String templatePathDialogSettingsKey = getTemplatePathDialogSettingsKey(modelObject);
+		String key = getTemplateFileDialogSettingsKey(modelObject);
 		if (settings != null) {
 			IDialogSettings topLevelSection = settings.getSection(CODE_GEN_SECTION);
 			if (topLevelSection == null) {
 				topLevelSection = settings.addNewSection(CODE_GEN_SECTION);
 			}
-			if (templatePathField.getText().trim().length() != 0) {
-				IDialogSettings templatePathSection = topLevelSection.getSection(templatePathDialogSettingsKey);
-				if (templatePathSection == null) {
-					templatePathSection = topLevelSection.addNewSection(templatePathDialogSettingsKey);
+			if (templateFileField.getText().trim().length() != 0) {
+				IDialogSettings templateFileSection = topLevelSection.getSection(key);
+				if (templateFileSection == null) {
+					templateFileSection = topLevelSection.addNewSection(key);
 				}
-				templatePathSection.put(templatePathDialogSettingsKey, templatePathField.getText());
-				String[] items = definitionComboField.getItems();
-				int selectionIndex = definitionComboField.getSelectionIndex();
+				templateFileSection.put(key, templateFileField.getText());
+				String[] items = definitionField.getItems();
+				int selectionIndex = definitionField.getSelectionIndex();
 				if (items.length > 0 && selectionIndex != -1) {
-					templatePathSection.put(STORE_SELECTED_DEFINE_BLOCK, items[selectionIndex]);
+					templateFileSection.put(STORE_SELECTED_DEFINITION, items[selectionIndex]);
 				}
 			}
 		}
 	}
 
-	protected String getTemplatePathDialogSettingsKey(EObject object) {
+	protected String getTemplateFileDialogSettingsKey(EObject object) {
 		Assert.isNotNull(object);
 
 		URI uri;
@@ -434,6 +432,6 @@ public class TemplateGroup extends AbstractGroup {
 			uri = EcoreUtil.getURI(object);
 		}
 
-		return TemplateGroup.STORE_TEMPLATE_PATH + uri.toString();
+		return TemplateGroup.STORE_TEMPLATE_FILE + uri.toString();
 	}
 }

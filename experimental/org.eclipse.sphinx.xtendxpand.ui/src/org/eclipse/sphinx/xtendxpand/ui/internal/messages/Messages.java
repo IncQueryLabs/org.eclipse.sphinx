@@ -26,11 +26,11 @@ public class Messages extends NLS {
 	public static String label_template;
 	public static String label_extension;
 	public static String label_output;
-	public static String label_templatePath;
-	public static String label_extensionPath;
+	public static String label_templateFile;
+	public static String label_extensionFile;
 	public static String label_templateSelection;
 	public static String label_extensionSelection;
-	public static String label_defineBlock;
+	public static String label_definition;
 	public static String label_extensionBlock;
 	public static String label_useDefaultPath;
 	public static String label_path;
@@ -40,6 +40,7 @@ public class Messages extends NLS {
 	public static String label_xtendPageName;
 	public static String label_definitionName;
 	public static String label_extensionName;
+	public static String label_functionFieldName;
 	public static String label_useCheckModelButton;
 	public static String label_checkModelBlock;
 	public static String label_checkFiles;

@@ -44,6 +44,7 @@ import org.eclipse.sphinx.platform.ui.fields.ComboField;
 import org.eclipse.sphinx.platform.ui.fields.IField;
 import org.eclipse.sphinx.platform.ui.fields.IFieldListener;
 import org.eclipse.sphinx.platform.ui.fields.StringButtonField;
+import org.eclipse.sphinx.platform.ui.fields.StringField;
 import org.eclipse.sphinx.platform.ui.fields.adapters.IButtonAdapter;
 import org.eclipse.sphinx.platform.ui.groups.AbstractGroup;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
@@ -70,18 +71,23 @@ public class ExtensionGroup extends AbstractGroup {
 	 * The extension group dialog settings.
 	 */
 	protected static final String M2M_TRANSFORM_SECTION = Activator.getPlugin().getSymbolicName() + ".M2M_TRANSFORM_SECTION"; //$NON-NLS-1$
-	protected static final String STORE_EXTENSION_PATH = "EXTENSION_PATH$"; //$NON-NLS-1$
+	protected static final String STORE_EXTENSION_FILE = "EXTENSION_FILE$"; //$NON-NLS-1$
 	protected static final String STORE_SELECTED_EXTENSION_BLOCK = "SELECTED_EXTENSION_BLOCK"; //$NON-NLS-1$
 
 	/**
-	 * The Xtend file path field.
+	 * The Xtend file field.
 	 */
-	protected StringButtonField extensionPathField;
+	protected StringButtonField extensionFileField;
 
 	/**
-	 * The extension to be used in the relevant Xtend file.
+	 * The function to be used in the relevant Xtend file.
 	 */
-	protected ComboField extensionNameField;
+	protected ComboField functionField;
+
+	/**
+	 * The extension name field.
+	 */
+	protected StringField extensionNameField;
 
 	/**
 	 * The selected model object.
@@ -114,8 +120,7 @@ public class ExtensionGroup extends AbstractGroup {
 		parent.setLayout(new GridLayout(numColumns, false));
 
 		// Extension file field
-		// TODO Rename to extension file field
-		extensionPathField = new StringButtonField(new IButtonAdapter() {
+		extensionFileField = new StringButtonField(new IButtonAdapter() {
 
 			public void changeControlPressed(IField field) {
 				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(parent.getShell(), new WorkbenchLabelProvider(),
@@ -158,36 +163,41 @@ public class ExtensionGroup extends AbstractGroup {
 				if (dialog.open() == IDialogConstants.OK_ID) {
 					IFile file = (IFile) dialog.getFirstResult();
 					if (file != null) {
-						extensionPathField.setText(file.getFullPath().makeRelative().toString());
-						updateExtensionNameComboItems(file);
+						extensionFileField.setText(file.getFullPath().makeRelative().toString());
+						updateFunctionFieldItems(file);
 					}
 				}
 			}
 		});
-		extensionPathField.setButtonLabel(Messages.label_browse);
-		extensionPathField.setLabelText(Messages.label_extensionPath);
-		extensionPathField.fillIntoGrid(parent, numColumns);
-		extensionPathField.addFieldListener(new IFieldListener() {
+		extensionFileField.setButtonLabel(Messages.label_browse);
+		extensionFileField.setLabelText(Messages.label_extensionFile);
+		extensionFileField.fillIntoGrid(parent, numColumns);
+		extensionFileField.addFieldListener(new IFieldListener() {
 
 			public void dialogFieldChanged(IField field) {
-				updateExtensionNameComboItems(getFile(extensionPathField.getText()));
-				notifyGroupChanged(extensionPathField);
+				updateFunctionFieldItems(getFile(extensionFileField.getText()));
+				updateExtensionNameField();
+				notifyGroupChanged(extensionFileField);
+			}
+		});
+
+		// Function name field
+		functionField = new ComboField(true);
+		functionField.setLabelText(Messages.label_functionFieldName);
+		functionField.fillIntoGrid(parent, numColumns);
+		functionField.addFieldListener(new IFieldListener() {
+
+			public void dialogFieldChanged(IField field) {
+				updateExtensionNameField();
+				notifyGroupChanged(extensionFileField);
 			}
 		});
 
 		// Extension name field
-		// TODO Rename to functionField
-		extensionNameField = new ComboField(true);
+		extensionNameField = new StringField();
 		extensionNameField.setLabelText(Messages.label_extensionName);
+		extensionNameField.setEditable(false);
 		extensionNameField.fillIntoGrid(parent, numColumns);
-		extensionNameField.addFieldListener(new IFieldListener() {
-
-			public void dialogFieldChanged(IField field) {
-				notifyGroupChanged(extensionPathField);
-			}
-		});
-
-		// TODO Add extension name field
 
 		// Load the group settings
 		loadGroupSettings();
@@ -196,26 +206,26 @@ public class ExtensionGroup extends AbstractGroup {
 	/**
 	 * Updates items of extensions combo field after loading selected Xtend file.
 	 */
-	public void updateExtensionNameComboItems(IFile templateFile) {
+	public void updateFunctionFieldItems(IFile templateFile) {
 		ExtensionFile extensionFile = loadExtensionFile(templateFile);
 		if (extensionFile != null) {
 			extensions = extensionFile.getExtensions();
-			extensionNameField.setItems(createExtensionNameComboItems(extensions));
+			functionField.setItems(createFunctionFieldItems(extensions));
 			return;
 		}
-		extensionNameField.setItems(new String[0]);
+		functionField.setItems(new String[0]);
 	}
 
 	/**
 	 * Creates extension items.
 	 */
-	protected String[] createExtensionNameComboItems(List<Extension> extensions) {
+	protected String[] createFunctionFieldItems(List<Extension> extensions) {
 		List<String> result = new ArrayList<String>();
 		if (metaModel != null) {
 			Type type = metaModel.getType(modelObject);
 			if (type != null) {
 				for (Callable extension : XtendXpandUtil.getApplicableFeatures(extensions, Extension.class, null, Arrays.asList(type))) {
-					result.add(((Extension) extension).getQualifiedName());
+					result.add(((Extension) extension).getName());
 				}
 			}
 		}
@@ -224,21 +234,30 @@ public class ExtensionGroup extends AbstractGroup {
 	}
 
 	public String getExtensionName() {
-		String selectedExtensionName = getSelectedExtensionNameComboItem();
-		if (selectedExtensionName != null) {
-			return selectedExtensionName;
+		String selectedFunction = getSelectedFunctionFieldItem();
+		if (selectedFunction != null) {
+			return XtendXpandUtil.getQualifiedName(getFile(getExtensionFileField().getText()), selectedFunction);
 		}
 		return ""; //$NON-NLS-1$
+	}
+
+	protected void updateExtensionNameField() {
+		IFile templateFile = getFile(extensionFileField.getText());
+		if (templateFile != null) {
+			extensionNameField.setText(getExtensionName());
+		} else {
+			extensionNameField.setText("..."); //$NON-NLS-1$
+		}
 	}
 
 	/**
 	 * Loads an Xtend resource.
 	 */
-	protected ExtensionFile loadExtensionFile(final IFile templateFile) {
-		if (templateFile != null && templateFile.exists() && IXtendXpandConstants.EXTENSION_EXTENSION.equals(templateFile.getFileExtension())) {
-			final IXtendXpandProject project = org.eclipse.xtend.shared.ui.Activator.getExtXptModelManager().findProject(templateFile);
+	protected ExtensionFile loadExtensionFile(final IFile extensionFile) {
+		if (extensionFile != null && extensionFile.exists() && IXtendXpandConstants.EXTENSION_EXTENSION.equals(extensionFile.getFileExtension())) {
+			final IXtendXpandProject project = org.eclipse.xtend.shared.ui.Activator.getExtXptModelManager().findProject(extensionFile);
 			if (project != null) {
-				final IXtendXpandResource resource = project.findXtendXpandResource(templateFile);
+				final IXtendXpandResource resource = project.findXtendXpandResource(extensionFile);
 				return (ExtensionFile) resource.getExtXptResource();
 			}
 		}
@@ -247,9 +266,9 @@ public class ExtensionGroup extends AbstractGroup {
 
 	@Override
 	public boolean isGroupComplete() {
-		IFile templateFile = getFile(getExtensionPathField().getText());
-		if (templateFile != null) {
-			return templateFile.exists() && getExtensionNameField().getSelectionIndex() != -1;
+		IFile extensionFile = getFile(getExtensionFileField().getText());
+		if (extensionFile != null) {
+			return extensionFile.exists() && getFunctionField().getSelectionIndex() != -1;
 		}
 		return false;
 	}
@@ -267,10 +286,10 @@ public class ExtensionGroup extends AbstractGroup {
 		return null;
 	}
 
-	public String getSelectedExtensionNameComboItem() {
-		if (extensionNameField != null && !extensionNameField.getComboControl().isDisposed()) {
-			String[] items = extensionNameField.getItems();
-			int selectionIndex = extensionNameField.getSelectionIndex();
+	public String getSelectedFunctionFieldItem() {
+		if (functionField != null && !functionField.getComboControl().isDisposed()) {
+			String[] items = functionField.getItems();
+			int selectionIndex = functionField.getSelectionIndex();
 			if (items.length > 0 && selectionIndex != -1) {
 				return items[selectionIndex];
 			}
@@ -278,12 +297,12 @@ public class ExtensionGroup extends AbstractGroup {
 		return null;
 	}
 
-	public StringButtonField getExtensionPathField() {
-		return extensionPathField;
+	public StringButtonField getExtensionFileField() {
+		return extensionFileField;
 	}
 
-	public ComboField getExtensionNameField() {
-		return extensionNameField;
+	public ComboField getFunctionField() {
+		return functionField;
 	}
 
 	public List<Extension> getExtensions() {
@@ -293,9 +312,9 @@ public class ExtensionGroup extends AbstractGroup {
 	public Collection<XtendEvaluationRequest> getXtendEvaluationRequests() {
 		List<XtendEvaluationRequest> requests = new ArrayList<XtendEvaluationRequest>();
 		if (modelObject != null) {
-			String definitionName = getExtensionName();
-			if (definitionName != null && definitionName.length() > 0) {
-				requests.add(new XtendEvaluationRequest(definitionName, modelObject));
+			String extensionName = getExtensionName();
+			if (extensionName != null && extensionName.length() > 0) {
+				requests.add(new XtendEvaluationRequest(extensionName, modelObject));
 			}
 		}
 		return requests;
@@ -309,19 +328,19 @@ public class ExtensionGroup extends AbstractGroup {
 	protected void loadGroupSettings() {
 		String extensionPath = getExtensionPathFromDialogSettings();
 		if (extensionPath != null) {
-			extensionPathField.setText(extensionPath);
-			updateExtensionNameComboItems(getFile(extensionPath));
+			extensionFileField.setText(extensionPath);
+			updateFunctionFieldItems(getFile(extensionPath));
 			String extensionName = getExtensionNameFromDialogSettings();
 			if (extensionName != null) {
-				extensionNameField.selectItem(extensionName);
+				functionField.selectItem(extensionName);
 			}
 		}
 	}
 
 	public String getExtensionPathFromDialogSettings() {
 		String result = null;
-		String extensionPathDialogSettingsKey = getExtensionPathDialogSettingsKey(modelObject);
-		IDialogSettings extensionPathSection = getExtensionPathSection();
+		String extensionPathDialogSettingsKey = getExtensionFileDialogSettingsKey(modelObject);
+		IDialogSettings extensionPathSection = getExtensionFileSection();
 		if (extensionPathSection != null) {
 			String extensionPath = extensionPathSection.get(extensionPathDialogSettingsKey);
 			if (extensionPath != null) {
@@ -336,19 +355,19 @@ public class ExtensionGroup extends AbstractGroup {
 
 	public String getExtensionNameFromDialogSettings() {
 		String result = null;
-		IDialogSettings extensionPathSection = getExtensionPathSection();
-		if (extensionPathSection != null) {
-			result = extensionPathSection.get(STORE_SELECTED_EXTENSION_BLOCK);
+		IDialogSettings extensionFileSection = getExtensionFileSection();
+		if (extensionFileSection != null) {
+			result = extensionFileSection.get(STORE_SELECTED_EXTENSION_BLOCK);
 		}
 		return result;
 	}
 
-	protected IDialogSettings getExtensionPathSection() {
+	protected IDialogSettings getExtensionFileSection() {
 		IDialogSettings result = null;
-		String extensionPathDialogSettingsKey = getExtensionPathDialogSettingsKey(modelObject);
+		String key = getExtensionFileDialogSettingsKey(modelObject);
 		IDialogSettings section = getDialogSettings().getSection(M2M_TRANSFORM_SECTION);
 		if (section != null) {
-			result = section.getSection(extensionPathDialogSettingsKey);
+			result = section.getSection(key);
 		}
 		return result;
 	}
@@ -362,28 +381,28 @@ public class ExtensionGroup extends AbstractGroup {
 	@Override
 	public void saveGroupSettings() {
 		IDialogSettings settings = getDialogSettings();
-		String extensionPathDialogSettingsKey = getExtensionPathDialogSettingsKey(modelObject);
+		String extensionFileDialogSettingsKey = getExtensionFileDialogSettingsKey(modelObject);
 		if (settings != null) {
 			IDialogSettings topLevelSection = settings.getSection(M2M_TRANSFORM_SECTION);
 			if (topLevelSection == null) {
 				topLevelSection = settings.addNewSection(M2M_TRANSFORM_SECTION);
 			}
-			if (extensionPathField.getText().trim().length() != 0) {
-				IDialogSettings extensionPathSection = topLevelSection.getSection(extensionPathDialogSettingsKey);
-				if (extensionPathSection == null) {
-					extensionPathSection = topLevelSection.addNewSection(extensionPathDialogSettingsKey);
+			if (extensionFileField.getText().trim().length() != 0) {
+				IDialogSettings extensionFileSection = topLevelSection.getSection(extensionFileDialogSettingsKey);
+				if (extensionFileSection == null) {
+					extensionFileSection = topLevelSection.addNewSection(extensionFileDialogSettingsKey);
 				}
-				extensionPathSection.put(extensionPathDialogSettingsKey, extensionPathField.getText());
-				String[] items = extensionNameField.getItems();
-				int selectionIndex = extensionNameField.getSelectionIndex();
+				extensionFileSection.put(extensionFileDialogSettingsKey, extensionFileField.getText());
+				String[] items = functionField.getItems();
+				int selectionIndex = functionField.getSelectionIndex();
 				if (items.length > 0 && selectionIndex != -1) {
-					extensionPathSection.put(STORE_SELECTED_EXTENSION_BLOCK, items[selectionIndex]);
+					extensionFileSection.put(STORE_SELECTED_EXTENSION_BLOCK, items[selectionIndex]);
 				}
 			}
 		}
 	}
 
-	protected String getExtensionPathDialogSettingsKey(EObject object) {
+	protected String getExtensionFileDialogSettingsKey(EObject object) {
 		Assert.isNotNull(object);
 
 		URI uri;
@@ -394,6 +413,6 @@ public class ExtensionGroup extends AbstractGroup {
 			uri = EcoreUtil.getURI(object);
 		}
 
-		return ExtensionGroup.STORE_EXTENSION_PATH + uri.toString();
+		return ExtensionGroup.STORE_EXTENSION_FILE + uri.toString();
 	}
 }
