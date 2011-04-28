@@ -37,21 +37,7 @@ Contributors:
             </or>
          </enablement>
       </actionProvider>
-      <actionProvider
-            class="org.eclipse.sphinx.emf.ui.actions.providers.BasicOpenWithMenuProvider"
-            id="org.eclipse.sphinx.emf.ui.actions.openWithActions"
-            priority="normal">
-         <enablement>
-            <or>
-               <instanceof
-                     value="org.eclipse.emf.ecore.EObject">
-               </instanceof>
-               <instanceof
-                     value="org.eclipse.emf.edit.provider.IWrapperItemProvider">
-               </instanceof>
-            </or>
-         </enablement>
-      </actionProvider> 
+      <!-- 
       <actionProvider
             class="org.eclipse.sphinx.emf.ui.actions.providers.CommonModelActionProvider"
             id="org.eclipse.sphinx.emf.ui.actions.commonModelActions">
@@ -66,7 +52,9 @@ Contributors:
             </or>
          </enablement>
       </actionProvider>
+      -->
    </extension>
+   <!--
    <extension
          point="org.eclipse.ui.views">
       <category
@@ -80,5 +68,6 @@ Contributors:
             id="org.eclipse.sphinx.emf.ui.views.references"
             name="References View">
       </view>
-   </extension>n>
+   </extension>
+   -->
 </plugin>

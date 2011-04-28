@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.emf.common.ui.URIEditorInput;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -33,7 +34,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.sphinx.emf.ui.actions.providers.ObjectOpenWithMenu;
+import org.eclipse.sphinx.emf.ui.actions.providers.OpenWithMenu;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
@@ -115,7 +116,7 @@ public class EcoreUIUtil {
 
 	public static IEditorDescriptor getDefaultEditor(Object object) {
 		if (object instanceof EObject) {
-			return getDefaultEditor(object.getClass());
+			return getDefaultEditor(((EObject) object).eClass());
 		} else if (object instanceof IWrapperItemProvider) {
 			Object unwrapped = AdapterFactoryEditingDomain.unwrap(object);
 			return getDefaultEditor(unwrapped);
@@ -130,32 +131,62 @@ public class EcoreUIUtil {
 	}
 
 	/**
-	 * A convenience method usually used to populate an {@linkplain ObjectOpenWithMenu}
+	 * A convenience method usually used to populate an {@linkplain OpenWithMenu}
 	 * 
 	 * @param object
 	 * @return
 	 */
 	public static IEditorDescriptor[] getEditors(Object object) {
-		// TODO aakar support other types
 		if (object instanceof EObject) {
-			return getEditors(object.getClass());
+			return getEditors(((EObject) object).eClass());
+		} else if (object instanceof IWrapperItemProvider) {
+			Object unwrapped = AdapterFactoryEditingDomain.unwrap(object);
+			return getEditors(unwrapped);
+		} else if (object instanceof FeatureMap.Entry) {
+			Object unwrapped = AdapterFactoryEditingDomain.unwrap(object);
+			return getEditors(unwrapped);
+		} else if (object instanceof Resource) {
+			String fileName = ((Resource) object).getURI().lastSegment();
+			return PlatformUI.getWorkbench().getEditorRegistry().getEditors(fileName);
 		}
 		return null;
 	}
 
-	public static IEditorDescriptor[] getEditors(Class<?> type) {
-		return findEditorsForType(type);
+	public static IEditorDescriptor[] getEditors(EClass eClass) {
+		return findEditorsForType(eClass);
 	}
 
+	/**
+	 * @deprecated Use {@link EcoreUIUtil#getDummyFileName(EClass)} instead.
+	 */
+
+	@Deprecated
 	public static String getDummyFileName(Class<?> objectType) {
 		String dummyFileName = "*." + objectType.getName(); //$NON-NLS-1$
 		return dummyFileName;
 	}
 
+	public static String getDummyFileName(EClass eClass) {
+		String dummyFileName = "*." + eClass.getInstanceClassName(); //$NON-NLS-1$
+		return dummyFileName;
+	}
+
+	/**
+	 * @deprecated Use {@link EcoreUIUtil#getDefaultEditor(EClass)} instead.
+	 */
+	@Deprecated
 	public static IEditorDescriptor getDefaultEditor(Class<?> type) {
 		IEditorDescriptor descriptor = findDefaultEditorForType(type);
 		if (descriptor == null) {
 			descriptor = findDefaultEditorForSuperType(type);
+		}
+		return descriptor;
+	}
+
+	public static IEditorDescriptor getDefaultEditor(EClass eClass) {
+		IEditorDescriptor descriptor = findDefaultEditorForType(eClass);
+		if (descriptor == null) {
+			descriptor = findDefaultEditorForSuperType(eClass);
 		}
 		return descriptor;
 	}
@@ -189,18 +220,25 @@ public class EcoreUIUtil {
 		return null;
 	}
 
-	private static IEditorDescriptor[] findEditorsForType(Class<?> objectType) {
+	private static IEditorDescriptor[] findEditorsForType(EClass eClass) {
 		Set<IEditorDescriptor> result = new HashSet<IEditorDescriptor>();
-		if (objectType != null) {
-			// Try to find editor registered with qualified or simple object type name
-			for (IEditorDescriptor descriptor : PlatformUI.getWorkbench().getEditorRegistry().getEditors(getDummyFileName(objectType))) {
-				if (!isInapplicableTextBasedEditor(objectType, descriptor)) {
+		if (eClass != null) {
+			// Try to find editors registered with qualified or simple EClass name
+			for (IEditorDescriptor descriptor : PlatformUI.getWorkbench().getEditorRegistry().getEditors(getDummyFileName(eClass))) {
+				if (!isInapplicableTextBasedEditor(descriptor)) {
 					result.add(descriptor);
 				}
+			}
 
+			// Try to find editors registered for all super types
+			for (EClass superType : eClass.getEAllSuperTypes()) {
+				for (IEditorDescriptor descriptor : PlatformUI.getWorkbench().getEditorRegistry().getEditors(getDummyFileName(superType))) {
+					if (!isInapplicableTextBasedEditor(descriptor)) {
+						result.add(descriptor);
+					}
+				}
 			}
 		}
-		result.add(findDefaultEditorForSuperType(objectType));
 		return result.toArray(new IEditorDescriptor[result.size()]);
 	}
 
@@ -241,18 +279,50 @@ public class EcoreUIUtil {
 		return null;
 	}
 
+	private static IEditorDescriptor findDefaultEditorForSuperType(EClass eClass) {
+		if (eClass != null) {
+			for (EClass superType : eClass.getEAllSuperTypes()) {
+				IEditorDescriptor defaultEditor = findDefaultEditorForType(superType);
+				if (defaultEditor != null) {
+					return defaultEditor;
+				}
+			}
+		}
+		return null;
+	}
+
 	private static IEditorDescriptor findDefaultEditorForType(Class<?> objectType) {
 		if (objectType != null) {
 			// Try to find editor registered with qualified or simple object type name
 			String dummyFileName = "*." + objectType.getName(); //$NON-NLS-1$
 			IEditorDescriptor descriptor = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(dummyFileName);
 			if (descriptor != null) {
-				if (!isInapplicableTextBasedEditor(objectType, descriptor)) {
+				if (!isInapplicableTextBasedEditor(descriptor)) {
 					return descriptor;
 				} else {
 					// Try to find alternative editor
 					for (IEditorDescriptor alternativeDescriptor : PlatformUI.getWorkbench().getEditorRegistry().getEditors(dummyFileName)) {
-						if (alternativeDescriptor != descriptor && !isInapplicableTextBasedEditor(objectType, alternativeDescriptor)) {
+						if (alternativeDescriptor != descriptor && !isInapplicableTextBasedEditor(alternativeDescriptor)) {
+							return alternativeDescriptor;
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	private static IEditorDescriptor findDefaultEditorForType(EClass eClass) {
+		if (eClass != null) {
+			// Try to find editor registered with qualified or simple object type name
+			IEditorDescriptor descriptor = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(getDummyFileName(eClass));
+			if (descriptor != null) {
+				if (!isInapplicableTextBasedEditor(descriptor)) {
+					return descriptor;
+				} else {
+					// Try to find alternative editor
+					for (IEditorDescriptor alternativeDescriptor : PlatformUI.getWorkbench().getEditorRegistry().getEditors(getDummyFileName(eClass))) {
+						if (alternativeDescriptor != descriptor && !isInapplicableTextBasedEditor(alternativeDescriptor)) {
 							return alternativeDescriptor;
 						}
 					}
@@ -269,7 +339,7 @@ public class EcoreUIUtil {
 	 */
 	// TODO This hard-coded kind of file editor exclusions could eventually be avoided by providing a separate extension
 	// point for model editors or by handing in a list of inapplicable editor id patterns via the API
-	private static boolean isInapplicableTextBasedEditor(Class<?> objectType, IEditorDescriptor editorDescriptor) {
+	private static boolean isInapplicableTextBasedEditor(IEditorDescriptor editorDescriptor) {
 		if (editorDescriptor.getId().startsWith("org.eclipse.ui") || editorDescriptor.getId().startsWith("org.eclipse.wst")) { //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}

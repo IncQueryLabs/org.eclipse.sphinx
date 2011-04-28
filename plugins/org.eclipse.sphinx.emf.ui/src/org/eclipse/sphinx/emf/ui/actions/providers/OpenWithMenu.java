@@ -1,3 +1,17 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2011 See4sys and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     See4sys - Initial API and implementation
+ * 
+ * </copyright>
+ */
 package org.eclipse.sphinx.emf.ui.actions.providers;
 
 import java.text.Collator;
@@ -25,7 +39,7 @@ import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 
-public class ObjectOpenWithMenu extends ContributionItem {
+public class OpenWithMenu extends ContributionItem {
 
 	private IWorkbenchPage page;
 
@@ -60,7 +74,7 @@ public class ObjectOpenWithMenu extends ContributionItem {
 	 * @param object
 	 *            the selected object
 	 */
-	public ObjectOpenWithMenu(IWorkbenchPage page, EObject object) {
+	public OpenWithMenu(IWorkbenchPage page, EObject object) {
 		super(ID);
 		this.page = page;
 		eObject = object;
@@ -87,14 +101,14 @@ public class ObjectOpenWithMenu extends ContributionItem {
 	private ImageDescriptor getImageDescriptor(IEditorDescriptor editorDesc) {
 		ImageDescriptor imageDesc = null;
 		if (editorDesc == null) {
-			imageDesc = registry.getImageDescriptor(EcoreUIUtil.getDummyFileName(eObject.getClass()));
+			imageDesc = registry.getImageDescriptor(EcoreUIUtil.getDummyFileName(eObject.eClass()));
 			// TODO: is this case valid, and if so, what are the implications for content-type editor bindings?
 		} else {
 			imageDesc = editorDesc.getImageDescriptor();
 		}
 		if (imageDesc == null) {
 			if (editorDesc.getId().equals(IEditorRegistry.SYSTEM_EXTERNAL_EDITOR_ID)) {
-				imageDesc = registry.getSystemExternalEditorImageDescriptor(EcoreUIUtil.getDummyFileName(eObject.getClass()));
+				imageDesc = registry.getSystemExternalEditorImageDescriptor(EcoreUIUtil.getDummyFileName(eObject.eClass()));
 			}
 		}
 		return imageDesc;

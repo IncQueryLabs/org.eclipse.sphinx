@@ -14,14 +14,17 @@
  */
 package org.eclipse.sphinx.emf.ui.actions.providers;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.sphinx.emf.ui.actions.BasicOpenInEditorAction;
+import org.eclipse.sphinx.emf.ui.internal.messages.Messages;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.navigator.ICommonActionConstants;
@@ -70,10 +73,22 @@ public class BasicEditorActionProvider extends BasicActionProvider {
 
 	@Override
 	public void fillContextMenu(IMenuManager menuManager) {
-		super.fillContextMenu(menuManager);
 
-		// Contribute open in editor action
+		// Contribute Open In Editor action
 		menuManager.appendToGroup(ICommonMenuConstants.GROUP_OPEN, new ActionContributionItem(openInEditorAction));
+
+		// Contribute Open With sub-menu
+		IStructuredSelection selection = SelectionUtil.getStructuredSelection(getContext().getSelection());
+		if (selection.size() == 1) {
+			Object selected = selection.getFirstElement();
+			if (selected instanceof EObject) {
+				if (workbenchPart != null) {
+					IMenuManager submenu = new MenuManager(Messages.label_openWithMenu);
+					submenu.add(new OpenWithMenu(workbenchPart.getSite().getPage(), (EObject) selected));
+					menuManager.appendToGroup(ICommonMenuConstants.GROUP_OPEN_WITH, submenu);
+				}
+			}
+		}
 	}
 
 	@Override
