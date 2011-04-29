@@ -162,8 +162,8 @@ public final class WorkspaceTransactionUtil {
 	 * @since 0.7.0
 	 **/
 	public static void executeInWriteTransaction(TransactionalEditingDomain editingDomain, final Runnable runnable, final String operationLabel,
-			IOperationHistory operationHistory, Map<String, Object> transactionOptions, IProgressMonitor monitor) throws OperationCanceledException,
-			ExecutionException {
+			IOperationHistory operationHistory, final Map<String, Object> transactionOptions, IProgressMonitor monitor)
+			throws OperationCanceledException, ExecutionException {
 		Assert.isNotNull(editingDomain);
 		Assert.isNotNull(runnable);
 
@@ -181,6 +181,14 @@ public final class WorkspaceTransactionUtil {
 						throw new ExecutionException(NLS.bind(Messages.problem_transactionFailed, operationLabel), ex);
 					}
 				}
+			}
+
+			@Override
+			public boolean canUndo() {
+				if (transactionOptions.containsKey(Transaction.OPTION_NO_UNDO) && transactionOptions.get(Transaction.OPTION_NO_UNDO) == Boolean.TRUE) {
+					return false;
+				}
+				return true;
 			}
 		};
 		// Perform the execution of the transaction.
