@@ -48,7 +48,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
@@ -819,32 +818,59 @@ public final class ExtendedPlatform {
 	}
 
 	/**
-	 * Creates a unique file name inside the given container represented the containerFullPath.
+	 * Creates a file name that is unique among the names of the files present in {@link IContainer container} with
+	 * given <code>containerFullPath</code>.
 	 * 
 	 * @param containerFullPath
-	 * @param tentativeFileName
+	 * @param candidateFileName
 	 * @return
 	 */
 
-	public static String createUniqueFileName(IPath containerFullPath, String tentativeFileName) {
-		if (containerFullPath == null) {
-			containerFullPath = new Path(""); //$NON-NLS-1$
+	public static String createUniqueFileName(IPath containerFullPath, String candidateFileName) {
+		Assert.isNotNull(containerFullPath);
+		if (candidateFileName == null || candidateFileName.trim().length() == 0) {
+			candidateFileName = "default"; //$NON-NLS-1$
 		}
-		if (tentativeFileName == null || tentativeFileName.trim().length() == 0) {
-			tentativeFileName = "default"; //$NON-NLS-1$
-		}
-		IPath filePath = containerFullPath.append(tentativeFileName);
-		String extension = filePath.getFileExtension();
-		tentativeFileName = filePath.removeFileExtension().lastSegment();
-		int i = 1;
-		while (ResourcesPlugin.getWorkspace().getRoot().exists(filePath)) {
-			i++;
-			filePath = containerFullPath.append(tentativeFileName + i);
+
+		IPath candidateFilePath = containerFullPath.append(candidateFileName);
+		String candidateFileBaseName = candidateFilePath.removeFileExtension().lastSegment();
+		String extension = candidateFilePath.getFileExtension();
+		for (int i = 1; ResourcesPlugin.getWorkspace().getRoot().exists(candidateFilePath); i++) {
+			candidateFilePath = containerFullPath.append(candidateFileBaseName + i);
 			if (extension != null) {
-				filePath = filePath.addFileExtension(extension);
+				candidateFilePath = candidateFilePath.addFileExtension(extension);
 			}
 		}
-		return filePath.lastSegment();
+		return candidateFilePath.lastSegment();
+	}
+
+	/**
+	 * Creates a unique {@link IPath path} starting from given <code>candidatePath</code> making sure that the result is
+	 * different from any of the provided <code>allocatedPaths</code>. In case that given <code>candidatePath</code>
+	 * already is unique wrt provided <code>allocatedPaths</code> the <code>candidatePath</code> is returned as is.
+	 * Otherwise the <code>candidatePath</code> is made unique by appending an appropriate number to its last segment.
+	 * Any file extension present on the <code>candiatePath</code> is be preserved.
+	 * 
+	 * @param candidatePath
+	 *            The candidate {@link IPath path} from which a unique path is to be created.
+	 * @param allocatedPaths
+	 *            The {@link IPath path}s from which the created path should be different.
+	 * @return A {@link IPath path} that is unique wrt provided <code>allocatedPaths</code>.
+	 */
+	public static IPath createUniquePath(IPath candidatePath, Collection<IPath> allocatedPaths) {
+		Assert.isNotNull(candidatePath);
+		Assert.isNotNull(allocatedPaths);
+
+		IPath parentPath = candidatePath.removeLastSegments(1);
+		String candidateLastSegmentName = candidatePath.removeFileExtension().lastSegment();
+		String extension = candidatePath.getFileExtension();
+		for (int i = 1; allocatedPaths.contains(candidatePath); i++) {
+			candidatePath = parentPath.append(candidateLastSegmentName + i);
+			if (extension != null) {
+				candidatePath = candidatePath.addFileExtension(extension);
+			}
+		}
+		return candidatePath;
 	}
 
 	private static final String NO_CONTENT_TYPE_ID = "org.eclipse.sphinx.platform.noContentTypeId"; //$NON-NLS-1$
