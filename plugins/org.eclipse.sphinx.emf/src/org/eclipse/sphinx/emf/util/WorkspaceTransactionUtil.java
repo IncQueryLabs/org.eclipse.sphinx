@@ -185,10 +185,7 @@ public final class WorkspaceTransactionUtil {
 
 			@Override
 			public boolean canUndo() {
-				if (transactionOptions.get(Transaction.OPTION_NO_UNDO) == Boolean.TRUE) {
-					return false;
-				}
-				return true;
+				return transactionOptions.get(Transaction.OPTION_NO_UNDO) != Boolean.TRUE;
 			}
 		};
 		// Perform the execution of the transaction.
