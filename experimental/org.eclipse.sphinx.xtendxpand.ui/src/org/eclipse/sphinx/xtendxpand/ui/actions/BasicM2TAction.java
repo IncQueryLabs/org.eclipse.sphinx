@@ -75,21 +75,34 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 
 	@Override
 	public void run() {
-		if (getDefinitionName(getSelectedModelObject()) != null) {
-			Job job = createXpandJob();
+		EObject modelObject = getSelectedModelObject();
+
+		// Definition to be used for selected model object available right away?
+		if (getDefinitionName(modelObject) != null) {
 			// Show console and make sure that all system output produced during execution gets displayed there
 			ExtendedPlatformUI.showSystemConsole();
+
+			// Schedule model to text transformation job
+			Job job = createXpandJob();
+			job.setPriority(Job.BUILD);
+			IFile file = EcorePlatformUtil.getFile(modelObject);
+			if (file != null) {
+				job.setRule(file.getProject());
+			}
 			job.schedule();
 			return;
 		}
 
-		M2TConfigurationWizard wizard = new M2TConfigurationWizard(getSelectedModelObject(), getMetaModel());
-		wizard.setM2TJobName(getM2TJobName());
-		wizard.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
-		wizard.setOutletsPreference(getOutletsPreference());
-		wizard.setDefaultOutlet(getDefaultOutlet());
-		WizardDialog wizardDialog = new WizardDialog(ExtendedPlatformUI.getDisplay().getActiveShell(), wizard);
-		wizardDialog.open();
+		// Open wizard that lets user select the definition to be used
+		else {
+			M2TConfigurationWizard wizard = new M2TConfigurationWizard(modelObject, getMetaModel());
+			wizard.setM2TJobName(getM2TJobName());
+			wizard.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
+			wizard.setOutletsPreference(getOutletsPreference());
+			wizard.setDefaultOutlet(getDefaultOutlet());
+			WizardDialog wizardDialog = new WizardDialog(ExtendedPlatformUI.getDisplay().getActiveShell(), wizard);
+			wizardDialog.open();
+		}
 	}
 
 	protected XpandJob createXpandJob() {

@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
@@ -31,6 +32,7 @@ import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.ui.wizards.AbstractWizard;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xtend.check.jobs.CheckJob;
+import org.eclipse.sphinx.xtend.jobs.SaveAsNewFileHandler;
 import org.eclipse.sphinx.xtend.jobs.XtendJob;
 import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
@@ -149,15 +151,26 @@ public class M2MConfigurationWizard extends AbstractWizard {
 			}
 		};
 		job.setPriority(Job.BUILD);
-		IFile file = EcorePlatformUtil.getFile(modelObject);
-		if (file != null) {
-			job.setRule(file.getProject());
+		IJobChangeListener handler = createResultObjectHandler(xtendJob);
+		if (handler != null) {
+			job.addJobChangeListener(handler);
 		}
 		job.schedule();
 	}
 
 	protected boolean isCheckRequired() {
 		return checkConfigurationPage.isCheckEnabled() && !checkConfigurationPage.getCheckEvaluationRequests().isEmpty();
+	}
+
+	protected CheckJob createCheckJob() {
+		CheckJob checkJob = new CheckJob(getM2MJobName(), metaModel, checkConfigurationPage.getCheckEvaluationRequests());
+		checkJob.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
+		checkJob.setPriority(Job.BUILD);
+		IFile file = EcorePlatformUtil.getFile(modelObject);
+		if (file != null) {
+			checkJob.setRule(file.getProject());
+		}
+		return checkJob;
 	}
 
 	protected XtendJob createXtendJob() {
@@ -171,15 +184,8 @@ public class M2MConfigurationWizard extends AbstractWizard {
 		return job;
 	}
 
-	protected CheckJob createCheckJob() {
-		CheckJob checkJob = new CheckJob(getM2MJobName(), metaModel, checkConfigurationPage.getCheckEvaluationRequests());
-		checkJob.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
-		checkJob.setPriority(Job.BUILD);
-		IFile file = EcorePlatformUtil.getFile(modelObject);
-		if (file != null) {
-			checkJob.setRule(file.getProject());
-		}
-		return checkJob;
+	protected IJobChangeListener createResultObjectHandler(XtendJob xtendJob) {
+		return new SaveAsNewFileHandler(xtendJob);
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -38,6 +39,7 @@ import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.xpand.util.XtendXpandUtil;
 import org.eclipse.sphinx.xtend.XtendEvaluationRequest;
+import org.eclipse.sphinx.xtend.jobs.SaveAsNewFileHandler;
 import org.eclipse.sphinx.xtend.jobs.XtendJob;
 import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
@@ -77,19 +79,31 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 
 	@Override
 	public void run() {
-		if (getExtensionName(getSelectedModelObject()) != null) {
-			Job job = createXtendJob();
+		EObject modelObject = getSelectedModelObject();
+
+		// Extension to be used for selected model object available right away?
+		if (getExtensionName(modelObject) != null) {
 			// Show console and make sure that all system output produced during execution gets displayed there
 			ExtendedPlatformUI.showSystemConsole();
+
+			// Schedule model to model transformation job
+			Job job = createXtendJob();
+			job.setPriority(Job.BUILD);
+			IJobChangeListener handler = createResultObjectHandler();
+			if (handler != null) {
+				job.addJobChangeListener(handler);
+			}
 			job.schedule();
-			return;
 		}
 
-		M2MConfigurationWizard wizard = new M2MConfigurationWizard(getSelectedModelObject(), getMetaModel());
-		wizard.setM2MJobName(getM2MJobName());
-		wizard.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
-		WizardDialog wizardDialog = new WizardDialog(ExtendedPlatformUI.getDisplay().getActiveShell(), wizard);
-		wizardDialog.open();
+		// Open wizard that lets user select the extension to be used
+		else {
+			M2MConfigurationWizard wizard = new M2MConfigurationWizard(modelObject, getMetaModel());
+			wizard.setM2MJobName(getM2MJobName());
+			wizard.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
+			WizardDialog wizardDialog = new WizardDialog(ExtendedPlatformUI.getDisplay().getActiveShell(), wizard);
+			wizardDialog.open();
+		}
 	}
 
 	protected XtendJob createXtendJob() {
@@ -105,6 +119,10 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 
 	protected String getM2MJobName() {
 		return Messages.job_modelTransformation;
+	}
+
+	protected IJobChangeListener createResultObjectHandler() {
+		return new SaveAsNewFileHandler();
 	}
 
 	// TODO Support a collection of MetaModels rather than a single MetaModel

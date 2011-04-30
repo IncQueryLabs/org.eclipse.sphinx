@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
@@ -37,19 +36,30 @@ import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
-import org.eclipse.sphinx.platform.util.ReflectUtil;
 import org.eclipse.sphinx.xtend.internal.Activator;
 
 public class SaveAsNewFileHandler extends JobChangeAdapter {
 
+	protected XtendJob xtendJob = null;
+
+	public SaveAsNewFileHandler() {
+	}
+
+	public SaveAsNewFileHandler(XtendJob xtendJob) {
+		this.xtendJob = xtendJob;
+	}
+
 	protected XtendJob getXtendJob(IJobChangeEvent event) {
+		// Refer to job in job change event if it is an XtendJob
 		if (event != null) {
 			Job job = event.getJob();
 			if (job instanceof XtendJob) {
 				return (XtendJob) job;
 			}
 		}
-		return null;
+
+		// Use preconfigured XtendJob otherwise
+		return xtendJob;
 	}
 
 	@Override
@@ -113,14 +123,7 @@ public class SaveAsNewFileHandler extends JobChangeAdapter {
 	protected IPath getUniqueResultPath(Object inputObject, EObject resultObject, Set<IPath> allocatedResultPaths) {
 		IPath candidateResultPath = getResultPath(inputObject, resultObject);
 		if (candidateResultPath != null) {
-			IPath resultContainerPath = candidateResultPath.removeLastSegments(1);
-			String candidateResultFileName = candidateResultPath.lastSegment();
-
-			// Make result path unique wrt existing files
-			String resultFileName = ExtendedPlatform.createUniqueFileName(resultContainerPath, candidateResultFileName);
-
-			// Make result path unique wrt other result paths that have already been allocated
-			return ExtendedPlatform.createUniquePath(resultContainerPath.append(resultFileName), allocatedResultPaths);
+			return ExtendedPlatform.createUniquePath(candidateResultPath, allocatedResultPaths);
 		}
 		return null;
 	}
@@ -129,7 +132,7 @@ public class SaveAsNewFileHandler extends JobChangeAdapter {
 		IFile inputFile = EcorePlatformUtil.getFile(inputObject);
 		if (inputFile != null) {
 			String resultFileExtension = getFileExtensionFor(resultObject);
-			inputFile.getFullPath().removeFileExtension().addFileExtension(resultFileExtension);
+			return inputFile.getFullPath().removeFileExtension().addFileExtension(resultFileExtension);
 		}
 		return null;
 	}
@@ -149,14 +152,9 @@ public class SaveAsNewFileHandler extends JobChangeAdapter {
 	}
 
 	protected String getContentTypeIdFor(EObject object) {
-		try {
-			EPackage ePackage = object.eClass().getEPackage();
-			Object contentTypeId = ReflectUtil.getFieldValue(ePackage, "eCONTENT_TYPE"); //$NON-NLS-1$;
-			if (contentTypeId instanceof String) {
-				return (String) contentTypeId;
-			}
-		} catch (Exception ex) {
-			// Ignore exception
+		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(object.eClass());
+		if (mmDescriptor != null) {
+			return mmDescriptor.getDefaultContentTypeId();
 		}
 		return null;
 	}
