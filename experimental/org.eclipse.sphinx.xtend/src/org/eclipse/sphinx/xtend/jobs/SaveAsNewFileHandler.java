@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - Extracted AbstractResultObjectHandler and derived SaveAsNewFileHandler from it.
  * 
  * </copyright>
  */
@@ -24,9 +25,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
@@ -38,7 +38,14 @@ import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.xtend.internal.Activator;
 
-public class SaveAsNewFileHandler extends JobChangeAdapter {
+/**
+ * An {@link IJobChangeListener} implementation that can be registered on an {@link XtendJob} instance or a {@link Job}
+ * instance that encloses the latter and saves the {@link XtendJob#getResultObjects() result objects} produced by the
+ * {@link XtendJob} as new files in the workspace.
+ * 
+ * @see XtendJob
+ */
+public class SaveAsNewFileHandler extends AbstractResultObjectHandler {
 
 	protected XtendJob xtendJob = null;
 
@@ -46,30 +53,10 @@ public class SaveAsNewFileHandler extends JobChangeAdapter {
 	}
 
 	public SaveAsNewFileHandler(XtendJob xtendJob) {
-		this.xtendJob = xtendJob;
-	}
-
-	protected XtendJob getXtendJob(IJobChangeEvent event) {
-		// Refer to job in job change event if it is an XtendJob
-		if (event != null) {
-			Job job = event.getJob();
-			if (job instanceof XtendJob) {
-				return (XtendJob) job;
-			}
-		}
-
-		// Use preconfigured XtendJob otherwise
-		return xtendJob;
+		super(xtendJob);
 	}
 
 	@Override
-	public void done(IJobChangeEvent event) {
-		XtendJob xtendJob = getXtendJob(event);
-		if (xtendJob != null) {
-			handleResultObjects(xtendJob.getResultObjects());
-		}
-	}
-
 	protected void handleResultObjects(Map<Object, Collection<?>> resultObjects) {
 		// Create descriptors for resources in which to save result objects
 		Set<ModelResourceDescriptor> allModelResourceDescriptors = new HashSet<ModelResourceDescriptor>();
