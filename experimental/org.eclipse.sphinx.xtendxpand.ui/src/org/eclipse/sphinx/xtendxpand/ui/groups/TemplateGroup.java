@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  * 
  * </copyright>
  */
@@ -94,24 +95,24 @@ public class TemplateGroup extends AbstractGroup {
 	protected EObject modelObject;
 
 	/**
-	 * The metamodel to be use.
+	 * The metamodel to be used.
 	 */
-	protected MetaModel metaModel;
+	protected Collection<MetaModel> metaModels;
 
 	/**
 	 * Defined definitions in the template file.
 	 */
 	private List<AbstractDefinition> definitions;
 
-	public TemplateGroup(String groupName, EObject modelObject, MetaModel metaModel) {
-		this(groupName, modelObject, metaModel, null);
+	public TemplateGroup(String groupName, EObject modelObject, Collection<MetaModel> metaModels) {
+		this(groupName, modelObject, metaModels, null);
 	}
 
-	public TemplateGroup(String groupName, EObject modelObject, MetaModel metaModel, IDialogSettings dialogSettings) {
+	public TemplateGroup(String groupName, EObject modelObject, Collection<MetaModel> metaModels, IDialogSettings dialogSettings) {
 		super(groupName, dialogSettings);
 
 		this.modelObject = modelObject;
-		this.metaModel = metaModel;
+		this.metaModels = metaModels;
 	}
 
 	@Override
@@ -220,7 +221,7 @@ public class TemplateGroup extends AbstractGroup {
 	 */
 	protected String[] createDefinitionFieldItems(List<AbstractDefinition> definitions) {
 		List<String> result = new ArrayList<String>();
-		if (metaModel != null) {
+		for (MetaModel metaModel : metaModels) {
 			Type type = metaModel.getType(modelObject);
 			if (type != null) {
 				for (AbstractDefinition definition : definitions) {
@@ -232,6 +233,7 @@ public class TemplateGroup extends AbstractGroup {
 						result.add(definition.getName());
 					}
 				}
+				break;
 			}
 		}
 		// TODO Create an empty combo item if result is empty

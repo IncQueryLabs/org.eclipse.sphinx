@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  * 
  * </copyright>
  */
@@ -64,7 +65,8 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		// Xpand execution
 		XpandEvaluationRequest xpandEvaluationRequest = new XpandEvaluationRequest(XtendXpandTestReferenceWorkspace.XPAND_CONFIGH_DEFINITION_NAME,
 				application);
-		XpandJob xpandJob = new XpandJob("Xpand Job", new SphinxManagedEmfMetaModel(hb20InstanceModelFile.getProject()), xpandEvaluationRequest); //$NON-NLS-1$
+		SphinxManagedEmfMetaModel metaModel = new SphinxManagedEmfMetaModel(hb20InstanceModelFile.getProject());
+		XpandJob xpandJob = new XpandJob("Xpand Job", metaModel, xpandEvaluationRequest); //$NON-NLS-1$
 		xpandJob.setWorkspaceResourceLoader(new BasicWorkspaceResourceLoader());
 		IStatus xpandStatus = xpandJob.runInWorkspace(new NullProgressMonitor());
 		assertEquals(Status.OK_STATUS, xpandStatus);
@@ -88,7 +90,7 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		assertTrue(xptFile.exists());
 
 		xpandEvaluationRequest = new XpandEvaluationRequest(XtendXpandTestReferenceWorkspace.XPAND_CONFIGH_TOHOUTLET_DEFINITION_NAME, application);
-		xpandJob = new XpandJob("Xpand Job", new SphinxManagedEmfMetaModel(hb20InstanceModelFile.getProject()), xpandEvaluationRequest); //$NON-NLS-1$
+		xpandJob = new XpandJob("Xpand Job", metaModel, xpandEvaluationRequest); //$NON-NLS-1$
 		xpandJob.setWorkspaceResourceLoader(new BasicWorkspaceResourceLoader());
 
 		// Add an outlet named HOUTLET

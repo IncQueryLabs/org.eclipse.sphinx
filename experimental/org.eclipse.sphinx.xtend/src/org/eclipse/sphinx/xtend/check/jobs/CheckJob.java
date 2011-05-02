@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  * 
  * </copyright>
  */
@@ -57,9 +58,11 @@ public class CheckJob extends WorkspaceJob {
 	protected static final Log log = LogFactory.getLog(CheckJob.class);
 
 	/**
-	 * The metamodel to be used for checking model.
+	 * The {@link MetaModel metamodel}s behind the model(s) to be checked.
+	 * 
+	 * @see MetaModel
 	 */
-	protected MetaModel metaModel;
+	protected Collection<MetaModel> metaModels;
 
 	/**
 	 * A collection of Check evaluation request.
@@ -74,38 +77,76 @@ public class CheckJob extends WorkspaceJob {
 	private IWorkspaceResourceLoader workspaceResourceLoader;
 
 	/**
-	 * Constructs a Check job for checking model for the given <code>checkEvaluationRequest</code> using the
-	 * <code>metaModel</code> metamodel.
+	 * Creates a {@link CheckJob} that validates a model based on given <code>metaModel</code> as specified by provided
+	 * <code>checkEvaluationRequest</code>.
 	 * 
 	 * @param name
-	 *            the name of the job.
+	 *            The name of the job.
 	 * @param metaModel
-	 *            the metamodel to be use.
+	 *            The {@link MetaModel metamodel} to be used.
 	 * @param checkEvaluationRequest
-	 *            the check evaluation request to be use.
+	 *            The {@link CheckEvaluationRequest Check evaluation request} to be processed.
+	 * @see MetaModel
+	 * @see CheckEvaluationRequest
 	 */
 	public CheckJob(String name, MetaModel metaModel, CheckEvaluationRequest checkEvaluationRequest) {
-		this(name, metaModel, Collections.singleton(checkEvaluationRequest));
+		this(name, Collections.singleton(metaModel), Collections.singleton(checkEvaluationRequest));
 	}
 
 	/**
-	 * Constructs a Check job for checking model for the given <code>checkEvaluationRequests</code> using the
-	 * <code>metaModel</code> metamodel.
+	 * Creates a {@link CheckJob} that validates one or several models based on given <code>metaModel</code> as
+	 * specified by provided <code>checkEvaluationRequests</code>.
 	 * 
 	 * @param name
-	 *            the name of the job.
+	 *            The name of the job.
 	 * @param metaModel
-	 *            the metamodel to be use.
+	 *            The {@link MetaModel metamodel} to be used.
 	 * @param checkEvaluationRequests
-	 *            a collection of check evaluation requests to be use.
+	 *            The {@link CheckEvaluationRequest Check evaluation request}s to be processed.
+	 * @see MetaModel
+	 * @see CheckEvaluationRequest
 	 */
 	public CheckJob(String name, MetaModel metaModel, Collection<CheckEvaluationRequest> checkEvaluationRequests) {
+		this(name, Collections.singleton(metaModel), checkEvaluationRequests);
+	}
+
+	/**
+	 * Creates a {@link CheckJob} that validates a model based on given <code>metaModels</code> as specified by provided
+	 * <code>checkEvaluationRequest</code>.
+	 * 
+	 * @param name
+	 *            The name of the job.
+	 * @param metaModels
+	 *            The {@link MetaModel metamodel}s to be used.
+	 * @param checkEvaluationRequest
+	 *            The {@link CheckEvaluationRequest Check evaluation request} to be processed.
+	 * @see MetaModel
+	 * @see CheckEvaluationRequest
+	 */
+	public CheckJob(String name, Collection<MetaModel> metaModels, CheckEvaluationRequest checkEvaluationRequest) {
+		this(name, metaModels, Collections.singleton(checkEvaluationRequest));
+	}
+
+	/**
+	 * Creates a {@link CheckJob} that validates one or several models based on given <code>metaModels</code> as
+	 * specified by provided <code>checkEvaluationRequests</code>.
+	 * 
+	 * @param name
+	 *            The name of the job.
+	 * @param metaModels
+	 *            The {@link MetaModel metamodel}s to be used.
+	 * @param checkEvaluationRequests
+	 *            The {@link CheckEvaluationRequest Check evaluation request}s to be processed.
+	 * @see MetaModel
+	 * @see CheckEvaluationRequest
+	 */
+	public CheckJob(String name, Collection<MetaModel> metaModels, Collection<CheckEvaluationRequest> checkEvaluationRequests) {
 		super(name);
 
-		Assert.isNotNull(metaModel);
+		Assert.isNotNull(metaModels);
 		Assert.isNotNull(checkEvaluationRequests);
 
-		this.metaModel = metaModel;
+		this.metaModels = metaModels;
 		this.checkEvaluationRequests = checkEvaluationRequests;
 	}
 
@@ -148,7 +189,9 @@ public class CheckJob extends WorkspaceJob {
 			Map<String, Variable> globalVarsMap = new HashMap<String, Variable>();
 			final ExecutionContextImpl execCtx = new ExecutionContextImpl(new ResourceManagerDefaultImpl(), null, new TypeSystemImpl(), variables,
 					globalVarsMap, new ProgressMonitorAdapter(monitor), null, null, null, null, null, null, null);
-			execCtx.registerMetaModel(metaModel);
+			for (MetaModel metaModel : metaModels) {
+				execCtx.registerMetaModel(metaModel);
+			}
 
 			// Execute validation
 			long startTime = System.currentTimeMillis();

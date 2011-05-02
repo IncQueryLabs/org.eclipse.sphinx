@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  * 
  * </copyright>
  */
@@ -61,14 +62,16 @@ public class XtendJob extends WorkspaceJob {
 	protected static final Log log = LogFactory.getLog(XtendJob.class);
 
 	/**
-	 * The metamodel to be used for model transformation.
+	 * The {@link MetaModel metamodel}s behind the model(s) to be transformed.
+	 * 
+	 * @see MetaModel
 	 */
-	protected MetaModel metaModel;
+	protected Collection<MetaModel> metaModels;
 
 	/**
-	 * A collection of Xtend evaluation request.
+	 * The collection of {@link XtendEvaluationRequest Xtend evaluation request}s to be processed.
 	 * 
-	 * @see {@link XtendEvaluationRequest} class.
+	 * @see XtendEvaluationRequest
 	 */
 	protected Collection<XtendEvaluationRequest> xtendEvaluationRequests;
 
@@ -93,39 +96,76 @@ public class XtendJob extends WorkspaceJob {
 	protected Map<Object, Collection<?>> resultObjects = new HashMap<Object, Collection<?>>();
 
 	/**
-	 * Constructs an Xtend job for execution model transformation for the given <code>xtendEvaluationRequest</code>
-	 * using the <code>metaModel</code> metamodel.
+	 * Creates an {@link XtendJob} that transforms a model based on given <code>metaModel</code> as specified by
+	 * provided <code>xtendEvaluationRequest</code>.
 	 * 
 	 * @param name
-	 *            the name of the job.
+	 *            The name of the job.
 	 * @param metaModel
-	 *            the metamodel to be use.
+	 *            The {@link MetaModel metamodel} to be used.
 	 * @param xtendEvaluationRequest
-	 *            the Xtend evaluation request.
-	 * @see {@link MetaModel} and {@link XtendEvaluationRequest} classes.
+	 *            The {@link XtendEvaluationRequest Xtend evaluation request} to be processed.
+	 * @see MetaModel
+	 * @see XtendEvaluationRequest
 	 */
 	public XtendJob(String name, MetaModel metaModel, XtendEvaluationRequest xtendEvaluationRequest) {
-		this(name, metaModel, Collections.singleton(xtendEvaluationRequest));
+		this(name, Collections.singleton(metaModel), Collections.singleton(xtendEvaluationRequest));
 	}
 
 	/**
-	 * Constructs an Xtend job for execution model transformation for the given <code>xtendEvaluationRequests</code>
-	 * using the <code>metaModel</code> metamodel.
+	 * Creates an {@link XtendJob} that transforms one or several models based on given <code>metaModel</code> as
+	 * specified by provided <code>xtendEvaluationRequests</code>.
 	 * 
 	 * @param name
-	 *            the name of the job.
+	 *            The name of the job.
 	 * @param metaModel
-	 *            the metamodel to be use.
+	 *            The {@link MetaModel metamodel} to be used.
 	 * @param xtendEvaluationRequests
-	 *            a collection of Xtend evaluation request.
+	 *            The {@link XtendEvaluationRequest Xtend evaluation request}s to be processed.
+	 * @see MetaModel
+	 * @see XtendEvaluationRequest
 	 */
 	public XtendJob(String name, MetaModel metaModel, Collection<XtendEvaluationRequest> xtendEvaluationRequests) {
+		this(name, Collections.singleton(metaModel), xtendEvaluationRequests);
+	}
+
+	/**
+	 * Creates an {@link XtendJob} that transforms a model based on given <code>metaModels</code> as specified by
+	 * provided <code>xtendEvaluationRequest</code>.
+	 * 
+	 * @param name
+	 *            The name of the job.
+	 * @param metaModels
+	 *            The {@link MetaModel metamodel}s to be used.
+	 * @param xtendEvaluationRequest
+	 *            The {@link XtendEvaluationRequest Xtend evaluation request} to be processed.
+	 * @see MetaModel
+	 * @see XtendEvaluationRequest
+	 */
+	public XtendJob(String name, Collection<MetaModel> metaModels, XtendEvaluationRequest xtendEvaluationRequest) {
+		this(name, metaModels, Collections.singleton(xtendEvaluationRequest));
+	}
+
+	/**
+	 * Creates an {@link XtendJob} that transforms one or several models based on given <code>metaModels</code> as
+	 * specified by provided <code>xtendEvaluationRequests</code>.
+	 * 
+	 * @param name
+	 *            The name of the job.
+	 * @param metaModels
+	 *            The {@link MetaModel metamodel}s to be used.
+	 * @param xtendEvaluationRequests
+	 *            The {@link XtendEvaluationRequest Xtend evaluation request}s to be processed.
+	 * @see MetaModel
+	 * @see XtendEvaluationRequest
+	 */
+	public XtendJob(String name, Collection<MetaModel> metaModels, Collection<XtendEvaluationRequest> xtendEvaluationRequests) {
 		super(name);
 
-		Assert.isNotNull(metaModel);
+		Assert.isNotNull(metaModels);
 		Assert.isNotNull(xtendEvaluationRequests);
 
-		this.metaModel = metaModel;
+		this.metaModels = metaModels;
 		this.xtendEvaluationRequests = xtendEvaluationRequests;
 	}
 
@@ -230,7 +270,9 @@ public class XtendJob extends WorkspaceJob {
 			Map<String, Variable> globalVarsMap = new HashMap<String, Variable>();
 			final ExecutionContextImpl execCtx = new ExecutionContextImpl(new ResourceManagerDefaultImpl(), null, new TypeSystemImpl(), variables,
 					globalVarsMap, new ProgressMonitorAdapter(monitor), null, null, null, null, null, null, null);
-			execCtx.registerMetaModel(metaModel);
+			for (MetaModel metaModel : metaModels) {
+				execCtx.registerMetaModel(metaModel);
+			}
 
 			// Execute transformation
 			long startTime = System.currentTimeMillis();

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  * 
  * </copyright>
  */
@@ -42,7 +43,7 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 	protected OutputGroup outputGroup;
 
 	protected EObject modelObject;
-	protected MetaModel metaModel;
+	protected Collection<MetaModel> metaModels;
 	protected OutletsPreference outletsPreference;
 	protected ExtendedOutlet defaultOutlet;
 
@@ -50,9 +51,9 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 		super(pageName);
 	}
 
-	public void init(EObject modelObject, MetaModel metaModel, OutletsPreference outletsPreference, ExtendedOutlet defaultOutlet) {
+	public void init(EObject modelObject, Collection<MetaModel> metaModels, OutletsPreference outletsPreference, ExtendedOutlet defaultOutlet) {
 		this.modelObject = modelObject;
-		this.metaModel = metaModel;
+		this.metaModels = metaModels;
 		this.outletsPreference = outletsPreference;
 		this.defaultOutlet = defaultOutlet;
 	}
@@ -84,7 +85,7 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 	 * Creates the template group field and load dialog settings.
 	 */
 	protected void createTemplateGroup(Composite parent) {
-		templateGroup = new TemplateGroup(Messages.label_template, modelObject, metaModel, getDialogSettings());
+		templateGroup = new TemplateGroup(Messages.label_template, modelObject, metaModels, getDialogSettings());
 		templateGroup.createContent(parent, 3);
 		templateGroup.addGroupListener(new IGroupListener() {
 

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  * 
  * </copyright>
  */
@@ -60,9 +61,11 @@ public class XpandJob extends WorkspaceJob {
 	protected static final Log log = LogFactory.getLog(XpandJob.class);
 
 	/**
-	 * The metamodel to be used for code generation.
+	 * The {@link MetaModel metamodel}s behind the model(s) to be generated code from.
+	 * 
+	 * @see MetaModel
 	 */
-	protected MetaModel metaModel;
+	protected Collection<MetaModel> metaModels;
 
 	/**
 	 * A collection of Xpand evaluation request.
@@ -82,39 +85,76 @@ public class XpandJob extends WorkspaceJob {
 	private Collection<ExtendedOutlet> outlets;
 
 	/**
-	 * Constructs an Xpand job for execution code generation for the given <code>xpandEvaluationRequest</code> using the
-	 * <code>metaModel</code> metamodel.
+	 * Creates an {@link XpandJob} that generates code from a model based on given <code>metaModel</code> as specified
+	 * by provided <code>xpandEvaluationRequest</code>.
 	 * 
 	 * @param name
-	 *            the name of the job.
+	 *            The name of the job.
 	 * @param metaModel
-	 *            the metamodel to be use.
+	 *            The {@link MetaModel metamodel} to be used.
 	 * @param xpandEvaluationRequest
-	 *            the Xpand evaluation request.
-	 * @see {@link MetaModel} and {@link XpandEvaluationRequest} classes.
+	 *            The {@link XpandEvaluationRequest Xpand evaluation request} to be processed.
+	 * @see MetaModel
+	 * @see XpandEvaluationRequest
 	 */
 	public XpandJob(String name, MetaModel metaModel, XpandEvaluationRequest xpandEvaluationRequest) {
-		this(name, metaModel, Collections.singleton(xpandEvaluationRequest));
+		this(name, Collections.singleton(metaModel), Collections.singleton(xpandEvaluationRequest));
 	}
 
 	/**
-	 * Constructs an Xpand job for execution code generation for the given <code>xpandEvaluationRequests</code> using
-	 * the <code>metaModel</code> metamodel.
+	 * Creates an {@link XpandJob} that generates code from one or several models based on given <code>metaModel</code>
+	 * as specified by provided <code>xpandEvaluationRequests</code>.
 	 * 
 	 * @param name
-	 *            the name of the job.
+	 *            The name of the job.
 	 * @param metaModel
-	 *            the metamodel to be use.
+	 *            The {@link MetaModel metamodel} to be used.
 	 * @param xpandEvaluationRequests
-	 *            a collection of Xpand evaluation request.
+	 *            The {@link XpandEvaluationRequest Xpand evaluation request}s to be processed.
+	 * @see MetaModel
+	 * @see XpandEvaluationRequest
 	 */
 	public XpandJob(String name, MetaModel metaModel, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
+		this(name, Collections.singleton(metaModel), xpandEvaluationRequests);
+	}
+
+	/**
+	 * Creates an {@link XpandJob} that generates code from a model based on given <code>metaModels</code> as specified
+	 * by provided <code>xpandEvaluationRequest</code>.
+	 * 
+	 * @param name
+	 *            The name of the job.
+	 * @param metaModels
+	 *            The {@link MetaModel metamodel}s to be used.
+	 * @param xpandEvaluationRequest
+	 *            The {@link XpandEvaluationRequest Xpand evaluation request} to be processed.
+	 * @see MetaModel
+	 * @see XpandEvaluationRequest
+	 */
+	public XpandJob(String name, Collection<MetaModel> metaModels, XpandEvaluationRequest xpandEvaluationRequest) {
+		this(name, metaModels, Collections.singleton(xpandEvaluationRequest));
+	}
+
+	/**
+	 * Creates an {@link XpandJob} that generates code from one or several models based on given <code>metaModels</code>
+	 * as specified by provided <code>xpandEvaluationRequests</code>.
+	 * 
+	 * @param name
+	 *            The name of the job.
+	 * @param metaModels
+	 *            The {@link MetaModel metamodel}s to be used.
+	 * @param xpandEvaluationRequests
+	 *            The {@link XpandEvaluationRequest Xpand evaluation request}s to be processed.
+	 * @see MetaModel
+	 * @see XpandEvaluationRequest
+	 */
+	public XpandJob(String name, Collection<MetaModel> metaModels, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
 		super(name);
 
-		Assert.isNotNull(metaModel);
+		Assert.isNotNull(metaModels);
 		Assert.isNotNull(xpandEvaluationRequests);
 
-		this.metaModel = metaModel;
+		this.metaModels = metaModels;
 		this.xpandEvaluationRequests = xpandEvaluationRequests;
 	}
 
@@ -182,7 +222,9 @@ public class XpandJob extends WorkspaceJob {
 			Map<String, Variable> globalVarsMap = new HashMap<String, Variable>();
 			XpandExecutionContextImpl execCtx = new XpandExecutionContextImpl(new ResourceManagerDefaultImpl(), output, null, globalVarsMap,
 					new ProgressMonitorAdapter(monitor), null, null, null);
-			execCtx.registerMetaModel(metaModel);
+			for (MetaModel metaModel : metaModels) {
+				execCtx.registerMetaModel(metaModel);
+			}
 
 			// Execute generation
 			long startTime = System.currentTimeMillis();

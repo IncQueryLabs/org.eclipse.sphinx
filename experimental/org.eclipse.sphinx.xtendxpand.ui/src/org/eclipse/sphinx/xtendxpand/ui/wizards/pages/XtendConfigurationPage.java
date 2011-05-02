@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  * 
  * </copyright>
  */
@@ -37,15 +38,15 @@ public class XtendConfigurationPage extends AbstractWizardPage {
 
 	protected EObject modelObject;
 
-	protected MetaModel metaModel;
+	protected Collection<MetaModel> metaModels;
 
 	public XtendConfigurationPage(String pageName) {
 		super(pageName);
 	}
 
-	public void init(EObject modelObject, MetaModel metaModel) {
+	public void init(EObject modelObject, Collection<MetaModel> metaModels) {
 		this.modelObject = modelObject;
-		this.metaModel = metaModel;
+		this.metaModels = metaModels;
 	}
 
 	@Override
@@ -73,7 +74,7 @@ public class XtendConfigurationPage extends AbstractWizardPage {
 	 * Creates the template group field and load dialog settings.
 	 */
 	protected void createExtensionGroup(Composite parent) {
-		extensionGroup = new ExtensionGroup(Messages.label_extension, modelObject, metaModel, getDialogSettings());
+		extensionGroup = new ExtensionGroup(Messages.label_extension, modelObject, metaModels, getDialogSettings());
 		extensionGroup.createContent(parent, 3);
 		extensionGroup.addGroupListener(new IGroupListener() {
 
