@@ -57,7 +57,7 @@ public class OutletsConfigurationPage extends AbstractWizardPage {
 	/**
 	 * The outlet provider.
 	 */
-	private OutletProvider outletProvider;
+	protected OutletProvider outletProvider;
 
 	/**
 	 * The outlets group.
@@ -106,7 +106,9 @@ public class OutletsConfigurationPage extends AbstractWizardPage {
 			}
 
 			// Add outlets group that allow Xtend/Xpand/Check support
-			outletProvider = new OutletProvider(getOutletsPreference());
+			if (getOutletProvider() == null) {
+				outletProvider = new OutletProvider(getOutletsPreference());
+			}
 			outletsGroup = new OutletsGroup(Messages.label_outletsGroupName, outletProvider);
 			outletsGroup.createContent(parentComposite, 2);
 			restoreDefaultButton = SWTUtil.createButton(outletsGroup.getButtonsComposite(), Messages.label_restoreDefaultButtons, SWT.PUSH);
