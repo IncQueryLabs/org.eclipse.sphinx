@@ -72,7 +72,7 @@ public class ExtensionGroup extends AbstractGroup {
 	 */
 	protected static final String M2M_TRANSFORM_SECTION = Activator.getPlugin().getSymbolicName() + ".M2M_TRANSFORM_SECTION"; //$NON-NLS-1$
 	protected static final String STORE_EXTENSION_FILE = "EXTENSION_FILE$"; //$NON-NLS-1$
-	protected static final String STORE_SELECTED_EXTENSION_BLOCK = "SELECTED_EXTENSION_BLOCK"; //$NON-NLS-1$
+	protected static final String STORE_SELECTED_FUNCTION = "SELECTED_FUNCTION"; //$NON-NLS-1$
 
 	/**
 	 * The Xtend file field.
@@ -326,38 +326,38 @@ public class ExtensionGroup extends AbstractGroup {
 	 */
 	@Override
 	protected void loadGroupSettings() {
-		String extensionPath = getExtensionPathFromDialogSettings();
-		if (extensionPath != null) {
-			extensionFileField.setText(extensionPath);
-			updateFunctionFieldItems(getFile(extensionPath));
-			String extensionName = getExtensionNameFromDialogSettings();
-			if (extensionName != null) {
-				functionField.selectItem(extensionName);
+		String extensionFile = getExtensionFileFromDialogSettings();
+		if (extensionFile != null) {
+			extensionFileField.setText(extensionFile);
+			updateFunctionFieldItems(getFile(extensionFile));
+			String functionName = getFunctionFromDialogSettings();
+			if (functionName != null) {
+				functionField.selectItem(functionName);
 			}
 		}
 	}
 
-	public String getExtensionPathFromDialogSettings() {
+	public String getExtensionFileFromDialogSettings() {
 		String result = null;
-		String extensionPathDialogSettingsKey = getExtensionFileDialogSettingsKey(modelObject);
-		IDialogSettings extensionPathSection = getExtensionFileSection();
-		if (extensionPathSection != null) {
-			String extensionPath = extensionPathSection.get(extensionPathDialogSettingsKey);
-			if (extensionPath != null) {
-				IFile extensionFile = getFile(extensionPath);
+		String key = getExtensionFileDialogSettingsKey(modelObject);
+		IDialogSettings extensionFileSection = getExtensionFileSection();
+		if (extensionFileSection != null) {
+			String extensionFilePath = extensionFileSection.get(key);
+			if (extensionFilePath != null) {
+				IFile extensionFile = getFile(extensionFilePath);
 				if (extensionFile != null && extensionFile.exists()) {
-					result = extensionPath;
+					result = extensionFilePath;
 				}
 			}
 		}
 		return result;
 	}
 
-	public String getExtensionNameFromDialogSettings() {
+	public String getFunctionFromDialogSettings() {
 		String result = null;
 		IDialogSettings extensionFileSection = getExtensionFileSection();
 		if (extensionFileSection != null) {
-			result = extensionFileSection.get(STORE_SELECTED_EXTENSION_BLOCK);
+			result = extensionFileSection.get(STORE_SELECTED_FUNCTION);
 		}
 		return result;
 	}
@@ -396,7 +396,7 @@ public class ExtensionGroup extends AbstractGroup {
 				String[] items = functionField.getItems();
 				int selectionIndex = functionField.getSelectionIndex();
 				if (items.length > 0 && selectionIndex != -1) {
-					extensionFileSection.put(STORE_SELECTED_EXTENSION_BLOCK, items[selectionIndex]);
+					extensionFileSection.put(STORE_SELECTED_FUNCTION, items[selectionIndex]);
 				}
 			}
 		}
