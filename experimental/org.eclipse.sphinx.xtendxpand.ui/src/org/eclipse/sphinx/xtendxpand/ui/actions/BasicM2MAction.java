@@ -51,9 +51,7 @@ import org.eclipse.xtend.typesystem.MetaModel;
 
 public class BasicM2MAction extends BaseSelectionListenerAction {
 
-	public static final String PROJECT_RELATIVE_DEFAULT_OUTLET_PATH = "gen"; //$NON-NLS-1$
-
-	public static final String DEFAULT_EXTENSION_NAME = "main"; //$NON-NLS-1$
+	public static final String DEFAULT_FUNCTION_NAME = "transform"; //$NON-NLS-1$
 
 	private IWorkspaceResourceLoader workspaceResourceLoader;
 
@@ -107,9 +105,6 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 	}
 
 	protected XtendJob createXtendJob() {
-		// TODO Enable to provide JobChangeAdapter that retrieves and handles result from XtendJob; provide default
-		// implementation that puts result objects on clipboard of shared editing domain for metamodel behind result
-		// objects or saves them into a new file
 		XtendJob job = new XtendJob(getM2MJobName(), getMetaModel(), getXtendEvaluationRequests());
 		job.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		job.setPriority(Job.BUILD);
@@ -166,7 +161,7 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 	protected String getExtensionName(EObject modelObject) {
 		IFile extensionFile = getExtensionFile(modelObject);
 		if (extensionFile != null) {
-			return XtendXpandUtil.getQualifiedName(extensionFile, getExtName());
+			return XtendXpandUtil.getQualifiedName(extensionFile, getFunctionName());
 		}
 		return null;
 	}
@@ -180,8 +175,8 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 		return null;
 	}
 
-	protected String getExtName() {
-		return DEFAULT_EXTENSION_NAME;
+	protected String getFunctionName() {
+		return DEFAULT_FUNCTION_NAME;
 	}
 
 	protected IWorkspaceResourceLoader getWorkspaceResourceLoader() {
@@ -193,9 +188,5 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 
 	protected IWorkspaceResourceLoader createWorkspaceResourceLoader() {
 		return new BasicWorkspaceResourceLoader();
-	}
-
-	protected String getProjectRelativeDefaultOutletPath() {
-		return PROJECT_RELATIVE_DEFAULT_OUTLET_PATH;
 	}
 }
