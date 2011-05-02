@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,10 +9,13 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.ui.wizards;
+
+import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -43,7 +46,7 @@ import org.eclipse.xtend.typesystem.MetaModel;
 public class M2MConfigurationWizard extends AbstractWizard {
 
 	protected EObject modelObject;
-	protected MetaModel metaModel;
+	protected Collection<MetaModel> metaModels;
 
 	private String m2mJobName;
 	private IWorkspaceResourceLoader workspaceResourceLoader;
@@ -51,11 +54,11 @@ public class M2MConfigurationWizard extends AbstractWizard {
 	protected XtendConfigurationPage xtendConfigurationPage;
 	protected CheckConfigurationPage checkConfigurationPage;
 
-	public M2MConfigurationWizard(EObject modelObject, MetaModel metaModel) {
+	public M2MConfigurationWizard(EObject modelObject, Collection<MetaModel> metaModels) {
 		setDialogSettings(Activator.getDefault().getDialogSettings());
 		setWindowTitle(Messages.title_modelTransformation);
 		this.modelObject = modelObject;
-		this.metaModel = metaModel;
+		this.metaModels = metaModels;
 	}
 
 	public String getM2MJobName() {
@@ -88,13 +91,13 @@ public class M2MConfigurationWizard extends AbstractWizard {
 
 	protected XtendConfigurationPage createXtendConfigurationPage() {
 		XtendConfigurationPage xtendPage = new XtendConfigurationPage(Messages.label_xtendPageName);
-		xtendPage.init(modelObject, metaModel);
+		xtendPage.init(modelObject, metaModels);
 		return xtendPage;
 	}
 
 	protected CheckConfigurationPage createCheckConfigurationPage() {
 		CheckConfigurationPage checkPage = new CheckConfigurationPage(Messages.label_xtendPageName);
-		checkPage.init(modelObject, metaModel);
+		checkPage.init(modelObject);
 		return checkPage;
 	}
 
@@ -158,7 +161,7 @@ public class M2MConfigurationWizard extends AbstractWizard {
 	}
 
 	protected CheckJob createCheckJob() {
-		CheckJob checkJob = new CheckJob(getM2MJobName(), metaModel, checkConfigurationPage.getCheckEvaluationRequests());
+		CheckJob checkJob = new CheckJob(getM2MJobName(), metaModels, checkConfigurationPage.getCheckEvaluationRequests());
 		checkJob.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		checkJob.setPriority(Job.BUILD);
 		IFile file = EcorePlatformUtil.getFile(modelObject);
@@ -169,7 +172,7 @@ public class M2MConfigurationWizard extends AbstractWizard {
 	}
 
 	protected XtendJob createXtendJob() {
-		XtendJob job = new XtendJob(getM2MJobName(), metaModel, xtendConfigurationPage.getXtendEvaluationRequests());
+		XtendJob job = new XtendJob(getM2MJobName(), metaModels, xtendConfigurationPage.getXtendEvaluationRequests());
 		job.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		job.setPriority(Job.BUILD);
 		IFile file = EcorePlatformUtil.getFile(modelObject);
