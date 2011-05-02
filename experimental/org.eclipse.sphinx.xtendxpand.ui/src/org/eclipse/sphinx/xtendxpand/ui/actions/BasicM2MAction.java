@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,13 +9,17 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
+ *     itemis - [343847] Use Xtend MetaModels configured in project settings when running BasicM2xAction or M2xConfigurationWizard
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.ui.actions;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -54,8 +58,6 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 	public static final String DEFAULT_FUNCTION_NAME = "transform"; //$NON-NLS-1$
 
 	private IWorkspaceResourceLoader workspaceResourceLoader;
-
-	private MetaModel metaModel;
 
 	public BasicM2MAction(String text) {
 		super(text);
@@ -96,7 +98,7 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 
 		// Open wizard that lets user select the extension to be used
 		else {
-			M2MConfigurationWizard wizard = new M2MConfigurationWizard(modelObject, getMetaModel());
+			M2MConfigurationWizard wizard = new M2MConfigurationWizard(modelObject, getMetaModels());
 			wizard.setM2MJobName(getM2MJobName());
 			wizard.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 			WizardDialog wizardDialog = new WizardDialog(ExtendedPlatformUI.getDisplay().getActiveShell(), wizard);
@@ -105,7 +107,7 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 	}
 
 	protected XtendJob createXtendJob() {
-		XtendJob job = new XtendJob(getM2MJobName(), getMetaModel(), getXtendEvaluationRequests());
+		XtendJob job = new XtendJob(getM2MJobName(), getMetaModels(), getXtendEvaluationRequests());
 		job.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		job.setPriority(Job.BUILD);
 		job.setRule(EcorePlatformUtil.getFile(getSelectedModelObject()).getProject());
@@ -120,32 +122,24 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 		return new SaveAsNewFileHandler();
 	}
 
-	// TODO Support a collection of MetaModels rather than a single MetaModel
-	// TODO Do same thing in BasicM2TAction and XpandJob
-	protected MetaModel getMetaModel() {
-		if (metaModel == null) {
-			metaModel = createMetaModel();
-		}
-		return metaModel;
-	}
-
-	protected MetaModel createMetaModel() {
-		IFile file = EcorePlatformUtil.getFile(getSelectedModelObject());
+	protected Collection<MetaModel> getMetaModels() {
+		Collection<MetaModel> metaModels = new HashSet<MetaModel>();
 
 		// Add metamodels defined by Xtend/Xpand preferences
+		IFile file = EcorePlatformUtil.getFile(getSelectedModelObject());
 		IJavaProject javaProject = JavaCore.create(file.getProject());
 		List<? extends MetamodelContributor> contributors = MetamodelContributorRegistry.getActiveMetamodelContributors(javaProject);
 		for (MetamodelContributor contributor : contributors) {
-			for (MetaModel metaModel : contributor.getMetamodels(javaProject, null)) {
-				// TODO return list of MetaModels
-				return metaModel;
-			}
+			metaModels.addAll(Arrays.asList(contributor.getMetamodels(javaProject, null)));
 		}
 
-		// Add MetaModels resulting behind models in workspace if no metamodels defined by Xtend/Xpand preferences are
-		// available
-		IModelDescriptor model = ModelDescriptorRegistry.INSTANCE.getModel(file);
-		return new SphinxManagedEmfMetaModel(model);
+		// Add metamodel resulting from models in workspace if no such are available in Xtend/Xpand preferences
+		if (metaModels.isEmpty()) {
+			IModelDescriptor model = ModelDescriptorRegistry.INSTANCE.getModel(file);
+			metaModels.add(new SphinxManagedEmfMetaModel(model));
+		}
+
+		return Collections.unmodifiableCollection(metaModels);
 	}
 
 	protected Collection<XtendEvaluationRequest> getXtendEvaluationRequests() {

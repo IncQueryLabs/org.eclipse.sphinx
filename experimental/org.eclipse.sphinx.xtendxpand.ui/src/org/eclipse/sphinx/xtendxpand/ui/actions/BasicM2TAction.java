@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,13 +9,18 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
+ *     itemis - [343847] Use Xtend MetaModels configured in project settings when running BasicM2xAction or M2xConfigurationWizard
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.ui.actions;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -25,6 +30,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
@@ -44,6 +51,8 @@ import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.M2TConfigurationWizard;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
+import org.eclipse.xtend.shared.ui.MetamodelContributor;
+import org.eclipse.xtend.shared.ui.core.metamodel.MetamodelContributorRegistry;
 import org.eclipse.xtend.typesystem.MetaModel;
 
 public class BasicM2TAction extends BaseSelectionListenerAction {
@@ -53,7 +62,6 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	public static final String DEFAULT_TEMPLATE_NAME = "main"; //$NON-NLS-1$
 
 	private IWorkspaceResourceLoader workspaceResourceLoader;
-	private MetaModel metaModel;
 
 	public BasicM2TAction(String text) {
 		super(text);
@@ -95,7 +103,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 
 		// Open wizard that lets user select the definition to be used
 		else {
-			M2TConfigurationWizard wizard = new M2TConfigurationWizard(modelObject, getMetaModel());
+			M2TConfigurationWizard wizard = new M2TConfigurationWizard(modelObject, getMetaModels());
 			wizard.setM2TJobName(getM2TJobName());
 			wizard.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 			wizard.setOutletsPreference(getOutletsPreference());
@@ -106,7 +114,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	}
 
 	protected XpandJob createXpandJob() {
-		XpandJob job = new XpandJob(getM2TJobName(), getMetaModel(), getXpandEvaluationRequests());
+		XpandJob job = new XpandJob(getM2TJobName(), getMetaModels(), getXpandEvaluationRequests());
 		job.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		job.getOutlets().addAll(getOutlets());
 		job.setPriority(Job.BUILD);
@@ -118,17 +126,24 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		return Messages.job_generatingCode;
 	}
 
-	protected MetaModel getMetaModel() {
-		if (metaModel == null) {
-			metaModel = createMetaModel();
-		}
-		return metaModel;
-	}
+	protected Collection<MetaModel> getMetaModels() {
+		Collection<MetaModel> metaModels = new HashSet<MetaModel>();
 
-	protected MetaModel createMetaModel() {
+		// Add metamodels defined by Xtend/Xpand preferences
 		IFile file = EcorePlatformUtil.getFile(getSelectedModelObject());
-		IModelDescriptor model = ModelDescriptorRegistry.INSTANCE.getModel(file);
-		return new SphinxManagedEmfMetaModel(model);
+		IJavaProject javaProject = JavaCore.create(file.getProject());
+		List<? extends MetamodelContributor> contributors = MetamodelContributorRegistry.getActiveMetamodelContributors(javaProject);
+		for (MetamodelContributor contributor : contributors) {
+			metaModels.addAll(Arrays.asList(contributor.getMetamodels(javaProject, null)));
+		}
+
+		// Add metamodel resulting from models in workspace if no such are available in Xtend/Xpand preferences
+		if (metaModels.isEmpty()) {
+			IModelDescriptor model = ModelDescriptorRegistry.INSTANCE.getModel(file);
+			metaModels.add(new SphinxManagedEmfMetaModel(model));
+		}
+
+		return Collections.unmodifiableCollection(metaModels);
 	}
 
 	protected Collection<XpandEvaluationRequest> getXpandEvaluationRequests() {
