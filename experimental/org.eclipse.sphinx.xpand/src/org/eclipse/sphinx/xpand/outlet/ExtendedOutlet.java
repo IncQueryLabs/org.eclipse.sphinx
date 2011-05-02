@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,10 +9,13 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - Improved #toString() implementation to produce more meaningful output for default outlets
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.xpand.outlet;
+
+import java.io.File;
 
 import org.eclipse.core.internal.resources.projectvariables.ProjectLocationVariableResolver;
 import org.eclipse.core.internal.resources.projectvariables.WorkspaceLocationVariableResolver;
@@ -166,13 +169,13 @@ public class ExtendedOutlet extends Outlet {
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
-		if (getName() != null) {
-			result.append(getName() + ":"); //$NON-NLS-1$
-		}
+		result.append((getName() != null ? getName() : "<default>") + "@"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (getPath() != null) {
 			result.append(getPath());
 		} else if (getPathExpression() != null) {
 			result.append(getPathExpression());
+		} else {
+			result.append(new File("").getAbsolutePath()); //$NON-NLS-1$
 		}
 		if (isAppend() || !isOverwrite()) {
 			result.append("(").append("overwrite=").append(isOverwrite()).append(",append=").append(isAppend()).append(",fileEncoding=").append(getFileEncoding()) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
