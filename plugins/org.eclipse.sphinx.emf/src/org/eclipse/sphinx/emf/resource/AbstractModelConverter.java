@@ -139,6 +139,16 @@ public abstract class AbstractModelConverter implements IModelConverter {
 		SAXBuilder builder = makeBuilder();
 		DefaultHandler handler = makeDefaultHandler(resource, options);
 
+		// Create input source from given input stream and initialize public and system id with resource URI so as to
+		// enable entity resolution relative to resource location (rather than relative to the running application's
+		// working directory)
+		InputSource inputSource = new InputSource(inputStream);
+		if (resource.getURI() != null) {
+			String resourceURI = resource.getURI().toString();
+			inputSource.setPublicId(resourceURI);
+			inputSource.setSystemId(resourceURI);
+		}
+
 		// Retrieve and set application-defined XMLReader features (see http://xerces.apache.org/xerces2-j/features.html
 		// for available features and their details)
 		@SuppressWarnings("unchecked")
@@ -182,8 +192,8 @@ public abstract class AbstractModelConverter implements IModelConverter {
 		// Register XML handler for capturing anomalies encountered during parsing as errors and warnings on resource
 		builder.setErrorHandler(handler);
 
-		// Parse given XML input stream into DOM structure
-		final Document document = builder.build(inputStream);
+		// Parse input source into DOM structure
+		final Document document = builder.build(inputSource);
 
 		// Iterate over all DOM elements and let them be converted
 		List<Element> elementsToConvert = new ArrayList<Element>();
