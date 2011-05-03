@@ -32,7 +32,7 @@ import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.ui.groups.FileSelectionGroup;
 import org.eclipse.sphinx.platform.ui.wizards.pages.AbstractWizardPage;
-import org.eclipse.sphinx.xtend.check.CheckEvaluationRequest;
+import org.eclipse.sphinx.xtendxpand.CheckEvaluationRequest;
 import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.swt.SWT;

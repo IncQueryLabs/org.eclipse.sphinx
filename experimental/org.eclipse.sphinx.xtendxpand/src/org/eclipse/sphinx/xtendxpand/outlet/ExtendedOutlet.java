@@ -13,7 +13,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.xpand.outlet;
+package org.eclipse.sphinx.xtendxpand.outlet;
 
 import java.io.File;
 
@@ -31,7 +31,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.sphinx.xpand.internal.EObjectAdapaterFactory;
+import org.eclipse.sphinx.xtendxpand.internal.EObjectAdapaterFactory;
 import org.eclipse.xpand2.output.Outlet;
 
 @SuppressWarnings("restriction")

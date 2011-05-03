@@ -23,8 +23,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
-import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
-import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
+import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
+import org.eclipse.sphinx.xtendxpand.preferences.OutletsPreference;
 import org.eclipse.xpand2.output.Outlet;
 
 public class OutletProvider implements IPreferenceChangeListener {

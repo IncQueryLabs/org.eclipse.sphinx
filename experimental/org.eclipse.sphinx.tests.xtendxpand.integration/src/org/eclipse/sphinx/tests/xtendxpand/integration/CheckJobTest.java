@@ -26,9 +26,9 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
 import org.eclipse.sphinx.tests.xtendxpand.integration.internal.Activator;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandTestReferenceWorkspace;
-import org.eclipse.sphinx.xtend.check.CheckEvaluationRequest;
-import org.eclipse.sphinx.xtend.check.jobs.CheckJob;
 import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
+import org.eclipse.sphinx.xtendxpand.CheckEvaluationRequest;
+import org.eclipse.sphinx.xtendxpand.jobs.CheckJob;
 
 public class CheckJobTest extends XtendXpandIntegrationTestCase {
 

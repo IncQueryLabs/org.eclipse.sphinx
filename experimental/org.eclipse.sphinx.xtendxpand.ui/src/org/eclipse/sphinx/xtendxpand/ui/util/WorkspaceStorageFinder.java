@@ -25,7 +25,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
-import org.eclipse.sphinx.xpand.util.XtendXpandUtil;
+import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
 import org.eclipse.xtend.shared.ui.StorageFinder;
 import org.eclipse.xtend.shared.ui.core.internal.ResourceID;
 

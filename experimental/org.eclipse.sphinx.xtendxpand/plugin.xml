@@ -17,7 +17,7 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="org.eclipse.sphinx.xpand.internal.preferences.OutletsPreferenceInitializer">
+            class="org.eclipse.sphinx.xtendxpand.internal.preferences.OutletsPreferenceInitializer">
       </initializer>
    </extension>
 

@@ -31,10 +31,10 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 import org.eclipse.sphinx.tests.xtendxpand.integration.internal.Activator;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandTestReferenceWorkspace;
-import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
-import org.eclipse.sphinx.xpand.jobs.XpandJob;
-import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
+import org.eclipse.sphinx.xtendxpand.XpandEvaluationRequest;
+import org.eclipse.sphinx.xtendxpand.jobs.XpandJob;
+import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
 
 public class XpandJobTest extends XtendXpandIntegrationTestCase {
 

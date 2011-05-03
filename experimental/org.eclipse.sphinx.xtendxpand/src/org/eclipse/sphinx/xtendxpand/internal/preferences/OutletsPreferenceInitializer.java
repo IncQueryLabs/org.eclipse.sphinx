@@ -12,13 +12,13 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.xpand.internal.preferences;
+package org.eclipse.sphinx.xtendxpand.internal.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
-import org.eclipse.sphinx.xpand.internal.Activator;
+import org.eclipse.sphinx.xtendxpand.internal.Activator;
 
 /**
  * Initializes the Outlets preference with its default value.

@@ -16,7 +16,7 @@ package org.eclipse.sphinx.xtendxpand.ui.outlet.providers;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
+import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.xpand2.output.Outlet;
 

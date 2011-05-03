@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.xpand;
+package org.eclipse.sphinx.xtendxpand;
 
 import java.util.Arrays;
 import java.util.Collections;

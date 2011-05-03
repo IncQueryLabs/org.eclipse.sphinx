@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: org.eclipse.sphinx.xpand;singleton:=true
+Bundle-SymbolicName: org.eclipse.sphinx.xtendxpand;singleton:=true
 Bundle-Version: 0.7.0.qualifier
-Bundle-Activator: org.eclipse.sphinx.xpand.internal.Activator$Implementation
+Bundle-Activator: org.eclipse.sphinx.xtendxpand.internal.Activator$Implementation
 Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -18,11 +18,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sphinx.emf.mwe;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.eclipse.sphinx.xpand,
- org.eclipse.sphinx.xpand.internal;x-internal:=true,
- org.eclipse.sphinx.xpand.internal.preferences;x-internal:=true,
- org.eclipse.sphinx.xpand.jobs,
- org.eclipse.sphinx.xpand.outlet,
- org.eclipse.sphinx.xpand.preferences,
- org.eclipse.sphinx.xpand.util
+Export-Package: org.eclipse.sphinx.xtendxpand,
+ org.eclipse.sphinx.xtendxpand.internal;x-internal:=true,
+ org.eclipse.sphinx.xtendxpand.internal.preferences;x-internal:=true,
+ org.eclipse.sphinx.xtendxpand.jobs,
+ org.eclipse.sphinx.xtendxpand.outlet,
+ org.eclipse.sphinx.xtendxpand.preferences,
+ org.eclipse.sphinx.xtendxpand.util
 Bundle-Localization: plugin

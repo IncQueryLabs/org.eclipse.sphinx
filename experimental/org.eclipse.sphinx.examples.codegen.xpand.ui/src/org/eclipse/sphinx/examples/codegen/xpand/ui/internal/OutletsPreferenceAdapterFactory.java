@@ -17,7 +17,7 @@ package org.eclipse.sphinx.examples.codegen.xpand.ui.internal;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.sphinx.examples.codegen.xpand.ui.preferences.OutletsPreferencePage;
 import org.eclipse.sphinx.platform.ui.preferences.IPropertyPageIdProvider;
-import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
+import org.eclipse.sphinx.xtendxpand.preferences.OutletsPreference;
 
 public class OutletsPreferenceAdapterFactory implements IAdapterFactory {
 

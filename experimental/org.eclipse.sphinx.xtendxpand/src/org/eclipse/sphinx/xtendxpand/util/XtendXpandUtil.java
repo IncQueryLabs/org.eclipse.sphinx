@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.xpand.util;
+package org.eclipse.sphinx.xtendxpand.util;
 
 import java.net.URISyntaxException;
 import java.net.URL;

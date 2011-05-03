@@ -13,7 +13,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.xpand.jobs;
+package org.eclipse.sphinx.xtendxpand.jobs;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,9 +44,9 @@ import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.StatusUtil;
-import org.eclipse.sphinx.xpand.XpandEvaluationRequest;
-import org.eclipse.sphinx.xpand.internal.Activator;
-import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
+import org.eclipse.sphinx.xtendxpand.XpandEvaluationRequest;
+import org.eclipse.sphinx.xtendxpand.internal.Activator;
+import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
 import org.eclipse.xpand2.XpandExecutionContextImpl;
 import org.eclipse.xpand2.XpandFacade;
 import org.eclipse.xpand2.output.Outlet;

@@ -30,7 +30,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.sphinx.platform.ui.groups.AbstractGroup;
 import org.eclipse.sphinx.platform.ui.util.SWTUtil;
-import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
+import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xtendxpand.ui.dialogs.EditOutletDialog;
 import org.eclipse.sphinx.xtendxpand.ui.groups.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.ui.outlet.providers.OutletProvider;

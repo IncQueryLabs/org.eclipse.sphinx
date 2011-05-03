@@ -23,7 +23,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.platform.ui.fields.IField;
 import org.eclipse.sphinx.platform.ui.groups.IGroupListener;
 import org.eclipse.sphinx.platform.ui.wizards.pages.AbstractWizardPage;
-import org.eclipse.sphinx.xtend.XtendEvaluationRequest;
+import org.eclipse.sphinx.xtendxpand.XtendEvaluationRequest;
 import org.eclipse.sphinx.xtendxpand.ui.groups.ExtensionGroup;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.swt.SWT;

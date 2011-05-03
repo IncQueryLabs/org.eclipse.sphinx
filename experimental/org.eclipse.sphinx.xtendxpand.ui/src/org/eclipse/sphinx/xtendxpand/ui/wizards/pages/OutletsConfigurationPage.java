@@ -24,8 +24,8 @@ import org.eclipse.sphinx.platform.ui.fields.IFieldListener;
 import org.eclipse.sphinx.platform.ui.fields.SelectionButtonField;
 import org.eclipse.sphinx.platform.ui.util.SWTUtil;
 import org.eclipse.sphinx.platform.ui.wizards.pages.AbstractWizardPage;
-import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
-import org.eclipse.sphinx.xpand.preferences.OutletsPreference;
+import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
+import org.eclipse.sphinx.xtendxpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xtendxpand.ui.groups.OutletsGroup;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.ui.outlet.providers.OutletProvider;
@@ -57,7 +57,7 @@ public class OutletsConfigurationPage extends AbstractWizardPage {
 	/**
 	 * The outlet provider.
 	 */
-	protected OutletProvider outletProvider;
+	private OutletProvider outletProvider;
 
 	/**
 	 * The outlets group.
@@ -106,10 +106,7 @@ public class OutletsConfigurationPage extends AbstractWizardPage {
 			}
 
 			// Add outlets group that allow Xtend/Xpand/Check support
-			if (getOutletProvider() == null) {
-				outletProvider = new OutletProvider(getOutletsPreference());
-			}
-			outletsGroup = new OutletsGroup(Messages.label_outletsGroupName, outletProvider);
+			outletsGroup = new OutletsGroup(Messages.label_outletsGroupName, getOutletProvider());
 			outletsGroup.createContent(parentComposite, 2);
 			restoreDefaultButton = SWTUtil.createButton(outletsGroup.getButtonsComposite(), Messages.label_restoreDefaultButtons, SWT.PUSH);
 			restoreDefaultButton.addListener(SWT.Selection, new Listener() {
@@ -160,7 +157,14 @@ public class OutletsConfigurationPage extends AbstractWizardPage {
 	}
 
 	protected OutletProvider getOutletProvider() {
+		if (outletProvider == null) {
+			outletProvider = createOutletProvider();
+		}
 		return outletProvider;
+	}
+
+	protected OutletProvider createOutletProvider() {
+		return new OutletProvider(getOutletsPreference());
 	}
 
 	@Override

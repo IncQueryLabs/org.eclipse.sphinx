@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.xpand.preferences;
+package org.eclipse.sphinx.xtendxpand.preferences;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,9 +25,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sphinx.platform.preferences.AbstractProjectWorkspacePreference;
-import org.eclipse.sphinx.xpand.internal.preferences.OutletsPreferenceInitializer;
-import org.eclipse.sphinx.xpand.outlet.ExtendedOutlet;
-import org.eclipse.sphinx.xpand.util.XtendXpandUtil;
+import org.eclipse.sphinx.xtendxpand.internal.preferences.OutletsPreferenceInitializer;
+import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
+import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
 
 public class OutletsPreference extends AbstractProjectWorkspacePreference<Collection<ExtendedOutlet>> implements IAdaptable {
 
