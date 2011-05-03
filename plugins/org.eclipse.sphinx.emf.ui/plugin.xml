@@ -54,20 +54,4 @@ Contributors:
       </actionProvider>
       -->
    </extension>
-   <!--
-   <extension
-         point="org.eclipse.ui.views">
-      <category
-            id="org.eclipse.sphinx.emf.ui"
-            name="Sample Category">
-      </category>
-      <view
-            category="org.eclipse.sphinx.examples.common.ui.views.category.sphinxExampleViews"
-            class="org.eclipse.sphinx.emf.ui.views.ReferencesView"
-            icon="icons/sample.gif"
-            id="org.eclipse.sphinx.emf.ui.views.references"
-            name="References View">
-      </view>
-   </extension>
-   -->
 </plugin>
