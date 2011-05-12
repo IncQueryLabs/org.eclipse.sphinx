@@ -15,11 +15,9 @@
 package org.eclipse.sphinx.emf.workspace.domain.mapping;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -92,7 +90,7 @@ public class DefaultWorkspaceEditingDomainMapping extends AbstractWorkspaceEditi
 					// Obtain the right editing domain factory
 					IExtendedTransactionalEditingDomainFactory factory = getEditingDomainFactory(mmDescriptor);
 					// Ask for the creation of a new editing domain
-					editingDomain = createEditingDomain(factory, Arrays.asList(mmDescriptor));
+					editingDomain = createEditingDomain(factory, Collections.singleton(mmDescriptor));
 					// Register the newly created editing domain
 					mappedEditingDomains.put(mmDescriptor, editingDomain);
 				}
@@ -117,17 +115,7 @@ public class DefaultWorkspaceEditingDomainMapping extends AbstractWorkspaceEditi
 	@Override
 	public void preDisposeEditingDomain(TransactionalEditingDomain editingDomain) {
 		// Remove EditingDomain to be disposed from mapping
-		// FIXME Try to replace this with mappedEditingDomains.values().remove(editingDomain);
-		synchronized (mappedEditingDomains) {
-			Iterator<IMetaModelDescriptor> iter = mappedEditingDomains.keySet().iterator();
-			while (iter.hasNext()) {
-				IMetaModelDescriptor mmDescriptor = iter.next();
-				if (editingDomain == mappedEditingDomains.get(mmDescriptor)) {
-					iter.remove();
-					break;
-				}
-			}
-		}
+		mappedEditingDomains.values().remove(editingDomain);
 		super.preDisposeEditingDomain(editingDomain);
 	}
 
