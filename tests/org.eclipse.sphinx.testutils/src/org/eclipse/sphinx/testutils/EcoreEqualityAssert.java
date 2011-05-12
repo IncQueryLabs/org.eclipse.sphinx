@@ -32,6 +32,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil.EqualityHelper;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.emf.validation.internal.modeled.model.validation.Feature;
 
 /**
  * This class is a copied and modified version of {@link EqualityHelper} and provides a set of equality assert methods
@@ -102,12 +103,6 @@ public class EcoreEqualityAssert extends Assert {
 			return;
 		}
 
-		// If they don't have the same class, they can't be equal.
-		//
-		EClass eClass = eObject1.eClass();
-		assertTrue("Object " + eObject1.toString() + " and object " + eObject2.toString() + " don't have the same class: "
-				+ eObject1.eClass().getName() + " <-> " + eObject2.eClass().getName() + ".", eClass == eObject2.eClass());
-
 		// If the first object is a proxy, the second object must be a proxy.
 		//
 		if (eObject1.eIsProxy()) {
@@ -127,6 +122,12 @@ public class EcoreEqualityAssert extends Assert {
 		// We know the first object isn't a proxy, so if the second one is, it can't be equal.
 		//
 		assertFalse("First object isn't a proxy: " + eObject1.toString() + ", but second is: " + eObject2.toString() + ".", eObject2.eIsProxy());
+
+		// If they don't have the same class, they can't be equal.
+		//
+		EClass eClass = eObject1.eClass();
+		assertTrue("Object " + eObject1.toString() + " and object " + eObject2.toString() + " don't have the same class: "
+				+ eObject1.eClass().getName() + " <-> " + eObject2.eClass().getName() + ".", eClass == eObject2.eClass());
 
 		// Assume from now on that they match.
 		//
