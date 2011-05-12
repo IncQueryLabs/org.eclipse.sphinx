@@ -32,7 +32,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil.EqualityHelper;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
-import org.eclipse.emf.validation.internal.modeled.model.validation.Feature;
 
 /**
  * This class is a copied and modified version of {@link EqualityHelper} and provides a set of equality assert methods
@@ -151,8 +150,8 @@ public class EcoreEqualityAssert extends Assert {
 	}
 
 	/**
-	 * Tests if given {@link Feature feature} is dedicated to capturing XML serialization specific things and does not
-	 * represent any information that would be relevant from a domain (meta-model) point of view.
+	 * Tests if given {@link EStructuralFeature feature} is dedicated to capturing XML serialization specific things and
+	 * does not represent any information that would be relevant from a domain (meta-model) point of view.
 	 * 
 	 * @param feature
 	 * @return <code>true</code> if given feature is XML serialization-specific, <code>false</code> otherwise.
