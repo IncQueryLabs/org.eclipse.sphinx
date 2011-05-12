@@ -92,6 +92,10 @@ import org.eclipse.sphinx.testutils.integration.internal.ZipArchiveImporter;
 @SuppressWarnings("nls")
 public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace> extends TestCase {
 
+	private static final String REFERENCE_WORKSPACE_PROPERTIES_FILE_NAME = "referenceWorkspaceSourceRootDirectory.properties";
+
+	private static final String REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY = "referenceWorksaceSourceDirectory";
+
 	private TestFileAccessor testFileAccessor = null;
 
 	private IInternalReferenceWorkspace internalRefWks;
@@ -107,10 +111,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	private File referenceWorkspaceTempDir;
 
 	private File referenceWorkspaceSourceDir;
-
-	private final String REFERENCE_WORKSPACE_PROPERTIES_FILE_NAME = "referenceWorkspaceSourceRootDirectory.properties";
-
-	private final String REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY = "referenceWorksaceSourceDirectory";
 
 	public AbstractIntegrationTestCase(String referenceWorkspaceTempDirBaseName) {
 		String tempDirPath = System.getProperty("java.io.tmpdir");
@@ -1536,11 +1536,15 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		importReferenceResourceToWorkspace(new File(referenceWorkspaceSourceDir, project.getName()), project);
 	}
 
-	public ReferenceWorkspaceChangeListener getReferenceWorkspaceChangeListener() {
+	protected File getReferenceWorkspaceSourceDir() {
+		return referenceWorkspaceSourceDir;
+	}
+
+	protected ReferenceWorkspaceChangeListener getReferenceWorkspaceChangeListener() {
 		return referenceWorkspaceChangeListener;
 	}
 
-	public ResourceProblemListener getResourceProblemListener() {
+	protected ResourceProblemListener getResourceProblemListener() {
 		return resourceProblemListener;
 	}
 }
