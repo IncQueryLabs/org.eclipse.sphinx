@@ -44,7 +44,6 @@ import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
-import org.eclipse.sphinx.testutils.integration.ResourceProblemListener;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 import org.eclipse.uml2.uml.Component;
@@ -272,7 +271,6 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 		String projectName = DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "_NewName"; //$NON-NLS-1$
 
 		synchronizedRenameProject(refWks.hbProject20_D, projectName);
-		ResourceProblemListener resourceListener = getResourceProblemListener();
 		// check if project name has been correctly changed
 		IProject newProject = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		assertTrue(newProject.exists());
