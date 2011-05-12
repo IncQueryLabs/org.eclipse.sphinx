@@ -42,7 +42,9 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
  * @see ResourceProblemMarkerService#updateProblemMarkers(Collection, boolean,
  *      org.eclipse.core.runtime.IProgressMonitor)
  */
+@SuppressWarnings("restriction")
 public class ReferenceWorkspaceChangeListener implements IResourceChangeListener {
+
 	protected Set<IFile> changedFiles = new HashSet<IFile>();
 	protected Set<IFile> addedFiles = new HashSet<IFile>();
 	protected Set<IProject> renamedProjects = new HashSet<IProject>();

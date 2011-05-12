@@ -38,7 +38,9 @@ import org.eclipse.sphinx.emf.internal.resource.ResourceProblemMarkerService;
  * @see ResourceProblemMarkerService#updateProblemMarkers(Collection, boolean,
  *      org.eclipse.core.runtime.IProgressMonitor)
  */
+@SuppressWarnings("restriction")
 public class ResourceProblemListener extends ResourceSetListenerImpl {
+
 	protected List<Resource> errorResources = new ArrayList<Resource>();
 
 	/**
