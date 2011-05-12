@@ -318,8 +318,4 @@ public final class WorkspaceEditingDomainUtil {
 	public static Collection<TransactionalEditingDomain> getAllEditingDomains() {
 		return getEditingDomains(ResourcesPlugin.getWorkspace().getRoot());
 	}
-
-	public static boolean isEditingDomainDisposed(TransactionalEditingDomain editingDomain) {
-		return editingDomain.getID() == null && editingDomain.getCommandStack() == null;
-	}
 }
