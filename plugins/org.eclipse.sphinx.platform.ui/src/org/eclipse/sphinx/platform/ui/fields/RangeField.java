@@ -270,4 +270,20 @@ public class RangeField extends BasicField {
 			}
 		}
 	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#dispose()
+	 */
+	@Override
+	public void dispose() {
+		super.dispose();
+		for (int i = 0; i < fItemCount; i++) {
+			if (isOkToUse(fTextsControls[i])) {
+				fTextsControls[i].dispose();
+			}
+			if (isOkToUse(fLabelsControls[i])) {
+				fLabelsControls[i].dispose();
+			}
+		}
+	}
 }

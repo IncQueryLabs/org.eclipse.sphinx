@@ -24,13 +24,19 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * <p align=justify> Dialog field containing a label and a text control. </p>
+ * <p align=justify>
+ * Dialog field containing a label and a text control.
+ * </p>
  * <table>
  * <td valign=top>
  * <p>
  * <b>Note&nbsp;&nbsp;</b></td>
- * <td valign=top><p align=justify> Parts have been commented (content assist for example). These parts are not needed
- * for the moment, but one day, they could be useful! </p></td>
+ * <td valign=top>
+ * <p align=justify>
+ * Parts have been commented (content assist for example). These parts are not needed for the moment, but one day, they
+ * could be useful!
+ * </p>
+ * </td>
  * </table>
  */
 public class StringField extends BasicField implements IStringField {
@@ -207,7 +213,7 @@ public class StringField extends BasicField implements IStringField {
 		}
 	}
 
-	// ------ enable / disable management
+	// ------ enable / disable management and dispose
 
 	/*
 	 * @see BasicField#updateEnableState
@@ -217,6 +223,17 @@ public class StringField extends BasicField implements IStringField {
 		super.updateEnableState();
 		if (isOkToUse(fTextControl)) {
 			fTextControl.setEnabled(isEnabled());
+		}
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#dispose()
+	 */
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (isOkToUse(fTextControl)) {
+			fTextControl.dispose();
 		}
 	}
 

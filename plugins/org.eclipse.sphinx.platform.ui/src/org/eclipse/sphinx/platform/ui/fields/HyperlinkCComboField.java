@@ -173,7 +173,7 @@ public class HyperlinkCComboField extends BasicHyperlinkField implements ICCombo
 		dialogFieldChanged();
 	}
 
-	// ------ enable / disable management
+	// ------ enable / disable and dispose management
 
 	/*
 	 * @see BasicField#updateEnableState
@@ -183,6 +183,17 @@ public class HyperlinkCComboField extends BasicHyperlinkField implements ICCombo
 		super.updateEnableState();
 		if (isOkToUse(fCComboControl)) {
 			fCComboControl.setEnabled(isEnabled());
+		}
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#dispose()
+	 */
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (isOkToUse(fCComboControl)) {
+			fCComboControl.dispose();
 		}
 	}
 

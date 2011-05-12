@@ -27,8 +27,12 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 
 /**
- * <p align=center> <b><em>String Button Dialog Field</em></b> </p> <p align=justify> Dialog field containing a label,
- * text control and a button control. </p>
+ * <p align=center>
+ * <b><em>String Button Dialog Field</em></b>
+ * </p>
+ * <p align=justify>
+ * Dialog field containing a label, text control and a button control.
+ * </p>
  */
 public class HyperlinkStringButtonField extends HyperlinkStringField implements IStringButtonField {
 
@@ -159,7 +163,7 @@ public class HyperlinkStringButtonField extends HyperlinkStringField implements 
 		return control;
 	}
 
-	// ------ enable / disable management
+	// ------ enable / disable and dispose management
 
 	/**
 	 * Sets the enable state of the button.
@@ -179,6 +183,17 @@ public class HyperlinkStringButtonField extends HyperlinkStringField implements 
 		super.updateEnableState();
 		if (isOkToUse(fBrowseButton)) {
 			fBrowseButton.setEnabled(isEnabled() && fButtonEnabled);
+		}
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#dispose()
+	 */
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (isOkToUse(fBrowseButton)) {
+			fBrowseButton.dispose();
 		}
 	}
 }

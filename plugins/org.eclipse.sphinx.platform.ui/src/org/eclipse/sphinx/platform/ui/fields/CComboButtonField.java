@@ -26,8 +26,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * <p align=center> <b><em>Combo Field</em></b> </p> <p align=justify> Field containing a label, a combo control and a
- * button. </p>
+ * <p align=center>
+ * <b><em>Combo Field</em></b>
+ * </p>
+ * <p align=justify>
+ * Field containing a label, a combo control and a button.
+ * </p>
  */
 public class CComboButtonField extends CComboField implements ICComboButtonField {
 
@@ -186,7 +190,7 @@ public class CComboButtonField extends CComboField implements ICComboButtonField
 		return control;
 	}
 
-	// ------ enable / disable management
+	// ------ enable / disable and dispose management
 
 	/**
 	 * Sets the enable state of the button.
@@ -206,6 +210,17 @@ public class CComboButtonField extends CComboField implements ICComboButtonField
 		super.updateEnableState();
 		if (isOkToUse(fBrowseButton)) {
 			fBrowseButton.setEnabled(isEnabled() && fButtonEnabled);
+		}
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#dispose()
+	 */
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (isOkToUse(fBrowseButton)) {
+			fBrowseButton.dispose();
 		}
 	}
 }

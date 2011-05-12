@@ -22,7 +22,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 /**
- * <p align=center> <b><em>Separator</em></b> </p> <p align=justify> Dialog field describing a separator. </p>
+ * <p align=center>
+ * <b><em>Separator</em></b>
+ * </p>
+ * <p align=justify>
+ * Dialog field describing a separator.
+ * </p>
  */
 public class Separator extends BasicField {
 
@@ -90,5 +95,16 @@ public class Separator extends BasicField {
 			fSeparator = new Label(parent, fStyle);
 		}
 		return fSeparator;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#dispose()
+	 */
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (isOkToUse(fSeparator)) {
+			fSeparator.dispose();
+		}
 	}
 }

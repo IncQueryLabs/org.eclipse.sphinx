@@ -27,8 +27,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 
 /**
- * <p align=center> <b><em>Combo Field</em></b> </p> <p align=justify> Field containing a label, a combo control and a
- * button. </p>
+ * <p align=center>
+ * <b><em>Combo Field</em></b>
+ * </p>
+ * <p align=justify>
+ * Field containing a label, a combo control and a button.
+ * </p>
  */
 public class HyperlinkCComboButtonField extends HyperlinkCComboField implements ICComboButtonField {
 
@@ -159,7 +163,7 @@ public class HyperlinkCComboButtonField extends HyperlinkCComboField implements 
 		return control;
 	}
 
-	// ------ enable / disable management
+	// ------ enable / disable and dispose management
 
 	/**
 	 * Sets the enable state of the button.
@@ -169,6 +173,17 @@ public class HyperlinkCComboButtonField extends HyperlinkCComboField implements 
 			fBrowseButton.setEnabled(isEnabled() && enable);
 		}
 		fButtonEnabled = enable;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#dispose()
+	 */
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (isOkToUse(fBrowseButton)) {
+			fBrowseButton.dispose();
+		}
 	}
 
 	/*

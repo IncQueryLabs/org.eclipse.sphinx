@@ -27,7 +27,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * <p align=center> <b><em>Combo Field</em></b> </p> <p align=justify> Field containing a label and a combo control.
+ * <p align=center>
+ * <b><em>Combo Field</em></b>
+ * </p>
+ * <p align=justify>
+ * Field containing a label and a combo control.
  * </p>
  */
 public class CComboField extends BasicField implements ICComboField {
@@ -197,7 +201,7 @@ public class CComboField extends BasicField implements ICComboField {
 		dialogFieldChanged();
 	}
 
-	// ------ enable / disable management
+	// ------ enable / disable and dispose management
 
 	/*
 	 * @see BasicField#updateEnableState
@@ -207,6 +211,17 @@ public class CComboField extends BasicField implements ICComboField {
 		super.updateEnableState();
 		if (isOkToUse(fCComboControl)) {
 			fCComboControl.setEnabled(isEnabled());
+		}
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#dispose()
+	 */
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (isOkToUse(fCComboControl)) {
+			fCComboControl.dispose();
 		}
 	}
 

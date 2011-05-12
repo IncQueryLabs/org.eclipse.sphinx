@@ -239,7 +239,7 @@ public class SelectionButtonField extends BasicField {
 		setButtonSelection(selected);
 	}
 
-	// ------ enable / disable management
+	// ------ enable / disable and dispose management
 
 	/*
 	 * @see BasicField#updateEnableState
@@ -249,6 +249,22 @@ public class SelectionButtonField extends BasicField {
 		super.updateEnableState();
 		if (isOkToUse(fButton)) {
 			fButton.setEnabled(isEnabled());
+		}
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#dispose()
+	 */
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (isOkToUse(fButton)) {
+			fButton.dispose();
+		}
+		if (fAttachedDialogFields != null) {
+			for (BasicField element : fAttachedDialogFields) {
+				element.dispose();
+			}
 		}
 	}
 

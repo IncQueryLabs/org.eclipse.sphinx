@@ -26,8 +26,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * <p align=center> <b><em>String Button Dialog Field</em></b> </p> <p align=justify> Dialog field containing a label,
- * text control and a button control. </p>
+ * <p align=center>
+ * <b><em>String Button Dialog Field</em></b>
+ * </p>
+ * <p align=justify>
+ * Dialog field containing a label, text control and a button control.
+ * </p>
  */
 public class StringButtonField extends StringField implements IStringButtonField {
 
@@ -166,7 +170,7 @@ public class StringButtonField extends StringField implements IStringButtonField
 		return control;
 	}
 
-	// ------ enable / disable management
+	// ------ enable / disable and dispose management
 
 	/**
 	 * Sets the enable state of the button.
@@ -186,6 +190,17 @@ public class StringButtonField extends StringField implements IStringButtonField
 		super.updateEnableState();
 		if (isOkToUse(fBrowseButton)) {
 			fBrowseButton.setEnabled(isEnabled() && fButtonEnabled);
+		}
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#dispose()
+	 */
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (isOkToUse(fBrowseButton)) {
+			fBrowseButton.dispose();
 		}
 	}
 }

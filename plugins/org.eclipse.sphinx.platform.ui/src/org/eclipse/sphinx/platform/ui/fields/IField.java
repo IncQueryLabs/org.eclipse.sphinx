@@ -18,7 +18,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * <p align=center><b><em>Sphinx Platform Field </em></b></p>
+ * <p align=center>
+ * <b><em>Sphinx Platform Field </em></b>
+ * </p>
  * <p>
  * A platform field is made of several controls (i.e. widgets such as: <em>label</em>, <em>text</em>, <em>combo</em>,
  * <em>button</em>, <em>list</em>, etc.). From the association of such controls result a field whose behavior is
@@ -67,6 +69,11 @@ public interface IField {
 	void setEnabled(boolean enabled);
 
 	/**
+	 * Gets the enable state of the dialog field.
+	 */
+	boolean isEnabled();
+
+	/**
 	 * Sets the label of the dialog field.
 	 * 
 	 * @param labeltext
@@ -97,4 +104,9 @@ public interface IField {
 	 *            The field listener to remove.
 	 */
 	void removeFieldListener(IFieldListener listener);
+
+	/**
+	 * Disposes of the operating system resources associated with the field.
+	 */
+	void dispose();
 }

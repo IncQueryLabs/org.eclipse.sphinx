@@ -32,7 +32,9 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
 /**
- * <p align=center><b><em> Basic Platform Field </em></b></p>
+ * <p align=center>
+ * <b><em> Basic Platform Field </em></b>
+ * </p>
  * <p>
  * Base class of all dialog fields. Dialog fields manage controls together with the model, independently from the
  * creation time of the widgets.
@@ -312,13 +314,13 @@ public class BasicField implements IField {
 	}
 
 	// ------------------------------------------------------------------------
-	// Enable/Disable state management
+	// Enable/Disable state management and Dispose field
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Gets the enable state of the dialog field.
 	 */
-	protected final boolean isEnabled() {
+	public final boolean isEnabled() {
 		return fEnabled;
 	}
 
@@ -338,6 +340,15 @@ public class BasicField implements IField {
 	protected void updateEnableState() {
 		if (fLabelControl != null) {
 			fLabelControl.setEnabled(fEnabled);
+		}
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#dispose()
+	 */
+	public void dispose() {
+		if (isOkToUse(fLabelControl)) {
+			fLabelControl.dispose();
 		}
 	}
 
@@ -364,14 +375,18 @@ public class BasicField implements IField {
 	// ------------------------------------------------------------------------
 
 	/*
-	 * @see org.eclipse.sphinx.platform.ui.fields.IField#addFieldListener(org.eclipse.sphinx.platform.ui.fields.IFieldListener)
+	 * @see
+	 * org.eclipse.sphinx.platform.ui.fields.IField#addFieldListener(org.eclipse.sphinx.platform.ui.fields.IFieldListener
+	 * )
 	 */
 	public final void addFieldListener(IFieldListener listener) {
 		fFieldListeners.add(listener);
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.platform.ui.fields.IField#removeFieldListener(org.eclipse.sphinx.platform.ui.fields.IFieldListener)
+	 * @see
+	 * org.eclipse.sphinx.platform.ui.fields.IField#removeFieldListener(org.eclipse.sphinx.platform.ui.fields.IFieldListener
+	 * )
 	 */
 	public void removeFieldListener(IFieldListener listener) {
 		fFieldListeners.remove(listener);

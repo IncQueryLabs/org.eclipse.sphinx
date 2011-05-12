@@ -489,7 +489,7 @@ public class ListField extends BasicField {
 		}
 	}
 
-	// ------ enable / disable management
+	// ------ enable / disable and dispose management
 
 	/*
 	 * @see BasicField#dialogFieldChanged
@@ -562,6 +562,22 @@ public class ListField extends BasicField {
 	private boolean isButtonEnabled(ISelection sel, int index) {
 		boolean extraState = getManagedButtonState(sel, index);
 		return isEnabled() && extraState && fButtonsEnabled != null && fButtonsEnabled[index];
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#dispose()
+	 */
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (isOkToUse(fTableControl)) {
+			fTableControl.dispose();
+		}
+		for (Button control : fButtonControls) {
+			if (isOkToUse(control)) {
+				control.dispose();
+			}
+		}
 	}
 
 	// ------ model access
