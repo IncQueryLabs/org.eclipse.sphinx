@@ -36,7 +36,6 @@ import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird10.Interface;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.testutils.integration.ReferenceWorkspaceChangeListener;
-import org.eclipse.sphinx.testutils.integration.ResourceProblemListener;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 import org.eclipse.uml2.uml.Model;
@@ -46,8 +45,8 @@ import org.eclipse.uml2.uml.UMLPackage;
 
 @SuppressWarnings("nls")
 public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTestCase {
-	ResourceProblemListener resourceListener = getResourceProblemListener();
-	ReferenceWorkspaceChangeListener referenceWorkspaceChangeListener = getReferenceWorkspaceChangeListener();
+
+	private ReferenceWorkspaceChangeListener referenceWorkspaceChangeListener = getReferenceWorkspaceChangeListener();
 
 	@Override
 	protected String[] getProjectsToLoad() {
