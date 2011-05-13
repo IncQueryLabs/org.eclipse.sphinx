@@ -11,7 +11,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources;visibility:=reexport,
  org.eclipse.core.expressions,
  org.apache.xerces,
- org.apache.commons.cli;bundle-version="1.0.0"
+ org.apache.commons.cli
 Export-Package: org.eclipse.sphinx.platform,
  org.eclipse.sphinx.platform.cli,
  org.eclipse.sphinx.platform.internal;x-internal:=true,
