@@ -45,6 +45,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -1455,37 +1456,50 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		if (externalResource.exists()) {
 			if (externalResource.isDirectory()) {
 				// Copy files and folders inside external directory to target container
-				IFolder targetFolder = targetContainer.getFolder(new Path(externalResource.getName()));
+				IContainer importedContainer;
+				if (targetContainer instanceof IWorkspaceRoot) {
+					importedContainer = ((IWorkspaceRoot) targetContainer).getProject(externalResource.getName());
+				} else {
+					importedContainer = targetContainer.getFolder(new Path(externalResource.getName()));
+				}
 				for (File file : externalResource.listFiles()) {
-					importExternalResourceToWorkspace(file, targetFolder);
+					importExternalResourceToWorkspace(file, importedContainer);
 				}
 			} else {
 				// Make sure that target container exists
 				createContainerTree(targetContainer);
 
 				// Copy external file to target container
-				IFile targetFile = targetContainer.getFile(new Path(externalResource.getName()));
+				IFile importedFile = targetContainer.getFile(new Path(externalResource.getName()));
 				InputStream externalFileContents = new FileInputStream(externalResource);
-				if (targetFile.exists()) {
+				if (importedFile.exists()) {
 					// Overwrite old file's contents
-					targetFile.setContents(externalFileContents, true, false, null);
+					importedFile.setContents(externalFileContents, true, false, null);
 				} else {
 					// Create new file at the targetLocation
 					try {
-						targetFile.create(externalFileContents, true, null);
+						importedFile.create(externalFileContents, true, null);
 					} catch (Exception ex) {
 						// In case, there is an exception while creating new file because of target file some how
 						// was already exist, try to overwrite its contents
 						if (ex.getMessage().contains("already exists")) {
 							// Overwrite old file's contents
 							externalFileContents = new FileInputStream(externalResource);
-							targetFile.setContents(externalFileContents, true, false, null);
+							importedFile.setContents(externalFileContents, true, false, null);
 						} else {
 							throw ex;
 						}
 					}
 				}
 			}
+		}
+	}
+
+	private IContainer getContainer(IContainer parentContainer, String path) {
+		if (parentContainer instanceof IWorkspaceRoot) {
+			return ((IWorkspaceRoot) parentContainer).getProject(path);
+		} else {
+			return parentContainer.getFolder(new Path(path));
 		}
 	}
 
