@@ -1476,14 +1476,13 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 					// Overwrite old file's contents
 					importedFile.setContents(externalFileContents, true, false, null);
 				} else {
-					// Create new file at the targetLocation
+					// Create new file in target container
 					try {
 						importedFile.create(externalFileContents, true, null);
 					} catch (Exception ex) {
-						// In case, there is an exception while creating new file because of target file some how
-						// was already exist, try to overwrite its contents
+						// Exception complaining that imported file already exists?
 						if (ex.getMessage().contains("already exists")) {
-							// Overwrite old file's contents
+							// Overwrite existing file's contents
 							externalFileContents = new FileInputStream(externalResource);
 							importedFile.setContents(externalFileContents, true, false, null);
 						} else {
@@ -1492,14 +1491,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 					}
 				}
 			}
-		}
-	}
-
-	private IContainer getContainer(IContainer parentContainer, String path) {
-		if (parentContainer instanceof IWorkspaceRoot) {
-			return ((IWorkspaceRoot) parentContainer).getProject(path);
-		} else {
-			return parentContainer.getFolder(new Path(path));
 		}
 	}
 
