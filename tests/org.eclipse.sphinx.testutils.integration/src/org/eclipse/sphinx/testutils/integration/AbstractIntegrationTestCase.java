@@ -178,13 +178,13 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			loadReferenceWorkspaceSourceDir();
 		}
 
-		// Delete un-used reference projects which imported for the previous test.
+		// Delete un-used reference projects which imported for the previous test
 		synchronizedDeleteProjects(getUnusedReferenceProjects());
 
 		org.eclipse.sphinx.emf.workspace.Activator.getPlugin().stopWorkspaceSynchronizing();
 
 		importMissingReferenceProjectsToWorkspace();
-		// In case previous test failed and tearDown() were not called, projects are still closed, open them.
+		// In case previous test failed and tearDown() were not called, projects are still closed, open them
 		synchronizedOpenAllProjects();
 
 		importMissingReferenceFilesToWorkspace();
@@ -206,7 +206,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			assertReferenceWorkspaceInitialized();
 		}
 
-		// Add ReferenceWorkspaceChangeListener to listening in workspace changes during the test.
+		// Add ReferenceWorkspaceChangeListener to listening in workspace changes during the test
 		internalRefWks.addReferenceWorkspaceChangeListener(referenceWorkspaceChangeListener);
 		org.eclipse.sphinx.emf.workspace.Activator.getPlugin().startWorkspaceSynchronizing();
 	}
@@ -1527,9 +1527,25 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		}
 	}
 
-	protected void importInputFileToWorkspace(String inputFileName, IContainer targetContainer) throws Exception {
+	protected void synchronizedImportExternalResourceToWorkspace(final File externalResource, final IContainer targetContainer) throws Exception {
+		waitForModelLoading();
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				try {
+					importExternalResourceToWorkspace(externalResource, targetContainer);
+				} catch (Exception ex) {
+					IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
+					throw new CoreException(status);
+				}
+			}
+		};
+		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		waitForModelLoading();
+	}
+
+	protected void synchronizedImportInputFileToWorkspace(String inputFileName, IContainer targetContainer) throws Exception {
 		java.net.URI inputFileURI = getTestFileAccessor().getInputFileURI(inputFileName, true);
-		importExternalResourceToWorkspace(new File(inputFileURI), targetContainer);
+		synchronizedImportExternalResourceToWorkspace(new File(inputFileURI), targetContainer);
 	}
 
 	protected File getReferenceWorkspaceSourceDir() {
