@@ -183,11 +183,11 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 		org.eclipse.sphinx.emf.workspace.Activator.getPlugin().stopWorkspaceSynchronizing();
 
-		importReferenceProjects();
+		importMissingReferenceProjectsToWorkspace();
 		// In case previous test failed and tearDown() were not called, projects are still closed, open them.
 		synchronizedOpenAllProjects();
 
-		importMissingFiles();
+		importMissingReferenceFilesToWorkspace();
 
 		createInterProjectReferences();
 
@@ -375,7 +375,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			if (project.exists()) {
 				assertTrue(project.isOpen());
 				File projectSourceDir = new File(referenceWorkspaceSourceDir, project.getName());
-				importReferenceResourceToWorkspace(new File(projectSourceDir, ".project"), project);
+				importExternalResourceToWorkspace(new File(projectSourceDir, ".project"), project);
 			}
 		}
 	}
@@ -391,7 +391,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			if (project.exists()) {
 				assertTrue(project.isOpen());
 				File projectSourceDir = new File(referenceWorkspaceSourceDir, project.getName());
-				importReferenceResourceToWorkspace(new File(projectSourceDir + ".settings"), project.getFolder(".settings"));
+				importExternalResourceToWorkspace(new File(projectSourceDir + ".settings"), project);
 			}
 		}
 	}
@@ -466,12 +466,14 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		waitForModelLoading();
 	}
 
-	protected void importReferenceProjects() throws Exception {
-		Set<IProject> missingProjects = getMissingProjects();
-		importReferenceProjectsToWorkspace(missingProjects);
+	private void importMissingReferenceProjectsToWorkspace() throws Exception {
+		Set<IProject> missingProjects = getMissingReferenceProjects();
+		for (IProject project : missingProjects) {
+			importExternalResourceToWorkspace(new File(referenceWorkspaceSourceDir, project.getName()), project.getParent());
+		}
 	}
 
-	private Set<IProject> getMissingProjects() {
+	private Set<IProject> getMissingReferenceProjects() {
 		Set<IProject> missingReferenceProjects = new HashSet<IProject>();
 		for (ReferenceProjectDescriptor descriptor : internalRefWks.getReferenceProjectDescriptors()) {
 			if (!descriptor.getProject().exists()) {
@@ -509,7 +511,17 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		return unusedReferenceProjects;
 	}
 
-	private Set<IFile> getMissingFile() {
+	private void importMissingReferenceFilesToWorkspace() throws Exception {
+		for (IFile missingFile : getMissingReferenceFiles()) {
+			File sourceFile = referenceWorkspaceSourceDir;
+			for (String segment : missingFile.getFullPath().segments()) {
+				sourceFile = new File(sourceFile, segment);
+			}
+			importExternalResourceToWorkspace(sourceFile, missingFile.getParent());
+		}
+	}
+
+	private Set<IFile> getMissingReferenceFiles() {
 		Set<IFile> missingReferenceFiles = new HashSet<IFile>();
 		for (IFile file : refWks.getAllReferenceFiles()) {
 			if (!file.exists()) {
@@ -517,21 +529,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			}
 		}
 		return missingReferenceFiles;
-	}
-
-	protected void importFilesToWorkspace(Set<IFile> missingFiles) throws Exception {
-		for (IFile missingFile : missingFiles) {
-			File sourceFile = referenceWorkspaceSourceDir;
-			for (String segment : missingFile.getFullPath().segments()) {
-				sourceFile = new File(sourceFile, segment);
-			}
-			importReferenceResourceToWorkspace(sourceFile, missingFile.getParent());
-		}
-	}
-
-	private void importMissingFiles() throws Exception {
-		Set<IFile> missingReferenceFiles = getMissingFile();
-		importFilesToWorkspace(missingReferenceFiles);
 	}
 
 	private void unzipArchiveFile() throws CoreException {
@@ -599,7 +596,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	private void assertExpectedReferenceProjectsExist() {
-		Set<IProject> missingReferenceProjects = getMissingProjects();
+		Set<IProject> missingReferenceProjects = getMissingReferenceProjects();
 
 		if (missingReferenceProjects.size() > 0) {
 			System.err.println("Missing reference project(s):");
@@ -612,7 +609,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	private void assertExpectedReferenceFilesExist() {
-		Set<IFile> missingReferenceFiles = getMissingFile();
+		Set<IFile> missingReferenceFiles = getMissingReferenceFiles();
 		if (missingReferenceFiles.size() > 0) {
 			System.err.println("Missing reference file(s):");
 			for (IFile file : missingReferenceFiles) {
@@ -1443,42 +1440,46 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		}
 	}
 
+	/**
+	 * @deprecated Use {@link AbstractIntegrationTestCase#importExternalResourceToWorkspace(File, IContainer)} instead.
+	 */
+	@Deprecated
 	protected void importReferenceResourceToWorkspace(File referenceSource, IContainer targetContainer) throws Exception {
-		assertNotNull(referenceSource);
+		importExternalResourceToWorkspace(referenceSource, targetContainer);
+	}
+
+	protected void importExternalResourceToWorkspace(File externalResource, IContainer targetContainer) throws Exception {
+		assertNotNull(externalResource);
 		assertNotNull(targetContainer);
 
-		if (referenceSource.exists()) {
-			if (referenceSource.isDirectory()) {
-				// Copy files and folders inside the reference source directory to target container
-				for (File file : referenceSource.listFiles()) {
-					if (file.isDirectory()) {
-						IFolder subFolder = targetContainer.getFolder(new Path(file.getName()));
-						importReferenceResourceToWorkspace(file, subFolder);
-					} else {
-						importReferenceResourceToWorkspace(file, targetContainer);
-					}
+		if (externalResource.exists()) {
+			if (externalResource.isDirectory()) {
+				// Copy files and folders inside external directory to target container
+				IFolder targetFolder = targetContainer.getFolder(new Path(externalResource.getName()));
+				for (File file : externalResource.listFiles()) {
+					importExternalResourceToWorkspace(file, targetFolder);
 				}
 			} else {
 				// Make sure that target container exists
 				createContainerTree(targetContainer);
 
-				// Copy reference source file to target container
-				IFile targetFile = targetContainer.getFile(new Path(referenceSource.getName()));
-				InputStream sourceFileContents = new FileInputStream(referenceSource);
+				// Copy external file to target container
+				IFile targetFile = targetContainer.getFile(new Path(externalResource.getName()));
+				InputStream externalFileContents = new FileInputStream(externalResource);
 				if (targetFile.exists()) {
 					// Overwrite old file's contents
-					targetFile.setContents(sourceFileContents, true, false, null);
+					targetFile.setContents(externalFileContents, true, false, null);
 				} else {
-					// create new file at the targetLocation
+					// Create new file at the targetLocation
 					try {
-						targetFile.create(sourceFileContents, true, null);
+						targetFile.create(externalFileContents, true, null);
 					} catch (Exception ex) {
 						// In case, there is an exception while creating new file because of target file some how
 						// was already exist, try to overwrite its contents
 						if (ex.getMessage().contains("already exists")) {
 							// Overwrite old file's contents
-							sourceFileContents = new FileInputStream(referenceSource);
-							targetFile.setContents(sourceFileContents, true, false, null);
+							externalFileContents = new FileInputStream(externalResource);
+							targetFile.setContents(externalFileContents, true, false, null);
 						} else {
 							throw ex;
 						}
@@ -1524,16 +1525,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				parentContainer = folder;
 			}
 		}
-	}
-
-	protected void importReferenceProjectsToWorkspace(Collection<IProject> projects) throws Exception {
-		for (IProject project : projects) {
-			importReferenceProjectToWorkspace(project);
-		}
-	}
-
-	protected void importReferenceProjectToWorkspace(IProject project) throws Exception {
-		importReferenceResourceToWorkspace(new File(referenceWorkspaceSourceDir, project.getName()), project);
 	}
 
 	protected File getReferenceWorkspaceSourceDir() {
