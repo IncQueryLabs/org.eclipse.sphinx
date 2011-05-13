@@ -1527,6 +1527,11 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		}
 	}
 
+	protected void importInputFileToWorkspace(String inputFileName, IContainer targetContainer) throws Exception {
+		java.net.URI inputFileURI = getTestFileAccessor().getInputFileURI(inputFileName, true);
+		importExternalResourceToWorkspace(new File(inputFileURI), targetContainer);
+	}
+
 	protected File getReferenceWorkspaceSourceDir() {
 		return referenceWorkspaceSourceDir;
 	}
