@@ -262,7 +262,9 @@ public class ExtensionGroup extends AbstractGroup {
 			final IXtendXpandProject project = org.eclipse.xtend.shared.ui.Activator.getExtXptModelManager().findProject(extensionFile);
 			if (project != null) {
 				final IXtendXpandResource resource = project.findXtendXpandResource(extensionFile);
-				return (ExtensionFile) resource.getExtXptResource();
+				if (resource != null) {
+					return (ExtensionFile) resource.getExtXptResource();
+				}
 			}
 		}
 		return null;

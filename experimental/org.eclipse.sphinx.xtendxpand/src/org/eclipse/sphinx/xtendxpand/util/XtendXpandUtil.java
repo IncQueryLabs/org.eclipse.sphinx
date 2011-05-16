@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.xtendxpand.util;
 
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +21,10 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
@@ -77,8 +79,20 @@ public final class XtendXpandUtil {
 		if (resourceURL != null) {
 			try {
 				Path location = new Path(resourceURL.toURI().getPath());
-				return ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(location);
-			} catch (URISyntaxException ex) {
+				IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+				if (workspaceRoot.getLocation().isPrefixOf(location)) {
+					return workspaceRoot.getFileForLocation(location);
+				}
+				// Checks whether there given file store points to a file in the workspace
+				IFileStore fileStore = EFS.getStore(resourceURL.toURI());
+				if (fileStore != null) {
+					IFile[] files = workspaceRoot.findFilesForLocationURI(fileStore.toURI());
+					if (files != null && files.length > 0) {
+						// Returns the first workspace file that match
+						return files[0];
+					}
+				}
+			} catch (Exception ex) {
 				// Ignore exception
 			}
 		}

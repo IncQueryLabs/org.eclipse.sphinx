@@ -275,7 +275,9 @@ public class TemplateGroup extends AbstractGroup {
 			final IXtendXpandProject project = org.eclipse.xtend.shared.ui.Activator.getExtXptModelManager().findProject(templateFile);
 			if (project != null) {
 				final IXtendXpandResource resource = project.findXtendXpandResource(templateFile);
-				return (Template) resource.getExtXptResource();
+				if (resource != null) {
+					return (Template) resource.getExtXptResource();
+				}
 			}
 		}
 		return null;
