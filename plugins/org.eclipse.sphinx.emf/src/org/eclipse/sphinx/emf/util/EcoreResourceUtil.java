@@ -140,10 +140,21 @@ public final class EcoreResourceUtil {
 
 		// FIXME File bug to EMF: CommonPlugin.asLocalURI() is unable to convert URIs that start with a driver letter
 		// (IOException raised and caught internally)
-		if (!uri.isFile() && uri.scheme() != null && uri.scheme().matches("[A-Z]")) { //$NON-NLS-1$
+		if (!uri.isRelative() && uri.scheme().matches("[A-Z]")) { //$NON-NLS-1$
 			uri = URI.createFileURI(uri.toString());
 		}
-		return CommonPlugin.asLocalURI(uri);
+
+		// Try to convert given URI to absolute file URI right away
+		URI convertedURI = CommonPlugin.asLocalURI(uri);
+
+		// Resulting URI still relative?
+		if (convertedURI.isRelative()) {
+			// Normalize given URI and try to convert it again
+			uri = getURIConverter().normalize(uri);
+			convertedURI = CommonPlugin.asLocalURI(uri);
+		}
+
+		return convertedURI;
 	}
 
 	/**

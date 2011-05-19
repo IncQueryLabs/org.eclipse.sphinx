@@ -57,6 +57,7 @@ import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.tests.emf.integration.internal.Activator;
+import org.eclipse.sphinx.tests.emf.integration.internal.Activator.Implementation;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 import org.eclipse.uml2.uml.Model;
@@ -67,9 +68,10 @@ import org.eclipse.uml2.uml.UMLPackage;
 
 @SuppressWarnings("nls")
 public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
-	private static final String SAMPLE_RESOURCE_NAME = "sampleResource.uml";
-	private static final String SAMPLE_RESOURCE_URI_PLATFORM_META = "platform:/meta/" + Activator.getPlugin().getSymbolicName() + "/"
-			+ SAMPLE_RESOURCE_NAME;
+
+	private static final String SAMPLE_META_FILE_NAME = "sampleResource.uml";
+	private static final Implementation SAMPLE_META_FILE_PLUGIN = Activator.getPlugin();
+	private static final String SAMPLE_META_FILE_URI = "platform:/meta/" + SAMPLE_META_FILE_PLUGIN.getSymbolicName() + "/" + SAMPLE_META_FILE_NAME;
 
 	List<String> hbProject10AResources10;
 	int resources10FromHbProject10_A;
@@ -112,7 +114,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 	@Override
 	protected void tearDown() throws Exception {
-		deleteExternalResource(SAMPLE_RESOURCE_URI_PLATFORM_META);
+		deleteExternalResource(SAMPLE_META_FILE_URI);
 
 		// Unload outside workspace resources manually (only resources inside workspace will be unloaded automatically)
 		if (retrievedOutsideWorkspaceHb20Root != null) {
@@ -168,7 +170,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 				+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1)));
 
 		// Given URI is Meta URI
-		URI uri_meta = URI.createURI(SAMPLE_RESOURCE_URI_PLATFORM_META, true);
+		URI uri_meta = URI.createURI(SAMPLE_META_FILE_URI, true);
 		Resource resource_meta = new XMIResourceImpl(uri_meta);
 		String modelName_2 = "Uml2Model_2";
 		Model uml2Model_2 = UMLFactory.eINSTANCE.createModel();
@@ -187,10 +189,10 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		}
 		assertTrue(EcoreResourceUtil.exists(uri_meta));
 
-		// Other kind
-		java.net.URI existingResourceURI = getTestFileAccessor().getInputFileURI("hbFile20.instancemodel");
-		URI emfExistingResourceUri = getTestFileAccessor().convertToEMFURI(existingResourceURI);
-		assertTrue(existingResourceURI.toString() + " is not exist", EcoreResourceUtil.exists(emfExistingResourceUri));
+		// Plug-in URI
+		URI platformPluginURI = URI.createPlatformPluginURI(
+				"/" + Activator.getPlugin().getSymbolicName() + "/resources/input/hbFile20.instancemodel", true);
+		assertTrue(platformPluginURI.toString() + " is not exist", EcoreResourceUtil.exists(platformPluginURI));
 
 		URI unexistingResourceURI = URI.createURI(Activator.getPlugin().getBundle().getLocation() + "dummy.txt");
 		assertFalse(unexistingResourceURI.toString(), EcoreResourceUtil.exists(unexistingResourceURI));
@@ -1255,6 +1257,60 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 				+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, true);
 		assertNull(EcoreResourceUtil.readTargetNamespace(EcoreResourceUtil.getURIConverter(refWks.editingDomain20.getResourceSet()), unexistUri));
 
+	}
+
+	/**
+	 * Test method for {@link EcoreResourceUtil#convertToAbsoluteFileURI(URI)}.
+	 */
+	public void testConvertToAbsoluteFileURI() throws Exception {
+		IFile workspaceFile = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
+		URI absoluteWorkspaceFileURI = URI.createFileURI(workspaceFile.getLocation().toString());
+
+		// platform:/resource URI
+		URI platformResourceURI = URI.createPlatformResourceURI(workspaceFile.getFullPath().toString(), true);
+		URI convertedURI = EcoreResourceUtil.convertToAbsoluteFileURI(platformResourceURI);
+
+		assertFalse(convertedURI.isPlatformResource());
+		assertTrue(convertedURI.isFile());
+		assertEquals(absoluteWorkspaceFileURI, convertedURI);
+
+		// file:/ URI
+		convertedURI = EcoreResourceUtil.convertToAbsoluteFileURI(absoluteWorkspaceFileURI);
+
+		assertTrue(convertedURI.isFile());
+		assertEquals(absoluteWorkspaceFileURI, convertedURI);
+
+		// platform:/plugin URI
+		URI platformPluginURI = URI.createPlatformPluginURI(
+				"/" + Activator.getPlugin().getSymbolicName() + "/resources/input/hbFile20.instancemodel", true);
+		convertedURI = EcoreResourceUtil.convertToAbsoluteFileURI(platformPluginURI);
+
+		assertFalse(convertedURI.isPlatformPlugin());
+		assertTrue(convertedURI.isFile());
+		assertTrue(convertedURI.toString().endsWith(platformPluginURI.lastSegment()));
+
+		// platform:/meta URI
+		URI platformMetaURI = URI.createURI(SAMPLE_META_FILE_URI, true);
+		URI absoluteSampleMetaFileURI = URI.createFileURI(SAMPLE_META_FILE_PLUGIN.getStateLocation().append(SAMPLE_META_FILE_NAME).toString());
+		convertedURI = EcoreResourceUtil.convertToAbsoluteFileURI(platformMetaURI);
+
+		assertFalse(convertedURI.isPlatform());
+		assertTrue(convertedURI.isFile());
+		assertEquals(absoluteSampleMetaFileURI, convertedURI);
+
+		// scheme-less, workspace-relative URI
+		URI uri = URI.createURI(workspaceFile.getFullPath().toString(), true);
+		convertedURI = EcoreResourceUtil.convertToAbsoluteFileURI(uri);
+
+		assertTrue(convertedURI.isFile());
+		assertEquals(absoluteWorkspaceFileURI, convertedURI);
+
+		// scheme-less, absolute URI
+		uri = URI.createURI(workspaceFile.getLocation().toString(), true);
+		convertedURI = EcoreResourceUtil.convertToAbsoluteFileURI(uri);
+
+		assertTrue(convertedURI.isFile());
+		assertEquals(absoluteWorkspaceFileURI, convertedURI);
 	}
 
 	/**
