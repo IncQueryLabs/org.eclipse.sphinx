@@ -392,7 +392,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			if (project.exists()) {
 				assertTrue(project.isOpen());
 				File projectSourceDir = new File(referenceWorkspaceSourceDir, project.getName());
-				importExternalResourceToWorkspace(new File(projectSourceDir + ".settings"), project);
+				importExternalResourceToWorkspace(new File(projectSourceDir, ".settings"), project);
 			}
 		}
 	}
