@@ -504,29 +504,15 @@ public final class EcorePlatformUtil {
 	}
 
 	/**
-	 * Retrieves the {@linkplain IFile file} corresponding to the given
-	 * {@linkplain org.eclipse.emf.ecore.resource.Resource}.
+	 * Retrieves the {@link IFile file} corresponding to the given <code>resource</code>.
 	 * 
 	 * @param resource
-	 *            The {@linkplain Resource} of the file to return.
-	 * @return The file corresponding to the specified {@link Resource resource}.
+	 *            The {@link Resource resource} for which the file is to be returned.
+	 * @return The file corresponding to the specified <code>resource</code>.
 	 */
 	public static IFile getFile(final Resource resource) {
 		if (resource != null && Platform.isRunning()) {
-			TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resource);
-			if (editingDomain != null) {
-				try {
-					return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<IFile>() {
-						public void run() {
-							setResult(WorkspaceSynchronizer.getFile(resource));
-						}
-					});
-				} catch (InterruptedException ex) {
-					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-				}
-			} else {
-				return WorkspaceSynchronizer.getFile(resource);
-			}
+			return WorkspaceSynchronizer.getFile(resource);
 		}
 		return null;
 	}

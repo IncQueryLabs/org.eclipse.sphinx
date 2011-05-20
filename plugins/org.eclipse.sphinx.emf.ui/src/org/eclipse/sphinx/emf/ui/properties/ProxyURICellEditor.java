@@ -41,18 +41,17 @@ public class ProxyURICellEditor extends TextCellEditor {
 	protected static class ProxyURIHandler implements ICellEditorValidator {
 
 		protected EObject owner;
-		protected EObject oldValue;
+		protected EObject value;
 
-		public ProxyURIHandler(EObject owner, EObject oldValue) {
+		public ProxyURIHandler(EObject owner, EObject value) {
 			Assert.isNotNull(owner);
-			Assert.isNotNull(oldValue);
+			Assert.isNotNull(value);
 
 			this.owner = owner;
-			this.oldValue = oldValue;
+			this.value = value;
 		}
 
 		public String isValid(Object value) {
-			System.out.println(value);
 			ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(owner.eResource());
 			if (extendedResource != null) {
 				if (value instanceof String) {
@@ -63,15 +62,14 @@ public class ProxyURICellEditor extends TextCellEditor {
 			return null;
 		}
 
-		public Object toValue(String valueAsString) {
+		public Object toObject(String valueAsString) {
 			URI proxyURI = URI.createURI(valueAsString);
-			if (!proxyURI.equals(((InternalEObject) oldValue).eProxyURI())) {
-				EFactory factory = oldValue.eClass().getEPackage().getEFactoryInstance();
-				EObject valueAsObject = factory.create(oldValue.eClass());
-				((InternalEObject) valueAsObject).eSetProxyURI(proxyURI);
-				return valueAsObject;
+			if (!proxyURI.equals(((InternalEObject) value).eProxyURI())) {
+				EFactory factory = value.eClass().getEPackage().getEFactoryInstance();
+				value = factory.create(value.eClass());
+				((InternalEObject) value).eSetProxyURI(proxyURI);
 			}
-			return oldValue;
+			return value;
 		}
 
 		public String toString(Object valueAsObject) {
@@ -99,64 +97,12 @@ public class ProxyURICellEditor extends TextCellEditor {
 
 		valueHandler = new ProxyURIHandler(owner, value);
 		setValidator(valueHandler);
-
-		// setValue(internalValue.eProxyURI().toString());
-
-		// addListener(new ICellEditorListener() {
-		//
-		// public void editorValueChanged(boolean oldValidState, boolean newValidState) {
-		// }
-		//
-		// public void cancelEditor() {
-		// }
-		//
-		// public void applyEditorValue() {
-		// Object editorValue = getValue();
-		// if (editorValue != null && internalValue != null) {
-		// URI newProxyURI = URI.createURI(editorValue.toString());
-		// URI oldProxyURI = internalValue.eProxyURI();
-		// internalValue.eSetProxyURI(newProxyURI);
-		//
-		// // Notify adapters about value change arising from value proxy URI change if
-		// // required
-		// /*
-		// * !! Important Note !! Don't raise notification with value object as notifier and eProxyURI as
-		// * "feature". The change of the value object's proxy URI is semantically equivalent with replacing
-		// * the value object with the old proxy URI by another value object with the new proxy URI. Therefore
-		// * notification must happen wrt owner object and feature of value object.
-		// */
-		// if (internalOwner.eNotificationRequired()) {
-		// // Restore old value proxy
-		// EFactory eFactoryInstance = internalValue.eClass().getEPackage().getEFactoryInstance();
-		// InternalEObject internalOldValue = (InternalEObject) eFactoryInstance.create(internalValue.eClass());
-		// internalOldValue.eSetProxyURI(oldProxyURI);
-		//
-		// // Deliver set notification for replacement of old value proxy by new value proxy
-		// internalOwner.eNotify(new ENotificationImpl(internalOwner, Notification.SET, feature, internalOldValue,
-		// internalValue));
-		// }
-		// }
-		// }
-		// });
-
-		// setValidator(new ICellEditorValidator() {
-		// public String isValid(Object editorValue) {
-		// ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(internalOwner.eResource());
-		// if (extendedResource != null) {
-		// if (editorValue instanceof String) {
-		// Diagnostic diagnostic = extendedResource.validateURI((String) editorValue);
-		// return Diagnostic.OK_INSTANCE == diagnostic ? null : diagnostic.getMessage();
-		// }
-		// }
-		// return null;
-		// }
-		// });
 	}
 
 	@Override
 	public Object doGetValue() {
 		String valueAsString = (String) super.doGetValue();
-		return valueHandler.toValue(valueAsString);
+		return valueHandler.toObject(valueAsString);
 	}
 
 	@Override

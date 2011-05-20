@@ -92,7 +92,9 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		// Graphical element creation inherited from super
+		/*
+		 * Dialog widgets copied from super
+		 */
 		Composite contents = new Composite(parent, SWT.NONE);
 		GridLayout compositeLayout = new GridLayout();
 		compositeLayout.marginHeight = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
@@ -406,8 +408,9 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 			}
 		});
 
-		// Graphical elements added to super elements
-		// This enable proxy URI edition on proxy elements in feature list
+		/*
+		 * Additional dialog widgets for editing proxy URI of proxified objects in feature table
+		 */
 		final Label proxyURILabel = new Label(featureComposite, SWT.NONE);
 		proxyURILabel.setText(Messages.label_editProxyURI);
 
@@ -418,13 +421,11 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 		proxyURIErrorText.setLayoutData(new GridData(GridData.FILL_BOTH));
 		proxyURIErrorText.setEditable(false);
 
-		// Set visible to false by default
 		proxyURIText.setVisible(false);
 		proxyURILabel.setVisible(false);
 		proxyURIErrorText.setVisible(false);
 
 		proxyURIText.addModifyListener(new ModifyListener() {
-
 			public void modifyText(ModifyEvent e) {
 				String text = proxyURIText.getText();
 				String errorMessage = null;
@@ -514,10 +515,9 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 				}
 			}
 		});
-		// listener that disable or enable text and label for proxy URI when selection of a proxy element is made in
-		// feature table
-		featureTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
+		// Listener that disables/enables proxy URI widgets when feature table selection changes
+		featureTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 				if (!selection.isEmpty()) {
@@ -538,9 +538,9 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 				proxyURIErrorText.setVisible(false);
 			}
 		});
-		// listener that disable text and label for proxy URI when selection is made in choice table
-		choiceTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
+		// Listener that disables proxy URI widgets when choice table selection changes
+		choiceTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				proxyURIText.setVisible(false);
 				proxyURILabel.setVisible(false);
