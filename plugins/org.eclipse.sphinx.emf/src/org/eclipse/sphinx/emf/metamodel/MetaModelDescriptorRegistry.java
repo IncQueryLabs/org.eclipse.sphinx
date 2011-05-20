@@ -527,7 +527,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		// Try to retrieve descriptor from model root object in given resource (applies to loaded resources)
 		EObject modelRoot = null;
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(resource);
-		if (editingDomain != null) {
+		if (false) {
 			try {
 				modelRoot = (EObject) editingDomain.runExclusive(new RunnableWithResult.Impl<EObject>() {
 					public void run() {
@@ -796,7 +796,16 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 */
 	public IMetaModelDescriptor getDescriptor(EObject eObject) {
 		if (eObject != null) {
-			// Retrieve meta-model descriptor from EClass behind given EObject in case that it is still up to date
+			// Retrieve and return meta-model descriptor from EClass behind given EObject unless it turns out that it is
+			// outdated
+			/*
+			 * !! Important Note !! This is necessary to return an appropriate results for EObjects from model files
+			 * that are in special intermediate states. An example of such an intermediate state is where a model file
+			 * has been deleted but not yet unloaded is requested. Returning the meta-model descriptor corresponding to
+			 * the underlying EClass/EPackage would be wrong because the underlying model file doesn't exist anymore and
+			 * requesting the meta-model descriptor for that file would result in null. We therefore need to detect such
+			 * cases and return the meta-model descriptor corresponding to the underlying model file instead.
+			 */
 			IMetaModelDescriptor descriptor = getDescriptor(eObject.eClass());
 			IMetaModelDescriptor oldDescriptor = getOldDescriptor(eObject.eResource());
 			if (descriptor != oldDescriptor) {
