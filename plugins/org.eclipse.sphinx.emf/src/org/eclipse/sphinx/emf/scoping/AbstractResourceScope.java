@@ -23,13 +23,11 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
-import org.eclipse.emf.workspace.util.WorkspaceSynchronizer;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSet;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
@@ -97,20 +95,6 @@ public abstract class AbstractResourceScope implements IResourceScope {
 			files.addAll(ExtendedPlatform.getAllFiles(folder));
 		}
 		return files;
-	}
-
-	/**
-	 * Retrieves the {@link IFile file} corresponding to the given <code>resource</code>.
-	 * 
-	 * @param resource
-	 *            The {@link Resource resource} for which the file is to be returned.
-	 * @return The file corresponding to the specified <code>resource</code>.
-	 */
-	protected IFile getFile(Resource resource) {
-		if (resource != null && Platform.isRunning()) {
-			return WorkspaceSynchronizer.getFile(resource);
-		}
-		return null;
 	}
 
 	/*

@@ -78,7 +78,7 @@ public class HummingbirdProjectResourceScope extends ProjectResourceScope {
 	public boolean belongsTo(Resource resource, boolean includeReferencedScopes) {
 		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource);
 		return super.belongsTo(resource, includeReferencedScopes)
-				&& isResourceVersionCorrespondingToMetaModelVersionOfEnclosingProject(getFile(resource), mmDescriptor);
+				&& isResourceVersionCorrespondingToMetaModelVersionOfEnclosingProject(EcorePlatformUtil.getFile(resource), mmDescriptor);
 	}
 
 	/*
