@@ -502,14 +502,11 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	}
 
 	/**
-	 * In order to obtain the meta-model descriptor for the given resource, this method first retrieves the namespace
-	 * URI specified in the header of this resource; then, the effective retrieval of the meta-model descriptor from
-	 * that namespace URI is delegated to the right method {@link #getDescriptor(URI)}.
+	 * Returns the {@link IMetaModelDescriptor meta-model descriptor} for the given <code>resource</code>.
 	 * 
-	 * @see MetaModelDescriptorRegistry#getDescriptor(URI)
 	 * @param resource
-	 *            The resource whose meta-model descriptor must be returned.
-	 * @return The meta-model descriptor of the specified resource.
+	 *            The {@link Resource resource} whose meta-model descriptor is to be returned.
+	 * @return The meta-model descriptor of the specified <code>resource</code>.
 	 */
 	public IMetaModelDescriptor getDescriptor(final Resource resource) {
 		/*
