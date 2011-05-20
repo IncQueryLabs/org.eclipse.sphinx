@@ -46,7 +46,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#belongsTo(org.eclipse.emf.ecore.resource.Resource, boolean)
 	 */
 	public boolean belongsTo(Resource resource, boolean includeReferencedScopes) {
-		IFile file = EcorePlatformUtil.getFile(resource);
+		IFile file = getFile(resource);
 		return belongsToRootOrDependingProjects(file, includeReferencedScopes);
 	}
 
@@ -98,7 +98,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#didBelongTo(org.eclipse.emf.ecore.resource.Resource, boolean)
 	 */
 	public boolean didBelongTo(Resource resource, boolean includeReferencedScopes) {
-		IFile file = EcorePlatformUtil.getFile(resource);
+		IFile file = getFile(resource);
 		return belongsToRootOrDependingProjects(file, includeReferencedScopes);
 	}
 

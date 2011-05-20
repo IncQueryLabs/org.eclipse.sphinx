@@ -53,8 +53,7 @@ import org.eclipse.emf.ecore.xmi.impl.RootXMLContentHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.RootXMLContentHandlerImpl.Describer;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
-import org.eclipse.emf.transaction.RunnableWithResult;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.workspace.util.WorkspaceSynchronizer;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
@@ -63,7 +62,6 @@ import org.eclipse.sphinx.emf.internal.metamodel.IFileMetaModelDescriptorCache;
 import org.eclipse.sphinx.emf.scoping.ResourceScopeProviderRegistry;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
-import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -130,6 +128,20 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	private MetaModelDescriptorRegistry() {
 		readContributedDescriptors();
 		readContributedTargetMetaModelDescriptorProviders();
+	}
+
+	/**
+	 * Retrieves the {@link IFile file} corresponding to the given <code>resource</code>.
+	 * 
+	 * @param resource
+	 *            The {@link Resource resource} for which the file is to be returned.
+	 * @return The file corresponding to the specified <code>resource</code>.
+	 */
+	private IFile getFile(Resource resource) {
+		if (resource != null && Platform.isRunning()) {
+			return WorkspaceSynchronizer.getFile(resource);
+		}
+		return null;
 	}
 
 	private IExtensionRegistry getExtensionRegistry() {
@@ -522,21 +534,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		 */
 
 		// Try to retrieve descriptor from model root object in given resource (applies to loaded resources)
-		EObject modelRoot = null;
-		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(resource);
-		if (false) {
-			try {
-				modelRoot = (EObject) editingDomain.runExclusive(new RunnableWithResult.Impl<EObject>() {
-					public void run() {
-						setResult(EcoreResourceUtil.getModelRoot(resource));
-					}
-				});
-			} catch (InterruptedException ex) {
-				// Ignore exception
-			}
-		} else {
-			modelRoot = EcoreResourceUtil.getModelRoot(resource);
-		}
+		EObject modelRoot = EcoreResourceUtil.getModelRoot(resource);
 		if (modelRoot != null) {
 			IMetaModelDescriptor mmDescriptor = getDescriptor(modelRoot);
 			if (mmDescriptor != null) {
@@ -546,7 +544,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 		// Try to retrieve descriptor from underlying workspace file (applies to resources that have been
 		// created but not loaded - and therefore no EObject content - yet and are located inside the workspace)
-		IFile file = EcorePlatformUtil.getFile(resource);
+		IFile file = getFile(resource);
 		if (file != null) {
 			return getDescriptor(file);
 		}
@@ -763,7 +761,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 *         before it was changed or deleted.
 	 */
 	public IMetaModelDescriptor getOldDescriptor(Resource resource) {
-		IFile file = EcorePlatformUtil.getFile(resource);
+		IFile file = getFile(resource);
 		return getOldDescriptor(file);
 	}
 
@@ -809,7 +807,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 				return descriptor;
 			} else {
 				// Try to retrieve an up to date meta-model descriptor from underlying file otherwise
-				IFile file = EcorePlatformUtil.getFile(eObject.eResource());
+				IFile file = getFile(eObject.eResource());
 				return getDescriptor(file);
 			}
 		}
@@ -1042,7 +1040,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	}
 
 	private ITargetMetaModelDescriptorProvider getTargetMetaModelDescriptorProvider(Resource resource) {
-		IFile file = EcorePlatformUtil.getFile(resource);
+		IFile file = getFile(resource);
 		return getTargetMetaModelDescriptorProvider(file);
 	}
 

@@ -71,13 +71,14 @@ public class HummingbirdProjectResourceScope extends ProjectResourceScope {
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.scoping.ProjectResourceScope#belongsTo(org.eclipse.emf.ecore.resource.Resource, boolean)
+	 * @see org.eclipse.sphinx.emf.scoping.ProjectResourceScope#belongsTo(org.eclipse.emf.ecore.resource.Resource,
+	 * boolean)
 	 */
 	@Override
 	public boolean belongsTo(Resource resource, boolean includeReferencedScopes) {
 		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource);
 		return super.belongsTo(resource, includeReferencedScopes)
-				&& isResourceVersionCorrespondingToMetaModelVersionOfEnclosingProject(EcorePlatformUtil.getFile(resource), mmDescriptor);
+				&& isResourceVersionCorrespondingToMetaModelVersionOfEnclosingProject(getFile(resource), mmDescriptor);
 	}
 
 	/*
