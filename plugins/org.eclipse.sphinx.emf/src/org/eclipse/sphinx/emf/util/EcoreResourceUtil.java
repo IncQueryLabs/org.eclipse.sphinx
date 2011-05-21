@@ -692,22 +692,6 @@ public final class EcoreResourceUtil {
 	}
 
 	/**
-	 * Retrieves the {@linkplain Resource resource} owning the given {@link TransientItemProvider provider}.
-	 * <p>
-	 * First retrieves the owner of the {@link TransientItemProvider provider}; then, if owner is an
-	 * {@linkplain EObject} returns its resource, else delegates to {@linkplain #getResource(Object)}.
-	 * 
-	 * @param provider
-	 *            The {@linkplain TransientItemProvider} whose resource must be returned.
-	 * @return The resource containing the specified {@link IWrapperItemProvider provider}; <code>null</code> if that
-	 *         provider is <code>null</code>.
-	 */
-	public static Resource getResource(TransientItemProvider provider) {
-		Notifier target = provider.getTarget();
-		return getResource(target);
-	}
-
-	/**
 	 * Retrieves the {@linkplain Resource resource} matching the given {@link FeatureMap.Entry entry}.
 	 * <p>
 	 * First unwraps the {@link FeatureMap.Entry entry}; then, delegates to {@linkplain #getResource(Object)}.
@@ -719,6 +703,27 @@ public final class EcoreResourceUtil {
 	public static Resource getResource(FeatureMap.Entry entry) {
 		Object unwrapped = AdapterFactoryEditingDomain.unwrap(entry);
 		return getResource(unwrapped);
+	}
+
+	/**
+	 * Retrieves the {@linkplain Resource resource} owning the given {@link TransientItemProvider provider}.
+	 * <p>
+	 * First retrieves the owner of the {@link TransientItemProvider provider}; then, if owner is an
+	 * {@linkplain EObject} returns its resource, else delegates to {@linkplain #getResource(Object)}.
+	 * 
+	 * @param provider
+	 *            The {@linkplain TransientItemProvider} whose resource must be returned.
+	 * @return The resource containing the specified {@link IWrapperItemProvider provider}; <code>null</code> if that
+	 *         provider is <code>null</code>.
+	 */
+	public static Resource getResource(TransientItemProvider provider) {
+		if (provider != null) {
+			Notifier target = provider.getTarget();
+			if (target instanceof EObject) {
+				return ((EObject) target).eResource();
+			}
+		}
+		return null;
 	}
 
 	/**

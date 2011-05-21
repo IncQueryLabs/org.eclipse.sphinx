@@ -525,21 +525,8 @@ public final class EcorePlatformUtil {
 	 * @return The file containing the specified {@link EObject eObject}.
 	 */
 	public static IFile getFile(final EObject eObject) {
-		final TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(eObject);
-		if (editingDomain != null) {
-			try {
-				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<IFile>() {
-					public void run() {
-						setResult(getFile(eObject.eResource()));
-					}
-				});
-			} catch (InterruptedException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
-		} else {
-			if (eObject != null) {
-				return getFile(eObject.eResource());
-			}
+		if (eObject != null) {
+			return getFile(eObject.eResource());
 		}
 		return null;
 	}
@@ -557,33 +544,14 @@ public final class EcorePlatformUtil {
 	 *         provider is <code>null</code>.
 	 */
 	public static IFile getFile(final IWrapperItemProvider provider) {
-
-		RunnableWithResult.Impl<IFile> runnable = new RunnableWithResult.Impl<IFile>() {
-			public void run() {
-				IFile file = null;
-				if (provider != null) {
-					Object owner = provider.getOwner();
-					if (owner instanceof EObject) {
-						file = getFile((EObject) owner);
-					} else {
-						Object unwrapped = AdapterFactoryEditingDomain.unwrap(provider);
-						file = getFile(unwrapped);
-					}
-				}
-				setResult(file);
+		if (provider != null) {
+			Object owner = provider.getOwner();
+			if (owner instanceof EObject) {
+				return getFile((EObject) owner);
+			} else {
+				Object unwrapped = AdapterFactoryEditingDomain.unwrap(provider);
+				return getFile(unwrapped);
 			}
-		};
-
-		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(provider);
-		if (editingDomain != null) {
-			try {
-				return TransactionUtil.runExclusive(editingDomain, runnable);
-			} catch (InterruptedException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
-		} else {
-			runnable.run();
-			return runnable.getResult();
 		}
 		return null;
 	}
@@ -614,30 +582,11 @@ public final class EcorePlatformUtil {
 	 *         provider is <code>null</code>.
 	 */
 	public static IFile getFile(final TransientItemProvider provider) {
-
-		RunnableWithResult.Impl<IFile> runnable = new RunnableWithResult.Impl<IFile>() {
-			public void run() {
-				IFile file = null;
-				if (provider != null) {
-					Object target = provider.getTarget();
-					if (target instanceof EObject) {
-						file = getFile((EObject) target);
-					}
-				}
-				setResult(file);
+		if (provider != null) {
+			Object target = provider.getTarget();
+			if (target instanceof EObject) {
+				return getFile((EObject) target);
 			}
-		};
-
-		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(provider);
-		if (editingDomain != null) {
-			try {
-				return TransactionUtil.runExclusive(editingDomain, runnable);
-			} catch (InterruptedException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
-		} else {
-			runnable.run();
-			return runnable.getResult();
 		}
 		return null;
 	}
@@ -737,21 +686,7 @@ public final class EcorePlatformUtil {
 	 * @return The resource corresponding to the specified {@link EObject object}.
 	 */
 	public static Resource getResource(final EObject eObject) {
-		final TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(eObject);
-		if (editingDomain != null) {
-			try {
-				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Resource>() {
-					public void run() {
-						setResult(EcoreResourceUtil.getResource(eObject));
-					}
-				});
-			} catch (InterruptedException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
-		} else {
-			return EcoreResourceUtil.getResource(eObject);
-		}
-		return null;
+		return EcoreResourceUtil.getResource(eObject);
 	}
 
 	/**
@@ -766,21 +701,7 @@ public final class EcorePlatformUtil {
 	 *         provider is <code>null</code>.
 	 */
 	public static Resource getResource(final IWrapperItemProvider provider) {
-		final TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(provider);
-		if (editingDomain != null) {
-			try {
-				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Resource>() {
-					public void run() {
-						setResult(EcoreResourceUtil.getResource(provider));
-					}
-				});
-			} catch (InterruptedException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
-		} else {
-			EcoreResourceUtil.getResource(provider);
-		}
-		return null;
+		return EcoreResourceUtil.getResource(provider);
 	}
 
 	/**
@@ -808,19 +729,7 @@ public final class EcorePlatformUtil {
 	 *         provider is <code>null</code>.
 	 */
 	public static Resource getResource(final TransientItemProvider provider) {
-		final TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(provider);
-		if (editingDomain != null) {
-			try {
-				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Resource>() {
-					public void run() {
-						setResult(EcoreResourceUtil.getResource(provider));
-					}
-				});
-			} catch (InterruptedException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
-		}
-		return null;
+		return EcoreResourceUtil.getResource(provider);
 	}
 
 	/**
@@ -945,7 +854,7 @@ public final class EcorePlatformUtil {
 	 * @since 0.7.0
 	 */
 	public static Collection<Resource> getResourcesInModel(EObject contextEObject, boolean includeReferencedModels) {
-		Resource contextResource = getResource(contextEObject);
+		Resource contextResource = contextEObject.eResource();
 		return getResourcesInModel(contextResource, includeReferencedModels);
 	}
 
@@ -1153,7 +1062,7 @@ public final class EcorePlatformUtil {
 	 * @since 0.7.0
 	 */
 	public static Collection<Resource> getResourcesInScope(EObject contextEObject, boolean includeReferencedScopes) {
-		Resource contextResource = getResource(contextEObject);
+		Resource contextResource = contextEObject.eResource();
 		return getResourcesInScope(contextResource, includeReferencedScopes);
 	}
 
