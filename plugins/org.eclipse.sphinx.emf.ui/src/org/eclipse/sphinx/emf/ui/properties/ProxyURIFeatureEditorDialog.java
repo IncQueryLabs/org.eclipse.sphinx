@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4Sys and others.
+ * Copyright (c) 2008-2011 See4Sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,9 @@
  * 
  * Contributors: 
  *     See4Sys - Initial API and implementation
+ *     itemis - Improved application of changed proxy URI to model so as to enable consistent update of the model's dirty state 
+ *              without needing to invoke org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager#notifyDirtyChanged(Object) 
+ *              and introducing dependency from EMF Runtime Extensions to Workspace Management
  * 
  * </copyright>
  */
@@ -17,8 +20,6 @@ package org.eclipse.sphinx.emf.ui.properties;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
@@ -27,7 +28,6 @@ import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.provider.ItemProvider;
 import org.eclipse.emf.edit.ui.EMFEditUIPlugin;
@@ -48,6 +48,8 @@ import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.ui.internal.messages.Messages;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
@@ -79,6 +81,7 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 	protected EStructuralFeature feature;
 	protected List<?> currentValues;
 
+	@SuppressWarnings("deprecation")
 	public ProxyURIFeatureEditorDialog(Shell parent, ILabelProvider labelProvider, EObject owner, EStructuralFeature feature, String displayName,
 			List<?> choiceOfValues, boolean multiLine, boolean sortChoices) {
 		// FIXME Use commented constructor once we don't need to support Eclipse 3.5 any longer.
@@ -93,7 +96,7 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		/*
-		 * Dialog widgets copied from super
+		 * Dialog widgets copied from super (otherwise no way to access featureComposite and featureTableViewer)
 		 */
 		Composite contents = new Composite(parent, SWT.NONE);
 		GridLayout compositeLayout = new GridLayout();
@@ -104,6 +107,7 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 		contents.setLayout(compositeLayout);
 		contents.setLayoutData(new GridData(GridData.FILL_BOTH));
 		applyDialogFont(contents);
+
 		GridLayout contentsGridLayout = (GridLayout) contents.getLayout();
 		contentsGridLayout.numColumns = 3;
 
@@ -413,105 +417,84 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 		 */
 		final Label proxyURILabel = new Label(featureComposite, SWT.NONE);
 		proxyURILabel.setText(Messages.label_editProxyURI);
+		proxyURILabel.setLayoutData(new GridData());
 
 		final Text proxyURIText = new Text(featureComposite, SWT.BORDER);
-		proxyURIText.setLayoutData(new GridData(GridData.FILL_BOTH));
+		GridData proxyURITextGridData = new GridData();
+		proxyURITextGridData.horizontalAlignment = SWT.FILL;
+		proxyURITextGridData.grabExcessHorizontalSpace = true;
+		proxyURIText.setLayoutData(proxyURITextGridData);
 
 		final Text proxyURIErrorText = new Text(featureComposite, SWT.NONE);
-		proxyURIErrorText.setLayoutData(new GridData(GridData.FILL_BOTH));
 		proxyURIErrorText.setEditable(false);
+		GridData proxyURIErrorTextGridData = new GridData();
+		proxyURIErrorTextGridData.horizontalAlignment = SWT.FILL;
+		proxyURIErrorTextGridData.grabExcessHorizontalSpace = true;
+		proxyURIErrorText.setLayoutData(proxyURIErrorTextGridData);
 
 		proxyURIText.setVisible(false);
 		proxyURILabel.setVisible(false);
 		proxyURIErrorText.setVisible(false);
 
-		proxyURIText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				String text = proxyURIText.getText();
-				String errorMessage = null;
+		proxyURIText.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent evt) {
+				// Validate proxy URI for selected value object
+				proxyURIErrorText.setText(""); //$NON-NLS-1$
 				if (object instanceof EObject) {
 					EObject eObject = (EObject) object;
 					ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(eObject.eResource());
 					if (extendedResource != null) {
-						Diagnostic diagnostic = extendedResource.validateURI(text);
-						errorMessage = Diagnostic.OK_INSTANCE.equals(diagnostic) ? null : diagnostic.getMessage();
+						Diagnostic diagnostic = extendedResource.validateURI(proxyURIText.getText());
+						if (!Diagnostic.OK_INSTANCE.equals(diagnostic)) {
+							proxyURIErrorText.setText(diagnostic.getMessage());
+							return;
+						}
 					}
 				}
 
-				if (errorMessage == null) {
-					proxyURIErrorText.setVisible(false);
+				// Update selected value object
+				IStructuredSelection selection = (IStructuredSelection) featureTableViewer.getSelection();
+				if (selection != null) {
+					Object selected = selection.getFirstElement();
+					if (selected instanceof EObject) {
+						InternalEObject oldValue = (InternalEObject) selected;
+						if (oldValue.eIsProxy()) {
+							URI oldProxyURI = oldValue.eProxyURI();
+							URI newProxyURI = URI.createURI(proxyURIText.getText());
+							if (!newProxyURI.equals(oldProxyURI)) {
+								// Create new value proxy with new proxy URI
+								EFactory factory = oldValue.eClass().getEPackage().getEFactoryInstance();
+								EObject newValueProxy = factory.create(oldValue.eClass());
+								((InternalEObject) newValueProxy).eSetProxyURI(newProxyURI);
 
-					IStructuredSelection selection = (IStructuredSelection) featureTableViewer.getSelection();
-					if (selection != null) {
-						Object selected = selection.getFirstElement();
-						if (selected instanceof EObject) {
-							InternalEObject internalValue = (InternalEObject) selected;
-							if (internalValue.eIsProxy()) {
-								URI oldProxyURI = internalValue.eProxyURI();
-								if (!text.equals(oldProxyURI.toString())) {
-									URI newProxyURI = URI.createURI(text);
-									internalValue.eSetProxyURI(newProxyURI);
-									boolean didChangeProxyURI = true;
+								// Try to resolve new value proxy
+								EObject newValue = EcoreUtil.resolve(newValueProxy, (EObject) object);
 
-									// Try to resolve value proxy
-									EObject newValue = EcoreUtil.resolve(internalValue, (EObject) object);
+								// Still a proxy?
+								if (newValue == newValueProxy) {
+									// Replace old value proxy with new value proxy
+									values.getChildren().remove(oldValue);
+									values.getChildren().add(newValue);
 
-									// Value proxy resolution successful?
-									if (!newValue.eIsProxy()) {
-										// Remove value proxy
-										values.getChildren().remove(internalValue);
-
-										// Resolved value not already contained in values list?
-										if (!values.getChildren().contains(newValue)) {
-											// Add resolved value
-											values.getChildren().add(newValue);
-										} else {
-											// Restore value proxy with previous proxy URI
-											values.getChildren().add(internalValue);
-											internalValue.eSetProxyURI(oldProxyURI);
-											didChangeProxyURI = false;
-
-											proxyURIErrorText.setVisible(true);
-											proxyURIErrorText.setText(Messages.message_proxyURIReferencesElementInList);
-										}
-									}
-
-									// Notify adapters about value change arising from value proxy URI change if
-									// required
-									/*
-									 * !! Important Note !! Don't raise notification with value object as notifier and
-									 * eProxyURI as "feature". The change of the value object's proxy URI is
-									 * semantically equivalent with removing the value object with the old proxy URI
-									 * from the owner and adding another value object with the new proxy URI. Therefore
-									 * notification must happen wrt owner object and feature of value object.
-									 */
-									InternalEObject internalOwner = (InternalEObject) object;
-									if (didChangeProxyURI && internalOwner.eNotificationRequired()) {
-										// Restore old value proxy
-										EFactory eFactoryInstance = newValue.eClass().getEPackage().getEFactoryInstance();
-										InternalEObject internalOldValue = (InternalEObject) eFactoryInstance.create(newValue.eClass());
-										internalOldValue.eSetProxyURI(oldProxyURI);
-
-										// Retrieve position of old and new value
-										int index = currentValues.indexOf(newValue);
-
-										// Deliver remove notification for old value proxy and add notification for new
-										// value
-										NotificationChain notifications = new ENotificationImpl(internalOwner, Notification.REMOVE, feature,
-												internalOldValue, null, index);
-										notifications.add(new ENotificationImpl(internalOwner, Notification.ADD, feature, null, newValue, index));
-										notifications.dispatch();
-									}
-
-									// Refresh the featureTableViewer to see new object appear in selections
 									featureTableViewer.refresh();
+								} else {
+									// New value not already contained in values list?
+									// FIXME Use commented code once we don't need to support Eclipse 3.5 any longer
+									// if (!unique || !values.getChildren().contains(newValue)) {
+									if (!values.getChildren().contains(newValue)) {
+										// Replace old value proxy with new value
+										values.getChildren().remove(oldValue);
+										values.getChildren().add(newValue);
+
+										featureTableViewer.refresh();
+									} else {
+										proxyURIErrorText.setText(Messages.message_proxyURIMustNotReferenceAnAlreadyExistingListElement);
+									}
 								}
 							}
 						}
 					}
-				} else {
-					proxyURIErrorText.setVisible(true);
-					proxyURIErrorText.setText(errorMessage);
 				}
 			}
 		});
@@ -521,21 +504,27 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 				if (!selection.isEmpty()) {
-					Object firstElement = selection.getFirstElement();
-					if (firstElement instanceof EObject) {
-						InternalEObject eObjectElement = (InternalEObject) firstElement;
-						proxyURILabel.setVisible(eObjectElement.eIsProxy());
-						proxyURIErrorText.setVisible(eObjectElement.eIsProxy());
-						if (eObjectElement.eIsProxy()) {
-							proxyURIText.setText(eObjectElement.eProxyURI().toString());
+					if (selection.size() == 1) {
+						Object firstElement = selection.getFirstElement();
+						if (firstElement instanceof EObject) {
+							InternalEObject value = (InternalEObject) firstElement;
+							proxyURILabel.setVisible(value.eIsProxy());
+							if (value.eIsProxy()) {
+								proxyURIText.setText(value.eProxyURI().toString());
+							}
+							proxyURIText.setVisible(value.eIsProxy());
+							proxyURIErrorText.setVisible(value.eIsProxy());
+							if (!value.eIsProxy()) {
+								proxyURIErrorText.setText(""); //$NON-NLS-1$
+							}
 						}
-						proxyURIText.setVisible(eObjectElement.eIsProxy());
-						return;
+					} else {
+						proxyURIText.setVisible(false);
+						proxyURILabel.setVisible(false);
+						proxyURIErrorText.setVisible(false);
+						proxyURIErrorText.setText(""); //$NON-NLS-1$
 					}
 				}
-				proxyURIText.setVisible(false);
-				proxyURILabel.setVisible(false);
-				proxyURIErrorText.setVisible(false);
 			}
 		});
 
@@ -545,6 +534,7 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 				proxyURIText.setVisible(false);
 				proxyURILabel.setVisible(false);
 				proxyURIErrorText.setVisible(false);
+				proxyURIErrorText.setText(""); //$NON-NLS-1$
 			}
 		});
 

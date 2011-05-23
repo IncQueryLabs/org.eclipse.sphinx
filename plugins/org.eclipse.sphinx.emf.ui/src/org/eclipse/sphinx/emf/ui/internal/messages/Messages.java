@@ -33,7 +33,7 @@ public class Messages extends NLS {
 	public static String label_openWithMenu;
 
 	public static String label_editProxyURI;
-	public static String message_proxyURIReferencesElementInList;
+	public static String message_proxyURIMustNotReferenceAnAlreadyExistingListElement;
 
 	static {
 		// Initialize resource bundle
