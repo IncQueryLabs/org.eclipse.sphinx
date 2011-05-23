@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 BMW Car IT, See4sys and others.
+ * Copyright (c) 2008-2011 BMW Car IT, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,8 @@
  *     See4sys - Added support for EPackage URIs
  *     BMW Car IT - Added robustness and support for singleton instantiation of descriptors
  *     See4sys - Added facilities for retrieving descriptor(s) from identifier, name, ordinal, object, etc.
- * 
+ *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.metamodel;
