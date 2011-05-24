@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [346945] Label decoration for proxyfied EObjects does not work correctly for multiplicity-many features
  * 
  * </copyright>
  */
@@ -102,42 +103,48 @@ public class ExtendedItemPropertyDescriptor extends ItemPropertyDescriptor {
 	}
 
 	/*
-	 * Overridden for overloading default IItemLabelProvider getText() method behavior to avoid that proxy EObject would
-	 * be displayed using their label feature value, in case one is set, or their type name, otherwise. All proxies (in
-	 * simple reference or multiple reference) will be displayed using the proxy URI.
+	 * Overridden to avoid that the label used for displaying EObject proxies defaults to the the name of their type or,
+	 * if set, the value of their label feature. Instead the proxy URI is used as label and an exclamation mark is added
+	 * as overlay image so as to facilitate their identification in the UI.
 	 * @see org.eclipse.emf.edit.provider.ItemPropertyDescriptor#getLabelProvider(java.lang.Object)
 	 */
 	@Override
 	public IItemLabelProvider getLabelProvider(Object object) {
-		final IItemLabelProvider itemLabelProvider = super.getLabelProvider(object);
+		final IItemLabelProvider delegate = super.getLabelProvider(object);
 		return new IItemLabelProvider() {
 			public String getText(Object object) {
-				if (object instanceof EObject) {
-					EObject eObject = (EObject) object;
-					if (eObject.eIsProxy()) {
-						URI proxyUri = EcoreUtil.getURI(eObject);
-						if (proxyUri != null) {
-							return proxyUri.toString();
-						} else {
-							return Messages.label_unknownProxyURI;
-						}
-
-					}
-				} else if (object instanceof EList<?>) {
-					StringBuffer result = new StringBuffer();
+				if (object instanceof EList<?>) {
+					StringBuffer text = new StringBuffer();
 					for (Object child : (List<?>) object) {
-						if (result.length() != 0) {
-							result.append(", "); //$NON-NLS-1$
+						if (text.length() != 0) {
+							text.append(", "); //$NON-NLS-1$
 						}
-						result.append(getText(child));
+						text.append(getText(child));
 					}
-					return result.toString();
+					return text.toString();
 				}
-				return itemLabelProvider.getText(object);
+				if (object instanceof EObject && ((EObject) object).eIsProxy()) {
+					URI proxyURI = EcoreUtil.getURI((EObject) object);
+					return proxyURI != null ? proxyURI.toString() : Messages.label_unknownProxyURI;
+				}
+
+				return delegate.getText(object);
 			}
 
 			public Object getImage(Object object) {
-				return itemLabelProvider.getImage(object);
+				if (object instanceof EList<?>) {
+					for (Object item : (EList<?>) (EList<?>) object) {
+						if (item instanceof EObject && ((EObject) item).eIsProxy()) {
+							return getImage(item);
+						}
+					}
+					for (Object item : (List<?>) object) {
+						return getImage(item);
+					}
+					return null;
+				}
+
+				return delegate.getImage(object);
 			}
 		};
 	}

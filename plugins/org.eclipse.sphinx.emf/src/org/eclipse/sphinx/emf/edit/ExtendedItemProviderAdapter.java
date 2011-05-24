@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys, BMW Car IT and others.
+ * Copyright (c) 2008-2011 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -579,18 +579,21 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 		return new ExtendedCreateChildCommand(domain, owner, feature, value, index, collection, this);
 	}
 
+	/*
+	 * Overridden to add an exclamation mark as overlay to icons of EObjects that are proxies so as to facilitate their
+	 * identification in the UI.
+	 * @see org.eclipse.emf.edit.provider.ItemProviderAdapter#overlayImage(java.lang.Object, java.lang.Object)
+	 */
 	@Override
 	protected Object overlayImage(Object object, Object image) {
-		if (object instanceof EObject) {
-			EObject eObject = (EObject) object;
-			if (eObject.eIsProxy()) {
-				List<Object> images = new ArrayList<Object>(2);
-				images.add(image);
-				images.add(Activator.INSTANCE.getImage("full/ovr16/exclampt_ovr")); //$NON-NLS-1$
-				image = new ComposedImage(images);
-				return image;
-			}
+		if (object instanceof EObject && ((EObject) object).eIsProxy()) {
+			List<Object> images = new ArrayList<Object>(2);
+			images.add(image);
+			images.add(Activator.INSTANCE.getImage("full/ovr16/exclampt_ovr")); //$NON-NLS-1$
+			image = new ComposedImage(images);
+			return image;
 		}
+
 		return super.overlayImage(object, image);
 	}
 }
