@@ -687,15 +687,15 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		// Try to retrieve content type describer which matches model namespace
 		List<String> contentTypeIdCandidates = new ArrayList<String>(2);
 		for (IContentType contentType : ContentTypeManager.getInstance().getAllContentTypes()) {
-			IContentDescriber describer = null;
-			if (contentType instanceof ContentType) {
-				describer = ((ContentType) contentType).getDescriber();
-			} else if (contentType instanceof ContentTypeHandler) {
-				describer = ((ContentTypeHandler) contentType).getTarget().getDescriber();
-			}
+			try {
+				IContentDescriber describer = null;
+				if (contentType instanceof ContentType) {
+					describer = ((ContentType) contentType).getDescriber();
+				} else if (contentType instanceof ContentTypeHandler) {
+					describer = ((ContentTypeHandler) contentType).getTarget().getDescriber();
+				}
 
-			if (describer instanceof RootXMLContentHandlerImpl.Describer) {
-				try {
+				if (describer instanceof RootXMLContentHandlerImpl.Describer) {
 					ContentHandler contentHandler = (ContentHandler) ReflectUtil.getInvisibleFieldValue(describer, "contentHandler"); //$NON-NLS-1$
 					Boolean matching = (Boolean) ReflectUtil.invokeInvisibleMethod(contentHandler, "isMatchingNamespace", namespace); //$NON-NLS-1$
 					if (matching) {
@@ -710,9 +710,11 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 							contentTypeIdCandidates.add(contentType.getId());
 						}
 					}
-				} catch (Exception ex) {
-					PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
 				}
+
+			} catch (Exception ex) {
+				// Ignore exception, just log as warning.
+				PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
 			}
 		}
 
