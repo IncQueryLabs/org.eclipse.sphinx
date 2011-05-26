@@ -52,6 +52,10 @@ public class Messages extends NLS {
 	public static String label_fileSystemBrowse;
 	public static String label_variablesBrowse;
 	public static String label_restoreDefaultButtons;
+	public static String label_useAsProtectedRegion;
+	public static String label_prExcludes;
+	public static String label_prDefaultExcludes;
+	public static String label_protectedRegionGroupName;
 
 	public static String msg_chooseTemplate;
 	public static String msg_chooseExtension;
@@ -85,6 +89,9 @@ public class Messages extends NLS {
 	public static String task_ConvertToJavaPluginProject;
 	public static String task_ConvertToBSWPlatformProject;
 	public static String task_AddMetamodelContributor;
+
+	public static String tooltip_prExcludesField;
+	public static String tooltip_prDefaultExcludes;
 
 	static {
 		// Initialize resource bundle

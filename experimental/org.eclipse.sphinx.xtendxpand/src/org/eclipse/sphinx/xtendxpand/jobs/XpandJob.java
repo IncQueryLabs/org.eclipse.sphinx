@@ -38,6 +38,7 @@ import org.eclipse.emf.mwe.core.monitor.ProgressMonitorAdapter;
 import org.eclipse.emf.mwe.core.resources.ResourceLoaderFactory;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
+import org.eclipse.internal.xpand2.pr.ProtectedRegionResolverImpl;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
@@ -83,6 +84,11 @@ public class XpandJob extends WorkspaceJob {
 	 * A collection of outlets to be used as target for code generation.
 	 */
 	private Collection<ExtendedOutlet> outlets;
+
+	/**
+	 * A protected region resolver which should be configured the user.
+	 */
+	private ProtectedRegionResolverImpl protectedRegionResolver = null;
 
 	/**
 	 * Creates an {@link XpandJob} that generates code from a model based on given <code>metaModel</code> as specified
@@ -192,6 +198,36 @@ public class XpandJob extends WorkspaceJob {
 		return outlets;
 	}
 
+	/**
+	 * You need to configure the protected region resolver, if you want to use protected regions.
+	 * 
+	 * @param prSrcPaths
+	 *            The prSrcPaths points to a comma-separated list of directories. The protected region resolver will
+	 *            scan these directories for files containing activated protected regions.
+	 * @param prDefaultExcludes
+	 *            There are several file names which are excluded by default:
+	 *            RCS,SCCS,CVS,CVS.adm,RCSLOG,cvslog.*,tags,TAGS,.make.state
+	 *            .nse_depinfo,*~,#*,.#*,',*',_$*,*$,*.old,*.bak,*.BAK,*.orig,*.rej,
+	 *            .del-*,*.a,*.olb,*.o,*.obj,*.so,*.exe,*.Z,*.elc,*.ln,core. If you don't want to exclude any of
+	 *            these,you must set prDefaultExcludes to false.
+	 * @param prExcludes
+	 *            If you want to add additional excludes, you should use the prExcludes property.
+	 */
+	public void configureProtectedRegionResolver(String prSrcPaths, boolean prDefaultExcludes, String prExcludes) {
+		if (prSrcPaths.trim().length() > 0) {
+			if (protectedRegionResolver == null) {
+				protectedRegionResolver = createProtectedRegionResolver();
+			}
+			protectedRegionResolver.setSrcPathes(prSrcPaths);
+			protectedRegionResolver.setIgnoreList(prExcludes);
+			protectedRegionResolver.setDefaultExcludes(prDefaultExcludes);
+		}
+	}
+
+	protected ProtectedRegionResolverImpl createProtectedRegionResolver() {
+		return new ProtectedRegionResolverImpl();
+	}
+
 	@Override
 	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 		try {
@@ -220,8 +256,8 @@ public class XpandJob extends WorkspaceJob {
 
 			// Create execution context
 			Map<String, Variable> globalVarsMap = new HashMap<String, Variable>();
-			XpandExecutionContextImpl execCtx = new XpandExecutionContextImpl(new ResourceManagerDefaultImpl(), output, null, globalVarsMap,
-					new ProgressMonitorAdapter(monitor), null, null, null);
+			XpandExecutionContextImpl execCtx = new XpandExecutionContextImpl(new ResourceManagerDefaultImpl(), output, protectedRegionResolver,
+					globalVarsMap, new ProgressMonitorAdapter(monitor), null, null, null);
 			for (MetaModel metaModel : metaModels) {
 				execCtx.registerMetaModel(metaModel);
 			}

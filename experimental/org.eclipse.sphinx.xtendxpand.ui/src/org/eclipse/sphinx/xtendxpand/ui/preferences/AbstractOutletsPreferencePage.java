@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.sphinx.platform.ui.preferences.AbstractPreferenceAndPropertyPage;
 import org.eclipse.sphinx.xtendxpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xtendxpand.ui.groups.OutletsGroup;
+import org.eclipse.sphinx.xtendxpand.ui.groups.ProtectedRegionGroup;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.ui.outlet.providers.OutletProvider;
 import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
@@ -32,6 +33,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 public abstract class AbstractOutletsPreferencePage extends AbstractPreferenceAndPropertyPage {
 
 	private OutletsGroup outletsGroup;
+	private ProtectedRegionGroup protectedRegionGroup;
 
 	private TableViewer tableViewer;
 
@@ -62,6 +64,7 @@ public abstract class AbstractOutletsPreferencePage extends AbstractPreferenceAn
 	@Override
 	protected void addFields(Composite parent) {
 		addOutletsGroup(parent);
+		addProtectedRegionGroup(parent);
 	}
 
 	protected void addOutletsGroup(Composite parent) {
@@ -70,6 +73,11 @@ public abstract class AbstractOutletsPreferencePage extends AbstractPreferenceAn
 		outletsGroup.createContent(parent, 2);
 		tableViewer = outletsGroup.getTableViewer();
 		Dialog.applyDialogFont(parent);
+	}
+
+	protected void addProtectedRegionGroup(Composite parent) {
+		protectedRegionGroup = new ProtectedRegionGroup(Messages.label_protectedRegionGroupName, ((IProject) getElement()));
+		protectedRegionGroup.createContent(parent, 3);
 	}
 
 	@Override
@@ -81,20 +89,23 @@ public abstract class AbstractOutletsPreferencePage extends AbstractPreferenceAn
 
 	@Override
 	protected void performDefaults() {
-		outletProvider.setToDefault();
+		outletsGroup.setToDefault();
+		protectedRegionGroup.setToDefault();
 		tableViewer.refresh();
 		super.performDefaults();
 	}
 
 	@Override
 	public boolean performOk() {
-		outletProvider.store();
+		outletsGroup.store();
+		protectedRegionGroup.store();
 		return super.performOk();
 	}
 
 	@Override
 	public void dispose() {
-		outletProvider.dispose();
+		outletsGroup.dispose();
+		protectedRegionGroup.dispose();
 		super.dispose();
 	}
 

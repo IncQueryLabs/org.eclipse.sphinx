@@ -34,6 +34,8 @@ public class OutletTableLabelProvider extends LabelProvider implements ITableLab
 				return outlet.getName() == null ? "<default>" : outlet.getName();//$NON-NLS-1$
 			case 1:
 				return outlet.getPathExpression();
+			case 2:
+				return Boolean.toString(outlet.isProtectedRegion());
 			default:
 				return ""; //$NON-NLS-1$
 			}

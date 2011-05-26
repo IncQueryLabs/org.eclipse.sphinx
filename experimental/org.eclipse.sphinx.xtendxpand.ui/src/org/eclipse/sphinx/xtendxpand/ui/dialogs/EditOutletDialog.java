@@ -27,6 +27,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.jface.layout.PixelConverter;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.sphinx.platform.ui.fields.IField;
+import org.eclipse.sphinx.platform.ui.fields.IFieldListener;
+import org.eclipse.sphinx.platform.ui.fields.SelectionButtonField;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
@@ -62,6 +65,7 @@ public class EditOutletDialog extends StatusDialog {
 
 	private Text nameText;
 	private Text locationText;
+	private SelectionButtonField protectedRegionField;
 
 	private Button workspaceBrowse;
 	private Button fileBrowse;
@@ -134,6 +138,12 @@ public class EditOutletDialog extends StatusDialog {
 
 		variables = createPushButton(buttonsParent, Messages.label_variablesBrowse, null);
 		variables.addSelectionListener(listener);
+
+		protectedRegionField = new SelectionButtonField(SWT.CHECK);
+		protectedRegionField.setLabelText(Messages.label_useAsProtectedRegion);
+		protectedRegionField.fillIntoGrid(parent, 3);
+		protectedRegionField.setSelectionWithoutEvent(outlet.isProtectedRegion());
+		protectedRegionField.addFieldListener(listener);
 		return parent;
 	}
 
@@ -290,7 +300,7 @@ public class EditOutletDialog extends StatusDialog {
 		return Math.max(widthHint, button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
 	}
 
-	class Listener extends SelectionAdapter implements ModifyListener {
+	class Listener extends SelectionAdapter implements ModifyListener, IFieldListener {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			Object source = e.getSource();
@@ -309,6 +319,12 @@ public class EditOutletDialog extends StatusDialog {
 				handleNameChanged();
 			} else if (source == locationText) {
 				handleLocationChanged();
+			}
+		}
+
+		public void dialogFieldChanged(IField field) {
+			if (field == protectedRegionField) {
+				outlet.setProtectedRegion(protectedRegionField.isSelected());
 			}
 		}
 	}

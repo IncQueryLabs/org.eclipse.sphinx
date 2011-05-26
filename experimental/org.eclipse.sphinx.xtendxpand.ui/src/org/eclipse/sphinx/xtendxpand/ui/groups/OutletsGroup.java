@@ -131,15 +131,20 @@ public class OutletsGroup extends AbstractGroup {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		TableColumn column1 = new TableColumn(table, SWT.NONE);
-		column1.setText(Messages.label_OutletsGroup_TableColumn_Name);
+		TableColumn nameColumn = new TableColumn(table, SWT.NONE);
+		nameColumn.setText(Messages.label_OutletsGroup_TableColumn_Name);
 		int minWidth = computeMinimumColumnWidth(gc, Messages.label_OutletsGroup_TableColumn_Name);
-		columnLayout.setColumnData(column1, new ColumnWeightData(1, minWidth, true));
+		columnLayout.setColumnData(nameColumn, new ColumnWeightData(2, minWidth, true));
 
-		TableColumn column2 = new TableColumn(table, SWT.NONE);
-		column2.setText(Messages.label_OutletsGroup_TableColumn_Path);
+		TableColumn pathColumn = new TableColumn(table, SWT.NONE);
+		pathColumn.setText(Messages.label_OutletsGroup_TableColumn_Path);
 		minWidth = computeMinimumColumnWidth(gc, Messages.label_OutletsGroup_TableColumn_Path);
-		columnLayout.setColumnData(column2, new ColumnWeightData(3, minWidth, true));
+		columnLayout.setColumnData(pathColumn, new ColumnWeightData(4, minWidth, true));
+
+		TableColumn protectedRegionColumn = new TableColumn(table, SWT.NONE);
+		protectedRegionColumn.setText("Protected Region");
+		minWidth = computeMinimumColumnWidth(gc, Messages.label_OutletsGroup_TableColumn_Path);
+		columnLayout.setColumnData(protectedRegionColumn, new ColumnWeightData(2, minWidth, true));
 
 		gc.dispose();
 
@@ -230,10 +235,12 @@ public class OutletsGroup extends AbstractGroup {
 		ExtendedOutlet selectedOutlet = (ExtendedOutlet) selection.getFirstElement();
 		ExtendedOutlet outletToEdit = new ExtendedOutlet(selectedOutlet.getPathExpression(), outletProvider.getProject());
 		outletToEdit.setName(selectedOutlet.getName());
+		outletToEdit.setProtectedRegion(selectedOutlet.isProtectedRegion());
 		ExtendedOutlet editedOutlet = editOutlet(outletToEdit, true, selectedOutlet.getName() != null);
 		if (editedOutlet != null) {
 			selectedOutlet.setPathExpression(editedOutlet.getPathExpression(), outletProvider.getProject());
 			selectedOutlet.setName(editedOutlet.getName());
+			selectedOutlet.setProtectedRegion(editedOutlet.isProtectedRegion());
 			tableViewer.refresh();
 		}
 	}
@@ -275,5 +282,17 @@ public class OutletsGroup extends AbstractGroup {
 
 	private int computeMinimumColumnWidth(GC gc, String string) {
 		return gc.stringExtent(string).x + 10;
+	}
+
+	public void setToDefault() {
+		outletProvider.setToDefault();
+	}
+
+	public void store() {
+		outletProvider.store();
+	}
+
+	public void dispose() {
+		outletProvider.dispose();
 	}
 }

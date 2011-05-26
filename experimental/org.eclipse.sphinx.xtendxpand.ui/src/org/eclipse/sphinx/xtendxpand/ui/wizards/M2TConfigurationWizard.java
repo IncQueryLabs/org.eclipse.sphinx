@@ -15,7 +15,9 @@
  */
 package org.eclipse.sphinx.xtendxpand.ui.wizards;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -37,6 +39,8 @@ import org.eclipse.sphinx.xtendxpand.jobs.CheckJob;
 import org.eclipse.sphinx.xtendxpand.jobs.XpandJob;
 import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xtendxpand.preferences.OutletsPreference;
+import org.eclipse.sphinx.xtendxpand.preferences.PrDefaultExcludesPreference;
+import org.eclipse.sphinx.xtendxpand.preferences.PrExcludesPreference;
 import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.pages.CheckConfigurationPage;
@@ -178,9 +182,26 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		job.setPriority(Job.BUILD);
 		IFile file = EcorePlatformUtil.getFile(modelObject);
 		if (file != null) {
+			job.configureProtectedRegionResolver(getPrSrcPaths(xpandConfigurationPage.getOutlets()),
+					PrDefaultExcludesPreference.INSTANCE.get(file.getProject()), PrExcludesPreference.INSTANCE.get(file.getProject()));
 			job.setRule(file.getProject());
 		}
 		return job;
+	}
+
+	protected String getPrSrcPaths(Collection<? extends ExtendedOutlet> outlets) {
+		StringBuilder builder = new StringBuilder();
+		List<ExtendedOutlet> allOutlets = new ArrayList<ExtendedOutlet>(outlets);
+		for (ExtendedOutlet outlet : allOutlets) {
+			if (outlet.isProtectedRegion()) {
+				builder.append(outlet.getPath());
+				// If it's not the last outlet
+				if (!(allOutlets.indexOf(outlet) == allOutlets.size() - 1)) {
+					builder.append(","); //$NON-NLS-1$
+				}
+			}
+		}
+		return builder.toString();
 	}
 
 	protected CheckJob createCheckJob() {

@@ -29,6 +29,7 @@ import org.eclipse.sphinx.xtendxpand.internal.preferences.OutletsPreferenceIniti
 import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
 
+// Pattern name@location?protectedRegion=value;overwrite=value;...
 public class OutletsPreference extends AbstractProjectWorkspacePreference<Collection<ExtendedOutlet>> implements IAdaptable {
 
 	/**
@@ -47,13 +48,30 @@ public class OutletsPreference extends AbstractProjectWorkspacePreference<Collec
 			List<ExtendedOutlet> outlets = new ArrayList<ExtendedOutlet>();
 			String[] values = valueAsString.split(File.pathSeparator);
 			for (String value : values) {
-				String[] args = value.split("@"); //$NON-NLS-1$
+				String nameAndLocaltion;
+				String allAttributes;
+				int i = value.indexOf("?"); //$NON-NLS-1$
+				nameAndLocaltion = i == -1 ? value : value.substring(0, i);
+				allAttributes = i == -1 ? "" : value.substring(i + 1); //$NON-NLS-1$
+				String[] args = nameAndLocaltion.split("@"); //$NON-NLS-1$
 				String name = args[0];
 				String expression = args[1];
 				ExtendedOutlet outlet = new ExtendedOutlet(expression, project);
 				if (name.length() > 0) {
 					outlet.setName(name);
 				}
+				if (allAttributes.length() > 0) {
+					String[] attributes = allAttributes.split(";"); //$NON-NLS-1$
+					for (String attribute : attributes) {
+						String[] attrNameAndValue = attribute.split("="); //$NON-NLS-1$
+						String attrName = attrNameAndValue[0];
+						String attrValue = attrNameAndValue[1];
+						if ("protectedRegion".equals(attrName)) { //$NON-NLS-1$
+							outlet.setProtectedRegion(Boolean.parseBoolean(attrValue));
+						}
+					}
+				}
+
 				outlets.add(outlet);
 			}
 			return Collections.unmodifiableCollection(outlets);
@@ -71,6 +89,10 @@ public class OutletsPreference extends AbstractProjectWorkspacePreference<Collec
 				builder.append(outlet.getName() != null ? outlet.getName() : ""); //$NON-NLS-1$
 				builder.append("@"); //$NON-NLS-1$
 				builder.append(outlet.getPathExpression());
+				if (outlet.isProtectedRegion()) {
+					builder.append("?");
+					builder.append("protectedRegion=true");
+				}
 				if (iter.hasNext()) {
 					builder.append(File.pathSeparator);
 				}

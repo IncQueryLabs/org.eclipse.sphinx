@@ -36,9 +36,29 @@ public class OutletsPreferenceInitializer extends AbstractPreferenceInitializer 
 	public static final String PREF_OUTLETS = "xpand.outlets"; //$NON-NLS-1$
 
 	/**
+	 * The key for the "prDefaultExcludes" preference used for file names which are excluded by default.
+	 */
+	public static final String PREF_PR_DEFAULT_EXCLUDES = "xpand.prDefaultExcludes"; //$NON-NLS-1$
+
+	/**
+	 * The key for the "prExcludes" preference used for additional excludes.
+	 */
+	public static final String PREF_PR_EXCLUDES = "xpand.prExcludes"; //$NON-NLS-1$
+
+	/**
 	 * The default value for the Outlets preference.
 	 */
 	public static final String PREF_OUTLETS_DEFAULT = "@${project_loc}/gen"; //$NON-NLS-1$
+
+	/**
+	 * The default value for the prDefaultExcludes preference.
+	 */
+	public static final boolean PREF_PR_DEFAULT_EXCLUDES_DEFAULT = false;
+
+	/**
+	 * The default value for the prExcludes preference.
+	 */
+	public static final String PREF_PR_EXCLUDES_DEFAULT = ""; //$NON-NLS-1$
 
 	/*
 	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
@@ -52,6 +72,8 @@ public class OutletsPreferenceInitializer extends AbstractPreferenceInitializer 
 		}
 
 		defaultPreferences.put(PREF_OUTLETS, PREF_OUTLETS_DEFAULT);
+		defaultPreferences.put(PREF_PR_EXCLUDES, PREF_PR_EXCLUDES_DEFAULT);
+		defaultPreferences.putBoolean(PREF_PR_DEFAULT_EXCLUDES, PREF_PR_DEFAULT_EXCLUDES_DEFAULT);
 	}
 
 	/**

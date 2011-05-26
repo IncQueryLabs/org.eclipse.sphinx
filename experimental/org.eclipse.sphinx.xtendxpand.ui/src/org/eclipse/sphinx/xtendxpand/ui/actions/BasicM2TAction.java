@@ -16,6 +16,7 @@
  */
 package org.eclipse.sphinx.xtendxpand.ui.actions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +48,8 @@ import org.eclipse.sphinx.xtendxpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xtendxpand.jobs.XpandJob;
 import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xtendxpand.preferences.OutletsPreference;
+import org.eclipse.sphinx.xtendxpand.preferences.PrDefaultExcludesPreference;
+import org.eclipse.sphinx.xtendxpand.preferences.PrExcludesPreference;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.M2TConfigurationWizard;
 import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
@@ -117,9 +120,27 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 		XpandJob job = new XpandJob(getM2TJobName(), getMetaModels(), getXpandEvaluationRequests());
 		job.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		job.getOutlets().addAll(getOutlets());
+		IProject currentProject = EcorePlatformUtil.getFile(getSelectedModelObject()).getProject();
+		job.configureProtectedRegionResolver(getPrSrcPaths(getOutlets()), PrDefaultExcludesPreference.INSTANCE.get(currentProject),
+				PrExcludesPreference.INSTANCE.get(currentProject));
 		job.setPriority(Job.BUILD);
-		job.setRule(EcorePlatformUtil.getFile(getSelectedModelObject()).getProject());
+		job.setRule(currentProject);
 		return job;
+	}
+
+	protected String getPrSrcPaths(Collection<ExtendedOutlet> outlets) {
+		StringBuilder builder = new StringBuilder();
+		List<ExtendedOutlet> allOutlets = new ArrayList<ExtendedOutlet>(outlets);
+		for (ExtendedOutlet outlet : allOutlets) {
+			if (outlet.isProtectedRegion()) {
+				builder.append(outlet.getPath());
+				// If it's not the last outlet
+				if (!(allOutlets.indexOf(outlet) == allOutlets.size() - 1)) {
+					builder.append(","); //$NON-NLS-1$
+				}
+			}
+		}
+		return builder.toString();
 	}
 
 	protected String getM2TJobName() {

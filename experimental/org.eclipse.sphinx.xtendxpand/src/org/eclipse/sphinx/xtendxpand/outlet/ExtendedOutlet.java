@@ -44,6 +44,7 @@ public class ExtendedOutlet extends Outlet {
 	public static final String VARIABLE_PROJECT_LOC = ProjectLocationVariableResolver.NAME.toLowerCase();
 
 	private String pathExpression = null;
+	private boolean protectedRegion = false;
 
 	public ExtendedOutlet() {
 	}
@@ -73,6 +74,14 @@ public class ExtendedOutlet extends Outlet {
 	public ExtendedOutlet(String name, String pathExpression, IProject project) {
 		setName(name);
 		setPathExpression(pathExpression, project);
+	}
+
+	public void setProtectedRegion(boolean protectedRegion) {
+		this.protectedRegion = protectedRegion;
+	}
+
+	public boolean isProtectedRegion() {
+		return protectedRegion;
 	}
 
 	public String getPathExpression() {
