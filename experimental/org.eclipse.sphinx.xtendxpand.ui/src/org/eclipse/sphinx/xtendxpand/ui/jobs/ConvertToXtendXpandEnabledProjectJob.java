@@ -253,8 +253,7 @@ public class ConvertToXtendXpandEnabledProjectJob extends WorkspaceJob {
 	public void addMetamodelContributor(IProgressMonitor monitor) {
 		SubMonitor progress = SubMonitor.convert(monitor, 2);
 		progress.setTaskName(Messages.task_AddMetamodelContributor);
-		IPreferenceStore store;
-		store = new ScopedPreferenceStore(new ProjectScope(project), org.eclipse.xtend.shared.ui.Activator.getId());
+		IPreferenceStore store = new ScopedPreferenceStore(new ProjectScope(project), org.eclipse.xtend.shared.ui.Activator.getId());
 		store.setValue(PreferenceConstants.PROJECT_SPECIFIC_METAMODEL, true);
 		String metaModelContribNames = new String();
 		for (Class<? extends MetamodelContributor> metaModelContributor : getMetamodelContributors()) {
@@ -264,8 +263,8 @@ public class ConvertToXtendXpandEnabledProjectJob extends WorkspaceJob {
 		progress.worked(1);
 		try {
 			((ScopedPreferenceStore) store).save();
-		} catch (final IOException e1) {
-			XtendLog.logError(e1);
+		} catch (final IOException ex) {
+			XtendLog.logError(ex);
 		}
 		progress.worked(1);
 	}
