@@ -258,7 +258,7 @@ public class ConvertToXtendXpandEnabledProjectJob extends WorkspaceJob {
 		store.setValue(PreferenceConstants.PROJECT_SPECIFIC_METAMODEL, true);
 		String metaModelContribNames = new String();
 		for (Class<? extends MetamodelContributor> metaModelContributor : getMetamodelContributors()) {
-			metaModelContribNames = metaModelContribNames.concat(SEPARATOR_COMMA).concat(metaModelContributor.getClass().getName());
+			metaModelContribNames = metaModelContribNames.concat(SEPARATOR_COMMA).concat(metaModelContributor.getName());
 		}
 		store.setValue(PreferenceConstants.METAMODELCONTRIBUTORS, metaModelContribNames);
 		progress.worked(1);
