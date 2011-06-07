@@ -80,9 +80,10 @@ Contributors:
             icon="$nl$/icons/full/obj16/umlfile_obj.gif"
             id="org.eclipse.sphinx.examples.uml2.ide.ui.editors.uml2"
             name="%org.eclipse.sphinx.examples.uml2.ide.ui.editors.uml2.name">
-         <contentTypeBinding
-               contentTypeId="org.eclipse.uml2.uml">
-         </contentTypeBinding>
+         <contentTypeBinding contentTypeId="org.eclipse.uml2"/>
+         <contentTypeBinding contentTypeId="org.eclipse.uml2.uml"/>
+         <contentTypeBinding contentTypeId="org.omg.uml"/>
+         <contentTypeBinding contentTypeId="org.omg.mof.cmof"/>
       </editor>
    </extension>
    <extension point="org.eclipse.ui.views.properties.tabbed.propertyContributor">

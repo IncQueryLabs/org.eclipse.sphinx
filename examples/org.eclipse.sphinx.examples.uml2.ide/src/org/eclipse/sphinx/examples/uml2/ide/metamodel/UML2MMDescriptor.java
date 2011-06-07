@@ -34,8 +34,8 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 	public static final String BASE_NAMESPACE = "http://www.eclipse.org/uml2"; //$NON-NLS-1$
 
 	/**
-	 * The id of the base content type for the version-specific UML2 XMI file content types behind this and all earlier
-	 * UML2 metamodel implementations.
+	 * The id of the base content type for the version-specific XMI file content types behind this and all earlier UML2
+	 * metamodel implementations.
 	 */
 	/*
 	 * Performance optimization: Don't retrieve content type id with UMLPackage.eCONTENT_TYPE so as to avoid unnecessary
@@ -49,6 +49,22 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 	 * The id of the XMI file content type behind the latest UML2 metamodel implementation.
 	 */
 	public static final String XMI_CONTENT_TYPE_ID = XMI_BASE_CONTENT_TYPE_ID + "_3_0_0"; //$NON-NLS-1$
+
+	/**
+	 * The prefix for ids of OMG content types.
+	 */
+	public static final String OMG_CONTENT_TYPE_ID_PREFIX = "org.omg"; //$NON-NLS-1$
+
+	/**
+	 * The id of the base content type for the version-specific OMG XMI file content types supported by this UML2
+	 * metamodel implementation.
+	 */
+	public static final String OMG_XMI_BASE_CONTENT_TYPE_ID = OMG_CONTENT_TYPE_ID_PREFIX + ".uml"; //$NON-NLS-1$
+
+	/**
+	 * The id of the CMOF file content type supported by this UML2 metamodel implementation.
+	 */
+	public static final String OMG_CMOF_CONTENT_TYPE_ID = OMG_CONTENT_TYPE_ID_PREFIX + ".mof.cmof"; //$NON-NLS-1$
 
 	/**
 	 * Singleton instance.
@@ -103,6 +119,10 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 		List<String> contentTypeIds = new ArrayList<String>();
 		contentTypeIds.add(XMI_BASE_CONTENT_TYPE_ID + "_2_0_0"); //$NON-NLS-1$
 		contentTypeIds.add(XMI_BASE_CONTENT_TYPE_ID + "_2_1_0"); //$NON-NLS-1$
+		contentTypeIds.add(OMG_XMI_BASE_CONTENT_TYPE_ID + "_2_1"); //$NON-NLS-1$
+		contentTypeIds.add(OMG_XMI_BASE_CONTENT_TYPE_ID + "_2_1_1"); //$NON-NLS-1$
+		contentTypeIds.add(OMG_XMI_BASE_CONTENT_TYPE_ID + "_2_2"); //$NON-NLS-1$
+		contentTypeIds.add(OMG_CMOF_CONTENT_TYPE_ID);
 		return contentTypeIds;
 	}
 }
