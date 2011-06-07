@@ -34,6 +34,21 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 	public static final String BASE_NAMESPACE = "http://www.eclipse.org/uml2"; //$NON-NLS-1$
 
 	/**
+	 * The base namespace of the OMG XML formats supported by this UML2 metamodel implementation.
+	 */
+	public static final String OMG_BASE_NAMESPACE = "http://schema.omg.org/spec"; //$NON-NLS-1$
+
+	/**
+	 * The base namespace of the OMG XMI formats supported by this UML2 metamodel implementation.
+	 */
+	public static final String OMG_XMI_BASE_NAMESPACE = OMG_BASE_NAMESPACE + "/UML"; //$NON-NLS-1$
+
+	/**
+	 * The namespace of the OMG CMOF format supported by this UML2 metamodel implementation.
+	 */
+	public static final String OMG_CMOF_NAMESPACE = OMG_BASE_NAMESPACE + "/MOF/2.0/cmof.xml"; //$NON-NLS-1$
+
+	/**
 	 * The id of the base content type for the version-specific XMI file content types behind this and all earlier UML2
 	 * metamodel implementations.
 	 */
@@ -62,7 +77,7 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 	public static final String OMG_XMI_BASE_CONTENT_TYPE_ID = OMG_CONTENT_TYPE_ID_PREFIX + ".uml"; //$NON-NLS-1$
 
 	/**
-	 * The id of the CMOF file content type supported by this UML2 metamodel implementation.
+	 * The id of the OMG CMOF file content type supported by this UML2 metamodel implementation.
 	 */
 	public static final String OMG_CMOF_CONTENT_TYPE_ID = OMG_CONTENT_TYPE_ID_PREFIX + ".mof.cmof"; //$NON-NLS-1$
 
@@ -97,6 +112,10 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 		try {
 			namespaceURIs.add(new URI(BASE_NAMESPACE + "/2.0.0/UML"));//$NON-NLS-1$
 			namespaceURIs.add(new URI(BASE_NAMESPACE + "/2.1.0/UML")); //$NON-NLS-1$
+			namespaceURIs.add(new URI(OMG_XMI_BASE_NAMESPACE + "/2.1")); //$NON-NLS-1$
+			namespaceURIs.add(new URI(OMG_XMI_BASE_NAMESPACE + "/2.1.1")); //$NON-NLS-1$
+			namespaceURIs.add(new URI(OMG_XMI_BASE_NAMESPACE + "/2.2")); //$NON-NLS-1$
+			namespaceURIs.add(new URI(OMG_CMOF_NAMESPACE));
 		} catch (URISyntaxException ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
