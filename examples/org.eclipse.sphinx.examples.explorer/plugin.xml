@@ -38,6 +38,7 @@ Contributors:
         <contentExtension pattern="org.eclipse.ui.navigator.resources.filters.*" />
         <!-- Java Content from JDT required for obtaining problem marker decorations on IResource items (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=264404 for details) -->
         <contentExtension pattern="org.eclipse.jdt.java.ui.javaContent" />
+        <contentExtension pattern="org.eclipse.jdt.java.ui.filters.*" />
         <contentExtension pattern="org.eclipse.ui.navigator.resources.linkHelper"/>
         <contentExtension pattern="org.eclipse.sphinx.emf.explorer.linkHelper"/>
       </includes>
