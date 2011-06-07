@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.internal.content.ContentType;
 import org.eclipse.core.internal.content.ContentTypeHandler;
@@ -88,6 +89,9 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 */
 	public static final IMetaModelDescriptor NO_MM = new NoMetaModelDescriptor();
 
+	/*
+	 * Extension point related constants
+	 */
 	private static final String EXTP_META_MODEL_DESCRIPTORS = "org.eclipse.sphinx.emf.metaModelDescriptors"; //$NON-NLS-1$
 	private static final String NODE_DESCRIPTOR = "descriptor"; //$NON-NLS-1$
 	private static final String NODE_TARGET_DESCRIPTOR = "targetDescriptorProvider";//$NON-NLS-1$
@@ -97,6 +101,12 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	private static final String ATTR_EXTENSION = "extension";//$NON-NLS-1$
 	private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
 	private static final String ATTR_OVERRIDE = "override";//$NON-NLS-1$
+
+	/**
+	 * The namespace pattern for OMG-defined XMI formats.
+	 */
+	private static final Pattern OMG_XMI_NAMESPACE_PATTERN = Pattern.compile("http://schema\\.omg\\.org/spec/XMI/.*"); //$NON-NLS-1$
+
 	/**
 	 * The extension registry.
 	 */
@@ -650,9 +660,13 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 						 * Performance optimization: If the namespace-based retrieval of the meta-model descriptor
 						 * didn't succeed and given file is an XML file that has a namespace then we can be sure that
 						 * the XML file is not a model file. Consequently, we can immediately remember it is such and
-						 * can spare out the lengthy analysis or its content type.
+						 * can spare out the lengthy analysis or its content type. The only exception to this rule are
+						 * XML files with OMG XMI content - they yield an OMG-defined XMI namespace rather than the
+						 * model namespace but still may embed model content somewhere inside. In this case we must let
+						 * perform a full content type analysis so as to detect if the OMG XMI file is a model file or
+						 * not.
 						 */
-						if (namespace != null) {
+						if (namespace != null && !OMG_XMI_NAMESPACE_PATTERN.matcher(namespace).matches()) {
 							// Set cached content type id for given file to unspecified to accelerate subsequent
 							// content type dependent operations
 							ExtendedPlatform.setCachedContentTypeId(file, IExtendedPlatformConstants.CONTENT_TYPE_ID_NON_MODEL_XML_FILE);
@@ -695,6 +709,11 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 					describer = ((ContentTypeHandler) contentType).getTarget().getDescriber();
 				}
 
+				// TODO Add file extension check so as to avoid invalid content type matches and boot performance
+				// if
+				// (Arrays.asList(contentType.getFileSpecs(IContentTypeSettings.FILE_EXTENSION_SPEC)).contains(extension))
+				// {
+
 				if (describer instanceof RootXMLContentHandlerImpl.Describer) {
 					ContentHandler contentHandler = (ContentHandler) ReflectUtil.getInvisibleFieldValue(describer, "contentHandler"); //$NON-NLS-1$
 					Boolean matching = (Boolean) ReflectUtil.invokeInvisibleMethod(contentHandler, "isMatchingNamespace", namespace); //$NON-NLS-1$
@@ -711,7 +730,6 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 						}
 					}
 				}
-
 			} catch (Exception ex) {
 				// Ignore exception, just log as warning.
 				PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
