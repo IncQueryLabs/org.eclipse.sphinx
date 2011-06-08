@@ -14,6 +14,7 @@
  *     See4sys - Added facilities for retrieving descriptor(s) from identifier, name, ordinal, object, etc.
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
  *     itemis - [348544] OMG XMI files with embedded model content are not recognized as model files
+ *     itemis - [348820] Performance-optimized content type detection in MetaModelDescriptorRegistry ignores file extensions
  *
  * </copyright>
  */
@@ -22,6 +23,7 @@ package org.eclipse.sphinx.emf.metamodel;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,6 +47,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentDescriber;
 import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.core.runtime.content.IContentTypeSettings;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -129,7 +132,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 	private FileMetaModelDescriptorCache fFileMetaModelDescriptorCache = new FileMetaModelDescriptorCache();
 
-	private Map<String, String> fNamespaceContentTypeIdCache = new HashMap<String, String>();
+	private Map<String, String> fContentTypeIdCache = new HashMap<String, String>();
 
 	/**
 	 * Private constructor for the singleton pattern.
@@ -647,12 +650,12 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 					// Does a matching meta-model descriptor exist?
 					if (mmDescriptor != null) {
-						// Try to retrieve content type id for given model namespace
-						String contentTypeId = getContentTypeIdFromDescriber(namespace);
+						// Try to retrieve content type id for given model namespace and file extension
+						String contentTypeId = getContentTypeIdFromDescriber(namespace, file.getFileExtension());
 						// Is a matching content type id available?
 						if (contentTypeId != null) {
 							// Cache content type id for given file to accelerate subsequent content type
-							// dependent operations
+							// dependent operations (e.g., ResourceFactory retrieval)
 							ExtendedPlatform.setCachedContentTypeId(file, contentTypeId);
 							return contentTypeId;
 						}
@@ -687,52 +690,55 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	}
 
 	/**
-	 * Returns content type id for given model namespace in case that an EMF {@link Describer content type describer}
-	 * has been contributed for this model namespace and matches it.
+	 * Returns content type id for given model namespace and file extension in case that an EMF {@link Describer content
+	 * type describer} has been contributed for this model namespace and matches it.
 	 * 
 	 * @param namespace
-	 *            The model namespace for which the corresponding content type id is to be found
-	 * @return The content type id for given model namespace, or <code>null</code> if no such could be determined.
+	 *            The model namespace for which the corresponding content type id is to be determined.
+	 * @param extension
+	 *            The file extension that must be supported by the corresponding content type.
+	 * @return The content type id for given model namespace and file extension, or <code>null</code> if no such could
+	 *         be determined.
 	 */
-	private String getContentTypeIdFromDescriber(String namespace) {
-		if (fNamespaceContentTypeIdCache.containsKey(namespace)) {
-			return fNamespaceContentTypeIdCache.get(namespace);
+	private String getContentTypeIdFromDescriber(String namespace, String extension) {
+		String key = namespace + "@" + extension; //$NON-NLS-1$
+		if (fContentTypeIdCache.containsKey(key)) {
+			return fContentTypeIdCache.get(key);
 		}
 
-		// Try to retrieve content type describer which matches model namespace
+		// Scan all registered content types
 		List<String> contentTypeIdCandidates = new ArrayList<String>(2);
 		for (IContentType contentType : ContentTypeManager.getInstance().getAllContentTypes()) {
 			try {
-				IContentDescriber describer = null;
-				if (contentType instanceof ContentType) {
-					describer = ((ContentType) contentType).getDescriber();
-				} else if (contentType instanceof ContentTypeHandler) {
-					describer = ((ContentTypeHandler) contentType).getTarget().getDescriber();
-				}
+				// Sort out any content type which does not support required file extension
+				if (Arrays.asList(contentType.getFileSpecs(IContentTypeSettings.FILE_EXTENSION_SPEC)).contains(extension)) {
+					// Try to retrieve content type describer which matches model namespace
+					IContentDescriber describer = null;
+					if (contentType instanceof ContentType) {
+						describer = ((ContentType) contentType).getDescriber();
+					} else if (contentType instanceof ContentTypeHandler) {
+						describer = ((ContentTypeHandler) contentType).getTarget().getDescriber();
+					}
 
-				// TODO Add file extension check so as to avoid invalid content type matches and boot performance
-				// if
-				// (Arrays.asList(contentType.getFileSpecs(IContentTypeSettings.FILE_EXTENSION_SPEC)).contains(extension))
-				// {
-
-				if (describer instanceof RootXMLContentHandlerImpl.Describer) {
-					ContentHandler contentHandler = (ContentHandler) ReflectUtil.getInvisibleFieldValue(describer, "contentHandler"); //$NON-NLS-1$
-					Boolean matching = (Boolean) ReflectUtil.invokeInvisibleMethod(contentHandler, "isMatchingNamespace", namespace); //$NON-NLS-1$
-					if (matching) {
-						// Exact match?
-						String contentHandlerNamespace = (String) ReflectUtil.getInvisibleFieldValue(contentHandler, "namespace"); //$NON-NLS-1$
-						if (contentHandlerNamespace == null && namespace == null || contentHandlerNamespace != null && namespace != null
-								&& contentHandlerNamespace.length() == namespace.length()) {
-							// Return id of exactly matching content type
-							return contentType.getId();
-						} else {
+					if (describer instanceof RootXMLContentHandlerImpl.Describer) {
+						ContentHandler contentHandler = (ContentHandler) ReflectUtil.getInvisibleFieldValue(describer, "contentHandler"); //$NON-NLS-1$
+						Boolean matching = (Boolean) ReflectUtil.invokeInvisibleMethod(contentHandler, "isMatchingNamespace", namespace); //$NON-NLS-1$
+						if (matching) {
 							// Remember id of matching content type as candidate
 							contentTypeIdCandidates.add(contentType.getId());
+
+							// Exact match?
+							String contentHandlerNamespace = (String) ReflectUtil.getInvisibleFieldValue(contentHandler, "namespace"); //$NON-NLS-1$
+							if (contentHandlerNamespace == null && namespace == null || contentHandlerNamespace != null && namespace != null
+									&& contentHandlerNamespace.length() == namespace.length()) {
+								// No need to look at other conten types
+								break;
+							}
 						}
 					}
 				}
 			} catch (Exception ex) {
-				// Ignore exception, just log as warning.
+				// Ignore exception, just log it as warning
 				PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
 			}
 		}
@@ -746,7 +752,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			contentTypeId = contentTypeIdCandidates.get(0);
 		}
 
-		fNamespaceContentTypeIdCache.put(namespace, contentTypeId);
+		fContentTypeIdCache.put(key, contentTypeId);
 		return contentTypeId;
 	}
 
