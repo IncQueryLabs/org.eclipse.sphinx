@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [346829] Enhance DiagnosticUI API
  * 
  * </copyright>
  */
@@ -25,96 +26,160 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * Utility class
+ * Utility class for displaying {@link Diagnostic}s resulting from a model validation in a dialog.
  */
 public class DiagnosticUI {
 
 	/**
-	 * Switch to display the nicer popup window for this list of {@link Diagnostic}
+	 * Displays a dialog for given list of {@link Diagnostic diagnostic}s.
 	 * 
 	 * @param diagnostics
-	 * @return
+	 *            The list of {@link Diagnostic diagnostic}s to be displayed.
+	 * @return The code of the button that was pressed to close the dialog. This will be {@link Window#OK} if the OK
+	 *         button was pressed, or {@link Window#CANCEL} if this dialog's close window decoration or the ESC key was
+	 *         used.
 	 */
-	static public int showDiagnostic(List<Diagnostic> diagnostics) {
-		Assert.isNotNull(diagnostics);
-
-		return diagnostics.size() == 1 ? showDiagnosticSingle(diagnostics.get(0)) : showDiagnosticMulti(diagnostics);
-
+	public static int showDiagnostic(List<Diagnostic> diagnostics) {
+		return showDiagnostic(diagnostics, null, null);
 	}
 
 	/**
-	 * Utility method to dispay a simple {@link Diagnostic} into a popup window.
+	 * Displays a dialog with specified title and message for given list of {@link Diagnostic diagnostic}s.
+	 * 
+	 * @param diagnostics
+	 *            The list of {@link Diagnostic diagnostic}s to be displayed.
+	 * @param title
+	 *            The dialog title to be used.
+	 * @param message
+	 *            The dialog message to be displayed above the diagnostics.
+	 * @return The code of the button that was pressed to close the dialog. This will be {@link Window#OK} if the OK
+	 *         button was pressed, or {@link Window#CANCEL} if this dialog's close window decoration or the ESC key was
+	 *         used.
+	 */
+	public static int showDiagnostic(List<Diagnostic> diagnostics, String title, String message) {
+		Assert.isNotNull(diagnostics);
+
+		return diagnostics.size() == 1 ? showDiagnosticSingle(diagnostics.get(0), title, message) : showDiagnosticMulti(diagnostics, title, message);
+	}
+
+	/**
+	 * Displays a dialog for given {@link Diagnostic diagnostic}.
 	 * 
 	 * @param diagnostic
-	 *            the diagnostic to display
-	 * @return the code status associated to the pressed button
+	 *            The {@link Diagnostic diagnostic} to be displayed.
+	 * @return The code of the button that was pressed to close the dialog. This will be {@link Window#OK} if the OK
+	 *         button was pressed, or {@link Window#CANCEL} if this dialog's close window decoration or the ESC key was
+	 *         used.
 	 */
-	static public int showDiagnosticSingle(Diagnostic diagnostic) {
+	public static int showDiagnosticSingle(Diagnostic diagnostic) {
+		return showDiagnosticSingle(diagnostic, null, null);
+	}
+
+	/**
+	 * Displays a dialog with specified title and message for given {@link Diagnostic diagnostic}.
+	 * 
+	 * @param diagnostic
+	 *            The {@link Diagnostic diagnostic} to be displayed.
+	 * @param title
+	 *            The dialog title to be used.
+	 * @param message
+	 *            The dialog message to be displayed above the diagnostic.
+	 * @return The code of the button that was pressed to close the dialog. This will be {@link Window#OK} if the OK
+	 *         button was pressed, or {@link Window#CANCEL} if this dialog's close window decoration or the ESC key was
+	 *         used.
+	 */
+	public static int showDiagnosticSingle(Diagnostic diagnostic, String title, String message) {
 		int severity = diagnostic.getSeverity();
-		String title = null;
-		String message = null;
 
 		if (severity == Diagnostic.ERROR || severity == Diagnostic.WARNING) {
-			title = EMFEditUIPlugin.INSTANCE.getString("_UI_ValidationProblems_title"); //$NON-NLS-1$
-			message = EMFEditUIPlugin.INSTANCE.getString("_UI_ValidationProblems_message"); //$NON-NLS-1$
+			if (title == null) {
+				title = EMFEditUIPlugin.INSTANCE.getString("_UI_ValidationProblems_title"); //$NON-NLS-1$
+			}
+			if (message == null) {
+				message = EMFEditUIPlugin.INSTANCE.getString("_UI_ValidationProblems_message"); //$NON-NLS-1$
+			}
 		} else {
-			title = EMFEditUIPlugin.INSTANCE.getString("_UI_ValidationResults_title"); //$NON-NLS-1$
-			message = EMFEditUIPlugin.INSTANCE.getString(severity == Diagnostic.OK ? "_UI_ValidationOK_message" : "_UI_ValidationResults_message"); //$NON-NLS-1$ //$NON-NLS-2$
+			if (title == null) {
+				title = EMFEditUIPlugin.INSTANCE.getString("_UI_ValidationResults_title"); //$NON-NLS-1$
+			}
+			if (message == null) {
+				message = EMFEditUIPlugin.INSTANCE
+						.getString(severity == Diagnostic.OK ? "_UI_ValidationOK_message" : "_UI_ValidationResults_message"); //$NON-NLS-1$ //$NON-NLS-2$
+			}
 		}
 
-		int result = 0;
-		if (diagnostic.getSeverity() == Diagnostic.OK) {
+		int result = Window.CANCEL;
+		if (severity == Diagnostic.OK) {
 			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message);
-			result = Window.CANCEL;
 		} else {
 			result = DiagnosticDialog.open(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, diagnostic);
 		}
-
 		return result;
 	}
 
 	/**
-	 * Utility method to display a list of {@link Diagnostic} into a popup window.
+	 * Displays a dialog for given list of {@link Diagnostic diagnostic}s.
 	 * 
 	 * @param diagnostics
-	 *            the list of Diagnostic to display
-	 * @return the code status associated to the pressed button
+	 *            The list of {@link Diagnostic diagnostic}s to be displayed.
+	 * @return The code of the button that was pressed to close the dialog. This will be {@link Window#OK} if the OK
+	 *         button was pressed, or {@link Window#CANCEL} if this dialog's close window decoration or the ESC key was
+	 *         used.
 	 */
-	static public int showDiagnosticMulti(List<Diagnostic> diagnostics) {
+	public static int showDiagnosticMulti(List<Diagnostic> diagnostics) {
+		return showDiagnosticMulti(diagnostics, null, null);
+	}
+
+	/**
+	 * Displays a dialog with specified title and message for given list of {@link Diagnostic diagnostic}s.
+	 * 
+	 * @param diagnostics
+	 *            The list of {@link Diagnostic diagnostic}s to be displayed.
+	 * @param title
+	 *            The dialog title to be used.
+	 * @param message
+	 *            The dialog message to be displayed above the diagnostics.
+	 * @return The code of the button that was pressed to close the dialog. This will be {@link Window#OK} if the OK
+	 *         button was pressed, or {@link Window#CANCEL} if this dialog's close window decoration or the ESC key was
+	 *         used.
+	 */
+	public static int showDiagnosticMulti(List<Diagnostic> diagnostics, String title, String message) {
 		Assert.isNotNull(diagnostics);
 
-		boolean isDiagnosticsOk = true;
+		boolean isOk = true;
 		boolean isInfo = false;
-
 		for (Diagnostic diagnostic : diagnostics) {
-			if (diagnostic.getSeverity() == Diagnostic.ERROR || diagnostic.getSeverity() == Diagnostic.WARNING) {
-				isDiagnosticsOk = false;
+			int severity = diagnostic.getSeverity();
+			if (severity == Diagnostic.ERROR || severity == Diagnostic.WARNING) {
+				isOk = false;
 				break;
-			} else if (diagnostic.getSeverity() == Diagnostic.INFO) {
+			} else if (severity == Diagnostic.INFO) {
 				isInfo = true;
 			}
 		}
 
-		int result = 0;
-		String title = EMFEditUIPlugin.INSTANCE.getString("_UI_ValidationProblems_title"); //$NON-NLS-1$
-		String message = "MESSAGE"; //$NON-NLS-1$
-
-		if (isDiagnosticsOk == false) {
-			title = EMFEditUIPlugin.INSTANCE.getString("_UI_ValidationProblems_title"); //$NON-NLS-1$
-			message = EMFEditUIPlugin.INSTANCE.getString("_UI_ValidationProblems_message"); //$NON-NLS-1$
+		if (!isOk) {
+			if (title == null) {
+				title = EMFEditUIPlugin.INSTANCE.getString("_UI_ValidationProblems_title"); //$NON-NLS-1$
+			}
+			if (message == null) {
+				message = EMFEditUIPlugin.INSTANCE.getString("_UI_ValidationProblems_message"); //$NON-NLS-1$
+			}
 		} else {
-			title = EMFEditUIPlugin.INSTANCE.getString("_UI_ValidationResults_title"); //$NON-NLS-1$
-			message = EMFEditUIPlugin.INSTANCE.getString(!isInfo ? "_UI_ValidationOK_message" : "_UI_ValidationResults_message"); //$NON-NLS-1$ //$NON-NLS-2$
+			if (title == null) {
+				title = EMFEditUIPlugin.INSTANCE.getString("_UI_ValidationResults_title"); //$NON-NLS-1$
+			}
+			if (message == null) {
+				message = EMFEditUIPlugin.INSTANCE.getString(!isInfo ? "_UI_ValidationOK_message" : "_UI_ValidationResults_message"); //$NON-NLS-1$ //$NON-NLS-2$
+			}
 		}
 
-		if (isDiagnosticsOk == true) {
+		int result = Window.CANCEL;
+		if (isOk) {
 			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message);
-			result = Window.CANCEL;
 		} else {
 			result = ExtendedDiagnosticDialog.open(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, diagnostics);
-			result = Window.OK;
 		}
-
 		return result;
 	}
 }
