@@ -13,6 +13,7 @@
  *     BMW Car IT - Added robustness and support for singleton instantiation of descriptors
  *     See4sys - Added facilities for retrieving descriptor(s) from identifier, name, ordinal, object, etc.
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
+ *     itemis - [348544] OMG XMI files with embedded model content are not recognized as model files
  *
  * </copyright>
  */
