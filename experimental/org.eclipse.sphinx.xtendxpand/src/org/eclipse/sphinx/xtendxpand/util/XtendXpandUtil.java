@@ -21,14 +21,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.filesystem.EFS;
-import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.mwe.core.resources.ResourceLoader;
 import org.eclipse.internal.xtend.type.baseimpl.TypesComparator;
 import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
@@ -78,19 +75,14 @@ public final class XtendXpandUtil {
 		URL resourceURL = resourceLoader.getResource(qualifiedName);
 		if (resourceURL != null) {
 			try {
-				Path location = new Path(resourceURL.toURI().getPath());
 				IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-				if (workspaceRoot.getLocation().isPrefixOf(location)) {
-					return workspaceRoot.getFileForLocation(location);
-				}
-				// Checks whether there given file store points to a file in the workspace
-				IFileStore fileStore = EFS.getStore(resourceURL.toURI());
-				if (fileStore != null) {
-					IFile[] files = workspaceRoot.findFilesForLocationURI(fileStore.toURI());
-					if (files != null && files.length > 0) {
-						// Returns the first workspace file that match
-						return files[0];
-					}
+				// Gets all files that are mapped in the current workspace to the given URI. The file search result
+				// include files located in the current workspace and also linked files or files contained in a linked
+				// folder that were located outside of the workspace.
+				IFile[] files = workspaceRoot.findFilesForLocationURI(resourceURL.toURI());
+				if (files != null && files.length > 0) {
+					// Returns the first workspace file that match
+					return files[0];
 				}
 			} catch (Exception ex) {
 				// Ignore exception
