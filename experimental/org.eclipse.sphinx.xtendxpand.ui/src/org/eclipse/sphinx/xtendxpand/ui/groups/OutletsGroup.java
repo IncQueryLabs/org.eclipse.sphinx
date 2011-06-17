@@ -295,4 +295,16 @@ public class OutletsGroup extends AbstractGroup {
 	public void dispose() {
 		outletProvider.dispose();
 	}
+
+	public Button getAddButton() {
+		return addButton;
+	}
+
+	public Button getEditButton() {
+		return editButton;
+	}
+
+	public Button getRemoveButton() {
+		return removeButton;
+	}
 }
