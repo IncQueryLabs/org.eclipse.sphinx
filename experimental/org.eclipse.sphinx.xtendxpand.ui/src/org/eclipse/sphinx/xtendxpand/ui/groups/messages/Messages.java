@@ -25,6 +25,7 @@ public class Messages extends NLS {
 	public static String label_RemoveButton;
 	public static String label_OutletsGroup_TableColumn_Name;
 	public static String label_OutletsGroup_TableColumn_Path;
+	public static String label_Protected_Region;
 
 	static {
 		// Initialize resource bundle

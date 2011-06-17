@@ -142,7 +142,7 @@ public class OutletsGroup extends AbstractGroup {
 		columnLayout.setColumnData(pathColumn, new ColumnWeightData(4, minWidth, true));
 
 		TableColumn protectedRegionColumn = new TableColumn(table, SWT.NONE);
-		protectedRegionColumn.setText("Protected Region");
+		protectedRegionColumn.setText(Messages.label_Protected_Region);
 		minWidth = computeMinimumColumnWidth(gc, Messages.label_OutletsGroup_TableColumn_Path);
 		columnLayout.setColumnData(protectedRegionColumn, new ColumnWeightData(2, minWidth, true));
 
