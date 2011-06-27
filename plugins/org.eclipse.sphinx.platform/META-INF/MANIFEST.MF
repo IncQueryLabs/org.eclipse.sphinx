@@ -8,10 +8,10 @@ Bundle-Activator: org.eclipse.sphinx.platform.internal.Activator
 Bundle-Localization: plugin
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.core.resources;visibility:=reexport,
+ org.eclipse.core.resources,
  org.eclipse.core.expressions,
  org.apache.xerces,
- org.apache.commons.cli
+ org.apache.commons.cli;visibility:=reexport
 Export-Package: org.eclipse.sphinx.platform,
  org.eclipse.sphinx.platform.cli,
  org.eclipse.sphinx.platform.internal;x-internal:=true,
