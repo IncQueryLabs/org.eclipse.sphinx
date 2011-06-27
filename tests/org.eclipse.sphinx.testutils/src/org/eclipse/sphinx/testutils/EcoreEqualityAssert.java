@@ -212,10 +212,9 @@ public class EcoreEqualityAssert extends Assert {
 	protected static void assertEqualFeature(EObject eObject1, EObject eObject2, EStructuralFeature feature) {
 		// If the set states are the same, and the values of the feature are the structurally equal, they are equal.
 		//
-		// assertTrue("Feature '" + feature.getName() + "' of object " + eObject1.toString() + " and object " +
-		// eObject2.toString()
-		// + " don't have same set state: " + eObject1.eIsSet(feature) + " <-> " + eObject2.eIsSet(feature) + ".",
-		// eObject1.eIsSet(feature) == eObject2.eIsSet(feature));
+		assertTrue("Feature '" + feature.getName() + "' of object " + eObject1.toString() + " and object " + eObject2.toString()
+				+ " don't have same set state: " + eObject1.eIsSet(feature) + " <-> " + eObject2.eIsSet(feature) + ".",
+				eObject1.eIsSet(feature) == eObject2.eIsSet(feature));
 
 		if (feature instanceof EReference) {
 			assertEqualReference(eObject1, eObject2, (EReference) feature);
@@ -282,10 +281,8 @@ public class EcoreEqualityAssert extends Assert {
 		} else {
 			// The values must be Java equal.
 			//
-			if (!"uuid".equals(attribute.getName())) {
-				assertEquals("Value of attribute '" + attribute.getName() + "' on object " + eObject1.toString()
-						+ " and that of same attribute on object " + eObject2.toString() + " are not equal, ", value1, value2);
-			}
+			assertEquals("Value of attribute '" + attribute.getName() + "' on object " + eObject1.toString()
+					+ " and that of same attribute on object " + eObject2.toString() + " are not equal, ", value1, value2);
 		}
 	}
 
