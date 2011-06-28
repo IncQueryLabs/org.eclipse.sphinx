@@ -17,6 +17,8 @@ package org.eclipse.sphinx.examples.common.ui.perspectives;
 /**
  * Interface defining constants used for the definition of the Sphinx perspective.
  */
+// TODO Remove all ID constants creating implicit dependencies on other examples plug-ins and let the example plug-ins
+// contribute perpective extensions instead
 public interface ISphinxPerspectiveConstants {
 
 	String LEFT = "left"; //$NON-NLS-1$
