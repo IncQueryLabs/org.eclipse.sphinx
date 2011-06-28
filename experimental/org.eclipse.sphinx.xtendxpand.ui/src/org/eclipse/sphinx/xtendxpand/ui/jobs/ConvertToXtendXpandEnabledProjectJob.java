@@ -165,7 +165,6 @@ public class ConvertToXtendXpandEnabledProjectJob extends WorkspaceJob {
 		IProjectDescription projectDescription = project.getDescription();
 		List<IClasspathEntry> classpathEntries = new UniqueEList<IClasspathEntry>();
 		classpathEntries.addAll(Arrays.asList(javaProject.getRawClasspath()));
-		boolean isInitiallyEmpty = classpathEntries.isEmpty();
 		ICommand[] builders = projectDescription.getBuildSpec();
 		if (builders == null) {
 			builders = new ICommand[0];
@@ -221,25 +220,23 @@ public class ConvertToXtendXpandEnabledProjectJob extends WorkspaceJob {
 			classpathEntries.add(0, sourceClasspathEntry);
 		}
 
-		if (isInitiallyEmpty) {
-			IClasspathEntry jreClasspathEntry = JavaCore.newVariableEntry(new Path(JavaRuntime.JRELIB_VARIABLE),
-					new Path(JavaRuntime.JRESRC_VARIABLE), new Path(JavaRuntime.JRESRCROOT_VARIABLE));
-			for (Iterator<IClasspathEntry> i = classpathEntries.iterator(); i.hasNext();) {
-				IClasspathEntry classpathEntry = i.next();
-				if (classpathEntry.getPath().isPrefixOf(jreClasspathEntry.getPath())) {
-					i.remove();
-				}
+		IClasspathEntry jreClasspathEntry = JavaCore.newVariableEntry(new Path(JavaRuntime.JRELIB_VARIABLE), new Path(JavaRuntime.JRESRC_VARIABLE),
+				new Path(JavaRuntime.JRESRCROOT_VARIABLE));
+		for (Iterator<IClasspathEntry> i = classpathEntries.iterator(); i.hasNext();) {
+			IClasspathEntry classpathEntry = i.next();
+			if (classpathEntry.getPath().isPrefixOf(jreClasspathEntry.getPath())) {
+				i.remove();
 			}
-
-			String jreContainer = JavaRuntime.JRE_CONTAINER;
-			String complianceLevel = javaProject.getOption(JavaCore.COMPILER_COMPLIANCE, true);
-			if ("1.5".equals(complianceLevel)) { //$NON-NLS-1$
-				jreContainer += JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_J2SE_1_5;
-			} else if ("1.6".equals(complianceLevel)) { //$NON-NLS-1$
-				jreContainer += JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_JAVA_SE_1_6;
-			}
-			classpathEntries.add(JavaCore.newContainerEntry(new Path(jreContainer)));
 		}
+
+		String jreContainer = JavaRuntime.JRE_CONTAINER;
+		String complianceLevel = javaProject.getOption(JavaCore.COMPILER_COMPLIANCE, true);
+		if ("1.5".equals(complianceLevel)) { //$NON-NLS-1$
+			jreContainer += JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_J2SE_1_5;
+		} else if ("1.6".equals(complianceLevel)) { //$NON-NLS-1$
+			jreContainer += JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_JAVA_SE_1_6;
+		}
+		classpathEntries.add(JavaCore.newContainerEntry(new Path(jreContainer)));
 		IClasspathEntry[] entries = new IClasspathEntry[classpathEntries.size()];
 		int i = 0;
 		for (IClasspathEntry entry : classpathEntries) {
