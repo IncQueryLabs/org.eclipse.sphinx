@@ -2,7 +2,7 @@
 <rmap xmlns="http://www.eclipse.org/buckminster/RMap-1.0" xmlns:bc="http://www.eclipse.org/buckminster/Common-1.0">
 	<locator pattern="^org\.eclipse\.sphinx(\..+)*" searchPathRef="org.eclipse.sphinx"/>
 	<!-- Use Helios version of EMF Compare. -->
-	<locator pattern="^org\.eclipse\.emf\.compare(\..+)*" searchPathRef="target.platform.helios"/>
+	<locator pattern="^org\.eclipse\.emf\.compare(\..+)*" searchPathRef="target.platform.emf.compare"/>
 	<locator searchPathRef="target.platform"/>
 	
 	<searchPath name="org.eclipse.sphinx">
@@ -56,8 +56,8 @@
 		</provider>
 	</searchPath>
 	
-	<searchPath name="target.platform.helios">
-		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)">
+	<searchPath name="target.platform.emf.compare">
+		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)&((tp.release=galileo)|(tp.release=helios))">
 			<uri format="{0}/releases/helios">
 				<bc:propertyRef key="eclipse.mirror"/>
 			</uri>
@@ -65,17 +65,52 @@
 	</searchPath>
 	
 	<searchPath name="target.platform">
-		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)">
+		<!-- Galileo -->
+		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)&(tp.release=galileo)">
 			<uri format="{0}/releases/galileo">
 				<bc:propertyRef key="eclipse.mirror"/>
 			</uri>
 		</provider>
-		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)">
+		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)&(tp.release=galileo)">
 			<uri format="{0}/eclipse/updates/3.5">
 				<bc:propertyRef key="eclipse.mirror"/>
 			</uri>
 		</provider>
-		<provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)">
+		<provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)&(tp.release=galileo)">
+			<uri format="{0}/tools/orbit/downloads/drops/R20090529135407/updateSite">
+				<bc:propertyRef key="eclipse.mirror"/>
+			</uri>
+		</provider>
+		
+		<!-- Helios -->
+		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)&(tp.release=helios)">
+			<uri format="{0}/releases/helios">
+				<bc:propertyRef key="eclipse.mirror"/>
+			</uri>
+		</provider>
+		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)&(tp.release=helios)">
+			<uri format="{0}/eclipse/updates/3.6">
+				<bc:propertyRef key="eclipse.mirror"/>
+			</uri>
+		</provider>
+		<provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)&(tp.release=helios)">
+			<uri format="{0}/tools/orbit/downloads/drops/R20100519200754/updateSite">
+				<bc:propertyRef key="eclipse.mirror"/>
+			</uri>
+		</provider>
+		
+		<!-- Indigo -->
+		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)&(tp.release=indigo)">
+			<uri format="{0}/releases/indigo">
+				<bc:propertyRef key="eclipse.mirror"/>
+			</uri>
+		</provider>
+		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)&(tp.release=indigo)">
+			<uri format="{0}/eclipse/updates/3.7">
+				<bc:propertyRef key="eclipse.mirror"/>
+			</uri>
+		</provider>
+		<provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)&(tp.release=indigo)">
 			<uri format="{0}/tools/orbit/downloads/drops/R20090529135407/updateSite">
 				<bc:propertyRef key="eclipse.mirror"/>
 			</uri>

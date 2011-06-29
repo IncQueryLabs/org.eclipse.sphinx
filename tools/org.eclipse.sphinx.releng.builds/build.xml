@@ -12,6 +12,8 @@
 	<property name="buckminster.jvmarg" value=""/>
 	<property name="buckminster.arg" value=""/>
 	
+	<property name="tp.release" value="helios"/>
+	
 	<target name="clean.downloads">
 		<delete dir="downloads"/>
 	</target>
@@ -75,14 +77,14 @@
 	<target name="setup.buckminster" depends="resolve.director.launcher" unless="buckminster.present">
 		<java jar="${director.launcher}" fork="true" failonerror="true" jvm="${java.home}/bin/java">
 			<arg line="-application org.eclipse.equinox.p2.director"/>
-			<arg line="-repository ${eclipse.mirror}/tools/buckminster/headless-3.6/"/>
+			<arg line="-repository ${eclipse.mirror}/tools/buckminster/headless-3.7/"/>
 			<arg line="-destination ${buckminster.home}"/>
 			<arg line="-profile Buckminster"/>
 			<arg line="-installIU org.eclipse.buckminster.cmdline.product,org.eclipse.buckminster.pde.headless.feature.feature.group"/>
 		</java>
 		<java jar="${director.launcher}" fork="true" failonerror="true" jvm="${java.home}/bin/java">
 			<arg line="-application org.eclipse.equinox.p2.director"/>
-			<arg line="-repository http://download.cloudsmith.com/buckminster/external-3.6/"/>
+			<arg line="-repository http://download.cloudsmith.com/buckminster/external-3.7/"/>
 			<arg line="-destination ${buckminster.home}"/>
 			<arg line="-profile Buckminster"/>
 			<arg line="-installIU org.eclipse.buckminster.subclipse.headless.feature.feature.group"/>
@@ -113,6 +115,7 @@
 			<sysproperty key="eclipse.svn" value="${eclipse.svn}"/>
 			
 			<sysproperty key="tp.present" value="${tp.present}"/>
+			<sysproperty key="tp.release" value="${tp.release}"/>
 			
 			<sysproperty key="eclipse.p2.MD5Check" value="false"/>
 			<sysproperty key="eclipse.p2.mirrors" value="false"/>
