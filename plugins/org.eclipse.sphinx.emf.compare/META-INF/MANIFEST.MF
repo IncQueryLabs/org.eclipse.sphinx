@@ -9,8 +9,7 @@ Bundle-Activator: org.eclipse.sphinx.emf.compare.internal.Activator$Implementati
 Require-Bundle: org.eclipse.sphinx.emf;visibility:=reexport,
  org.eclipse.emf.compare;visibility:=reexport,
  org.eclipse.emf.compare.match;visibility:=reexport,
- org.eclipse.emf.compare.diff;visibility:=reexport,
- org.eclipse.emf.compare.ui;visibility:=reexport
+ org.eclipse.emf.compare.diff;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.sphinx.emf.compare.diff,

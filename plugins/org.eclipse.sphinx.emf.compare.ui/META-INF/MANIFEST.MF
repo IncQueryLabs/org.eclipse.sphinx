@@ -8,9 +8,9 @@ Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.sphinx.emf.compare.ui.internal.Activator$Implementation
 Require-Bundle: org.eclipse.compare;visibility:=reexport,
  org.eclipse.team.ui;visibility:=reexport,
+ org.eclipse.emf.compare.ui,
  org.eclipse.sphinx.emf.compare;visibility:=reexport,
- org.eclipse.sphinx.emf.workspace.ui;visibility:=reexport,
- org.eclipse.sphinx.emf.editors.forms
+ org.eclipse.sphinx.emf.workspace.ui;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.sphinx.emf.compare.ui,
