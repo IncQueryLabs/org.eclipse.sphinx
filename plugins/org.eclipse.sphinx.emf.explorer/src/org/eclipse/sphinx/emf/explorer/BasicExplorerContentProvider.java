@@ -58,7 +58,6 @@ import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -212,7 +211,8 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * @param object
 	 *            An arbitrary model object to be investigated.
 	 * @return The {@link EObject object} or {@link Resource resource} which is used as root of the model content
-	 *         provided by this content provider for given model object.
+	 *         provided by this content provider for given model object or <code>null</code> if given object is no model
+	 *         object or has no parent that corresponds to the expected model content root.
 	 */
 	protected Object getModelContentRoot(Object object) {
 		if (object instanceof EObject) {
@@ -224,7 +224,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		} else if (object instanceof TransientItemProvider) {
 			return getModelContentRoot((TransientItemProvider) object);
 		}
-		return object;
+		return null;
 	}
 
 	/**
@@ -251,7 +251,8 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * @param object
 	 *            An arbitrary {@link EObject object} to be investigated.
 	 * @return The {@link EObject object} or {@link Resource resource} which is used as root of the model content
-	 *         provided by this content provider for given model object.
+	 *         provided by this content provider for given model object or <code>null</code> if given object is no model
+	 *         object or has no parent that corresponds to the expected model content root.
 	 */
 	protected Object getModelContentRoot(EObject object) {
 		Assert.isNotNull(object);
@@ -529,8 +530,8 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 				Set<Resource> removedResources = new HashSet<Resource>();
 				Set<Resource> changedResources = new HashSet<Resource>();
 
-				// Analyze notifications for changed resources; record only loaded and unloaded resources which have not
-				// got unloaded/loaded again later on
+				// Analyze notifications for changed resources; record only loaded and unloaded or added and removed
+				// resources which have not got unloaded/loaded or removed/added again later on
 				for (Notification notification : event.getNotifications()) {
 					Object notifier = notification.getNotifier();
 					if (notifier instanceof Resource) {
@@ -624,19 +625,16 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	}
 
 	protected ResourceSetListener createNonContainmentReferenceChangeListener() {
-		return new ResourceSetListenerImpl() {
+		return new ResourceSetListenerImpl(NotificationFilter.createNotifierTypeFilter(EObject.class)) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
 				Set<EObject> objectsToRefresh = new HashSet<EObject>();
 				for (Notification notification : event.getNotifications()) {
-					Object notifier = notification.getNotifier();
-					if (notifier instanceof EObject) {
-						EObject object = (EObject) notifier;
-						if (notification.getFeature() instanceof EReference) {
-							EReference reference = (EReference) notification.getFeature();
-							if (!reference.isContainment() && !reference.isContainer() && reference.getEType() instanceof EClass) {
-								objectsToRefresh.add(object);
-							}
+					EObject object = (EObject) notification.getNotifier();
+					if (notification.getFeature() instanceof EReference) {
+						EReference reference = (EReference) notification.getFeature();
+						if (!reference.isContainment() && !reference.isContainer() && reference.getEType() instanceof EClass) {
+							objectsToRefresh.add(object);
 						}
 					}
 				}
@@ -651,21 +649,74 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	}
 
 	protected ResourceSetListener createModelContentRootChangeListener() {
-		return new ResourceSetListenerImpl() {
+		return new ResourceSetListenerImpl(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__CONTENTS)
+				.or(NotificationFilter.createNotifierTypeFilter(EObject.class))) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
-				Set<Resource> resources = new HashSet<Resource>();
+				Set<EObject> addedValues = new HashSet<EObject>();
+				Set<EObject> removedValues = new HashSet<EObject>();
+				Set<EObject> changedValues = new HashSet<EObject>();
+
+				// Analyze notifications for changed values; record only added and removed values which have not got
+				// removed/added again later on
 				for (Notification notification : event.getNotifications()) {
 					Object notifier = notification.getNotifier();
-					Object modelContentRoot = getModelContentRoot(notifier);
-					if (notifier == modelContentRoot) {
-						Resource resource = EcoreResourceUtil.getResource(notifier);
-						if (resource != null) {
-							resources.add(resource);
+					if (notifier instanceof Resource || notification.getFeature() instanceof EReference) {
+						if (notification.getEventType() == Notification.ADD || notification.getEventType() == Notification.ADD_MANY) {
+							List<EObject> newValues = new ArrayList<EObject>();
+							Object newValue = notification.getNewValue();
+							if (newValue instanceof List<?>) {
+								@SuppressWarnings("unchecked")
+								List<EObject> newValueList = (List<EObject>) newValue;
+								newValues.addAll(newValueList);
+							} else if (newValue instanceof EObject) {
+								newValues.add((EObject) newValue);
+							}
+
+							for (EObject value : newValues) {
+								if (removedValues.contains(value)) {
+									removedValues.remove(value);
+								} else {
+									addedValues.add(value);
+								}
+							}
+						} else if (notification.getEventType() == Notification.REMOVE || notification.getEventType() == Notification.REMOVE_MANY) {
+							List<EObject> oldValues = new ArrayList<EObject>();
+							Object oldValue = notification.getOldValue();
+							if (oldValue instanceof List<?>) {
+								@SuppressWarnings("unchecked")
+								List<EObject> oldValueList = (List<EObject>) oldValue;
+								oldValues.addAll(oldValueList);
+							} else if (oldValue instanceof Resource) {
+								oldValues.add((EObject) oldValue);
+							}
+
+							for (EObject value : oldValues) {
+								if (addedValues.contains(value)) {
+									addedValues.remove(value);
+								} else {
+									removedValues.add(value);
+								}
+							}
 						}
 					}
+
 				}
-				refreshViewerOnModelResources(resources);
+				changedValues.addAll(addedValues);
+				changedValues.addAll(removedValues);
+
+				// Explicitly refresh parents of changed values in case that they are workspace resources. This is
+				// necessary because viewer refreshes triggered by the model content provider only affect the model
+				// content roots behind the workspace resources. The latter are not represented by any tree item
+				// in the viewer and so these refresh attempts have no effect.
+				Set<IResource> resourcesToRefresh = new HashSet<IResource>();
+				for (EObject changedObject : changedValues) {
+					Object changedObjectParent = getParent(changedObject);
+					if (changedObjectParent instanceof IResource) {
+						resourcesToRefresh.add((IResource) changedObjectParent);
+					}
+				}
+				refreshViewerOnWorkspaceResources(resourcesToRefresh);
 			}
 
 			@Override
