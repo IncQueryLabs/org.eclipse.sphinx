@@ -31,6 +31,7 @@ import org.eclipse.sphinx.emf.workspace.internal.EditingDomainAdapterFactory;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 
+@SuppressWarnings({ "restriction" })
 public class EditingDomainAdapterFactoryTest extends DefaultIntegrationTestCase {
 
 	@Override
@@ -39,26 +40,23 @@ public class EditingDomainAdapterFactoryTest extends DefaultIntegrationTestCase 
 				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B };
 	}
 
-	@SuppressWarnings({ "restriction" })
 	static final EditingDomainAdapterFactory factory = new EditingDomainAdapterFactory();
 
-	@SuppressWarnings({ "unchecked", "restriction" })
 	public void testGetAdapterList() {
-		List<Class> ex = new ArrayList<Class>();
+		List<Class<?>> ex = new ArrayList<Class<?>>();
 		ex.add(IContainerEditingDomainProvider.class);
 		ex.add(IEditingDomainProvider.class);
 		ex.add(IResourceSaveIndicator.class);
 
-		Class[] res = factory.getAdapterList();
+		Class<?>[] res = factory.getAdapterList();
 
 		assertEquals(ex.size(), res.length);
-		for (Class re : res) {
+		for (Class<?> re : res) {
 			assertTrue(ex.contains(re));
 		}
 
 	}
 
-	@SuppressWarnings("restriction")
 	public void testGetAdapter() {
 		// ############### Context Object : IFile ###############################
 
