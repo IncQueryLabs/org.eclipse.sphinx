@@ -23,6 +23,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.sphinx.platform.util.ReflectUtil;
 import org.eclipse.team.svn.core.SVNMessages;
 import org.eclipse.team.svn.core.operation.CompositeOperation;
 import org.eclipse.team.svn.core.operation.IActionOperation;
@@ -37,6 +38,7 @@ public class DelegatingCompositeOperation implements IActionOperation {
 	}
 
 	public DelegatingCompositeOperation(String operationName, Class<? extends NLS> messagesClass) {
+		// Ensure backward compatibility with Eclipse 3.5.x and earlier
 		try {
 			if (ExtendedPlatform.getFeatureVersionOrdinal() >= 36) {
 				Constructor<CompositeOperation> constructor = CompositeOperation.class.getConstructor(String.class, Class.class);
@@ -111,5 +113,16 @@ public class DelegatingCompositeOperation implements IActionOperation {
 	@Override
 	public String toString() {
 		return delegate.toString();
+	}
+
+	public void reportStatus(int severity, String message, Throwable t) {
+		// Ensure backward compatibility with Eclipse 3.6.x and earlier
+		try {
+			if (ExtendedPlatform.getFeatureVersionOrdinal() >= 37) {
+				ReflectUtil.invokeMethod(delegate, "reportStatus", severity, message, t); //$NON-NLS-1$
+			}
+		} catch (Exception ex) {
+			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+		}
 	}
 }
