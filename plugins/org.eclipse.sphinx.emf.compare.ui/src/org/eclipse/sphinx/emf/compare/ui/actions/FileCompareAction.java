@@ -40,6 +40,7 @@ public class FileCompareAction implements IObjectActionDelegate {
 
 	@SuppressWarnings("unchecked")
 	public FileCompareAction() {
+		// Ensure backward compatibility with Eclipse 3.4.x and earlier
 		try {
 			String eclipseCompareActionClassName;
 			if (ExtendedPlatform.getFeatureVersionOrdinal() >= 35) {

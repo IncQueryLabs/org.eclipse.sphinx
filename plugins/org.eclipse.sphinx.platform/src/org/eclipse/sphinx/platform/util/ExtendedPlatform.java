@@ -402,7 +402,7 @@ public final class ExtendedPlatform {
 	 */
 	public static boolean isTeamPrivateResource(IResource resource, int options) {
 		if (resource != null) {
-			// Ensure compatibility with Eclipse 3.4.x and Eclipse 3.5.x
+			// Ensure backward compatibility with Eclipse 3.4.x and earlier
 			if (ExtendedPlatform.getFeatureVersionOrdinal() >= 35) {
 				// CVS private resources can be detected using native Eclipse API because CVS client is always shipped
 				// with Eclipse
