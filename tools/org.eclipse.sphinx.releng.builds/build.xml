@@ -92,6 +92,8 @@
 			<syspropertyset>
 				<propertyref prefix="http."/>
 			</syspropertyset>
+			
+			<sysproperty key="org.eclipse.ecf.provider.filetransfer.excludeContributors" value="org.eclipse.ecf.provider.filetransfer.httpclient"/>
 		</java>
 	</target>
 	
