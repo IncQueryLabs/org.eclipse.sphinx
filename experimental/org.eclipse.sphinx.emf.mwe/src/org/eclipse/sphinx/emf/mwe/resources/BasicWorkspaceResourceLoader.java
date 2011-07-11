@@ -141,7 +141,8 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 				// Ignore exception
 			}
 		}
-		return !outputURLs.isEmpty() ? new URLClassLoader(outputURLs.toArray(new URL[outputURLs.size()])) : null;
+		return !outputURLs.isEmpty() ? new URLClassLoader(outputURLs.toArray(new URL[outputURLs.size()]), Thread.currentThread()
+				.getContextClassLoader()) : null;
 	}
 
 	protected IPath getJavaOutputPath(IProject project) {
