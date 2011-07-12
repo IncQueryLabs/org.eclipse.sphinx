@@ -17,7 +17,9 @@ package org.eclipse.sphinx.xtendxpand.ui.wizards;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -190,18 +192,21 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	}
 
 	protected String getPrSrcPaths(Collection<? extends ExtendedOutlet> outlets) {
+		// Use a set drop outlet pointing to same physical path
+		Set<String> paths = new HashSet<String>();
 		StringBuilder builder = new StringBuilder();
 		List<ExtendedOutlet> allOutlets = new ArrayList<ExtendedOutlet>(outlets);
 		for (ExtendedOutlet outlet : allOutlets) {
 			if (outlet.isProtectedRegion()) {
-				builder.append(outlet.getPath());
-				// If it's not the last outlet
-				if (!(allOutlets.indexOf(outlet) == allOutlets.size() - 1)) {
-					builder.append(","); //$NON-NLS-1$
-				}
+				paths.add(outlet.getPath());
 			}
 		}
-		return builder.toString();
+		for (String path : paths) {
+			builder.append(path);
+			builder.append(","); //$NON-NLS-1$
+		}
+		;
+		return builder.substring(0, builder.lastIndexOf(",")).toString(); //$NON-NLS-1$
 	}
 
 	protected CheckJob createCheckJob() {
