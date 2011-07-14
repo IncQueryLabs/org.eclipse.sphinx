@@ -77,4 +77,18 @@
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="org.eclipse.sphinx.tests.xtendxpand.integration"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>

@@ -9,4 +9,12 @@
          id="org.eclipse.sphinx.sdk"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.sphinx.examples"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.sphinx.testutils"
+         version="0.0.0"/>
+
 </feature>

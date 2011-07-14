@@ -17,116 +17,40 @@
       %license
    </license>
 
-   <plugin
-         id="org.eclipse.sphinx.emf"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.sphinx.core"
+         version="0.0.0"/>
 
-   <plugin
-         id="org.eclipse.sphinx.emf.editors.forms"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.emf.explorer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.emf.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.emf.workspace"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.emf.workspace.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.platform"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.platform.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.gmf.workspace"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
+   <includes
          id="org.eclipse.sphinx.emf.compare"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
-   <plugin
-         id="org.eclipse.sphinx.emf.compare.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.sphinx.emf.compare.team.subversive"
+         version="0.0.0"/>
 
-   <plugin
-         id="org.eclipse.sphinx.emf.compare.team.subversive.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.sphinx.emf.editors.forms"
+         version="0.0.0"/>
 
-   <plugin
-         id="org.eclipse.sphinx.gmf.runtime.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.sphinx.emf.navigators"
+         version="0.0.0"/>
 
-   <plugin
+   <includes
          id="org.eclipse.sphinx.emf.validation"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
-   <plugin
-         id="org.eclipse.sphinx.emf.validation.bridge"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.sphinx.gmf.editors"
+         version="0.0.0"/>
 
-   <plugin
-         id="org.eclipse.sphinx.emf.validation.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.sphinx.graphiti.editors"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.sphinx.xtendxpand"
+         version="0.0.0"/>
 
 </feature>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.sphinx.xtendxpand"
+      label="%featureName"
+      version="0.7.0.qualifier"
+      provider-name="%providerName">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <requires>
+      <import feature="org.eclipse.jdt" version="3.6.0"/>
+      <import feature="org.eclipse.pde" version="3.6.0"/>
+      <import feature="org.eclipse.xtend" version="1.0.0"/>
+      <import feature="org.eclipse.xpand" version="1.0.0"/>
+      <import feature="org.eclipse.emf.mwe.core" version="1.1.0"/>
+      <import feature="org.eclipse.sphinx.core" version="0.7.0"/>
+      <import plugin="org.apache.commons.logging"/>
+   </requires>
+
+   <plugin
+         id="org.eclipse.sphinx.emf.mwe"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.xtend.typesystem.emf"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.xtend.typesystem.emf.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.xtendxpand"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.xtendxpand.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

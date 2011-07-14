@@ -17,43 +17,28 @@
       %license
    </license>
 
+   <includes
+         id="org.eclipse.sphinx.examples.core"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.sphinx.examples.metamodels"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.sphinx.examples.navigators"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.sphinx.examples.validation"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.sphinx.examples.xtendxpand"
+         version="0.0.0"/>
+
    <requires>
       <import feature="org.eclipse.sphinx" version="0.7.0"/>
    </requires>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.common.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.actions"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.explorer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.hummingbird.compare"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.validation.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
 
 </feature>

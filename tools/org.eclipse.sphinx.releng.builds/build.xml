@@ -1,4 +1,4 @@
-<project name="org.eclipse.sphinx.releng.builds" default="update.site">
+<project name="org.eclipse.sphinx.releng.builds" default="build">
 	
 	<property file="${user.home}/sphinx/build.properties"/>
 	
@@ -107,7 +107,14 @@
 	<target name="setup" depends="setup.check, setup.director, resolve.director.launcher, setup.buckminster, resolve.buckminster.launcher">
 	</target>
 	
-	<target name="update.site" depends="clean, setup">
+	<target name="build" depends="clean, setup">
+		<tstamp/>
+		<property name="date" value="${DSTAMP}"/>
+		<property name="time" value="${TSTAMP}"/>
+		<property name="timestamp" value="${date}-${time}"/>
+		<property name="buildType" value=""/>
+		<property name="buildId" value="${buildType}${timestamp}"/>
+		
 		<java jar="${buckminster.launcher}" fork="true" failonerror="true" clonevm="true" jvm="${java.home}/bin/java">
 			<jvmarg line="-Xms40m"/>
 			<jvmarg line="-Xmx256m"/>
@@ -122,10 +129,32 @@
 			<sysproperty key="eclipse.p2.MD5Check" value="false"/>
 			<sysproperty key="eclipse.p2.mirrors" value="false"/>
 			
+			<sysproperty key="buildId" value="${buildId}"/>
+			
 			<arg line="-data workspace"/>
 			<arg line="--loglevel ${buckminster.loglevel}"/>
 			<arg line="--scriptfile buckminster.script"/>
 			<arg line="${buckminster.arg}"/>
 		</java>
+		
+		<mkdir dir="output/zips"/>
+		
+		<move file="output/org.eclipse.sphinx.sdk.parent_0.7.0-eclipse.feature/site.p2.zip/org.eclipse.sphinx.sdk.parent_0.7.0.${buildId}.zip" todir="output/zips"/>
+		<!--
+		<move todir="output/zips">
+			<fileset dir="output/org.eclipse.sphinx.sdk.parent_0.7.0-eclipse.feature/site.p2.zip">
+				<include name="*.zip"/>
+			</fileset>
+		</move>
+		<zip destfile="output/zips/runtime.zip">
+			<zipfileset dir="output/xxx/feature.exports"/>
+		</zip>
+		<zip destfile="output/zips/examples.zip">
+			<zipfileset dir="output/xxx/feature.exports"/>
+		</zip>
+		<zip destfile="output/zips/testutils.zip">
+			<zipfileset dir="output/xxx/feature.exports"/>
+		</zip>
+		-->
 	</target>
 </project>
