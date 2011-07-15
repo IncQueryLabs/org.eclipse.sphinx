@@ -3,6 +3,7 @@
 	<locator pattern="^org\.eclipse\.sphinx(\..+)*" searchPathRef="org.eclipse.sphinx"/>
 	<!-- Use Helios version of EMF Compare. -->
 	<locator pattern="^org\.eclipse\.emf\.compare(\..+)*" searchPathRef="target.platform.emf.compare"/>
+	<locator pattern="^org\.eclipse\.graphiti(\..+)*" searchPathRef="target.platform.graphiti"/>
 	<locator searchPathRef="target.platform"/>
 	
 	<searchPath name="org.eclipse.sphinx">
@@ -51,6 +52,14 @@
 			</uri>
 		</provider>
 		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(&amp;(tp.present=false)(tp.release=indigo))">
+			<uri format="{0}/releases/indigo">
+				<bc:propertyRef key="eclipse.mirror"/>
+			</uri>
+		</provider>
+	</searchPath>
+	
+	<searchPath name="target.platform.graphiti">
+		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(&amp;(tp.present=false)(|(tp.release=galileo)(tp.release=helios)(tp.release=indigo)))">
 			<uri format="{0}/releases/indigo">
 				<bc:propertyRef key="eclipse.mirror"/>
 			</uri>
