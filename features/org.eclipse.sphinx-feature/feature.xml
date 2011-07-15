@@ -45,9 +45,11 @@
          id="org.eclipse.sphinx.gmf.editors"
          version="0.0.0"/>
 
+<!-- TODO excluded due to compile errors
    <includes
          id="org.eclipse.sphinx.graphiti.editors"
          version="0.0.0"/>
+-->
 
    <includes
          id="org.eclipse.sphinx.xtendxpand"

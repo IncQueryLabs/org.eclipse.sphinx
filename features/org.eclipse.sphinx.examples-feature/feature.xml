@@ -21,9 +21,11 @@
          id="org.eclipse.sphinx.examples.core"
          version="0.0.0"/>
 
+<!-- TODO excluded due to compile errors
    <includes
          id="org.eclipse.sphinx.examples.metamodels"
          version="0.0.0"/>
+-->
 
    <includes
          id="org.eclipse.sphinx.examples.navigators"
