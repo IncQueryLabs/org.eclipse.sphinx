@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.sphinx.sdk.parent"
-      label="Sphinx SDK Releng Parent Feature (Incubation)"
+      id="org.eclipse.sphinx.site.parent"
+      label="Sphinx Update Site Releng Parent Feature (Incubation)"
       version="0.7.0.qualifier"
       provider-name="Eclipse.org">
 

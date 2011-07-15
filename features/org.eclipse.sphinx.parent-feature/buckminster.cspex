@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cspecExtension xmlns="http://www.eclipse.org/buckminster/CSpec-1.0">
 	<dependencies>
+		<!--
+		Included here so that platform specific plug-ins and fragments, e.g org.eclipse.swt.win32... will show up in target platform.
+		-->
 		<dependency name="org.eclipse.platform" componentType="eclipse.feature"/>
 	</dependencies>
 </cspecExtension>

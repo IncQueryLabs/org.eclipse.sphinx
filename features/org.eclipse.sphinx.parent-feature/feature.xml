@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.sphinx.parent"
+      label="Sphinx Releng Parent Feature (Incubation)"
+      version="0.7.0.qualifier"
+      provider-name="Eclipse.org">
+
+   <includes
+         id="org.eclipse.sphinx.site.parent"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.sphinx.tests"
+         version="0.0.0"/>
+
+</feature>
