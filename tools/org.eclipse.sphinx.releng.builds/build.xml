@@ -139,7 +139,7 @@
 		
 		<mkdir dir="output/zips"/>
 		
-		<move file="output/org.eclipse.sphinx.sdk.parent_0.7.0-eclipse.feature/site.p2.zip/org.eclipse.sphinx.sdk.parent_0.7.0.${buildId}.zip" todir="output/zips"/>
+		<move file="output/org.eclipse.sphinx.site.parent_0.7.0-eclipse.feature/site.p2.zip/org.eclipse.sphinx.site.parent_0.7.0.${buildId}.zip" todir="output/zips"/>
 		<!--
 		<move todir="output/zips">
 			<fileset dir="output/org.eclipse.sphinx.sdk.parent_0.7.0-eclipse.feature/site.p2.zip">
