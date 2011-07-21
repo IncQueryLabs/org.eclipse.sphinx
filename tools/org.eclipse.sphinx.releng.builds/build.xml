@@ -92,8 +92,13 @@
 			<syspropertyset>
 				<propertyref prefix="http."/>
 			</syspropertyset>
-			
-			<sysproperty key="org.eclipse.ecf.provider.filetransfer.excludeContributors" value="org.eclipse.ecf.provider.filetransfer.httpclient"/>
+		</java>
+		<java jar="${director.launcher}" fork="true" failonerror="true" jvm="${java.home}/bin/java">
+			<arg line="-application org.eclipse.equinox.p2.director"/>
+			<arg line="-repository ${eclipse.mirror}/releases/indigo/"/>
+			<arg line="-destination ${buckminster.home}"/>
+			<arg line="-profile Buckminster"/>
+			<arg line="-installIU org.eclipse.equinox.p2.repository.tools"/>
 		</java>
 	</target>
 	
