@@ -129,7 +129,7 @@
 			<sysproperty key="eclipse.p2.MD5Check" value="false"/>
 			<sysproperty key="eclipse.p2.mirrors" value="false"/>
 			
-			<sysproperty key="buildId" value="${buildId}"/>
+			<sysproperty key="buildId2" value="${buildId}"/>
 			
 			<arg line="-data workspace"/>
 			<arg line="--loglevel ${buckminster.loglevel}"/>
@@ -137,24 +137,40 @@
 			<arg line="${buckminster.arg}"/>
 		</java>
 		
-		<mkdir dir="output/zips"/>
-		
-		<move file="output/org.eclipse.sphinx.site.parent_0.7.0-eclipse.feature/site.p2.zip/org.eclipse.sphinx.site.parent_0.7.0.${buildId}.zip" todir="output/zips"/>
-		<!--
-		<move todir="output/zips">
-			<fileset dir="output/org.eclipse.sphinx.sdk.parent_0.7.0-eclipse.feature/site.p2.zip">
-				<include name="*.zip"/>
-			</fileset>
-		</move>
-		<zip destfile="output/zips/runtime.zip">
-			<zipfileset dir="output/xxx/feature.exports"/>
-		</zip>
-		<zip destfile="output/zips/examples.zip">
-			<zipfileset dir="output/xxx/feature.exports"/>
-		</zip>
-		<zip destfile="output/zips/testutils.zip">
-			<zipfileset dir="output/xxx/feature.exports"/>
-		</zip>
-		-->
+		<!-- Invoke the post.build target using antRunner for availability of repo2runnable task. -->
+		<java jar="${buckminster.launcher}" fork="true" failonerror="true" clonevm="true" jvm="${java.home}/bin/java">
+			<sysproperty key="buildId" value="${buildId}"/>
+			
+			<arg line="-data workspace"/>
+			<arg line="-application org.eclipse.ant.core.antRunner"/>
+			<arg line="post.build"/>
+		</java>
 	</target>
+	
+	<target name="post.build">
+		<mkdir dir="output/zips"/>
+		<mkdir dir="output/folders"/>
+		
+		<p2.mirror source="file:${basedir}/output/org.eclipse.sphinx.parent_0.7.0-eclipse.feature/site.p2" destination="file${basedir}/output/folders/update">
+			<iu id="org.eclipse.sphinx.sdk.feature.group"/>
+			<iu id="org.eclipse.sphinx.examples.feature.group"/>
+			<iu id="org.eclipse.sphinx.testutils.feature.group"/>
+			<slicingOptions followStrict="true"/>
+		</p2.mirror>
+		<p2.repo2runnable source="file:${basedir}/output/org.eclipse.sphinx.site.parent_0.7.0-eclipse.feature/site.p2" destination="${basedir}/output/folders/runtime/eclipse">
+			<iu id="org.eclipse.sphinx.feature.group"/>
+		</p2.repo2runnable>
+		<p2.repo2runnable source="file:${basedir}/output/org.eclipse.sphinx.site.parent_0.7.0-eclipse.feature/site.p2" destination="${basedir}/output/folders/examples/eclipse">
+			<iu id="org.eclipse.sphinx.examples.feature.group"/>
+		</p2.repo2runnable>
+		<p2.repo2runnable source="file:${basedir}/output/org.eclipse.sphinx.site.parent_0.7.0-eclipse.feature/site.p2" destination="${basedir}/output/folders/testutils/eclipse">
+			<iu id="org.eclipse.sphinx.testutils.feature.group"/>
+		</p2.repo2runnable>
+		
+		<zip destfile="output/zips/update.zip" basedir="output/folders/update"/>
+		<zip destfile="output/zips/runtime.zip" basedir="output/folders/runtime"/>
+		<zip destfile="output/zips/examples.zip" basedir="output/folders/examples"/>
+		<zip destfile="output/zips/testutils.zip" basedir="output/folders/testutils"/>
+	</target>
+	
 </project>
