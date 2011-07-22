@@ -156,6 +156,11 @@
 		<mkdir dir="output/zips"/>
 		<mkdir dir="output/folders"/>
 		
+		<mkdir dir="output/folders/update"/>
+		<mkdir dir="output/folders/runtime/eclipse"/>
+		<mkdir dir="output/folders/examples/eclipse"/>
+		<mkdir dir="output/folders/testutils/eclipse"/>
+		
 		<p2.mirror source="file:${basedir}/output/org.eclipse.sphinx.parent_0.7.0-eclipse.feature/site.p2" destination="file${basedir}/output/folders/update">
 			<iu id="org.eclipse.sphinx.sdk.feature.group"/>
 			<iu id="org.eclipse.sphinx.examples.feature.group"/>
