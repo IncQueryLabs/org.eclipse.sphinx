@@ -21,4 +21,8 @@
          id="org.eclipse.sphinx.tests"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.sphinx.thirdparty"
+         version="0.0.0"/>
+
 </feature>

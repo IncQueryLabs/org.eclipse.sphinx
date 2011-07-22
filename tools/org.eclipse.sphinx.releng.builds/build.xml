@@ -164,6 +164,7 @@
 			<iu id="org.eclipse.sphinx.sdk.feature.group"/>
 			<iu id="org.eclipse.sphinx.examples.feature.group"/>
 			<iu id="org.eclipse.sphinx.testutils.feature.group"/>
+			<iu id="org.eclipse.sphinx.thirdparty.feature.group"/>
 			<slicingOptions followStrict="true"/>
 		</p2.mirror>
 		<p2.mirror source="${parent.repo}" destination="file:${basedir}/output/folders/sdk">
