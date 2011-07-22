@@ -156,31 +156,53 @@
 		<mkdir dir="output/zips"/>
 		<mkdir dir="output/folders"/>
 		
-		<mkdir dir="output/folders/update"/>
-		<mkdir dir="output/folders/runtime/eclipse"/>
-		<mkdir dir="output/folders/examples/eclipse"/>
-		<mkdir dir="output/folders/testutils/eclipse"/>
+		<property name="parent.repo" value="file:${basedir}/output/org.eclipse.sphinx.parent_0.7.0-eclipse.feature/site.p2"/>
 		
-		<p2.mirror source="file:${basedir}/output/org.eclipse.sphinx.parent_0.7.0-eclipse.feature/site.p2" destination="file${basedir}/output/folders/update">
+		<p2.mirror>
+			<source location="${parent.repo}"/>
+			<destination location="file:${basedir}/output/folders/update" name="org.eclipse.sphinx" compressed="true"/>
 			<iu id="org.eclipse.sphinx.sdk.feature.group"/>
 			<iu id="org.eclipse.sphinx.examples.feature.group"/>
 			<iu id="org.eclipse.sphinx.testutils.feature.group"/>
 			<slicingOptions followStrict="true"/>
 		</p2.mirror>
-		<p2.repo2runnable source="file:${basedir}/output/org.eclipse.sphinx.site.parent_0.7.0-eclipse.feature/site.p2" destination="${basedir}/output/folders/runtime/eclipse">
+		<p2.mirror source="${parent.repo}" destination="file:${basedir}/output/folders/sdk">
+			<iu id="org.eclipse.sphinx.sdk.feature.group"/>
+			<slicingOptions followStrict="true"/>
+		</p2.mirror>
+		<p2.mirror source="${parent.repo}" destination="file:${basedir}/output/folders/runtime">
 			<iu id="org.eclipse.sphinx.feature.group"/>
-		</p2.repo2runnable>
-		<p2.repo2runnable source="file:${basedir}/output/org.eclipse.sphinx.site.parent_0.7.0-eclipse.feature/site.p2" destination="${basedir}/output/folders/examples/eclipse">
+			<slicingOptions followStrict="true"/>
+		</p2.mirror>
+		<p2.mirror source="${parent.repo}" destination="file:${basedir}/output/folders/examples">
 			<iu id="org.eclipse.sphinx.examples.feature.group"/>
-		</p2.repo2runnable>
-		<p2.repo2runnable source="file:${basedir}/output/org.eclipse.sphinx.site.parent_0.7.0-eclipse.feature/site.p2" destination="${basedir}/output/folders/testutils/eclipse">
+			<slicingOptions followStrict="true"/>
+		</p2.mirror>
+		<p2.mirror source="${parent.repo}" destination="file:${basedir}/output/folders/testutils">
 			<iu id="org.eclipse.sphinx.testutils.feature.group"/>
-		</p2.repo2runnable>
+			<slicingOptions followStrict="true"/>
+		</p2.mirror>
 		
-		<zip destfile="output/zips/update.zip" basedir="output/folders/update"/>
-		<zip destfile="output/zips/runtime.zip" basedir="output/folders/runtime"/>
-		<zip destfile="output/zips/examples.zip" basedir="output/folders/examples"/>
-		<zip destfile="output/zips/testutils.zip" basedir="output/folders/testutils"/>
+		<p2.repo2runnable source="file:${basedir}/output/folders/sdk" destination="file:${basedir}/output/folders/sdk.runnable/eclipse"/>
+		<p2.repo2runnable source="file:${basedir}/output/folders/runtime" destination="file:${basedir}/output/folders/runtime.runnable/eclipse"/>
+		<p2.repo2runnable source="file:${basedir}/output/folders/examples" destination="file:${basedir}/output/folders/examples.runnable/eclipse"/>
+		<p2.repo2runnable source="file:${basedir}/output/folders/testutils" destination="file:${basedir}/output/folders/testutils.runnable/eclipse"/>
+		
+		<zip destfile="output/zips/update.zip">
+			<zipfileset dir="output/folders/update"/>
+		</zip>
+		<zip destfile="output/zips/sdk.zip">
+			<zipfileset dir="output/folders/sdk.runnable" excludes="eclipse/*.jar"/>
+		</zip>
+		<zip destfile="output/zips/runtime.zip">
+			<zipfileset dir="output/folders/runtime.runnable" excludes="eclipse/*.jar"/>
+		</zip>
+		<zip destfile="output/zips/examples.zip">
+			<zipfileset dir="output/folders/examples.runnable" excludes="eclipse/*.jar"/>
+		</zip>
+		<zip destfile="output/zips/testutils.zip">
+			<zipfileset dir="output/folders/testutils.runnable" excludes="eclipse/*.jar"/>
+		</zip>
 	</target>
 	
 </project>
