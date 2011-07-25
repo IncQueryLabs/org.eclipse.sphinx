@@ -2,5 +2,5 @@
 <componentQuery xmlns="http://www.eclipse.org/buckminster/CQuery-1.0" resourceMap="sphinx.rmap">
     <rootRequest name="org.eclipse.sphinx.parent" componentType="eclipse.feature"/>
     <advisorNode namePattern=".*" allowCircularDependency="true"/>
-    <advisorNode namePattern="^org\.eclipse\.sphinx(\..+)*\.source" skipComponent="true"/>
+    <advisorNode namePattern="^org\.eclipse\.sphinx(\..+)+\.source" skipComponent="true"/>
 </componentQuery>
