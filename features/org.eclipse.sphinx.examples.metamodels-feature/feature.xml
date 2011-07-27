@@ -115,13 +115,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.sphinx.examples.hummingbird20.transform.xtend"
          download-size="0"
          install-size="0"
