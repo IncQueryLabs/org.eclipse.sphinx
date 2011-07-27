@@ -189,19 +189,19 @@
 		<p2.repo2runnable source="file:${basedir}/output/folders/examples" destination="file:${basedir}/output/folders/examples.runnable/eclipse"/>
 		<p2.repo2runnable source="file:${basedir}/output/folders/testutils" destination="file:${basedir}/output/folders/testutils.runnable/eclipse"/>
 		
-		<zip destfile="output/zips/update.zip">
+		<zip destfile="output/zips/mdt-sphinx-Update-0.7.0.${buildId}.zip">
 			<zipfileset dir="output/folders/update"/>
 		</zip>
-		<zip destfile="output/zips/sdk.zip">
+		<zip destfile="output/zips/mdt-sphinx-SDK-0.7.0.${buildId}.zip">
 			<zipfileset dir="output/folders/sdk.runnable" excludes="eclipse/*.jar"/>
 		</zip>
-		<zip destfile="output/zips/runtime.zip">
+		<zip destfile="output/zips/mdt-sphinx-runtime-0.7.0.${buildId}.zip">
 			<zipfileset dir="output/folders/runtime.runnable" excludes="eclipse/*.jar"/>
 		</zip>
-		<zip destfile="output/zips/examples.zip">
+		<zip destfile="output/zips/mdt-sphinx-examples-0.7.0.${buildId}.zip">
 			<zipfileset dir="output/folders/examples.runnable" excludes="eclipse/*.jar"/>
 		</zip>
-		<zip destfile="output/zips/testutils.zip">
+		<zip destfile="output/zips/mdt-sphinx-testutils-0.7.0.${buildId}.zip">
 			<zipfileset dir="output/folders/testutils.runnable" excludes="eclipse/*.jar"/>
 		</zip>
 	</target>
