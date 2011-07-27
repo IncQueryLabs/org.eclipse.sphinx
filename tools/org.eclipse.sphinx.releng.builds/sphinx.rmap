@@ -37,12 +37,14 @@
 				<bc:propertyRef key="eclipse.svn"/>
 			</uri>
 		</provider>
+		<!-- Deactivated for release build. Use this only for testing of experimental content
 		<provider componentTypes="osgi.bundle" readerType="svn">
 			<uri format="{1}/modeling/org.eclipse.mdt.sphinx/trunk/experimental/{0}?moduleAfterTag&amp;amp;moduleAfterBranch">
 				<bc:propertyRef key="buckminster.component"/>
 				<bc:propertyRef key="eclipse.svn"/>
 			</uri>
 		</provider>
+		-->
 	</searchPath>
 	
 	<searchPath name="target.platform.emf.compare">
