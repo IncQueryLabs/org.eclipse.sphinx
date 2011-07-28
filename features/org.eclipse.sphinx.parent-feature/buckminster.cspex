@@ -5,5 +5,11 @@
 		Included here so that platform specific plug-ins and fragments, e.g org.eclipse.swt.win32... will show up in target platform.
 		-->
 		<dependency name="org.eclipse.platform" componentType="eclipse.feature"/>
+		<!--
+		Included here since the feature org.eclipse.emf.mwe.core depends on com.google.inject which requires
+		org.aopalliance but somehow just referencing org.eclipse.emf.mwe.core is not sufficient so that
+		org.aopalliance shows up in the target platform.
+		-->
+		<dependency name="org.aopalliance" componentType="osgi.bundle"/>
 	</dependencies>
 </cspecExtension>
