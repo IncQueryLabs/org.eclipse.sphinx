@@ -403,9 +403,12 @@ public final class ExtendedPlatform {
 	 */
 	public static boolean isTeamPrivateResource(IResource resource, int options) {
 		if (resource != null) {
+			// CVS private resources can be detected using native Eclipse API because CVS client is always shipped
+			// with Eclipse
 			if (resource.isTeamPrivateMember()) {
 				return true;
 			}
+
 			// Do extra name-based check for detecting SVN private resources because SVN client is not necessarily
 			// present in every client's Eclipse target platform
 			/*
