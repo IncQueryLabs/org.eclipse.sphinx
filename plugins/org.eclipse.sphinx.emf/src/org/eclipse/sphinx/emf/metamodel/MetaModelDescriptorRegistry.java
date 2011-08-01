@@ -15,6 +15,7 @@
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
  *     itemis - [348544] OMG XMI files with embedded model content are not recognized as model files
  *     itemis - [348820] Performance-optimized content type detection in MetaModelDescriptorRegistry ignores file extensions
+ *     Conti  - [349675] Performance improvements of MetaModelDescriptorRegistry
  *
  * </copyright>
  */
@@ -29,6 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -119,7 +121,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	/**
 	 * The contributed meta-model descriptors.
 	 */
-	private Map<String, IMetaModelDescriptor> fMetaModelDescriptors = Collections.synchronizedMap(new HashMap<String, IMetaModelDescriptor>());
+	private Map<String, IMetaModelDescriptor> fMetaModelDescriptors = Collections.synchronizedMap(new LinkedHashMap<String, IMetaModelDescriptor>());
 
 	/**
 	 * The contributed target meta-model descriptor providers.
@@ -134,6 +136,17 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 	private Map<String, String> fContentTypeIdCache = new HashMap<String, String>();
 
+	private Map<String, Pattern> patternCache = new LinkedHashMap<String, Pattern>() {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		protected boolean removeEldestEntry(java.util.Map.Entry<String, Pattern> eldest) {
+			// keep up to 100 entries in the cache
+			return size() > 100;
+		}
+	};
+
 	/**
 	 * Private constructor for the singleton pattern.
 	 * <p>
@@ -142,6 +155,22 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	private MetaModelDescriptorRegistry() {
 		readContributedDescriptors();
 		readContributedTargetMetaModelDescriptorProviders();
+	}
+
+	/**
+	 * Get a pattern from the cache, creating one if necessary
+	 * 
+	 * @param regexp
+	 * @return
+	 */
+	private Pattern getPattern(String regexp) {
+		if (patternCache.containsKey(regexp)) {
+			return patternCache.get(regexp);
+		} else {
+			Pattern p = Pattern.compile(regexp);
+			patternCache.put(regexp, p);
+			return p;
+		}
 	}
 
 	private IExtensionRegistry getExtensionRegistry() {
@@ -848,7 +877,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			if (nsURI != null) {
 				return getDescriptor(ANY_MM, new IDescriptorFilter() {
 					public boolean accept(IMetaModelDescriptor descriptor) {
-						return nsURI.matches(descriptor.getEPackageNsURIPattern());
+						return getPattern(descriptor.getEPackageNsURIPattern()).matcher(nsURI).matches();
 					}
 				});
 			}
@@ -900,24 +929,25 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	public IMetaModelDescriptor getDescriptor(final URI namespaceURI) {
 		if (namespaceURI != null) {
 			synchronized (fMetaModelDescriptors) {
+				final String namespaceURIStr = namespaceURI.toString();
 				IMetaModelDescriptor mmDescriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
 					public boolean accept(IMetaModelDescriptor mmDescriptor) {
-						if (namespaceURI.toString().matches(mmDescriptor.getNamespace())) {
+						if (getPattern(mmDescriptor.getNamespace()).matcher(namespaceURIStr).matches()) {
 							return true;
 						}
-						if (namespaceURI.toString().matches(mmDescriptor.getEPackageNsURIPattern())) {
+						if (getPattern(mmDescriptor.getEPackageNsURIPattern()).matcher(namespaceURIStr).matches()) {
 							return true;
 						}
 						for (URI compatibleNamepaceURI : mmDescriptor.getCompatibleNamespaceURIs()) {
-							if (namespaceURI.toString().matches(compatibleNamepaceURI.toString())) {
+							if (getPattern(compatibleNamepaceURI.toString()).matcher(namespaceURIStr).matches()) {
 								return true;
 							}
 						}
 						for (IMetaModelDescriptor compatibleResourceVersionDescriptor : mmDescriptor.getCompatibleResourceVersionDescriptors()) {
-							if (namespaceURI.toString().matches(compatibleResourceVersionDescriptor.getNamespace())) {
+							if (getPattern(compatibleResourceVersionDescriptor.getNamespace()).matcher(namespaceURIStr).matches()) {
 								return true;
 							}
-							if (namespaceURI.toString().matches(compatibleResourceVersionDescriptor.getEPackageNsURIPattern())) {
+							if (getPattern(compatibleResourceVersionDescriptor.getEPackageNsURIPattern()).matcher(namespaceURIStr).matches()) {
 								return true;
 							}
 						}
@@ -929,7 +959,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 				if (mmDescriptor == null) {
 					// Try to retrieve Ecore model behind given namespace and dynamically create a new meta-model
 					// descriptor
-					EPackage ePackage = EPackage.Registry.INSTANCE.getEPackage(namespaceURI.toString());
+					EPackage ePackage = EPackage.Registry.INSTANCE.getEPackage(namespaceURIStr);
 					if (ePackage != null) {
 						mmDescriptor = createDescriptor(ePackage);
 						addDescriptor(mmDescriptor);
@@ -976,8 +1006,18 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * @return
 	 */
 	private <T extends IMetaModelDescriptor> T getDescriptor(T mmDescriptor, IDescriptorFilter filter) {
-		for (T descriptor : getDescriptors(mmDescriptor)) {
+		List<T> descriptors = getDescriptors(mmDescriptor);
+		for (int i = descriptors.size() - 1; i >= 0; i--) {
+			T descriptor = descriptors.get(i);
 			if (filter.accept(descriptor)) {
+				if (i < descriptors.size() - 1) {
+					// there is a very good chance that the next descriptor lookup to trigger the same descriptor,
+					// as a a result, moving the descriptor to the last position could improve the performance
+					synchronized (fMetaModelDescriptors) {
+						fMetaModelDescriptors.remove(descriptor.getIdentifier());
+						fMetaModelDescriptors.put(descriptor.getIdentifier(), descriptor);
+					}
+				}
 				return descriptor;
 			}
 		}
