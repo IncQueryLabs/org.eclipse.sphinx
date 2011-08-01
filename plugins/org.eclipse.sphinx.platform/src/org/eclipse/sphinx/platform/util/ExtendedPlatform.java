@@ -22,16 +22,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.internal.resources.ResourceException;
@@ -77,8 +74,6 @@ import org.osgi.framework.BundleException;
 public final class ExtendedPlatform {
 
 	public static final int LIMIT_INDIVIDUAL_RESOURCES_SCHEDULING_RULE = 500;
-
-	private static Map<Class<?>, Method> teamPrivateMethodCache = new HashMap<Class<?>, Method>();
 
 	// Prevent from instantiation
 	private ExtendedPlatform() {
@@ -408,32 +403,9 @@ public final class ExtendedPlatform {
 	 */
 	public static boolean isTeamPrivateResource(IResource resource, int options) {
 		if (resource != null) {
-			// Ensure backward compatibility with Eclipse 3.4.x and earlier
-			if (ExtendedPlatform.getFeatureVersionOrdinal() >= 35) {
-				// CVS private resources can be detected using native Eclipse API because CVS client is always shipped
-				// with Eclipse
-				try {
-					Class<? extends IResource> resClass = resource.getClass();
-					Method method;
-					if (teamPrivateMethodCache.containsKey(resClass)) {
-						method = teamPrivateMethodCache.get(resClass);
-					} else {
-						method = ReflectUtil.findMethod(resClass, "isTeamPrivateMember"); //$NON-NLS-1$
-						teamPrivateMethodCache.put(resClass, method);
-					}
-					if (method != null && (Boolean) method.invoke(resource)) {
-						return true;
-					}
-				} catch (Exception ex) {
-					// Ignore exception
-				}
-			} else {
-				// No other choice than using a name-based check for detecting CVS private resources
-				if (resource.getName().equals("CVS")) { //$NON-NLS-1$
-					return true;
-				}
+			if (resource.isTeamPrivateMember()) {
+				return true;
 			}
-
 			// Do extra name-based check for detecting SVN private resources because SVN client is not necessarily
 			// present in every client's Eclipse target platform
 			/*
