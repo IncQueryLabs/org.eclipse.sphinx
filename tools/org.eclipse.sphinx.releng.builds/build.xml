@@ -163,7 +163,9 @@
 			<destination location="file:${basedir}/output/folders/update" name="org.eclipse.sphinx" compressed="true"/>
 			<iu id="org.eclipse.sphinx.sdk.feature.group"/>
 			<iu id="org.eclipse.sphinx.examples.feature.group"/>
+			<iu id="org.eclipse.sphinx.examples.source.feature.group"/>
 			<iu id="org.eclipse.sphinx.testutils.feature.group"/>
+			<iu id="org.eclipse.sphinx.testutils.source.feature.group"/>
 			<iu id="org.eclipse.sphinx.thirdparty.feature.group"/>
 			<slicingOptions followStrict="true"/>
 		</p2.mirror>
@@ -177,10 +179,12 @@
 		</p2.mirror>
 		<p2.mirror source="${parent.repo}" destination="file:${basedir}/output/folders/examples">
 			<iu id="org.eclipse.sphinx.examples.feature.group"/>
+			<iu id="org.eclipse.sphinx.examples.source.feature.group"/>
 			<slicingOptions followStrict="true"/>
 		</p2.mirror>
 		<p2.mirror source="${parent.repo}" destination="file:${basedir}/output/folders/testutils">
 			<iu id="org.eclipse.sphinx.testutils.feature.group"/>
+			<iu id="org.eclipse.sphinx.testutils.source.feature.group"/>
 			<slicingOptions followStrict="true"/>
 		</p2.mirror>
 		
