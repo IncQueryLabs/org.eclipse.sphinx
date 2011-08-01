@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
+ *     Conti - [353487] - Performance of ExtendedPlatform.isPlatformPrivateResource
  * 
  * </copyright>
  */
@@ -21,13 +22,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.internal.resources.ResourceException;
@@ -73,6 +77,8 @@ import org.osgi.framework.BundleException;
 public final class ExtendedPlatform {
 
 	public static final int LIMIT_INDIVIDUAL_RESOURCES_SCHEDULING_RULE = 500;
+
+	private static Map<Class<?>, Method> teamPrivateMethodCache = new HashMap<Class<?>, Method>();
 
 	// Prevent from instantiation
 	private ExtendedPlatform() {
@@ -407,7 +413,15 @@ public final class ExtendedPlatform {
 				// CVS private resources can be detected using native Eclipse API because CVS client is always shipped
 				// with Eclipse
 				try {
-					if ((Boolean) ReflectUtil.invokeMethod(resource, "isTeamPrivateMember")) { //$NON-NLS-1$
+					Class<? extends IResource> resClass = resource.getClass();
+					Method method;
+					if (teamPrivateMethodCache.containsKey(resClass)) {
+						method = teamPrivateMethodCache.get(resClass);
+					} else {
+						method = ReflectUtil.findMethod(resClass, "isTeamPrivateMember"); //$NON-NLS-1$
+						teamPrivateMethodCache.put(resClass, method);
+					}
+					if (method != null && (Boolean) method.invoke(resource)) {
 						return true;
 					}
 				} catch (Exception ex) {
