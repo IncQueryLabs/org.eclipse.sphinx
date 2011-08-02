@@ -18,6 +18,7 @@ package org.eclipse.sphinx.xtendxpand.ui.wizards;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -201,12 +202,13 @@ public class M2TConfigurationWizard extends AbstractWizard {
 				paths.add(outlet.getPath());
 			}
 		}
-		for (String path : paths) {
-			builder.append(path);
-			builder.append(","); //$NON-NLS-1$
+		for (Iterator<String> iter = paths.iterator(); iter.hasNext();) {
+			builder.append(iter.next());
+			if (iter.hasNext()) {
+				builder.append(","); //$NON-NLS-1$
+			}
 		}
-		;
-		return builder.substring(0, builder.lastIndexOf(",")).toString(); //$NON-NLS-1$
+		return builder.toString();
 	}
 
 	protected CheckJob createCheckJob() {
