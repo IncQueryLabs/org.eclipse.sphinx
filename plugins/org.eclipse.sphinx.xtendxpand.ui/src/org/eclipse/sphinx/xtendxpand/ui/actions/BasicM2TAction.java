@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -139,12 +140,13 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 				paths.add(outlet.getPath());
 			}
 		}
-		for (String path : paths) {
-			builder.append(path);
-			builder.append(","); //$NON-NLS-1$
+		for (Iterator<String> iter = paths.iterator(); iter.hasNext();) {
+			builder.append(iter.next());
+			if (iter.hasNext()) {
+				builder.append(","); //$NON-NLS-1$
+			}
 		}
-		;
-		return builder.substring(0, builder.lastIndexOf(",")).toString(); //$NON-NLS-1$
+		return builder.toString();
 	}
 
 	protected String getM2TJobName() {
