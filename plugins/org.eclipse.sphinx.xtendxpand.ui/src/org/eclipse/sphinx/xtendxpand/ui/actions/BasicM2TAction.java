@@ -62,8 +62,14 @@ import org.eclipse.xtend.typesystem.MetaModel;
 
 public class BasicM2TAction extends BaseSelectionListenerAction {
 
+	/**
+	 * The default output folder for code generation.
+	 */
 	public static final String PROJECT_RELATIVE_DEFAULT_OUTLET_PATH = "gen"; //$NON-NLS-1$
 
+	/**
+	 * The default template name.
+	 */
 	public static final String DEFAULT_TEMPLATE_NAME = "main"; //$NON-NLS-1$
 
 	private IWorkspaceResourceLoader workspaceResourceLoader;
