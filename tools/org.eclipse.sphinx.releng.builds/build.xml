@@ -169,7 +169,7 @@
 			<iu id="org.eclipse.sphinx.thirdparty.feature.group"/>
 			<slicingOptions followStrict="true"/>
 		</p2.mirror>
-		<eclipse.publish.featuresAndBundles repository="file:${basedir}/output/folders/update" site="${basedir}/site.xml" category="${basedir}/category.xml" compress="true"/>
+		<eclipse.publish.featuresAndBundles repository="file:${basedir}/output/folders/update" site="file:${basedir}/site.xml" category="file:${basedir}/category.xml" compress="true"/>
 		<p2.mirror source="${parent.repo}" destination="file:${basedir}/output/folders/sdk">
 			<iu id="org.eclipse.sphinx.sdk.feature.group"/>
 			<slicingOptions followStrict="true"/>
