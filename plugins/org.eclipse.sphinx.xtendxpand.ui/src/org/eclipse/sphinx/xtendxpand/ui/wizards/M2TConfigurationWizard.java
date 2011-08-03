@@ -146,7 +146,9 @@ public class M2TConfigurationWizard extends AbstractWizard {
 					if (checkJob != null) {
 						IStatus status = checkJob.runInWorkspace(progress.newChild(50));
 
-						if (!status.isOK() || progress.isCanceled()) {
+						// Abort if check job ends with errors or is cancelled; continue when there are no errors or
+						// only warnings
+						if (status.getSeverity() != IStatus.ERROR || progress.isCanceled()) {
 							throw new OperationCanceledException();
 						}
 					}
@@ -171,7 +173,6 @@ public class M2TConfigurationWizard extends AbstractWizard {
 			job.setRule(file.getProject());
 		}
 		job.schedule();
-
 	}
 
 	protected boolean isCheckRequired() {

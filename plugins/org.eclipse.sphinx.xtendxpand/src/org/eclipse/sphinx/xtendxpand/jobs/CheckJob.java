@@ -224,19 +224,21 @@ public class CheckJob extends WorkspaceJob {
 			}
 			long duration = System.currentTimeMillis() - startTime;
 
-			// Log errors and warnings encountered end of validation and return appropriate status
-			if (issues.hasWarnings()) {
-				for (MWEDiagnostic warning : issues.getWarnings()) {
-					log.warn(warning.getMessage());
-				}
-			}
+			// Log errors and warnings encountered during validation and return appropriate status
 			if (issues.hasErrors()) {
 				log.error("Check model failed in " + duration + "ms!"); //$NON-NLS-1$ //$NON-NLS-2$
 				for (MWEDiagnostic error : issues.getErrors()) {
 					log.error(error.getMessage());
 				}
-				return StatusUtil.createErrorStatus(Activator.getPlugin(), "Check model failed"); //$NON-NLS-1$
+				return StatusUtil.createErrorStatus(Activator.getPlugin(), "Check model failed with errors"); //$NON-NLS-1$
 			}
+			if (issues.hasWarnings()) {
+				for (MWEDiagnostic warning : issues.getWarnings()) {
+					log.warn(warning.getMessage());
+				}
+				return StatusUtil.createWarningStatus(Activator.getPlugin(), "Check model failed with warnings"); //$NON-NLS-1$
+			}
+
 			log.info("Check model completed in " + duration + "ms!"); //$NON-NLS-1$ //$NON-NLS-2$
 			return Status.OK_STATUS;
 		} catch (OperationCanceledException exception) {
