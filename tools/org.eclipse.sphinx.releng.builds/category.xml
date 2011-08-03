@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+	<feature url="features/org.eclipse.sphinx_0.7.0.qualifier.jar" id="org.eclipse.sphinx" version="0.7.0.qualifier">
+		<category name="org.eclipse.sphinx.category"/>
+	</feature>
+	<category-def name="org.eclipse.sphinx.category" label="Eclipse Sphinx (Incubation)"/>
+</site>
