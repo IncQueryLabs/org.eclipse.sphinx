@@ -117,25 +117,19 @@ public class M2MConfigurationWizard extends AbstractWizard {
 				}
 
 				try {
-					IStatus status;
-
 					// Run check if required
 					if (checkJob != null) {
-						status = checkJob.runInWorkspace(progress.newChild(50));
+						IStatus status = checkJob.runInWorkspace(progress.newChild(50));
 
-						if (!status.isOK() || progress.isCanceled()) {
+						// Abort if check job ends with errors or is cancelled; continue when there are no errors or
+						// only warnings
+						if (status.getSeverity() != IStatus.ERROR || progress.isCanceled()) {
 							throw new OperationCanceledException();
 						}
 					}
 
 					// Run Xtend
-					status = xtendJob.runInWorkspace(progress.newChild(50));
-
-					if (!status.isOK() || progress.isCanceled()) {
-						throw new OperationCanceledException();
-					}
-
-					return status;
+					return xtendJob.runInWorkspace(progress.newChild(50));
 				} catch (OperationCanceledException ex) {
 					return Status.CANCEL_STATUS;
 				} catch (Exception ex) {
