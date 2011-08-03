@@ -34,7 +34,11 @@
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.sphinx.examples.metamodels"
+         id="org.eclipse.sphinx.examples.metamodels.hummingbird"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.sphinx.examples.metamodels.uml2"
          version="0.0.0"/>
 
    <requires>

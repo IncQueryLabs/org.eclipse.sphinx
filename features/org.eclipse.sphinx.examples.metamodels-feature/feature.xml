@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.sphinx.examples.metamodels"
+      id="org.eclipse.sphinx.examples.metamodels.hummingbird"
       label="%featureName"
       version="0.7.0.qualifier"
       provider-name="%providerName">
@@ -18,14 +18,12 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.uml2" version="3.2.0"/>
       <import feature="org.eclipse.sphinx.core" version="0.7.0"/>
       <import feature="org.eclipse.sphinx.emf.navigators" version="0.7.0"/>
       <import feature="org.eclipse.sphinx.emf.editors.forms" version="0.7.0"/>
       <import feature="org.eclipse.sphinx.emf.compare" version="0.7.0"/>
       <import feature="org.eclipse.sphinx.xtendxpand" version="0.7.0"/>
       <import feature="org.eclipse.sphinx.examples.core" version="0.7.0"/>
-      <import feature="org.eclipse.sphinx.graphiti.editors" version="0.7.0"/>
       <import plugin="org.apache.commons.logging"/>
       <import plugin="org.antlr.runtime"/>
    </requires>
@@ -81,20 +79,6 @@
 
    <plugin
          id="org.eclipse.sphinx.examples.hummingbird20.editor"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.uml2.ide"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.uml2.ide.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"
