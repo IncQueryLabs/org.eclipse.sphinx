@@ -29,13 +29,12 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitorAdapter;
 import org.eclipse.emf.mwe.core.resources.ResourceLoaderFactory;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -57,7 +56,7 @@ import org.eclipse.xtend.expression.TypeSystemImpl;
 import org.eclipse.xtend.expression.Variable;
 import org.eclipse.xtend.typesystem.MetaModel;
 
-public class XtendJob extends WorkspaceJob {
+public class XtendJob extends Job {
 
 	protected static final Log log = LogFactory.getLog(XtendJob.class);
 
@@ -253,7 +252,7 @@ public class XtendJob extends WorkspaceJob {
 	}
 
 	@Override
-	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+	public IStatus run(IProgressMonitor monitor) {
 		try {
 			if (xtendEvaluationRequests.isEmpty()) {
 				return Status.CANCEL_STATUS;

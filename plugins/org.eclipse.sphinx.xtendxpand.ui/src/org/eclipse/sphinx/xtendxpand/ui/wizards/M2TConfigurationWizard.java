@@ -144,7 +144,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 				try {
 					// Run check if required
 					if (checkJob != null) {
-						IStatus status = checkJob.runInWorkspace(progress.newChild(50));
+						IStatus status = checkJob.run(progress.newChild(50));
 
 						// Abort if check job ends with errors or is cancelled; continue when there are no errors or
 						// only warnings

@@ -18,7 +18,6 @@ package org.eclipse.sphinx.xtendxpand.ui.wizards;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -108,9 +107,9 @@ public class M2MConfigurationWizard extends AbstractWizard {
 		final CheckJob checkJob = isCheckRequired() ? createCheckJob() : null;
 		final XtendJob xtendJob = createXtendJob();
 
-		Job job = new WorkspaceJob(getM2MJobName()) {
+		Job job = new Job(getM2MJobName()) {
 			@Override
-			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+			public IStatus run(IProgressMonitor monitor) {
 				SubMonitor progress = SubMonitor.convert(monitor, 100);
 				if (progress.isCanceled()) {
 					throw new OperationCanceledException();
@@ -119,7 +118,7 @@ public class M2MConfigurationWizard extends AbstractWizard {
 				try {
 					// Run check if required
 					if (checkJob != null) {
-						IStatus status = checkJob.runInWorkspace(progress.newChild(50));
+						IStatus status = checkJob.run(progress.newChild(50));
 
 						// Abort if check job ends with errors or is cancelled; continue when there are no errors or
 						// only warnings
@@ -129,7 +128,7 @@ public class M2MConfigurationWizard extends AbstractWizard {
 					}
 
 					// Run Xtend
-					return xtendJob.runInWorkspace(progress.newChild(50));
+					return xtendJob.run(progress.newChild(50));
 				} catch (OperationCanceledException ex) {
 					return Status.CANCEL_STATUS;
 				} catch (Exception ex) {

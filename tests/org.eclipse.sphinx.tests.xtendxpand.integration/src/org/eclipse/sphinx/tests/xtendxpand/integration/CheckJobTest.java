@@ -67,7 +67,7 @@ public class CheckJobTest extends XtendXpandIntegrationTestCase {
 		CheckEvaluationRequest checkEvaluationRequest = new CheckEvaluationRequest(checkFile, application);
 		CheckJob checkJob = new CheckJob("Check Job", new SphinxManagedEmfMetaModel(hb20InstanceModelFile.getProject()), checkEvaluationRequest); //$NON-NLS-1$
 		checkJob.setWorkspaceResourceLoader(new BasicWorkspaceResourceLoader());
-		IStatus checkStatus = checkJob.runInWorkspace(new NullProgressMonitor());
+		IStatus checkStatus = checkJob.run(new NullProgressMonitor());
 		assertEquals(Status.OK_STATUS, checkStatus);
 	}
 }
