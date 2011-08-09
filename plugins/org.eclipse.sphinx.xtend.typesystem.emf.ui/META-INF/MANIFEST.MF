@@ -14,4 +14,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.shared.ui,
  org.eclipse.sphinx.xtend.typesystem.emf
 Bundle-Activator: org.eclipse.sphinx.xtend.typesystem.emf.ui.internal.Activator$Implementation
-Export-Package: org.eclipse.sphinx.xtend.typesystem.emf.ui.internal;x-internal:=true
+Export-Package: org.eclipse.sphinx.xtend.typesystem.emf.ui,
+ org.eclipse.sphinx.xtend.typesystem.emf.ui.internal;x-internal:=true

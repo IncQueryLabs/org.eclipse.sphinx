@@ -20,7 +20,7 @@ Contributors:
    <extension
          point="org.eclipse.xtend.shared.ui.metamodelContributor">
       <metamodelContributor
-            class="org.eclipse.sphinx.xtend.typesystem.emf.ui.internal.SphinxManagedEmfMetamodelContributor"
+            class="org.eclipse.sphinx.xtend.typesystem.emf.ui.SphinxManagedEmfMetamodelContributor"
             name="%sphinx.xtend.typesystem.emf.ui.metamodelContributors.sphinxManagedEMF.name">
       </metamodelContributor>
    </extension>

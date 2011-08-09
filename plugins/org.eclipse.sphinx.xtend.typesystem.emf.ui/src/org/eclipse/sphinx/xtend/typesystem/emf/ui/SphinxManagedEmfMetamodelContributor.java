@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.xtend.typesystem.emf.ui.internal;
+package org.eclipse.sphinx.xtend.typesystem.emf.ui;
 
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
