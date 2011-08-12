@@ -270,6 +270,10 @@ public abstract class AbstractFormSection implements IFormSection {
 		formPage.setActiveSection(this);
 	}
 
+	public AbstractFormPage getFormPage() {
+		return formPage;
+	}
+
 	public void refreshSection() {
 		// Do nothing by default
 	}
