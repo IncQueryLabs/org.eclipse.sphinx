@@ -53,7 +53,7 @@ public class OutletsPreferenceInitializer extends AbstractPreferenceInitializer 
 	/**
 	 * The default value for the prDefaultExcludes preference.
 	 */
-	public static final boolean PREF_PR_DEFAULT_EXCLUDES_DEFAULT = false;
+	public static final boolean PREF_PR_DEFAULT_EXCLUDES_DEFAULT = true;
 
 	/**
 	 * The default value for the prExcludes preference.
