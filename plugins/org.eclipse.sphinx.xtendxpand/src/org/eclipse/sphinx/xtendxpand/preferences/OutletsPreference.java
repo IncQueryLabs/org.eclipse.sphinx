@@ -90,8 +90,8 @@ public class OutletsPreference extends AbstractProjectWorkspacePreference<Collec
 				builder.append("@"); //$NON-NLS-1$
 				builder.append(outlet.getPathExpression());
 				if (outlet.isProtectedRegion()) {
-					builder.append("?");
-					builder.append("protectedRegion=true");
+					builder.append("?"); //$NON-NLS-1$
+					builder.append("protectedRegion=true"); //$NON-NLS-1$
 				}
 				if (iter.hasNext()) {
 					builder.append(File.pathSeparator);
