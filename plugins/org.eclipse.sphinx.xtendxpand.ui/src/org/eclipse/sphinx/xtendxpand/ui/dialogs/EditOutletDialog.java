@@ -104,13 +104,15 @@ public class EditOutletDialog extends StatusDialog {
 		createLabel(parent, Messages.label_name, 1);
 		nameText = createText(parent, GridData.BEGINNING, 1);
 		nameText.setEditable(editableName);
+		if (outlet.getName() != null) {
+			nameText.setText(outlet.getName());
+		}
 		if (editableName) {
-			if (outlet.getName() != null) {
-				nameText.setText(outlet.getName());
-			}
 			nameText.addModifyListener(listener);
 		} else {
-			nameText.setText(Messages.label_default);
+			if (outlet.getName() == null) {
+				nameText.setText(Messages.label_default);
+			}
 		}
 
 		createLabel(parent, Messages.label_location, 1);
