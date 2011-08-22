@@ -95,6 +95,11 @@ public class XtendJob extends Job {
 	protected Map<Object, Collection<?>> resultObjects = new HashMap<Object, Collection<?>>();
 
 	/**
+	 * The TypeSystemImpl used for the ExecutionContextImpl.
+	 */
+	private TypeSystemImpl typeSystemImpl = null;
+
+	/**
 	 * Creates an {@link XtendJob} that transforms a model based on given <code>metaModel</code> as specified by
 	 * provided <code>xtendEvaluationRequest</code>.
 	 * 
@@ -193,6 +198,13 @@ public class XtendJob extends Job {
 	}
 
 	/**
+	 * @param typeSystemImpl
+	 */
+	public void setTypeSystemImpl(TypeSystemImpl typeSystemImpl) {
+		this.typeSystemImpl = typeSystemImpl;
+	}
+
+	/**
 	 * Returns the label for the {@link IUndoableOperation operation} in which the Xtend transformation is executed.
 	 * 
 	 * @return The operation label for the Xtend transformation.
@@ -267,8 +279,9 @@ public class XtendJob extends Job {
 			// Create execution context
 			Map<String, Variable> variables = new HashMap<String, Variable>();
 			Map<String, Variable> globalVarsMap = new HashMap<String, Variable>();
-			final ExecutionContextImpl execCtx = new ExecutionContextImpl(new ResourceManagerDefaultImpl(), null, new TypeSystemImpl(), variables,
-					globalVarsMap, new ProgressMonitorAdapter(monitor), null, null, null, null, null, null, null);
+			final ExecutionContextImpl execCtx = new ExecutionContextImpl(new ResourceManagerDefaultImpl(), null,
+					typeSystemImpl != null ? typeSystemImpl : new TypeSystemImpl(), variables, globalVarsMap, new ProgressMonitorAdapter(monitor),
+					null, null, null, null, null, null, null);
 			for (MetaModel metaModel : metaModels) {
 				execCtx.registerMetaModel(metaModel);
 			}
