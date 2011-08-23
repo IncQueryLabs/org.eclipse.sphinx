@@ -15,7 +15,6 @@
 package org.eclipse.sphinx.platform.preferences;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.sphinx.platform.internal.Activator;
@@ -139,23 +138,25 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	 * @see org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#get(org.eclipse.core.resources.IProject)
 	 */
 	public T get(IProject project) {
-		Assert.isNotNull(project);
-
-		try {
-			if (project.isAccessible()) {
-				String natureId = projectPreference.getRequiredProjectNatureId();
-				if (natureId == null || project.hasNature(natureId)) {
-					T valueAsObject = getFromProject(project);
-					if (valueAsObject != null) {
-						return valueAsObject;
+		if (project != null) {
+			try {
+				if (project.isAccessible()) {
+					String natureId = projectPreference.getRequiredProjectNatureId();
+					if (natureId == null || project.hasNature(natureId)) {
+						T valueAsObject = getFromProject(project);
+						if (valueAsObject != null) {
+							return valueAsObject;
+						}
+						return getFromWorkspaceForProject(project);
 					}
-					return getFromWorkspaceForProject(project);
 				}
+			} catch (Exception ex) {
+				PlatformLogUtil.logAsWarning(Activator.getDefault(), ex);
 			}
-		} catch (Exception ex) {
-			PlatformLogUtil.logAsWarning(Activator.getDefault(), ex);
+			return null;
+		} else {
+			return getFromWorkspace();
 		}
-		return null;
 	}
 
 	/*

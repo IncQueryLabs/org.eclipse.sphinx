@@ -46,7 +46,7 @@ public class OutletProvider implements IPreferenceChangeListener {
 
 		allOutlets = new ArrayList<ExtendedOutlet>();
 		unappliedOutlets = new ArrayList<ExtendedOutlet>();
-		allOutlets.addAll(getOutletsFromPreferences());
+		allOutlets.addAll(outletsPreference.get(project));
 
 		if (project != null) {
 			outletsPreference.addPreferenceChangeListenerToProject(project, this);
@@ -93,24 +93,19 @@ public class OutletProvider implements IPreferenceChangeListener {
 		allOutlets.remove(outlet);
 	}
 
-	protected Collection<ExtendedOutlet> getOutletsFromPreferences() {
-		return project != null ? outletsPreference.get(project) : outletsPreference.getDefaultValueAsObject();
-	}
-
 	public void setToDefault() {
-		if (project != null) {
-			outletsPreference.setToDefaultInProject(project);
-		}
 		unappliedOutlets.clear();
 		allOutlets.clear();
-		allOutlets.addAll(getOutletsFromPreferences());
+		allOutlets.addAll(outletsPreference.getDefaultValueAsObject());
 	}
 
 	public synchronized void store() {
 		if (project != null) {
-			unappliedOutlets.clear();
 			outletsPreference.setInProject(project, getOutlets());
+		} else {
+			outletsPreference.setInWorkspace(getOutlets());
 		}
+		unappliedOutlets.clear();
 	}
 
 	public void preferenceChange(PreferenceChangeEvent event) {
@@ -121,7 +116,7 @@ public class OutletProvider implements IPreferenceChangeListener {
 
 	protected void updateOutlets() {
 		allOutlets.clear();
-		allOutlets.addAll(getOutletsFromPreferences());
+		allOutlets.addAll(outletsPreference.get(project));
 		allOutlets.addAll(unappliedOutlets);
 	}
 

@@ -46,8 +46,13 @@ public class ProtectedRegionGroup extends AbstractGroup {
 	}
 
 	public void store() {
-		PrExcludesPreference.INSTANCE.setInProject(project, prExcludesField.getText());
-		PrDefaultExcludesPreference.INSTANCE.setInProject(project, prDefaultExcludesField.isSelected());
+		if (project != null) {
+			PrExcludesPreference.INSTANCE.setInProject(project, prExcludesField.getText());
+			PrDefaultExcludesPreference.INSTANCE.setInProject(project, prDefaultExcludesField.isSelected());
+		} else {
+			PrExcludesPreference.INSTANCE.setInWorkspace(prExcludesField.getText());
+			PrDefaultExcludesPreference.INSTANCE.setInWorkspace(prDefaultExcludesField.isSelected());
+		}
 	}
 
 	public void dispose() {
