@@ -74,18 +74,23 @@ public final class XtendXpandUtil {
 
 		URL resourceURL = resourceLoader.getResource(qualifiedName);
 		if (resourceURL != null) {
-			try {
-				IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-				// Gets all files that are mapped in the current workspace to the given URI. The file search result
-				// include files located in the current workspace and also linked files or files contained in a linked
-				// folder that were located outside of the workspace.
-				IFile[] files = workspaceRoot.findFilesForLocationURI(resourceURL.toURI());
-				if (files != null && files.length > 0) {
-					// Returns the first workspace file that match
-					return files[0];
+			// Avoid CoreException in org.eclipse.core.internal.filesystem.InternalFileSystemCore.getFileSystem(String)
+			if (!"bundleresource".equals(resourceURL.getProtocol())) { //$NON-NLS-1$
+				try {
+					IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+					// Find all files that are mapped to the given URI
+					/*
+					 * !! Important Note !! The search result includes files located in the workspace as well as linked
+					 * files or files contained in a linked folder that were located outside of the workspace.
+					 */
+					IFile[] files = workspaceRoot.findFilesForLocationURI(resourceURL.toURI());
+					if (files != null && files.length > 0) {
+						// Returns the first workspace file that match
+						return files[0];
+					}
+				} catch (Exception ex) {
+					// Ignore exception
 				}
-			} catch (Exception ex) {
-				// Ignore exception
 			}
 		}
 		return null;
