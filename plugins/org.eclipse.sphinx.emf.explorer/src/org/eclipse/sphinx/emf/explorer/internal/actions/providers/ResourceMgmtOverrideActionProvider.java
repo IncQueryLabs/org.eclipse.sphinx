@@ -41,11 +41,13 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.BuildAction;
 import org.eclipse.ui.actions.CloseResourceAction;
+import org.eclipse.ui.actions.CloseUnrelatedProjectsAction;
 import org.eclipse.ui.actions.OpenResourceAction;
 import org.eclipse.ui.actions.RefreshAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.ide.IDEActionFactory;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
+import org.eclipse.ui.internal.navigator.resources.actions.ResourceMgmtActionProvider;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
@@ -207,13 +209,61 @@ public class ResourceMgmtOverrideActionProvider extends CommonActionProvider {
 		// The shell provider for any dialog that could be opened by actions
 		final IShellProvider provider = navigator.getSite();
 
-		openProjectAction = new OpenResourceAction(provider);
-		closeProjectAction = new CloseResourceOverrideAction(provider);
+		openProjectAction = createOpenResourceAction(provider);
+		closeProjectAction = createCloseResourceAction(provider);
 
 		// TODO Override CloseUnrelatedProjectsAction in the same way as CloseResourceAction and make it available again
 		// closeUnrelatedProjectsAction = new CloseUnrelatedProjectsAction(shell);
 
-		refreshAction = new RefreshAction(provider) {
+		refreshAction = createRefreshAction(provider);
+		refreshAction.setDisabledImageDescriptor(getImageDescriptor("dlcl16/refresh_nav.gif"));//$NON-NLS-1$
+		refreshAction.setImageDescriptor(getImageDescriptor("elcl16/refresh_nav.gif"));//$NON-NLS-1$       
+		refreshAction.setActionDefinitionId("org.eclipse.ui.file.refresh"); //$NON-NLS-1$
+
+		buildAction = createBuildAction(provider);
+		buildAction.setActionDefinitionId("org.eclipse.ui.project.buildProject"); //$NON-NLS-1$
+	}
+
+	/**
+	 * Creates the {@link OpenResourceAction open resource action} to be used by this action provider.
+	 * <p>
+	 * Clients may override this method if they need to use a custom implementation of {@link OpenResourceAction}.
+	 * </p>
+	 * 
+	 * @param provider
+	 *            The {@link IShellProvider shell provider} for any dialogs that could be opened by the action.
+	 * @return The open resource action to be used.
+	 */
+	protected OpenResourceAction createOpenResourceAction(final IShellProvider provider) {
+		return new OpenResourceAction(provider);
+	}
+
+	/**
+	 * Creates the {@link CloseResourceAction close resource action} to be used by this action provider.
+	 * <p>
+	 * Clients may override this method if they need to use a custom implementation of {@link CloseResourceAction}.
+	 * </p>
+	 * 
+	 * @param provider
+	 *            The {@link IShellProvider shell provider} for any dialogs that could be opened by the action.
+	 * @return The close resource action to be used.
+	 */
+	protected CloseResourceAction createCloseResourceAction(final IShellProvider provider) {
+		return new CloseResourceOverrideAction(provider);
+	}
+
+	/**
+	 * Creates the {@link RefreshAction refresh action} to be used by this action provider.
+	 * <p>
+	 * Clients may override this method if they need to use a custom implementation of {@link RefreshAction}.
+	 * </p>
+	 * 
+	 * @param provider
+	 *            The {@link IShellProvider shell provider} for any dialogs that could be opened by the action.
+	 * @return The refresh action to be used.
+	 */
+	protected RefreshAction createRefreshAction(final IShellProvider provider) {
+		return new RefreshAction(provider) {
 			@Override
 			public void run() {
 				final IStatus[] errorStatus = new IStatus[1];
@@ -255,12 +305,20 @@ public class ResourceMgmtOverrideActionProvider extends CommonActionProvider {
 				job.schedule();
 			}
 		};
-		refreshAction.setDisabledImageDescriptor(getImageDescriptor("dlcl16/refresh_nav.gif"));//$NON-NLS-1$
-		refreshAction.setImageDescriptor(getImageDescriptor("elcl16/refresh_nav.gif"));//$NON-NLS-1$       
-		refreshAction.setActionDefinitionId("org.eclipse.ui.file.refresh"); //$NON-NLS-1$
+	}
 
-		buildAction = new BuildAction(provider, IncrementalProjectBuilder.INCREMENTAL_BUILD);
-		buildAction.setActionDefinitionId("org.eclipse.ui.project.buildProject"); //$NON-NLS-1$
+	/**
+	 * Creates the {@link BuildAction build action} to be used by this action provider.
+	 * <p>
+	 * Clients may override this method if they need to use a custom implementation of {@link BuildAction}.
+	 * </p>
+	 * 
+	 * @param provider
+	 *            The {@link IShellProvider shell provider} for any dialogs that could be opened by the action.
+	 * @return The build action to be used.
+	 */
+	protected BuildAction createBuildAction(final IShellProvider provider) {
+		return new BuildAction(provider, IncrementalProjectBuilder.INCREMENTAL_BUILD);
 	}
 
 	/**
