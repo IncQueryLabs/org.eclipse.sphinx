@@ -106,6 +106,8 @@ public class EValidatorAdapter extends EObjectValidator {
 			// externally). If there is no context map, then we can't
 			// help it
 			if (!hasProcessed(eObject, context)) {
+				// Add filters, if it exists (pre-process)
+				addFilters(filters);
 
 				TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(eObject);
 				if (editingDomain != null) {
@@ -114,16 +116,12 @@ public class EValidatorAdapter extends EObjectValidator {
 						public void run() {
 							IStatus status = Status.OK_STATUS;
 
-							// Add filters, if it exists
-							addFilters(filters);
 							try {
 								status = batchValidator.validate(tgt, new NullProgressMonitor());
 							} finally {
 								// Remove the icf filter, if it exists
 								removeFilters(filters);
 							}
-							processed(eObject, context, status);
-							appendDiagnostics(status, diagnostics);
 							setResult(status);
 						}
 					};
@@ -133,8 +131,17 @@ public class EValidatorAdapter extends EObjectValidator {
 					} catch (InterruptedException ex) {
 					}
 				} else {
-					status = batchValidator.validate(eObject, new NullProgressMonitor());
+					try {
+						status = batchValidator.validate(eObject, new NullProgressMonitor());
+					} finally {
+						// Remove the icf filter, if it exists
+						removeFilters(filters);
+					}
 				}
+
+				// post-process
+				processed(eObject, context, status);
+				appendDiagnostics(status, diagnostics);
 			}
 		}
 
