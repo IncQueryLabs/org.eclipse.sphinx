@@ -54,6 +54,7 @@ import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.navigator.ICommonMenuConstants;
@@ -112,21 +113,25 @@ public class BasicModelEditActionProvider extends BasicActionProvider {
 		Assert.isNotNull(cutAction);
 		cutAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
 		cutAction.setActiveWorkbenchPart(workbenchPart);
+		cutAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_CUT);
 
 		copyAction = createCopyAction();
 		Assert.isNotNull(copyAction);
 		copyAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
 		copyAction.setActiveWorkbenchPart(workbenchPart);
+		copyAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_COPY);
 
 		pasteAction = createPasteAction();
 		Assert.isNotNull(pasteAction);
 		pasteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
 		pasteAction.setActiveWorkbenchPart(workbenchPart);
+		pasteAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_PASTE);
 
 		deleteAction = createDeleteAction();
 		Assert.isNotNull(deleteAction);
 		deleteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 		deleteAction.setActiveWorkbenchPart(workbenchPart);
+		deleteAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_DELETE);
 
 		if (selectionProvider != null) {
 			selectionProvider.addSelectionChangedListener(cutAction);

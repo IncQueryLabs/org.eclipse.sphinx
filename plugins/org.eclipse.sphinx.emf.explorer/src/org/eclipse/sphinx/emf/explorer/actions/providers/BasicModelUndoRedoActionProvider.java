@@ -26,6 +26,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.navigator.ICommonMenuConstants;
@@ -50,11 +51,13 @@ public class BasicModelUndoRedoActionProvider extends BasicActionProvider {
 		Assert.isNotNull(undoAction);
 		undoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO));
 		undoAction.setActiveWorkbenchPart(workbenchPart);
+		undoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_UNDO);
 
 		redoAction = createRedoAction();
 		Assert.isNotNull(redoAction);
 		redoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
 		redoAction.setActiveWorkbenchPart(workbenchPart);
+		redoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_REDO);
 
 		if (selectionProvider != null) {
 			updateActions(selectionProvider.getSelection());

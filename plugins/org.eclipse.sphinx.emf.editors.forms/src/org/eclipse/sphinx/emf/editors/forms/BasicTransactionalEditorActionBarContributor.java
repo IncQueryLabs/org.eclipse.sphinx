@@ -79,6 +79,7 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
@@ -236,21 +237,27 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
 		deleteAction = createDeleteAction();
 		deleteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
+		deleteAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_DELETE);
 
 		cutAction = createCutAction();
 		cutAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
+		cutAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_CUT);
 
 		copyAction = createCopyAction();
 		copyAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
+		copyAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_COPY);
 
 		pasteAction = createPasteAction();
 		pasteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
+		pasteAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_PASTE);
 
 		undoAction = createUndoAction();
 		undoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO));
+		undoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_UNDO);
 
 		redoAction = createRedoAction();
 		redoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
+		redoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_REDO);
 
 		setGlobalActionHandlers();
 
@@ -268,36 +275,42 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 
 	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
 	// @Override
+	@Override
 	protected DeleteAction createDeleteAction() {
 		return new ExtendedDeleteAction(removeAllReferencesOnDelete(), getCustomAdapterFactory());
 	}
 
 	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
 	// @Override
+	@Override
 	protected PasteAction createPasteAction() {
 		return new ExtendedPasteAction(getCustomAdapterFactory());
 	}
 
 	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
 	// @Override
+	@Override
 	protected CopyAction createCopyAction() {
 		return new ExtendedCopyAction(getCustomAdapterFactory());
 	}
 
 	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
 	// @Override
+	@Override
 	protected CutAction createCutAction() {
 		return new ExtendedCutAction(getCustomAdapterFactory());
 	}
 
 	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
 	// @Override
+	@Override
 	protected RedoAction createRedoAction() {
 		return new RedoActionWrapper();
 	}
 
 	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
 	// @Override
+	@Override
 	protected UndoAction createUndoAction() {
 		return new UndoActionWrapper();
 	}
