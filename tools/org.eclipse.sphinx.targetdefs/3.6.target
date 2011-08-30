@@ -19,23 +19,16 @@
 </location>
 <location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
 <unit id="org.eclipse.emf.compare.sdk.feature.group" version="1.1.2.v20110202-0936"/>
+<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.0.2.v201102150556"/>
 <unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.4.0.v20100428-2315-777N-9AZP-D1aQtjUklrYl0eU20D"/>
 <unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.4.0.v20100428-2315-67J-96SGR35WNqZRZfmQnghI6uFA"/>
 <unit id="org.eclipse.emf.sdk.feature.group" version="2.6.1.v20100914-1218"/>
 <unit id="org.eclipse.gmf.sdk.feature.group" version="2.3.0.v20100508-1742-777B-95pDcLakRvph3PMwwfmjSTZ"/>
 <unit id="org.eclipse.team.svn.feature.group" version="0.7.9.I20110207-1700"/>
 <unit id="org.eclipse.uml2.sdk.feature.group" version="3.1.2.v201010261927"/>
+<unit id="org.eclipse.xpand.sdk.feature.group" version="1.0.1.v201008251147"/>
 <unit id="org.eclipse.xsd.sdk.feature.group" version="2.6.0.v20100914-1218"/>
 <repository location="http://download.eclipse.org/releases/helios"/>
-</location>
-<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
-<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.1.0.v201106070424"/>
-<unit id="org.eclipse.xpand.sdk.feature.group" version="1.1.0.v201106070515"/>
-<repository location="http://download.eclipse.org/releases/indigo"/>
-</location>
-<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
-<unit id="org.eclipse.graphiti.sdk.feature.feature.group" version="0.8.0.v20110315-1013"/>
-<repository location="http://download.eclipse.org/graphiti/updates/milestones"/>
 </location>
 </locations>
 <environment>
