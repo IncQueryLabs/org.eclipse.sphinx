@@ -16,14 +16,10 @@ package org.eclipse.sphinx.emf.workspace.domain.factory;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.OperationHistoryFactory;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.command.Command;
@@ -32,8 +28,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.edit.EMFEditPlugin;
-import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.IEditingDomainProvider;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
@@ -42,10 +36,8 @@ import org.eclipse.emf.transaction.TransactionalCommandStack;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.impl.AbstractTransactionalCommandStack;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
-import org.eclipse.emf.workspace.EMFCommandOperation;
 import org.eclipse.emf.workspace.WorkspaceEditingDomainFactory;
 import org.eclipse.emf.workspace.impl.WorkspaceCommandStackImpl;
-import org.eclipse.emf.workspace.internal.Tracing;
 import org.eclipse.sphinx.emf.domain.factory.EditingDomainFactoryListenerRegistry;
 import org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
@@ -113,8 +105,8 @@ public class ExtendedWorkspaceEditingDomainFactory extends WorkspaceEditingDomai
 		 * @see IAdaptable#getAdapter(Class)
 		 * @see Platform#getAdapterManager()
 		 */
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
-		@SuppressWarnings("unchecked")
 		public Object getAdapter(Class adapterType) {
 			Object adapter = super.getAdapter(adapterType);
 			if (adapter != null) {
@@ -138,6 +130,7 @@ public class ExtendedWorkspaceEditingDomainFactory extends WorkspaceEditingDomai
 			}
 		}
 
+		@SuppressWarnings("deprecation")
 		@Override
 		protected boolean isReadOnlyURI(URI uri) {
 			// FIXME File bug to EMF: NPE is raised when calling this method for an URI that doesn't exist
@@ -195,10 +188,9 @@ public class ExtendedWorkspaceEditingDomainFactory extends WorkspaceEditingDomai
 
 		// Create new WorkspaceCommandStack and TransactionalEditingDomain using given IOperationHistory and ResourceSet
 		WorkspaceCommandStackImpl stack = new WorkspaceCommandStackImpl(history) {
-			/**
-			 * Redefines the inherited method by forwarding to the
-			 * {@link TransactionalCommandStack#execute(Command, Map)} method. Any checked exception thrown by that
-			 * method is handled by {@link #handleError(Exception)} but is not propagated.
+			/*
+			 * Overridden for passing {@link WorkspaceTransactionUtil#getDefaultTransactionOptions()} rather than
+			 * <code>null</code> to {@link WorkspaceCommandStackImpl#execute(Command, Map<?, ?>)}.
 			 */
 			@SuppressWarnings("restriction")
 			@Override
@@ -215,70 +207,6 @@ public class ExtendedWorkspaceEditingDomainFactory extends WorkspaceEditingDomai
 					// so handleError() will not find an active transaction
 					org.eclipse.emf.transaction.internal.Tracing.catching(AbstractTransactionalCommandStack.class, "execute", e); //$NON-NLS-1$
 					handleError(e);
-				}
-			}
-
-			/**
-			 * Overridden to make sure that only last segment of command label is used as operation label in case that
-			 * given command is a create child command and has a qualified label (see GenModel option
-			 * "Editor > Creation Sub-menus" for details).
-			 */
-			@SuppressWarnings("restriction")
-			@Override
-			protected void doExecute(Command command, Map<?, ?> options) throws InterruptedException, RollbackException {
-				EMFCommandOperation oper = new EMFCommandOperation(getDomain(), command, options) {
-					@Override
-					protected void improveLabel(Command cmd) {
-						super.improveLabel(cmd);
-
-						// Extract and use only last command label segment in case that it is a create child command and
-						// has a qualified label
-						if (cmd instanceof CreateChildCommand) {
-							String label = getLabel();
-							if (label != null) {
-								int index = label.lastIndexOf("|"); //$NON-NLS-1$
-								if (index != -1 && label.length() > index + 1) {
-									label = label.substring(index + 1).trim();
-									setLabel(EMFEditPlugin.INSTANCE.getString("_UI_CreateChildCommand_label", new Object[] { label })); //$NON-NLS-1$
-								}
-							}
-						}
-					}
-				};
-
-				// add the appropriate context
-				oper.addContext(getDefaultUndoContext());
-
-				try {
-					IStatus status = getOperationHistory().execute(oper, new NullProgressMonitor(), null);
-
-					if (status.getSeverity() >= IStatus.ERROR) {
-						// the transaction must have rolled back if the status was
-						// error or worse
-						RollbackException exc = new RollbackException(status);
-						Tracing.throwing(WorkspaceCommandStackImpl.class, "execute", exc); //$NON-NLS-1$
-						throw exc;
-					}
-
-					notifyListeners();
-				} catch (ExecutionException e) {
-					Tracing.catching(WorkspaceCommandStackImpl.class, "execute", e); //$NON-NLS-1$
-					command.dispose();
-
-					if (e.getCause() instanceof RollbackException) {
-						// throw the rollback
-						RollbackException exc = (RollbackException) e.getCause();
-						Tracing.throwing(WorkspaceCommandStackImpl.class, "execute", exc); //$NON-NLS-1$
-						throw exc;
-					} else if (e.getCause() instanceof RuntimeException) {
-						// throw the programming error
-						RuntimeException exc = (RuntimeException) e.getCause();
-						Tracing.throwing(WorkspaceCommandStackImpl.class, "execute", exc); //$NON-NLS-1$
-						throw exc;
-					} else {
-						// log the problem. We can't rethrow whatever it was
-						handleError(e);
-					}
 				}
 			}
 		};

@@ -45,6 +45,7 @@ import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.edit.EMFEditPlugin;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.CommandParameter;
+import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -513,12 +514,55 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 	}
 
 	/*
-	 * Overridden for tweaking create child/sibling submenu and action texts.
+	 * Overridden for delegating to enhanced create child text API.
+	 * @see org.eclipse.sphinx.emf.edit.ExtendedItemProviderAdapter.getCreateChildText(Object, Object, Object,
+	 * Collection<?>, boolean)
 	 * @see org.eclipse.emf.edit.provider.ItemProviderAdapter#getCreateChildText(java.lang.Object, java.lang.Object,
 	 * java.lang.Object, java.util.Collection)
 	 */
 	@Override
 	public String getCreateChildText(Object owner, Object feature, Object child, Collection<?> selection) {
+		return getCreateChildText(owner, feature, child, selection, false);
+	}
+
+	/**
+	 * Returns the text to be used as label or text of {@link CreateChildCommand} or {@link ExtendedCreateChildCommand}.
+	 * Enables the create child text to be retrieved in qualified form provided that the underlying metamodel's EMF Edit
+	 * implementation includes supports for that (requires the metamodel's EMF Edit implementation to be generated with
+	 * generator model option "Editor > Creation Sub-menus" set to true). Qualified create child texts are expected to
+	 * consist of two segments separated by a vertical bar. The leading segment typically corresponds to the name of
+	 * feature on the owner object that holds the child object and the trailing segment to the type of the child object
+	 * to be created. They are leveraged by
+	 * org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider#extractSubmenuActions(Collection<IAction>,
+	 * ISelection) and
+	 * org.eclipse.sphinx.emf.editors.forms.BasicTransactionalEditorActionBarContributor#extractSubmenuActions
+	 * (Collection<IAction>, ISelection) so as to group the corresponding create child actions in submenus according to
+	 * the qualified create child texts' leading segments.
+	 * <p>
+	 * Qualified create child texts are requested by {@link ExtendedCreateChildCommand#getText()} and returned to
+	 * {@link CreateChildAction#configureAction(ISelection)} so as to make their {@link CreateChildAction#getText()
+	 * action text}s qualified and prepare them for being grouped in creation submenus. Simple create child action texts
+	 * are requested by {@link CreateChildCommand#CreateChildCommand(EditingDomain, EObject, EStructuralFeature, Object,
+	 * int, Collection<?>, Helper)} and used to initialize the {@link CreateChildCommand#getLabel() command label} by
+	 * which the command is displayed in any location outside the creation menus or submenus (e.g., undo and redo
+	 * menus).
+	 * </p>
+	 * 
+	 * @param owner
+	 *            The <code>owner</code> object to which the new <code>child</code> object will be added.
+	 * @param feature
+	 *            The <code>feature</code> of the <code>owner</code> object that is going to hold the new
+	 *            <code>child</code> object.
+	 * @param child
+	 *            The new, i.e., still unassigned <code>child</code> object that will be added to the <code>owner</code>
+	 *            object.
+	 * @param qualified
+	 *            <code>true</code> if a qualified create child text should be returned for metamodels whose EMF Edit
+	 *            implementation support that, <code>false</code> otherwise.
+	 * @return The qualified or simple text to be used as label or text of {@link CreateChildCommand} or
+	 *         {@link ExtendedCreateChildCommand}.
+	 */
+	public String getCreateChildText(Object owner, Object feature, Object child, Collection<?> selection, boolean qualified) {
 		if (feature instanceof EStructuralFeature && FeatureMapUtil.isFeatureMap((EStructuralFeature) feature)) {
 			FeatureMap.Entry entry = (FeatureMap.Entry) child;
 			feature = entry.getEStructuralFeature();
@@ -534,8 +578,9 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 			return getResourceLocator().getString("_UI_CreateChild_text3", //$NON-NLS-1$
 					new Object[] { childTypeText, featureText });
 		}
+
 		// Reference feature whose name is different from target type
-		else if (!childTypeText.equals(featureText)) {
+		else if (!childTypeText.equals(featureText) && qualified) {
 			// The try/catch provides backwards compatibility with metamodels whose Edit support has no
 			// extra _UI_CreateChild_text1 key
 			try {
@@ -547,6 +592,7 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 						new Object[] { childTypeText, featureText });
 			}
 		}
+
 		// Reference feature whose name is equal to target type
 		else {
 			// Use only target type name as action text

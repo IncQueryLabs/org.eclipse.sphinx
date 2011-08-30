@@ -38,6 +38,26 @@ public class ExtendedCreateChildCommand extends CreateChildCommand {
 		super(domain, owner, feature, child, index, selection, helper);
 	}
 
+	/*
+	 * Overridden for returning qualified create child text in case that this is supported by underlying helper
+	 * implementation. Qualified create child texts are expected to consist of two segments separated by a vertical bar.
+	 * The leading segment typically corresponds to the name of feature on the owner object that holds the child object
+	 * and the trailing segment to the type of the child object to be created. They are leveraged by
+	 * org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider#extractSubmenuActions(Collection<IAction>,
+	 * ISelection) and
+	 * org.eclipse.sphinx.emf.editors.forms.BasicTransactionalEditorActionBarContributor#extractSubmenuActions
+	 * (Collection<IAction>, ISelection) so as to group the corresponding create child actions in submenus according to
+	 * the qualified create child texts' leading segments.
+	 * @see org.eclipse.emf.edit.command.CreateChildCommand#getText()
+	 */
+	@Override
+	public String getText() {
+		if (helper instanceof ExtendedItemProviderAdapter) {
+			return ((ExtendedItemProviderAdapter) helper).getCreateChildText(owner, feature, child, selection, true);
+		}
+		return super.getText();
+	}
+
 	@Override
 	protected Command createCommand() {
 		if (owner == null || feature == null || child == null) {
