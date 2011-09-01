@@ -482,7 +482,7 @@ public final class EObjectUtil {
 	/**
 	 * Returns the EStructuralFeature specified by the <code>featureName</code>. The method will return the
 	 * EStructuralFeature if it exists for a given EClass or EObject. If the provided Object is not an EClass or an
-	 * EObject or the EStructuralFeature does not exist <code>null</code> is returned.
+	 * EObject or the EStructuralFeature does not exist, <code>null</code> is returned.
 	 * 
 	 * @param owner
 	 *            The EClass or EObject from which the EStructuralFeature is to be resolved.
@@ -497,6 +497,28 @@ public final class EObjectUtil {
 		}
 		if (owner instanceof EObject) {
 			return ((EObject) owner).eClass().getEStructuralFeature(featureName);
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the EStructuralFeature specified by the <code>featureID</code>. The method will return the
+	 * EStructuralFeature if it exists for a given EClass or EObject. If the provided Object is not an EClass or an
+	 * EObject or the EStructuralFeature does not exist, <code>null</code> is returned.
+	 * 
+	 * @param owner
+	 *            The EClass or EObject from which the EStructuralFeature is to be resolved.
+	 * @param featureID
+	 *            The id of the EStructuralFeature.
+	 * @return The EStructuralFeature if the provided <code>object</code> is an EClass or EObject and the
+	 *         EStructuralFeature exists, otherwise <code>null</code> is returned.
+	 */
+	public static EStructuralFeature getEStructuralFeature(Object owner, int featureID) {
+		if (owner instanceof EClass) {
+			return ((EClass) owner).getEStructuralFeature(featureID);
+		}
+		if (owner instanceof EObject) {
+			return ((EObject) owner).eClass().getEStructuralFeature(featureID);
 		}
 		return null;
 	}
