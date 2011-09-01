@@ -59,17 +59,12 @@ public class BasicModelUndoRedoActionProvider extends BasicActionProvider {
 		redoAction.setActiveWorkbenchPart(workbenchPart);
 		redoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_REDO);
 
-		if (selectionProvider != null) {
-			updateActions(selectionProvider.getSelection());
-		}
-
 		updateActionBars();
 	}
 
 	@Override
 	public void fillContextMenu(IMenuManager menuManager) {
 		super.fillContextMenu(menuManager);
-		updateActions(getContext().getSelection());
 
 		// Add the edit menu actions
 		menuManager.appendToGroup(ICommonMenuConstants.GROUP_EDIT, new ActionContributionItem(undoAction));
@@ -105,18 +100,18 @@ public class BasicModelUndoRedoActionProvider extends BasicActionProvider {
 		}
 	}
 
+	protected void updateActions(ISelection selection) {
+		TransactionalEditingDomain editingDomain = getEditingDomainFromSelection(selection);
+
+		undoAction.setEditingDomain(editingDomain);
+		redoAction.setEditingDomain(editingDomain);
+	}
+
 	protected RedoAction createRedoAction() {
 		return new RedoActionWrapper();
 	}
 
 	protected UndoAction createUndoAction() {
 		return new UndoActionWrapper();
-	}
-
-	protected void updateActions(ISelection selection) {
-		TransactionalEditingDomain editingDomain = getEditingDomainFromSelection(selection);
-
-		undoAction.setEditingDomain(editingDomain);
-		redoAction.setEditingDomain(editingDomain);
 	}
 }

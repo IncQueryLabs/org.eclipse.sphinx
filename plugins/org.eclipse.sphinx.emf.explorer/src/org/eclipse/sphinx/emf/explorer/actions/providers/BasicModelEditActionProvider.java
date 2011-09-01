@@ -132,29 +132,11 @@ public class BasicModelEditActionProvider extends BasicActionProvider {
 		deleteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 		deleteAction.setActiveWorkbenchPart(workbenchPart);
 		deleteAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_DELETE);
-
-		if (selectionProvider != null) {
-			selectionProvider.addSelectionChangedListener(cutAction);
-			selectionProvider.addSelectionChangedListener(copyAction);
-			selectionProvider.addSelectionChangedListener(pasteAction);
-			selectionProvider.addSelectionChangedListener(deleteAction);
-
-			ISelection selection = selectionProvider.getSelection();
-			IStructuredSelection structuredSelection = SelectionUtil.getStructuredSelection(selection);
-
-			cutAction.selectionChanged(structuredSelection);
-			copyAction.selectionChanged(structuredSelection);
-			pasteAction.selectionChanged(structuredSelection);
-			deleteAction.selectionChanged(structuredSelection);
-
-			updateActions(selection);
-		}
 	}
 
 	@Override
 	public void fillContextMenu(IMenuManager menuManager) {
 		super.fillContextMenu(menuManager);
-		updateActions(getContext().getSelection());
 
 		// Add New Child sub menu
 		MenuManager createChildMenuManager = new MenuManager("New Child"); //$NON-NLS-1$
@@ -204,35 +186,28 @@ public class BasicModelEditActionProvider extends BasicActionProvider {
 		if (deleteAction != null) {
 			deleteAction.setEditingDomain(null);
 		}
-		if (selectionProvider != null) {
-			if (cutAction != null) {
-				selectionProvider.removeSelectionChangedListener(cutAction);
-			}
-			if (copyAction != null) {
-				selectionProvider.removeSelectionChangedListener(copyAction);
-			}
-			if (pasteAction != null) {
-				selectionProvider.removeSelectionChangedListener(pasteAction);
-			}
-			if (deleteAction != null) {
-				selectionProvider.removeSelectionChangedListener(deleteAction);
-			}
-		}
 	}
 
 	protected void updateActions(ISelection selection) {
 		TransactionalEditingDomain editingDomain = getEditingDomainFromSelection(selection);
 
+		// Switch actions to current editing domain
 		cutAction.setEditingDomain(editingDomain);
 		copyAction.setEditingDomain(editingDomain);
 		pasteAction.setEditingDomain(editingDomain);
 		deleteAction.setEditingDomain(editingDomain);
 
+		// Update action states
+		IStructuredSelection structuredSelection = SelectionUtil.getStructuredSelection(selection);
+		cutAction.selectionChanged(structuredSelection);
+		copyAction.selectionChanged(structuredSelection);
+		pasteAction.selectionChanged(structuredSelection);
+		deleteAction.selectionChanged(structuredSelection);
+
 		// Query the new selection for appropriate new child/sibling descriptors
 		Collection<?> newChildDescriptors = null;
 		Collection<?> newSiblingDescriptors = null;
 
-		IStructuredSelection structuredSelection = SelectionUtil.getStructuredSelection(selection);
 		if (editingDomain != null && structuredSelection.size() == 1 && shouldCreateCreateChildActions(structuredSelection.getFirstElement())) {
 			newChildDescriptors = getNewChildDescriptors(editingDomain, structuredSelection.getFirstElement(), null);
 			newSiblingDescriptors = getNewChildDescriptors(editingDomain, null, structuredSelection.getFirstElement());
