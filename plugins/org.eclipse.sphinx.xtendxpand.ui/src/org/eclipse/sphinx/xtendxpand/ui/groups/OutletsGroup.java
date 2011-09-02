@@ -32,7 +32,7 @@ import org.eclipse.sphinx.platform.ui.groups.AbstractGroup;
 import org.eclipse.sphinx.platform.ui.util.SWTUtil;
 import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xtendxpand.ui.dialogs.EditOutletDialog;
-import org.eclipse.sphinx.xtendxpand.ui.groups.messages.Messages;
+import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.ui.outlet.providers.OutletProvider;
 import org.eclipse.sphinx.xtendxpand.ui.outlet.providers.OutletTableContentProvider;
 import org.eclipse.sphinx.xtendxpand.ui.outlet.providers.OutletTableLabelProvider;

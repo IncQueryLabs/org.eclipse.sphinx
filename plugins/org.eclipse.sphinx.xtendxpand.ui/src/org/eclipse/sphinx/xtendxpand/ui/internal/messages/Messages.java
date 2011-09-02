@@ -56,6 +56,12 @@ public class Messages extends NLS {
 	public static String label_prExcludes;
 	public static String label_prDefaultExcludes;
 	public static String label_protectedRegionGroupName;
+	public static String label_AddButton;
+	public static String label_EditButton;
+	public static String label_RemoveButton;
+	public static String label_OutletsGroup_TableColumn_Name;
+	public static String label_OutletsGroup_TableColumn_Path;
+	public static String label_Protected_Region;
 
 	public static String msg_chooseTemplate;
 	public static String msg_chooseExtension;
