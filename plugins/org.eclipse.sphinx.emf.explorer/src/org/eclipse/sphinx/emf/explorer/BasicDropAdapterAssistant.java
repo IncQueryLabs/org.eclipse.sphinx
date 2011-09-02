@@ -48,7 +48,18 @@ import org.eclipse.ui.navigator.CommonDropAdapterAssistant;
 
 public class BasicDropAdapterAssistant extends CommonDropAdapterAssistant {
 
-	protected static final int operations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
+	public static final int DND_OPERATIONS_DROP_COPY_DROP_MOVE_DROP_LINK = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
+
+	/**
+	 * Drop location constant for obtaining the following drop behavior: Always try to DROP_ON first, and, if this is
+	 * not possible, try to DROP_INSERT.
+	 * <ul>
+	 * <li>DROP_ON: paste drop source as child of drop target => dropped source will be a child of drop target</li>
+	 * <li>DROP_INSERT: find the parent of the drop target and paste drop source as child of that parent => dropped
+	 * source will be a sibling of drop target</li>
+	 * </ul>
+	 */
+	public static final float DND_LOCATION_DROP_ON_FIRST = 0.5f;
 
 	/*
 	 * @see org.eclipse.ui.navigator.CommonDropAdapterAssistant#handleDrop(org.eclipse.ui.navigator.CommonDropAdapter,
@@ -95,12 +106,14 @@ public class BasicDropAdapterAssistant extends CommonDropAdapterAssistant {
 			}
 
 			Object unwrappedTarget = AdapterFactoryEditingDomain.unwrap(target);
-			Command command = DragAndDropCommand.create(editingDomain, unwrappedTarget, 0.0f, operations, operation, selectedEObjects);
+			Command command = DragAndDropCommand.create(editingDomain, unwrappedTarget, getDefaultDragAndDropLocation(),
+					getDefaultDragAndDropOperations(), operation, selectedEObjects);
 
 			if (command.canExecute()) {
 				return Status.OK_STATUS;
 			} else if (!command.canExecute() && operation == DND.DROP_NONE) {
-				Command command2 = DragAndDropCommand.create(editingDomain, unwrappedTarget, 0.0f, operations, operations, selectedEObjects);
+				Command command2 = DragAndDropCommand.create(editingDomain, unwrappedTarget, getDefaultDragAndDropLocation(),
+						getDefaultDragAndDropOperations(), getDefaultDragAndDropOperations(), selectedEObjects);
 				if (command2.canExecute()) {
 					return Status.OK_STATUS;
 				}
@@ -120,7 +133,7 @@ public class BasicDropAdapterAssistant extends CommonDropAdapterAssistant {
 					"Target object has no editing domain.", Activator.getPlugin().getBundle().getSymbolicName(), new RuntimeException()); //$NON-NLS-1$
 		}
 		List<EObject> selectedEObjects = getSelectedEObjects();
-		Command command = DragAndDropCommand.create(domain, target, dropAdapter.getCurrentLocation(), event.operations, DND.DROP_COPY,
+		Command command = DragAndDropCommand.create(domain, target, getDefaultDragAndDropLocation(), event.operations, DND.DROP_COPY,
 				selectedEObjects);
 		return promptAndExecuteDropCopy(domain, target, command, "Confirm Copy", "Press OK to confirm copy.");
 	}
@@ -135,10 +148,40 @@ public class BasicDropAdapterAssistant extends CommonDropAdapterAssistant {
 		List<EObject> selectedEObjects = getSelectedEObjects();
 
 		Object unwrappedTarget = AdapterFactoryEditingDomain.unwrap(target);
-		Command command = DragAndDropCommand.create(domain, unwrappedTarget, dropAdapter.getCurrentLocation(), event.operations, DND.DROP_MOVE,
+		Command command = DragAndDropCommand.create(domain, unwrappedTarget, getDefaultDragAndDropLocation(), event.operations, DND.DROP_MOVE,
 				selectedEObjects);
 
 		return promptAndExecuteDropMove(domain, target, command, "Confirm move", "Press OK to confirm move");
+	}
+
+	/**
+	 * Returns the default drop location to be used for creating {@link DragAndDropCommand}s in situations where this
+	 * information cannot be obtained from the context. It should be in the range of 0.0 to 1.0, indicating the relative
+	 * vertical location of the drop operation, where 0.0 is at the top and 1.0 is at the bottom.
+	 * <p>
+	 * This implementation returns {@link #DND_LOCATION_DROP_ON_FIRST} as default. Clients may override this method and
+	 * return other values as appropriate.
+	 * </p>
+	 * 
+	 * @return The default drag and drop location to be used for creating {@link DragAndDropCommand}s.
+	 */
+	protected float getDefaultDragAndDropLocation() {
+		return DND_LOCATION_DROP_ON_FIRST;
+	}
+
+	/**
+	 * Returns the default drag and drop operations bit mask to be used for creating {@link DragAndDropCommand}s in
+	 * situations where this information cannot be obtained from the context. It is intended to be a mask of bitwise
+	 * or-ed {@link DND#DROP_*} values indicating the desired drag and drop operation types.
+	 * <p>
+	 * This implementation returns {@link #DND_OPERATIONS_DROP_COPY_DROP_MOVE_DROP_LINK} as default. Clients may
+	 * override this method and return other values as appropriate.
+	 * </p>
+	 * 
+	 * @return The default drag and drop operations bit mask to be used for creating {@link DragAndDropCommand}s.
+	 */
+	protected int getDefaultDragAndDropOperations() {
+		return DND_OPERATIONS_DROP_COPY_DROP_MOVE_DROP_LINK;
 	}
 
 	@SuppressWarnings("unchecked")
