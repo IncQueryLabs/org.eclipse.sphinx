@@ -122,7 +122,7 @@ public class M2MConfigurationWizard extends AbstractWizard {
 
 						// Abort if check job ends with errors or is cancelled; continue when there are no errors or
 						// only warnings
-						if (status.getSeverity() != IStatus.ERROR || progress.isCanceled()) {
+						if (status.getSeverity() == IStatus.ERROR || progress.isCanceled()) {
 							throw new OperationCanceledException();
 						}
 					}
