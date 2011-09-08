@@ -253,7 +253,7 @@ public class FileSelectionGroup extends AbstractGroup {
 					setEnabledButtonSelection(enableCheck);
 					for (String fullPath : items) {
 						IFile file = getFile(fullPath);
-						if (file != null) {
+						if (file != null && file.exists()) {
 							addFile(file);
 						}
 					}
