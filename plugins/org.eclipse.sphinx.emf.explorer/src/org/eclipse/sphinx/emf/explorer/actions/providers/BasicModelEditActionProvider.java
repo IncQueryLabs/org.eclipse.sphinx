@@ -137,6 +137,7 @@ public class BasicModelEditActionProvider extends BasicActionProvider {
 	@Override
 	public void fillContextMenu(IMenuManager menuManager) {
 		super.fillContextMenu(menuManager);
+		updateActions(getContext().getSelection());
 
 		// Add New Child sub menu
 		MenuManager createChildMenuManager = new MenuManager("New Child"); //$NON-NLS-1$
@@ -160,6 +161,8 @@ public class BasicModelEditActionProvider extends BasicActionProvider {
 	@Override
 	public void fillActionBars(IActionBars actionBars) {
 		super.fillActionBars(actionBars);
+
+		// Propagate new selection to actions
 		updateActions(getContext().getSelection());
 
 		// Redirect retargetable actions
@@ -189,44 +192,57 @@ public class BasicModelEditActionProvider extends BasicActionProvider {
 	}
 
 	protected void updateActions(ISelection selection) {
+		// Switch actions to editing domain behind current selection
 		TransactionalEditingDomain editingDomain = getEditingDomainFromSelection(selection);
-
-		// Switch actions to current editing domain
 		cutAction.setEditingDomain(editingDomain);
 		copyAction.setEditingDomain(editingDomain);
 		pasteAction.setEditingDomain(editingDomain);
 		deleteAction.setEditingDomain(editingDomain);
 
-		// Update action states
+		// Update action states according to current selection
 		IStructuredSelection structuredSelection = SelectionUtil.getStructuredSelection(selection);
 		cutAction.selectionChanged(structuredSelection);
 		copyAction.selectionChanged(structuredSelection);
 		pasteAction.selectionChanged(structuredSelection);
 		deleteAction.selectionChanged(structuredSelection);
 
-		// Query the new selection for appropriate new child/sibling descriptors
-		Collection<?> newChildDescriptors = null;
-		Collection<?> newSiblingDescriptors = null;
+		// Query new child/sibling descriptors for current selection
+		/*
+		 * !! Important Note !! This need to be redone upon each time the context menu is about to be shown (but not
+		 * only when the selection changes). The new child/sibling descriptors already contain the new objects to be
+		 * added as new child/sibling to the selected object when the corresponding new child/sibling action gets
+		 * invoked. These new objects need to be brand new instances in each context menu instance so as to make sure
+		 * that users can successively create multiple new children/siblings with the same type for same selected object
+		 * and feature. If new child/sibling descriptors were only recreated upon selection change it could happen that
+		 * users end up with the same new child/sibling object instance being added again and again instead.
+		 */
+		if (shouldCreateCreateChildActions(structuredSelection.getFirstElement())) {
+			Collection<?> newChildDescriptors = null;
+			Collection<?> newSiblingDescriptors = null;
 
-		if (editingDomain != null && structuredSelection.size() == 1 && shouldCreateCreateChildActions(structuredSelection.getFirstElement())) {
-			newChildDescriptors = getNewChildDescriptors(editingDomain, structuredSelection.getFirstElement(), null);
-			newSiblingDescriptors = getNewChildDescriptors(editingDomain, null, structuredSelection.getFirstElement());
+			if (editingDomain != null && structuredSelection.size() == 1) {
+				newChildDescriptors = getNewChildDescriptors(editingDomain, structuredSelection.getFirstElement(), null);
+				newSiblingDescriptors = getNewChildDescriptors(editingDomain, null, structuredSelection.getFirstElement());
+			}
+
+			// Generate new create child/sibling actions
+			createChildActions = generateCreateChildActions(editingDomain, newChildDescriptors, selection);
+			createChildSubmenuActions = extractSubmenuActions(createChildActions, selection);
+			createSiblingActions = generateCreateSiblingActions(editingDomain, newSiblingDescriptors, selection);
+			createSiblingSubmenuActions = extractSubmenuActions(createSiblingActions, selection);
 		}
-
-		// Generate actions for selection
-		createChildActions = generateCreateChildActions(editingDomain, newChildDescriptors, selection);
-		createChildSubmenuActions = extractSubmenuActions(createChildActions, selection);
-		createSiblingActions = generateCreateSiblingActions(editingDomain, newSiblingDescriptors, selection);
-		createSiblingSubmenuActions = extractSubmenuActions(createSiblingActions, selection);
 	}
 
 	/**
-	 * Return true or false if create child action must be shown for the given object. This method return true by
-	 * default and should be overridden by subclasses.
+	 * Returns if create child/sibling menus and actions should be shown for the given object.
+	 * <p>
+	 * This default implementation returns always <code>true</code>. It may be overridden by subclasses as appropriate.
+	 * </p>
 	 * 
 	 * @param object
-	 *            an object.
-	 * @return <code>true</code> or <code>false</code> if create child action must be shown for the given object
+	 *            The object under investigation.
+	 * @return <code>true</code> if create child/sibling menus and actions should be shown for the given object,
+	 *         <code>false</code> otherwise.
 	 */
 	protected boolean shouldCreateCreateChildActions(Object object) {
 		return true;
