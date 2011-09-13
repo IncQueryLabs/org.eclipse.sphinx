@@ -25,6 +25,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
@@ -40,6 +41,7 @@ import org.eclipse.sphinx.xtendxpand.preferences.PrDefaultExcludesPreference;
 import org.eclipse.sphinx.xtendxpand.preferences.PrExcludesPreference;
 import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
+import org.eclipse.sphinx.xtendxpand.ui.jobs.ResultMessageHandler;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.pages.CheckConfigurationPage;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.pages.XpandConfigurationPage;
 import org.eclipse.xtend.typesystem.MetaModel;
@@ -133,6 +135,10 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		if (file != null) {
 			job.setRule(file.getProject());
 		}
+		IJobChangeListener handler = createResultMessageHandler(job);
+		if (handler != null) {
+			job.addJobChangeListener(handler);
+		}
 		job.schedule();
 	}
 
@@ -182,6 +188,10 @@ public class M2TConfigurationWizard extends AbstractWizard {
 			checkJob.setRule(file.getProject());
 		}
 		return checkJob;
+	}
+
+	protected IJobChangeListener createResultMessageHandler(M2TJob job) {
+		return new ResultMessageHandler(job);
 	}
 
 	@Override

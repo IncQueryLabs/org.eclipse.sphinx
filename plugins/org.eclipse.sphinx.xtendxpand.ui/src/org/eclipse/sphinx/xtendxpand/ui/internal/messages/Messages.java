@@ -72,6 +72,10 @@ public class Messages extends NLS {
 	public static String msg_outletNameEmptyValidationError;
 	public static String msg_outletNameExistValidationError;
 	public static String msg_outletLocationEmptyValidationError;
+	public static String msg_M2x_successfull;
+	public static String msg_M2x_failed;
+	public static String msg_M2x_cancelled;
+	public static String msg_M2x_Check_failed;
 
 	public static String title_launchGen;
 	public static String title_codeGen;

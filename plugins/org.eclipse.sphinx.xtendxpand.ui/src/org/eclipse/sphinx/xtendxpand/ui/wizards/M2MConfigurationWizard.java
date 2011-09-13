@@ -33,6 +33,7 @@ import org.eclipse.sphinx.xtendxpand.jobs.SaveAsNewFileHandler;
 import org.eclipse.sphinx.xtendxpand.jobs.XtendJob;
 import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
+import org.eclipse.sphinx.xtendxpand.ui.jobs.ResultMessageHandler;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.pages.CheckConfigurationPage;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.pages.XtendConfigurationPage;
 import org.eclipse.xtend.typesystem.MetaModel;
@@ -108,6 +109,10 @@ public class M2MConfigurationWizard extends AbstractWizard {
 		if (handler != null) {
 			job.addJobChangeListener(handler);
 		}
+		handler = createResultMessageHandler(job);
+		if (handler != null) {
+			job.addJobChangeListener(handler);
+		}
 		job.schedule();
 	}
 
@@ -139,6 +144,10 @@ public class M2MConfigurationWizard extends AbstractWizard {
 
 	protected IJobChangeListener createResultObjectHandler(XtendJob xtendJob) {
 		return new SaveAsNewFileHandler(xtendJob);
+	}
+
+	protected IJobChangeListener createResultMessageHandler(M2MJob job) {
+		return new ResultMessageHandler(job);
 	}
 
 	@Override
