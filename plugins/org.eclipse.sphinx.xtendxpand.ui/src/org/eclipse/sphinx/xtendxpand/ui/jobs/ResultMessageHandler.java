@@ -50,8 +50,10 @@ public class ResultMessageHandler extends JobChangeAdapter {
 	/**
 	 * This bit field indicate when the message is to be displayed (on completion only, or on cancellation only or on
 	 * completion and cancellation, etc.).
+	 * 
+	 * @see {@link ResultMessageConstants} interface.
 	 */
-	private int messageKind;
+	private int openDialogOn;
 
 	/**
 	 * This construct a result message dialog handler that opens a message dialog indicating the status result of M2x
@@ -70,15 +72,15 @@ public class ResultMessageHandler extends JobChangeAdapter {
 	 * 
 	 * @param m2xJob
 	 *            the M2TJob or M2MJob instance to be use.
-	 * @param messageKind
+	 * @param openDialogOn
 	 *            a bit indicating when the message is to be displayed (on completion only, or on cancellation only or
 	 *            on completion and cancellation, etc.).
 	 */
-	public ResultMessageHandler(Job m2xJob, int messageKind) {
+	public ResultMessageHandler(Job m2xJob, int openDialogOn) {
 		Assert.isTrue(m2xJob instanceof M2TJob || m2xJob instanceof M2MJob);
 
 		this.m2xJob = m2xJob;
-		this.messageKind = messageKind;
+		this.openDialogOn = openDialogOn;
 	}
 
 	/**
@@ -123,18 +125,13 @@ public class ResultMessageHandler extends JobChangeAdapter {
 	@Override
 	public void done(IJobChangeEvent event) {
 		// Opens message dialog that inform the status of M2x job result
-		handleResultMessage(messageKind);
+		handleResultMessage();
 	}
 
 	/**
-	 * Open message dialog that inform the status of M2x job result.
-	 * 
-	 * @param messageKind
-	 *            indicate when a dialog message should be displayed e.g., only if M2x process completed or cancelled or
-	 *            both competed or cancelled.
-	 * @see {ResultMessageConstants} result message constant class.
+	 * Opens a message dialog that inform the status of M2x job result.
 	 */
-	protected void handleResultMessage(final int messageKind) {
+	protected void handleResultMessage() {
 		final Display display = ExtendedPlatformUI.getDisplay();
 		if (display != null) {
 			display.asyncExec(new Runnable() {
@@ -161,7 +158,7 @@ public class ResultMessageHandler extends JobChangeAdapter {
 						 * soon as we return an error status. In this case, we do not open explicitly a message dialog
 						 * when M2x job ends with errors.
 						 */
-						switch (messageKind) {
+						switch (openDialogOn) {
 						// The case when the message is to be displayed on completion or failed only
 						case ResultMessageConstants.OPEN_DIALOG_ON_FAILED_OR_COMPLETION:
 							if (m2xResult.getSeverity() == IStatus.OK) {
