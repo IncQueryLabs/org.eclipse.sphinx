@@ -15,7 +15,7 @@
 package org.eclipse.sphinx.xtendxpand.ui.jobs;
 
 /**
- * Constants that indicate when a message dialog should be displayed.
+ * This class contains the constants that indicate when message dialog should be displayed with M2x job result.
  */
 public interface ResultMessageConstants {
 

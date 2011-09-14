@@ -34,7 +34,7 @@ import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * Implements handlers that can be registered as {@link IJobChangeListener} on an {@link M2TJob} instance or a
+ * Implements handlers that can be registered as {@link IJobChangeListener} on a {@link M2TJob} instance or a
  * {@link M2MJob} instance that encloses the latter and open a message dialog indicating the status result of M2x job.
  * 
  * @see {@link M2TJob} class.
@@ -149,15 +149,14 @@ public class ResultMessageHandler extends JobChangeAdapter {
 							return;
 						}
 
-						IStatus m2xResult = m2xJob.getResult();
-						String message = ""; //$NON-NLS-1$
-						int imageType = -1;
-
 						/*
 						 * !!! Important: not that Eclipse automatically opens a message dialog with a status message as
 						 * soon as we return an error status. In this case, we do not open explicitly a message dialog
 						 * when M2x job ends with errors.
 						 */
+						IStatus m2xResult = m2xJob.getResult();
+						String message = ""; //$NON-NLS-1$
+						int imageType = -1;
 						switch (openDialogOn) {
 						// The case when the message is to be displayed on completion or failed only
 						case ResultMessageConstants.OPEN_DIALOG_ON_FAILED_OR_COMPLETION:
