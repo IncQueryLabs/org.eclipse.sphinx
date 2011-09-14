@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.mwe.core.WorkflowContext;
@@ -33,6 +34,7 @@ import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
+import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 
 // TODO Create ModelSaver as counterpart which takes a collection of model objects and saves them using
 // org.eclipse.sphinx.emf.util.EcorePlatformUtil.saveNewModelResources(TransactionalEditingDomain, Collection<ModelResourceDescriptor>, boolean, IProgressMonitor)
@@ -50,6 +52,16 @@ public class ModelLoader extends WorkflowComponentWithModelSlot {
 
 	@Override
 	protected void invokeInternal(WorkflowContext ctx, ProgressMonitor monitor, Issues issues) {
+		// Wait until initialization jobs have completed (required for safely accessing models in
+		// ModelDescriptorRegistry)
+		// TODO Create FAMILY_INITIALIZATION and add it to ModelDescriptorRegistryInitializer so as to enable this
+		// kind of jobs being focused more specifically
+		try {
+			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_LONG_RUNNING, null);
+		} catch (Exception ex) {
+			// Ignore exception
+		}
+
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IProject project = workspace.getRoot().getProject(projectName);
 
