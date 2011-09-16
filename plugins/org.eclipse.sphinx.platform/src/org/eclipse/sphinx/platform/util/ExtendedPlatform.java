@@ -244,7 +244,19 @@ public final class ExtendedPlatform {
 	 * @return The resulting {@link ISchedulingRule scheduling rule} or <code>null</code> if no such could be created.
 	 */
 	public static ISchedulingRule createSaveNewSchedulingRule(IResource resource) {
-		return createCreateSchedulingRule(resource);
+		if (resource != null) {
+			// Create modify rule for project behind given resource
+			/*
+			 * !! Important Note !! It might be that not all the folders on the resource's path already exist and are
+			 * supposed to be created along with the new resource being saved. We therefore cannot go along with a
+			 * create rule just for the file being created but must use a modify rule for the underlying project.
+			 * Otherwise the creation of not yet existing containing folders would lead to rule conflicts.
+			 */
+			IProject project = resource.getProject();
+			IResourceRuleFactory ruleFactory = resource.getWorkspace().getRuleFactory();
+			return MultiRule.combine(new ISchedulingRule[] { ruleFactory.modifyRule(project), ruleFactory.refreshRule(project) });
+		}
+		return null;
 	}
 
 	/**
