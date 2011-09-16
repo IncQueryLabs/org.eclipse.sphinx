@@ -866,43 +866,68 @@ public final class EcoreResourceUtil {
 	 * @param modelRoot
 	 *            Can either be an EObject or a Resource.
 	 * @param options
-	 *            The saving options. <br>
-	 *            If no particular option, parameter should be set with:
-	 *            {@link EcoreResourceUtil#getDefaultSaveOptions()}
+	 *            The save options.
+	 * @see #getDefaultSaveOptions()
 	 */
 	public static void saveNewModelResource(ResourceSet resourceSet, URI uri, String contentTypeId, EObject modelRoot, Map<?, ?> options) {
 		// Create new model resource and add it to the provided ResourceSet
 		Resource resource = addNewModelResource(resourceSet, uri, contentTypeId, modelRoot);
 
 		// Save the newly created resource
-		saveModelResource(resource, options);
+		saveModelResource(resource, options, false);
 	}
 
 	/**
-	 * Saves the specified {@link Resource resource}.
+	 * Saves the specified <code>resource</code>.
 	 * 
 	 * @param resource
-	 *            The resource to save.
+	 *            The {@link Resource resource} to be saved.
 	 * @param options
-	 *            The saving options.<br>
-	 *            If no particular option, parameter should be set with:
-	 *            {@linkplain EcoreResourceUtil#getDefaultSaveOptions()}
+	 *            The save options.
+	 * @see #getDefaultSaveOptions()
 	 */
 	public static void saveModelResource(Resource resource, Map<?, ?> options) {
+		saveModelResource(resource, options, true);
+	}
+
+	/**
+	 * Saves the specified <code>resource</code>.
+	 * 
+	 * @param resource
+	 *            The {@link Resource resource} to be saved.
+	 * @param options
+	 *            The save options.
+	 * @param recordProblems
+	 *            <code>true</code> if problems encountered during save operation should be recorded as
+	 *            {@link Resource#getErrors() errors} and {@link Resource#getWarnings() warnings} on
+	 *            <code>resource</code> or <code>false</code> if they should be logged in error log instead.
+	 * @see #getDefaultSaveOptions()
+	 */
+	private static void saveModelResource(Resource resource, Map<?, ?> options, boolean recordProblems) {
 		if (resource != null) {
 			try {
 				resource.save(options);
 			} catch (Exception ex) {
-				// Leave an error about what has happened on resource
-				Throwable cause = ex.getCause();
-				if (cause instanceof XMIException) {
-					resource.getErrors().add((XMIException) cause);
+				if (recordProblems) {
+					try {
+						// Leave an error about what has happened on resource
+						Throwable cause = ex.getCause();
+						if (cause instanceof XMIException) {
+							resource.getErrors().add((XMIException) cause);
+						} else {
+							URI uri = resource.getURI();
+							Exception exception = cause instanceof Exception ? (Exception) cause : ex;
+							resource.getErrors().add(
+									new XMIException(NLS.bind(Messages.error_problemOccurredWhenSavingResource, uri.toString()), exception, uri
+											.toString(), 1, 1));
+						}
+					} catch (Exception e) {
+						// Log original exception in error log if something goes wrong
+						PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+					}
 				} else {
-					URI uri = resource.getURI();
-					Exception causeEx = cause instanceof Exception ? (Exception) cause : null;
-					resource.getErrors().add(
-							new XMIException(NLS.bind(Messages.error_problemOccurredWhenSavingResource, uri.toString()), causeEx, uri.toString(), 1,
-									1));
+					// Log original exception in error log if recording on resource is not required
+					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 				}
 			}
 		}
@@ -1105,13 +1130,11 @@ public final class EcoreResourceUtil {
 						if (cause instanceof XMIException) {
 							resource.getErrors().add((XMIException) cause);
 						} else {
-							Exception causeEx = cause instanceof Exception ? (Exception) cause : null;
+							Exception exception = cause instanceof Exception ? (Exception) cause : ex;
 							resource.getErrors().add(
-									new XMIException(NLS.bind(Messages.error_problemOccurredWhenLoadingResource, uri.toString()), causeEx, uri
+									new XMIException(NLS.bind(Messages.error_problemOccurredWhenLoadingResource, uri.toString()), exception, uri
 											.toString(), 1, 1));
 						}
-						resource.getErrors().add(
-								new XMIException(NLS.bind(Messages.error_problemOccurredWhenLoadingResource, uri), ex, uri.toString(), 1, 1));
 					}
 				} catch (Exception e) {
 					// Log original exception in error log if something goes wrong
