@@ -47,8 +47,6 @@ import org.eclipse.sphinx.xtendxpand.internal.Activator;
  */
 public class SaveAsNewFileHandler extends AbstractResultObjectHandler {
 
-	protected XtendJob xtendJob = null;
-
 	public SaveAsNewFileHandler() {
 	}
 
@@ -64,11 +62,11 @@ public class SaveAsNewFileHandler extends AbstractResultObjectHandler {
 		for (Object inputObject : resultObjects.keySet()) {
 			for (Object resultObject : resultObjects.get(inputObject)) {
 				if (resultObject instanceof EObject && shouldSave((EObject) resultObject)) {
-					IPath resultPath = getUniqueResultPath(inputObject, ((EObject) resultObject), allocatedResultPaths);
+					IPath resultPath = getUniqueResultPath(inputObject, (EObject) resultObject, allocatedResultPaths);
 					if (resultPath != null) {
 						allocatedResultPaths.add(resultPath);
 
-						String resultContentTypeId = getContentTypeIdFor(((EObject) resultObject));
+						String resultContentTypeId = getContentTypeIdFor((EObject) resultObject);
 						allModelResourceDescriptors.add(new ModelResourceDescriptor((EObject) resultObject, resultPath, resultContentTypeId));
 					}
 				}
