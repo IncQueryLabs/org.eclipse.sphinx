@@ -245,9 +245,8 @@ public class TemplateGroup extends AbstractGroup {
 	 */
 	protected String getSimpleTypeName(Type type) {
 		String typeName = type.getName();
-		String namespaceDelimiter = IXtendXpandConstants.NS_DELIMITER;
-		int idx = typeName.lastIndexOf(namespaceDelimiter);
-		return idx != -1 && typeName.length() >= idx + namespaceDelimiter.length() ? typeName.substring(idx + namespaceDelimiter.length()) : typeName;
+		int idx = typeName.lastIndexOf(IXtendXpandConstants.NS_DELIMITER);
+		return idx != -1 && typeName.length() >= idx + IXtendXpandConstants.NS_DELIMITER.length() ? typeName.substring(idx + IXtendXpandConstants.NS_DELIMITER.length()) : typeName;
 	}
 
 	public String getDefinitionName() {

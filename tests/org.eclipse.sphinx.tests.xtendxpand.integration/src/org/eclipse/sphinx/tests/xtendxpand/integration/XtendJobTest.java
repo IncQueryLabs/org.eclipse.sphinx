@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,12 +9,15 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [358131] Make Xtend/Xpand/CheckJobs more robust against template file encoding mismatches
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.tests.xtendxpand.integration;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -28,10 +31,12 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
 import org.eclipse.sphinx.tests.xtendxpand.integration.internal.Activator;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandTestReferenceWorkspace;
+import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
 import org.eclipse.sphinx.xtendxpand.XtendEvaluationRequest;
 import org.eclipse.sphinx.xtendxpand.jobs.XtendJob;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.PackageableElement;
+import org.eclipse.xtend.typesystem.MetaModel;
 import org.eclipse.xtend.typesystem.uml2.UML2MetaModel;
 
 public class XtendJobTest extends XtendXpandIntegrationTestCase {
@@ -65,7 +70,10 @@ public class XtendJobTest extends XtendXpandIntegrationTestCase {
 
 		// Xtend execution
 		XtendEvaluationRequest xtendEvaluationRequest = new XtendEvaluationRequest(XtendXpandTestReferenceWorkspace.XTEND_EXTENSION_NAME, umlModel);
-		XtendJob xtendJob = new XtendJob("Xtend Job", new UML2MetaModel(), xtendEvaluationRequest); //$NON-NLS-1$
+		List<MetaModel> metaModels = new ArrayList<MetaModel>(2);
+		metaModels.add(new UML2MetaModel());
+		metaModels.add(new SphinxManagedEmfMetaModel(umlModelFile.getProject()));
+		XtendJob xtendJob = new XtendJob("Xtend Job", metaModels, xtendEvaluationRequest); //$NON-NLS-1$
 		xtendJob.setWorkspaceResourceLoader(new BasicWorkspaceResourceLoader());
 		IStatus xtendStatus = xtendJob.run(new NullProgressMonitor());
 		assertEquals(Status.OK_STATUS, xtendStatus);

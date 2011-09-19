@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,12 +9,11 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [358131] Make Xtend/Xpand/CheckJobs more robust against template file encoding mismatches
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.ui.util;
-
-import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -33,11 +32,8 @@ public class WorkspaceStorageFinder implements StorageFinder {
 
 	protected IWorkspaceResourceLoader workspaceResourceLoader;
 
-	protected static final Pattern patternNamespace = Pattern.compile("::"); //$NON-NLS-1$
-	protected static final Pattern patternSlash = Pattern.compile("/"); //$NON-NLS-1$
-
 	public WorkspaceStorageFinder() {
-		workspaceResourceLoader = createScopingResourceLoader();
+		workspaceResourceLoader = createWorkspaceResourceLoader();
 	}
 
 	public ResourceID findXtendXpandResourceID(IJavaProject javaProject, IStorage storage) {
@@ -70,23 +66,14 @@ public class WorkspaceStorageFinder implements StorageFinder {
 		workspaceResourceLoader.setContextProject(javaProject.getProject());
 		workspaceResourceLoader.setSearchArchives(searchJars);
 
-		// TODO File bug to Xtend: NPE is raised when ResourceID#toFileName() is called but underlying file has been
-		// deleted before
-		String fileName = null;
-		try {
-			fileName = resourceID.toFileName();
-		} catch (NullPointerException ex) {
-			return null;
-		}
-
-		return XtendXpandUtil.getUnderlyingFile(fileName, workspaceResourceLoader);
+		return XtendXpandUtil.getUnderlyingFile(resourceID.name, resourceID.extension, workspaceResourceLoader);
 	}
 
 	public int getPriority() {
 		return 1;
 	}
 
-	protected IWorkspaceResourceLoader createScopingResourceLoader() {
+	protected IWorkspaceResourceLoader createWorkspaceResourceLoader() {
 		return new BasicWorkspaceResourceLoader();
 	}
 }

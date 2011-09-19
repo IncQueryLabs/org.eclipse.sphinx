@@ -11,7 +11,8 @@
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
- * 
+ *     itemis - [358131] Make Xtend/Xpand/CheckJobs more robust against template file encoding mismatches
+ *      
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.jobs;
@@ -43,6 +44,7 @@ import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.internal.xpand2.pr.ProtectedRegionResolverImpl;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
 import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
@@ -55,6 +57,7 @@ import org.eclipse.xpand2.XpandExecutionContextImpl;
 import org.eclipse.xpand2.XpandFacade;
 import org.eclipse.xpand2.output.Outlet;
 import org.eclipse.xpand2.output.OutputImpl;
+import org.eclipse.xtend.expression.ResourceManager;
 import org.eclipse.xtend.expression.ResourceManagerDefaultImpl;
 import org.eclipse.xtend.expression.TypeSystem;
 import org.eclipse.xtend.expression.TypeSystemImpl;
@@ -305,8 +308,7 @@ public class XpandJob extends WorkspaceJob {
 			}
 
 			// Create execution context
-			ResourceManagerDefaultImpl resourceManager = new ResourceManagerDefaultImpl();
-			resourceManager.setFileEncoding(XtendXpandUtil.FILE_ENCODING_UTF8);
+			final ResourceManager resourceManager = new ResourceManagerDefaultImpl();
 			Map<String, Variable> globalVarsMap = new HashMap<String, Variable>();
 			XpandExecutionContextImpl execCtx = new XpandExecutionContextImpl(resourceManager, output, protectedRegionResolver, globalVarsMap,
 					new ProgressMonitorAdapter(monitor), null, null, null);
@@ -334,6 +336,18 @@ public class XpandJob extends WorkspaceJob {
 
 							// Update resource loader context
 							updateResourceLoaderContext(request.getTargetObject());
+
+							// Update resource manager with file encoding information for next Xpand file to be
+							// evaluated
+							IFile definitionFile = XtendXpandUtil.getUnderlyingFile(request.getDefinitionName(),
+									IXtendXpandConstants.TEMPLATE_EXTENSION, workspaceResourceLoader);
+							if (definitionFile == null) {
+								try {
+									resourceManager.setFileEncoding(definitionFile.getCharset());
+								} catch (CoreException ex) {
+									// Ignore exception
+								}
+							}
 
 							// Evaluate current request
 							facade.evaluate(request.getDefinitionName(), request.getTargetObject(), request.getParameterList().toArray());

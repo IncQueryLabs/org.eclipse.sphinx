@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
+ *     itemis - [358131] Make Xtend/Xpand/CheckJobs more robust against template file encoding mismatches
  * 
  * </copyright>
  */
@@ -27,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -50,6 +52,7 @@ import org.eclipse.sphinx.xtendxpand.XtendEvaluationRequest;
 import org.eclipse.sphinx.xtendxpand.internal.Activator;
 import org.eclipse.xtend.check.CheckFacade;
 import org.eclipse.xtend.expression.ExecutionContextImpl;
+import org.eclipse.xtend.expression.ResourceManager;
 import org.eclipse.xtend.expression.ResourceManagerDefaultImpl;
 import org.eclipse.xtend.expression.TypeSystem;
 import org.eclipse.xtend.expression.TypeSystemImpl;
@@ -233,9 +236,10 @@ public class CheckJob extends Job {
 			installResourceLoader();
 
 			// Create execution context
+			final ResourceManager resourceManager = new ResourceManagerDefaultImpl();
 			Map<String, Variable> variables = new HashMap<String, Variable>();
 			Map<String, Variable> globalVarsMap = new HashMap<String, Variable>();
-			final ExecutionContextImpl execCtx = new ExecutionContextImpl(new ResourceManagerDefaultImpl(), null,
+			final ExecutionContextImpl execCtx = new ExecutionContextImpl(resourceManager, null,
 					typeSystem instanceof TypeSystemImpl ? (TypeSystemImpl) typeSystem : new TypeSystemImpl(), variables, globalVarsMap,
 					new ProgressMonitorAdapter(monitor), null, null, null, null, null, null, null);
 			if (metaModels != null) {
@@ -256,10 +260,19 @@ public class CheckJob extends Job {
 							// Update resource loader context
 							updateResourceLoaderContext(request.getModelRootObject());
 
-							// Evaluate current request
+							// Evaluate check files
 							for (IFile file : request.getCheckFiles()) {
 								log.info("Check model with '" + file.getFullPath().makeRelative() + "'"); //$NON-NLS-1$ //$NON-NLS-2$ //);
 
+								// Update resource manager with file encoding information for next Check file to be
+								// evaluated
+								try {
+									resourceManager.setFileEncoding(file.getCharset());
+								} catch (CoreException ex) {
+									// Ignore exception
+								}
+
+								// Evaluate current check file
 								String path = file.getProjectRelativePath().removeFileExtension().toString();
 								CheckFacade.checkAll(path, request.getModelObjects(), execCtx, issues, false);
 							}

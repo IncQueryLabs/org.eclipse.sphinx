@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,8 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [358131] Make Xtend/Xpand/CheckJobs more robust against template file encoding mismatches
+ *      
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.util;
@@ -26,6 +27,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.mwe.core.resources.ResourceLoader;
 import org.eclipse.internal.xtend.type.baseimpl.TypesComparator;
 import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
@@ -43,55 +45,65 @@ public final class XtendXpandUtil {
 
 	public static final String XTEND_XPAND_NATURE_ID = "org.eclipse.xtend.shared.ui.xtendXPandNature"; //$NON-NLS-1$
 
-	public static final String FILE_ENCODING_UTF8 = "UTF-8"; //$NON-NLS-1$
-
-	public static String getQualifiedName(IFile underlyingFile, String featureName) {
+	public static String getQualifiedName(IFile underlyingFile, String definitionOrFeatureName) {
 		Assert.isNotNull(underlyingFile);
 
 		if (underlyingFile.exists()) {
-			StringBuilder path = new StringBuilder();
-			IPath templateNamespace = underlyingFile.getProjectRelativePath().removeFileExtension();
-			for (Iterator<String> iter = Arrays.asList(templateNamespace.segments()).iterator(); iter.hasNext();) {
+			StringBuilder qualifiedName = new StringBuilder();
+			IPath path = underlyingFile.getProjectRelativePath().removeFileExtension();
+			for (Iterator<String> iter = Arrays.asList(path.segments()).iterator(); iter.hasNext();) {
 				String segment = iter.next();
-				path.append(segment);
+				qualifiedName.append(segment);
 				if (iter.hasNext()) {
-					path.append(IXtendXpandConstants.NS_DELIMITER);
+					qualifiedName.append(IXtendXpandConstants.NS_DELIMITER);
 				}
 			}
-			if (featureName != null && featureName.length() > 0) {
-				path.append(IXtendXpandConstants.NS_DELIMITER);
-				path.append(featureName);
+			if (definitionOrFeatureName != null && definitionOrFeatureName.length() > 0) {
+				qualifiedName.append(IXtendXpandConstants.NS_DELIMITER);
+				qualifiedName.append(definitionOrFeatureName);
 			}
-			return path.toString();
+			return qualifiedName.toString();
 		}
 		return null;
 	}
 
-	public static IFile getUnderlyingFile(String qualifiedName) {
-		return getUnderlyingFile(qualifiedName, new BasicWorkspaceResourceLoader());
+	public static IFile getUnderlyingFile(String qualifiedName, String extension) {
+		return getUnderlyingFile(qualifiedName, extension, new BasicWorkspaceResourceLoader());
 	}
 
-	public static IFile getUnderlyingFile(String qualifiedName, ResourceLoader resourceLoader) {
+	public static IFile getUnderlyingFile(String qualifiedName, String extension, ResourceLoader resourceLoader) {
 		Assert.isNotNull(resourceLoader);
 
-		URL resourceURL = resourceLoader.getResource(qualifiedName);
-		if (resourceURL != null) {
-			// Avoid CoreException in org.eclipse.core.internal.filesystem.InternalFileSystemCore.getFileSystem(String)
-			if (!"bundleresource".equals(resourceURL.getProtocol())) { //$NON-NLS-1$
-				try {
-					IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-					// Find all files that are mapped to the given URI
-					/*
-					 * !! Important Note !! The search result includes files located in the workspace as well as linked
-					 * files or files contained in a linked folder that were located outside of the workspace.
-					 */
-					IFile[] files = workspaceRoot.findFilesForLocationURI(resourceURL.toURI());
-					if (files != null && files.length > 0) {
-						// Returns the first workspace file that match
-						return files[0];
+		if (qualifiedName != null) {
+			// Assume that given qualified name represents an Xpand or Xtend template and try resolve it as is
+			IPath path = new Path(qualifiedName.replace(IXtendXpandConstants.NS_DELIMITER, Character.toString(IPath.SEPARATOR)))
+					.addFileExtension(extension);
+			URL resourceURL = resourceLoader.getResource(path.toString());
+			if (resourceURL == null) {
+				// Assume that given qualified name represents a definition of feature inside an Xpand or Xtend
+				// template; so ignore the last segment and try to resolve only the file part of it
+				resourceURL = resourceLoader.getResource(path.removeLastSegments(1).addFileExtension(extension).toString());
+			}
+			if (resourceURL != null) {
+				// Avoid CoreException in
+				// org.eclipse.core.internal.filesystem.InternalFileSystemCore.getFileSystem(String)
+				if (!"bundleresource".equals(resourceURL.getProtocol())) { //$NON-NLS-1$
+					try {
+						IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+						// Find all files that are mapped to the given URI
+						/*
+						 * !! Important Note !! The search result includes files located in the workspace as well as
+						 * linked files or files contained in a linked folder that were located outside of the
+						 * workspace.
+						 */
+						IFile[] files = workspaceRoot.findFilesForLocationURI(resourceURL.toURI());
+						if (files != null && files.length > 0) {
+							// Returns the first workspace file that match
+							return files[0];
+						}
+					} catch (Exception ex) {
+						// Ignore exception
 					}
-				} catch (Exception ex) {
-					// Ignore exception
 				}
 			}
 		}

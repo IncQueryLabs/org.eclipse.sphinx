@@ -11,7 +11,8 @@
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
- * 
+ *     itemis - [358131] Make Xtend/Xpand/CheckJobs more robust against template file encoding mismatches
+ *      
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.jobs;
@@ -31,6 +32,7 @@ import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -42,6 +44,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
 import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
@@ -49,9 +52,11 @@ import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xtendxpand.XtendEvaluationRequest;
 import org.eclipse.sphinx.xtendxpand.internal.Activator;
+import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
 import org.eclipse.xpand2.XpandUtil;
 import org.eclipse.xtend.XtendFacade;
 import org.eclipse.xtend.expression.ExecutionContextImpl;
+import org.eclipse.xtend.expression.ResourceManager;
 import org.eclipse.xtend.expression.ResourceManagerDefaultImpl;
 import org.eclipse.xtend.expression.TypeSystem;
 import org.eclipse.xtend.expression.TypeSystemImpl;
@@ -312,9 +317,10 @@ public class XtendJob extends Job {
 			installResourceLoader();
 
 			// Create execution context
+			final ResourceManager resourceManager = new ResourceManagerDefaultImpl();
 			Map<String, Variable> variables = new HashMap<String, Variable>();
 			Map<String, Variable> globalVarsMap = new HashMap<String, Variable>();
-			final ExecutionContextImpl execCtx = new ExecutionContextImpl(new ResourceManagerDefaultImpl(), null,
+			final ExecutionContextImpl execCtx = new ExecutionContextImpl(resourceManager, null,
 					typeSystem instanceof TypeSystemImpl ? (TypeSystemImpl) typeSystem : new TypeSystemImpl(), variables, globalVarsMap,
 					new ProgressMonitorAdapter(monitor), null, null, null, null, null, null, null);
 			if (metaModels != null) {
@@ -335,6 +341,18 @@ public class XtendJob extends Job {
 
 							// Update resource loader context
 							updateResourceLoaderContext(request.getTargetObject());
+
+							// Update resource manager with file encoding information for next Xtend file to be
+							// evaluated
+							IFile extensionFile = XtendXpandUtil.getUnderlyingFile(request.getExtensionName(),
+									IXtendXpandConstants.EXTENSION_EXTENSION, workspaceResourceLoader);
+							if (extensionFile != null) {
+								try {
+									resourceManager.setFileEncoding(extensionFile.getCharset());
+								} catch (CoreException ex) {
+									// Ignore exception
+								}
+							}
 
 							// Evaluate current request
 							XtendFacade facade = XtendFacade.create(execCtx, XpandUtil.withoutLastSegment(request.getExtensionName()));
