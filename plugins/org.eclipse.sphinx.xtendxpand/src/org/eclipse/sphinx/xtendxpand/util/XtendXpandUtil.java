@@ -43,6 +43,8 @@ public final class XtendXpandUtil {
 
 	public static final String XTEND_XPAND_NATURE_ID = "org.eclipse.xtend.shared.ui.xtendXPandNature"; //$NON-NLS-1$
 
+	public static final String FILE_ENCODING_UTF8 = "UTF-8"; //$NON-NLS-1$
+
 	public static String getQualifiedName(IFile underlyingFile, String featureName) {
 		Assert.isNotNull(underlyingFile);
 
