@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
+ *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
  * 
  * </copyright>
  */
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
@@ -44,12 +46,14 @@ import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.ui.jobs.ResultMessageHandler;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.pages.CheckConfigurationPage;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.pages.XpandConfigurationPage;
+import org.eclipse.xtend.expression.TypeSystem;
+import org.eclipse.xtend.expression.TypeSystemImpl;
 import org.eclipse.xtend.typesystem.MetaModel;
 
 public class M2TConfigurationWizard extends AbstractWizard {
 
 	protected EObject modelObject;
-	protected Collection<MetaModel> metaModels;
+	protected TypeSystem typeSystem;
 
 	private String m2tJobName;
 	private IWorkspaceResourceLoader workspaceResourceLoader;
@@ -60,10 +64,17 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	protected CheckConfigurationPage checkConfigurationPage;
 
 	public M2TConfigurationWizard(EObject modelObject, Collection<MetaModel> metaModels) {
+		Assert.isNotNull(metaModels);
+
 		setDialogSettings(Activator.getDefault().getDialogSettings());
 		setWindowTitle(Messages.title_codeGen);
+
 		this.modelObject = modelObject;
-		this.metaModels = metaModels;
+
+		typeSystem = new TypeSystemImpl();
+		for (MetaModel metaModel : metaModels) {
+			((TypeSystemImpl) typeSystem).registerMetaModel(metaModel);
+		}
 	}
 
 	public String getM2TJobName() {
@@ -112,7 +123,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 
 	protected XpandConfigurationPage createXpandConfigurationPage() {
 		XpandConfigurationPage xpandPage = new XpandConfigurationPage(Messages.label_configPageName);
-		xpandPage.init(modelObject, metaModels, getOutletsPreference(), getDefaultOutlet());
+		xpandPage.init(modelObject, typeSystem, getOutletsPreference(), getDefaultOutlet());
 		return xpandPage;
 	}
 
@@ -126,8 +137,8 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	protected void doPerformFinish(IProgressMonitor monitor) throws CoreException {
 		ExtendedPlatformUI.showSystemConsole();
 
-		final CheckJob checkJob = isCheckRequired() ? createCheckJob() : null;
-		final XpandJob xpandJob = createXpandJob();
+		CheckJob checkJob = isCheckRequired() ? createCheckJob() : null;
+		XpandJob xpandJob = createXpandJob();
 
 		M2TJob job = new M2TJob(getM2TJobName(), xpandJob, checkJob);
 		job.setPriority(Job.BUILD);
@@ -147,7 +158,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	}
 
 	protected XpandJob createXpandJob() {
-		XpandJob job = new XpandJob(getM2TJobName(), metaModels, xpandConfigurationPage.getXpandEvaluationRequests());
+		XpandJob job = new XpandJob(getM2TJobName(), typeSystem, xpandConfigurationPage.getXpandEvaluationRequests());
 		job.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		job.getOutlets().addAll(xpandConfigurationPage.getOutlets());
 		job.setPriority(Job.BUILD);
@@ -180,7 +191,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	}
 
 	protected CheckJob createCheckJob() {
-		CheckJob checkJob = new CheckJob(getM2TJobName(), metaModels, checkConfigurationPage.getCheckEvaluationRequests());
+		CheckJob checkJob = new CheckJob(getM2TJobName(), typeSystem, checkConfigurationPage.getCheckEvaluationRequests());
 		checkJob.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 		checkJob.setPriority(Job.BUILD);
 		IFile file = EcorePlatformUtil.getFile(modelObject);

@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
+ *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
  * 
  * </copyright>
  */
@@ -44,10 +45,12 @@ import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xtendxpand.CheckEvaluationRequest;
+import org.eclipse.sphinx.xtendxpand.XtendEvaluationRequest;
 import org.eclipse.sphinx.xtendxpand.internal.Activator;
 import org.eclipse.xtend.check.CheckFacade;
 import org.eclipse.xtend.expression.ExecutionContextImpl;
 import org.eclipse.xtend.expression.ResourceManagerDefaultImpl;
+import org.eclipse.xtend.expression.TypeSystem;
 import org.eclipse.xtend.expression.TypeSystemImpl;
 import org.eclipse.xtend.expression.Variable;
 import org.eclipse.xtend.typesystem.MetaModel;
@@ -61,7 +64,12 @@ public class CheckJob extends Job {
 	 * 
 	 * @see MetaModel
 	 */
-	protected Collection<MetaModel> metaModels;
+	protected Collection<MetaModel> metaModels = null;
+
+	/**
+	 * The {@link TypeSystem} including the {@link MetaModel metamodel}s behind the model(s) to be transformed.
+	 */
+	protected TypeSystem typeSystem = null;
 
 	/**
 	 * A collection of Check evaluation request.
@@ -150,14 +158,43 @@ public class CheckJob extends Job {
 	}
 
 	/**
-	 * Sets the {@link IWorkspaceResourceLoader resource loader} for resolving resources referenced by Check
-	 * constraints.
+	 * Creates an {@link CheckJob} that validates a model based on given <code>typeSystem</code> as specified by
+	 * provided <code>checkEvaluationRequest</code>.
 	 * 
-	 * @param resourceLoader
-	 *            The resource loader to be used.
+	 * @param name
+	 *            The name of the job.
+	 * @param typeSystem
+	 *            The {@link TypeSystem type system} that includes the {@link MetaModel metamodel}s to be used.
+	 * @param checkEvaluationRequest
+	 *            The {@link CheckEvaluationRequest Check evaluation request} to be processed.
+	 * @see TypeSystem
+	 * @see XtendEvaluationRequest
 	 */
-	public void setWorkspaceResourceLoader(IWorkspaceResourceLoader resourceLoader) {
-		workspaceResourceLoader = resourceLoader;
+	public CheckJob(String name, TypeSystem typeSystem, CheckEvaluationRequest checkEvaluationRequest) {
+		this(name, typeSystem, Collections.singleton(checkEvaluationRequest));
+	}
+
+	/**
+	 * Creates an {@link CheckJob} that validates one or several models based on given <code>typeSystem</code> as
+	 * specified by provided <code>checkEvaluationRequests</code>.
+	 * 
+	 * @param name
+	 *            The name of the job.
+	 * @param typeSystem
+	 *            The {@link TypeSystem type system} that includes the {@link MetaModel metamodel}s to be used.
+	 * @param checkEvaluationRequests
+	 *            The {@link CheckEvaluationRequest Check evaluation request}s to be processed.
+	 * @see TypeSystem
+	 * @see XtendEvaluationRequest
+	 */
+	public CheckJob(String name, TypeSystem typeSystem, Collection<CheckEvaluationRequest> checkEvaluationRequests) {
+		super(name);
+
+		Assert.isNotNull(typeSystem);
+		Assert.isNotNull(checkEvaluationRequests);
+
+		this.typeSystem = typeSystem;
+		this.checkEvaluationRequests = checkEvaluationRequests;
 	}
 
 	protected Map<TransactionalEditingDomain, Collection<CheckEvaluationRequest>> getCheckEvaluationRequests() {
@@ -174,6 +211,17 @@ public class CheckJob extends Job {
 		return requests;
 	}
 
+	/**
+	 * Sets the {@link IWorkspaceResourceLoader resource loader} for resolving resources referenced by Check
+	 * constraints.
+	 * 
+	 * @param resourceLoader
+	 *            The resource loader to be used.
+	 */
+	public void setWorkspaceResourceLoader(IWorkspaceResourceLoader resourceLoader) {
+		workspaceResourceLoader = resourceLoader;
+	}
+
 	@Override
 	public IStatus run(IProgressMonitor monitor) {
 		try {
@@ -186,10 +234,13 @@ public class CheckJob extends Job {
 			// Create execution context
 			Map<String, Variable> variables = new HashMap<String, Variable>();
 			Map<String, Variable> globalVarsMap = new HashMap<String, Variable>();
-			final ExecutionContextImpl execCtx = new ExecutionContextImpl(new ResourceManagerDefaultImpl(), null, new TypeSystemImpl(), variables,
-					globalVarsMap, new ProgressMonitorAdapter(monitor), null, null, null, null, null, null, null);
-			for (MetaModel metaModel : metaModels) {
-				execCtx.registerMetaModel(metaModel);
+			final ExecutionContextImpl execCtx = new ExecutionContextImpl(new ResourceManagerDefaultImpl(), null,
+					typeSystem instanceof TypeSystemImpl ? (TypeSystemImpl) typeSystem : new TypeSystemImpl(), variables, globalVarsMap,
+					new ProgressMonitorAdapter(monitor), null, null, null, null, null, null, null);
+			if (metaModels != null) {
+				for (MetaModel metaModel : metaModels) {
+					execCtx.registerMetaModel(metaModel);
+				}
 			}
 
 			// Execute validation

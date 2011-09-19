@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
+ *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
  * 
  * </copyright>
  */
@@ -18,6 +19,7 @@ package org.eclipse.sphinx.xtendxpand.ui.wizards.pages;
 import java.util.Collection;
 import java.util.MissingResourceException;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.platform.ui.fields.IField;
@@ -29,24 +31,24 @@ import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.xtend.typesystem.MetaModel;
+import org.eclipse.xtend.expression.TypeSystem;
 
 public class XtendConfigurationPage extends AbstractWizardPage {
 
-	// Extension Group
 	protected ExtensionGroup extensionGroup;
 
 	protected EObject modelObject;
-
-	protected Collection<MetaModel> metaModels;
+	protected TypeSystem typeSystem;
 
 	public XtendConfigurationPage(String pageName) {
 		super(pageName);
 	}
 
-	public void init(EObject modelObject, Collection<MetaModel> metaModels) {
+	public void init(EObject modelObject, TypeSystem typeSystem) {
+		Assert.isNotNull(typeSystem);
+
 		this.modelObject = modelObject;
-		this.metaModels = metaModels;
+		this.typeSystem = typeSystem;
 	}
 
 	@Override
@@ -74,7 +76,7 @@ public class XtendConfigurationPage extends AbstractWizardPage {
 	 * Creates the template group field and load dialog settings.
 	 */
 	protected void createExtensionGroup(Composite parent) {
-		extensionGroup = new ExtensionGroup(Messages.label_extension, modelObject, metaModels, getDialogSettings());
+		extensionGroup = new ExtensionGroup(Messages.label_extension, modelObject, typeSystem, getDialogSettings());
 		extensionGroup.createContent(parent, 3);
 		extensionGroup.addGroupListener(new IGroupListener() {
 

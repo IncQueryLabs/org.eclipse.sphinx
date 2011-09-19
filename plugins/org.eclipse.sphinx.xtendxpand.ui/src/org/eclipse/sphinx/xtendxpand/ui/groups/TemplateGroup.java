@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
+ *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
  * 
  * </copyright>
  */
@@ -60,9 +61,9 @@ import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
+import org.eclipse.xtend.expression.TypeSystem;
 import org.eclipse.xtend.shared.ui.core.IXtendXpandProject;
 import org.eclipse.xtend.shared.ui.core.IXtendXpandResource;
-import org.eclipse.xtend.typesystem.MetaModel;
 import org.eclipse.xtend.typesystem.Type;
 
 public class TemplateGroup extends AbstractGroup {
@@ -95,24 +96,26 @@ public class TemplateGroup extends AbstractGroup {
 	protected EObject modelObject;
 
 	/**
-	 * The metamodel to be used.
+	 * The {@link TypeSystem type system} to be used.
 	 */
-	protected Collection<MetaModel> metaModels;
+	protected TypeSystem typeSystem;
 
 	/**
 	 * Defined definitions in the template file.
 	 */
 	private List<AbstractDefinition> definitions;
 
-	public TemplateGroup(String groupName, EObject modelObject, Collection<MetaModel> metaModels) {
-		this(groupName, modelObject, metaModels, null);
+	public TemplateGroup(String groupName, EObject modelObject, TypeSystem typeSystem) {
+		this(groupName, modelObject, typeSystem, null);
 	}
 
-	public TemplateGroup(String groupName, EObject modelObject, Collection<MetaModel> metaModels, IDialogSettings dialogSettings) {
+	public TemplateGroup(String groupName, EObject modelObject, TypeSystem typeSystem, IDialogSettings dialogSettings) {
 		super(groupName, dialogSettings);
 
+		Assert.isNotNull(typeSystem);
+
 		this.modelObject = modelObject;
-		this.metaModels = metaModels;
+		this.typeSystem = typeSystem;
 	}
 
 	@Override
@@ -141,7 +144,7 @@ public class TemplateGroup extends AbstractGroup {
 							return IXtendXpandConstants.TEMPLATE_EXTENSION.equals(((IFile) element).getFileExtension());
 						}
 						if (element instanceof IResource) {
-							return !ExtendedPlatform.isPlatformPrivateResource(((IResource) element));
+							return !ExtendedPlatform.isPlatformPrivateResource((IResource) element);
 						}
 						return true;
 					}
@@ -221,19 +224,16 @@ public class TemplateGroup extends AbstractGroup {
 	 */
 	protected String[] createDefinitionFieldItems(List<AbstractDefinition> definitions) {
 		List<String> result = new ArrayList<String>();
-		for (MetaModel metaModel : metaModels) {
-			Type type = metaModel.getType(modelObject);
-			if (type != null) {
-				for (AbstractDefinition definition : definitions) {
-					// TODO Replace filtering based on target type names by one that takes inheritance hierarchy into
-					// account, just as org.eclipse.xpand2.XpandExecutionContextImpl.findDefinition(XpandDefinition[],
-					// String, Type, Type[], XpandExecutionContext) does; provide a new helper method similar to
-					// XtendXpandUtil.getFeatures() to XtendXpandUtil for that purpose
-					if (type.getName().equals(definition.getTargetType()) || getSimpleTypeName(type).equals(definition.getTargetType())) {
-						result.add(definition.getName());
-					}
+		Type type = typeSystem.getType(modelObject);
+		if (type != null) {
+			for (AbstractDefinition definition : definitions) {
+				// TODO Replace filtering based on target type names by one that takes inheritance hierarchy into
+				// account, just as org.eclipse.xpand2.XpandExecutionContextImpl.findDefinition(XpandDefinition[],
+				// String, Type, Type[], XpandExecutionContext) does; provide a new helper method similar to
+				// org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil.getApplicableFeatures(List<? extends Callable>, Class<?>, String, List<? extends Type>) to XtendXpandUtil for that purpose
+				if (type.getName().equals(definition.getTargetType()) || getSimpleTypeName(type).equals(definition.getTargetType())) {
+					result.add(definition.getName());
 				}
-				break;
 			}
 		}
 		// TODO Create an empty combo item if result is empty

@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
+ *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
  * 
  * </copyright>
  */
@@ -48,11 +49,14 @@ import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xtendxpand.XpandEvaluationRequest;
 import org.eclipse.sphinx.xtendxpand.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
+import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
 import org.eclipse.xpand2.XpandExecutionContextImpl;
 import org.eclipse.xpand2.XpandFacade;
 import org.eclipse.xpand2.output.Outlet;
 import org.eclipse.xpand2.output.OutputImpl;
 import org.eclipse.xtend.expression.ResourceManagerDefaultImpl;
+import org.eclipse.xtend.expression.TypeSystem;
+import org.eclipse.xtend.expression.TypeSystemImpl;
 import org.eclipse.xtend.expression.Variable;
 import org.eclipse.xtend.typesystem.MetaModel;
 
@@ -69,6 +73,11 @@ public class XpandJob extends WorkspaceJob {
 	protected Collection<MetaModel> metaModels;
 
 	/**
+	 * The {@link TypeSystem} including the {@link MetaModel metamodel}s behind the model(s) to be transformed.
+	 */
+	protected TypeSystem typeSystem = null;
+
+	/**
 	 * A collection of Xpand evaluation request.
 	 * 
 	 * @see {@link XpandEvaluationRequest} class.
@@ -76,7 +85,7 @@ public class XpandJob extends WorkspaceJob {
 	protected Collection<XpandEvaluationRequest> xpandEvaluationRequests;
 
 	/**
-	 * The resource loader to be used for loading Xtend/Xpand/Check files.
+	 * The resource loader to be used for loading Xpand templates.
 	 */
 	private IWorkspaceResourceLoader workspaceResourceLoader = null;
 
@@ -165,13 +174,43 @@ public class XpandJob extends WorkspaceJob {
 	}
 
 	/**
-	 * Sets the {@link IWorkspaceResourceLoader resource loader} for resolving resources referenced by Xpand templates.
+	 * Creates an {@link XpandJob} that generates code from a model based on given <code>typeSystem</code> as specified
+	 * by provided <code>xpandEvaluationRequest</code>.
 	 * 
-	 * @param resourceLoader
-	 *            The resource loader to be used.
+	 * @param name
+	 *            The name of the job.
+	 * @param typeSystem
+	 *            The {@link TypeSystem type system} that includes the {@link MetaModel metamodel}s to be used.
+	 * @param xpandEvaluationRequest
+	 *            The {@link XpandEvaluationRequest Xpand evaluation request} to be processed.
+	 * @see TypeSystem
+	 * @see XpandEvaluationRequest
 	 */
-	public void setWorkspaceResourceLoader(IWorkspaceResourceLoader resourceLoader) {
-		workspaceResourceLoader = resourceLoader;
+	public XpandJob(String name, TypeSystem typeSystem, XpandEvaluationRequest xpandEvaluationRequest) {
+		this(name, typeSystem, Collections.singleton(xpandEvaluationRequest));
+	}
+
+	/**
+	 * Creates an {@link XpandJob} that generates code from one or several models based on given <code>typeSystem</code>
+	 * as specified by provided <code>xpandEvaluationRequests</code>.
+	 * 
+	 * @param name
+	 *            The name of the job.
+	 * @param typeSystem
+	 *            The {@link TypeSystem type system} that includes the {@link MetaModel metamodel}s to be used.
+	 * @param xpandEvaluationRequests
+	 *            The {@link XpandEvaluationRequest Xpand evaluation request}s to be processed.
+	 * @see TypeSystem
+	 * @see XpandEvaluationRequest
+	 */
+	public XpandJob(String name, TypeSystem typeSystem, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
+		super(name);
+
+		Assert.isNotNull(typeSystem);
+		Assert.isNotNull(xpandEvaluationRequests);
+
+		this.typeSystem = typeSystem;
+		this.xpandEvaluationRequests = xpandEvaluationRequests;
 	}
 
 	protected Map<TransactionalEditingDomain, Collection<XpandEvaluationRequest>> getXpandEvaluationRequests() {
@@ -186,6 +225,16 @@ public class XpandJob extends WorkspaceJob {
 			requestsInEditingDomain.add(request);
 		}
 		return requests;
+	}
+
+	/**
+	 * Sets the {@link IWorkspaceResourceLoader resource loader} for resolving resources referenced by Xpand templates.
+	 * 
+	 * @param resourceLoader
+	 *            The resource loader to be used.
+	 */
+	public void setWorkspaceResourceLoader(IWorkspaceResourceLoader resourceLoader) {
+		workspaceResourceLoader = resourceLoader;
 	}
 
 	/**
@@ -255,11 +304,20 @@ public class XpandJob extends WorkspaceJob {
 			}
 
 			// Create execution context
+			ResourceManagerDefaultImpl resourceManager = new ResourceManagerDefaultImpl();
+			resourceManager.setFileEncoding(XtendXpandUtil.FILE_ENCODING_UTF8);
 			Map<String, Variable> globalVarsMap = new HashMap<String, Variable>();
-			XpandExecutionContextImpl execCtx = new XpandExecutionContextImpl(new ResourceManagerDefaultImpl(), output, protectedRegionResolver,
-					globalVarsMap, new ProgressMonitorAdapter(monitor), null, null, null);
-			for (MetaModel metaModel : metaModels) {
-				execCtx.registerMetaModel(metaModel);
+			XpandExecutionContextImpl execCtx = new XpandExecutionContextImpl(resourceManager, output, protectedRegionResolver, globalVarsMap,
+					new ProgressMonitorAdapter(monitor), null, null, null);
+			if (metaModels != null) {
+				for (MetaModel metaModel : metaModels) {
+					execCtx.registerMetaModel(metaModel);
+				}
+			}
+			if (typeSystem instanceof TypeSystemImpl) {
+				for (MetaModel metaModel : ((TypeSystemImpl) typeSystem).getMetaModels()) {
+					execCtx.registerMetaModel(metaModel);
+				}
 			}
 
 			// Execute generation

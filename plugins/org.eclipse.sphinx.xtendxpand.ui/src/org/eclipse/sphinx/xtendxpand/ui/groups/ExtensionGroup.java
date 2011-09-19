@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
+ *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
  * 
  * </copyright>
  */
@@ -60,10 +61,10 @@ import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
+import org.eclipse.xtend.expression.TypeSystem;
 import org.eclipse.xtend.shared.ui.core.IXtendXpandProject;
 import org.eclipse.xtend.shared.ui.core.IXtendXpandResource;
 import org.eclipse.xtend.typesystem.Callable;
-import org.eclipse.xtend.typesystem.MetaModel;
 import org.eclipse.xtend.typesystem.Type;
 
 public class ExtensionGroup extends AbstractGroup {
@@ -96,26 +97,26 @@ public class ExtensionGroup extends AbstractGroup {
 	protected EObject modelObject;
 
 	/**
-	 * The metamodel to be used.
+	 * The {@link TypeSystem type system} to be used.
 	 */
-	protected Collection<MetaModel> metaModels;
+	protected TypeSystem typeSystem;
 
 	/**
 	 * Defined extensions in the relevant Xtend file.
 	 */
 	private List<Extension> extensions;
 
-	public ExtensionGroup(String groupName, EObject modelObject, Collection<MetaModel> metaModels) {
-		this(groupName, modelObject, metaModels, null);
+	public ExtensionGroup(String groupName, EObject modelObject, TypeSystem typeSystem) {
+		this(groupName, modelObject, typeSystem, null);
 	}
 
-	public ExtensionGroup(String groupName, EObject modelObject, Collection<MetaModel> metaModels, IDialogSettings dialogSettings) {
+	public ExtensionGroup(String groupName, EObject modelObject, TypeSystem typeSystem, IDialogSettings dialogSettings) {
 		super(groupName, dialogSettings);
 
-		Assert.isNotNull(metaModels);
+		Assert.isNotNull(typeSystem);
 
 		this.modelObject = modelObject;
-		this.metaModels = metaModels;
+		this.typeSystem = typeSystem;
 	}
 
 	@Override
@@ -144,7 +145,7 @@ public class ExtensionGroup extends AbstractGroup {
 							return IXtendXpandConstants.EXTENSION_EXTENSION.equals(((IFile) element).getFileExtension());
 						}
 						if (element instanceof IResource) {
-							return !ExtendedPlatform.isPlatformPrivateResource(((IResource) element));
+							return !ExtendedPlatform.isPlatformPrivateResource((IResource) element);
 						}
 						return true;
 					}
@@ -224,13 +225,10 @@ public class ExtensionGroup extends AbstractGroup {
 	 */
 	protected String[] createFunctionFieldItems(List<Extension> extensions) {
 		List<String> result = new ArrayList<String>();
-		for (MetaModel metaModel : metaModels) {
-			Type type = metaModel.getType(modelObject);
-			if (type != null) {
-				for (Callable extension : XtendXpandUtil.getApplicableFeatures(extensions, Extension.class, null, Arrays.asList(type))) {
-					result.add(((Extension) extension).getName());
-				}
-				break;
+		Type type = typeSystem.getType(modelObject);
+		if (type != null) {
+			for (Callable extension : XtendXpandUtil.getApplicableFeatures(extensions, Extension.class, null, Arrays.asList(type))) {
+				result.add(((Extension) extension).getName());
 			}
 		}
 		// TODO Create an empty combo item if result is empty

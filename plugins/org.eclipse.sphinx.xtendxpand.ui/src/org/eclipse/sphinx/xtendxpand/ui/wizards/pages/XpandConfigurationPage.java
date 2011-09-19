@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
+ *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
  * 
  * </copyright>
  */
@@ -18,6 +19,7 @@ package org.eclipse.sphinx.xtendxpand.ui.wizards.pages;
 import java.util.Collection;
 import java.util.MissingResourceException;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.platform.ui.fields.IField;
@@ -32,18 +34,16 @@ import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.xtend.typesystem.MetaModel;
+import org.eclipse.xtend.expression.TypeSystem;
 
 public class XpandConfigurationPage extends AbstractWizardPage {
 
-	// Template Group
 	protected TemplateGroup templateGroup;
-
-	// Output Group
 	protected OutputGroup outputGroup;
 
 	protected EObject modelObject;
-	protected Collection<MetaModel> metaModels;
+	protected TypeSystem typeSystem;
+
 	protected OutletsPreference outletsPreference;
 	protected ExtendedOutlet defaultOutlet;
 
@@ -51,9 +51,11 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 		super(pageName);
 	}
 
-	public void init(EObject modelObject, Collection<MetaModel> metaModels, OutletsPreference outletsPreference, ExtendedOutlet defaultOutlet) {
+	public void init(EObject modelObject, TypeSystem typeSystem, OutletsPreference outletsPreference, ExtendedOutlet defaultOutlet) {
+		Assert.isNotNull(typeSystem);
+
+		this.typeSystem = typeSystem;
 		this.modelObject = modelObject;
-		this.metaModels = metaModels;
 		this.outletsPreference = outletsPreference;
 		this.defaultOutlet = defaultOutlet;
 	}
@@ -85,7 +87,7 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 	 * Creates the template group field and load dialog settings.
 	 */
 	protected void createTemplateGroup(Composite parent) {
-		templateGroup = new TemplateGroup(Messages.label_template, modelObject, metaModels, getDialogSettings());
+		templateGroup = new TemplateGroup(Messages.label_template, modelObject, typeSystem, getDialogSettings());
 		templateGroup.createContent(parent, 3);
 		templateGroup.addGroupListener(new IGroupListener() {
 

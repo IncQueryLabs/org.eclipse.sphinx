@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
+ *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
  * 
  * </copyright>
  */
@@ -52,6 +53,7 @@ import org.eclipse.xpand2.XpandUtil;
 import org.eclipse.xtend.XtendFacade;
 import org.eclipse.xtend.expression.ExecutionContextImpl;
 import org.eclipse.xtend.expression.ResourceManagerDefaultImpl;
+import org.eclipse.xtend.expression.TypeSystem;
 import org.eclipse.xtend.expression.TypeSystemImpl;
 import org.eclipse.xtend.expression.Variable;
 import org.eclipse.xtend.typesystem.MetaModel;
@@ -65,7 +67,12 @@ public class XtendJob extends Job {
 	 * 
 	 * @see MetaModel
 	 */
-	protected Collection<MetaModel> metaModels;
+	protected Collection<MetaModel> metaModels = null;
+
+	/**
+	 * The {@link TypeSystem} including the {@link MetaModel metamodel}s behind the model(s) to be transformed.
+	 */
+	protected TypeSystem typeSystem = null;
 
 	/**
 	 * The collection of {@link XtendEvaluationRequest Xtend evaluation request}s to be processed.
@@ -75,7 +82,7 @@ public class XtendJob extends Job {
 	protected Collection<XtendEvaluationRequest> xtendEvaluationRequests;
 
 	/**
-	 * The resource loader to be used when loading Xpand template files.
+	 * The resource loader to be used when loading Xtend templates.
 	 */
 	private IWorkspaceResourceLoader workspaceResourceLoader;
 
@@ -93,11 +100,6 @@ public class XtendJob extends Job {
 	 * The Xtend transformation result.
 	 */
 	protected Map<Object, Collection<?>> resultObjects = new HashMap<Object, Collection<?>>();
-
-	/**
-	 * The TypeSystemImpl used for the ExecutionContextImpl.
-	 */
-	private TypeSystemImpl typeSystemImpl = null;
 
 	/**
 	 * Creates an {@link XtendJob} that transforms a model based on given <code>metaModel</code> as specified by
@@ -173,6 +175,46 @@ public class XtendJob extends Job {
 		this.xtendEvaluationRequests = xtendEvaluationRequests;
 	}
 
+	/**
+	 * Creates an {@link XtendJob} that transforms a model based on given <code>typeSystem</code> as specified by
+	 * provided <code>xtendEvaluationRequest</code>.
+	 * 
+	 * @param name
+	 *            The name of the job.
+	 * @param typeSystem
+	 *            The {@link TypeSystem type system} that includes the {@link MetaModel metamodel}s to be used.
+	 * @param xtendEvaluationRequest
+	 *            The {@link XtendEvaluationRequest Xtend evaluation request} to be processed.
+	 * @see TypeSystem
+	 * @see XtendEvaluationRequest
+	 */
+	public XtendJob(String name, TypeSystem typeSystem, XtendEvaluationRequest xtendEvaluationRequest) {
+		this(name, typeSystem, Collections.singleton(xtendEvaluationRequest));
+	}
+
+	/**
+	 * Creates an {@link XtendJob} that transforms one or several models based on given <code>typeSystem</code> as
+	 * specified by provided <code>xtendEvaluationRequests</code>.
+	 * 
+	 * @param name
+	 *            The name of the job.
+	 * @param typeSystem
+	 *            The {@link TypeSystem type system} that includes the {@link MetaModel metamodel}s to be used.
+	 * @param xtendEvaluationRequests
+	 *            The {@link XtendEvaluationRequest Xtend evaluation request}s to be processed.
+	 * @see TypeSystem
+	 * @see XtendEvaluationRequest
+	 */
+	public XtendJob(String name, TypeSystem typeSystem, Collection<XtendEvaluationRequest> xtendEvaluationRequests) {
+		super(name);
+
+		Assert.isNotNull(typeSystem);
+		Assert.isNotNull(xtendEvaluationRequests);
+
+		this.typeSystem = typeSystem;
+		this.xtendEvaluationRequests = xtendEvaluationRequests;
+	}
+
 	protected Map<TransactionalEditingDomain, Collection<XtendEvaluationRequest>> getXtendEvaluationRequests() {
 		Map<TransactionalEditingDomain, Collection<XtendEvaluationRequest>> requests = new HashMap<TransactionalEditingDomain, Collection<XtendEvaluationRequest>>();
 		for (XtendEvaluationRequest request : xtendEvaluationRequests) {
@@ -195,13 +237,6 @@ public class XtendJob extends Job {
 	 */
 	public void setWorkspaceResourceLoader(IWorkspaceResourceLoader resourceLoader) {
 		workspaceResourceLoader = resourceLoader;
-	}
-
-	/**
-	 * @param typeSystemImpl
-	 */
-	public void setTypeSystemImpl(TypeSystemImpl typeSystemImpl) {
-		this.typeSystemImpl = typeSystemImpl;
 	}
 
 	/**
@@ -280,10 +315,12 @@ public class XtendJob extends Job {
 			Map<String, Variable> variables = new HashMap<String, Variable>();
 			Map<String, Variable> globalVarsMap = new HashMap<String, Variable>();
 			final ExecutionContextImpl execCtx = new ExecutionContextImpl(new ResourceManagerDefaultImpl(), null,
-					typeSystemImpl != null ? typeSystemImpl : new TypeSystemImpl(), variables, globalVarsMap, new ProgressMonitorAdapter(monitor),
-					null, null, null, null, null, null, null);
-			for (MetaModel metaModel : metaModels) {
-				execCtx.registerMetaModel(metaModel);
+					typeSystem instanceof TypeSystemImpl ? (TypeSystemImpl) typeSystem : new TypeSystemImpl(), variables, globalVarsMap,
+					new ProgressMonitorAdapter(monitor), null, null, null, null, null, null, null);
+			if (metaModels != null) {
+				for (MetaModel metaModel : metaModels) {
+					execCtx.registerMetaModel(metaModel);
+				}
 			}
 
 			// Execute transformation
