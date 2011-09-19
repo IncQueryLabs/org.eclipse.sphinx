@@ -11,7 +11,7 @@
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
- * 
+ *     itemis - [357962] Make sure that problems occurring when saving model elements in a new resource are not recorded as errors/warnings on resource 
  * </copyright>
  */
 package org.eclipse.sphinx.emf.util;
