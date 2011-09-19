@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys, BMW Car IT and others.
+ * Copyright (c) 2008-2010 See4sys, BMW Car IT, Continental Engineering Services, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
  *     Conti - [353487] - Performance of ExtendedPlatform.isPlatformPrivateResource
- * 
+ *     itemis - [357965] Scheduling rules for saving new resources must be scoped to enclosing project 
  * </copyright>
  */
 package org.eclipse.sphinx.platform.util;
