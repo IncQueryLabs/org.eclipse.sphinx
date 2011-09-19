@@ -115,9 +115,18 @@ public class SaveAsNewFileHandler extends AbstractResultObjectHandler {
 
 	protected IPath getResultPath(Object inputObject, EObject resultObject) {
 		IFile inputFile = EcorePlatformUtil.getFile(inputObject);
+		IPath projectRelativeResultPath = getProjectRelativeResultPath(inputFile, resultObject);
+		if (projectRelativeResultPath != null) {
+			return inputFile.getProject().getFullPath().append(projectRelativeResultPath);
+		}
+		return null;
+
+	}
+
+	protected IPath getProjectRelativeResultPath(IFile inputFile, EObject resultObject) {
 		if (inputFile != null) {
 			String resultFileExtension = getFileExtensionFor(resultObject);
-			return inputFile.getFullPath().removeFileExtension().addFileExtension(resultFileExtension);
+			return inputFile.getProjectRelativePath().removeFileExtension().addFileExtension(resultFileExtension);
 		}
 		return null;
 	}
