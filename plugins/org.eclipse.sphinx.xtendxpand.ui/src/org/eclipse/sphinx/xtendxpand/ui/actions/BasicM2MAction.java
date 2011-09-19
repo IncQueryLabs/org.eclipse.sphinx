@@ -16,10 +16,10 @@
  */
 package org.eclipse.sphinx.xtendxpand.ui.actions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -122,8 +122,15 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 		return new SaveAsNewFileHandler();
 	}
 
-	protected Collection<MetaModel> getMetaModels() {
-		Collection<MetaModel> metaModels = new HashSet<MetaModel>();
+	protected List<MetaModel> getMetaModels() {
+		/*
+		 * !! Important Note !! We must use a list for storing the Xtend MetaModels and passing them around because the
+		 * order of the Xtend MetaModels in the list defines their precedence (Xtend MetaModel with the lowest list
+		 * position has the highest precedence). The precedence is vital when multiple Xtend MetaModels are applicable
+		 * to - i.e., are able to return an Xtend type for - the same model object under evaluation. The Xtend MetaModel
+		 * being used in such cases is that with the highest precedence.
+		 */
+		List<MetaModel> metaModels = new ArrayList<MetaModel>();
 
 		// Add metamodels defined by Xtend/Xpand preferences
 		IFile file = EcorePlatformUtil.getFile(getSelectedModelObject());
@@ -139,7 +146,7 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 			metaModels.add(new SphinxManagedEmfMetaModel(model));
 		}
 
-		return Collections.unmodifiableCollection(metaModels);
+		return Collections.unmodifiableList(metaModels);
 	}
 
 	protected Collection<XtendEvaluationRequest> getXtendEvaluationRequests() {

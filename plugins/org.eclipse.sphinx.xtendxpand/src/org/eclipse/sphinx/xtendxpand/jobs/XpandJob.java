@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -70,7 +71,7 @@ public class XpandJob extends WorkspaceJob {
 	 * 
 	 * @see MetaModel
 	 */
-	protected Collection<MetaModel> metaModels;
+	protected List<MetaModel> metaModels;
 
 	/**
 	 * The {@link TypeSystem} including the {@link MetaModel metamodel}s behind the model(s) to be transformed.
@@ -113,7 +114,7 @@ public class XpandJob extends WorkspaceJob {
 	 * @see XpandEvaluationRequest
 	 */
 	public XpandJob(String name, MetaModel metaModel, XpandEvaluationRequest xpandEvaluationRequest) {
-		this(name, Collections.singleton(metaModel), Collections.singleton(xpandEvaluationRequest));
+		this(name, Collections.singletonList(metaModel), Collections.singleton(xpandEvaluationRequest));
 	}
 
 	/**
@@ -130,7 +131,7 @@ public class XpandJob extends WorkspaceJob {
 	 * @see XpandEvaluationRequest
 	 */
 	public XpandJob(String name, MetaModel metaModel, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
-		this(name, Collections.singleton(metaModel), xpandEvaluationRequests);
+		this(name, Collections.singletonList(metaModel), xpandEvaluationRequests);
 	}
 
 	/**
@@ -146,7 +147,7 @@ public class XpandJob extends WorkspaceJob {
 	 * @see MetaModel
 	 * @see XpandEvaluationRequest
 	 */
-	public XpandJob(String name, Collection<MetaModel> metaModels, XpandEvaluationRequest xpandEvaluationRequest) {
+	public XpandJob(String name, List<MetaModel> metaModels, XpandEvaluationRequest xpandEvaluationRequest) {
 		this(name, metaModels, Collections.singleton(xpandEvaluationRequest));
 	}
 
@@ -163,7 +164,7 @@ public class XpandJob extends WorkspaceJob {
 	 * @see MetaModel
 	 * @see XpandEvaluationRequest
 	 */
-	public XpandJob(String name, Collection<MetaModel> metaModels, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
+	public XpandJob(String name, List<MetaModel> metaModels, Collection<XpandEvaluationRequest> xpandEvaluationRequests) {
 		super(name);
 
 		Assert.isNotNull(metaModels);

@@ -63,7 +63,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	protected XpandConfigurationPage xpandConfigurationPage;
 	protected CheckConfigurationPage checkConfigurationPage;
 
-	public M2TConfigurationWizard(EObject modelObject, Collection<MetaModel> metaModels) {
+	public M2TConfigurationWizard(EObject modelObject, List<MetaModel> metaModels) {
 		Assert.isNotNull(metaModels);
 
 		setDialogSettings(Activator.getDefault().getDialogSettings());

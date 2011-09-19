@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -64,7 +65,7 @@ public class CheckJob extends Job {
 	 * 
 	 * @see MetaModel
 	 */
-	protected Collection<MetaModel> metaModels = null;
+	protected List<MetaModel> metaModels = null;
 
 	/**
 	 * The {@link TypeSystem} including the {@link MetaModel metamodel}s behind the model(s) to be transformed.
@@ -97,7 +98,7 @@ public class CheckJob extends Job {
 	 * @see CheckEvaluationRequest
 	 */
 	public CheckJob(String name, MetaModel metaModel, CheckEvaluationRequest checkEvaluationRequest) {
-		this(name, Collections.singleton(metaModel), Collections.singleton(checkEvaluationRequest));
+		this(name, Collections.singletonList(metaModel), Collections.singleton(checkEvaluationRequest));
 	}
 
 	/**
@@ -114,7 +115,7 @@ public class CheckJob extends Job {
 	 * @see CheckEvaluationRequest
 	 */
 	public CheckJob(String name, MetaModel metaModel, Collection<CheckEvaluationRequest> checkEvaluationRequests) {
-		this(name, Collections.singleton(metaModel), checkEvaluationRequests);
+		this(name, Collections.singletonList(metaModel), checkEvaluationRequests);
 	}
 
 	/**
@@ -130,7 +131,7 @@ public class CheckJob extends Job {
 	 * @see MetaModel
 	 * @see CheckEvaluationRequest
 	 */
-	public CheckJob(String name, Collection<MetaModel> metaModels, CheckEvaluationRequest checkEvaluationRequest) {
+	public CheckJob(String name, List<MetaModel> metaModels, CheckEvaluationRequest checkEvaluationRequest) {
 		this(name, metaModels, Collections.singleton(checkEvaluationRequest));
 	}
 
@@ -147,7 +148,7 @@ public class CheckJob extends Job {
 	 * @see MetaModel
 	 * @see CheckEvaluationRequest
 	 */
-	public CheckJob(String name, Collection<MetaModel> metaModels, Collection<CheckEvaluationRequest> checkEvaluationRequests) {
+	public CheckJob(String name, List<MetaModel> metaModels, Collection<CheckEvaluationRequest> checkEvaluationRequests) {
 		super(name);
 
 		Assert.isNotNull(metaModels);

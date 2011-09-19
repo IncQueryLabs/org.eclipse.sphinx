@@ -16,7 +16,7 @@
  */
 package org.eclipse.sphinx.xtendxpand.ui.wizards;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
@@ -53,7 +53,7 @@ public class M2MConfigurationWizard extends AbstractWizard {
 	protected XtendConfigurationPage xtendConfigurationPage;
 	protected CheckConfigurationPage checkConfigurationPage;
 
-	public M2MConfigurationWizard(EObject modelObject, Collection<MetaModel> metaModels) {
+	public M2MConfigurationWizard(EObject modelObject, List<MetaModel> metaModels) {
 		Assert.isNotNull(metaModels);
 
 		setDialogSettings(Activator.getDefault().getDialogSettings());

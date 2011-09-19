@@ -67,7 +67,7 @@ public class XtendJob extends Job {
 	 * 
 	 * @see MetaModel
 	 */
-	protected Collection<MetaModel> metaModels = null;
+	protected List<MetaModel> metaModels = null;
 
 	/**
 	 * The {@link TypeSystem} including the {@link MetaModel metamodel}s behind the model(s) to be transformed.
@@ -115,7 +115,7 @@ public class XtendJob extends Job {
 	 * @see XtendEvaluationRequest
 	 */
 	public XtendJob(String name, MetaModel metaModel, XtendEvaluationRequest xtendEvaluationRequest) {
-		this(name, Collections.singleton(metaModel), Collections.singleton(xtendEvaluationRequest));
+		this(name, Collections.singletonList(metaModel), Collections.singleton(xtendEvaluationRequest));
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class XtendJob extends Job {
 	 * @see XtendEvaluationRequest
 	 */
 	public XtendJob(String name, MetaModel metaModel, Collection<XtendEvaluationRequest> xtendEvaluationRequests) {
-		this(name, Collections.singleton(metaModel), xtendEvaluationRequests);
+		this(name, Collections.singletonList(metaModel), xtendEvaluationRequests);
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class XtendJob extends Job {
 	 * @see MetaModel
 	 * @see XtendEvaluationRequest
 	 */
-	public XtendJob(String name, Collection<MetaModel> metaModels, XtendEvaluationRequest xtendEvaluationRequest) {
+	public XtendJob(String name, List<MetaModel> metaModels, XtendEvaluationRequest xtendEvaluationRequest) {
 		this(name, metaModels, Collections.singleton(xtendEvaluationRequest));
 	}
 
@@ -165,7 +165,7 @@ public class XtendJob extends Job {
 	 * @see MetaModel
 	 * @see XtendEvaluationRequest
 	 */
-	public XtendJob(String name, Collection<MetaModel> metaModels, Collection<XtendEvaluationRequest> xtendEvaluationRequests) {
+	public XtendJob(String name, List<MetaModel> metaModels, Collection<XtendEvaluationRequest> xtendEvaluationRequests) {
 		super(name);
 
 		Assert.isNotNull(metaModels);
