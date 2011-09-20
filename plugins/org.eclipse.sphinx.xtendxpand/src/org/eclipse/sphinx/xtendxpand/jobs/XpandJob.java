@@ -341,7 +341,7 @@ public class XpandJob extends WorkspaceJob {
 							// evaluated
 							IFile definitionFile = XtendXpandUtil.getUnderlyingFile(request.getDefinitionName(),
 									IXtendXpandConstants.TEMPLATE_EXTENSION, workspaceResourceLoader);
-							if (definitionFile == null) {
+							if (definitionFile != null) {
 								try {
 									resourceManager.setFileEncoding(definitionFile.getCharset());
 								} catch (CoreException ex) {
