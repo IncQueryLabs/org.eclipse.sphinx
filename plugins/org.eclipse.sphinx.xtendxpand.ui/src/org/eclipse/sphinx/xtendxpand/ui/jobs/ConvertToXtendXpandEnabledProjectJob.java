@@ -74,8 +74,7 @@ public class ConvertToXtendXpandEnabledProjectJob extends WorkspaceJob {
 
 	private static String SOURCE_PACKAGE_NAME = "src"; //$NON-NLS-1$
 
-	private StringBuilder REQUIRED_BUNDLES = new StringBuilder(
-			"org.eclipse.jdt.core,org.eclipse.xtend.profiler,org.apache.commons.logging,org.apache.log4j,com.ibm.icu,org.antlr.runtime,org.eclipse.core.runtime,org.eclipse.emf.ecore.xmi,org.eclipse.jface.text,org.eclipse.xtend,org.eclipse.xtend.typesystem.emf,org.eclipse.xtend.backend,org.eclipse.xtend.middleend.xpand,org.eclipse.xtend.middleend.xtend,org.eclipse.xtend.util.stdlib,org.eclipse.emf.mwe.activities,org.eclipse.xpand"); //$NON-NLS-1$
+	private StringBuilder REQUIRED_BUNDLES = new StringBuilder("org.eclipse.xtend.util.stdlib"); //$NON-NLS-1$
 
 	private static String REQUIRED_EXECUTION_ENVIRONMENT = "J2SE-1.5"; //$NON-NLS-1$
 
