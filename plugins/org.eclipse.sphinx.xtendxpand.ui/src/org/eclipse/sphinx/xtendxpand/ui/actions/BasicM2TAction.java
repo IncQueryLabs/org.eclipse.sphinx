@@ -55,7 +55,6 @@ import org.eclipse.sphinx.xtendxpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xtendxpand.preferences.PrDefaultExcludesPreference;
 import org.eclipse.sphinx.xtendxpand.preferences.PrExcludesPreference;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
-import org.eclipse.sphinx.xtendxpand.ui.jobs.IResultMessageConstants;
 import org.eclipse.sphinx.xtendxpand.ui.jobs.ResultMessageHandler;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.M2TConfigurationWizard;
 import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
@@ -170,7 +169,7 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 	}
 
 	protected IJobChangeListener createResultMessageHandler() {
-		return new ResultMessageHandler(IResultMessageConstants.OPEN_DIALOG_ON_FAILED_OR_COMPLETION);
+		return new ResultMessageHandler();
 	}
 
 	protected List<MetaModel> getMetaModels() {
