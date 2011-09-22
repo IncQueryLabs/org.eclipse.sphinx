@@ -32,10 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -133,7 +131,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	protected final TestFileAccessor getTestFileAccessor() {
 		if (testFileAccessor == null) {
-			testFileAccessor = new TestFileAccessor(getTestPlugin());
+			testFileAccessor = new TestFileAccessor(getTestPlugin(), new File("working-dir"));
 		}
 		return testFileAccessor;
 	}
@@ -408,9 +406,8 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 *         directory; <code>false</code> otherwise.
 	 */
 	boolean needToUnzipArchiveFile() throws Exception {
-		TestFileAccessor refWksTestFileAccessor = new TestFileAccessor(internalRefWks.getReferenceWorkspacePlugin());
-		java.net.URI referenceWorkspaceInputFileURI = refWksTestFileAccessor.getInputFileURI(internalRefWks.getReferenceWorkspaceArchiveFileName(),
-				true);
+		java.net.URI referenceWorkspaceInputFileURI = getReferenceWorkspaceFileAccessor().getInputFileURI(
+				internalRefWks.getReferenceWorkspaceArchiveFileName(), true);
 		File referenceWorkspaceArchive = null;
 		if (referenceWorkspaceInputFileURI != null) {
 			referenceWorkspaceArchive = new File(referenceWorkspaceInputFileURI);
@@ -419,6 +416,10 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		return !(referenceWorkspaceTempDir.exists() && propertiesFile.exists()) || referenceWorkspaceArchive != null
 				&& referenceWorkspaceArchive.lastModified() > referenceWorkspaceTempDir.lastModified();
 
+	}
+
+	private TestFileAccessor getReferenceWorkspaceFileAccessor() {
+		return new TestFileAccessor(internalRefWks.getReferenceWorkspacePlugin());
 	}
 
 	/**
@@ -538,8 +539,8 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				ZipArchiveImporter zipArchiveImpoter = new ZipArchiveImporter();
-				zipArchiveImpoter.unzipArchiveFile(new TestFileAccessor(internalRefWks.getReferenceWorkspacePlugin()),
-						internalRefWks.getReferenceWorkspaceArchiveFileName(), referenceWorkspaceTempDir.getPath());
+				zipArchiveImpoter.unzipArchiveFile(getReferenceWorkspaceFileAccessor(), internalRefWks.getReferenceWorkspaceArchiveFileName(),
+						referenceWorkspaceTempDir.getPath());
 
 				referenceWorkspaceSourceDir = new File(zipArchiveImpoter.getDirectoryRoot());
 

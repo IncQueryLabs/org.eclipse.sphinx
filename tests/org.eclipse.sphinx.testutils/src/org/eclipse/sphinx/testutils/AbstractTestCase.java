@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.testutils;
 
+import java.io.File;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -35,7 +36,7 @@ import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 @SuppressWarnings("nls")
 public abstract class AbstractTestCase extends TestCase {
 
-	protected TestFileAccessor fileAccessor = null;
+	private TestFileAccessor testFileAccessor = null;
 
 	private boolean ignoreLoadProblems;
 	private boolean ignoreSaveProblems;
@@ -60,11 +61,15 @@ public abstract class AbstractTestCase extends TestCase {
 		IEclipsePreferences workbenchPrefs = instanceScope.getNode("org.eclipse.ui.workbench");
 		workbenchPrefs.put("RUN_IN_BACKGROUND", Boolean.TRUE.toString());
 
-		if (fileAccessor == null) {
-			fileAccessor = new TestFileAccessor(getTestPlugin());
-		}
 		ignoreLoadProblems = false;
 		ignoreSaveProblems = false;
+	}
+
+	protected final TestFileAccessor getTestFileAccessor() {
+		if (testFileAccessor == null) {
+			testFileAccessor = new TestFileAccessor(getTestPlugin(), new File("working-dir"));
+		}
+		return testFileAccessor;
 	}
 
 	protected abstract Plugin getTestPlugin();
@@ -99,7 +104,7 @@ public abstract class AbstractTestCase extends TestCase {
 
 	// TODO Enable external resourceSet to be handed in
 	private EObject loadFile(java.net.URI fileURI, ResourceFactoryImpl resourceFactory, EPackage ePackage, Map<?, ?> options) throws Exception {
-		URI emfURI = fileAccessor.convertToEMFURI(fileURI);
+		URI emfURI = getTestFileAccessor().convertToEMFURI(fileURI);
 		XMLResource resource = (XMLResource) resourceFactory.createResource(emfURI);
 		resource.load(options);
 
@@ -120,7 +125,7 @@ public abstract class AbstractTestCase extends TestCase {
 
 	// TODO Enable external resourceSet to be handed in
 	private void saveFile(java.net.URI fileURI, EObject modelRoot, ResourceFactoryImpl resourceFactory, Map<?, ?> options) throws Exception {
-		URI emfURI = fileAccessor.convertToEMFURI(fileURI);
+		URI emfURI = getTestFileAccessor().convertToEMFURI(fileURI);
 		XMLResource resource = (XMLResource) resourceFactory.createResource(emfURI);
 		resource.getContents().add(modelRoot);
 		resource.save(options);

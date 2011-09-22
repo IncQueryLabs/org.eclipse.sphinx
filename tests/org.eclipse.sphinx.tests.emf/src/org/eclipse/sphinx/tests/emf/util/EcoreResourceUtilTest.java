@@ -20,7 +20,6 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
-import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -93,30 +92,30 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 
 		// Read Model Namespace from Resource
 		// HB Resource
-		EObject modelRoot = loadInputFile(hbFile20_1, fileAccessor, hb20ResourceFactory, InstanceModel20Package.eINSTANCE, null);
+		EObject modelRoot = loadInputFile(hbFile20_1, getTestFileAccessor(), hb20ResourceFactory, InstanceModel20Package.eINSTANCE, null);
 		assertNotNull(modelRoot);
 		Resource resource21_instancemodel = modelRoot.eResource();
 		assertNotNull(resource21_instancemodel);
 		assertEquals(namespace21_1, EcoreResourceUtil.readModelNamespace(resource21_instancemodel));
 
-		modelRoot = loadInputFile(hbFile20_2, fileAccessor, hb20ResourceFactory, TypeModel20Package.eINSTANCE, null);
+		modelRoot = loadInputFile(hbFile20_2, getTestFileAccessor(), hb20ResourceFactory, TypeModel20Package.eINSTANCE, null);
 		assertNotNull(modelRoot);
 		Resource resource21_typemodel = modelRoot.eResource();
 		assertEquals(namespace21_2, EcoreResourceUtil.readModelNamespace(resource21_typemodel));
 
-		modelRoot = loadInputFile(hbFile20_3, fileAccessor, hb20ResourceFactory, TypeModel20Package.eINSTANCE, null);
+		modelRoot = loadInputFile(hbFile20_3, getTestFileAccessor(), hb20ResourceFactory, TypeModel20Package.eINSTANCE, null);
 		assertNotNull(modelRoot);
 		Resource resource20_instancemodel = modelRoot.eResource();
 		assertNotNull(resource20_instancemodel);
 		assertEquals(namespace20_1, EcoreResourceUtil.readModelNamespace(resource20_instancemodel));
 
-		modelRoot = loadInputFile(hbFile20_4, fileAccessor, hb20ResourceFactory, TypeModel20Package.eINSTANCE, null);
+		modelRoot = loadInputFile(hbFile20_4, getTestFileAccessor(), hb20ResourceFactory, TypeModel20Package.eINSTANCE, null);
 		assertNotNull(modelRoot);
 		Resource resource20_typemodel = modelRoot.eResource();
 		assertNotNull(resource20_typemodel);
 		assertEquals(namespace20_2, EcoreResourceUtil.readModelNamespace(resource20_typemodel));
 
-		modelRoot = loadInputFile(hbFile10, fileAccessor, xmiResourceFactoryImpl, Hummingbird10Package.eINSTANCE, null);
+		modelRoot = loadInputFile(hbFile10, getTestFileAccessor(), xmiResourceFactoryImpl, Hummingbird10Package.eINSTANCE, null);
 		assertNotNull(modelRoot);
 		Resource resource10 = modelRoot.eResource();
 		assertNotNull(resource10);
@@ -124,7 +123,7 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		assertEquals(namespace10, readModelNamespace10);
 
 		// UML resource
-		modelRoot = loadInputFile(uml2File, fileAccessor, new UMLResourceFactoryImpl(), UMLPackage.eINSTANCE, null);
+		modelRoot = loadInputFile(uml2File, getTestFileAccessor(), new UMLResourceFactoryImpl(), UMLPackage.eINSTANCE, null);
 		assertNotNull(modelRoot);
 		Resource resourceUml2 = modelRoot.eResource();
 		assertNotNull(resourceUml2);
@@ -143,7 +142,8 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		XMIResourceFactoryImpl xmiResourceFactoryImpl = new XMIResourceFactoryImpl();
 		UMLResourceFactoryImpl umlResourceFactory = new UMLResourceFactoryImpl();
 		// HB20 Resource
-		EObject modelRoot20 = loadInputFile("hbFile20.instancemodel", fileAccessor, hb20ResourceFactory, InstanceModel20Package.eINSTANCE, null);
+		EObject modelRoot20 = loadInputFile("hbFile20.instancemodel", getTestFileAccessor(), hb20ResourceFactory, InstanceModel20Package.eINSTANCE,
+				null);
 		assertNotNull(modelRoot20);
 		Resource resource20 = modelRoot20.eResource();
 		assertNotNull(resource20);
@@ -151,7 +151,8 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		assertSame(modelRoot20, retrievedModelRoot20);
 		// =========================================
 		// HB10 Resource
-		EObject modelRoot10 = loadInputFile("hbFile10.hummingbird", fileAccessor, xmiResourceFactoryImpl, Hummingbird10Package.eINSTANCE, null);
+		EObject modelRoot10 = loadInputFile("hbFile10.hummingbird", getTestFileAccessor(), xmiResourceFactoryImpl, Hummingbird10Package.eINSTANCE,
+				null);
 		assertNotNull(modelRoot10);
 		Resource resource10 = modelRoot10.eResource();
 		assertNotNull(resource10);
@@ -159,7 +160,7 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		assertSame(modelRoot10, retrievedModelRoot10);
 		// =========================================
 		// Uml2 Resource
-		EObject modelRootUml2 = loadInputFile("uml2File.uml", fileAccessor, umlResourceFactory, UMLPackage.eINSTANCE, null);
+		EObject modelRootUml2 = loadInputFile("uml2File.uml", getTestFileAccessor(), umlResourceFactory, UMLPackage.eINSTANCE, null);
 		assertNotNull(modelRootUml2);
 		Resource resourceUml2 = modelRootUml2.eResource();
 		assertNotNull(resourceUml2);
@@ -208,18 +209,18 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		{
 			// Read Model Namespace from Resource
 			// HB Resource
-			EObject modelRoot = loadInputFile(hbFile20_1, fileAccessor, hb20ResourceFactory, InstanceModel20Package.eINSTANCE, null);
+			EObject modelRoot = loadInputFile(hbFile20_1, getTestFileAccessor(), hb20ResourceFactory, InstanceModel20Package.eINSTANCE, null);
 			assertNotNull(modelRoot);
 			assertTrue(EcoreResourceUtil.getModelName(modelRoot), EcoreResourceUtil.getModelName(modelRoot).equalsIgnoreCase("InstanceModel"));
 
-			modelRoot = loadInputFile(hbFile20_2, fileAccessor, hb20ResourceFactory, TypeModel20Package.eINSTANCE, null);
+			modelRoot = loadInputFile(hbFile20_2, getTestFileAccessor(), hb20ResourceFactory, TypeModel20Package.eINSTANCE, null);
 			assertNotNull(modelRoot);
 			assertTrue(EcoreResourceUtil.getModelName(modelRoot), EcoreResourceUtil.getModelName(modelRoot).equalsIgnoreCase("TypeModel"));
 
 		}
 		// HB10 Model
 		{
-			EObject modelRoot10 = loadInputFile(hbFile10, fileAccessor, xmiResourceFactoryImpl, Hummingbird10Package.eINSTANCE, null);
+			EObject modelRoot10 = loadInputFile(hbFile10, getTestFileAccessor(), xmiResourceFactoryImpl, Hummingbird10Package.eINSTANCE, null);
 			assertNotNull(modelRoot10);
 			assertNotNull(modelRoot10.eResource());
 			assertTrue(EcoreResourceUtil.getModelName(modelRoot10), EcoreResourceUtil.getModelName(modelRoot10).equalsIgnoreCase("Hummingbird10"));
@@ -230,7 +231,7 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 
 		// Uml2 Model
 		{
-			EObject modelRootUml2 = loadInputFile(uml2File, fileAccessor, umlResourceFactory, UMLPackage.eINSTANCE, null);
+			EObject modelRootUml2 = loadInputFile(uml2File, getTestFileAccessor(), umlResourceFactory, UMLPackage.eINSTANCE, null);
 			assertNotNull(modelRootUml2);
 			assertNotNull(modelRootUml2.eResource());
 			assertTrue(EcoreResourceUtil.getModelName(modelRootUml2).equalsIgnoreCase("Uml"));
@@ -252,13 +253,13 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 	 * Test method for {@link EcoreResourceUtil#validate(URI, URL)} .
 	 */
 	public void testValidate() throws Exception {
-		java.net.URI validXMLURI = fileAccessor.getInputFileURI("valid_exampleModel.xml");
-		URI xmlEMFURI = fileAccessor.convertToEMFURI(validXMLURI);
+		java.net.URI validXMLURI = getTestFileAccessor().getInputFileURI("valid_exampleModel.xml");
+		URI xmlEMFURI = getTestFileAccessor().convertToEMFURI(validXMLURI);
 
-		java.net.URI invalidXMLURI = fileAccessor.getInputFileURI("invalid_exampleModel.xml");
-		URI invalidXmlEMFURI = fileAccessor.convertToEMFURI(invalidXMLURI);
+		java.net.URI invalidXMLURI = getTestFileAccessor().getInputFileURI("invalid_exampleModel.xml");
+		URI invalidXmlEMFURI = getTestFileAccessor().convertToEMFURI(invalidXMLURI);
 
-		URL schemaURL = fileAccessor.getInputFileURI("exampleSchema.xsd", true).toURL();
+		URL schemaURL = getTestFileAccessor().getInputFileURI("exampleSchema.xsd", true).toURL();
 
 		try {
 			EcoreResourceUtil.validate(xmlEMFURI, schemaURL);
@@ -299,7 +300,7 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		assertEquals(null, EcoreResourceUtil.readTargetNamespace(null));
 		// =========================================
 		// Uml2 Resource
-		EObject modelRootUml2 = loadInputFile("uml2File.uml", fileAccessor, umlResourceFactory, UMLPackage.eINSTANCE, null);
+		EObject modelRootUml2 = loadInputFile("uml2File.uml", getTestFileAccessor(), umlResourceFactory, UMLPackage.eINSTANCE, null);
 		assertNotNull(modelRootUml2);
 		Resource resourceUml2 = modelRootUml2.eResource();
 		assertNotNull(resourceUml2);
@@ -308,19 +309,19 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		// XML Resource
 		// -----Read Target Namespace from HB10 Resource
 
-		EObject modelRoot10 = loadInputFile(hbFile10, fileAccessor, xmiResourceFactoryImpl, Hummingbird10Package.eINSTANCE, null);
+		EObject modelRoot10 = loadInputFile(hbFile10, getTestFileAccessor(), xmiResourceFactoryImpl, Hummingbird10Package.eINSTANCE, null);
 		assertNotNull(modelRoot10);
 		Resource resource10 = modelRoot10.eResource();
 		assertNotNull(resource10);
 		assertNull(EcoreResourceUtil.readTargetNamespace(resource10));
 
 		// -----Read Target Namespace from HB20 Resource
-		EObject modelRoot = loadInputFile(hbFile20_1, fileAccessor, hb20ResourceFactory, InstanceModel20Package.eINSTANCE, null);
+		EObject modelRoot = loadInputFile(hbFile20_1, getTestFileAccessor(), hb20ResourceFactory, InstanceModel20Package.eINSTANCE, null);
 		assertNotNull(modelRoot);
 		Resource resource20_1 = modelRoot.eResource();
 		assertNotNull(resource20_1);
 
-		modelRoot = loadInputFile(hbFile20_2, fileAccessor, hb20ResourceFactory, TypeModel20Package.eINSTANCE, null);
+		modelRoot = loadInputFile(hbFile20_2, getTestFileAccessor(), hb20ResourceFactory, TypeModel20Package.eINSTANCE, null);
 		assertNotNull(modelRoot);
 		Resource resource20_2 = modelRoot.eResource();
 		assertNotNull(resource20_2);
@@ -382,12 +383,13 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		// Read Model Name space from Resource
 		// HB Resource
 		Hummingbird20ResourceFactoryImpl hb20ResourceFactory = new Hummingbird20ResourceFactoryImpl();
-		EObject modelRoot = loadInputFile("hbFile20.instancemodel", fileAccessor, hb20ResourceFactory, InstanceModel20Package.eINSTANCE, null);
+		EObject modelRoot = loadInputFile("hbFile20.instancemodel", getTestFileAccessor(), hb20ResourceFactory, InstanceModel20Package.eINSTANCE,
+				null);
 		assertNotNull(modelRoot);
 		Resource resource20_withSchema = modelRoot.eResource();
 
 		XMIResourceFactoryImpl hb10ResourceFactory = new XMIResourceFactoryImpl();
-		modelRoot = loadInputFile("hbFile10.hummingbird", fileAccessor, hb10ResourceFactory, Hummingbird10Package.eINSTANCE, null);
+		modelRoot = loadInputFile("hbFile10.hummingbird", getTestFileAccessor(), hb10ResourceFactory, Hummingbird10Package.eINSTANCE, null);
 		assertNotNull(modelRoot);
 		Resource resource10_withoutSchema = modelRoot.eResource();
 
@@ -414,20 +416,22 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		UMLResourceFactoryImpl umlResourceFactory = new UMLResourceFactoryImpl();
 
 		// Hummingbird 20 Resource
-		EObject modelRoot20 = loadInputFile("hbFile20.instancemodel", fileAccessor, hb20ResourceFactory, InstanceModel20Package.eINSTANCE, null);
+		EObject modelRoot20 = loadInputFile("hbFile20.instancemodel", getTestFileAccessor(), hb20ResourceFactory, InstanceModel20Package.eINSTANCE,
+				null);
 		assertNotNull(modelRoot20);
 		Resource resource20 = modelRoot20.eResource();
 		assertNotNull(resource20);
 		assertSame(resource20.getContents(), EcoreResourceUtil.getResourceContents(resource20));
 		// Hummingbird 10 Resource
-		EObject modelRoot10 = loadInputFile("hbFile10.hummingbird", fileAccessor, xmiResourceFactoryImpl, Hummingbird10Package.eINSTANCE, null);
+		EObject modelRoot10 = loadInputFile("hbFile10.hummingbird", getTestFileAccessor(), xmiResourceFactoryImpl, Hummingbird10Package.eINSTANCE,
+				null);
 		assertNotNull(modelRoot10);
 		Resource resource10 = modelRoot10.eResource();
 		assertNotNull(resource10);
 		assertSame(resource10.getContents(), EcoreResourceUtil.getResourceContents(resource10));
 		// =========================================
 		// Uml2 Resource
-		EObject modelRootUml2 = loadInputFile("uml2File.uml", fileAccessor, umlResourceFactory, UMLPackage.eINSTANCE, null);
+		EObject modelRootUml2 = loadInputFile("uml2File.uml", getTestFileAccessor(), umlResourceFactory, UMLPackage.eINSTANCE, null);
 		assertNotNull(modelRootUml2);
 		Resource resourceUml2 = modelRootUml2.eResource();
 		assertNotNull(resourceUml2);

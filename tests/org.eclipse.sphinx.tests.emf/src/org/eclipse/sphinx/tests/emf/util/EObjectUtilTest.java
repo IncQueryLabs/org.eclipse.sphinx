@@ -26,7 +26,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
-import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Factory;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
@@ -528,8 +527,8 @@ public class EObjectUtilTest extends AbstractTestCase {
 	 * @throws Exception
 	 */
 	public void testGetMixedText() throws Exception {
-		Application hb20Application = (Application) loadInputFile("hbFile20.instancemodel", fileAccessor, new Hummingbird20ResourceFactoryImpl(),
-				InstanceModel20Package.eINSTANCE, null);
+		Application hb20Application = (Application) loadInputFile("hbFile20.instancemodel", getTestFileAccessor(),
+				new Hummingbird20ResourceFactoryImpl(), InstanceModel20Package.eINSTANCE, null);
 		assertNotNull(hb20Application);
 		Description description = hb20Application.getDescription();
 		assertNotNull(description);
@@ -556,10 +555,10 @@ public class EObjectUtilTest extends AbstractTestCase {
 		assertEquals(newText, EObjectUtil.getMixedText(description.getMixed()));
 		hb20Application.setDescription(description);
 
-		saveWorkingFile(workingFileName, hb20Application, fileAccessor, new Hummingbird20ResourceFactoryImpl());
+		saveWorkingFile(workingFileName, hb20Application, getTestFileAccessor(), new Hummingbird20ResourceFactoryImpl());
 
-		Application savedHb20Application = (Application) loadWorkingFile(workingFileName, fileAccessor, new Hummingbird20ResourceFactoryImpl(),
-				InstanceModel20Package.eINSTANCE, null);
+		Application savedHb20Application = (Application) loadWorkingFile(workingFileName, getTestFileAccessor(),
+				new Hummingbird20ResourceFactoryImpl(), InstanceModel20Package.eINSTANCE, null);
 		assertNotNull(savedHb20Application);
 		assertEquals(hb20ApplicationName, savedHb20Application.getName());
 		Description savedDescription = savedHb20Application.getDescription();

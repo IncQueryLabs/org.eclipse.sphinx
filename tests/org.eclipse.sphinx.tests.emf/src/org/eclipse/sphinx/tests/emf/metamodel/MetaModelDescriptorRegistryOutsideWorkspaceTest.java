@@ -43,7 +43,7 @@ public class MetaModelDescriptorRegistryOutsideWorkspaceTest extends AbstractTes
 	public void testGetDescriptorForFileResource() throws Exception {
 
 		// Create copy of UML2 test file in working directory
-		File file = fileAccessor.createWorkingCopyOfInputFile(UML2_FILE_NAME);
+		File file = getTestFileAccessor().createWorkingCopyOfInputFile(UML2_FILE_NAME);
 		assertTrue(file.exists());
 
 		// Load UML2 test file from working directory
@@ -61,7 +61,7 @@ public class MetaModelDescriptorRegistryOutsideWorkspaceTest extends AbstractTes
 	public void testGetDescriptorForPlatformPluginResource() throws Exception {
 
 		// Load UML2 test file from resources/input folder of test plug-in
-		EObject modelRoot = loadInputFile(UML2_FILE_NAME, fileAccessor, new UMLResourceFactoryImpl(), UMLPackage.eINSTANCE, null);
+		EObject modelRoot = loadInputFile(UML2_FILE_NAME, getTestFileAccessor(), new UMLResourceFactoryImpl(), UMLPackage.eINSTANCE, null);
 		assertTrue(modelRoot instanceof Model);
 		Resource resource = modelRoot.eResource();
 		assertNotNull(resource);

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2010 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - Bug 358559, introduced base directory that can be explicitly set
  * 
  * </copyright>
  */
@@ -41,10 +42,19 @@ public class TestFileAccessor {
 	private static final String BUNDLE_ENTRY_SCHEME = "bundleentry";
 
 	private Plugin targetPlugin;
+	private File baseDirectory;
+
+	public TestFileAccessor(Plugin targetPlugin, File baseDirectory) {
+		Assert.isNotNull(targetPlugin);
+		Assert.isNotNull(baseDirectory);
+		this.targetPlugin = targetPlugin;
+		this.baseDirectory = baseDirectory;
+
+		baseDirectory.mkdirs();
+	}
 
 	public TestFileAccessor(Plugin targetPlugin) {
-		Assert.isNotNull(targetPlugin);
-		this.targetPlugin = targetPlugin;
+		this(targetPlugin, new File(".")); // use current working directory as default base directory
 	}
 
 	public Plugin getTargetPlugin() {
@@ -81,24 +91,24 @@ public class TestFileAccessor {
 	}
 
 	public File createWorkingFile(String workingFileName) {
-		return new File(workingFileName);
+		return new File(baseDirectory, workingFileName);
 	}
 
 	public java.net.URI getWorkingFileURI(String workingFileName) {
-		return new File(workingFileName).toURI();
+		return createWorkingFile(workingFileName).toURI();
 	}
 
 	public InputStream openWorkingFileInputStream(String workingFileName) throws FileNotFoundException {
-		return new FileInputStream(workingFileName);
+		return new FileInputStream(createWorkingFile(workingFileName));
 	}
 
 	public OutputStream openWorkingFileOutputStream(String workingFileName, boolean append) throws FileNotFoundException {
-		return new FileOutputStream(workingFileName, append);
+		return new FileOutputStream(createWorkingFile(workingFileName), append);
 	}
 
 	public File createWorkingCopyOfInputFile(String inputFileName) throws IOException {
 		InputStream in = openInputFileInputStream(inputFileName);
-		File workingCopyOfInputFile = new File(inputFileName);
+		File workingCopyOfInputFile = createWorkingFile(inputFileName);
 		OutputStream out = new FileOutputStream(workingCopyOfInputFile);
 		try {
 			// Transfer bytes from in to out
