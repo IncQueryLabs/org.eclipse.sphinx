@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
+ *     itemis - [358591] ResultObjectHandler and ResultMessageHandler used by M2xConfigurationWizards are difficult to customize and should be usable in BasicM2xActions too
  * 
  * </copyright>
  */
@@ -31,11 +32,9 @@ import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.ui.wizards.AbstractWizard;
 import org.eclipse.sphinx.xtendxpand.jobs.CheckJob;
 import org.eclipse.sphinx.xtendxpand.jobs.M2MJob;
-import org.eclipse.sphinx.xtendxpand.jobs.SaveAsNewFileHandler;
 import org.eclipse.sphinx.xtendxpand.jobs.XtendJob;
 import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
-import org.eclipse.sphinx.xtendxpand.ui.jobs.ResultMessageHandler;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.pages.CheckConfigurationPage;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.pages.XtendConfigurationPage;
 import org.eclipse.xtend.expression.TypeSystem;
@@ -49,6 +48,8 @@ public class M2MConfigurationWizard extends AbstractWizard {
 
 	private String m2mJobName;
 	private IWorkspaceResourceLoader workspaceResourceLoader;
+	private IJobChangeListener resultObjectHandler;
+	private IJobChangeListener resultMessageHandler;
 
 	protected XtendConfigurationPage xtendConfigurationPage;
 	protected CheckConfigurationPage checkConfigurationPage;
@@ -87,12 +88,20 @@ public class M2MConfigurationWizard extends AbstractWizard {
 		workspaceResourceLoader = resourceLoader;
 	}
 
-	public IJobChangeListener getResultObjectHandler(XtendJob xtendJob) {
-		return new SaveAsNewFileHandler(xtendJob);
+	public IJobChangeListener getResultObjectHandler() {
+		return resultObjectHandler;
 	}
 
-	public IJobChangeListener getResultMessageHandler(M2MJob job) {
-		return new ResultMessageHandler(job);
+	public void setResultObjectHandler(IJobChangeListener resultObjectHandler) {
+		this.resultObjectHandler = resultObjectHandler;
+	}
+
+	public IJobChangeListener getResultMessageHandler() {
+		return resultMessageHandler;
+	}
+
+	public void setResultMessageHandler(IJobChangeListener resultMessageHandler) {
+		this.resultMessageHandler = resultMessageHandler;
 	}
 
 	@Override
@@ -124,13 +133,13 @@ public class M2MConfigurationWizard extends AbstractWizard {
 
 		M2MJob job = new M2MJob(getM2MJobName(), xtendJob, checkJob);
 		job.setPriority(Job.BUILD);
-		IJobChangeListener handler = createResultObjectHandler(xtendJob);
-		if (handler != null) {
-			job.addJobChangeListener(handler);
+		IJobChangeListener resultObjectHandler = getResultObjectHandler();
+		if (resultObjectHandler != null) {
+			job.addJobChangeListener(resultObjectHandler);
 		}
-		handler = createResultMessageHandler(job);
-		if (handler != null) {
-			job.addJobChangeListener(handler);
+		IJobChangeListener resultMessageHandler = getResultMessageHandler();
+		if (resultMessageHandler != null) {
+			job.addJobChangeListener(resultMessageHandler);
 		}
 		job.schedule();
 	}
@@ -159,16 +168,6 @@ public class M2MConfigurationWizard extends AbstractWizard {
 			job.setRule(file.getProject());
 		}
 		return job;
-	}
-
-	@Deprecated
-	protected IJobChangeListener createResultObjectHandler(XtendJob xtendJob) {
-		return new SaveAsNewFileHandler(xtendJob);
-	}
-
-	@Deprecated
-	protected IJobChangeListener createResultMessageHandler(M2MJob job) {
-		return new ResultMessageHandler(job);
 	}
 
 	@Override

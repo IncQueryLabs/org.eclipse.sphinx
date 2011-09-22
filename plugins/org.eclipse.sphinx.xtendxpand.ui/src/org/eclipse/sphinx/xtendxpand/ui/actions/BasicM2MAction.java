@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  *     itemis - [343847] Use Xtend MetaModels configured in project settings when running BasicM2xAction or M2xConfigurationWizard
+ *     itemis - [358591] ResultObjectHandler and ResultMessageHandler used by M2xConfigurationWizards are difficult to customize and should be usable in BasicM2xActions too
  * 
  * </copyright>
  */
@@ -46,6 +47,8 @@ import org.eclipse.sphinx.xtendxpand.XtendEvaluationRequest;
 import org.eclipse.sphinx.xtendxpand.jobs.SaveAsNewFileHandler;
 import org.eclipse.sphinx.xtendxpand.jobs.XtendJob;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
+import org.eclipse.sphinx.xtendxpand.ui.jobs.IResultMessageConstants;
+import org.eclipse.sphinx.xtendxpand.ui.jobs.ResultMessageHandler;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.M2MConfigurationWizard;
 import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
@@ -89,9 +92,13 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 			// Schedule model to model transformation job
 			Job job = createXtendJob();
 			job.setPriority(Job.BUILD);
-			IJobChangeListener handler = createResultObjectHandler();
-			if (handler != null) {
-				job.addJobChangeListener(handler);
+			IJobChangeListener resultObjectHandler = createResultObjectHandler();
+			if (resultObjectHandler != null) {
+				job.addJobChangeListener(resultObjectHandler);
+			}
+			IJobChangeListener resultMessageHandler = createResultMessageHandler();
+			if (resultMessageHandler != null) {
+				job.addJobChangeListener(resultMessageHandler);
 			}
 			job.schedule();
 		}
@@ -101,6 +108,9 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 			M2MConfigurationWizard wizard = new M2MConfigurationWizard(modelObject, getMetaModels());
 			wizard.setM2MJobName(getM2MJobName());
 			wizard.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
+			wizard.setResultObjectHandler(createResultObjectHandler());
+			wizard.setResultMessageHandler(createResultMessageHandler());
+
 			WizardDialog wizardDialog = new WizardDialog(ExtendedPlatformUI.getDisplay().getActiveShell(), wizard);
 			wizardDialog.open();
 		}
@@ -120,6 +130,10 @@ public class BasicM2MAction extends BaseSelectionListenerAction {
 
 	protected IJobChangeListener createResultObjectHandler() {
 		return new SaveAsNewFileHandler();
+	}
+
+	protected IJobChangeListener createResultMessageHandler() {
+		return new ResultMessageHandler(IResultMessageConstants.OPEN_DIALOG_ON_FAILED_OR_COMPLETION);
 	}
 
 	protected List<MetaModel> getMetaModels() {

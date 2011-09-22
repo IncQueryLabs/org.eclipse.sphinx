@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  *     itemis - [343847] Use Xtend MetaModels configured in project settings when running BasicM2xAction or M2xConfigurationWizard
+ *     itemis - [358591] ResultObjectHandler and ResultMessageHandler used by M2xConfigurationWizards are difficult to customize and should be usable in BasicM2xActions too
  * 
  * </copyright>
  */
@@ -30,6 +31,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -53,6 +55,8 @@ import org.eclipse.sphinx.xtendxpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xtendxpand.preferences.PrDefaultExcludesPreference;
 import org.eclipse.sphinx.xtendxpand.preferences.PrExcludesPreference;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
+import org.eclipse.sphinx.xtendxpand.ui.jobs.IResultMessageConstants;
+import org.eclipse.sphinx.xtendxpand.ui.jobs.ResultMessageHandler;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.M2TConfigurationWizard;
 import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
@@ -108,6 +112,10 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 			if (file != null) {
 				job.setRule(file.getProject());
 			}
+			IJobChangeListener handler = createResultMessageHandler();
+			if (handler != null) {
+				job.addJobChangeListener(handler);
+			}
 			job.schedule();
 			return;
 		}
@@ -119,6 +127,8 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 			wizard.setWorkspaceResourceLoader(getWorkspaceResourceLoader());
 			wizard.setOutletsPreference(getOutletsPreference());
 			wizard.setDefaultOutlet(getDefaultOutlet());
+			wizard.setResultMessageHandler(createResultMessageHandler());
+
 			WizardDialog wizardDialog = new WizardDialog(ExtendedPlatformUI.getDisplay().getActiveShell(), wizard);
 			wizardDialog.open();
 		}
@@ -157,6 +167,10 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 
 	protected String getM2TJobName() {
 		return Messages.job_generatingCode;
+	}
+
+	protected IJobChangeListener createResultMessageHandler() {
+		return new ResultMessageHandler(IResultMessageConstants.OPEN_DIALOG_ON_FAILED_OR_COMPLETION);
 	}
 
 	protected List<MetaModel> getMetaModels() {

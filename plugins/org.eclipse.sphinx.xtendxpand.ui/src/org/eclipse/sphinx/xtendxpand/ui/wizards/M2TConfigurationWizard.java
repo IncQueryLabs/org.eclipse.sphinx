@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
+ *     itemis - [358591] ResultObjectHandler and ResultMessageHandler used by M2xConfigurationWizards are difficult to customize and should be usable in BasicM2xActions too
  * 
  * </copyright>
  */
@@ -43,7 +44,6 @@ import org.eclipse.sphinx.xtendxpand.preferences.PrDefaultExcludesPreference;
 import org.eclipse.sphinx.xtendxpand.preferences.PrExcludesPreference;
 import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
-import org.eclipse.sphinx.xtendxpand.ui.jobs.ResultMessageHandler;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.pages.CheckConfigurationPage;
 import org.eclipse.sphinx.xtendxpand.ui.wizards.pages.XpandConfigurationPage;
 import org.eclipse.xtend.expression.TypeSystem;
@@ -59,6 +59,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	private IWorkspaceResourceLoader workspaceResourceLoader;
 	private OutletsPreference outletsPreference;
 	private ExtendedOutlet defaultOutlet;
+	private IJobChangeListener resultMessageHandler;
 
 	protected XpandConfigurationPage xpandConfigurationPage;
 	protected CheckConfigurationPage checkConfigurationPage;
@@ -113,6 +114,14 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		this.defaultOutlet = defaultOutlet;
 	}
 
+	public IJobChangeListener getResultMessageHandler() {
+		return resultMessageHandler;
+	}
+
+	public void setResultMessageHandler(IJobChangeListener resultMessageHandler) {
+		this.resultMessageHandler = resultMessageHandler;
+	}
+
 	@Override
 	public void addPages() {
 		xpandConfigurationPage = createXpandConfigurationPage();
@@ -146,7 +155,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 		if (file != null) {
 			job.setRule(file.getProject());
 		}
-		IJobChangeListener handler = createResultMessageHandler(job);
+		IJobChangeListener handler = getResultMessageHandler();
 		if (handler != null) {
 			job.addJobChangeListener(handler);
 		}
@@ -199,10 +208,6 @@ public class M2TConfigurationWizard extends AbstractWizard {
 			checkJob.setRule(file.getProject());
 		}
 		return checkJob;
-	}
-
-	protected IJobChangeListener createResultMessageHandler(M2TJob job) {
-		return new ResultMessageHandler(job);
 	}
 
 	@Override

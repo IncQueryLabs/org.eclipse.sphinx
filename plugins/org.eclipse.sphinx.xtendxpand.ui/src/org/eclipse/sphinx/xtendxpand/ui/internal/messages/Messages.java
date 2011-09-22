@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [358591] ResultObjectHandler and ResultMessageHandler used by M2xConfigurationWizards are difficult to customize and should be usable in BasicM2xActions too
  * 
  * </copyright>
  */
@@ -31,7 +32,6 @@ public class Messages extends NLS {
 	public static String label_templateSelection;
 	public static String label_extensionSelection;
 	public static String label_definition;
-	public static String label_extensionBlock;
 	public static String label_useDefaultPath;
 	public static String label_path;
 	public static String label_browse;
@@ -43,7 +43,6 @@ public class Messages extends NLS {
 	public static String label_functionFieldName;
 	public static String label_useCheckModelButton;
 	public static String label_checkModelBlock;
-	public static String label_checkFiles;
 	public static String label_configureProjectSpecificSettings;
 	public static String label_outletsGroupName;
 	public static String label_default;
@@ -72,10 +71,11 @@ public class Messages extends NLS {
 	public static String msg_outletNameEmptyValidationError;
 	public static String msg_outletNameExistValidationError;
 	public static String msg_outletLocationEmptyValidationError;
-	public static String msg_M2x_successfull;
-	public static String msg_M2x_failed;
-	public static String msg_M2x_cancelled;
-	public static String msg_M2x_Check_failed;
+	public static String msg_codeGen;
+	public static String msg_modelTransformation;
+	public static String msg_M2x_operation_successful;
+	public static String msg_M2x_operation_canceled;
+	public static String msg_M2x_Check_operation_failed;
 
 	public static String title_launchGen;
 	public static String title_codeGen;

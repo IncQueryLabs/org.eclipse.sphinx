@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - Extracted AbstractResultObjectHandler and derived SaveAsNewFileHandler from it.
+ *     itemis - [358591] ResultObjectHandler and ResultMessageHandler used by M2xConfigurationWizards are difficult to customize and should be usable in BasicM2xActions too
  * 
  * </copyright>
  */
@@ -26,7 +27,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
@@ -39,21 +39,18 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.xtendxpand.internal.Activator;
 
 /**
- * An {@link IJobChangeListener} implementation that can be registered on an {@link XtendJob} instance or a {@link Job}
- * instance that encloses the latter and saves the {@link XtendJob#getResultObjects() result objects} produced by the
- * {@link XtendJob} as new files in the workspace.
+ * An {@link IJobChangeListener} implementation that can be registered on an {@link XtendJob} instance or a
+ * {@link M2MJob} instance that encloses the latter and saves the {@link XtendJob#getResultObjects() result objects}
+ * produced by the {@link XtendJob} as new files in the workspace.
  * 
  * @see XtendJob
+ * @see M2MJob
  */
 public class SaveAsNewFileHandler extends AbstractResultObjectHandler {
 
-	public SaveAsNewFileHandler() {
-	}
-
-	public SaveAsNewFileHandler(XtendJob xtendJob) {
-		super(xtendJob);
-	}
-
+	/*
+	 * @see org.eclipse.sphinx.xtendxpand.jobs.AbstractResultObjectHandler#handleResultObjects(java.util.Map)
+	 */
 	@Override
 	protected void handleResultObjects(Map<Object, Collection<?>> resultObjects) {
 		// Create descriptors for resources in which to save result objects

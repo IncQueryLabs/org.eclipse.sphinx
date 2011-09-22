@@ -17,49 +17,41 @@ package org.eclipse.sphinx.xtendxpand.jobs;
 import java.util.Collection;
 import java.util.Map;
 
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 
 /**
  * Abstract base class for implementing handlers that can be registered as {@link IJobChangeListener} on an
- * {@link XtendJob} instance or a {@link Job} instance that encloses the latter and processes the
+ * {@link XtendJob} instance or a {@link M2MJob} instance that encloses the latter and process the
  * {@link XtendJob#getResultObjects() result objects} produced by the {@link XtendJob}.
  * 
  * @see XtendJob
+ * @see M2MJob
  */
-public abstract class AbstractResultObjectHandler extends JobChangeAdapter {
+public abstract class AbstractResultObjectHandler extends AbstractM2xResultHandler {
 
-	protected XtendJob xtendJob = null;
-
-	public AbstractResultObjectHandler() {
-	}
-
-	public AbstractResultObjectHandler(XtendJob xtendJob) {
-		this.xtendJob = xtendJob;
-	}
-
-	protected XtendJob getXtendJob(IJobChangeEvent event) {
-		// Refer to job in job change event if it is an XtendJob
-		if (event != null) {
-			Job job = event.getJob();
-			if (job instanceof XtendJob) {
-				return (XtendJob) job;
-			}
-		}
-
-		// Use preconfigured XtendJob otherwise
-		return xtendJob;
-	}
-
+	/*
+	 * @see org.eclipse.sphinx.xtendxpand.jobs.AbstractM2xResultHandler#handleResult(org.eclipse.core.runtime.jobs.Job)
+	 */
 	@Override
-	public void done(IJobChangeEvent event) {
-		XtendJob xtendJob = getXtendJob(event);
+	public void handleResult(Job m2xJob) {
+		XtendJob xtendJob = getXtendJob();
 		if (xtendJob != null) {
 			handleResultObjects(xtendJob.getResultObjects());
 		}
 	}
 
+	/**
+	 * Invoked for handling the the {@link XtendJob#getResultObjects() result objects} produced by the {@link XtendJob}
+	 * behind the last job that has completed execution.
+	 * <p>
+	 * Clients are expected to override this method and for implementing the required result object handling behavior.
+	 * </p>
+	 * 
+	 * @param resultObjects
+	 *            A map that is keyed by the input objects that had been passed to the {@link XtendJob} and yields the
+	 *            collection of result objects that the {@link XtendJob} has produced for each of them as value.
+	 * @see #getM2xJob()
+	 */
 	protected abstract void handleResultObjects(Map<Object, Collection<?>> resultObjects);
 }
