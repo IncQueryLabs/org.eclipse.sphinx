@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 BMW Car IT and others.
+ * Copyright (c) 2008-2011 BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,6 +27,7 @@ import junit.framework.TestSuite;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sphinx.testutils.internal.Activator;
 import org.junit.internal.runners.ErrorReportingRunner;
+import org.junit.internal.runners.JUnit38ClassRunner;
 import org.junit.runner.Request;
 import org.junit.runner.Runner;
 import org.junit.runners.Parameterized;
@@ -87,10 +88,10 @@ public class AutoTestSuite {
 
 					if (isAbstract(c)) {
 						continue;
-					} else if (isTestCase(c)) {
-						test = new TestSuite(c);
 					} else if (isJUnit4Test(c)) {
 						test = new JUnit4TestAdapter(c);
+					} else if (isTestCase(c)) {
+						test = new TestSuite(c);
 					} else {
 						continue;
 					}
@@ -122,6 +123,10 @@ public class AutoTestSuite {
 		}
 
 		if (runner instanceof ErrorReportingRunner) {
+			return false;
+		}
+
+		if (runner instanceof JUnit38ClassRunner) {
 			return false;
 		}
 
