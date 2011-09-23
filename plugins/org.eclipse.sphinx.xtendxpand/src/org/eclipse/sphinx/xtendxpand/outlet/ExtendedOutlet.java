@@ -153,7 +153,18 @@ public class ExtendedOutlet extends Outlet {
 	}
 
 	public void setPath(IContainer container) {
-		setPath(container.getLocation().toFile().getAbsolutePath());
+		// Does given container actually exist?
+		if (container.exists()) {
+			// Retrieve and use the container's absolute file system path
+			IPath location = container.getLocation();
+			if (location != null) {
+				setPath(location.toFile().getAbsolutePath());
+			}
+		} else {
+			// Retrieve and use corresponding ordinary absolute files system path
+			setPath(container.getFullPath().makeRelative().toFile().getAbsolutePath());
+		}
+
 		pathExpression = container.getFullPath().makeRelative().toString();
 	}
 
