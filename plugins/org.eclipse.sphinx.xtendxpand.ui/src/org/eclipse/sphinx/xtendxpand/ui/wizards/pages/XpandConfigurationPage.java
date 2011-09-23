@@ -11,7 +11,8 @@
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
- * 
+ *     itemis - [358706] Default output path never initialized when opening M2TConfigurationWizard
+ *      
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.ui.wizards.pages;
@@ -101,7 +102,7 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 	 * Creates the output group field.
 	 */
 	protected void createOutputGroup(Composite parent) {
-		outputGroup = new OutputGroup(Messages.label_output, modelObject, outletsPreference);
+		outputGroup = new OutputGroup(Messages.label_output, modelObject, outletsPreference, defaultOutlet);
 		outputGroup.createContent(parent, 3);
 		outputGroup.addGroupListener(new IGroupListener() {
 

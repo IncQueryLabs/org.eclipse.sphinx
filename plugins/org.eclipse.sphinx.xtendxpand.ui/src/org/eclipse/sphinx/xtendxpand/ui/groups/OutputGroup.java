@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [358706] Default output path never initialized when opening M2TConfigurationWizard
  * 
  * </copyright>
  */
@@ -80,16 +81,18 @@ public class OutputGroup extends AbstractGroup {
 	 */
 	protected EObject modelObject;
 
-	public OutputGroup(String groupName, EObject modelObject, OutletsPreference outletsPreference) {
-		this(groupName, modelObject, outletsPreference, null);
+	public OutputGroup(String groupName, EObject modelObject, OutletsPreference outletsPreference, ExtendedOutlet defaultOutlet) {
+		this(groupName, modelObject, outletsPreference, defaultOutlet, null);
 	}
 
-	public OutputGroup(String groupName, EObject modelObject, OutletsPreference outletsPreference, IDialogSettings dialogSettings) {
+	public OutputGroup(String groupName, EObject modelObject, OutletsPreference outletsPreference, ExtendedOutlet defaultOutlet,
+			IDialogSettings dialogSettings) {
 		super(groupName, dialogSettings);
 
 		this.groupName = groupName;
 		this.modelObject = modelObject;
 		this.outletsPreference = outletsPreference;
+		this.defaultOutlet = defaultOutlet;
 	}
 
 	@Override
@@ -190,6 +193,16 @@ public class OutputGroup extends AbstractGroup {
 
 	protected void updateEnableState(boolean enabled) {
 		outputPathField.setEnabled(enabled);
+		if (!enabled) {
+			if (defaultOutlet != null) {
+				IContainer defaultOutletContainer = defaultOutlet.getContainer();
+				if (defaultOutletContainer != null) {
+					outputPathField.setText(defaultOutletContainer.getFullPath().makeRelative().toString());
+				}
+			} else {
+				outputPathField.setText(""); //$NON-NLS-1$
+			}
+		}
 	}
 
 	public SelectionButtonField getUseDefaultPathButtonField() {
