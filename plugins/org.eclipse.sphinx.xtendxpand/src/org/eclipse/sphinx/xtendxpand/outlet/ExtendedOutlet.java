@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - Improved #toString() implementation to produce more meaningful output for default outlets
+ *     itemis - [358705] NullPointerException when entering path of not existing output folder in M2TConfigurationWizard
  * 
  * </copyright>
  */
