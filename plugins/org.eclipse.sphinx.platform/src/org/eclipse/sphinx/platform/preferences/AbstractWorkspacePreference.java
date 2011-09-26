@@ -136,8 +136,7 @@ public abstract class AbstractWorkspacePreference<T> extends AbstractEclipsePref
 	 * @see org.eclipse.core.runtime.preferences.InstanceScope#getNode(String)
 	 */
 	protected IEclipsePreferences getWorkspacePreferences() {
-		InstanceScope instanceScope = new InstanceScope();
-		return instanceScope.getNode(qualifier);
+		return InstanceScope.INSTANCE.getNode(qualifier);
 	}
 
 	/**
