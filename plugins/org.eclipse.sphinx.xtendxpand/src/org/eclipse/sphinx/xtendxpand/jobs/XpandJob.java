@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
+ *     itemis - [358082] Precedence of Xtend MetaModels gets lost in Xtend/Xpand runtime enhancements implemented in Sphinx
  *     itemis - [358131] Make Xtend/Xpand/CheckJobs more robust against template file encoding mismatches
  *      
  * </copyright>
