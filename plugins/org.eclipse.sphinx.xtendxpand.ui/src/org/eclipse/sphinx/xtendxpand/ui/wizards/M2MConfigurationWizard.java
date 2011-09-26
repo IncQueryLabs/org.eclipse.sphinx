@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
+ *     itemis - [358082] Precedence of Xtend MetaModels gets lost in Xtend/Xpand runtime enhancements implemented in Sphinx
  *     itemis - [358591] ResultObjectHandler and ResultMessageHandler used by M2xConfigurationWizards are difficult to customize and should be usable in BasicM2xActions too
  * 
  * </copyright>
@@ -73,7 +74,7 @@ public class M2MConfigurationWizard extends AbstractWizard {
 	}
 
 	protected String getDefaultM2MJobName() {
-		return Messages.job_modelTransformation;
+		return Messages.job_transformingModel;
 	}
 
 	public void setM2MJobName(String m2mJobName) {

@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [358082] Precedence of Xtend MetaModels gets lost in Xtend/Xpand runtime enhancements implemented in Sphinx
  *     itemis - [358591] ResultObjectHandler and ResultMessageHandler used by M2xConfigurationWizards are difficult to customize and should be usable in BasicM2xActions too
  * 
  * </copyright>
@@ -22,7 +23,8 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.xtendxpand.ui.internal.messages.messages"; //$NON-NLS-1$
 
 	public static String job_generatingCode;
-	public static String job_modelTransformation;
+	public static String job_transformingModel;
+	public static String job_convertingToXtendXpandEnabledPluginProject;
 
 	public static String label_template;
 	public static String label_extension;
@@ -93,12 +95,10 @@ public class Messages extends NLS {
 	public static String desc_configOutlets;
 	public static String desc_checkConfigurationPage;
 
-	public static String task_CreationOfSubpackageExtensions;
-	public static String task_AddPluginDependencies;
-	public static String task_AddXtendXpandNature;
-	public static String task_ConvertToJavaPluginProject;
-	public static String task_ConvertToBSWPlatformProject;
-	public static String task_AddMetamodelContributor;
+	public static String task_ConvertingToXtendXpandEnabledPluginProject;
+	public static String task_ConvertingToJavaProject;
+	public static String task_ConvertingToPluginProject;
+	public static String task_ConvertingToXtendXpandProject;
 
 	public static String tooltip_prExcludesField;
 	public static String tooltip_prDefaultExcludes;
