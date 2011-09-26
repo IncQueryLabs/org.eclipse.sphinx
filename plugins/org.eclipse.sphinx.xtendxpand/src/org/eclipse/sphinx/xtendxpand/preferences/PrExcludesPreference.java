@@ -20,7 +20,7 @@ public class PrExcludesPreference extends AbstractProjectWorkspacePreference<Str
 
 	@Override
 	protected String toObject(IProject project, String valueAsString) {
-		return valueAsString == null ? "" : valueAsString; //$NON-NLS-1$
+		return valueAsString == null ? OutletsPreferenceInitializer.PREF_PR_EXCLUDES_DEFAULT : valueAsString;
 	}
 
 	@Override
