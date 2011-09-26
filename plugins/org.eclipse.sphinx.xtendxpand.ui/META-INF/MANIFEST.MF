@@ -26,8 +26,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sphinx.platform.ui,
  org.eclipse.sphinx.emf,
  org.eclipse.sphinx.xtendxpand;visibility:=reexport,
- org.eclipse.sphinx.xtend.typesystem.emf
+ org.eclipse.sphinx.xtend.typesystem.emf,
+ org.eclipse.sphinx.xtend.typesystem.emf.ui
 Export-Package: org.eclipse.sphinx.xtendxpand.ui.actions,
+ org.eclipse.sphinx.xtendxpand.ui.commands.handlers,
  org.eclipse.sphinx.xtendxpand.ui.decorators,
  org.eclipse.sphinx.xtendxpand.ui.dialogs,
  org.eclipse.sphinx.xtendxpand.ui.groups,
