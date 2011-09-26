@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,24 +25,20 @@ import org.eclipse.jface.viewers.StructuredSelection;
 
 public class SelectionUtil {
 
+	public static IStructuredSelection getStructuredSelection(ISelection selection) {
+		return selection instanceof IStructuredSelection ? (IStructuredSelection) selection : StructuredSelection.EMPTY;
+	}
+
 	public static boolean containsOnlyProjects(IStructuredSelection selection) {
 		if (selection.isEmpty()) {
 			return false;
 		}
 		for (Object obj : selection.toList()) {
-			if (!isProject(obj)) {
+			if (!(obj instanceof IProject)) {
 				return false;
 			}
 		}
 		return true;
-	}
-
-	public static boolean isProject(Object element) {
-		return element instanceof IProject;
-	}
-
-	public static IStructuredSelection getStructuredSelection(ISelection selection) {
-		return selection instanceof IStructuredSelection ? (IStructuredSelection) selection : StructuredSelection.EMPTY;
 	}
 
 	public static boolean hasOnlyElementsOfSameType(ISelection selection) {
