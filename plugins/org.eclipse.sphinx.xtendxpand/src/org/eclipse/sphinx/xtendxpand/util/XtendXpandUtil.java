@@ -79,7 +79,7 @@ public final class XtendXpandUtil {
 			IPath path = new Path(qualifiedName.replace(IXtendXpandConstants.NS_DELIMITER, Character.toString(IPath.SEPARATOR)))
 					.addFileExtension(extension);
 			URL resourceURL = resourceLoader.getResource(path.toString());
-			if (resourceURL == null) {
+			if (resourceURL == null && path.segmentCount() > 1) {
 				// Assume that given qualified name represents a definition of feature inside an Xpand or Xtend
 				// template; so ignore the last segment and try to resolve only the file part of it
 				resourceURL = resourceLoader.getResource(path.removeLastSegments(1).addFileExtension(extension).toString());
