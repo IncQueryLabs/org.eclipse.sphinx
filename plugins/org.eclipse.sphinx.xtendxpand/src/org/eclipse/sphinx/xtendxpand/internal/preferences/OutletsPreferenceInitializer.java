@@ -83,7 +83,6 @@ public class OutletsPreferenceInitializer extends AbstractPreferenceInitializer 
 	 *         <code>null</code> if no such could be determined.
 	 */
 	private IEclipsePreferences getDefaultPreferences() {
-		DefaultScope defaultScope = new DefaultScope();
-		return defaultScope.getNode(QUALIFIER);
+		return DefaultScope.INSTANCE.getNode(QUALIFIER);
 	}
 }
