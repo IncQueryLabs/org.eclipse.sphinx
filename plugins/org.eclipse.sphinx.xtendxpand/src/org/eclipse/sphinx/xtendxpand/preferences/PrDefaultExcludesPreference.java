@@ -20,7 +20,7 @@ public class PrDefaultExcludesPreference extends AbstractProjectWorkspacePrefere
 
 	@Override
 	protected Boolean toObject(IProject project, String valueAsString) {
-		return valueAsString == null ? Boolean.TRUE : Boolean.parseBoolean(valueAsString);
+		return valueAsString == null ? OutletsPreferenceInitializer.PREF_PR_DEFAULT_EXCLUDES_DEFAULT : Boolean.parseBoolean(valueAsString);
 	}
 
 	@Override
