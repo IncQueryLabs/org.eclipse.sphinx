@@ -154,8 +154,8 @@ public class ExtendedOutlet extends Outlet {
 	}
 
 	public void setPath(IContainer container) {
-		// Does given container actually exist?
-		if (container.exists()) {
+		// Does project behind given container actually exist?
+		if (container.getProject().exists()) {
 			// Retrieve and use the container's absolute file system path
 			IPath location = container.getLocation();
 			if (location != null) {
