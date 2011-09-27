@@ -178,10 +178,8 @@ public abstract class AbstractModelConverter implements IModelConverter {
 			builder.setEntityResolver(handler);
 		}
 
-		// Make sure that parsing is continued even in case of fatal errors (typically XML well-formedness problems);
-		// the idea is to always load XML documents as far as possible rather than not loading the entire document just
-		// because a potentially small part of it is not good
-		builder.setFeature(Constants.XERCES_FEATURE_PREFIX + Constants.CONTINUE_AFTER_FATAL_ERROR_FEATURE, true);
+		// Abort parsing in case of fatal errors (typically XML well-formedness problems or I/O errors)
+		builder.setFeature(Constants.XERCES_FEATURE_PREFIX + Constants.CONTINUE_AFTER_FATAL_ERROR_FEATURE, false);
 
 		// Use custom extended error handler wrapper enabling concise distinction between well-formedness, validity
 		// and integrity problems

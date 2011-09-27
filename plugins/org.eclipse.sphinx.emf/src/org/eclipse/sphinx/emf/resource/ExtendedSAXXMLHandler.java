@@ -142,9 +142,10 @@ public class ExtendedSAXXMLHandler extends SAXXMLHandler {
 	}
 
 	/*
-	 * Overridden to make sure that parsing is continued even in case of fatal errors (typically XML well-formedness
-	 * problems). The idea is to always load XML documents as far as possible rather than not loading the entire
-	 * document just because a potentially small part of it is not good.
+	 * Overridden to make sure that parsing may be continued even in case of fatal errors (typically XML well-formedness
+	 * problems or I/O errors) if the underlying SAX parser has been configured to operate that way. In case that Apache
+	 * Xerces parser is used the parser feature http://apache.org/xml/features/continue-after-fatal-error needs to be
+	 * set to true for this purpose.
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLHandler#fatalError(org.xml.sax.SAXParseException)
 	 */
 	@Override

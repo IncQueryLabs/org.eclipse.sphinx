@@ -66,12 +66,14 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
+import org.eclipse.sphinx.emf.internal.metamodel.InternalMetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.resource.ModelResourceDescriptor;
 import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
+import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.ReflectUtil;
@@ -379,6 +381,27 @@ public final class EcorePlatformUtil {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Marks the given <code>file</code> as a damaged by setting its content type to
+	 * {@link IExtendedPlatformConstants#CONTENT_TYPE_ID_DAMAGED_XML_FILE}.
+	 * <p>
+	 * Clients may want to call this method after an unsuccessful attempt to load the <code>file</code> so as to make
+	 * sure that it is no longer considered as a model file until someone has touched and potentially fixed it.
+	 * </p>
+	 * 
+	 * @param file
+	 *            The {@link IFile file} to be marked as damaged.
+	 */
+	public static void markAsDamaged(IFile file) {
+		/*
+		 * !! Important Note !! We must remove the cached metamodel descriptor first and then set the new cached content
+		 * type id because the removal of the cached metamodel descriptor also entails a removal of the file's cached
+		 * content type id.
+		 */
+		InternalMetaModelDescriptorRegistry.INSTANCE.removeCachedDescriptor(file);
+		ExtendedPlatform.setCachedContentTypeId(file, IExtendedPlatformConstants.CONTENT_TYPE_ID_DAMAGED_XML_FILE);
 	}
 
 	/**
@@ -1445,16 +1468,32 @@ public final class EcorePlatformUtil {
 							// Convert path to URI
 							URI uri = URI.createPlatformResourceURI(descriptor.getPath().toString(), true);
 
-							// Save new resource
-							/*
-							 * !! Important Note !! Resource must be saved before marking it as freshly saved because
-							 * otherwise the resource would loose its dirty state and consequently not be saved at all.
-							 */
-							EcoreResourceUtil.saveNewModelResource(editingDomain.getResourceSet(), uri, descriptor.getContentTypeId(),
-									descriptor.getModelRoot(), options);
+							try {
+								// Save new resource
+								/*
+								 * !! Important Note !! Resource must be saved before marking it as freshly saved
+								 * because otherwise the resource would loose its dirty state and consequently not be
+								 * saved at all.
+								 */
+								EcoreResourceUtil.saveNewModelResource(editingDomain.getResourceSet(), uri, descriptor.getContentTypeId(),
+										descriptor.getModelRoot(), options);
 
-							// Mark resource as freshly saved in order to avoid that it gets automatically reloaded
-							SaveIndicatorUtil.setSaved(editingDomain, descriptor.getModelRoot().eResource());
+								// Mark resource as freshly saved in order to avoid that it gets automatically reloaded
+								SaveIndicatorUtil.setSaved(editingDomain, descriptor.getModelRoot().eResource());
+							} catch (Exception ex) {
+								// Log exception in Error Log
+								/*
+								 * !! Important Note !! The exception has already been recorded as error on the resource
+								 * and is principally subject to being converted to a problem marker later on (see
+								 * org.eclipse.sphinx.emf.util.EcoreResourceUtil.saveModelResource(Resource, Map<?,?>)
+								 * and org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler for details).
+								 * However, this is a new resource which had never saved before and does not yet exist
+								 * in the file system. As a consequence, there is no target to which the problem marker
+								 * could be attached and the problem behind this exception would remain unperceiveable
+								 * if we wouldn't log anything at this point.
+								 */
+								PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+							}
 
 							progress.worked(1);
 						}
@@ -1697,16 +1736,25 @@ public final class EcorePlatformUtil {
 							for (Resource resource : resourcesToSave.get(editingDomain)) {
 								progress.subTask(NLS.bind(Messages.subtask_savingResource, resource.getURI().toString()));
 
-								// Save resource
-								/*
-								 * !! Important Note !! Resource must be saved before marking it as freshly saved
-								 * because otherwise the resource would loose its dirty state and consequently not be
-								 * saved at all.
-								 */
-								EcoreResourceUtil.saveModelResource(resource, options);
+								try {
+									// Save resource
+									/*
+									 * !! Important Note !! Resource must be saved before marking it as freshly saved
+									 * because otherwise the resource would loose its dirty state and consequently not
+									 * be saved at all.
+									 */
+									EcoreResourceUtil.saveModelResource(resource, options);
 
-								// Mark resource as freshly saved in order to avoid that it gets automatically reloaded
-								SaveIndicatorUtil.setSaved(editingDomain, resource);
+									// Mark resource as freshly saved in order to avoid that it gets automatically
+									// reloaded
+									SaveIndicatorUtil.setSaved(editingDomain, resource);
+								} catch (Exception ex) {
+									// Ignore exception, it has already been recorded as error on resource and will be
+									// converted to a problem marker later on (see
+									// org.eclipse.sphinx.emf.util.EcoreResourceUtil.saveModelResource(Resource,
+									// Map<?,?>) and org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler for
+									// details)
+								}
 
 								progress.worked(1);
 							}

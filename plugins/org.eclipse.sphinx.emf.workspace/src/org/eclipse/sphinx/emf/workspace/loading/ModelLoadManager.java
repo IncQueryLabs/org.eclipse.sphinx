@@ -760,8 +760,14 @@ public final class ModelLoadManager {
 							ModelLoadingPerformanceStats.INSTANCE.startNewEvent(ModelLoadingPerformanceStats.ModelEvent.EVENT_LOAD_FILE, file
 									.getFullPath().toString());
 
-							EcorePlatformUtil.loadModelRoot(editingDomain, file);
-							loadedFiles.add(file);
+							try {
+								EcorePlatformUtil.loadModelRoot(editingDomain, file);
+								loadedFiles.add(file);
+							} catch (Exception ex) {
+								// Mark files that could not be loaded as damaged so as to avoid subsequent load
+								// attempts until they have been touched (and potentially fixed)
+								EcorePlatformUtil.markAsDamaged(file);
+							}
 
 							ModelLoadingPerformanceStats.INSTANCE.endEvent(ModelLoadingPerformanceStats.ModelEvent.EVENT_LOAD_FILE, file
 									.getFullPath().toString());

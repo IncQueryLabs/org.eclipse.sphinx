@@ -72,9 +72,16 @@ public interface IExtendedPlatformConstants {
 	public static final String SYSTEM_PROPERTY_PLATFORM_FEATURE_VERSION = "org.eclipse.platform.featureVersion"; //$NON-NLS-1$
 
 	/**
-	 * A constant used to indicate that a {@link Resource resource} or {@link IFile file} is non-model XML document.
+	 * A constant used to indicate that a {@link org.eclipse.emf.ecore.resource.Resource resource} or {@link IFile file}
+	 * is non-model XML document.
 	 * 
 	 * @see ExtendedPlatform#getContentTypeId(IFile)
 	 */
 	public static final String CONTENT_TYPE_ID_NON_MODEL_XML_FILE = "org.eclipse.sphinx.platform.nonModelXMLFile"; //$NON-NLS-1$;
+
+	/**
+	 * A constant used to indicate that a {@link org.eclipse.emf.ecore.resource.Resource resource} or {@link IFile file}
+	 * is a damaged (not-loadable) model document.
+	 */
+	public static final String CONTENT_TYPE_ID_DAMAGED_XML_FILE = "org.eclipse.sphinx.platform.damagedXMLFile"; //$NON-NLS-1$;
 }

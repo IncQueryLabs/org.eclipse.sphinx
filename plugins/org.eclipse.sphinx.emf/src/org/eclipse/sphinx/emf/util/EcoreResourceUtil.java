@@ -19,7 +19,6 @@ package org.eclipse.sphinx.emf.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,7 +65,6 @@ import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
-import org.eclipse.sphinx.platform.util.ReflectUtil;
 import org.eclipse.sphinx.platform.util.XMLRootElementHandler;
 import org.xml.sax.SAXException;
 
@@ -206,7 +204,7 @@ public final class EcoreResourceUtil {
 				Map<String, ?> contentDescription = getURIConverter().contentDescription(uri, null);
 				return (String) contentDescription.get(ContentHandler.CONTENT_TYPE_PROPERTY);
 			} catch (Exception ex) {
-				// Ignore exception
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			}
 		}
 		return null;
@@ -874,7 +872,7 @@ public final class EcoreResourceUtil {
 		Resource resource = addNewModelResource(resourceSet, uri, contentTypeId, modelRoot);
 
 		// Save the newly created resource
-		saveModelResource(resource, options, false);
+		saveModelResource(resource, options);
 	}
 
 	/**
@@ -887,48 +885,20 @@ public final class EcoreResourceUtil {
 	 * @see #getDefaultSaveOptions()
 	 */
 	public static void saveModelResource(Resource resource, Map<?, ?> options) {
-		saveModelResource(resource, options, true);
-	}
-
-	/**
-	 * Saves the specified <code>resource</code>.
-	 * 
-	 * @param resource
-	 *            The {@link Resource resource} to be saved.
-	 * @param options
-	 *            The save options.
-	 * @param recordProblems
-	 *            <code>true</code> if problems encountered during save operation should be recorded as
-	 *            {@link Resource#getErrors() errors} and {@link Resource#getWarnings() warnings} on
-	 *            <code>resource</code> or <code>false</code> if they should be logged in error log instead.
-	 * @see #getDefaultSaveOptions()
-	 */
-	private static void saveModelResource(Resource resource, Map<?, ?> options, boolean recordProblems) {
 		if (resource != null) {
 			try {
 				resource.save(options);
-			} catch (Exception ex) {
-				if (recordProblems) {
-					try {
-						// Leave an error about what has happened on resource
-						Throwable cause = ex.getCause();
-						if (cause instanceof XMIException) {
-							resource.getErrors().add((XMIException) cause);
-						} else {
-							URI uri = resource.getURI();
-							Exception exception = cause instanceof Exception ? (Exception) cause : ex;
-							resource.getErrors().add(
-									new XMIException(NLS.bind(Messages.error_problemOccurredWhenSavingResource, uri.toString()), exception, uri
-											.toString(), 1, 1));
-						}
-					} catch (Exception e) {
-						// Log original exception in error log if something goes wrong
-						PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-					}
-				} else {
-					// Log original exception in error log if recording on resource is not required
-					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-				}
+			} catch (IOException ex) {
+				// Record exception as error on resource
+				Throwable cause = ex.getCause();
+				Exception exception = cause instanceof Exception ? (Exception) cause : ex;
+				URI uri = resource.getURI();
+				resource.getErrors()
+						.add(new XMIException(NLS.bind(Messages.error_problemOccurredWhenSavingResource, uri.toString()), exception, uri.toString(),
+								1, 1));
+
+				// Re-throw exception
+				throw new WrappedException(ex);
 			}
 		}
 	}
@@ -1088,18 +1058,18 @@ public final class EcoreResourceUtil {
 
 		// Load it using specified options if not done so yet and a demand load has been requested
 		if ((resource == null || !resource.isLoaded()) && loadOnDemand) {
-			try {
-				if (exists(uri)) {
-					if (resource == null) {
-						String contentType = getContentTypeId(uri);
-						resource = resourceSet.createResource(uri, contentType);
-					}
-					if (resource != null) {
+			if (exists(uri)) {
+				if (resource == null) {
+					String contentType = getContentTypeId(uri);
+					resource = resourceSet.createResource(uri, contentType);
+				}
+				if (resource != null) {
+					try {
 						// Capture errors and warnings encountered during resource creation
 						/*
 						 * !! Important note !! This is necessary because the resource's errors and warnings are
-						 * automatically cleared when loading begins so that any previously encountered errors and
-						 * warnings would get lost otherwise (see
+						 * automatically cleared when the loading begins. Therefore, if we don't retrieve them at this
+						 * point all previously encountered errors and warnings would be lost (see
 						 * org.eclipse.emf.ecore.resource.impl.ResourceImpl.load(InputStream, Map<?, ?>) for details)
 						 */
 						List<Diagnostic> creationErrors = new ArrayList<Diagnostic>(resource.getErrors());
@@ -1116,29 +1086,34 @@ public final class EcoreResourceUtil {
 						// Restore creation time errors and warnings
 						resource.getErrors().addAll(creationErrors);
 						resource.getWarnings().addAll(creationWarnings);
-					}
-				}
-			} catch (Exception ex) {
-				try {
-					// Check if some resource has been created for given URI and added to the resource set
-					if (resource != null) {
-						// Make sure that resource gets unloaded and removed from resource set again
-						unloadResource(resource, true);
+					} catch (IOException ex) {
+						// Capture errors and warnings encountered during resource load attempt
+						/*
+						 * !! Important note !! This is necessary because the resource's errors and warnings are
+						 * automatically cleared when it gets unloaded. Therefore, if we don't retrieve them at this
+						 * point all encountered errors and warnings encountered during loading would be lost (see
+						 * org.eclipse.emf.ecore.resource.impl.ResourceImpl.doUnload() for details)
+						 */
+						List<Diagnostic> loadErrors = new ArrayList<Diagnostic>(resource.getErrors());
+						List<Diagnostic> loadWarnings = new ArrayList<Diagnostic>(resource.getWarnings());
 
-						// Leave an error about what has happened on resource
-						Throwable cause = ex.getCause();
-						if (cause instanceof XMIException) {
-							resource.getErrors().add((XMIException) cause);
-						} else {
-							Exception exception = cause instanceof Exception ? (Exception) cause : ex;
-							resource.getErrors().add(
-									new XMIException(NLS.bind(Messages.error_problemOccurredWhenLoadingResource, uri.toString()), exception, uri
-											.toString(), 1, 1));
+						// Make sure that resource gets unloaded and removed from resource set again
+						try {
+							unloadResource(resource, true);
+						} catch (Exception e) {
+							// Log unload problem in Error Log but don't let it go along as runtime exception. It is
+							// most likely just a consequence of the load problems encountered before and therefore
+							// should not prevent those from being restored as errors and warnings on resource.
+							PlatformLogUtil.logAsError(Activator.getPlugin(), e);
 						}
+
+						// Restore load time errors and warnings on resource
+						resource.getErrors().addAll(loadErrors);
+						resource.getWarnings().addAll(loadWarnings);
+
+						// Re-throw exception
+						throw new WrappedException(ex);
 					}
-				} catch (Exception e) {
-					// Log original exception in error log if something goes wrong
-					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 				}
 			}
 		}
@@ -1168,29 +1143,6 @@ public final class EcoreResourceUtil {
 		Resource resource = loadModelResource(resourceSet, uri, options, loadOnDemand);
 
 		// Obtain and return resource content
-		EObject resourceContent = getModelRoot(resource);
-
-		// FIXME Is that really needed?
-		cleanUriCache();
-
-		return resourceContent;
-	}
-
-	// hack: force uriCache to get clean
-	private static void cleanUriCache() {
-		Field f = ReflectUtil.findDeclaredField(URI.class, "uriCache"); //$NON-NLS-1$
-		boolean old = f.isAccessible();
-		if (true && f != null) {
-			try {
-				f.setAccessible(true);
-				Map<?, ?> m = (Map<?, ?>) f.get(null);
-				if (m != null) {
-					m.clear();
-				}
-			} catch (Exception e) {
-			} finally {
-				f.setAccessible(old);
-			}
-		}
+		return getModelRoot(resource);
 	}
 }
