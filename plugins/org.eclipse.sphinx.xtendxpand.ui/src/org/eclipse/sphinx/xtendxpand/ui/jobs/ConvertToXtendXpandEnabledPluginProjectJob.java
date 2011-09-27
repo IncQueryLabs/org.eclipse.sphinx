@@ -56,7 +56,8 @@ import org.eclipse.xtend.shared.ui.core.preferences.PreferenceConstants;
  * A {@link WorkspaceJob workspace job} that supports conversion of {@link IProject project}s to an Xtend/Xpand-enabled
  * plug-in project.
  */
-// TODO Get rid of UI dependencies and move to org.eclipse.sphinx.xtendxpand.jobs
+// TODO (aakar) Get rid of UI dependencies and move to org.eclipse.sphinx.xtendxpand.jobs (Done by aakar and will
+// committed asap)
 @SuppressWarnings("restriction")
 public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 
