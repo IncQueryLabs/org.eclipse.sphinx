@@ -26,6 +26,9 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
 @SuppressWarnings("restriction")
 public class LinkedFileWizard extends BasicNewResourceWizard implements INewWizard {
+
+	private String[] filterExtensions = new String[0];
+
 	private LinkedFileCreationMainPage mainPage;
 
 	/**
@@ -35,6 +38,11 @@ public class LinkedFileWizard extends BasicNewResourceWizard implements INewWiza
 		super();
 	}
 
+	public LinkedFileWizard(String[] filterExtensions) {
+		super();
+		this.filterExtensions = filterExtensions;
+	}
+
 	/*
 	 * (non-Javadoc) Method declared on IWizard.
 	 */
@@ -42,6 +50,7 @@ public class LinkedFileWizard extends BasicNewResourceWizard implements INewWiza
 	public void addPages() {
 		super.addPages();
 		mainPage = new LinkedFileCreationMainPage(getSelection());
+		mainPage.setFilterExtensions(filterExtensions);
 		addPage(mainPage);
 	}
 

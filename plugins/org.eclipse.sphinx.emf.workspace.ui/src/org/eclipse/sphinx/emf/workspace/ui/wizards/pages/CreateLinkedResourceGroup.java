@@ -68,6 +68,8 @@ public class CreateLinkedResourceGroup {
 
 	private String linkTarget = ""; //$NON-NLS-1$
 
+	private String[] filterExtensions = new String[0];
+
 	private int type;
 
 	// Used to compute layout sizes
@@ -366,6 +368,11 @@ public class CreateLinkedResourceGroup {
 					} else {
 						dialog.setFileName(linkTarget);
 					}
+				} else {
+					dialog.setFilterPath(ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString());
+				}
+				if (filterExtensions != null && filterExtensions.length != 0) {
+					dialog.setFilterExtensions(filterExtensions);
 				}
 				selection = dialog.open();
 			} else {
@@ -391,6 +398,8 @@ public class CreateLinkedResourceGroup {
 				dialog.setMessage(IDEWorkbenchMessages.CreateLinkedResourceGroup_targetSelectionLabel);
 				if (filterPath != null) {
 					dialog.setFilterPath(filterPath);
+				} else {
+					dialog.setFilterPath(ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString());
 				}
 				selection = dialog.open();
 			} else {
@@ -567,5 +576,21 @@ public class CreateLinkedResourceGroup {
 			return createStatus(IStatus.WARNING, IDEWorkbenchMessages.CreateLinkedResourceGroup_linkTargetNonExistent);
 		}
 		return locationStatus;
+	}
+
+	/**
+	 * Set the file extensions which the {@link FileDialog} will use to filter the files it shows to the argument, which
+	 * may be null.
+	 * <p>
+	 * The strings are platform specific. For example, on some platforms, an extension filter string is typically of the
+	 * form "*.extension", where "*.*" matches all files. For filters with multiple extensions, use semicolon as a
+	 * separator, e.g. "*.jpg;*.png".
+	 * </p>
+	 * 
+	 * @param filterExtensions
+	 *            the filterExtensions to set on the {@link FileDialog} opened when the user select the browse button.
+	 */
+	public void setFilterExtensions(String[] filterExtensions) {
+		this.filterExtensions = filterExtensions;
 	}
 }

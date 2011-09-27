@@ -45,9 +45,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.undo.CreateFileOperation;
 import org.eclipse.ui.ide.undo.WorkspaceUndoUtil;
 
@@ -90,6 +92,11 @@ public class LinkedFileCreationMainPage extends WizardPage implements Listener {
 	 * First time the advanced group is validated.
 	 */
 	private boolean firstLinkCheck = true;
+
+	/**
+	 * File extensions which the {@link FileDialog} will use to filter the files it shows.
+	 */
+	private String[] filterExtensions = new String[0];
 
 	/**
 	 * Creates a new file creation wizard page. If the initial resource selection contains exactly one container
@@ -163,6 +170,9 @@ public class LinkedFileCreationMainPage extends WizardPage implements Listener {
 				return getFileName();
 			}
 		});
+		if (filterExtensions != null && filterExtensions.length != 0) {
+			linkedResourceGroup.setFilterExtensions(filterExtensions);
+		}
 		doShellResizing(parent);
 	}
 
@@ -439,5 +449,21 @@ public class LinkedFileCreationMainPage extends WizardPage implements Listener {
 		}
 
 		return valid;
+	}
+
+	/**
+	 * Set the file extensions which the {@link FileDialog} will use to filter the files it shows to the argument, which
+	 * may be null.
+	 * <p>
+	 * The strings are platform specific. For example, on some platforms, an extension filter string is typically of the
+	 * form "*.extension", where "*.*" matches all files. For filters with multiple extensions, use semicolon as a
+	 * separator, e.g. "*.jpg;*.png".
+	 * </p>
+	 * 
+	 * @param filterExtensions
+	 *            the filterExtensions to set on the {@link FileDialog} opened when the user select the browse button.
+	 */
+	public void setFilterExtensions(String[] filterExtensions) {
+		this.filterExtensions = filterExtensions;
 	}
 }
