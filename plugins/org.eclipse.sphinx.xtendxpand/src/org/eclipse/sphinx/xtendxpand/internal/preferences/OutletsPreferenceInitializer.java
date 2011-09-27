@@ -83,6 +83,10 @@ public class OutletsPreferenceInitializer extends AbstractPreferenceInitializer 
 	 *         <code>null</code> if no such could be determined.
 	 */
 	private IEclipsePreferences getDefaultPreferences() {
-		return DefaultScope.INSTANCE.getNode(QUALIFIER);
+		// Use deprecated API so as to ensure backward compatibility with Eclipse 3.6.x and earlier
+		/*
+		 * !! Important Note !! @since annotation on DefaultScope#INSTANCE is wrong, it should be 3.7 instead of 3.4.
+		 */
+		return new DefaultScope().getNode(QUALIFIER);
 	}
 }
