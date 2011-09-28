@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2011 See4sys, itemis and others.
+ * Copyright (c) 2008-2011 See4sys, itemis, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - Improved API for importing external resources to workspace
  *     itemis - Improved handling of reference workspace path names so as to make integration tests more stable when running on different platforms
+ *     BMW Car IT - Introduced waitForFamily method, refactored scheduleAndWait method
  * 
  * </copyright>
  */
