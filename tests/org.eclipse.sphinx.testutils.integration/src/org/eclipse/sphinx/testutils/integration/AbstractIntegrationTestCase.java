@@ -95,8 +95,11 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	private static final String REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY = "referenceWorksaceSourceDirectory";
 
-	private static final String JOB_TIMEOUT = System.getProperty(AbstractIntegrationTestCase.class.getName() + ".JOB_TIMEOUT", new Integer(
-			1 * 60 * 1000).toString());
+	private static final String SCHEDULED_JOB_TIMEOUT = System.getProperty(AbstractIntegrationTestCase.class.getName() + ".SCHEDULED_JOB_TIMEOUT",
+			new Integer(10 * 1000).toString());
+
+	private static final String JOB_FAMILY_TIMEOUT = System.getProperty(AbstractIntegrationTestCase.class.getName() + ".JOB_FAMILY_TIMEOUT",
+			new Integer(1 * 60 * 1000).toString());
 
 	private TestFileAccessor testFileAccessor = null;
 
@@ -1368,9 +1371,9 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		t.start();
 
 		try {
-			t.join(Integer.parseInt(JOB_TIMEOUT));
+			t.join(Integer.parseInt(JOB_FAMILY_TIMEOUT));
 		} catch (InterruptedException ex) {
-			// TODO Auto-generated catch block
+			// Ignore exception
 		}
 
 		if (t.isAlive()) {
@@ -1388,10 +1391,12 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 */
 	protected IStatus scheduleAndWait(Job job) throws InterruptedException {
 		class DoneListener extends JobChangeAdapter {
+			boolean done = false;
 			IStatus result;
 
 			@Override
 			public synchronized void done(IJobChangeEvent event) {
+				done = true;
 				result = event.getResult();
 				notify();
 			}
@@ -1406,9 +1411,11 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 			// Wait for job to finish
 
-			doneListener.wait(10 * 1000);
+			doneListener.wait(Integer.parseInt(SCHEDULED_JOB_TIMEOUT));
 
-			job.getThread().interrupt();
+			if (doneListener.done == false) {
+				job.getThread().interrupt();
+			}
 		}
 
 		return doneListener.result;
