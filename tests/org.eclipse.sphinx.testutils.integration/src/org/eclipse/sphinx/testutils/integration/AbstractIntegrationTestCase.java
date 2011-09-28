@@ -1364,6 +1364,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			}
 		};
 
+		t.setDaemon(true);
 		t.start();
 
 		try {
@@ -1378,7 +1379,8 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	/**
-	 * Schedule the job for execution and wait until the execution is done. Return the status returned by the job
+	 * Schedule the job for execution and wait up to 10 seconds until the execution is done. Returns the status returned
+	 * by the job.
 	 * 
 	 * @param job
 	 * @return
@@ -1404,7 +1406,9 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 			// Wait for job to finish
 
-			doneListener.wait();
+			doneListener.wait(10 * 1000);
+
+			job.getThread().interrupt();
 		}
 
 		return doneListener.result;
