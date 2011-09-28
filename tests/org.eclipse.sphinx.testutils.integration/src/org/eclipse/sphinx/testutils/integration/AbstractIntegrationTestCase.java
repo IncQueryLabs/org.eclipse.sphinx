@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.TimeUnit;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -96,6 +94,9 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	private static final String REFERENCE_WORKSPACE_PROPERTIES_FILE_NAME = "referenceWorkspaceSourceRootDirectory.properties";
 
 	private static final String REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY = "referenceWorksaceSourceDirectory";
+
+	private static final String JOB_TIMEOUT = System.getProperty(AbstractIntegrationTestCase.class.getName() + ".JOB_TIMEOUT", new Integer(
+			1 * 60 * 1000).toString());
 
 	private TestFileAccessor testFileAccessor = null;
 
@@ -1337,21 +1338,42 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 * Blocks the calling thread until model loading completes.
 	 */
 	protected void waitForModelLoading() {
-		try {
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, null);
-		} catch (Exception ex) {
-			// Ignore exception
-		}
+		waitForFamily(IExtendedPlatformConstants.FAMILY_MODEL_LOADING);
 	}
 
 	/**
 	 * Blocks the calling thread until automatic build completes.
 	 */
 	protected void waitForAutoBuild() {
+		waitForFamily(ResourcesPlugin.FAMILY_AUTO_BUILD);
+	}
+
+	/**
+	 * Blocks the calling thread until the specified job family completes.
+	 */
+	private void waitForFamily(final Object family) {
+		// wait in a separate thread to realize a timeout to avoid potentially waiting forever
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				try {
+					Job.getJobManager().join(family, null);
+				} catch (Exception ex) {
+					// Ignore exception
+				}
+			}
+		};
+
+		t.start();
+
 		try {
-			Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD, null);
-		} catch (Exception ex) {
-			// Ignore exception
+			t.join(Integer.parseInt(JOB_TIMEOUT));
+		} catch (InterruptedException ex) {
+			// TODO Auto-generated catch block
+		}
+
+		if (t.isAlive()) {
+			throw new RuntimeException("Timeout while waiting for job family '" + family + "'.");
 		}
 	}
 
@@ -1360,37 +1382,32 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 * 
 	 * @param job
 	 * @return
-	 * @throws TimeoutException
-	 * @throws BrokenBarrierException
 	 * @throws InterruptedException
 	 */
-	protected IStatus scheduleAndWait(Job job) throws Exception {
-		final CyclicBarrier barrier = new CyclicBarrier(2);
-		final IStatus result[] = new IStatus[1];
-		job.addJobChangeListener(new JobChangeAdapter() {
-			@Override
-			public void done(IJobChangeEvent event) {
-				result[0] = event.getResult();
-				try {
-					barrier.await(10, TimeUnit.SECONDS);
-				} catch (Exception ex) {
-					// Ignore exception
-				}
-			}
-		});
-		job.schedule();
+	protected IStatus scheduleAndWait(Job job) throws InterruptedException {
+		class DoneListener extends JobChangeAdapter {
+			IStatus result;
 
-		// Wait for job to finish
-		try {
-			barrier.await(10, TimeUnit.SECONDS);
-		} catch (Exception ex) {
-			// Interrupt the job if timeout has elapsed or some other exception
-			// has occurred
-			job.getThread().interrupt();
-			throw ex;
+			@Override
+			public synchronized void done(IJobChangeEvent event) {
+				result = event.getResult();
+				notify();
+			}
 		}
 
-		return result[0];
+		DoneListener doneListener = new DoneListener();
+
+		job.addJobChangeListener(doneListener);
+
+		synchronized (doneListener) {
+			job.schedule();
+
+			// Wait for job to finish
+
+			doneListener.wait();
+		}
+
+		return doneListener.result;
 	}
 
 	/**
