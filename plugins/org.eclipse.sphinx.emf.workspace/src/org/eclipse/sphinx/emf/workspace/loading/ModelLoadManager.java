@@ -764,9 +764,11 @@ public final class ModelLoadManager {
 								EcorePlatformUtil.loadModelRoot(editingDomain, file);
 								loadedFiles.add(file);
 							} catch (Exception ex) {
-								// Mark files that could not be loaded as damaged so as to avoid subsequent load
-								// attempts until they have been touched (and potentially fixed)
-								EcorePlatformUtil.markAsDamaged(file);
+								// Ignore exception, it has already been recorded as error on resource and will be
+								// converted to a problem marker later on (see
+								// org.eclipse.sphinx.emf.util.EcoreResourceUtil.loadModelResource(ResourceSet, URI,
+								// Map<?, ?>, boolean) and
+								// org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler for details)
 							}
 
 							ModelLoadingPerformanceStats.INSTANCE.endEvent(ModelLoadingPerformanceStats.ModelEvent.EVENT_LOAD_FILE, file

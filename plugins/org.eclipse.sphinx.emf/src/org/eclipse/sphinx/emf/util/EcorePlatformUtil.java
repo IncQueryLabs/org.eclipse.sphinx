@@ -66,14 +66,12 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
-import org.eclipse.sphinx.emf.internal.metamodel.InternalMetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.resource.ModelResourceDescriptor;
 import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
-import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.ReflectUtil;
@@ -381,27 +379,6 @@ public final class EcorePlatformUtil {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Marks the given <code>file</code> as a damaged by setting its content type to
-	 * {@link IExtendedPlatformConstants#CONTENT_TYPE_ID_DAMAGED_XML_FILE}.
-	 * <p>
-	 * Clients may want to call this method after an unsuccessful attempt to load the <code>file</code> so as to make
-	 * sure that it is no longer considered as a model file until someone has touched and potentially fixed it.
-	 * </p>
-	 * 
-	 * @param file
-	 *            The {@link IFile file} to be marked as damaged.
-	 */
-	public static void markAsDamaged(IFile file) {
-		/*
-		 * !! Important Note !! We must remove the cached metamodel descriptor first and then set the new cached content
-		 * type id because the removal of the cached metamodel descriptor also entails a removal of the file's cached
-		 * content type id.
-		 */
-		InternalMetaModelDescriptorRegistry.INSTANCE.removeCachedDescriptor(file);
-		ExtendedPlatform.setCachedContentTypeId(file, IExtendedPlatformConstants.CONTENT_TYPE_ID_DAMAGED_XML_FILE);
 	}
 
 	/**

@@ -17,6 +17,7 @@ package org.eclipse.sphinx.examples.hummingbird20.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.xerces.impl.Constants;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EPackageRegistryImpl;
@@ -102,6 +103,13 @@ public class Hummingbird20ResourceFactoryImpl extends ResourceFactoryImpl {
 		result.getDefaultSaveOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, extendedMetaData);
 
 		result.getDefaultLoadOptions().put(XMLResource.OPTION_USE_LEXICAL_HANDLER, Boolean.TRUE);
+
+		// Configure SAX parser to continue even in case of fatal errors (typically XML well-formedness problems or I/O
+		// errors) so as to always load XML documents as far as possible rather than not loading the entire document
+		// just because a potentially small part of it is not good
+		Map<String, Boolean> parserFeatures = new HashMap<String, Boolean>();
+		parserFeatures.put(Constants.XERCES_FEATURE_PREFIX + Constants.CONTINUE_AFTER_FATAL_ERROR_FEATURE, true);
+		result.getDefaultLoadOptions().put(XMLResource.OPTION_PARSER_FEATURES, parserFeatures);
 
 		result.getDefaultSaveOptions().put(XMLResource.OPTION_SCHEMA_LOCATION, Boolean.TRUE);
 		result.getDefaultSaveOptions().put(ExtendedResource.OPTION_SCHEMA_LOCATION_CATALOG, schemaLocationCatalog);

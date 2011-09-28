@@ -152,9 +152,6 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 			parserProperties.put(Constants.JAXP_PROPERTY_PREFIX + Constants.SCHEMA_LANGUAGE, XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		}
 
-		// Abort parsing in case of fatal errors (typically XML well-formedness problems or I/O errors)
-		parserFeatures.put(Constants.XERCES_FEATURE_PREFIX + Constants.CONTINUE_AFTER_FATAL_ERROR_FEATURE, false);
-
 		// Use custom extended error handler wrapper enabling concise distinction between well-formedness, validity and
 		// integrity problems
 		/*

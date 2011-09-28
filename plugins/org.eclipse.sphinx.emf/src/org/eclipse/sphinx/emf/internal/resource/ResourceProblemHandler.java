@@ -137,7 +137,7 @@ public class ResourceProblemHandler extends ResourceSetListenerImpl implements I
 				IResourceDeltaVisitor visitor = new ResourceDeltaVisitor(event.getType(), new DefaultResourceChangeHandler() {
 					@Override
 					public void handleFileChanged(int eventType, IFile file) {
-						/**
+						/*
 						 * !! Important Note !! We must not try to obtain the model resource behind the changed file in
 						 * the present execution context. This would require requesting exclusive access to underlying
 						 * editing domain by creating a read transaction. However, the workspace is locked during

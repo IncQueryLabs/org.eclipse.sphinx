@@ -55,53 +55,74 @@ public class ModelDescriptorSynchronizerComplement extends ResourceSetListenerIm
 
 	@Override
 	public void resourceSetChanged(ResourceSetChangeEvent event) {
-		Collection<Resource> loadedResources = new HashSet<Resource>();
-		Collection<Resource> unloadedResources = new HashSet<Resource>();
+		Set<Resource> loadedResources = new HashSet<Resource>();
+		Set<Resource> unloadedResources = new HashSet<Resource>();
+		Set<Resource> addedResources = new HashSet<Resource>();
+		Set<Resource> removedResources = new HashSet<Resource>();
 
-		// Analyze notifications for loaded and unloaded resources
+		// Analyze notifications for loaded and unloaded resources; record only resources which have not got
+		// unloaded/loaded again later on
 		for (Notification notification : event.getNotifications()) {
 			Object notifier = notification.getNotifier();
 			if (notifier instanceof Resource) {
 				Resource resource = (Resource) notifier;
-				if (resource.isLoaded()) {
-					loadedResources.add(resource);
+				Boolean newValue = (Boolean) notification.getNewValue();
+				if (newValue) {
+					if (unloadedResources.contains(resource)) {
+						unloadedResources.remove(resource);
+					} else {
+						loadedResources.add(resource);
+					}
 				} else {
-					unloadedResources.add(resource);
+					if (loadedResources.contains(resource)) {
+						loadedResources.remove(resource);
+					} else {
+						unloadedResources.add(resource);
+					}
 				}
 			} else if (notifier instanceof ResourceSet) {
-				ResourceSet resourceSet = (ResourceSet) notifier;
-
-				Object newValue = notification.getNewValue();
-				Object oldValue = notification.getOldValue();
-
-				List<Resource> newResources = new ArrayList<Resource>();
-				List<Resource> oldResources = new ArrayList<Resource>();
-				if (newValue instanceof List<?>) {
-					@SuppressWarnings("unchecked")
-					List<Resource> newResourcesValue = (List<Resource>) newValue;
-					newResources.addAll(newResourcesValue);
-				} else if (newValue instanceof Resource) {
-					newResources.add((Resource) newValue);
-				}
-				if (oldValue instanceof List<?>) {
-					@SuppressWarnings("unchecked")
-					List<Resource> oldResourcesValue = (List<Resource>) oldValue;
-					oldResources.addAll(oldResourcesValue);
-				} else if (oldValue instanceof Resource) {
-					oldResources.add((Resource) oldValue);
-				}
-
 				if (notification.getEventType() == Notification.ADD || notification.getEventType() == Notification.ADD_MANY) {
-					newResources.removeAll(oldResources);
-					newResources.retainAll(resourceSet.getResources());
-					loadedResources.addAll(newResources);
+					List<Resource> newResources = new ArrayList<Resource>();
+					Object newValue = notification.getNewValue();
+					if (newValue instanceof List<?>) {
+						@SuppressWarnings("unchecked")
+						List<Resource> newResourcesValue = (List<Resource>) newValue;
+						newResources.addAll(newResourcesValue);
+					} else if (newValue instanceof Resource) {
+						newResources.add((Resource) newValue);
+					}
+
+					for (Resource newResource : newResources) {
+						if (removedResources.contains(newResource)) {
+							removedResources.remove(newResource);
+						} else {
+							addedResources.add(newResource);
+						}
+					}
 				} else if (notification.getEventType() == Notification.REMOVE || notification.getEventType() == Notification.REMOVE_MANY) {
-					oldResources.removeAll(newResources);
-					oldResources.removeAll(resourceSet.getResources());
-					unloadedResources.addAll(oldResources);
+					List<Resource> oldResources = new ArrayList<Resource>();
+					Object oldValue = notification.getOldValue();
+					if (oldValue instanceof List<?>) {
+						@SuppressWarnings("unchecked")
+						List<Resource> oldResourcesValue = (List<Resource>) oldValue;
+						oldResources.addAll(oldResourcesValue);
+					} else if (oldValue instanceof Resource) {
+						oldResources.add((Resource) oldValue);
+					}
+
+					for (Resource oldResource : oldResources) {
+						if (addedResources.contains(oldResource)) {
+							addedResources.remove(oldResource);
+						} else {
+							removedResources.add(oldResource);
+						}
+					}
 				}
 			}
 		}
+		loadedResources.addAll(addedResources);
+		unloadedResources.addAll(removedResources);
+
 		// Handle loaded and unloaded resources
 		handleModelResourceLoaded(loadedResources);
 		handleModelResourceUnloaded(unloadedResources);
