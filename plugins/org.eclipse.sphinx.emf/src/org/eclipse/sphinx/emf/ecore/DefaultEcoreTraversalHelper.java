@@ -46,7 +46,7 @@ public class DefaultEcoreTraversalHelper implements EcoreTraversalHelper {
 		Collection<EObject> result = new ArrayList<EObject>();
 		Resource resource = referenceSource.eResource();
 		if (resource != null) {
-			Collection<Resource> contextResources = EcorePlatformUtil.getResourcesInModel(resource, true);
+			Collection<Resource> contextResources = EcorePlatformUtil.getResourcesInScope(resource, true);
 			if (!contextResources.isEmpty()) {
 				for (Resource contextResource : contextResources) {
 					for (EObject eObject : contextResource.getContents()) {
