@@ -30,7 +30,9 @@ public class GMFTargetMetaModelDescriptorProvider implements ITargetMetaModelDes
 	public IMetaModelDescriptor getDescriptor(IFile file) {
 		try {
 			String targetNamespace = EcorePlatformUtil.readTargetNamespace(file);
-			return MetaModelDescriptorRegistry.INSTANCE.getDescriptor(new URI(targetNamespace));
+			if (targetNamespace != null) {
+				return MetaModelDescriptorRegistry.INSTANCE.getDescriptor(new URI(targetNamespace));
+			}
 		} catch (URISyntaxException ex) {
 			// Ignore exception, just return null
 		}
@@ -40,7 +42,9 @@ public class GMFTargetMetaModelDescriptorProvider implements ITargetMetaModelDes
 	public IMetaModelDescriptor getDescriptor(Resource resource) {
 		try {
 			String targetNamespace = EcoreResourceUtil.readTargetNamespace(resource);
-			return MetaModelDescriptorRegistry.INSTANCE.getDescriptor(new URI(targetNamespace));
+			if (targetNamespace != null) {
+				return MetaModelDescriptorRegistry.INSTANCE.getDescriptor(new URI(targetNamespace));
+			}
 		} catch (URISyntaxException ex) {
 			// Ignore exception, just return null
 		}
