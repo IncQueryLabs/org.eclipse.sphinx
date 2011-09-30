@@ -8,18 +8,22 @@ Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.core.variables,
+ org.eclipse.pde.core,
  org.eclipse.emf.ecore,
  org.eclipse.emf.mwe.core,
+ org.eclipse.jdt.core;visibility:=reexport,
+ org.eclipse.jdt.launching,
  org.eclipse.xpand;visibility:=reexport,
  org.eclipse.xtend;visibility:=reexport,
  org.eclipse.xtend.typesystem.emf;visibility:=reexport,
  org.apache.commons.logging;visibility:=reexport,
- org.eclipse.sphinx.emf,
+ org.eclipse.sphinx.emf;visibility:=reexport,
  org.eclipse.sphinx.emf.mwe;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.sphinx.xtendxpand,
  org.eclipse.sphinx.xtendxpand.internal;x-internal:=true,
+ org.eclipse.sphinx.xtendxpand.internal.messages;x-internal:=true,
  org.eclipse.sphinx.xtendxpand.internal.preferences;x-internal:=true,
  org.eclipse.sphinx.xtendxpand.jobs,
  org.eclipse.sphinx.xtendxpand.outlet,

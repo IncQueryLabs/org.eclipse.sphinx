@@ -20,8 +20,8 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.sphinx.platform.ui.util.UIUtil;
 import org.eclipse.sphinx.xtend.typesystem.emf.ui.SphinxManagedEmfMetamodelContributor;
+import org.eclipse.sphinx.xtendxpand.jobs.ConvertToXtendXpandEnabledPluginProjectJob;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
-import org.eclipse.sphinx.xtendxpand.ui.jobs.ConvertToXtendXpandEnabledPluginProjectJob;
 
 /**
  * Command hander that supports conversion of {@link IProject project}s to an Xtend/Xpand-enabled plug-in project.

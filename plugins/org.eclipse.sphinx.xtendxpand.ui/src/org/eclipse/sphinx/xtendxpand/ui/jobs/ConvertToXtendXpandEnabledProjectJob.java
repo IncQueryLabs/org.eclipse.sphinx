@@ -23,10 +23,10 @@ import org.eclipse.core.resources.WorkspaceJob;
  * A {@link WorkspaceJob workspace job} that supports conversion of {@link IProject project}s to an Xtend/Xpand-enabled
  * plug-in project.
  * 
- * @deprecated Use {@link ConvertToXtendXpandEnabledPluginProjectJob} instead.
+ * @deprecated Use {@link org.eclipse.sphinx.xtendxpand.jobs.ConvertToXtendXpandEnabledPluginProjectJob} instead.
  */
 @Deprecated
-public class ConvertToXtendXpandEnabledProjectJob extends ConvertToXtendXpandEnabledPluginProjectJob {
+public class ConvertToXtendXpandEnabledProjectJob extends org.eclipse.sphinx.xtendxpand.jobs.ConvertToXtendXpandEnabledPluginProjectJob {
 
 	public ConvertToXtendXpandEnabledProjectJob(String name, IProject project) {
 		super(name, project);

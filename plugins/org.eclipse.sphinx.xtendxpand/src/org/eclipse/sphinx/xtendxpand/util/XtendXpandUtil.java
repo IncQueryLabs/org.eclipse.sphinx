@@ -44,6 +44,10 @@ public final class XtendXpandUtil {
 	}
 
 	public static final String XTEND_XPAND_NATURE_ID = "org.eclipse.xtend.shared.ui.xtendXPandNature"; //$NON-NLS-1$
+	public static final String XTEND_SHARED_UI_PLUGIN_ID = "org.eclipse.xtend.shared.ui"; //$NON-NLS-1$
+
+	public static final String PreferenceConstants__PROJECT_SPECIFIC_METAMODEL = "project.specific.metamodel"; //$NON-NLS-1$
+	public static final String PreferenceConstants__METAMODELCONTRIBUTORS = "metamodelContributor"; //$NON-NLS-1$
 
 	public static String getQualifiedName(IFile underlyingFile, String definitionOrFeatureName) {
 		Assert.isNotNull(underlyingFile);
