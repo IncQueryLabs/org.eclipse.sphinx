@@ -74,8 +74,8 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 
 	private IProject project;
 
+	private String javaExtensionPackageName;
 	private String projectRelativeJavaSourcePath = PROJECT_RELATIVE_JAVA_SOURCE_DEFAULT_PATH;
-	private String javaExtensionPackageName = project.getName().toLowerCase() + "." + JAVA_EXTENSIONS_PACKAGE_DEFAULT_NAME; //$NON-NLS-1$
 	private String compilerCompliance = null;
 	private List<String> requiredBundleIds = null;
 	private List<String> enabledMetaModelContributorTypeNames = null;
@@ -83,6 +83,7 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 	public ConvertToXtendXpandEnabledPluginProjectJob(String name, IProject project) {
 		super(name);
 		this.project = project;
+		javaExtensionPackageName = project.getName().toLowerCase() + "." + JAVA_EXTENSIONS_PACKAGE_DEFAULT_NAME; //$NON-NLS-1$
 		setPriority(Job.BUILD);
 		setRule(ResourcesPlugin.getWorkspace().getRoot());
 	}
