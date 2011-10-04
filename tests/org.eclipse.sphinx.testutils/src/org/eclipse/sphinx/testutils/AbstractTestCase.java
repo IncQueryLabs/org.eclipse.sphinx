@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.Resource.Diagnostic;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -90,27 +89,21 @@ public abstract class AbstractTestCase extends TestCase {
 		this.ignoreSaveProblems = ignoreSaveProblems;
 	}
 
-	// TODO Remove fileAccessor from parameter list and use fFileAccessor instead
-	protected EObject loadInputFile(String inputFileName, TestFileAccessor fileAccessor, ResourceFactoryImpl resourceFactory, EPackage ePackage,
-			Map<?, ?> options) throws Exception {
-		return loadFile(fileAccessor.getInputFileURI(inputFileName), resourceFactory, ePackage, options);
+	protected EObject loadInputFile(String inputFileName, ResourceFactoryImpl resourceFactory, Map<?, ?> options) throws Exception {
+		return loadFile(getTestFileAccessor().getInputFileURI(inputFileName), resourceFactory, options);
 	}
 
-	// TODO Remove fileAccessor from parameter list and use fFileAccessor instead
-	protected EObject loadWorkingFile(String workingFileName, TestFileAccessor fileAccessor, ResourceFactoryImpl resourceFactory, EPackage ePackage,
-			Map<?, ?> options) throws Exception {
-		return loadFile(fileAccessor.getWorkingFileURI(workingFileName), resourceFactory, ePackage, options);
+	protected EObject loadWorkingFile(String workingFileName, ResourceFactoryImpl resourceFactory, Map<?, ?> options) throws Exception {
+		return loadFile(getTestFileAccessor().getWorkingFileURI(workingFileName), resourceFactory, options);
 	}
 
 	// TODO Enable external resourceSet to be handed in
-	private EObject loadFile(java.net.URI fileURI, ResourceFactoryImpl resourceFactory, EPackage ePackage, Map<?, ?> options) throws Exception {
+	private EObject loadFile(java.net.URI fileURI, ResourceFactoryImpl resourceFactory, Map<?, ?> options) throws Exception {
 		URI emfURI = getTestFileAccessor().convertToEMFURI(fileURI);
 		XMLResource resource = (XMLResource) resourceFactory.createResource(emfURI);
 		resource.load(options);
 
-		// TODO Check if this is still needed and remove ePackage from parameter list if not
 		ResourceSet resourceSet = createDefaultResourceSet();
-		resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
 		resourceSet.getResources().add(resource);
 
 		assertHasNoLoadProblems(resource);
@@ -118,9 +111,8 @@ public abstract class AbstractTestCase extends TestCase {
 		return resource.getContents().get(0);
 	}
 
-	protected void saveWorkingFile(String fileName, EObject modelRoot, TestFileAccessor fileAccessor, ResourceFactoryImpl resourceFactory)
-			throws Exception {
-		saveFile(fileAccessor.getWorkingFileURI(fileName), modelRoot, resourceFactory, null);
+	protected void saveWorkingFile(String fileName, EObject modelRoot, ResourceFactoryImpl resourceFactory) throws Exception {
+		saveFile(getTestFileAccessor().getWorkingFileURI(fileName), modelRoot, resourceFactory, null);
 	}
 
 	// TODO Enable external resourceSet to be handed in
