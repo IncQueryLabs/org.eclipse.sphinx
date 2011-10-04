@@ -335,8 +335,8 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 			}
 
 			IEclipsePreferences prefs = new ProjectScope(project).getNode(XtendXpandUtil.XTEND_SHARED_UI_PLUGIN_ID);
-			prefs.put(XtendXpandUtil.PreferenceConstants__PROJECT_SPECIFIC_METAMODEL, Boolean.TRUE.toString());
-			prefs.put(XtendXpandUtil.PreferenceConstants__METAMODELCONTRIBUTORS, enabledMetaModelContributorTypeNamesStr.toString());
+			prefs.put(XtendXpandUtil.PREFERENCE_KEY_PROJECT_SPECIFIC_METAMODEL, Boolean.TRUE.toString());
+			prefs.put(XtendXpandUtil.PREFERENCE_KEY_METAMODEL_CONTRIBUTOR, enabledMetaModelContributorTypeNamesStr.toString());
 			try {
 				prefs.flush();
 			} catch (Exception ex) {

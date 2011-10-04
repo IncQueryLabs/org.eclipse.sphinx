@@ -39,15 +39,15 @@ import org.eclipse.xtend.typesystem.Type;
 
 public final class XtendXpandUtil {
 
+	public static final String XTEND_SHARED_UI_PLUGIN_ID = "org.eclipse.xtend.shared.ui"; //$NON-NLS-1$
+	public static final String XTEND_XPAND_NATURE_ID = XTEND_SHARED_UI_PLUGIN_ID + ".xtendXPandNature"; //$NON-NLS-1$
+
+	public static final String PREFERENCE_KEY_PROJECT_SPECIFIC_METAMODEL = "project.specific.metamodel"; //$NON-NLS-1$
+	public static final String PREFERENCE_KEY_METAMODEL_CONTRIBUTOR = "metamodelContributor"; //$NON-NLS-1$
+
 	// Prevent from instantiation
 	private XtendXpandUtil() {
 	}
-
-	public static final String XTEND_XPAND_NATURE_ID = "org.eclipse.xtend.shared.ui.xtendXPandNature"; //$NON-NLS-1$
-	public static final String XTEND_SHARED_UI_PLUGIN_ID = "org.eclipse.xtend.shared.ui"; //$NON-NLS-1$
-
-	public static final String PreferenceConstants__PROJECT_SPECIFIC_METAMODEL = "project.specific.metamodel"; //$NON-NLS-1$
-	public static final String PreferenceConstants__METAMODELCONTRIBUTORS = "metamodelContributor"; //$NON-NLS-1$
 
 	public static String getQualifiedName(IFile underlyingFile, String definitionOrFeatureName) {
 		Assert.isNotNull(underlyingFile);
