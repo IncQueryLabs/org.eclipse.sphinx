@@ -53,8 +53,6 @@ import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
  * A {@link WorkspaceJob workspace job} that supports conversion of {@link IProject project}s to an Xtend/Xpand-enabled
  * plug-in project.
  */
-// TODO (aakar) Get rid of UI dependencies and move to org.eclipse.sphinx.xtendxpand.jobs (Done by aakar and will
-// committed asap)
 @SuppressWarnings("restriction")
 public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 
