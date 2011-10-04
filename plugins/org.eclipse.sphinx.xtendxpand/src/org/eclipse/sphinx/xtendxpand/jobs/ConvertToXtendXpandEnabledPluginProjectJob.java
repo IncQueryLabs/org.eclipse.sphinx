@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,10 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [358082] Precedence of Xtend MetaModels gets lost in Xtend/Xpand runtime enhancements implemented in Sphinx
+ *     itemis - Revised implementation (redesigned overriding points and getters/setters, improved of naming, fixed progress monitor issues)
+ *     See4sys - Replaced ConvertProjectToPluginOperation with ConvertProjectToPluginProjectJob and 
+ *               moved from org.eclipse.sphinx.xtendxpand.ui.jobs to org.eclipse.sphinx.xtendxpand.jobs
  * 
  * </copyright>
  */
@@ -72,16 +76,19 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 
 	private IProject project;
 
-	private String javaExtensionPackageName;
 	private String projectRelativeJavaSourcePath = PROJECT_RELATIVE_JAVA_SOURCE_DEFAULT_PATH;
-	private String compilerCompliance = null;
+	private String compilerCompliance;
+	private String javaExtensionsPackageName;
 	private List<String> requiredBundleIds = null;
 	private List<String> enabledMetaModelContributorTypeNames = null;
 
 	public ConvertToXtendXpandEnabledPluginProjectJob(String name, IProject project) {
 		super(name);
+
 		this.project = project;
-		javaExtensionPackageName = project.getName().toLowerCase() + "." + JAVA_EXTENSIONS_PACKAGE_DEFAULT_NAME; //$NON-NLS-1$
+		compilerCompliance = JavaCore.getOption(JavaCore.COMPILER_COMPLIANCE);
+		javaExtensionsPackageName = project.getName().toLowerCase() + "." + JAVA_EXTENSIONS_PACKAGE_DEFAULT_NAME; //$NON-NLS-1$
+
 		setPriority(Job.BUILD);
 		setRule(ResourcesPlugin.getWorkspace().getRoot());
 	}
@@ -94,23 +101,20 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 		this.projectRelativeJavaSourcePath = projectRelativeJavaSourcePath;
 	}
 
-	public String getJavaExtensionPackageName() {
-		return javaExtensionPackageName;
-	}
-
-	public void setJavaExtensionPackageName(String javaExtensionPackageName) {
-		this.javaExtensionPackageName = javaExtensionPackageName;
-	}
-
 	public String getCompilerCompliance() {
-		if (compilerCompliance == null) {
-			compilerCompliance = JavaCore.getOption(JavaCore.COMPILER_COMPLIANCE);
-		}
 		return compilerCompliance;
 	}
 
 	public void setCompilerCompliance(String compilerCompliance) {
 		this.compilerCompliance = compilerCompliance;
+	}
+
+	public String getJavaExtensionsPackageName() {
+		return javaExtensionsPackageName;
+	}
+
+	public void setJavaExtensionsPackageName(String javaExtensionsPackageName) {
+		this.javaExtensionsPackageName = javaExtensionsPackageName;
 	}
 
 	public List<String> getRequiredBundleIds() {
@@ -344,10 +348,9 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 		}
 		progress.worked(1);
 
-		// Add Java package of extensions
+		// Add Java package for Java-based Xtend extensions
 		IJavaProject javaProject = JavaCore.create(project);
 		IPackageFragmentRoot rootPackageFragmentRoot = javaProject.getPackageFragmentRoot(project.getFolder(getProjectRelativeJavaSourcePath()));
-		rootPackageFragmentRoot.createPackageFragment(
-				project.getName().toLowerCase() + "." + JAVA_EXTENSIONS_PACKAGE_DEFAULT_NAME, true, progress.newChild(1)); //$NON-NLS-1$
+		rootPackageFragmentRoot.createPackageFragment(getJavaExtensionsPackageName(), true, progress.newChild(1));
 	}
 }
