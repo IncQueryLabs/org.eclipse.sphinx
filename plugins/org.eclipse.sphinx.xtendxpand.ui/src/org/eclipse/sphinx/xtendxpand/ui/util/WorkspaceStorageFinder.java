@@ -25,10 +25,10 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
 import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
-import org.eclipse.xtend.shared.ui.StorageFinder;
+import org.eclipse.xtend.shared.ui.StorageFinder2;
 import org.eclipse.xtend.shared.ui.core.internal.ResourceID;
 
-public class WorkspaceStorageFinder implements StorageFinder {
+public class WorkspaceStorageFinder implements StorageFinder2 {
 
 	protected IWorkspaceResourceLoader workspaceResourceLoader;
 
@@ -36,6 +36,14 @@ public class WorkspaceStorageFinder implements StorageFinder {
 		workspaceResourceLoader = createWorkspaceResourceLoader();
 	}
 
+	protected IWorkspaceResourceLoader createWorkspaceResourceLoader() {
+		return new BasicWorkspaceResourceLoader();
+	}
+
+	/*
+	 * @see org.eclipse.xtend.shared.ui.StorageFinder2#findXtendXpandResourceID(org.eclipse.jdt.core.IJavaProject,
+	 * org.eclipse.core.resources.IStorage)
+	 */
 	public ResourceID findXtendXpandResourceID(IJavaProject javaProject, IStorage storage) {
 		workspaceResourceLoader.setContextProject(javaProject.getProject());
 
@@ -62,6 +70,10 @@ public class WorkspaceStorageFinder implements StorageFinder {
 		return null;
 	}
 
+	/*
+	 * @see org.eclipse.xtend.shared.ui.StorageFinder#findStorage(org.eclipse.jdt.core.IJavaProject,
+	 * org.eclipse.xtend.shared.ui.core.internal.ResourceID, boolean)
+	 */
 	public IStorage findStorage(IJavaProject javaProject, ResourceID resourceID, boolean searchJars) {
 		workspaceResourceLoader.setContextProject(javaProject.getProject());
 		workspaceResourceLoader.setSearchArchives(searchJars);
@@ -69,11 +81,10 @@ public class WorkspaceStorageFinder implements StorageFinder {
 		return XtendXpandUtil.getUnderlyingFile(resourceID.name, resourceID.extension, workspaceResourceLoader);
 	}
 
+	/*
+	 * @see org.eclipse.xtend.shared.ui.StorageFinder#getPriority()
+	 */
 	public int getPriority() {
 		return 1;
-	}
-
-	protected IWorkspaceResourceLoader createWorkspaceResourceLoader() {
-		return new BasicWorkspaceResourceLoader();
 	}
 }
