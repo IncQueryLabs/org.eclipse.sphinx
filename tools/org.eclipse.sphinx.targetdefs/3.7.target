@@ -19,7 +19,6 @@
 </location>
 <location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
 <unit id="org.eclipse.emf.compare.sdk.feature.group" version="1.2.1.v20110913-0926"/>
-<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.1.1.v201108020506"/>
 <unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.5.1.v20110823-1800-777T19A_WsXmjNatPxcrPm1rOKlH"/>
 <unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.5.0.v20110502-1600-67O-96SGR55YJeZPedcQnghI6uFA"/>
 <unit id="org.eclipse.emf.sdk.feature.group" version="2.7.1.v20110913-1526"/>
@@ -28,9 +27,16 @@
 <unit id="org.eclipse.graphiti.sdk.feature.feature.group" version="0.8.1.v20110912-1027"/>
 <unit id="org.eclipse.team.svn.feature.group" version="0.7.9.I20110819-1700"/>
 <unit id="org.eclipse.uml2.sdk.feature.group" version="3.2.1.v201109082252"/>
-<unit id="org.eclipse.xpand.sdk.feature.group" version="1.1.0.v201106070515"/>
 <unit id="org.eclipse.xsd.sdk.feature.group" version="2.7.0.v20110606-0949"/>
 <repository location="http://download.eclipse.org/releases/indigo"/>
+</location>
+<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
+<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.2.1.v201109270437"/>
+<repository location="http://download.eclipse.org/sphinx/updates/temp/mwe"/>
+</location>
+<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
+<unit id="org.eclipse.xpand.sdk.feature.group" version="1.2.1.v201109270445"/>
+<repository location="http://download.eclipse.org/sphinx/updates/temp/xpand"/>
 </location>
 <location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
 <unit id="org.eclipse.gmf.sdk.feature.group" version="2.3.0.v20100508-1742-777B-95pDcLakRvph3PMwwfmjSTZ"/>
