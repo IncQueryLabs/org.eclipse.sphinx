@@ -527,8 +527,7 @@ public class EObjectUtilTest extends AbstractTestCase {
 	 * @throws Exception
 	 */
 	public void testGetMixedText() throws Exception {
-		Application hb20Application = (Application) loadInputFile("hbFile20.instancemodel", getTestFileAccessor(),
-				new Hummingbird20ResourceFactoryImpl(), InstanceModel20Package.eINSTANCE, null);
+		Application hb20Application = (Application) loadInputFile("hbFile20.instancemodel", new Hummingbird20ResourceFactoryImpl(), null);
 		assertNotNull(hb20Application);
 		Description description = hb20Application.getDescription();
 		assertNotNull(description);
@@ -555,10 +554,9 @@ public class EObjectUtilTest extends AbstractTestCase {
 		assertEquals(newText, EObjectUtil.getMixedText(description.getMixed()));
 		hb20Application.setDescription(description);
 
-		saveWorkingFile(workingFileName, hb20Application, getTestFileAccessor(), new Hummingbird20ResourceFactoryImpl());
+		saveWorkingFile(workingFileName, hb20Application, new Hummingbird20ResourceFactoryImpl());
 
-		Application savedHb20Application = (Application) loadWorkingFile(workingFileName, getTestFileAccessor(),
-				new Hummingbird20ResourceFactoryImpl(), InstanceModel20Package.eINSTANCE, null);
+		Application savedHb20Application = (Application) loadWorkingFile(workingFileName, new Hummingbird20ResourceFactoryImpl(), null);
 		assertNotNull(savedHb20Application);
 		assertEquals(hb20ApplicationName, savedHb20Application.getName());
 		Description savedDescription = savedHb20Application.getDescription();

@@ -26,7 +26,6 @@ import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
 import org.eclipse.sphinx.tests.emf.internal.Activator;
 import org.eclipse.sphinx.testutils.AbstractTestCase;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.internal.resource.UMLResourceFactoryImpl;
 import org.eclipse.uml2.uml.internal.resource.UMLResourceImpl;
 
@@ -61,7 +60,7 @@ public class MetaModelDescriptorRegistryOutsideWorkspaceTest extends AbstractTes
 	public void testGetDescriptorForPlatformPluginResource() throws Exception {
 
 		// Load UML2 test file from resources/input folder of test plug-in
-		EObject modelRoot = loadInputFile(UML2_FILE_NAME, getTestFileAccessor(), new UMLResourceFactoryImpl(), UMLPackage.eINSTANCE, null);
+		EObject modelRoot = loadInputFile(UML2_FILE_NAME, new UMLResourceFactoryImpl(), null);
 		assertTrue(modelRoot instanceof Model);
 		Resource resource = modelRoot.eResource();
 		assertNotNull(resource);
