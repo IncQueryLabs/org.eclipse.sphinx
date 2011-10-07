@@ -24,6 +24,8 @@ public class Messages extends NLS {
 	public static String task_ConvertingToJavaProject;
 	public static String task_ConvertingToPluginProject;
 	public static String task_ConvertingToXtendXpandProject;
+	public static String error_JRECompliance_NotSupported;
+	public static String error_JRECompliance_NotCompatible;
 
 	static {
 		// Initialize resource bundle

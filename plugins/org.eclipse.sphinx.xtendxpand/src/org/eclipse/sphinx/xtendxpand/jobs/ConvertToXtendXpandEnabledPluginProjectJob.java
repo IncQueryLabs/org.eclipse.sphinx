@@ -28,6 +28,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -42,14 +43,18 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.IVMInstall2;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.pde.internal.core.bundle.WorkspaceBundlePluginModel;
 import org.eclipse.pde.internal.core.ibundle.IBundle;
 import org.eclipse.pde.internal.core.project.PDEProject;
-import org.eclipse.sphinx.platform.internal.Activator;
 import org.eclipse.sphinx.platform.jobs.ConvertProjectToPluginProjectJob;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.StatusUtil;
+import org.eclipse.sphinx.xtendxpand.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.internal.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
 
@@ -59,6 +64,13 @@ import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
  */
 @SuppressWarnings("restriction")
 public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
+
+	/**
+	 * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=309163
+	 * 
+	 * @since 3.6
+	 */
+	public static final boolean HIDE_VERSION_1_7 = true;
 
 	private static final String PROJECT_RELATIVE_JAVA_SOURCE_DEFAULT_PATH = "src"; //$NON-NLS-1$
 
@@ -106,6 +118,7 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 	}
 
 	public void setCompilerCompliance(String compilerCompliance) {
+		validateCompilerCompliance(compilerCompliance);
 		this.compilerCompliance = compilerCompliance;
 	}
 
@@ -208,9 +221,11 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 		// Set compiler compliance
 		IJavaProject javaProject = JavaCore.create(project);
 		String compilerCompliance = getCompilerCompliance();
-		if (compilerCompliance != null) {
+		if (compilerCompliance != null && !JavaCore.getOption(JavaCore.COMPILER_COMPLIANCE).equals(compilerCompliance)) {
 			javaProject.setOption(JavaCore.COMPILER_COMPLIANCE, compilerCompliance);
-		} else {
+			javaProject.setOption(JavaCore.COMPILER_SOURCE, compilerCompliance);
+			javaProject.setOption(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, compilerCompliance);
+		} else if (compilerCompliance == null) {
 			compilerCompliance = javaProject.getOption(JavaCore.COMPILER_COMPLIANCE, true);
 		}
 
@@ -352,5 +367,47 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 		IJavaProject javaProject = JavaCore.create(project);
 		IPackageFragmentRoot rootPackageFragmentRoot = javaProject.getPackageFragmentRoot(project.getFolder(getProjectRelativeJavaSourcePath()));
 		rootPackageFragmentRoot.createPackageFragment(getJavaExtensionsPackageName(), true, progress.newChild(1));
+	}
+
+	protected void validateCompilerCompliance(String compliance) {
+		Assert.isLegal(compliance.equals(JavaCore.VERSION_1_6) || compliance.equals(JavaCore.VERSION_1_5),
+				NLS.bind(Messages.error_JRECompliance_NotSupported, JavaCore.VERSION_1_5, JavaCore.VERSION_1_6));
+		IVMInstall install = JavaRuntime.getDefaultVMInstall();
+		if (install instanceof IVMInstall2) {
+			String compilerCompliance = getCompilerCompliance((IVMInstall2) install, compliance);
+			// compliance to set must be equal or less than compliance level from VMInstall.
+			if (!compilerCompliance.equals(compliance)) {
+				try {
+					float complianceToSet = Float.parseFloat(compliance);
+					float complianceFromVM = Float.parseFloat(compilerCompliance);
+					Assert.isLegal(complianceToSet <= complianceFromVM,
+							NLS.bind(Messages.error_JRECompliance_NotCompatible, compliance, compilerCompliance));
+				} catch (NumberFormatException ex) {
+					PlatformLogUtil.logAsWarning(Activator.getDefault(), ex);
+				}
+			}
+		}
+	}
+
+	protected String getCompilerCompliance(IVMInstall2 vMInstall, String defaultCompliance) {
+		String version = vMInstall.getJavaVersion();
+		if (version == null) {
+			return defaultCompliance;
+		} else if (version.startsWith(JavaCore.VERSION_1_7)) {
+			return HIDE_VERSION_1_7 ? JavaCore.VERSION_1_6 : JavaCore.VERSION_1_7;
+		} else if (version.startsWith(JavaCore.VERSION_1_6)) {
+			return JavaCore.VERSION_1_6;
+		} else if (version.startsWith(JavaCore.VERSION_1_5)) {
+			return JavaCore.VERSION_1_5;
+		} else if (version.startsWith(JavaCore.VERSION_1_4)) {
+			return JavaCore.VERSION_1_4;
+		} else if (version.startsWith(JavaCore.VERSION_1_3)) {
+			return JavaCore.VERSION_1_3;
+		} else if (version.startsWith(JavaCore.VERSION_1_2)) {
+			return JavaCore.VERSION_1_3;
+		} else if (version.startsWith(JavaCore.VERSION_1_1)) {
+			return JavaCore.VERSION_1_3;
+		}
+		return defaultCompliance;
 	}
 }
