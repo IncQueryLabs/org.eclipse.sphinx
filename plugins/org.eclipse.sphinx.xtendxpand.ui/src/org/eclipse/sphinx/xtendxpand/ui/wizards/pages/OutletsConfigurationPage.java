@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -76,18 +77,18 @@ public class OutletsConfigurationPage extends AbstractWizardPage {
 	}
 
 	@Override
-	protected void doCreateControl(Composite parent) {
-		createOutletsGroupContent(parent);
-	}
-
-	protected void createOutletsGroupContent(Composite parent) {
+	protected Control doCreateControl(Composite parent) {
 		Composite parentComposite = new Composite(parent, SWT.NULL);
 		parentComposite.setFont(parent.getFont());
 		parentComposite.setLayout(new GridLayout(2, false));
 		parentComposite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		createOutletsGroupContent(parentComposite);
+		return parentComposite;
+	}
 
+	protected void createOutletsGroupContent(Composite parent) {
 		// Allow user to add specific groups
-		createAdditionalGroups(parentComposite);
+		createAdditionalGroups(parent);
 
 		if (outletsPreference != null) {
 			// Add button enable Xtend/Xpand/Check support
@@ -97,7 +98,7 @@ public class OutletsConfigurationPage extends AbstractWizardPage {
 			if (enableText != null && enableText.length() > 0) {
 				enableButton.setLabelText(enableText);
 				enableButton.setSelection(true);
-				enableButton.fillIntoGrid(parentComposite, 2);
+				enableButton.fillIntoGrid(parent, 2);
 				enableButton.addFieldListener(new IFieldListener() {
 					public void dialogFieldChanged(IField field) {
 						updateOutletsGroupEnableState(enableButton.isSelected());
@@ -107,7 +108,7 @@ public class OutletsConfigurationPage extends AbstractWizardPage {
 
 			// Add outlets group that allow Xtend/Xpand/Check support
 			outletsGroup = new OutletsGroup(Messages.label_outletsGroupName, getOutletProvider());
-			outletsGroup.createContent(parentComposite, 2);
+			outletsGroup.createContent(parent, 2);
 			restoreDefaultButton = SWTUtil.createButton(outletsGroup.getButtonsComposite(), Messages.label_restoreDefaultButtons, SWT.PUSH);
 			restoreDefaultButton.addListener(SWT.Selection, new Listener() {
 				public void handleEvent(Event event) {
@@ -122,7 +123,6 @@ public class OutletsConfigurationPage extends AbstractWizardPage {
 				updateOutletsGroupEnableState(true);
 			}
 		}
-		setControl(parentComposite);
 	}
 
 	/**

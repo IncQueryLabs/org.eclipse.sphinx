@@ -35,6 +35,7 @@ import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.xtend.expression.TypeSystem;
 
 public class XpandConfigurationPage extends AbstractWizardPage {
@@ -62,7 +63,7 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 	}
 
 	@Override
-	protected void doCreateControl(Composite parent) {
+	protected Control doCreateControl(Composite parent) {
 		initializeDialogUnits(parent);
 
 		GridLayout layout = new GridLayout();
@@ -74,7 +75,7 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 
 		// Create page content
 		createPageContent(composite);
-		setControl(composite);
+		return composite;
 	}
 
 	protected void createPageContent(Composite parent) {

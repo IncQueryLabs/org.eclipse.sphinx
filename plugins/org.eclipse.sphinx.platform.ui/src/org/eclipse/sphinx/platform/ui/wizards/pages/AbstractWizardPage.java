@@ -25,6 +25,7 @@ import org.eclipse.sphinx.platform.ui.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 /**
  * Abstraction for wizard pages responsible of the creation of new elements.
@@ -41,7 +42,8 @@ public abstract class AbstractWizardPage extends WizardPage implements IWizardPa
 	}
 
 	public final void createControl(Composite parent) {
-		doCreateControl(parent);
+		Control control = doCreateControl(parent);
+		setControl(control);
 	}
 
 	@Override
@@ -49,7 +51,7 @@ public abstract class AbstractWizardPage extends WizardPage implements IWizardPa
 		return doIsPageComplete();
 	}
 
-	protected abstract void doCreateControl(Composite parent);
+	protected abstract Control doCreateControl(Composite parent);
 
 	protected abstract String doGetDescription() throws MissingResourceException;
 
