@@ -263,7 +263,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		}
 	};
 
-	private ResourceSetListener resourceChangedListener;
+	private ResourceSetListener resourceLoadedListener;
 
 	private ResourceSetListener resourceMovedListener;
 
@@ -451,16 +451,6 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				}
 
 				modelRoot = getEObject(editorInputURI);
-
-				// Given file not loaded yet?
-				if (modelRoot == null) {
-					// Request asynchronous loading of model behind given file if there is any
-					IFile editorInputFile = EcoreUIUtil.getFileFromEditorInput(getEditorInput());
-					IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(editorInputFile);
-					if (modelDescriptor != null) {
-						ModelLoadManager.INSTANCE.loadModel(modelDescriptor, true, null);
-					}
-				}
 
 				if (modelRoot != null && oldModelRoot != null) {
 					oldModelRoot = null;
@@ -1005,10 +995,10 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	protected void addTransactionalEditingDomainListeners(TransactionalEditingDomain editingDomain) {
 		if (editingDomain != null) {
-			// Create and register ResourceSetChangedListener that detects reloaded resources
-			resourceChangedListener = createResourceChangedListener();
-			Assert.isNotNull(resourceChangedListener);
-			editingDomain.addResourceSetListener(resourceChangedListener);
+			// Create and register ResourceSetChangedListener that detects loaded resources
+			resourceLoadedListener = createResourceLoadedListener();
+			Assert.isNotNull(resourceLoadedListener);
+			editingDomain.addResourceSetListener(resourceLoadedListener);
 
 			// Create and register ResourceSetChangedListener that detects renamed or moved resources
 			resourceMovedListener = createResourceMovedListener();
@@ -1034,8 +1024,8 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	protected void removeTransactionalEditingDomainListeners(TransactionalEditingDomain editingDomain) {
 		if (editingDomain != null) {
-			if (resourceChangedListener != null) {
-				editingDomain.removeResourceSetListener(resourceChangedListener);
+			if (resourceLoadedListener != null) {
+				editingDomain.removeResourceSetListener(resourceLoadedListener);
 			}
 			if (resourceMovedListener != null) {
 				editingDomain.removeResourceSetListener(resourceMovedListener);
@@ -1053,31 +1043,35 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		}
 	}
 
-	protected ResourceSetListener createResourceChangedListener() {
+	protected ResourceSetListener createResourceLoadedListener() {
 		return new ResourceSetListenerImpl(
 				NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__IS_LOADED)) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
-				// Retrieve changed resource from notification
+				// Retrieve loaded resources from notification
 				List<?> notifications = event.getNotifications();
 				for (Object object : notifications) {
 					if (object instanceof Notification) {
 						Notification notification = (Notification) object;
-						if (notification.getNotifier() instanceof Resource) {
-							Resource changedResource = (Resource) notification.getNotifier();
+						if (notification.getNewBooleanValue()) {
+							Resource loadedResource = (Resource) notification.getNotifier();
+							// Has loaded resource not been unloaded again subsequently?
+							if (loadedResource.isLoaded()) {
 
-							// Is changed resource equal to model root resource?
-							URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
-							if (editorInputURI != null && changedResource.getURI().equals(editorInputURI.trimFragment())) {
-								handleModelRootResourceChanged();
-								break;
+								// Is loaded resource equal to model root resource?
+								URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
+								if (editorInputURI != null && loadedResource.getURI().equals(editorInputURI.trimFragment())) {
+									// Handle loaded model root resource
+									handleModelRootResourceLoaded();
+									break;
+								}
 							}
 						}
 					}
 				}
 			}
 
-			private void handleModelRootResourceChanged() {
+			private void handleModelRootResourceLoaded() {
 				getSite().getShell().getDisplay().asyncExec(new Runnable() {
 					public void run() {
 						// Discard undo context and reset dirty state
@@ -1115,21 +1109,20 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		return new ResourceSetListenerImpl(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__URI)) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
-				// Retrieve moved resource from notification
+				// Retrieve moved resources from notification
 				List<?> notifications = event.getNotifications();
 				for (Object object : notifications) {
 					if (object instanceof Notification) {
 						Notification notification = (Notification) object;
-						if (notification.getNotifier() instanceof Resource) {
 
-							// Is removed resource equal to model root resource?
-							if (notification.getOldValue() instanceof URI) {
-								URI oldResourceURI = (URI) notification.getOldValue();
-								URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
-								if (editorInputURI != null && oldResourceURI != null && oldResourceURI.equals(editorInputURI.trimFragment())) {
-									handleModelRootResourceMoved((URI) notification.getNewValue());
-									break;
-								}
+						// Is removed resource equal to model root resource?
+						if (notification.getOldValue() instanceof URI) {
+							URI oldResourceURI = (URI) notification.getOldValue();
+							URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
+							if (editorInputURI != null && oldResourceURI != null && oldResourceURI.equals(editorInputURI.trimFragment())) {
+								// Handle moved model root resource
+								handleModelRootResourceMoved((URI) notification.getNewValue());
+								break;
 							}
 						}
 					}
@@ -1173,23 +1166,36 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				for (Object object : notifications) {
 					if (object instanceof Notification) {
 						Notification notification = (Notification) object;
-						if (notification.getOldValue() instanceof Resource) {
-							removedResources.add((Resource) notification.getOldValue());
+						Object oldValue = notification.getOldValue();
+						if (oldValue instanceof Resource) {
+							Resource oldResource = (Resource) oldValue;
+							// Has old resource not been added back subsequently?
+							if (oldResource.getResourceSet() == null) {
+								removedResources.add(oldResource);
+							}
 						}
-						if (notification.getOldValue() instanceof List<?>) {
+						if (oldValue instanceof List<?>) {
 							@SuppressWarnings("unchecked")
-							List<Resource> resources = (List<Resource>) notification.getOldValue();
-							removedResources.addAll(resources);
+							List<Resource> oldResources = (List<Resource>) oldValue;
+							for (Resource oldResource : oldResources) {
+								// Has old resource not been added back subsequently?
+								if (oldResource.getResourceSet() == null) {
+									removedResources.add(oldResource);
+								}
+							}
 						}
 					}
 				}
 
 				// Is model root resource part of removed resources?
 				URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
-				URI modelRootResourceURI = editorInputURI != null ? editorInputURI.trimFragment() : null;
-				for (Resource removedResource : removedResources) {
-					if (removedResource.getURI().equals(modelRootResourceURI)) {
-						handleModelRootResourceRemoved();
+				if (editorInputURI != null) {
+					URI modelRootResourceURI = editorInputURI.trimFragment();
+					for (Resource removedResource : removedResources) {
+						if (removedResource.getURI().equals(modelRootResourceURI)) {
+							// Handle removed model root resource
+							handleModelRootResourceRemoved();
+						}
 					}
 				}
 			}
@@ -1217,31 +1223,46 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				for (Object object : notifications) {
 					if (object instanceof Notification) {
 						Notification notification = (Notification) object;
-
-						if (notification.getOldValue() instanceof EObject) {
-							removedObjects.add((EObject) notification.getOldValue());
+						Object oldValue = notification.getOldValue();
+						if (oldValue instanceof EObject) {
+							EObject oldObject = (EObject) oldValue;
+							// Has old object not been added back subsequently?
+							if (oldObject.eResource() == null) {
+								removedObjects.add(oldObject);
+							}
 						}
-						if (notification.getOldValue() instanceof List<?>) {
-							@SuppressWarnings("unchecked")
-							List<EObject> objects = (List<EObject>) notification.getOldValue();
-							removedObjects.addAll(objects);
+						if (oldValue instanceof List<?>) {
+							for (Object oldValueItem : (List<?>) oldValue) {
+								if (oldValueItem instanceof EObject) {
+									EObject oldObject = (EObject) oldValueItem;
+									// Has old object not been added back subsequently?
+									if (oldObject.eResource() == null) {
+										removedObjects.add(oldObject);
+									}
+								}
+							}
 						}
 					}
 				}
 
-				// Is model root or its parents container are part of removed objects?
+				// Is model root on which this editor had been opened so far or one of its containers part of the
+				// objects that have been removed?
 				if (getModelRoot() == null) {
+					Object oldModelRoot = getOldModelRoot();
 					if (removedObjects.contains(oldModelRoot)) {
+						// Handle removed model root
 						handleModelRootRemoved();
 					} else {
-						for (EObject parent = oldModelRoot.eContainer(); parent != null; parent = parent.eContainer()) {
-							if (removedObjects.contains(parent)) {
-								handleModelRootRemoved();
-								return;
+						if (oldModelRoot instanceof EObject) {
+							for (EObject parent = ((EObject) oldModelRoot).eContainer(); parent != null; parent = parent.eContainer()) {
+								if (removedObjects.contains(parent)) {
+									// Handle removed model root
+									handleModelRootRemoved();
+									return;
+								}
 							}
 						}
 					}
-
 				}
 			}
 
@@ -1435,15 +1456,19 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 */
 	@Override
 	protected void createPages() {
+		// Model root not yet available?
 		if (getModelRoot() == null) {
-			// Close editor if resource behind model root is out of scope
+			// Close editor if file behind model root is out of scope
 			IFile file = EcoreUIUtil.getFileFromEditorInput(getEditorInput());
 			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(file);
 			if (modelDescriptor == null) {
 				close(false);
 				return;
 			} else {
-				// Create temporary loading editor input indication page when model root is not yet available
+				// Request asynchronous loading of model behind editor input
+				ModelLoadManager.INSTANCE.loadModel(modelDescriptor, true, null);
+
+				// Create temporary page indicating that editor input is being loaded
 				try {
 					loadingEditorInputPage = createLoadingEditorInputPage();
 					addPage(loadingEditorInputPage);
