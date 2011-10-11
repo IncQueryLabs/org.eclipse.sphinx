@@ -201,9 +201,6 @@ public class TemplateGroup extends AbstractGroup {
 		definitionNameField.setLabelText(Messages.label_definitionName);
 		definitionNameField.setEditable(false);
 		definitionNameField.fillIntoGrid(parent, numColumns);
-
-		// Load the group settings
-		loadGroupSettings();
 	}
 
 	/**
@@ -230,7 +227,8 @@ public class TemplateGroup extends AbstractGroup {
 				// TODO Replace filtering based on target type names by one that takes inheritance hierarchy into
 				// account, just as org.eclipse.xpand2.XpandExecutionContextImpl.findDefinition(XpandDefinition[],
 				// String, Type, Type[], XpandExecutionContext) does; provide a new helper method similar to
-				// org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil.getApplicableFeatures(List<? extends Callable>, Class<?>, String, List<? extends Type>) to XtendXpandUtil for that purpose
+				// org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil.getApplicableFeatures(List<? extends Callable>,
+				// Class<?>, String, List<? extends Type>) to XtendXpandUtil for that purpose
 				if (type.getName().equals(definition.getTargetType()) || getSimpleTypeName(type).equals(definition.getTargetType())) {
 					result.add(definition.getName());
 				}
@@ -246,7 +244,8 @@ public class TemplateGroup extends AbstractGroup {
 	protected String getSimpleTypeName(Type type) {
 		String typeName = type.getName();
 		int idx = typeName.lastIndexOf(IXtendXpandConstants.NS_DELIMITER);
-		return idx != -1 && typeName.length() >= idx + IXtendXpandConstants.NS_DELIMITER.length() ? typeName.substring(idx + IXtendXpandConstants.NS_DELIMITER.length()) : typeName;
+		return idx != -1 && typeName.length() >= idx + IXtendXpandConstants.NS_DELIMITER.length() ? typeName.substring(idx
+				+ IXtendXpandConstants.NS_DELIMITER.length()) : typeName;
 	}
 
 	public String getDefinitionName() {

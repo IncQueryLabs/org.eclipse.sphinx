@@ -115,9 +115,6 @@ public class FileSelectionGroup extends AbstractGroup {
 			fileListField.setLabelText(fileListLabel);
 			updateFileSelectionEnableState(true);
 		}
-
-		// Load Dialog Settings
-		loadGroupSettings();
 	}
 
 	public void updateFileSelectionEnableState(boolean enabled) {

@@ -202,9 +202,6 @@ public class ExtensionGroup extends AbstractGroup {
 		extensionNameField.setLabelText(Messages.label_extensionName);
 		extensionNameField.setEditable(false);
 		extensionNameField.fillIntoGrid(parent, numColumns);
-
-		// Load the group settings
-		loadGroupSettings();
 	}
 
 	/**

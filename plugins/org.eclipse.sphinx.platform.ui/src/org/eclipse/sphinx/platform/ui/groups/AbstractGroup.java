@@ -80,6 +80,9 @@ public abstract class AbstractGroup implements IGroup {
 
 		parentComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		doCreateContent(parentComposite, numColumns);
+
+		// Load the group settings
+		loadGroupSettings();
 	}
 
 	/**
