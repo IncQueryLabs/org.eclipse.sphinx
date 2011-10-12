@@ -14,11 +14,9 @@
  */
 package org.eclipse.sphinx.gmf.runtime.ui.editor.document;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +50,9 @@ import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.ResourceSetChangeEvent;
 import org.eclipse.emf.transaction.ResourceSetListener;
 import org.eclipse.emf.transaction.ResourceSetListenerImpl;
+import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.emf.workspace.IWorkspaceCommandStack;
 import org.eclipse.emf.workspace.ResourceUndoContext;
 import org.eclipse.emf.workspace.util.WorkspaceSynchronizer;
@@ -61,7 +61,6 @@ import org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.DiagramDocum
 import org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.IDiagramDocument;
 import org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.IDiagramDocumentProvider;
 import org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.IDocument;
-import org.eclipse.gmf.runtime.emf.core.resources.GMFResourceFactory;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.osgi.util.NLS;
@@ -82,9 +81,6 @@ import org.eclipse.ui.part.FileEditorInput;
 
 public class BasicDocumentProvider extends AbstractDocumentProvider implements IDiagramDocumentProvider {
 
-	/**
-	 * 
-	 */
 	private long computeModificationStamp(GMFResourceInfo info) {
 		int result = 0;
 		IFile file = EcorePlatformUtil.getFile(getDiagramResource(info));
@@ -98,9 +94,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		return result;
 	}
 
-	/**
-	 * @generated
-	 */
 	private ISchedulingRule computeSchedulingRule(IResource toCreateOrModify) {
 		if (toCreateOrModify.exists()) {
 			return ResourcesPlugin.getWorkspace().getRuleFactory().modifyRule(toCreateOrModify);
@@ -124,7 +117,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	 */
 	@Override
 	protected ElementInfo createElementInfo(Object element) throws CoreException {
-		if (false == element instanceof FileEditorInput && false == element instanceof URIEditorInput) {
+		if (!(element instanceof IEditorInput)) {
 			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
 					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
 					null));
@@ -143,13 +136,15 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	 */
 	@Override
 	protected IDocument createDocument(Object element) throws CoreException {
-		if (false == element instanceof FileEditorInput && false == element instanceof URIEditorInput) {
+		if (!(element instanceof IEditorInput)) {
 			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
 					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
 					null));
 		}
-		IDocument document = createEmptyDocument((IEditorInput) element);
-		setDocumentContent(document, (IEditorInput) element);
+		IEditorInput editorInput = (IEditorInput) element;
+		IDocument document = createEmptyDocument(editorInput);
+
+		setDocumentContent(document, editorInput);
 		setupDocument(element, document);
 		return document;
 	}
@@ -176,9 +171,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		return document;
 	}
 
-	/**
-	 * @generated
-	 */
 	@Override
 	protected void doSynchronize(Object element, IProgressMonitor monitor) throws CoreException {
 		GMFResourceInfo info = getGMFResourceInfo(element);
@@ -189,9 +181,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		super.doSynchronize(element, monitor);
 	}
 
-	/**
-	 * @generated
-	 */
 	@Override
 	protected void doSaveDocument(IProgressMonitor monitor, Object element, IDocument document, boolean overwrite) throws CoreException {
 		if (element instanceof IEditorInput) {
@@ -228,7 +217,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 				URI newResoruceURI = EcoreUIUtil.getURIFromEditorInput((IEditorInput) element);
 
 				IDiagramDocument diagramDocument = (IDiagramDocument) document;
-				final Diagram diagramCopy = (Diagram) EcoreUtil.copy(diagramDocument.getDiagram());
+				final Diagram diagramCopy = EcoreUtil.copy(diagramDocument.getDiagram());
 				EcorePlatformUtil.saveNewModelResource(diagramDocument.getEditingDomain(), EcorePlatformUtil.getFile(newResoruceURI).getFullPath(),
 						getDiagramContentType(), diagramCopy, false, monitor);
 			}
@@ -246,7 +235,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	 * @return
 	 */
 	protected Map<?, ?> getSaveOptions() {
-		return null;
+		return Collections.emptyMap();
 	}
 
 	/**
@@ -263,9 +252,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		super.doValidateState(element, computationContext);
 	}
 
-	/**
-	 * @generated
-	 */
 	@Override
 	protected void doUpdateStateCache(Object element) throws CoreException {
 		GMFResourceInfo info = getGMFResourceInfo(element);
@@ -291,9 +277,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		return WorkspaceEditingDomainUtil.getEditingDomain(EcoreUIUtil.getFileFromEditorInput(editorInput));
 	}
 
-	/**
-	 * @generated
-	 */
 	@Override
 	protected ISchedulingRule getSaveRule(Object element) {
 		GMFResourceInfo info = getGMFResourceInfo(element);
@@ -308,9 +291,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		return null;
 	}
 
-	/**
-	 * @generated
-	 */
 	@Override
 	protected ISchedulingRule getResetRule(Object element) {
 		GMFResourceInfo info = getGMFResourceInfo(element);
@@ -325,9 +305,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		return null;
 	}
 
-	/**
-	 * @generated
-	 */
 	@Override
 	protected ISchedulingRule getSynchronizeRule(Object element) {
 		GMFResourceInfo info = getGMFResourceInfo(element);
@@ -342,9 +319,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		return null;
 	}
 
-	/**
-	 * @generated
-	 */
 	@Override
 	protected ISchedulingRule getValidateStateRule(Object element) {
 		GMFResourceInfo info = getGMFResourceInfo(element);
@@ -369,17 +343,11 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		return EcoreUIUtil.getURIFromEditorInput(editorInput);
 	}
 
-	/**
-	 * @generated
-	 */
 	@Override
 	protected IRunnableContext getOperationRunner(IProgressMonitor monitor) {
 		return null;
 	}
 
-	/**
-	 * @generated
-	 */
 	protected void handleElementChanged(GMFResourceInfo info, Resource changedResource, IProgressMonitor monitor) {
 		IFile file = WorkspaceSynchronizer.getFile(changedResource);
 		if (file != null) {
@@ -421,9 +389,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		fireElementMoved(input, new URIEditorInput(uri));
 	}
 
-	/**
-	 * @generated
-	 */
 	protected void handleElementRemoved(IEditorInput input) {
 		fireElementDeleted(input);
 	}
@@ -436,7 +401,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	 *            the blue-print element
 	 * @param document
 	 *            the document to set up
-	 * @generated
 	 */
 	protected void setupDocument(Object element, IDocument document) {
 		// for subclasses
@@ -445,69 +409,49 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	/**
 	 *
 	 */
-	@SuppressWarnings("unchecked")
 	protected void setDocumentContent(IDocument document, IEditorInput element) throws CoreException {
-		IDiagramDocument diagramDocument = (IDiagramDocument) document;
-		TransactionalEditingDomain domain = diagramDocument.getEditingDomain();
-		if (element instanceof FileEditorInput) {
-			IFile diagramFile = ((FileEditorInput) element).getFile();
-			EcorePlatformUtil.loadModelRoot(domain, diagramFile, GMFResourceFactory.getDefaultLoadOptions());
-			// ModelLoadManager.INSTANCE.loadFile(diagramFile, false, getProgressMonitor(),
-			// GMFResourceFactory.getDefaultLoadOptions());
-			Diagram diagram = (Diagram) EcoreResourceUtil.getModelRoot(EcorePlatformUtil.getResource(diagramFile));
-			document.setContent(diagram);
-		} else if (element instanceof URIEditorInput) {
-			// FIXME review this ???
-			URI uri = ((URIEditorInput) element).getURI();
-			Resource resource = null;
-			try {
-				resource = domain.getResourceSet().getResource(uri.trimFragment(), false);
-				if (resource == null) {
-					resource = domain.getResourceSet().createResource(uri.trimFragment());
-				}
-				if (!resource.isLoaded()) {
-					try {
-						Map options = new HashMap(GMFResourceFactory.getDefaultLoadOptions());
-						// @see 171060
-						// options.put(org.eclipse.emf.ecore.xmi.XMLResource.OPTION_RECORD_UNKNOWN_FEATURE,
-						// Boolean.TRUE);
-						resource.load(options);
-					} catch (IOException e) {
-						resource.unload();
-						throw e;
-					}
-				}
-				if (uri.fragment() != null) {
-					EObject rootElement = resource.getEObject(uri.fragment());
-					if (rootElement instanceof Diagram) {
-						document.setContent(rootElement);
-						return;
-					}
-				} else {
-					for (Object rootElement : resource.getContents()) {
-						if (rootElement instanceof Diagram) {
-							document.setContent(rootElement);
-							return;
-						}
-					}
-				}
-				throw new RuntimeException(Messages.error_NoDiagramInResource);
-			} catch (Exception e) {
-				CoreException thrownExcp = null;
-				if (e instanceof CoreException) {
-					thrownExcp = (CoreException) e;
-				} else {
-					String msg = e.getLocalizedMessage();
-					thrownExcp = new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, msg != null ? msg
-							: Messages.error_DiagramLoading, e));
-				}
-				throw thrownExcp;
-			}
-		} else {
+		URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(element);
+		if (editorInputURI == null) {
 			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
 					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
 					null));
 		}
+
+		IDiagramDocument diagramDocument = (IDiagramDocument) document;
+		Diagram diagram = loadDiagram(diagramDocument.getEditingDomain(), editorInputURI);
+		if (diagram == null) {
+			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, Messages.error_NoDiagramInResource,
+					new RuntimeException(Messages.error_NoDiagramInResource)));
+		}
+
+		document.setContent(diagram);
+	}
+
+	protected Diagram loadDiagram(final TransactionalEditingDomain editingDomain, final URI uri) {
+		if (editingDomain != null) {
+			EObject modelObject = null;
+			try {
+				modelObject = TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
+					public void run() {
+						if (uri.hasFragment()) {
+							setResult(EcoreResourceUtil.loadModelFragment(editingDomain.getResourceSet(), uri));
+						} else {
+							setResult(EcoreResourceUtil.loadModelRoot(editingDomain.getResourceSet(), uri, getLoadOptions()));
+						}
+					}
+				});
+			} catch (InterruptedException ex) {
+				PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
+			}
+			if (modelObject instanceof Diagram) {
+				return (Diagram) modelObject;
+			}
+		}
+		return null;
+	}
+
+	protected Map<?, ?> getLoadOptions() {
+		return Collections.emptyMap();
 	}
 
 	protected Resource getDiagramResource(GMFResourceInfo info) {
@@ -633,9 +577,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		return super.isReadOnly(element);
 	}
 
-	/**
-	 * @generated
-	 */
 	@Override
 	public boolean isModifiable(Object element) {
 		if (!isStateValidated(element)) {
@@ -659,9 +600,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		return super.isModifiable(element);
 	}
 
-	/**
-	 * @generated
-	 */
 	@Override
 	public boolean isSynchronized(Object element) {
 		GMFResourceInfo info = getGMFResourceInfo(element);
@@ -671,74 +609,26 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		return super.isSynchronized(element);
 	}
 
-	/**
-	 * @generated
-	 */
 	protected class GMFResourceInfo extends ElementInfo {
 
-		/**
-		 * @generated
-		 */
 		private long myModificationStamp = IResource.NULL_STAMP;
-
-		/**
-		 * @generated
-		 */
 		private WorkspaceSynchronizer mySynchronizer;
-
-		/**
-		 * @generated
-		 */
 		private final Collection<Resource> myUnSynchronizedResources = new ArrayList<Resource>();
-
-		/**
-		 * @generated
-		 */
 		private final IDiagramDocument myDocument;
-
-		/**
-		 * @generated
-		 */
 		private final IEditorInput myEditorInput;
-
-		/**
-		 * 
-		 */
 		private final URI domainModelResourceURI;
-
-		/**
-		 * @generated
-		 */
 		private boolean myUpdateCache = true;
-
-		/**
-		 * @generated
-		 */
 		private boolean myModifiable = false;
-
-		/**
-		 * @generated
-		 */
 		private boolean myReadOnly = true;
-
-		/**
-		 * @generated
-		 */
-		// private ResourceSetModificationListener resourceChangedListener;
-
 		private IOperationHistoryListener affectedObjectsListener;
-
 		private ResourceSetListener resourceRemovedListener;
-
 		private IModelDirtyChangeListener dirtyChangedListener;
 
-		/**
-		 * @generated
-		 */
 		public GMFResourceInfo(IDiagramDocument document, IEditorInput editorInput) {
 			super(document);
 			myDocument = document;
-			domainModelResourceURI = document.getDiagram().getElement().eResource().getURI();
+			EObject element = document.getDiagram().getElement();
+			domainModelResourceURI = element != null ? element.eResource().getURI() : null;
 			myEditorInput = editorInput;
 			addTransactionalEditingDomainListeners(document.getEditingDomain());
 			startResourceListening();
@@ -807,124 +697,78 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 			}
 		}
 
-		/**
-		 * @generated
-		 */
 		public final void startResourceListening() {
 			mySynchronizer = new WorkspaceSynchronizer(getEditingDomain(), new SynchronizerDelegate());
 		}
 
-		/**
-		 * @generated
-		 */
 		public final void stopResourceListening() {
 			mySynchronizer.dispose();
 			mySynchronizer = null;
 		}
 
-		/**
-		 * @generated
-		 */
 		public long getModificationStamp() {
 			return myModificationStamp;
 		}
 
-		/**
-		 * @generated
-		 */
 		public void setModificationStamp(long modificationStamp) {
 			myModificationStamp = modificationStamp;
 		}
 
-		/**
-		 * @generated
-		 */
 		public TransactionalEditingDomain getEditingDomain() {
 			return myDocument.getEditingDomain();
 		}
 
-		/**
-		 * @generated
-		 */
 		public ResourceSet getResourceSet() {
 			return getEditingDomain().getResourceSet();
 		}
 
-		/**
-		 * @generated
-		 */
 		public IEditorInput getEditorInput() {
 			return myEditorInput;
 		}
 
-		/**
-		 * @generated
-		 */
 		public void dispose() {
-			stopResourceListening();
-			removeTransactionalEditingDomainListeners(myDocument.getEditingDomain());
-			ModelLoadManager.INSTANCE.unloadFile(EcoreUIUtil.getFileFromEditorInput(myEditorInput), false, getProgressMonitor());
+			IProgressMonitor monitor = getProgressMonitor();
+			try {
+				stopResourceListening();
+				removeTransactionalEditingDomainListeners(myDocument.getEditingDomain());
+				EcorePlatformUtil.unloadFile(myDocument.getEditingDomain(), EcoreUIUtil.getFileFromEditorInput(myEditorInput));
+			} finally {
+				monitor.done();
+			}
 		}
 
-		/**
-		 * @generated
-		 */
 		public boolean isSynchronized() {
 			return myUnSynchronizedResources.size() == 0;
 		}
 
-		/**
-		 * @generated
-		 */
 		public void setUnSynchronized(Resource resource) {
 			myUnSynchronizedResources.add(resource);
 		}
 
-		/**
-		 * @generated
-		 */
 		public void setSynchronized(Resource resource) {
 			myUnSynchronizedResources.remove(resource);
 		}
 
-		/**
-		 * @generated
-		 */
 		public boolean isUpdateCache() {
 			return myUpdateCache;
 		}
 
-		/**
-		 * @generated
-		 */
 		public void setUpdateCache(boolean update) {
 			myUpdateCache = update;
 		}
 
-		/**
-		 * @generated
-		 */
 		public boolean isModifiable() {
 			return myModifiable;
 		}
 
-		/**
-		 * @generated
-		 */
 		public void setModifiable(boolean modifiable) {
 			myModifiable = modifiable;
 		}
 
-		/**
-		 * @generated
-		 */
 		public boolean isReadOnly() {
 			return myReadOnly;
 		}
 
-		/**
-		 * @generated
-		 */
 		public void setReadOnly(boolean readOnly) {
 			myReadOnly = readOnly;
 		}
@@ -994,9 +838,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 
 	// FIXME aakar remove this listener
 	private class AffectedObjectsListener implements IOperationHistoryListener {
-		/**
-	 *
-	 */
+
 		private final GMFResourceInfo myInfo;
 
 		public AffectedObjectsListener(GMFResourceInfo info) {
@@ -1047,9 +889,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 
 	private class ResourceRemovedListener extends ResourceSetListenerImpl {
 
-		/**
-		 * 
-		 */
 		private final GMFResourceInfo myInfo;
 
 		public ResourceRemovedListener(GMFResourceInfo info) {
@@ -1100,9 +939,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 
 	private class ModelDirtyChangeListener implements IModelDirtyChangeListener {
 
-		/**
-	 *
-	 */
 		private final GMFResourceInfo myInfo;
 
 		public ModelDirtyChangeListener(GMFResourceInfo info) {
