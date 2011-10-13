@@ -100,12 +100,14 @@ public class OutletProvider implements IPreferenceChangeListener {
 	}
 
 	public synchronized void store() {
+		// Unapplied outlets must be cleared before setting the preference into the project or the workspace, otherwise
+		// newly added outlets will be duplicated.
+		unappliedOutlets.clear();
 		if (project != null) {
 			outletsPreference.setInProject(project, getOutlets());
 		} else {
 			outletsPreference.setInWorkspace(getOutlets());
 		}
-		unappliedOutlets.clear();
 	}
 
 	public void preferenceChange(PreferenceChangeEvent event) {
