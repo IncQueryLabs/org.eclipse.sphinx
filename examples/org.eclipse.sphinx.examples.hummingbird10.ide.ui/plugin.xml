@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+
+<!--
+<copyright>
+
+Copyright (c) 2011 See4sys and others.
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+which accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html
+ 
+Contributors: 
+    See4sys - Initial API and implementation
+
+</copyright>
+-->
+
+<plugin>
+
+  <!-- Common navigator viewer content binding contribution for Hummingbird models -->
+
+  <extension point="org.eclipse.ui.navigator.viewer">
+    <viewerContentBinding viewerId="org.eclipse.sphinx.examples.explorer.views.modelExplorer">
+      <includes>
+        <contentExtension pattern="org.eclipse.sphinx.examples.hummingbird10.ide.ui.navigatorContent.hummingbird" />
+      </includes>
+    </viewerContentBinding>
+  </extension>
+  
+   <!-- Common navigator content contribution for Hummingbird models -->
+  
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <navigatorContent
+            id="org.eclipse.sphinx.examples.hummingbird10.ide.ui.navigatorContent.hummingbird"
+            name="%sphinx.examples.hummingbird10.ide.ui.navigatorContent.hummingbird"
+            activeByDefault="true"
+            contentProvider="org.eclipse.sphinx.examples.hummingbird10.ide.ui.providers.ExtendedExplorerContentProvider"
+            labelProvider="org.eclipse.sphinx.examples.hummingbird10.ide.ui.providers.ExtendedExplorerLabelProvider"
+            priority="normal">
+         <triggerPoints>
+            <and>
+               <instanceof value="org.eclipse.core.resources.IFile"/>
+               <test
+                     property="org.eclipse.sphinx.emf.isInScope"
+                     value="true" />
+               <test 
+                     property="org.eclipse.sphinx.emf.metaModelIdMatches"
+                     value="org\.eclipse\.sphinx\.examples\.hummingbird10"/>
+            </and>
+         </triggerPoints>
+         <possibleChildren>
+            <or>
+               <and>
+                  <instanceof
+                        value="org.eclipse.emf.edit.provider.IWrapperItemProvider">
+                  </instanceof>
+                  <test
+                        property="org.eclipse.sphinx.emf.ownerClassNameMatches"
+                        value="org\.eclipse\.sphinx\.examples\.hummingbird10\..*">
+                  </test>
+               </and>
+            </or>
+            <and>
+               <instanceof
+                     value="org.eclipse.emf.ecore.EObject">
+               </instanceof>
+               <test
+                     property="org.eclipse.sphinx.emf.classNameMatches"
+                     value="org\.eclipse\.sphinx\.examples\.hummingbird10\..*">
+               </test>
+            </and>
+         </possibleChildren>
+         <dropAssistant 
+               id="org.eclipse.sphinx.examples.hummingbird.ide.ui.navigatorContent.dropAssistant.hummingbird"
+               class="org.eclipse.sphinx.emf.explorer.BasicDropAdapterAssistant">
+            <possibleDropTargets>
+               <instanceof value="org.eclipse.emf.ecore.EObject"/>
+            </possibleDropTargets>
+         </dropAssistant>      
+      </navigatorContent>
+   </extension>
+   
+   <!-- Form editor with tabbed property sheet contribution for Hummingbird models -->
+   
+  
+   <!-- Overlay icon for projects with Hummingbird nature -->
+   
+
+   <!-- Label decorator indicating Hummingbird metamodel version supported by projects with Hummingbird nature -->
+
+</plugin>
