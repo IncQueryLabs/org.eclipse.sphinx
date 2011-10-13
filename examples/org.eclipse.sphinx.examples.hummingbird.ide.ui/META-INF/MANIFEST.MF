@@ -8,10 +8,10 @@ Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.common,
  org.eclipse.emf.common.ui,
- org.eclipse.sphinx.emf.explorer,
+ org.eclipse.sphinx.emf.explorer;visibility:=reexport,
  org.eclipse.sphinx.emf.editors.forms,
  org.eclipse.sphinx.examples.common.ui,
- org.eclipse.sphinx.examples.hummingbird.ide
+ org.eclipse.sphinx.examples.hummingbird.ide;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.sphinx.examples.hummingbird.ide.ui.internal;x-internal:=true

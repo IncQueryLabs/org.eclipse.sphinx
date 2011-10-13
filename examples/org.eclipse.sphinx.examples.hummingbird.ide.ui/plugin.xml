@@ -29,44 +29,6 @@ Contributors:
   </extension>
   
    <!-- Common navigator content contribution for Hummingbird models -->
-  
-   <extension
-         point="org.eclipse.ui.navigator.navigatorContent">
-      <navigatorContent
-            id="org.eclipse.sphinx.examples.hummingbird.ide.ui.navigatorContent.hummingbird"
-            name="%sphinx.examples.hummingbird.ide.ui.navigatorContent.hummingbird"
-            activeByDefault="true"
-            contentProvider="org.eclipse.sphinx.emf.explorer.BasicExplorerContentProvider"
-            labelProvider="org.eclipse.sphinx.emf.explorer.BasicExplorerLabelProvider"
-            priority="normal">
-         <triggerPoints>
-            <and>
-               <instanceof value="org.eclipse.core.resources.IFile"/>
-               <test
-                     property="org.eclipse.sphinx.emf.isInScope"
-                     value="true" />
-               <test 
-                     property="org.eclipse.sphinx.emf.metaModelIdMatches"
-                     value="org\.eclipse\.sphinx\.examples\.hummingbird\d\d"/>
-            </and>
-         </triggerPoints>
-         <possibleChildren>
-            <and>
-               <instanceof value="org.eclipse.emf.ecore.EObject" />
-               <test 
-                     property="org.eclipse.sphinx.emf.classNameMatches"
-                     value="org\.eclipse\.sphinx\.examples\.hummingbird\d\d\..*"/>
-            </and>
-         </possibleChildren>
-         <dropAssistant 
-               id="org.eclipse.sphinx.examples.hummingbird.ide.ui.navigatorContent.dropAssistant.hummingbird"
-               class="org.eclipse.sphinx.emf.explorer.BasicDropAdapterAssistant">
-            <possibleDropTargets>
-               <instanceof value="org.eclipse.emf.ecore.EObject"/>
-            </possibleDropTargets>
-         </dropAssistant>      
-      </navigatorContent>
-   </extension>
    
    <!-- Form editor with tabbed property sheet contribution for Hummingbird models -->
    
