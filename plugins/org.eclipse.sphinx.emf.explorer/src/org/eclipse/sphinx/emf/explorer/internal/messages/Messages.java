@@ -21,6 +21,19 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.emf.explorer.internal.messages.Messages"; //$NON-NLS-1$
 
 	public static String label_EmptyFeatureMapEntryLabel;
+	public static String label_confirmCopy;
+	public static String label_OKToCopy;
+	public static String label_confirmMove;
+	public static String label_OKToMove;
+	public static String label_confirmDuplicate;
+	public static String label_OKToHaveDuplicate;
+
+	public static String info_targetObjectType;
+	public static String info_dropCommandCannotExecute;
+
+	public static String error_transferTypeNotSupported;
+	public static String error_targetNoEditingDomain;
+	public static String error_failedToSaveModelsInWorkbench;
 
 	static {
 		// initialize resource bundle

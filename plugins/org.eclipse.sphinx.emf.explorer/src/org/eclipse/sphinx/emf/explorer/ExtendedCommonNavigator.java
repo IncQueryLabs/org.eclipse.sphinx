@@ -279,7 +279,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 		return getViewSite().getId();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class adapter) {
 		if (IPropertySheetPage.class == adapter) {

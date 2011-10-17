@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.sphinx.emf.explorer.internal.Activator;
+import org.eclipse.sphinx.emf.explorer.internal.messages.Messages;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveableFilter;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
@@ -33,14 +34,11 @@ import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
 import org.eclipse.ui.internal.ide.IIDEHelpContextIds;
 
 /**
- * 
+ * Customized close resource action that is intended to override the {@link CloseResourceAction original one} from
+ * Eclipse. It is used to save dirty models before closing.
  */
+@SuppressWarnings("restriction")
 public class CloseResourceOverrideAction extends CloseResourceAction {
-
-	/**
-	 * The shell in which to show the progress and problems dialog.
-	 */
-	private final IShellProvider shellProvider;
 
 	/**
 	 * The id of this action.
@@ -54,9 +52,7 @@ public class CloseResourceOverrideAction extends CloseResourceAction {
 	 *            the shell provider for any dialogs
 	 */
 	public CloseResourceOverrideAction(final IShellProvider provider) {
-		super(provider);
-		Assert.isNotNull(provider);
-		shellProvider = provider;
+		this(provider, IDEWorkbenchMessages.CloseResourceAction_text);
 	}
 
 	/**
@@ -70,9 +66,12 @@ public class CloseResourceOverrideAction extends CloseResourceAction {
 	public CloseResourceOverrideAction(IShellProvider provider, String text) {
 		super(provider, text);
 		Assert.isNotNull(provider);
-		shellProvider = provider;
+		initAction();
 	}
 
+	/**
+	 * Initialize action
+	 */
 	private void initAction() {
 		setId(ID);
 		setToolTipText(IDEWorkbenchMessages.CloseResourceAction_toolTip);
@@ -102,10 +101,7 @@ public class CloseResourceOverrideAction extends CloseResourceAction {
 		final boolean canceled[] = new boolean[1];
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			public void run() {
-				// TODO Externalize message
-				SafeRunner.run(new SafeRunnable("An error occurred while saving dirty models in the workbench"/*
-																											 * Messages.error_failedToSaveModelsInWorkbench
-																											 */) {
+				SafeRunner.run(new SafeRunnable(Messages.error_failedToSaveModelsInWorkbench) {
 					public void run() {
 						IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 						if (window == null) {

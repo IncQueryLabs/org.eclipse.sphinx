@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2010 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - Reviewed and improved fix for [355368] Drag and drop tree-item/element from file A to file B got problem
  * 
  * </copyright>
  */
@@ -29,7 +30,6 @@ import org.eclipse.emf.edit.command.DragAndDropCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
-import org.eclipse.emf.edit.provider.WrapperItemProvider;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -37,6 +37,7 @@ import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.sphinx.emf.explorer.internal.Activator;
+import org.eclipse.sphinx.emf.explorer.internal.messages.Messages;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -81,7 +82,7 @@ public class BasicDropAdapterAssistant extends CommonDropAdapterAssistant {
 			}
 			return Status.OK_STATUS;
 		}
-		return new Status(IStatus.ERROR, Activator.getPlugin().getBundle().getSymbolicName(), "Cannot drop, transfer type is not supported"); //$NON-NLS-1$
+		return new Status(IStatus.ERROR, Activator.getPlugin().getBundle().getSymbolicName(), Messages.error_transferTypeNotSupported);
 	}
 
 	/*
@@ -93,16 +94,15 @@ public class BasicDropAdapterAssistant extends CommonDropAdapterAssistant {
 		if (LocalSelectionTransfer.getTransfer().isSupportedType(transferType)) {
 			List<EObject> selectedEObjects = getSelectedEObjects();
 
-			if (!(target instanceof EObject) && !(target instanceof WrapperItemProvider)) {
-				return StatusUtil.createStatus(IStatus.INFO, 0,
-						"Target object must be either an EObject or an WrapperItemProvider.", Activator.getPlugin() //$NON-NLS-1$
-								.getSymbolicName(), new RuntimeException());
+			if (!(target instanceof EObject) && !(target instanceof IWrapperItemProvider)) {
+				return StatusUtil.createStatus(IStatus.INFO, 0, Messages.info_targetObjectType, Activator.getPlugin().getSymbolicName(),
+						new RuntimeException());
 			}
 
 			TransactionalEditingDomain editingDomain = getEditingDomain(target);
 			if (editingDomain == null) {
-				return StatusUtil.createStatus(IStatus.ERROR, 0,
-						"Target object has no editing domain.", Activator.getPlugin().getBundle().getSymbolicName(), new RuntimeException()); //$NON-NLS-1$
+				return StatusUtil.createStatus(IStatus.ERROR, 0, Messages.error_targetNoEditingDomain, Activator.getPlugin().getBundle()
+						.getSymbolicName(), new RuntimeException());
 			}
 
 			Object unwrappedTarget = AdapterFactoryEditingDomain.unwrap(target);
@@ -118,31 +118,31 @@ public class BasicDropAdapterAssistant extends CommonDropAdapterAssistant {
 					return Status.OK_STATUS;
 				}
 			} else {
-				return StatusUtil.createStatus(IStatus.INFO, 0,
-						"Cannot execute drop command.", Activator.getPlugin().getBundle().getSymbolicName(), new RuntimeException()); //$NON-NLS-1$
+				return StatusUtil.createStatus(IStatus.INFO, 0, Messages.info_dropCommandCannotExecute, Activator.getPlugin().getBundle()
+						.getSymbolicName(), new RuntimeException());
 			}
 		}
-		return StatusUtil.createStatus(IStatus.ERROR, 0,
-				"Cannot drop, transfer type is not supported.", Activator.getPlugin().getBundle().getSymbolicName(), new RuntimeException()); //$NON-NLS-1$
+		return StatusUtil.createStatus(IStatus.ERROR, 0, Messages.error_transferTypeNotSupported,
+				Activator.getPlugin().getBundle().getSymbolicName(), new RuntimeException());
 	}
 
 	protected IStatus handleDropCopy(Object target, CommonDropAdapter dropAdapter, DropTargetEvent event) {
 		TransactionalEditingDomain domain = getEditingDomain(target);
 		if (domain == null) {
-			return StatusUtil.createStatus(IStatus.ERROR, 0,
-					"Target object has no editing domain.", Activator.getPlugin().getBundle().getSymbolicName(), new RuntimeException()); //$NON-NLS-1$
+			return StatusUtil.createStatus(IStatus.ERROR, 0, Messages.error_targetNoEditingDomain, Activator.getPlugin().getBundle()
+					.getSymbolicName(), new RuntimeException());
 		}
 		List<EObject> selectedEObjects = getSelectedEObjects();
 		Command command = DragAndDropCommand.create(domain, target, getDefaultDragAndDropLocation(), event.operations, DND.DROP_COPY,
 				selectedEObjects);
-		return promptAndExecuteDropCopy(domain, target, command, "Confirm Copy", "Press OK to confirm copy.");
+		return promptAndExecuteDropCopy(domain, target, command, Messages.label_confirmCopy, Messages.label_OKToCopy);
 	}
 
 	protected IStatus handleDropMove(Object target, CommonDropAdapter dropAdapter, DropTargetEvent event) {
 		TransactionalEditingDomain domain = getEditingDomain(target);
 		if (domain == null) {
-			return StatusUtil.createStatus(IStatus.ERROR, 0,
-					"Target object has no editing domain.", Activator.getPlugin().getBundle().getSymbolicName(), new RuntimeException()); //$NON-NLS-1$
+			return StatusUtil.createStatus(IStatus.ERROR, 0, Messages.error_targetNoEditingDomain, Activator.getPlugin().getBundle()
+					.getSymbolicName(), new RuntimeException());
 		}
 
 		List<EObject> selectedEObjects = getSelectedEObjects();
@@ -151,7 +151,7 @@ public class BasicDropAdapterAssistant extends CommonDropAdapterAssistant {
 		Command command = DragAndDropCommand.create(domain, unwrappedTarget, getDefaultDragAndDropLocation(), event.operations, DND.DROP_MOVE,
 				selectedEObjects);
 
-		return promptAndExecuteDropMove(domain, target, command, "Confirm move", "Press OK to confirm move");
+		return promptAndExecuteDropMove(domain, target, command, Messages.label_confirmMove, Messages.label_OKToMove);
 	}
 
 	/**
@@ -208,8 +208,13 @@ public class BasicDropAdapterAssistant extends CommonDropAdapterAssistant {
 			Object o = i.next();
 			if (o instanceof EObject) {
 				selectedEObject.add((EObject) o);
-			} else if (o instanceof WrapperItemProvider) {
-				selectedEObject.add((EObject) ((WrapperItemProvider) o).getValue());
+			} else if (o instanceof IWrapperItemProvider) {
+				Object obj = ((IWrapperItemProvider) o).getValue();
+				if (obj instanceof EObject) {
+					// interested in EObject only
+					selectedEObject.add((EObject) obj);
+				}
+				// obj can be TransientItemProvider, skip this case
 			} else if (o instanceof IAdaptable) {
 				IAdaptable a = (IAdaptable) o;
 				EObject eo = (EObject) a.getAdapter(EObject.class);
@@ -230,7 +235,7 @@ public class BasicDropAdapterAssistant extends CommonDropAdapterAssistant {
 	}
 
 	protected TransactionalEditingDomain getEditingDomain(Object target) {
-		return TransactionUtil.getEditingDomain(target instanceof WrapperItemProvider ? ((WrapperItemProvider) target).getValue() : target);
+		return TransactionUtil.getEditingDomain(target instanceof IWrapperItemProvider ? ((IWrapperItemProvider) target).getValue() : target);
 	}
 
 	protected IStatus promptAndExecuteDropCopy(TransactionalEditingDomain domain, Object target, Command command, String title, String msg) {
@@ -249,7 +254,7 @@ public class BasicDropAdapterAssistant extends CommonDropAdapterAssistant {
 				IWrapperItemProvider wrapedTarget = (IWrapperItemProvider) target;
 				Collection<?> wrapedChildren = getChildren(wrapedTarget);
 				if (wrapedChildren.containsAll(getSelection())) {
-					return promptAndExecute(domain, command, "Confirm duplicate", "Press OK to confirm duplicate");
+					return promptAndExecute(domain, command, Messages.label_confirmDuplicate, Messages.label_OKToHaveDuplicate);
 				}
 			}
 		}
