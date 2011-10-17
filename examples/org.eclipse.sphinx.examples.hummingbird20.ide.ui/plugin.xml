@@ -28,7 +28,7 @@ Contributors:
     </viewerContentBinding>
   </extension>
   
-   <!-- Common navigator content contribution for Hummingbird models -->
+   <!-- Common navigator content contribution for Hummingbird 2.0 models -->
   
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">

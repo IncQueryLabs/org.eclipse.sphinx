@@ -27,8 +27,6 @@ Contributors:
       </includes>
     </viewerContentBinding>
   </extension>
-  
-   <!-- Common navigator content contribution for Hummingbird models -->
    
    <!-- Form editor with tabbed property sheet contribution for Hummingbird models -->
    
