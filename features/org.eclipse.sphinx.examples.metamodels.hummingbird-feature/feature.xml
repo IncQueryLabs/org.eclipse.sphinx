@@ -18,37 +18,14 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.sphinx.emf.editors.forms" version="0.7.0"/>
-      <import feature="org.eclipse.sphinx.emf.compare" version="0.7.0"/>
-      <import plugin="org.apache.commons.logging"/>
-      <import plugin="org.antlr.runtime"/>
       <import feature="org.eclipse.sphinx.core" version="0.7.0"/>
       <import feature="org.eclipse.sphinx.emf.navigators" version="0.7.0"/>
       <import feature="org.eclipse.sphinx.emf.editors.forms" version="0.7.0"/>
       <import feature="org.eclipse.sphinx.emf.compare" version="0.7.0"/>
       <import feature="org.eclipse.sphinx.xtendxpand" version="0.7.0"/>
       <import feature="org.eclipse.sphinx.examples.core" version="0.7.0"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.emf.common"/>
-      <import plugin="org.eclipse.emf.ecore.xmi"/>
-      <import plugin="org.eclipse.sphinx.emf"/>
-      <import plugin="org.eclipse.sphinx.emf.workspace"/>
-      <import plugin="org.eclipse.emf.common.ui"/>
-      <import plugin="org.eclipse.sphinx.emf.explorer"/>
-      <import plugin="org.eclipse.sphinx.examples.common.ui"/>
-      <import plugin="org.eclipse.emf.ecore"/>
-      <import plugin="org.eclipse.emf.edit"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.emf.edit.ui"/>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.ui.navigator"/>
-      <import plugin="org.eclipse.emf.ecore.edit"/>
-      <import plugin="org.eclipse.uml2"/>
-      <import plugin="org.eclipse.xtend"/>
-      <import plugin="org.eclipse.xtend.util.stdlib"/>
-      <import plugin="org.eclipse.xtend.typesystem.emf"/>
-      <import plugin="org.eclipse.xtend.typesystem.uml2"/>
-      <import plugin="org.eclipse.xpand"/>
+      <import plugin="org.apache.commons.logging"/>
+      <import plugin="org.antlr.runtime"/>
    </requires>
 
    <plugin
