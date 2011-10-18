@@ -23,12 +23,10 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
-import org.eclipse.sphinx.tests.xtendxpand.integration.internal.Activator;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandTestReferenceWorkspace;
 import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
@@ -40,11 +38,6 @@ import org.eclipse.xtend.typesystem.MetaModel;
 import org.eclipse.xtend.typesystem.uml2.UML2MetaModel;
 
 public class XtendJobTest extends XtendXpandIntegrationTestCase {
-
-	@Override
-	protected Plugin getTestPlugin() {
-		return Activator.getPlugin();
-	}
 
 	@Override
 	protected String[] getProjectsToLoad() {
