@@ -25,6 +25,7 @@ public class SphinxXtendXpandTestsIntegration {
 		suite.addTestSuite(org.eclipse.sphinx.tests.xtendxpand.integration.XtendJobTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.xtendxpand.integration.XpandJobTest.class);
 		suite.addTestSuite(org.eclipse.sphinx.tests.xtendxpand.integration.CheckJobTest.class);
+		suite.addTestSuite(org.eclipse.sphinx.tests.xtendxpand.integration.XtendXpandUtilTest.class);
 		// $JUnit-END$
 		return suite;
 	}

@@ -41,6 +41,10 @@ public class XtendXpandTestReferenceWorkspace extends AbstractReferenceWorkspace
 
 	public static final String XTEND_EXTENSION_NAME = "extensions::UML2ToHummingbird20::transform";
 
+	public static final String EXTENSION_FILE_NAME_TO_BE_LINK = "extensionFile.ext";
+
+	public static final String LINKED_XTEND_EXTENSION_NAME = "extensionFile::transform";
+
 	// Xpand project.
 	//
 	public static final String HB_CODEGEN_XPAND_PROJECT_NAME = "hummingbird20.codegen.xpand";
