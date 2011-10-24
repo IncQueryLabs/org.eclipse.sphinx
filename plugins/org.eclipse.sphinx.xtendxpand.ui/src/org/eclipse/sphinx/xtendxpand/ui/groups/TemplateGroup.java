@@ -293,7 +293,7 @@ public class TemplateGroup extends AbstractGroup {
 	/**
 	 * Gets the file located at the given full path or returns null.
 	 */
-	protected IFile getFile(String fullPath) {
+	public IFile getFile(String fullPath) {
 		if (fullPath != null && fullPath.length() > 0) {
 			Path path = new Path(fullPath);
 			if (path.segmentCount() > 1) {
