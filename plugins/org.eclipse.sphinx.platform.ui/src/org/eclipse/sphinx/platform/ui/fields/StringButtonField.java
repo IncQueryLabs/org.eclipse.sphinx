@@ -84,9 +84,12 @@ public class StringButtonField extends StringField implements IStringButtonField
 
 		Control label = getLabelControl(parent, 1);
 
-		Text text = getTextControl(parent, nColumns - 2);
+		// Creates a specific composite so that button could correctly be created (size & position)
+		Composite composite = createSpecificComposite(parent, getNumberOfControls() - 1, nColumns - 1, true, false, fUseFormLayout);
 
-		Button button = getChangeControl(parent, 1);
+		Text text = getTextControl(composite, 1);
+
+		Button button = getChangeControl(composite, 1);
 
 		return new Control[] { label, text, button };
 	}

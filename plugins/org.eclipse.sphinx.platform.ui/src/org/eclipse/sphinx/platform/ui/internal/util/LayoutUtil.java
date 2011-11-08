@@ -19,13 +19,18 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
 /**
- * <p align=center> <b><em>UI Layout Utility</em></b> </p> <p align=justify> Provides utility methods to set parameters
- * of UI layouts. </p>
+ * <p align=center>
+ * <b><em>UI Layout Utility</em></b>
+ * </p>
+ * <p align=justify>
+ * Provides utility methods to set parameters of UI layouts.
+ * </p>
  */
 public class LayoutUtil {
 
@@ -133,17 +138,51 @@ public class LayoutUtil {
 		return twd;
 	}
 
+	/**
+	 * Creates a {@link GridData} for the specified {@link Button button} widget.
+	 * <p>
+	 * This method initializes grid data as follows:
+	 * <ul>
+	 * <li>fills horizontally;</li>
+	 * <li>does not grab horizontal space;</li>
+	 * <li>spans the right number of columns;</li>
+	 * <li>computes the right width if button style is <em>push</em>.</li>
+	 * </ul>
+	 * 
+	 * @param button
+	 *            The button widget for which a grid data must be created and initialized.
+	 * @param span
+	 *            The number of columns the button must take up.
+	 * @return The created {@link GridData} for the specified {@link Button button}, correctly initialized.
+	 */
 	public static final GridData gridDataForButton(Button button, int span) {
 		GridData gd = new GridData();
 		gd.horizontalAlignment = GridData.FILL;
 		gd.grabExcessHorizontalSpace = false;
 		gd.horizontalSpan = span;
-		if (button.getStyle() == SWT.PUSH) {
+		if ((button.getStyle() & SWT.PUSH) != 0) {
 			gd.widthHint = SWTUtil.getButtonWidthHint(button);
 		}
 		return gd;
 	}
 
+	/**
+	 * Creates a {@link TableWrapData} for the specified {@link Button button} widget.
+	 * <p>
+	 * This method initializes table wrap data as follows:
+	 * <ul>
+	 * <li>fills horizontally;</li>
+	 * <li>does not grab horizontal space;</li>
+	 * <li>spans the right number of columns;</li>
+	 * <li>computes the right width if button style is <em>push</em>.</li>
+	 * </ul>
+	 * 
+	 * @param button
+	 *            The button widget for which a table wrap data must be created and initialized.
+	 * @param span
+	 *            The number of columns the button must take up.
+	 * @return The created {@link TableWrapData} for the specified {@link Button button}, correctly initialized.
+	 */
 	public static final TableWrapData tableWrapDataForButton(Button button, int span) {
 		// FIXME Find the right one
 		// TableWrapData twd = new TableWrapData(TableWrapData.FILL, TableWrapData.TOP);
@@ -151,8 +190,7 @@ public class LayoutUtil {
 		twd.align = TableWrapData.FILL;
 		twd.grabHorizontal = false;
 		twd.colspan = span;
-		// FIXME See this.
-		if (button.getStyle() == SWT.PUSH) {
+		if ((button.getStyle() & SWT.PUSH) != 0) {
 			twd.maxWidth = SWTUtil.getButtonWidthHint(button);
 		}
 		return twd;
@@ -169,6 +207,7 @@ public class LayoutUtil {
 	public static final GridData gridDataForLabel(int span, boolean multiLine) {
 		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		gd.horizontalSpan = span;
+		gd.verticalAlignment = multiLine ? GridData.BEGINNING : GridData.CENTER;
 		return gd;
 	}
 
@@ -249,12 +288,46 @@ public class LayoutUtil {
 	 * Specific composite
 	 */
 
+	/**
+	 * Convenient method for creating a {@link GridData} dedicated to a specific {@linkplain Composite composite} (e.g.
+	 * for list button field or string button field).
+	 * 
+	 * @param span
+	 *            The number of column the composite (for which the grid data is created) will take up.
+	 * @return The grid data to use for a specific composite.
+	 */
 	public static final GridData gridDataForSpecificComposite(int span) {
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		return gridDataForSpecificComposite(span, true, true);
+	}
+
+	/**
+	 * Convenient method for creating a {@link GridData} dedicated to a specific {@linkplain Composite composite} (e.g.
+	 * for list button field or string button field).
+	 * 
+	 * @param span
+	 *            The number of column the composite (for which the grid data is created) will take up.
+	 * @param hgrab
+	 *            Flag indicating whether composite (for which the grid data is created) should be made wide enough to
+	 *            fit the remaining horizontal space.
+	 * @param vgrab
+	 *            Flag indicating whether composite (for which the grid data is created) should be made wide enough to
+	 *            fit the remaining vertical space.
+	 * @return The grid data to use for a specific composite.
+	 */
+	public static final GridData gridDataForSpecificComposite(int span, boolean hgrab, boolean vgrab) {
+		GridData gd = new GridData(SWT.FILL, SWT.FILL, hgrab, vgrab);
 		gd.horizontalSpan = span;
 		return gd;
 	}
 
+	/**
+	 * Convenient method for creating a {@link GridLayout} dedicated to a specific {@linkplain Composite composite}
+	 * (e.g. for list button field or string button field).
+	 * 
+	 * @param numColumns
+	 *            The number of columns in the layout.
+	 * @return The grid layout to use for a specific composite, with the right number of columns.
+	 */
 	public static final GridLayout gridLayoutForSpecificComposite(int numColumns) {
 		GridLayout gl = new GridLayout();
 		gl.marginHeight = 0;
@@ -263,12 +336,48 @@ public class LayoutUtil {
 		return gl;
 	}
 
+	/**
+	 * Convenient method for creating a {@link TableWrapData} dedicated to a specific {@linkplain Composite composite}
+	 * (e.g. for list button field or string button field).
+	 * 
+	 * @param span
+	 *            The number of columns the composite (for which the table wrap data is created) will take up.
+	 * @return The table wrap data to use for a specific composite.
+	 */
 	public static final TableWrapData tableWrapDataForSpecificComposite(int span) {
+		return tableWrapDataForSpecificComposite(span, true, true);
+	}
+
+	/**
+	 * Convenient method for creating a {@link TableWrapData} dedicated to a specific {@linkplain Composite composite}
+	 * (e.g. for list button field or string button field).
+	 * 
+	 * @param span
+	 *            The number of columns the composite (for which the table wrap data is created) will take up.
+	 * @param hgrab
+	 *            Flag indicating whether composite (for which the table wrap data is created) should be made wide
+	 *            enough to fit the remaining horizontal space.
+	 * @param vgrab
+	 *            Flag indicating whether composite (for which the table wrap data is created) should be made wide
+	 *            enough to fit the remaining vertical space.
+	 * @return The table wrap data to use for a specific composite.
+	 */
+	public static final TableWrapData tableWrapDataForSpecificComposite(int span, boolean hgrab, boolean vgrab) {
 		TableWrapData twd = new TableWrapData(TableWrapData.FILL_GRAB);
 		twd.colspan = span;
+		twd.grabHorizontal = hgrab;
+		twd.grabVertical = vgrab;
 		return twd;
 	}
 
+	/**
+	 * Convenient method for creating a {@link TableWrapLayout} dedicated to a specific {@linkplain Composite composite}
+	 * (e.g. for list button field or string button field).
+	 * 
+	 * @param numColumns
+	 *            The number of columns in the layout.
+	 * @return The table wrap layout to use for a specific composite, with the right number of columns.
+	 */
 	public static final TableWrapLayout tableWrapLayoutForSpecificComposite(int numColumns) {
 		TableWrapLayout twl = new TableWrapLayout();
 		twl.topMargin = 0;

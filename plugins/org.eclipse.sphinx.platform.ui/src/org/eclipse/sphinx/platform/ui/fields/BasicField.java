@@ -23,6 +23,7 @@ import org.eclipse.sphinx.platform.ui.internal.util.LayoutUtil;
 import org.eclipse.sphinx.platform.ui.widgets.IWidgetFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -103,14 +104,24 @@ public class BasicField implements IField {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Tests is the control is not <code>null</code> and not disposed.
+	 * Checks if the specified {@link Control control} is not <code>null</code> neither disposed.
+	 * 
+	 * @param control
+	 *            The {@link Control} whose usability must be verified.
+	 * @return <ul>
+	 *         <li><code><b>true</b>&nbsp;&nbsp;</code> if the specified control is ok to be used;</li>
+	 *         <li><code><b>false</b>&nbsp;</code> otherwise.</li>
+	 *         </ul>
 	 */
 	protected final boolean isOkToUse(Control control) {
 		return control != null && Display.getCurrent() != null && !control.isDisposed();
 	}
 
 	/**
+	 * Asserts the specified number of columns is compatible with the expected number of columns for this field.
+	 * 
 	 * @param nColumns
+	 *            The number of columns of the composite in which field must be created.
 	 */
 	private final void assertEnoughColumns(int nColumns) {
 		String msg = NLS.bind(FieldsMessages.error_assert_LayoutNumberOfColumnsIsTooSmall, getNumberOfControls());
@@ -118,18 +129,70 @@ public class BasicField implements IField {
 	}
 
 	/**
+	 * Asserts the specified {@link Composite composite} is not <code>null</code>.
+	 * 
 	 * @param composite
+	 *            The composite that is expected to be not <code>null</code>.
 	 */
 	protected final void assertCompositeNotNull(Composite composite) {
 		Assert.isNotNull(composite, "uncreated control requested with composite null"); //$NON-NLS-1$
 	}
 
 	/**
-	 * Creates a spacer control with the given span. The composite is assumed to have <code>MGridLayout</code> as
+	 * Creates and returns a specific {@link Composite} that can be used by subclasses in some specific cases (e.g. list
+	 * button field or string button field).
+	 * 
+	 * @param parent
+	 *            The parent of the composite to create.
+	 * @param nColumns
+	 *            The number of columns inside the created composite itself.
+	 * @param span
+	 *            The number of columns the created composite will take up.
+	 * @param hgrab
+	 *            Flag indicating whether composite should be made wide enough to fit the remaining horizontal space.
+	 * @param vgrab
+	 *            Flag indicating whether composite should be made wide enough to fit the remaining vertical space.
+	 * @param useFormLayout
+	 *            Flag indicating if a form layout is expected to be used (e.g. in form editor).
+	 * @return The newly created specific composite, whom layout and layout data are correctly set.
+	 */
+	protected static final Composite createSpecificComposite(Composite parent, int nColumns, int span, boolean hgrab, boolean vgrab,
+			boolean useFormLayout) {
+		// The (table wrap or grid) layout to set on the being created specific composite
+		Layout layout;
+		if (useFormLayout) {
+			layout = LayoutUtil.tableWrapLayoutForSpecificComposite(nColumns);
+		} else {
+			layout = LayoutUtil.gridLayoutForSpecificComposite(nColumns);
+		}
+
+		// The (table wrap or grid) data to set on the being created specific composite
+		Object data;
+		if (useFormLayout) {
+			data = LayoutUtil.tableWrapDataForSpecificComposite(span, hgrab, vgrab);
+		} else {
+			data = LayoutUtil.gridDataForSpecificComposite(span, hgrab, vgrab);
+		}
+
+		// The new specific composite, with the right layout, data, and font
+		Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayout(layout);
+		composite.setLayoutData(data);
+		composite.setFont(parent.getFont());
+
+		return composite;
+	}
+
+	/**
+	 * Creates a spacer control with the given <tt>span</tt>.
+	 * <p>
+	 * The specified {@link Composite composite} is assumed to have either {@link TableWrapLayout} or {@link GridLayout}
 	 * layout.
 	 * 
 	 * @param parent
-	 *            The parent composite
+	 *            The parent composite.
+	 * @param span
+	 *            The number of column cells the empty space control will take up.
 	 */
 	protected static final Control createEmptySpace(Composite parent, int span) {
 		Label label = new Label(parent, SWT.LEFT);
@@ -161,7 +224,7 @@ public class BasicField implements IField {
 	 * Creates a spacer control.
 	 * 
 	 * @param parent
-	 *            The parent composite
+	 *            The parent composite.
 	 */
 	public static final Control createEmptySpace(Composite parent) {
 		return createEmptySpace(parent, 1);
@@ -207,18 +270,28 @@ public class BasicField implements IField {
 
 	/**
 	 * @param parent
+	 *            The parent composite inside which label control must exist.
 	 * @param hspan
-	 * @return
+	 *            The number of columns the label control is supposed to take up.
+	 * @return The label control of this field.
 	 */
 	protected final Control getLabelControl(Composite parent, int hspan) {
 		return getLabelControl(parent, false, hspan);
 	}
 
 	/**
+	 * Returns the label control of this field, creates it if required.
+	 * <p>
+	 * After having requested label control creation (when label does not already exist), method sets layout data on
+	 * label according to parent layout (form layout or not).
+	 * 
 	 * @param parent
+	 *            The parent composite inside which label control must be created.
 	 * @param multiLine
+	 *            Flag indicating if field is made of several lines or not.
 	 * @param hspan
-	 * @return
+	 *            The number of columns the label control is supposed to take up.
+	 * @return The label control of this field.
 	 */
 	protected final Control getLabelControl(Composite parent, boolean multiLine, int hspan) {
 		if (fLabelControl == null) {

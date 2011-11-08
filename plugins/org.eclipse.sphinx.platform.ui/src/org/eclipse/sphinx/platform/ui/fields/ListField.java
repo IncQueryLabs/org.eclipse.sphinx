@@ -958,10 +958,6 @@ public class ListField extends BasicField {
 			// will never happen
 		}
 
-		public boolean isDeleted(Object element) {
-			return false;
-		}
-
 		public void dispose() {
 		}
 
@@ -981,7 +977,6 @@ public class ListField extends BasicField {
 		public void doubleClick(DoubleClickEvent event) {
 			doDoubleClick(event);
 		}
-
 	}
 
 	protected void doListSelected(SelectionChangedEvent event) {
