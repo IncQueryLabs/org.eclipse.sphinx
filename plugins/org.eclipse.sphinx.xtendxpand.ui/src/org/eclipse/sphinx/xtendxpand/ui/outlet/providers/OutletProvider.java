@@ -14,10 +14,9 @@
  */
 package org.eclipse.sphinx.xtendxpand.ui.outlet.providers;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
@@ -31,8 +30,8 @@ public class OutletProvider implements IPreferenceChangeListener {
 
 	private IProject project;
 	private OutletsPreference outletsPreference;
-	private List<ExtendedOutlet> allOutlets;
-	private List<ExtendedOutlet> unappliedOutlets;
+	private Set<ExtendedOutlet> allOutlets;
+	private Set<ExtendedOutlet> unappliedOutlets;
 
 	public OutletProvider(OutletsPreference outletPreference) {
 		this(null, outletPreference);
@@ -44,8 +43,8 @@ public class OutletProvider implements IPreferenceChangeListener {
 		this.project = project;
 		this.outletsPreference = outletsPreference;
 
-		allOutlets = new ArrayList<ExtendedOutlet>();
-		unappliedOutlets = new ArrayList<ExtendedOutlet>();
+		allOutlets = new HashSet<ExtendedOutlet>();
+		unappliedOutlets = new HashSet<ExtendedOutlet>();
 		allOutlets.addAll(outletsPreference.get(project));
 
 		if (project != null) {
@@ -61,8 +60,8 @@ public class OutletProvider implements IPreferenceChangeListener {
 		this.project = project;
 	}
 
-	public Collection<ExtendedOutlet> getOutlets() {
-		return Collections.unmodifiableCollection(allOutlets);
+	public Set<ExtendedOutlet> getOutlets() {
+		return Collections.unmodifiableSet(allOutlets);
 	}
 
 	public ExtendedOutlet getDefaultOutlet() {
@@ -74,13 +73,13 @@ public class OutletProvider implements IPreferenceChangeListener {
 		return null;
 	}
 
-	public Collection<ExtendedOutlet> getNamedOutlets() {
-		Collection<ExtendedOutlet> result = getOutlets();
+	public Set<ExtendedOutlet> getNamedOutlets() {
+		Set<ExtendedOutlet> result = getOutlets();
 		Outlet defaultOutlet = getDefaultOutlet();
 		if (defaultOutlet != null) {
 			result.remove(defaultOutlet);
 		}
-		return Collections.unmodifiableCollection(result);
+		return Collections.unmodifiableSet(result);
 	}
 
 	public void addOutlet(ExtendedOutlet outlet) {
