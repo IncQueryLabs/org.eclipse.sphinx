@@ -225,8 +225,8 @@ public abstract class AbstractCLIApplication implements IApplication {
 		if (t instanceof OperationCanceledException) {
 			return ERROR_NO;
 		}
-
 		System.err.println(t.getMessage());
+		t.printStackTrace(System.err);
 		return ERROR_UNSPECIFIED;
 	}
 }
