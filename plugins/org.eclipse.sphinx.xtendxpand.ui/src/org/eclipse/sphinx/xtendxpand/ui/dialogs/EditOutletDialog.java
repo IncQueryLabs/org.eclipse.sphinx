@@ -19,11 +19,12 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
+import org.eclipse.debug.ui.StringVariableSelectionDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.jface.layout.PixelConverter;
 import org.eclipse.jface.resource.JFaceResources;
@@ -32,6 +33,7 @@ import org.eclipse.sphinx.platform.ui.fields.IFieldListener;
 import org.eclipse.sphinx.platform.ui.fields.SelectionButtonField;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
+import org.eclipse.sphinx.xtendxpand.preferences.OutletsPreference;
 import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.ui.internal.messages.Messages;
 import org.eclipse.sphinx.xtendxpand.ui.outlet.providers.OutletProvider;
@@ -56,6 +58,11 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.eclipse.xpand2.output.Outlet;
 
+/**
+ * This class implements dialog which allows an outlet to be created or edited
+ * 
+ * @author See4sys
+ */
 public class EditOutletDialog extends StatusDialog {
 
 	private ExtendedOutlet outlet;
@@ -73,6 +80,20 @@ public class EditOutletDialog extends StatusDialog {
 
 	protected Listener listener = new Listener();
 
+	/**
+	 * Constructor
+	 * 
+	 * @param parent
+	 *            the parent shell, or <code>null</code> to create a top-level shell
+	 * @param outlet
+	 *            the outlet to edit
+	 * @param edit
+	 *            set to true is outlet is being edited, false if it is a outlet creation
+	 * @param editableName
+	 *            set to true if outlet name can be editable, false otherwise
+	 * @param outletProvider
+	 *            the {@link OutletProvider} created for an {@link OutletsPreference} and may refers to project
+	 */
 	public EditOutletDialog(Shell parent, ExtendedOutlet outlet, boolean edit, boolean editableName, OutletProvider outletProvider) {
 		super(parent);
 		String title = edit ? Messages.title_editOutletDialog : Messages.title_newOutletDialog;
@@ -149,23 +170,39 @@ public class EditOutletDialog extends StatusDialog {
 		return parent;
 	}
 
+	/**
+	 * This method is called when user changes outlet name. It checks its consistency and refreshes buttons accordingly.
+	 * 
+	 * @See {@link #validateOutletName()}
+	 */
 	protected void handleNameChanged() {
 		IStatus nameStatus = validateOutletName();
-		updateStatus(nameStatus);
 		if (nameStatus.isOK()) {
 			outlet.setName(nameText.getText());
 		}
+		// Updates dialog status with name and location validation status
+		updateStatus(validateOutletInputs());
 	}
 
+	/**
+	 * This method is called when user changes outlet location. It checks its consistency and refreshes buttons
+	 * accordingly.
+	 * 
+	 * @see #validateOutletLocation()
+	 */
 	protected void handleLocationChanged() {
 		IStatus locationStatus = validateOutletLocation();
-		updateStatus(locationStatus);
 		if (locationStatus.isOK()) {
 			String location = locationText.getText();
 			outlet.setPathExpression(location, outletProvider.getProject());
 		}
+		// Updates dialog status with name and location validation status
+		updateStatus(validateOutletInputs());
 	}
 
+	/**
+	 * This method is called when user clicks on file system button. It will display a folder selection dialog.
+	 */
 	protected void handleBrowseFileSystem() {
 		String filePath = locationText.getText();
 		DirectoryDialog dialog = new DirectoryDialog(getShell());
@@ -175,6 +212,9 @@ public class EditOutletDialog extends StatusDialog {
 		}
 	}
 
+	/**
+	 * This method is called when user clicks on Workspace button. It will display Workspace selection dialog.
+	 */
 	protected void handleBrowseWorkspace() {
 		ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new WorkbenchContentProvider());
 		dialog.setTitle(Messages.title_containerSelection);
@@ -203,9 +243,38 @@ public class EditOutletDialog extends StatusDialog {
 	}
 
 	protected void handleInsertVariable() {
-		MessageDialog.openWarning(getShell(), Messages.title_variableSelection, Messages.msg_variableSelectionWarning);
+		// Displays string variables dialog
+		StringVariableSelectionDialog dialog = new StringVariableSelectionDialog(getShell());
+		if (dialog.open() == IDialogConstants.OK_ID || dialog.getResult().length == 1) {
+			String variableName = dialog.getVariableExpression();
+			if (variableName != null) {
+				locationText.setText(variableName);
+			}
+		}
 	}
 
+	/**
+	 * Checks that all outlet properties are valid, by checking its name and its location.
+	 * 
+	 * @return Status OK if name and location are valid
+	 * @see #validateOutletName()
+	 * @see #validateOutletLocation()
+	 */
+
+	protected IStatus validateOutletInputs() {
+		IStatus status = validateOutletName();
+		if (!status.isOK()) {
+			return status;
+		} else {
+			return validateOutletLocation();
+		}
+	}
+
+	/**
+	 * Checks outlet name by checking it is not empty, or name is not already used by other ones.
+	 * 
+	 * @return Returns status of outlet name validity
+	 */
 	protected IStatus validateOutletName() {
 		String name = nameText.getText();
 		if (name.trim().length() == 0) {
@@ -225,15 +294,16 @@ public class EditOutletDialog extends StatusDialog {
 	}
 
 	/**
-	 * Validates that the location is not empty and match some predefined regex. We don't validate the container
-	 * existence, it will be created by Xpand during the generation if it does not exist.
+	 * Validates that the location is not empty and Is a valid path. We don't validate the container existence, it will
+	 * be created by Xpand during the generation if it does not exist.
 	 * 
-	 * @return
+	 * @return status of outlet location validity
 	 */
-	// TODO (aakar) Enhance the validation by using some regex !!
 	protected IStatus validateOutletLocation() {
 		String location = locationText.getText();
-		if (location.trim().length() == 0) {
+
+		// Check if path is valid
+		if (location.trim().length() == 0 || !Path.ROOT.isValidPath(location)) {
 			return StatusUtil.createStatus(IStatus.ERROR, IStatus.ERROR, Messages.msg_outletLocationEmptyValidationError, Activator.getPlugin()
 					.getSymbolicName(), null);
 		}
@@ -284,15 +354,23 @@ public class EditOutletDialog extends StatusDialog {
 		}
 	}
 
+	/**
+	 * @return Returns outlet being edited or created
+	 */
 	public ExtendedOutlet getOutlet() {
 		return outlet;
 	}
 
+	/**
+	 * Sets validation buttons state before dialog is displayed.
+	 * 
+	 * @see org.eclipse.jface.dialogs.StatusDialog#create()
+	 */
 	@Override
 	public void create() {
 		super.create();
 		// Update initial OK button to be disabled for new Outlet
-		updateButtonsEnableState(validateOutletName());
+		updateButtonsEnableState(validateOutletInputs());
 	}
 
 	private int getButtonWidthHint(Button button) {

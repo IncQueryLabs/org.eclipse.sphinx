@@ -38,3 +38,4 @@ Export-Package: org.eclipse.sphinx.xtendxpand.ui.actions,
  org.eclipse.sphinx.xtendxpand.ui.wizards.pages
 Bundle-Activator: org.eclipse.sphinx.xtendxpand.ui.internal.Activator$Implementation
 Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.debug.ui
