@@ -386,9 +386,12 @@ public class TemplateGroup extends AbstractGroup {
 	protected IDialogSettings getTemplateFileSection() {
 		IDialogSettings result = null;
 		String templateFileDialogSettingsKey = getTemplateFileDialogSettingsKey(modelObject);
-		IDialogSettings section = getDialogSettings().getSection(CODE_GEN_SECTION);
-		if (section != null) {
-			result = section.getSection(templateFileDialogSettingsKey);
+		IDialogSettings dialogSettings = getDialogSettings();
+		if (dialogSettings != null) {
+			IDialogSettings section = dialogSettings.getSection(CODE_GEN_SECTION);
+			if (section != null) {
+				result = section.getSection(templateFileDialogSettingsKey);
+			}
 		}
 		return result;
 	}
@@ -402,8 +405,8 @@ public class TemplateGroup extends AbstractGroup {
 	@Override
 	public void saveGroupSettings() {
 		IDialogSettings settings = getDialogSettings();
-		String key = getTemplateFileDialogSettingsKey(modelObject);
 		if (settings != null) {
+			String key = getTemplateFileDialogSettingsKey(modelObject);
 			IDialogSettings topLevelSection = settings.getSection(CODE_GEN_SECTION);
 			if (topLevelSection == null) {
 				topLevelSection = settings.addNewSection(CODE_GEN_SECTION);
