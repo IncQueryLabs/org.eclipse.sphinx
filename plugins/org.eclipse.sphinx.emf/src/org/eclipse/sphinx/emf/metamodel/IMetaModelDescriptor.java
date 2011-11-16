@@ -99,7 +99,9 @@ public interface IMetaModelDescriptor {
 	 * @return The ordinal of the described meta-model or <code>null</code> if the described meta-model is not a
 	 *         concrete meta-model version.
 	 * @since 0.7.0
+	 * @deprecated see {@link MetaModelVersionData#getOrdinal()}
 	 */
+	@Deprecated
 	int getOrdinal();
 
 	/**

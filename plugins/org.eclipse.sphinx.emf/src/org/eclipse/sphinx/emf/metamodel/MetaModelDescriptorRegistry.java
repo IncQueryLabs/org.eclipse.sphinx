@@ -58,7 +58,6 @@ import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.impl.RootXMLContentHandlerImpl;
-import org.eclipse.emf.ecore.xmi.impl.RootXMLContentHandlerImpl.Describer;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.osgi.util.NLS;

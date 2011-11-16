@@ -22,6 +22,11 @@ public class MetaModelVersionData {
 	private String fNsPostfix;
 	private String fEPackageNsURIPostfixPattern;
 	private String fName;
+
+	/**
+	 * @deprecated see {@link MetaModelVersionData#getOrdinal()}
+	 */
+	@Deprecated
 	private int fOrdinal;
 
 	public MetaModelVersionData(String nsPostfix, String ePackageNsURIPostfixPattern, String name, int ordinal) {
@@ -37,6 +42,11 @@ public class MetaModelVersionData {
 		return fNsPostfix;
 	}
 
+	/**
+	 * @deprecated Instead of relying on this ordinal with unclear semantics meta models should provide a subclass which
+	 *             defines its own version number semantics. See bug 363915 for more details.
+	 */
+	@Deprecated
 	public int getOrdinal() {
 		return fOrdinal;
 	}

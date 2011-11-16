@@ -218,6 +218,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getOrdinal()
 	 */
+	@Deprecated
 	public int getOrdinal() {
 		if (fVersionData != null) {
 			return fVersionData.getOrdinal();
