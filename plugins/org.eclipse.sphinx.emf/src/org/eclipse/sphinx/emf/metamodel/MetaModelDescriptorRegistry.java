@@ -519,7 +519,9 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * @param mmDescriptor
 	 * @param ordinal
 	 * @return
+	 * @deprecated see {@link MetaModelVersionData#getOrdinal()}
 	 */
+	@Deprecated
 	public <T extends IMetaModelDescriptor> T getDescriptor(T mmDescriptor, final int ordinal) {
 		return getDescriptor(mmDescriptor, new IDescriptorFilter() {
 			public boolean accept(IMetaModelDescriptor descriptor) {
