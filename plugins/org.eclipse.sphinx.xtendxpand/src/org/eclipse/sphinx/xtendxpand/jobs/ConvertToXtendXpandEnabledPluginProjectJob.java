@@ -260,11 +260,11 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 
 		// Add new classpath entry for actual JRE system library
 		String jreContainer = JavaRuntime.JRE_CONTAINER;
-		if ("1.5".equals(compilerCompliance)) { //$NON-NLS-1$
+		if (JavaCore.VERSION_1_5.equals(compilerCompliance)) {
 			jreContainer += JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_J2SE_1_5;
-		} else if ("1.6".equals(compilerCompliance)) { //$NON-NLS-1$
+		} else if (JavaCore.VERSION_1_6.equals(compilerCompliance)) {
 			jreContainer += JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_JAVA_SE_1_6;
-		} else if ("1.7".equals(compilerCompliance)) { //$NON-NLS-1$
+		} else if (JavaCore.VERSION_1_7.equals(compilerCompliance)) {
 			jreContainer += JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_JAVA_SE_1_7;
 		}
 		classpathEntries.add(JavaCore.newContainerEntry(new Path(jreContainer)));
@@ -311,11 +311,11 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 		// Add required execution environment
 		String requiredExecutionEnvironment = null;
 		String compilerCompliance = getCompilerCompliance();
-		if ("1.5".equals(compilerCompliance)) { //$NON-NLS-1$
+		if (JavaCore.VERSION_1_5.equals(compilerCompliance)) {
 			requiredExecutionEnvironment = PDE_EXECUTION_ENVIRONMENT_J2SE_15;
-		} else if ("1.6".equals(compilerCompliance)) { //$NON-NLS-1$
+		} else if (JavaCore.VERSION_1_6.equals(compilerCompliance)) {
 			requiredExecutionEnvironment = PDE_EXECUTION_ENVIRONMENT_JavaSE_16;
-		} else if ("1.7".equals(compilerCompliance)) { //$NON-NLS-1$
+		} else if (JavaCore.VERSION_1_7.equals(compilerCompliance)) {
 			requiredExecutionEnvironment = PDE_EXECUTION_ENVIRONMENT_JavaSE_17;
 		}
 
