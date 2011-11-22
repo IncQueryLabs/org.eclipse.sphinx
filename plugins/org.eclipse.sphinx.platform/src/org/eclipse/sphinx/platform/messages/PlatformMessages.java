@@ -131,6 +131,7 @@ public class PlatformMessages extends NLS {
 	public static String warning_messageDialogTitle;
 	public static String warning_unexpectedArrayLength;
 	public static String warning_unknown;
+	public static String warning_unresolvedProxyObject;
 
 	/* --------------------------------------------------------------------- */
 	/*
