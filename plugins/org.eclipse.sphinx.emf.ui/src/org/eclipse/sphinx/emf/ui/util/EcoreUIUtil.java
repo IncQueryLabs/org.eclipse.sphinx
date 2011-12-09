@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.emf.ui.util;
 
+import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,11 +36,14 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.sphinx.emf.ui.actions.providers.OpenWithMenu;
+import org.eclipse.sphinx.emf.ui.internal.Activator;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IURIEditorInput;
 import org.eclipse.ui.PlatformUI;
 
 /**
@@ -194,6 +198,15 @@ public class EcoreUIUtil {
 	public static URI getURIFromEditorInput(IEditorInput editorInput) {
 		if (editorInput instanceof URIEditorInput) {
 			return ((URIEditorInput) editorInput).getURI();
+		}
+		if (editorInput instanceof IURIEditorInput) {
+			IURIEditorInput uriEditorInput = (IURIEditorInput) editorInput;
+			java.net.URI uri = uriEditorInput.getURI();
+			try {
+				return URI.createFileURI(uri.toURL().getFile());
+			} catch (MalformedURLException ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			}
 		}
 		if (editorInput != null) {
 			IFile file = (IFile) editorInput.getAdapter(IFile.class);

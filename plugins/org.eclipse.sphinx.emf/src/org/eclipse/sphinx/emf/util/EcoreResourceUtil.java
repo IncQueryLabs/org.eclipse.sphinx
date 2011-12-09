@@ -526,6 +526,22 @@ public final class EcoreResourceUtil {
 	}
 
 	/**
+	 * Returns the root element of the model owned by the resource specified by the given URI.
+	 * 
+	 * @param resourceSet
+	 *            The resource set into which model resource must be loaded.
+	 * @param uri
+	 *            The URI to resolve; i.e. the URI of the model resource to load.
+	 * @param loadOnDemand
+	 *            If <code>true</code>, creates and loads the resource if it does not already exist.
+	 * @return The root of the loaded model either if loaded or <code>loadOnDemand</code> is <code>true</code>;
+	 *         <code>null</code> if underlying resource has not been loaded and <code>loadOnDemand</code> is false.
+	 */
+	public static EObject getModelRoot(ResourceSet resourceSet, URI uri, boolean loadOnDemand) {
+		return loadModelRoot(resourceSet, uri, null, loadOnDemand);
+	}
+
+	/**
 	 * Returns the element of the model owned by the resource specified by the given URI and pointed by the given
 	 * fragment. Does not explicitly ask the loading of the resource if it has not already been loaded in resource set.
 	 * 
@@ -538,6 +554,24 @@ public final class EcoreResourceUtil {
 	 */
 	public static EObject getModelFragment(ResourceSet resourceSet, URI uri) {
 		return loadModelFragment(resourceSet, uri, false);
+	}
+
+	/**
+	 * Returns the element of the model owned by the resource specified by the given URI and pointed by the given
+	 * fragment.
+	 * 
+	 * @param resourceSet
+	 *            The resource set into which model resource must be loaded.
+	 * @param uri
+	 *            The URI to resolve; i.e. the URI of the model resource to load.
+	 * @param loadOnDemand
+	 *            If <code>true</code>, creates and loads the resource if it does not already exist.
+	 * @return The element of the loaded model pointed by the fragment of the uri either if resource is loaded or
+	 *         loadOnDemand is <code>true</code>; <code>null</code> if underlying resource has not been loaded and
+	 *         <code>loadOnDemand</code> is <code>false</code>.
+	 */
+	public static EObject getModelFragment(ResourceSet resourceSet, URI uri, boolean loadOnDemand) {
+		return loadModelFragment(resourceSet, uri, loadOnDemand);
 	}
 
 	/**

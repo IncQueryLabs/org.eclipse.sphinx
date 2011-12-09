@@ -14,9 +14,13 @@
  */
 package org.eclipse.sphinx.emf.editors.forms;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EventObject;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -36,7 +40,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CommandStack;
+import org.eclipse.emf.common.command.CommandStackListener;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
@@ -80,6 +87,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -92,19 +100,23 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.editors.forms.internal.Activator;
+import org.eclipse.sphinx.emf.editors.forms.internal.DefaultSaveable;
 import org.eclipse.sphinx.emf.editors.forms.internal.messages.Messages;
 import org.eclipse.sphinx.emf.editors.forms.pages.GenericContentsTreePage;
 import org.eclipse.sphinx.emf.editors.forms.pages.MessagePage;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
+import org.eclipse.sphinx.emf.workspace.domain.WorkspaceEditingDomainManager;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
+import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.SWT;
@@ -131,9 +143,11 @@ import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.Saveable;
 import org.eclipse.ui.SaveablesLifecycleEvent;
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.IFormPage;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.navigator.SaveablesProvider;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
@@ -141,6 +155,7 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
+import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
@@ -272,6 +287,8 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	private IOperationHistoryListener affectedObjectsListener;
 
 	private ResourceSetListener objectRemovedListener;
+
+	private CommandStackListener commandStackListener;
 
 	/**
 	 * Handles activation of the editor or it's associated views.
@@ -470,15 +487,16 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	}
 
 	protected EObject getEObject(final URI uri) {
-		final TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
+		final TransactionalEditingDomain editingDomain = getEditingDomain(uri);
 		if (editingDomain != null) {
+			final boolean loadOnDemand = getEditorInput() instanceof FileStoreEditorInput ? true : false;
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
 					public void run() {
 						if (uri.hasFragment()) {
-							setResult(EcoreResourceUtil.getModelFragment(editingDomain.getResourceSet(), uri));
+							setResult(EcoreResourceUtil.getModelFragment(editingDomain.getResourceSet(), uri, loadOnDemand));
 						} else {
-							setResult(EcoreResourceUtil.getModelRoot(editingDomain.getResourceSet(), uri));
+							setResult(EcoreResourceUtil.getModelRoot(editingDomain.getResourceSet(), uri, loadOnDemand));
 						}
 					}
 				});
@@ -487,6 +505,17 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			}
 		}
 		return null;
+	}
+
+	protected TransactionalEditingDomain getEditingDomain(final URI uri) {
+		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
+		if (editingDomain == null && getEditorInput() instanceof FileStoreEditorInput) {
+			String modelNamespace = EcoreResourceUtil.readModelNamespace(null, EcoreUIUtil.getURIFromEditorInput(getEditorInput()));
+			editingDomain = WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping().getEditingDomain(null,
+					MetaModelDescriptorRegistry.INSTANCE.getDescriptor(java.net.URI.create(modelNamespace)));
+		}
+		return editingDomain;
+
 	}
 
 	protected Map<?, ?> getLoadOptions() {
@@ -688,6 +717,10 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	@Override
 	public boolean isDirty() {
+		// For resources outside the workspace
+		if (getEditorInput() instanceof FileStoreEditorInput) {
+			return ((BasicCommandStack) getEditingDomain().getCommandStack()).isSaveNeeded();
+		}
 		Object modelRoot = getModelRoot();
 		if (modelRoot instanceof EObject) {
 			// Return true if the model, this editor or both are dirty
@@ -709,23 +742,93 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 */
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		try {
-			Object modelRoot = getModelRoot();
-			if (modelRoot instanceof EObject) {
-				// Save the all dirty resources of underlying model
-				ModelSaveManager.INSTANCE.saveModel(((EObject) modelRoot).eResource(), getSaveOptions(), false, monitor);
-			}
-		} finally {
-			/*
-			 * !! Important Note !! Normally we shouldn't need to close down the progress monitor at this point.
-			 * However, it looks like that the progress monitor is not handled appropriately by whoever call us here
-			 * because we have observed the progress bar stays frozen at 100% after completion of the save operation. In
-			 * order to avoid that we notify the progress monitor that the save work is done right here.
-			 */
-			if (monitor != null) {
-				monitor.done();
+		if (getEditorInput() instanceof FileStoreEditorInput) {
+			saveResource();
+		} else {
+			try {
+				Object modelRoot = getModelRoot();
+				if (modelRoot instanceof EObject) {
+					// Save the all dirty resources of underlying model
+					ModelSaveManager.INSTANCE.saveModel(((EObject) modelRoot).eResource(), getSaveOptions(), false, monitor);
+				}
+			} finally {
+				/*
+				 * !! Important Note !! Normally we shouldn't need to close down the progress monitor at this point.
+				 * However, it looks like that the progress monitor is not handled appropriately by whoever call us here
+				 * because we have observed the progress bar stays frozen at 100% after completion of the save
+				 * operation. In order to avoid that we notify the progress monitor that the save work is done right
+				 * here.
+				 */
+				if (monitor != null) {
+					monitor.done();
+				}
 			}
 		}
+	}
+
+	/**
+	 * Saves the resource on which the editor is opened.
+	 */
+	protected void saveResource() {
+		final EditingDomain editingDomain = getEditingDomain();
+		// Save only if resource changed.
+		//
+		final Map<Object, Object> saveOptions = new HashMap<Object, Object>();
+		saveOptions.put(Resource.OPTION_SAVE_ONLY_IF_CHANGED, Resource.OPTION_SAVE_ONLY_IF_CHANGED_MEMORY_BUFFER);
+
+		// Do the work within an operation because this is a long running activity that modifies the workbench.
+		//
+		WorkspaceModifyOperation operation = new WorkspaceModifyOperation() {
+			// This is the method that gets invoked when the operation runs.
+			//
+			@Override
+			public void execute(IProgressMonitor monitor) {
+				// Save the resources to the file system.
+				//
+				if ((!getModelRootResource().getContents().isEmpty() || isPersisted(getModelRootResource()))
+						&& !editingDomain.isReadOnly(getModelRootResource())) {
+					try {
+						getModelRootResource().save(saveOptions);
+
+					} catch (Exception exception) {
+						PlatformLogUtil.logAsError(Activator.getPlugin(), exception);
+					}
+				}
+			}
+		};
+
+		try {
+			// This runs the operation, and shows progress.
+			//
+			new ProgressMonitorDialog(getSite().getShell()).run(true, false, operation);
+
+			// Refresh the necessary state.
+			//
+			((BasicCommandStack) editingDomain.getCommandStack()).saveIsDone();
+			firePropertyChange(IEditorPart.PROP_DIRTY);
+		} catch (Exception exception) {
+			// Something went wrong that shouldn't.
+			//
+			PlatformLogUtil.logAsError(Activator.getPlugin(), exception);
+		}
+	}
+
+	/**
+	 * This returns whether something has been persisted to the URI of the specified resource. The implementation uses
+	 * the URI converter from the editor's resource set to try to open an input stream.
+	 */
+	protected boolean isPersisted(Resource resource) {
+		boolean result = false;
+		try {
+			InputStream stream = getEditingDomain().getResourceSet().getURIConverter().createInputStream(resource.getURI());
+			if (stream != null) {
+				result = true;
+				stream.close();
+			}
+		} catch (IOException e) {
+			// Ignore
+		}
+		return result;
 	}
 
 	protected Map<?, ?> getSaveOptions() {
@@ -935,7 +1038,10 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	public IOperationHistory getOperationHistory() {
 		EditingDomain editingDomain = getEditingDomain();
 		if (editingDomain != null) {
-			return ((IWorkspaceCommandStack) editingDomain.getCommandStack()).getOperationHistory();
+			IWorkspaceCommandStack commandStack = (IWorkspaceCommandStack) editingDomain.getCommandStack();
+			if (commandStack != null) {
+				return commandStack.getOperationHistory();
+			}
 		}
 		return null;
 	}
@@ -969,6 +1075,11 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			modelSaveablesProvider.dispose();
 		}
 
+		// Unload the resource when disposing the editor if resource is outside the workspace
+		if (getEditorInput() instanceof FileStoreEditorInput) {
+			EcoreResourceUtil.unloadResource(getModelRootResource(), true);
+		}
+
 		super.dispose();
 	}
 
@@ -995,30 +1106,37 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	protected void addTransactionalEditingDomainListeners(TransactionalEditingDomain editingDomain) {
 		if (editingDomain != null) {
-			// Create and register ResourceSetChangedListener that detects loaded resources
-			resourceLoadedListener = createResourceLoadedListener();
-			Assert.isNotNull(resourceLoadedListener);
-			editingDomain.addResourceSetListener(resourceLoadedListener);
+			// This commandStackListener is enough when the resource resides outside the workspace
+			if (getEditorInput() instanceof FileStoreEditorInput) {
+				commandStackListener = createCommandStackListener();
+				Assert.isNotNull(commandStackListener);
+				editingDomain.getCommandStack().addCommandStackListener(commandStackListener);
+			} else {
+				// Create and register ResourceSetChangedListener that detects loaded resources
+				resourceLoadedListener = createResourceLoadedListener();
+				Assert.isNotNull(resourceLoadedListener);
+				editingDomain.addResourceSetListener(resourceLoadedListener);
 
-			// Create and register ResourceSetChangedListener that detects renamed or moved resources
-			resourceMovedListener = createResourceMovedListener();
-			Assert.isNotNull(resourceMovedListener);
-			editingDomain.addResourceSetListener(resourceMovedListener);
+				// Create and register ResourceSetChangedListener that detects renamed or moved resources
+				resourceMovedListener = createResourceMovedListener();
+				Assert.isNotNull(resourceMovedListener);
+				editingDomain.addResourceSetListener(resourceMovedListener);
 
-			// Create and register ResourceSetChangedListener that detects removed resources
-			resourceRemovedListener = createResourceRemovedListener();
-			Assert.isNotNull(resourceRemovedListener);
-			editingDomain.addResourceSetListener(resourceRemovedListener);
+				// Create and register ResourceSetChangedListener that detects removed resources
+				resourceRemovedListener = createResourceRemovedListener();
+				Assert.isNotNull(resourceRemovedListener);
+				editingDomain.addResourceSetListener(resourceRemovedListener);
 
-			// Create and register ResourceSetChangedListener that detects removed objects
-			objectRemovedListener = createObjectRemovedListener();
-			Assert.isNotNull(objectRemovedListener);
-			editingDomain.addResourceSetListener(objectRemovedListener);
+				// Create and register ResourceSetChangedListener that detects removed objects
+				objectRemovedListener = createObjectRemovedListener();
+				Assert.isNotNull(objectRemovedListener);
+				editingDomain.addResourceSetListener(objectRemovedListener);
 
-			// Create and register IOperationHistoryListener that detects changed objects
-			affectedObjectsListener = createAffectedObjectsListener();
-			Assert.isNotNull(affectedObjectsListener);
-			((IWorkspaceCommandStack) editingDomain.getCommandStack()).getOperationHistory().addOperationHistoryListener(affectedObjectsListener);
+				// Create and register IOperationHistoryListener that detects changed objects
+				affectedObjectsListener = createAffectedObjectsListener();
+				Assert.isNotNull(affectedObjectsListener);
+				((IWorkspaceCommandStack) editingDomain.getCommandStack()).getOperationHistory().addOperationHistoryListener(affectedObjectsListener);
+			}
 		}
 	}
 
@@ -1040,7 +1158,44 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				IOperationHistory operationHistory = ((IWorkspaceCommandStack) editingDomain.getCommandStack()).getOperationHistory();
 				operationHistory.removeOperationHistoryListener(affectedObjectsListener);
 			}
+			if (commandStackListener != null) {
+				IWorkspaceCommandStack commandStack = (IWorkspaceCommandStack) editingDomain.getCommandStack();
+				commandStack.removeCommandStackListener(commandStackListener);
+			}
 		}
+	}
+
+	/**
+	 * A {@link CommandStackListener} which is used just in the case when the resource resides outside the workspace.
+	 * 
+	 * @return
+	 */
+	protected CommandStackListener createCommandStackListener() {
+		return new CommandStackListener() {
+			public void commandStackChanged(final EventObject event) {
+				ExtendedPlatformUI.getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						firePropertyChange(IEditorPart.PROP_DIRTY);
+						// Try to select the affected objects.
+						//
+						Command mostRecentCommand = ((CommandStack) event.getSource()).getMostRecentCommand();
+						if (mostRecentCommand != null) {
+							setSelectionToViewer(mostRecentCommand.getAffectedObjects());
+						}
+
+						for (IPropertySheetPage propertySheetPage : propertySheetPages) {
+							if (propertySheetPage != null && !propertySheetPage.getControl().isDisposed()) {
+								if (propertySheetPage instanceof PropertySheetPage) {
+									((PropertySheetPage) propertySheetPage).refresh();
+								} else if (propertySheetPage instanceof TabbedPropertySheetPage) {
+									((TabbedPropertySheetPage) propertySheetPage).refresh();
+								}
+							}
+						}
+					}
+				});
+			}
+		};
 	}
 
 	protected ResourceSetListener createResourceLoadedListener() {
@@ -1383,7 +1538,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 */
 	public EditingDomain getEditingDomain() {
 		URI uri = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
-		return WorkspaceEditingDomainUtil.getEditingDomain(uri);
+		return getEditingDomain(uri);
 	}
 
 	/**
@@ -1563,6 +1718,11 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	}
 
 	public Saveable[] getSaveables() {
+		// As Saveables management is based on ModelDescriptors & no ModelDescriptor for files outside the workspace, we
+		// return here a default Saveable
+		if (getEditorInput() instanceof FileStoreEditorInput) {
+			return new Saveable[] { new DefaultSaveable(this) };
+		}
 		if (modelSaveablesProvider != null) {
 			Saveable saveable = modelSaveablesProvider.getSaveable(getModelRootResource());
 			if (saveable != null) {
