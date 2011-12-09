@@ -510,9 +510,12 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	protected TransactionalEditingDomain getEditingDomain(final URI uri) {
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
 		if (editingDomain == null && getEditorInput() instanceof FileStoreEditorInput) {
-			String modelNamespace = EcoreResourceUtil.readModelNamespace(null, EcoreUIUtil.getURIFromEditorInput(getEditorInput()));
-			editingDomain = WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping().getEditingDomain(null,
-					MetaModelDescriptorRegistry.INSTANCE.getDescriptor(java.net.URI.create(modelNamespace)));
+			// If the file has been deleted
+			if (((FileStoreEditorInput) getEditorInput()).exists()) {
+				String modelNamespace = EcoreResourceUtil.readModelNamespace(null, EcoreUIUtil.getURIFromEditorInput(getEditorInput()));
+				editingDomain = WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping().getEditingDomain(null,
+						MetaModelDescriptorRegistry.INSTANCE.getDescriptor(java.net.URI.create(modelNamespace)));
+			}
 		}
 		return editingDomain;
 
@@ -718,7 +721,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	@Override
 	public boolean isDirty() {
 		// For resources outside the workspace
-		if (getEditorInput() instanceof FileStoreEditorInput) {
+		if (getEditorInput() instanceof FileStoreEditorInput && ((FileStoreEditorInput) getEditorInput()).exists()) {
 			return ((BasicCommandStack) getEditingDomain().getCommandStack()).isSaveNeeded();
 		}
 		Object modelRoot = getModelRoot();
@@ -731,6 +734,10 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	@Override
 	public boolean isSaveOnCloseNeeded() {
+		// In this case the opened editor own the file
+		if (getEditorInput() instanceof FileStoreEditorInput && ((FileStoreEditorInput) getEditorInput()).exists()) {
+			return isDirty();
+		}
 		// Model-based editors don't need to be saved when being closed even if the model is dirty, because they don't
 		// own the model. The model is loaded, managed, and saved globally, i.e. it is not destroyed but stays there
 		// when editors are being closed.
