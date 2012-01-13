@@ -71,14 +71,7 @@
 	<searchPath name="target.platform">
 		<!-- Overlayed update sites -->
 		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)">
-			<uri format="{0}/sphinx/updates/temp/mwe">
-				<bc:propertyRef key="eclipse.mirror"/>
-			</uri>
-		</provider>
-		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)">
-			<uri format="{0}/sphinx/updates/temp/xpand">
-				<bc:propertyRef key="eclipse.mirror"/>
-			</uri>
+			<uri format="https://hudson.eclipse.org/hudson/job/Xpand-nightly-HEAD/752/artifact/xpand.p2.repository/"/>
 		</provider>
 		
 		<!-- Galileo -->
