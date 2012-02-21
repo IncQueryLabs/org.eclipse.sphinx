@@ -4,6 +4,7 @@
 	<!-- Use Helios version of EMF Compare. -->
 	<locator pattern="^org\.eclipse\.emf\.compare(\..+)*" searchPathRef="target.platform.emf.compare"/>
 	<locator pattern="^org\.eclipse\.graphiti(\..+)*" searchPathRef="target.platform.graphiti"/>
+	<locator pattern="^org\.google\.guava" searchPathRef="target.platform.guava"/>
 	<locator searchPathRef="target.platform"/>
 	
 	<searchPath name="org.eclipse.sphinx">
@@ -68,6 +69,14 @@
 		</provider>
 	</searchPath>
 	
+	<searchPath name="target.platform.guava">
+		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(&amp;(tp.present=false)(|(tp.release=galileo)(tp.release=helios)(tp.release=indigo)))">
+			<uri format="{0}/modeling/tmf/xtext/updates/composite/releases">
+				<bc:propertyRef key="eclipse.mirror"/>
+			</uri>
+		</provider>
+	</searchPath>
+	
 	<searchPath name="target.platform">
 		<!-- Overlayed update sites -->
 		<provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(tp.present=false)">
@@ -120,7 +129,7 @@
 			</uri>
 		</provider>
 		<provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(&amp;(tp.present=false)(tp.release=indigo))">
-			<uri format="{0}/tools/orbit/downloads/drops/R20090529135407/updateSite">
+			<uri format="{0}/tools/orbit/downloads/drops/R20110523182458/updateSite">
 				<bc:propertyRef key="eclipse.mirror"/>
 			</uri>
 		</provider>
