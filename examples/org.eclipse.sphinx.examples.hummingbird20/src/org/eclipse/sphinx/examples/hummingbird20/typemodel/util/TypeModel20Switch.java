@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.util.Switch;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.*;
 
@@ -36,7 +38,7 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.*;
  * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package
  * @generated
  */
-public class TypeModel20Switch<T> {
+public class TypeModel20Switch<T> extends Switch<T> {
 	/**
 	 * The cached model package
 	 * <!-- begin-user-doc -->
@@ -52,20 +54,24 @@ public class TypeModel20Switch<T> {
 	 * @generated
 	 */
 	public TypeModel20Switch() {
-		if (modelPackage == null) {
+		if (modelPackage == null)
+		{
 			modelPackage = TypeModel20Package.eINSTANCE;
 		}
 	}
 
 	/**
-	 * Calls <code>caseXXX</code> for each class of the model until one returns a non null result; it yields that result.
+	 * Checks whether this is a switch for the given package.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the first non-null result returned by a <code>caseXXX</code> call.
+	 * @parameter ePackage the package in question.
+	 * @return whether this is a switch for the given package.
 	 * @generated
 	 */
-	public T doSwitch(EObject theEObject) {
-		return doSwitch(theEObject.eClass(), theEObject);
+	@Override
+	protected boolean isSwitchFor(EPackage ePackage)
+	{
+		return ePackage == modelPackage;
 	}
 
 	/**
@@ -75,57 +81,44 @@ public class TypeModel20Switch<T> {
 	 * @return the first non-null result returned by a <code>caseXXX</code> call.
 	 * @generated
 	 */
-	protected T doSwitch(EClass theEClass, EObject theEObject) {
-		if (theEClass.eContainer() == modelPackage) {
-			return doSwitch(theEClass.getClassifierID(), theEObject);
-		}
-		else {
-			List<EClass> eSuperTypes = theEClass.getESuperTypes();
-			return
-				eSuperTypes.isEmpty() ?
-					defaultCase(theEObject) :
-					doSwitch(eSuperTypes.get(0), theEObject);
-		}
-	}
-
-	/**
-	 * Calls <code>caseXXX</code> for each class of the model until one returns a non null result; it yields that result.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the first non-null result returned by a <code>caseXXX</code> call.
-	 * @generated
-	 */
+	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
-		switch (classifierID) {
-			case TypeModel20Package.PLATFORM: {
+		switch (classifierID)
+		{
+			case TypeModel20Package.PLATFORM:
+			{
 				Platform platform = (Platform)theEObject;
 				T result = casePlatform(platform);
 				if (result == null) result = caseIdentifiable(platform);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case TypeModel20Package.COMPONENT_TYPE: {
+			case TypeModel20Package.COMPONENT_TYPE:
+			{
 				ComponentType componentType = (ComponentType)theEObject;
 				T result = caseComponentType(componentType);
 				if (result == null) result = caseIdentifiable(componentType);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case TypeModel20Package.PORT: {
+			case TypeModel20Package.PORT:
+			{
 				Port port = (Port)theEObject;
 				T result = casePort(port);
 				if (result == null) result = caseIdentifiable(port);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case TypeModel20Package.INTERFACE: {
+			case TypeModel20Package.INTERFACE:
+			{
 				Interface interface_ = (Interface)theEObject;
 				T result = caseInterface(interface_);
 				if (result == null) result = caseIdentifiable(interface_);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case TypeModel20Package.PARAMETER: {
+			case TypeModel20Package.PARAMETER:
+			{
 				Parameter parameter = (Parameter)theEObject;
 				T result = caseParameter(parameter);
 				if (result == null) result = caseIdentifiable(parameter);
@@ -237,6 +230,7 @@ public class TypeModel20Switch<T> {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject)
 	 * @generated
 	 */
+	@Override
 	public T defaultCase(EObject object) {
 		return null;
 	}

@@ -47,7 +47,8 @@ public class Common20AdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Common20AdapterFactory() {
-		if (modelPackage == null) {
+		if (modelPackage == null)
+		{
 			modelPackage = Common20Package.eINSTANCE;
 		}
 	}
@@ -62,10 +63,12 @@ public class Common20AdapterFactory extends AdapterFactoryImpl {
 	 */
 	@Override
 	public boolean isFactoryForType(Object object) {
-		if (object == modelPackage) {
+		if (object == modelPackage)
+		{
 			return true;
 		}
-		if (object instanceof EObject) {
+		if (object instanceof EObject)
+		{
 			return ((EObject)object).eClass().getEPackage() == modelPackage;
 		}
 		return false;
@@ -78,17 +81,21 @@ public class Common20AdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	protected Common20Switch<Adapter> modelSwitch =
-		new Common20Switch<Adapter>() {
+		new Common20Switch<Adapter>()
+		{
 			@Override
-			public Adapter caseIdentifiable(Identifiable object) {
+			public Adapter caseIdentifiable(Identifiable object)
+			{
 				return createIdentifiableAdapter();
 			}
 			@Override
-			public Adapter caseDescription(Description object) {
+			public Adapter caseDescription(Description object)
+			{
 				return createDescriptionAdapter();
 			}
 			@Override
-			public Adapter defaultCase(EObject object) {
+			public Adapter defaultCase(EObject object)
+			{
 				return createEObjectAdapter();
 			}
 		};

@@ -35,13 +35,16 @@ public class Common20FactoryImpl extends EFactoryImpl implements Common20Factory
 	 * @generated
 	 */
 	public static Common20Factory init() {
-		try {
+		try
+		{
 			Common20Factory theCommon20Factory = (Common20Factory)EPackage.Registry.INSTANCE.getEFactory("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common"); //$NON-NLS-1$ 
-			if (theCommon20Factory != null) {
+			if (theCommon20Factory != null)
+			{
 				return theCommon20Factory;
 			}
 		}
-		catch (Exception exception) {
+		catch (Exception exception)
+		{
 			EcorePlugin.INSTANCE.log(exception);
 		}
 		return new Common20FactoryImpl();
@@ -62,7 +65,8 @@ public class Common20FactoryImpl extends EFactoryImpl implements Common20Factory
 	 */
 	@Override
 	public EObject create(EClass eClass) {
-		switch (eClass.getClassifierID()) {
+		switch (eClass.getClassifierID())
+		{
 			case Common20Package.DESCRIPTION: return createDescription();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$

@@ -30,7 +30,6 @@ import org.eclipse.emf.ecore.EReference;
  * <!-- end-user-doc -->
  * @see org.eclipse.sphinx.examples.hummingbird20.common.Common20Factory
  * @model kind="package"
- *        extendedMetaData="kind='mixed'"
  * @generated
  */
 public interface Common20Package extends EPackage {

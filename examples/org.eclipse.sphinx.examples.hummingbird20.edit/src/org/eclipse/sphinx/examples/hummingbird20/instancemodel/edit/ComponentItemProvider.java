@@ -68,7 +68,8 @@ public class ComponentItemProvider
 	 */
 	@Override
 	public List<IItemPropertyDescriptor> getPropertyDescriptors(Object object) {
-		if (itemPropertyDescriptors == null) {
+		if (itemPropertyDescriptors == null)
+		{
 			super.getPropertyDescriptors(object);
 
 			addTypePropertyDescriptor(object);
@@ -131,7 +132,8 @@ public class ComponentItemProvider
 	 */
 	@Override
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
-		if (childrenFeatures == null) {
+		if (childrenFeatures == null)
+		{
 			super.getChildrenFeatures(object);
 			childrenFeatures.add(InstanceModel20Package.Literals.COMPONENT__OUTGOING_CONNECTIONS);
 			childrenFeatures.add(InstanceModel20Package.Literals.COMPONENT__PARAMETER_VALUES);
@@ -188,7 +190,8 @@ public class ComponentItemProvider
 	public void notifyChanged(Notification notification) {
 		updateChildren(notification);
 
-		switch (notification.getFeatureID(Component.class)) {
+		switch (notification.getFeatureID(Component.class))
+		{
 			case InstanceModel20Package.COMPONENT__OUTGOING_CONNECTIONS:
 			case InstanceModel20Package.COMPONENT__PARAMETER_VALUES:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));

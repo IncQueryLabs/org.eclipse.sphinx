@@ -30,26 +30,19 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
-import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.emf.ecore.xmi.XMLSave;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.eclipse.emf.ecore.xml.namespace.XMLNamespacePackage;
-import org.eclipse.emf.ecore.xml.type.ProcessingInstruction;
-import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.ReflectUtil;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
  * An extended {@link XMLSave} implementation that provides support for on-the-fly migration of instances of newer
@@ -370,14 +363,6 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 			}
 		}
 
-		if (declareXSI) {
-			if (!toDOM) {
-				doc.addAttribute(XSI_XMLNS, XMLResource.XSI_URI);
-			} else {
-				((Element) currentNode).setAttributeNS(ExtendedMetaData.XMLNS_URI, XSI_XMLNS, XMLResource.XSI_URI);
-			}
-		}
-
 		for (EPackage package1 : packages) {
 			EPackage ePackage = package1;
 			if (ePackage != noNamespacePackage && ePackage != XMLNamespacePackage.eINSTANCE
@@ -422,6 +407,14 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 			}
 		}
 
+		if (declareXSI) {
+			if (!toDOM) {
+				doc.addAttribute(XSI_XMLNS, XMLResource.XSI_URI);
+			} else {
+				((Element) currentNode).setAttributeNS(ExtendedMetaData.XMLNS_URI, XSI_XMLNS, XMLResource.XSI_URI);
+			}
+		}
+
 		if (xsiSchemaLocation.length() > 0) {
 			if (!toDOM) {
 				doc.addAttribute(XSI_SCHEMA_LOCATION, xsiSchemaLocation.toString());
@@ -453,153 +446,29 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 	 */
 	@Override
 	protected Object writeTopObject(EObject top) {
-		// Make sure that comments and processing instructions get added BEFORE (rather than behind) the root element
-		saveTopCommentsAndProcessingInstructions(top);
+		// Make sure that comments, text, CDATA and processing instructions get added BEFORE the
+		// root element
+		saveOuterContent(top);
 
 		return super.writeTopObject(top);
 	}
 
 	/**
-	 * Does the same as {@link XMLSaveImpl#saveElementFeatureMap(EObject, EStructuralFeature)} for comments and
-	 * processing instructions, except that the comments are added BEFORE (rather than behind) the root element.
+	 * Writes out the contents of the special feature ExtendedResourceConstants.OUTER_CONTENT_ATTRIBUTE_NAME of the
+	 * passed in object. This method is used to write out such comment before the starting tag of the actual root
+	 * element.
 	 * 
 	 * @param top
-	 *            The {@link EObject root object} whose comments and processing instructions are to be saved.
+	 *            The {@link EObject root object} whose mixed outer content (text, comments, CDATA and processing
+	 *            instructions) is to be saved.
 	 */
-	protected void saveTopCommentsAndProcessingInstructions(EObject top) {
+	protected void saveOuterContent(EObject top) {
 		EList<EAttribute> allAttributes = top.eClass().getEAllAttributes();
 		for (Object element : allAttributes) {
 			EAttribute attribute = (EAttribute) element;
-			if ("mixed".equals(attribute.getName())) { //$NON-NLS-1$
-				@SuppressWarnings("unchecked")
-				List<? extends FeatureMap.Entry> values = (List<? extends FeatureMap.Entry>) helper.getValue(top, attribute);
-				int size = values.size();
-				for (int i = 0; i < size; i++) {
-					FeatureMap.Entry entry = values.get(i);
-					EStructuralFeature entryFeature = entry.getEStructuralFeature();
-					Object value = entry.getValue();
-					if (entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION) {
-						ProcessingInstruction pi = (ProcessingInstruction) value;
-						String target = pi.getTarget();
-						String data = pi.getData();
-						if (escape != null && data != null) {
-							data = escape.convertLines(data);
-						}
-						if (!toDOM) {
-							doc.addProcessingInstruction(target, data);
-						} else {
-							// TODO processing instructions are not sent to recordValues
-							currentNode.appendChild(document.createProcessingInstruction(target, data));
-						}
-					} else if (entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT) {
-						String stringValue = value.toString();
-						if (escape != null) {
-							stringValue = escape.convertLines(stringValue);
-						}
-						if (!toDOM) {
-							doc.addComment(stringValue);
-						} else {
-							currentNode.appendChild(document.createComment(stringValue));
-						}
-					}
-				}
+			if (ExtendedResourceConstants.OUTER_CONTENT_ATTRIBUTE_NAME.equals(attribute.getName())) {
+				saveElementFeatureMap(top, attribute);
 			}
 		}
-	}
-
-	/**
-	 * Does the same as {@link XMLSaveImpl#saveElementFeatureMap(EObject, EStructuralFeature)}, except that comments and
-	 * processing instructions of the root element are no longer added here. This is done in
-	 * {@link #saveTopCommentsAndProcessingInstructions(EObject)} instead.
-	 * 
-	 * @param top
-	 *            The {@link EObject root object} whose comments are to be saved.
-	 * @see org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl#saveElementFeatureMap(org.eclipse.emf.ecore.EObject,
-	 *      org.eclipse.emf.ecore.EStructuralFeature)
-	 * @see #saveTopCommentsAndProcessingInstructions(EObject)
-	 */
-	@Override
-	protected boolean saveElementFeatureMap(EObject o, EStructuralFeature f) {
-		@SuppressWarnings("unchecked")
-		List<? extends FeatureMap.Entry> values = (List<? extends FeatureMap.Entry>) helper.getValue(o, f);
-		int size = values.size();
-		for (int i = 0; i < size; i++) {
-			FeatureMap.Entry entry = values.get(i);
-			EStructuralFeature entryFeature = entry.getEStructuralFeature();
-			Object value = entry.getValue();
-			if (entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION) {
-				// Skip adding processing instructions if current object is the root element
-				if (o != root) {
-					ProcessingInstruction pi = (ProcessingInstruction) value;
-					String target = pi.getTarget();
-					String data = pi.getData();
-					if (escape != null && data != null) {
-						data = escape.convertLines(data);
-					}
-					if (!toDOM) {
-						doc.addProcessingInstruction(target, data);
-					} else {
-						// TODO processing instructions are not sent to recordValues
-						currentNode.appendChild(document.createProcessingInstruction(target, data));
-					}
-				}
-			} else if (entryFeature instanceof EReference) {
-				if (value == null) {
-					saveNil(o, entryFeature);
-				} else {
-					EReference referenceEntryFeature = (EReference) entryFeature;
-					if (referenceEntryFeature.isContainment()) {
-						saveElement((InternalEObject) value, entryFeature);
-					} else if (referenceEntryFeature.isResolveProxies()) {
-						saveFeatureMapElementReference((EObject) value, referenceEntryFeature);
-					} else {
-						saveElementIDRef(o, (EObject) value, entryFeature);
-					}
-				}
-			} else {
-				if (entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT) {
-					String svalue = value.toString();
-					if (escape != null) {
-						svalue = escape.convertText(svalue);
-					}
-					if (!toDOM) {
-						doc.addText(svalue);
-					} else {
-						Node text = document.createTextNode(svalue);
-						currentNode.appendChild(text);
-						handler.recordValues(text, o, f, entry);
-					}
-				} else if (entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA) {
-					String stringValue = value.toString();
-					if (escape != null) {
-						stringValue = escape.convertLines(stringValue);
-					}
-					if (!toDOM) {
-						doc.addCDATA(stringValue);
-					} else {
-						Node cdata = document.createCDATASection(stringValue);
-						currentNode.appendChild(cdata);
-						handler.recordValues(cdata, o, f, entry);
-					}
-				} else if (entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT) {
-					// Skip adding comments if current object is the root element
-					if (o != root) {
-						String stringValue = value.toString();
-						if (escape != null) {
-							stringValue = escape.convertLines(stringValue);
-						}
-						if (!toDOM) {
-							doc.addComment(stringValue);
-						} else {
-							// TODO comments are not sent to recordValues
-							currentNode.appendChild(document.createComment(stringValue));
-						}
-					}
-				} else {
-					saveElement(o, value, entryFeature);
-				}
-			}
-		}
-		return size > 0;
 	}
 }

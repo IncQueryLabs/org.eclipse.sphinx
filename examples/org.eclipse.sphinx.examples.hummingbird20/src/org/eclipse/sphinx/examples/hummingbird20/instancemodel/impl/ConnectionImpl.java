@@ -107,7 +107,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * @generated
 	 */
 	public void setSourceComponent(Component newSourceComponent) {
-		if (newSourceComponent != eInternalContainer() || (eContainerFeatureID() != InstanceModel20Package.CONNECTION__SOURCE_COMPONENT && newSourceComponent != null)) {
+		if (newSourceComponent != eInternalContainer() || (eContainerFeatureID() != InstanceModel20Package.CONNECTION__SOURCE_COMPONENT && newSourceComponent != null))
+		{
 			if (EcoreUtil.isAncestor(this, newSourceComponent))
 				throw new IllegalArgumentException("Recursive containment not allowed for " + toString()); //$NON-NLS-1$
 			NotificationChain msgs = null;
@@ -128,10 +129,12 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * @generated
 	 */
 	public Port getSourcePort() {
-		if (sourcePort != null && sourcePort.eIsProxy()) {
+		if (sourcePort != null && sourcePort.eIsProxy())
+		{
 			InternalEObject oldSourcePort = (InternalEObject)sourcePort;
 			sourcePort = (Port)eResolveProxy(oldSourcePort);
-			if (sourcePort != oldSourcePort) {
+			if (sourcePort != oldSourcePort)
+			{
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE, InstanceModel20Package.CONNECTION__SOURCE_PORT, oldSourcePort, sourcePort));
 			}
@@ -166,10 +169,12 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * @generated
 	 */
 	public Component getTargetComponent() {
-		if (targetComponent != null && targetComponent.eIsProxy()) {
+		if (targetComponent != null && targetComponent.eIsProxy())
+		{
 			InternalEObject oldTargetComponent = (InternalEObject)targetComponent;
 			targetComponent = (Component)eResolveProxy(oldTargetComponent);
-			if (targetComponent != oldTargetComponent) {
+			if (targetComponent != oldTargetComponent)
+			{
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE, InstanceModel20Package.CONNECTION__TARGET_COMPONENT, oldTargetComponent, targetComponent));
 			}
@@ -194,7 +199,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	public NotificationChain basicSetTargetComponent(Component newTargetComponent, NotificationChain msgs) {
 		Component oldTargetComponent = targetComponent;
 		targetComponent = newTargetComponent;
-		if (eNotificationRequired()) {
+		if (eNotificationRequired())
+		{
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, InstanceModel20Package.CONNECTION__TARGET_COMPONENT, oldTargetComponent, newTargetComponent);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
@@ -207,7 +213,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * @generated
 	 */
 	public void setTargetComponent(Component newTargetComponent) {
-		if (newTargetComponent != targetComponent) {
+		if (newTargetComponent != targetComponent)
+		{
 			NotificationChain msgs = null;
 			if (targetComponent != null)
 				msgs = ((InternalEObject)targetComponent).eInverseRemove(this, InstanceModel20Package.COMPONENT__INCOMING_CONNECTIONS, Component.class, msgs);
@@ -227,7 +234,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 */
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:
 				if (eInternalContainer() != null)
 					msgs = eBasicRemoveFromContainer(msgs);
@@ -247,7 +255,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:
 				return basicSetSourceComponent(null, msgs);
 			case InstanceModel20Package.CONNECTION__TARGET_COMPONENT:
@@ -263,7 +272,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 */
 	@Override
 	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
-		switch (eContainerFeatureID()) {
+		switch (eContainerFeatureID())
+		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:
 				return eInternalContainer().eInverseRemove(this, InstanceModel20Package.COMPONENT__OUTGOING_CONNECTIONS, Component.class, msgs);
 		}
@@ -277,7 +287,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:
 				return getSourceComponent();
 			case InstanceModel20Package.CONNECTION__SOURCE_PORT:
@@ -297,7 +308,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:
 				setSourceComponent((Component)newValue);
 				return;
@@ -318,7 +330,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 */
 	@Override
 	public void eUnset(int featureID) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:
 				setSourceComponent((Component)null);
 				return;
@@ -339,7 +352,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:
 				return getSourceComponent() != null;
 			case InstanceModel20Package.CONNECTION__SOURCE_PORT:

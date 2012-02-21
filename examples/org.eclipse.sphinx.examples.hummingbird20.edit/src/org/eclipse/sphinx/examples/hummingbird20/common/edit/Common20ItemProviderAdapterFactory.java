@@ -97,7 +97,8 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 	 */
 	@Override
 	public Adapter createDescriptionAdapter() {
-		if (descriptionItemProvider == null) {
+		if (descriptionItemProvider == null)
+		{
 			descriptionItemProvider = new DescriptionItemProvider(this);
 		}
 
@@ -152,9 +153,11 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 	 */
 	@Override
 	public Object adapt(Object object, Object type) {
-		if (isFactoryForType(type)) {
+		if (isFactoryForType(type))
+		{
 			Object adapter = super.adapt(object, type);
-			if (!(type instanceof Class<?>) || (((Class<?>)type).isInstance(adapter))) {
+			if (!(type instanceof Class<?>) || (((Class<?>)type).isInstance(adapter)))
+			{
 				return adapter;
 			}
 		}
@@ -191,7 +194,8 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 	public void fireNotifyChanged(Notification notification) {
 		changeNotifier.fireNotifyChanged(notification);
 
-		if (parentAdapterFactory != null) {
+		if (parentAdapterFactory != null)
+		{
 			parentAdapterFactory.fireNotifyChanged(notification);
 		}
 	}

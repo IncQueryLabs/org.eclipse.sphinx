@@ -93,10 +93,12 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 * @generated
 	 */
 	public Parameter getType() {
-		if (type != null && type.eIsProxy()) {
+		if (type != null && type.eIsProxy())
+		{
 			InternalEObject oldType = (InternalEObject)type;
 			type = (Parameter)eResolveProxy(oldType);
-			if (type != oldType) {
+			if (type != oldType)
+			{
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE, InstanceModel20Package.PARAMETER_VALUE__TYPE, oldType, type));
 			}
@@ -153,7 +155,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case InstanceModel20Package.PARAMETER_VALUE__TYPE:
 				if (resolve) return getType();
 				return basicGetType();
@@ -170,7 +173,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case InstanceModel20Package.PARAMETER_VALUE__TYPE:
 				setType((Parameter)newValue);
 				return;
@@ -188,7 +192,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 */
 	@Override
 	public void eUnset(int featureID) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case InstanceModel20Package.PARAMETER_VALUE__TYPE:
 				setType((Parameter)null);
 				return;
@@ -206,7 +211,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case InstanceModel20Package.PARAMETER_VALUE__TYPE:
 				return type != null;
 			case InstanceModel20Package.PARAMETER_VALUE__VALUE:

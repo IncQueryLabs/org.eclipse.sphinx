@@ -22,15 +22,20 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.ResourceLocator;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EcoreFactory;
+import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
+import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
 import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
 import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
+import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 import org.eclipse.sphinx.examples.hummingbird20.common.edit.IdentifiableItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.edit.Activator;
@@ -70,7 +75,8 @@ public class ApplicationItemProvider
 	 */
 	@Override
 	public List<IItemPropertyDescriptor> getPropertyDescriptors(Object object) {
-		if (itemPropertyDescriptors == null) {
+		if (itemPropertyDescriptors == null)
+		{
 			super.getPropertyDescriptors(object);
 
 		}
@@ -87,7 +93,8 @@ public class ApplicationItemProvider
 	 */
 	@Override
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
-		if (childrenFeatures == null) {
+		if (childrenFeatures == null)
+		{
 			super.getChildrenFeatures(object);
 			childrenFeatures.add(InstanceModel20Package.Literals.APPLICATION__COMPONENTS);
 			childrenFeatures.add(InstanceModel20Package.Literals.APPLICATION__MIXED);
@@ -144,7 +151,8 @@ public class ApplicationItemProvider
 	public void notifyChanged(Notification notification) {
 		updateChildren(notification);
 
-		switch (notification.getFeatureID(Application.class)) {
+		switch (notification.getFeatureID(Application.class))
+		{
 			case InstanceModel20Package.APPLICATION__COMPONENTS:
 			case InstanceModel20Package.APPLICATION__MIXED:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
@@ -196,6 +204,44 @@ public class ApplicationItemProvider
 				 FeatureMapUtil.createEntry
 					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA,
 					 ""))); //$NON-NLS-1$
+
+		newChildDescriptors.add
+			(createChildParameter
+				(InstanceModel20Package.Literals.APPLICATION__MIXED,
+				 FeatureMapUtil.createEntry
+					(InstanceModel20Package.Literals.APPLICATION__COMPONENTS,
+					 InstanceModel20Factory.eINSTANCE.createComponent())));
+	}
+
+	/**
+	 * This returns the label text for {@link org.eclipse.emf.edit.command.CreateChildCommand}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String getCreateChildText(Object owner, Object feature, Object child, Collection<?> selection)
+	{
+		Object childFeature = feature;
+		Object childObject = child;
+
+		if (childFeature instanceof EStructuralFeature && FeatureMapUtil.isFeatureMap((EStructuralFeature)childFeature))
+		{
+			FeatureMap.Entry entry = (FeatureMap.Entry)childObject;
+			childFeature = entry.getEStructuralFeature();
+			childObject = entry.getValue();
+		}
+
+		boolean qualify =
+			childFeature == InstanceModel20Package.Literals.APPLICATION__COMPONENTS;
+
+		if (qualify)
+		{
+			return getString
+				("_UI_CreateChild_text2", //$NON-NLS-1$
+				 new Object[] { getTypeText(childObject), getFeatureText(childFeature), getTypeText(owner) });
+		}
+		return super.getCreateChildText(owner, feature, child, selection);
 	}
 
 	/**

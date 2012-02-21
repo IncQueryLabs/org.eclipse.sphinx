@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.util.Switch;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.*;
 
@@ -36,7 +38,7 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.*;
  * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package
  * @generated
  */
-public class InstanceModel20Switch<T> {
+public class InstanceModel20Switch<T> extends Switch<T> {
 	/**
 	 * The cached model package
 	 * <!-- begin-user-doc -->
@@ -52,20 +54,24 @@ public class InstanceModel20Switch<T> {
 	 * @generated
 	 */
 	public InstanceModel20Switch() {
-		if (modelPackage == null) {
+		if (modelPackage == null)
+		{
 			modelPackage = InstanceModel20Package.eINSTANCE;
 		}
 	}
 
 	/**
-	 * Calls <code>caseXXX</code> for each class of the model until one returns a non null result; it yields that result.
+	 * Checks whether this is a switch for the given package.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the first non-null result returned by a <code>caseXXX</code> call.
+	 * @parameter ePackage the package in question.
+	 * @return whether this is a switch for the given package.
 	 * @generated
 	 */
-	public T doSwitch(EObject theEObject) {
-		return doSwitch(theEObject.eClass(), theEObject);
+	@Override
+	protected boolean isSwitchFor(EPackage ePackage)
+	{
+		return ePackage == modelPackage;
 	}
 
 	/**
@@ -75,50 +81,36 @@ public class InstanceModel20Switch<T> {
 	 * @return the first non-null result returned by a <code>caseXXX</code> call.
 	 * @generated
 	 */
-	protected T doSwitch(EClass theEClass, EObject theEObject) {
-		if (theEClass.eContainer() == modelPackage) {
-			return doSwitch(theEClass.getClassifierID(), theEObject);
-		}
-		else {
-			List<EClass> eSuperTypes = theEClass.getESuperTypes();
-			return
-				eSuperTypes.isEmpty() ?
-					defaultCase(theEObject) :
-					doSwitch(eSuperTypes.get(0), theEObject);
-		}
-	}
-
-	/**
-	 * Calls <code>caseXXX</code> for each class of the model until one returns a non null result; it yields that result.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the first non-null result returned by a <code>caseXXX</code> call.
-	 * @generated
-	 */
+	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
-		switch (classifierID) {
-			case InstanceModel20Package.APPLICATION: {
+		switch (classifierID)
+		{
+			case InstanceModel20Package.APPLICATION:
+			{
 				Application application = (Application)theEObject;
 				T result = caseApplication(application);
 				if (result == null) result = caseIdentifiable(application);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case InstanceModel20Package.COMPONENT: {
+			case InstanceModel20Package.COMPONENT:
+			{
 				Component component = (Component)theEObject;
 				T result = caseComponent(component);
 				if (result == null) result = caseIdentifiable(component);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case InstanceModel20Package.CONNECTION: {
+			case InstanceModel20Package.CONNECTION:
+			{
 				Connection connection = (Connection)theEObject;
 				T result = caseConnection(connection);
 				if (result == null) result = caseIdentifiable(connection);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case InstanceModel20Package.PARAMETER_VALUE: {
+			case InstanceModel20Package.PARAMETER_VALUE:
+			{
 				ParameterValue parameterValue = (ParameterValue)theEObject;
 				T result = caseParameterValue(parameterValue);
 				if (result == null) result = caseIdentifiable(parameterValue);
@@ -215,6 +207,7 @@ public class InstanceModel20Switch<T> {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject)
 	 * @generated
 	 */
+	@Override
 	public T defaultCase(EObject object) {
 		return null;
 	}

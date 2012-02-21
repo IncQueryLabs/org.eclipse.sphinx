@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.examples.hummingbird20.typemodel.editor;
+package org.eclipse.sphinx.examples.hummingbird20.common.editor;
 
 
 import java.util.ArrayList;
@@ -25,52 +25,76 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.StringTokenizer;
 
+import org.eclipse.emf.common.CommonPlugin;
+
+import org.eclipse.emf.common.util.URI;
+
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+
+import org.eclipse.emf.ecore.EObject;
+
+import org.eclipse.emf.ecore.xmi.XMLResource;
+
+import org.eclipse.emf.edit.ui.provider.ExtendedImageRegistry;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.CommonPlugin;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.emf.edit.ui.provider.ExtendedImageRegistry;
+
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
+
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
+
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
-import org.eclipse.sphinx.examples.hummingbird20.edit.Activator;
-import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Factory;
-import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
+
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.ModifyEvent;
+
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
+
+import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
+
+import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.part.ISetSelectionTarget;
+
+import org.eclipse.sphinx.examples.hummingbird20.common.Common20Factory;
+import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
+import org.eclipse.sphinx.examples.hummingbird20.edit.Activator;
+
+
+import org.eclipse.core.runtime.Path;
+
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.actions.WorkspaceModifyOperation;
-import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
-import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.part.ISetSelectionTarget;
 
 
 /**
@@ -79,7 +103,8 @@ import org.eclipse.ui.part.ISetSelectionTarget;
  * <!-- end-user-doc -->
  * @generated
  */
-public class TypeModel20ModelWizard extends Wizard implements INewWizard {
+public class Common20ModelWizard extends Wizard implements INewWizard
+{
 	/**
 	 * The supported extensions for created files.
 	 * <!-- begin-user-doc -->
@@ -87,7 +112,7 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * @generated
 	 */
 	public static final List<String> FILE_EXTENSIONS =
-		Collections.unmodifiableList(Arrays.asList(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_TypeModel20EditorFilenameExtensions").split("\\s*,\\s*"))); //$NON-NLS-1$ //$NON-NLS-2$
+		Collections.unmodifiableList(Arrays.asList(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_Common20EditorFilenameExtensions").split("\\s*,\\s*"))); //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * A formatted list of supported file extensions, suitable for display.
@@ -96,7 +121,7 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * @generated
 	 */
 	public static final String FORMATTED_FILE_EXTENSIONS =
-		org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_TypeModel20EditorFilenameExtensions").replaceAll("\\s*,\\s*", ", "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_Common20EditorFilenameExtensions").replaceAll("\\s*,\\s*", ", "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	/**
 	 * This caches an instance of the model package.
@@ -104,7 +129,7 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected TypeModel20Package typeModel20Package = TypeModel20Package.eINSTANCE;
+	protected Common20Package common20Package = Common20Package.eINSTANCE;
 
 	/**
 	 * This caches an instance of the model factory.
@@ -112,7 +137,7 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected TypeModel20Factory typeModel20Factory = typeModel20Package.getTypeModel20Factory();
+	protected Common20Factory common20Factory = common20Package.getCommon20Factory();
 
 	/**
 	 * This is the file creation page.
@@ -120,7 +145,7 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected TypeModel20ModelWizardNewFileCreationPage newFileCreationPage;
+	protected Common20ModelWizardNewFileCreationPage newFileCreationPage;
 
 	/**
 	 * This is the initial object creation page.
@@ -128,7 +153,7 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected TypeModel20ModelWizardInitialObjectCreationPage initialObjectCreationPage;
+	protected Common20ModelWizardInitialObjectCreationPage initialObjectCreationPage;
 
 	/**
 	 * Remember the selection during initialization for populating the default container.
@@ -160,11 +185,12 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
+	public void init(IWorkbench workbench, IStructuredSelection selection)
+	{
 		this.workbench = workbench;
 		this.selection = selection;
 		setWindowTitle(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_Wizard_label")); //$NON-NLS-1$
-		setDefaultPageImageDescriptor(ExtendedImageRegistry.INSTANCE.getImageDescriptor(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getImage("full/wizban/NewTypeModel20"))); //$NON-NLS-1$
+		setDefaultPageImageDescriptor(ExtendedImageRegistry.INSTANCE.getImageDescriptor(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getImage("full/wizban/NewCommon20"))); //$NON-NLS-1$
 	}
 
 	/**
@@ -173,11 +199,12 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected Collection<String> getInitialObjectNames() {
+	protected Collection<String> getInitialObjectNames()
+	{
 		if (initialObjectNames == null)
 		{
 			initialObjectNames = new ArrayList<String>();
-			for (EClassifier eClassifier : typeModel20Package.getEClassifiers())
+			for (EClassifier eClassifier : common20Package.getEClassifiers())
 			{
 				if (eClassifier instanceof EClass)
 				{
@@ -199,9 +226,10 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected EObject createInitialModel() {
-		EClass eClass = (EClass)typeModel20Package.getEClassifier(initialObjectCreationPage.getInitialObjectName());
-		EObject rootObject = typeModel20Factory.create(eClass);
+	protected EObject createInitialModel()
+	{
+		EClass eClass = (EClass)common20Package.getEClassifier(initialObjectCreationPage.getInitialObjectName());
+		EObject rootObject = common20Factory.create(eClass);
 		return rootObject;
 	}
 
@@ -209,11 +237,13 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * Do the work after everything is specified.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated NOT
+	 * @generated
 	 */
 	@Override
-	public boolean performFinish() {
-		try {
+	public boolean performFinish()
+	{
+		try
+		{
 			// Remember the file.
 			//
 			final IFile modelFile = getModelFile();
@@ -221,10 +251,13 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 			// Do the work within an operation.
 			//
 			WorkspaceModifyOperation operation =
-				new WorkspaceModifyOperation() {
+				new WorkspaceModifyOperation()
+				{
 					@Override
-					protected void execute(IProgressMonitor progressMonitor) {
-						try {
+					protected void execute(IProgressMonitor progressMonitor)
+					{
+						try
+						{
 							// Create a resource set
 							//
 							ResourceSet resourceSet = new ResourceSetImpl();
@@ -235,12 +268,13 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 
 							// Create a resource for this file.
 							//
-							Resource resource = resourceSet.createResource(fileURI, Hummingbird20MMDescriptor.XMI_CONTENT_TYPE_ID);
+							Resource resource = resourceSet.createResource(fileURI);
 
 							// Add the initial model object to the contents.
 							//
 							EObject rootObject = createInitialModel();
-							if (rootObject != null) {
+							if (rootObject != null)
+							{
 								resource.getContents().add(rootObject);
 							}
 
@@ -250,10 +284,12 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 							options.put(XMLResource.OPTION_ENCODING, initialObjectCreationPage.getEncoding());
 							resource.save(options);
 						}
-						catch (Exception exception) {
+						catch (Exception exception)
+						{
 							org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.log(exception);
 						}
-						finally {
+						finally
+						{
 							progressMonitor.done();
 						}
 					}
@@ -266,11 +302,14 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 			IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
 			IWorkbenchPage page = workbenchWindow.getActivePage();
 			final IWorkbenchPart activePart = page.getActivePart();
-			if (activePart instanceof ISetSelectionTarget) {
+			if (activePart instanceof ISetSelectionTarget)
+			{
 				final ISelection targetSelection = new StructuredSelection(modelFile);
 				getShell().getDisplay().asyncExec
-					(new Runnable() {
-						 public void run() {
+					(new Runnable()
+					 {
+						 public void run()
+						 {
 							 ((ISetSelectionTarget)activePart).selectReveal(targetSelection);
 						 }
 					 });
@@ -278,19 +317,22 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 
 			// Open an editor on the new file.
 			//
-			try {
+			try
+			{
 				page.openEditor
 					(new FileEditorInput(modelFile),
-					 workbench.getEditorRegistry().getDefaultEditor(modelFile.getFullPath().toString()).getId());
+					 workbench.getEditorRegistry().getDefaultEditor(modelFile.getFullPath().toString()).getId());					 	 
 			}
-			catch (PartInitException exception) {
+			catch (PartInitException exception)
+			{
 				MessageDialog.openError(workbenchWindow.getShell(), org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_OpenEditorError_label"), exception.getMessage()); //$NON-NLS-1$
 				return false;
 			}
 
 			return true;
 		}
-		catch (Exception exception) {
+		catch (Exception exception)
+		{
 			org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.log(exception);
 			return false;
 		}
@@ -302,14 +344,16 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public class TypeModel20ModelWizardNewFileCreationPage extends WizardNewFileCreationPage {
+	public class Common20ModelWizardNewFileCreationPage extends WizardNewFileCreationPage
+	{
 		/**
 		 * Pass in the selection.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		public TypeModel20ModelWizardNewFileCreationPage(String pageId, IStructuredSelection selection) {
+		public Common20ModelWizardNewFileCreationPage(String pageId, IStructuredSelection selection)
+		{
 			super(pageId, selection);
 		}
 
@@ -320,7 +364,8 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 		 * @generated
 		 */
 		@Override
-		protected boolean validatePage() {
+		protected boolean validatePage()
+		{
 			if (super.validatePage())
 			{
 				String extension = new Path(getFileName()).getFileExtension();
@@ -340,7 +385,8 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		public IFile getModelFile() {
+		public IFile getModelFile()
+		{
 			return ResourcesPlugin.getWorkspace().getRoot().getFile(getContainerFullPath().append(getFileName()));
 		}
 	}
@@ -351,7 +397,8 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public class TypeModel20ModelWizardInitialObjectCreationPage extends WizardPage {
+	public class Common20ModelWizardInitialObjectCreationPage extends WizardPage
+	{
 		/**
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -379,7 +426,8 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		public TypeModel20ModelWizardInitialObjectCreationPage(String pageId) {
+		public Common20ModelWizardInitialObjectCreationPage(String pageId)
+		{
 			super(pageId);
 		}
 
@@ -388,7 +436,8 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		public void createControl(Composite parent) {
+		public void createControl(Composite parent)
+		{
 			Composite composite = new Composite(parent, SWT.NONE);
 			{
 				GridLayout layout = new GridLayout();
@@ -478,7 +527,8 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		protected boolean validatePage() {
+		protected boolean validatePage()
+		{
 			return getInitialObjectName() != null && getEncodings().contains(encodingField.getText());
 		}
 
@@ -488,7 +538,8 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 		 * @generated
 		 */
 		@Override
-		public void setVisible(boolean visible) {
+		public void setVisible(boolean visible)
+		{
 			super.setVisible(visible);
 			if (visible)
 			{
@@ -510,7 +561,8 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		public String getInitialObjectName() {
+		public String getInitialObjectName()
+		{
 			String label = initialObjectField.getText();
 
 			for (String name : getInitialObjectNames())
@@ -528,7 +580,8 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		public String getEncoding() {
+		public String getEncoding()
+		{
 			return encodingField.getText();
 		}
 
@@ -538,7 +591,8 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		protected String getLabel(String typeName) {
+		protected String getLabel(String typeName)
+		{
 			try
 			{
 				return Activator.INSTANCE.getString("_UI_" + typeName + "_type"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -555,7 +609,8 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		protected Collection<String> getEncodings() {
+		protected Collection<String> getEncodings()
+		{
 			if (encodings == null)
 			{
 				encodings = new ArrayList<String>();
@@ -575,13 +630,14 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * @generated
 	 */
 		@Override
-	public void addPages() {
+	public void addPages()
+	{
 		// Create a page, set the title, and the initial model file name.
 		//
-		newFileCreationPage = new TypeModel20ModelWizardNewFileCreationPage("Whatever", selection); //$NON-NLS-1$
-		newFileCreationPage.setTitle(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_TypeModel20ModelWizard_label")); //$NON-NLS-1$
-		newFileCreationPage.setDescription(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_TypeModel20ModelWizard_description")); //$NON-NLS-1$
-		newFileCreationPage.setFileName(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_TypeModel20EditorFilenameDefaultBase") + "." + FILE_EXTENSIONS.get(0)); //$NON-NLS-1$ //$NON-NLS-2$
+		newFileCreationPage = new Common20ModelWizardNewFileCreationPage("Whatever", selection); //$NON-NLS-1$
+		newFileCreationPage.setTitle(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_Common20ModelWizard_label")); //$NON-NLS-1$
+		newFileCreationPage.setDescription(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_Common20ModelWizard_description")); //$NON-NLS-1$
+		newFileCreationPage.setFileName(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_Common20EditorFilenameDefaultBase") + "." + FILE_EXTENSIONS.get(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		addPage(newFileCreationPage);
 
 		// Try and get the resource selection to determine a current directory for the file dialog.
@@ -611,7 +667,7 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 
 					// Make up a unique new name here.
 					//
-					String defaultModelBaseFilename = org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_TypeModel20EditorFilenameDefaultBase"); //$NON-NLS-1$
+					String defaultModelBaseFilename = org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_Common20EditorFilenameDefaultBase"); //$NON-NLS-1$
 					String defaultModelFilenameExtension = FILE_EXTENSIONS.get(0);
 					String modelFilename = defaultModelBaseFilename + "." + defaultModelFilenameExtension; //$NON-NLS-1$
 					for (int i = 1; ((IContainer)selectedResource).findMember(modelFilename) != null; ++i)
@@ -622,8 +678,8 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 				}
 			}
 		}
-		initialObjectCreationPage = new TypeModel20ModelWizardInitialObjectCreationPage("Whatever2"); //$NON-NLS-1$
-		initialObjectCreationPage.setTitle(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_TypeModel20ModelWizard_label")); //$NON-NLS-1$
+		initialObjectCreationPage = new Common20ModelWizardInitialObjectCreationPage("Whatever2"); //$NON-NLS-1$
+		initialObjectCreationPage.setTitle(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_Common20ModelWizard_label")); //$NON-NLS-1$
 		initialObjectCreationPage.setDescription(org.eclipse.sphinx.examples.hummingbird20.editor.Activator.INSTANCE.getString("_UI_Wizard_initial_object_description")); //$NON-NLS-1$
 		addPage(initialObjectCreationPage);
 	}
@@ -634,7 +690,8 @@ public class TypeModel20ModelWizard extends Wizard implements INewWizard {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IFile getModelFile() {
+	public IFile getModelFile()
+	{
 		return newFileCreationPage.getModelFile();
 	}
 

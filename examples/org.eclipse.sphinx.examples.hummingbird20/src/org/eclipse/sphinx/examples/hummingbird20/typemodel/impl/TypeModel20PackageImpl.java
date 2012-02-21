@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.Common20PackageImpl;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
@@ -122,6 +123,7 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 
 		// Initialize simple dependencies
 		EcorePackage.eINSTANCE.eClass();
+		XMLTypePackage.eINSTANCE.eClass();
 
 		// Obtain or create and register interdependencies
 		Common20PackageImpl theCommon20Package = (Common20PackageImpl)(EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI) instanceof Common20PackageImpl ? EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI) : Common20Package.eINSTANCE);
@@ -463,20 +465,23 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 		addAnnotation
 		  (platformEClass, 
 		   source, 
-		   new String[] {
+		   new String[] 
+		   {
 			 "kind", "mixed" //$NON-NLS-1$ //$NON-NLS-2$
 		   });		
 		addAnnotation
 		  (getPlatform_Mixed(), 
 		   source, 
-		   new String[] {
+		   new String[] 
+		   {
 			 "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
 			 "kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
 		   });		
 		addAnnotation
 		  (getPlatform_XSISchemaLocation(), 
 		   source, 
-		   new String[] {
+		   new String[] 
+		   {
 			 "name", "xsi:schemaLocation" //$NON-NLS-1$ //$NON-NLS-2$
 		   });
 	}

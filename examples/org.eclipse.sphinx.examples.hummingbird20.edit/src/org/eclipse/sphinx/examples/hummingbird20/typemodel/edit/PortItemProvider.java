@@ -67,7 +67,8 @@ public class PortItemProvider
 	 */
 	@Override
 	public List<IItemPropertyDescriptor> getPropertyDescriptors(Object object) {
-		if (itemPropertyDescriptors == null) {
+		if (itemPropertyDescriptors == null)
+		{
 			super.getPropertyDescriptors(object);
 
 			addRequiredInterfacePropertyDescriptor(object);
@@ -179,7 +180,8 @@ public class PortItemProvider
 	public void notifyChanged(Notification notification) {
 		updateChildren(notification);
 
-		switch (notification.getFeatureID(Port.class)) {
+		switch (notification.getFeatureID(Port.class))
+		{
 			case TypeModel20Package.PORT__MIN_PROVIDER_COUNT:
 			case TypeModel20Package.PORT__MAX_PROVIDER_COUNT:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));

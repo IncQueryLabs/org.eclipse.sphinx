@@ -19,6 +19,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 
 import org.eclipse.emf.ecore.util.FeatureMap;
+import org.eclipse.emf.ecore.xml.type.ProcessingInstruction;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 
 /**
@@ -32,6 +33,7 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application#getComponents <em>Components</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application#getMixed <em>Mixed</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application#getXSISchemaLocation <em>XSI Schema Location</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application#getMixedOuterContent <em>Mixed Outer Content</em>}</li>
  * </ul>
  * </p>
  *
@@ -51,7 +53,8 @@ public interface Application extends Identifiable {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Components</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getApplication_Components()
-	 * @model containment="true" required="true"
+	 * @model containment="true" required="true" transient="true" volatile="true" derived="true"
+	 *        extendedMetaData="kind='element'"
 	 * @generated
 	 */
 	EList<Component> getComponents();
@@ -86,9 +89,26 @@ public interface Application extends Identifiable {
 	 * @return the value of the '<em>XSI Schema Location</em>' map.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getApplication_XSISchemaLocation()
 	 * @model mapType="org.eclipse.emf.ecore.EStringToStringMapEntry<org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EString>" transient="true"
-	 *        extendedMetaData="name='xsi:schemaLocation'"
+	 *        extendedMetaData="name='xsi:schemaLocation' kind='element'"
 	 * @generated
 	 */
 	EMap<String, String> getXSISchemaLocation();
+
+	/**
+	 * Returns the value of the '<em><b>Mixed Outer Content</b></em>' attribute list.
+	 * The list contents are of type {@link org.eclipse.emf.ecore.util.FeatureMap.Entry}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Mixed Outer Content</em>' attribute list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Mixed Outer Content</em>' attribute list.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getApplication_MixedOuterContent()
+	 * @model unique="false" dataType="org.eclipse.emf.ecore.EFeatureMapEntry" many="true" transient="true"
+	 *        extendedMetaData="kind='elementWildcard' wildcards='http://www.eclipse.org/emf/2003/XMLType'"
+	 * @generated
+	 */
+	FeatureMap getMixedOuterContent();
 
 } // Application

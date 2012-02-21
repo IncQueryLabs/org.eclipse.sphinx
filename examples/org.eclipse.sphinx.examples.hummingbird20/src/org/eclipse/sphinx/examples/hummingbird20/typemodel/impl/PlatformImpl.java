@@ -117,7 +117,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * @generated
 	 */
 	public EList<ComponentType> getComponentTypes() {
-		if (componentTypes == null) {
+		if (componentTypes == null)
+		{
 			componentTypes = new EObjectContainmentEList<ComponentType>(ComponentType.class, this, TypeModel20Package.PLATFORM__COMPONENT_TYPES);
 		}
 		return componentTypes;
@@ -129,7 +130,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * @generated
 	 */
 	public EList<Interface> getInterfaces() {
-		if (interfaces == null) {
+		if (interfaces == null)
+		{
 			interfaces = new EObjectContainmentEList<Interface>(Interface.class, this, TypeModel20Package.PLATFORM__INTERFACES);
 		}
 		return interfaces;
@@ -141,7 +143,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * @generated
 	 */
 	public FeatureMap getMixed() {
-		if (mixed == null) {
+		if (mixed == null)
+		{
 			mixed = new BasicFeatureMap(this, TypeModel20Package.PLATFORM__MIXED);
 		}
 		return mixed;
@@ -153,7 +156,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * @generated
 	 */
 	public EMap<String, String> getXSISchemaLocation() {
-		if (xSISchemaLocation == null) {
+		if (xSISchemaLocation == null)
+		{
 			xSISchemaLocation = new EcoreEMap<String,String>(EcorePackage.Literals.ESTRING_TO_STRING_MAP_ENTRY, EStringToStringMapEntryImpl.class, this, TypeModel20Package.PLATFORM__XSI_SCHEMA_LOCATION);
 		}
 		return xSISchemaLocation;
@@ -166,7 +170,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case TypeModel20Package.PLATFORM__COMPONENT_TYPES:
 				return ((InternalEList<?>)getComponentTypes()).basicRemove(otherEnd, msgs);
 			case TypeModel20Package.PLATFORM__INTERFACES:
@@ -186,7 +191,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case TypeModel20Package.PLATFORM__COMPONENT_TYPES:
 				return getComponentTypes();
 			case TypeModel20Package.PLATFORM__INTERFACES:
@@ -209,7 +215,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case TypeModel20Package.PLATFORM__COMPONENT_TYPES:
 				getComponentTypes().clear();
 				getComponentTypes().addAll((Collection<? extends ComponentType>)newValue);
@@ -235,7 +242,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 */
 	@Override
 	public void eUnset(int featureID) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case TypeModel20Package.PLATFORM__COMPONENT_TYPES:
 				getComponentTypes().clear();
 				return;
@@ -259,7 +267,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case TypeModel20Package.PLATFORM__COMPONENT_TYPES:
 				return componentTypes != null && !componentTypes.isEmpty();
 			case TypeModel20Package.PLATFORM__INTERFACES:

@@ -88,7 +88,8 @@ public class InterfaceImpl extends IdentifiableImpl implements Interface {
 	 * @generated
 	 */
 	public EList<ComponentType> getProvidingComponentTypes() {
-		if (providingComponentTypes == null) {
+		if (providingComponentTypes == null)
+		{
 			providingComponentTypes = new EObjectWithInverseResolvingEList.ManyInverse<ComponentType>(ComponentType.class, this, TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES, TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES);
 		}
 		return providingComponentTypes;
@@ -100,7 +101,8 @@ public class InterfaceImpl extends IdentifiableImpl implements Interface {
 	 * @generated
 	 */
 	public EList<Port> getRequiringPorts() {
-		if (requiringPorts == null) {
+		if (requiringPorts == null)
+		{
 			requiringPorts = new EObjectWithInverseResolvingEList<Port>(Port.class, this, TypeModel20Package.INTERFACE__REQUIRING_PORTS, TypeModel20Package.PORT__REQUIRED_INTERFACE);
 		}
 		return requiringPorts;
@@ -114,7 +116,8 @@ public class InterfaceImpl extends IdentifiableImpl implements Interface {
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
 				return ((InternalEList<InternalEObject>)(InternalEList<?>)getProvidingComponentTypes()).basicAdd(otherEnd, msgs);
 			case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
@@ -130,7 +133,8 @@ public class InterfaceImpl extends IdentifiableImpl implements Interface {
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
 				return ((InternalEList<?>)getProvidingComponentTypes()).basicRemove(otherEnd, msgs);
 			case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
@@ -146,7 +150,8 @@ public class InterfaceImpl extends IdentifiableImpl implements Interface {
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
 				return getProvidingComponentTypes();
 			case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
@@ -163,7 +168,8 @@ public class InterfaceImpl extends IdentifiableImpl implements Interface {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
 				getProvidingComponentTypes().clear();
 				getProvidingComponentTypes().addAll((Collection<? extends ComponentType>)newValue);
@@ -183,7 +189,8 @@ public class InterfaceImpl extends IdentifiableImpl implements Interface {
 	 */
 	@Override
 	public void eUnset(int featureID) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
 				getProvidingComponentTypes().clear();
 				return;
@@ -201,7 +208,8 @@ public class InterfaceImpl extends IdentifiableImpl implements Interface {
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
 				return providingComponentTypes != null && !providingComponentTypes.isEmpty();
 			case TypeModel20Package.INTERFACE__REQUIRING_PORTS:

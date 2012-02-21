@@ -126,7 +126,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	public NotificationChain basicSetDescription(Description newDescription, NotificationChain msgs) {
 		Description oldDescription = description;
 		description = newDescription;
-		if (eNotificationRequired()) {
+		if (eNotificationRequired())
+		{
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, Common20Package.IDENTIFIABLE__DESCRIPTION, oldDescription, newDescription);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
@@ -139,7 +140,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * @generated
 	 */
 	public void setDescription(Description newDescription) {
-		if (newDescription != description) {
+		if (newDescription != description)
+		{
 			NotificationChain msgs = null;
 			if (description != null)
 				msgs = ((InternalEObject)description).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - Common20Package.IDENTIFIABLE__DESCRIPTION, null, msgs);
@@ -159,7 +161,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case Common20Package.IDENTIFIABLE__DESCRIPTION:
 				return basicSetDescription(null, msgs);
 		}
@@ -173,7 +176,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case Common20Package.IDENTIFIABLE__NAME:
 				return getName();
 			case Common20Package.IDENTIFIABLE__DESCRIPTION:
@@ -189,7 +193,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case Common20Package.IDENTIFIABLE__NAME:
 				setName((String)newValue);
 				return;
@@ -207,7 +212,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 */
 	@Override
 	public void eUnset(int featureID) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case Common20Package.IDENTIFIABLE__NAME:
 				setName(NAME_EDEFAULT);
 				return;
@@ -225,7 +231,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
-		switch (featureID) {
+		switch (featureID)
+		{
 			case Common20Package.IDENTIFIABLE__NAME:
 				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
 			case Common20Package.IDENTIFIABLE__DESCRIPTION:

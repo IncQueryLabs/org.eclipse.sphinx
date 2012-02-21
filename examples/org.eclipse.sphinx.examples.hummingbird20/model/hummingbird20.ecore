@@ -5,9 +5,6 @@
     nsURI="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1" nsPrefix="hb">
   <eSubpackages name="common" nsURI="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common"
       nsPrefix="cn">
-    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="kind" value="mixed"/>
-    </eAnnotations>
     <eClassifiers xsi:type="ecore:EClass" name="Identifiable" abstract="true">
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="description" eType="#//common/Description"
@@ -87,7 +84,12 @@
         <details key="kind" value="mixed"/>
       </eAnnotations>
       <eStructuralFeatures xsi:type="ecore:EReference" name="components" lowerBound="1"
-          upperBound="-1" eType="#//instancemodel/Component" containment="true"/>
+          upperBound="-1" eType="#//instancemodel/Component" volatile="true" transient="true"
+          derived="true" containment="true">
+        <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+          <details key="kind" value="element"/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="mixed" unique="false"
           upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFeatureMapEntry">
         <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
@@ -100,6 +102,18 @@
           transient="true" containment="true">
         <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
           <details key="name" value="xsi:schemaLocation"/>
+          <details key="kind" value="element"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="mixedOuterContent" unique="false"
+          upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFeatureMapEntry"
+          transient="true">
+        <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+          <details key="kind" value="elementWildcard"/>
+          <details key="wildcards" value="http://www.eclipse.org/emf/2003/XMLType"/>
+        </eAnnotations>
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="suppressedGetVisibility" value="true"/>
         </eAnnotations>
       </eStructuralFeatures>
     </eClassifiers>

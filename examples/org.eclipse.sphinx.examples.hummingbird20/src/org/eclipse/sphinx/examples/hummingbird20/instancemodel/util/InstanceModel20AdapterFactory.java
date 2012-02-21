@@ -49,7 +49,8 @@ public class InstanceModel20AdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public InstanceModel20AdapterFactory() {
-		if (modelPackage == null) {
+		if (modelPackage == null)
+		{
 			modelPackage = InstanceModel20Package.eINSTANCE;
 		}
 	}
@@ -64,10 +65,12 @@ public class InstanceModel20AdapterFactory extends AdapterFactoryImpl {
 	 */
 	@Override
 	public boolean isFactoryForType(Object object) {
-		if (object == modelPackage) {
+		if (object == modelPackage)
+		{
 			return true;
 		}
-		if (object instanceof EObject) {
+		if (object instanceof EObject)
+		{
 			return ((EObject)object).eClass().getEPackage() == modelPackage;
 		}
 		return false;
@@ -80,29 +83,36 @@ public class InstanceModel20AdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	protected InstanceModel20Switch<Adapter> modelSwitch =
-		new InstanceModel20Switch<Adapter>() {
+		new InstanceModel20Switch<Adapter>()
+		{
 			@Override
-			public Adapter caseApplication(Application object) {
+			public Adapter caseApplication(Application object)
+			{
 				return createApplicationAdapter();
 			}
 			@Override
-			public Adapter caseComponent(Component object) {
+			public Adapter caseComponent(Component object)
+			{
 				return createComponentAdapter();
 			}
 			@Override
-			public Adapter caseConnection(Connection object) {
+			public Adapter caseConnection(Connection object)
+			{
 				return createConnectionAdapter();
 			}
 			@Override
-			public Adapter caseParameterValue(ParameterValue object) {
+			public Adapter caseParameterValue(ParameterValue object)
+			{
 				return createParameterValueAdapter();
 			}
 			@Override
-			public Adapter caseIdentifiable(Identifiable object) {
+			public Adapter caseIdentifiable(Identifiable object)
+			{
 				return createIdentifiableAdapter();
 			}
 			@Override
-			public Adapter defaultCase(EObject object) {
+			public Adapter defaultCase(EObject object)
+			{
 				return createEObjectAdapter();
 			}
 		};

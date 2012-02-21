@@ -15,15 +15,22 @@
 package org.eclipse.sphinx.emf.resource;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Map;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.URIConverter;
+import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.SAXXMIHandler;
-import org.eclipse.emf.ecore.xmi.impl.XMLHandler;
+import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
+import org.eclipse.emf.ecore.xml.type.util.XMLTypeUtil;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.xml.sax.InputSource;
@@ -113,41 +120,6 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 	}
 
 	/*
-	 * Overridden to prevent whitespace from being captured in mixed attributes
-	 * @see org.eclipse.emf.ecore.xmi.impl.XMLHandler#characters(char[], int, int)
-	 */
-	@Override
-	public void characters(char[] ch, int start, int length) {
-		if (!isIgnorableWhitespace(ch, start, length) || text != null && text.length() > 0) {
-			super.characters(ch, start, length);
-		}
-	}
-
-	/**
-	 * Returns if the given chunk of character data consists of ignorable whitespace.
-	 * <p>
-	 * Can be used for filtering character data reported to {@link XMLHandler#characters(char[], int, int)}.
-	 * </p>
-	 * 
-	 * @param ch
-	 *            The characters from the XML document.
-	 * @param start
-	 *            The start position in the array.
-	 * @param length
-	 *            The number of characters to read from the array.
-	 * @return <code>true</code> if given chunk of character data consists of ignorable whitespace, <code>false</code>
-	 *         otherwise.
-	 */
-	protected boolean isIgnorableWhitespace(char[] ch, int start, int length) {
-		for (int i = start; i < start + length; i++) {
-			if (ch[i] != '\n' && ch[i] != '\r' && ch[i] != '\t' && ch[i] != ' ') {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/*
 	 * Overridden to make sure that parsing may be continued even in case of fatal errors (typically XML well-formedness
 	 * problems or I/O errors) if the underlying SAX parser has been configured to operate that way. In case that Apache
 	 * Xerces parser is used the parser feature http://apache.org/xml/features/continue-after-fatal-error needs to be
@@ -161,5 +133,48 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 		} catch (SAXException ex) {
 			// Ignore exception
 		}
+	}
+
+	@Override
+	protected void processTopObject(EObject object) {
+		if (object != null) {
+			if (deferredExtent != null) {
+				deferredExtent.add(object);
+			} else {
+				extent.addUnique(object);
+			}
+
+			if (extendedMetaData != null && !mixedTargets.isEmpty()) {
+				FeatureMap featureMap = mixedTargets.pop();
+				EStructuralFeature target = null;
+
+				EList<EAttribute> allAttributes = object.eClass().getEAllAttributes();
+				for (Object element : allAttributes) {
+					EAttribute attribute = (EAttribute) element;
+					if (ExtendedResourceConstants.OUTER_CONTENT_ATTRIBUTE_NAME.equals(attribute.getName())) {
+						target = attribute;
+					}
+				}
+
+				if (target == null) {
+					target = extendedMetaData.getMixedFeature(object.eClass());
+				}
+
+				if (target != null) {
+					FeatureMap otherFeatureMap = (FeatureMap) object.eGet(target);
+					for (FeatureMap.Entry entry : new ArrayList<FeatureMap.Entry>(featureMap)) {
+						// Ignore a whitespace only text entry at the beginning.
+						//
+						if (entry.getEStructuralFeature() != XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT
+								|| !"".equals(XMLTypeUtil.normalize(entry.getValue().toString(), true))) { //$NON-NLS-1$
+							otherFeatureMap.add(entry.getEStructuralFeature(), entry.getValue());
+						}
+					}
+				}
+				text = null;
+			}
+		}
+
+		processObject(object);
 	}
 }

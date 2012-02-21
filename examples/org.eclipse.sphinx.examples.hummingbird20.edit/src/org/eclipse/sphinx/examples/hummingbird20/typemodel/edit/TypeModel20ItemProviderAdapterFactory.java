@@ -97,7 +97,8 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	 */
 	@Override
 	public Adapter createPlatformAdapter() {
-		if (platformItemProvider == null) {
+		if (platformItemProvider == null)
+		{
 			platformItemProvider = new PlatformItemProvider(this);
 		}
 
@@ -120,7 +121,8 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	 */
 	@Override
 	public Adapter createComponentTypeAdapter() {
-		if (componentTypeItemProvider == null) {
+		if (componentTypeItemProvider == null)
+		{
 			componentTypeItemProvider = new ComponentTypeItemProvider(this);
 		}
 
@@ -143,7 +145,8 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	 */
 	@Override
 	public Adapter createPortAdapter() {
-		if (portItemProvider == null) {
+		if (portItemProvider == null)
+		{
 			portItemProvider = new PortItemProvider(this);
 		}
 
@@ -166,7 +169,8 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	 */
 	@Override
 	public Adapter createInterfaceAdapter() {
-		if (interfaceItemProvider == null) {
+		if (interfaceItemProvider == null)
+		{
 			interfaceItemProvider = new InterfaceItemProvider(this);
 		}
 
@@ -189,7 +193,8 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	 */
 	@Override
 	public Adapter createParameterAdapter() {
-		if (parameterItemProvider == null) {
+		if (parameterItemProvider == null)
+		{
 			parameterItemProvider = new ParameterItemProvider(this);
 		}
 
@@ -244,9 +249,11 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	 */
 	@Override
 	public Object adapt(Object object, Object type) {
-		if (isFactoryForType(type)) {
+		if (isFactoryForType(type))
+		{
 			Object adapter = super.adapt(object, type);
-			if (!(type instanceof Class<?>) || (((Class<?>)type).isInstance(adapter))) {
+			if (!(type instanceof Class<?>) || (((Class<?>)type).isInstance(adapter)))
+			{
 				return adapter;
 			}
 		}
@@ -283,7 +290,8 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	public void fireNotifyChanged(Notification notification) {
 		changeNotifier.fireNotifyChanged(notification);
 
-		if (parentAdapterFactory != null) {
+		if (parentAdapterFactory != null)
+		{
 			parentAdapterFactory.fireNotifyChanged(notification);
 		}
 	}

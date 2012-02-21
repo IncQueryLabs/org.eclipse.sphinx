@@ -49,7 +49,8 @@ public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public TypeModel20AdapterFactory() {
-		if (modelPackage == null) {
+		if (modelPackage == null)
+		{
 			modelPackage = TypeModel20Package.eINSTANCE;
 		}
 	}
@@ -64,10 +65,12 @@ public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
 	 */
 	@Override
 	public boolean isFactoryForType(Object object) {
-		if (object == modelPackage) {
+		if (object == modelPackage)
+		{
 			return true;
 		}
-		if (object instanceof EObject) {
+		if (object instanceof EObject)
+		{
 			return ((EObject)object).eClass().getEPackage() == modelPackage;
 		}
 		return false;
@@ -80,33 +83,41 @@ public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	protected TypeModel20Switch<Adapter> modelSwitch =
-		new TypeModel20Switch<Adapter>() {
+		new TypeModel20Switch<Adapter>()
+		{
 			@Override
-			public Adapter casePlatform(Platform object) {
+			public Adapter casePlatform(Platform object)
+			{
 				return createPlatformAdapter();
 			}
 			@Override
-			public Adapter caseComponentType(ComponentType object) {
+			public Adapter caseComponentType(ComponentType object)
+			{
 				return createComponentTypeAdapter();
 			}
 			@Override
-			public Adapter casePort(Port object) {
+			public Adapter casePort(Port object)
+			{
 				return createPortAdapter();
 			}
 			@Override
-			public Adapter caseInterface(Interface object) {
+			public Adapter caseInterface(Interface object)
+			{
 				return createInterfaceAdapter();
 			}
 			@Override
-			public Adapter caseParameter(Parameter object) {
+			public Adapter caseParameter(Parameter object)
+			{
 				return createParameterAdapter();
 			}
 			@Override
-			public Adapter caseIdentifiable(Identifiable object) {
+			public Adapter caseIdentifiable(Identifiable object)
+			{
 				return createIdentifiableAdapter();
 			}
 			@Override
-			public Adapter defaultCase(EObject object) {
+			public Adapter defaultCase(EObject object)
+			{
 				return createEObjectAdapter();
 			}
 		};

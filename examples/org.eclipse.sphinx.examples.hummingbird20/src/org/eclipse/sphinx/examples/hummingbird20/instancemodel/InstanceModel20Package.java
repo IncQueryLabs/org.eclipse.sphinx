@@ -115,13 +115,22 @@ public interface InstanceModel20Package extends EPackage {
 	int APPLICATION__XSI_SCHEMA_LOCATION = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 2;
 
 	/**
+	 * The feature id for the '<em><b>Mixed Outer Content</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int APPLICATION__MIXED_OUTER_CONTENT = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>Application</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int APPLICATION_FEATURE_COUNT = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 3;
+	int APPLICATION_FEATURE_COUNT = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 4;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ComponentImpl <em>Component</em>}' class.
@@ -348,6 +357,17 @@ public interface InstanceModel20Package extends EPackage {
 	EReference getApplication_XSISchemaLocation();
 
 	/**
+	 * Returns the meta object for the attribute list '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application#getMixedOuterContent <em>Mixed Outer Content</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>Mixed Outer Content</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application#getMixedOuterContent()
+	 * @see #getApplication()
+	 * @generated
+	 */
+	EAttribute getApplication_MixedOuterContent();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component <em>Component</em>}'.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Component</em>'.
@@ -522,6 +542,14 @@ public interface InstanceModel20Package extends EPackage {
 		 * @generated
 		 */
 		EReference APPLICATION__XSI_SCHEMA_LOCATION = eINSTANCE.getApplication_XSISchemaLocation();
+
+		/**
+		 * The meta object literal for the '<em><b>Mixed Outer Content</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute APPLICATION__MIXED_OUTER_CONTENT = eINSTANCE.getApplication_MixedOuterContent();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ComponentImpl <em>Component</em>}' class.

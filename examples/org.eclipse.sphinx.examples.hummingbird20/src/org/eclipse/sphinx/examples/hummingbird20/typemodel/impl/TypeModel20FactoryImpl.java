@@ -39,13 +39,16 @@ public class TypeModel20FactoryImpl extends EFactoryImpl implements TypeModel20F
 	 * @generated
 	 */
 	public static TypeModel20Factory init() {
-		try {
+		try
+		{
 			TypeModel20Factory theTypeModel20Factory = (TypeModel20Factory)EPackage.Registry.INSTANCE.getEFactory("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel"); //$NON-NLS-1$ 
-			if (theTypeModel20Factory != null) {
+			if (theTypeModel20Factory != null)
+			{
 				return theTypeModel20Factory;
 			}
 		}
-		catch (Exception exception) {
+		catch (Exception exception)
+		{
 			EcorePlugin.INSTANCE.log(exception);
 		}
 		return new TypeModel20FactoryImpl();
@@ -66,7 +69,8 @@ public class TypeModel20FactoryImpl extends EFactoryImpl implements TypeModel20F
 	 */
 	@Override
 	public EObject create(EClass eClass) {
-		switch (eClass.getClassifierID()) {
+		switch (eClass.getClassifierID())
+		{
 			case TypeModel20Package.PLATFORM: return createPlatform();
 			case TypeModel20Package.COMPONENT_TYPE: return createComponentType();
 			case TypeModel20Package.PORT: return createPort();
