@@ -39,6 +39,16 @@ public class RootElementTest extends AbstractTestCase {
 		saveWorkingFile(wc, a, rf, options);
 
 		String expected = loadInputFileAsString(wc);
+
+		// Workaround for known EMF bug which causes that last text content is ignored by
+		// org.eclipse.emf.ecore.xmi.impl.XMLHandler.
+		expected = expected.replace("<!-- comment 3 -->\r\n", "<!-- comment 3 -->");
+
+		// Workaround for the issue that the description element moves to the front due to the fact that the Application
+		// element inherits from Identifiable and that inherited features are serialized first.
+		expected = expected.replace("<description>DescriptionText</description>", "");
+		expected = expected.replace("name=\"Application\">", "name=\"Application\"><description>DescriptionText</description>");
+
 		String actual = loadWorkingFileAsString(wc);
 
 		assertEquals(expected, actual);
