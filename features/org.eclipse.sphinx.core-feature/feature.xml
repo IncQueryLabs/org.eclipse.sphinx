@@ -23,6 +23,8 @@
       <import feature="org.eclipse.emf.workspace" version="1.4.0"/>
       <import feature="org.eclipse.emf.transaction" version="1.4.0"/>
       <import plugin="org.apache.xerces"/>
+      <import plugin="org.apache.xml.resolver"/>
+      <import plugin="org.apache.xml.serializer"/>
       <import plugin="org.apache.commons.cli"/>
       <import plugin="org.jdom"/>
    </requires>
