@@ -153,6 +153,7 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 					EAttribute attribute = (EAttribute) element;
 					if (ExtendedResourceConstants.OUTER_CONTENT_ATTRIBUTE_NAME.equals(attribute.getName())) {
 						target = attribute;
+						break;
 					}
 				}
 
