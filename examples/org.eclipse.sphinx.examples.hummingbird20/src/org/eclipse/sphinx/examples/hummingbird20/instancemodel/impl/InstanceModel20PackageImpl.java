@@ -432,7 +432,9 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 		   source, 
 		   new String[] 
 		   {
-			 "kind", "element" //$NON-NLS-1$ //$NON-NLS-2$
+			 "kind", "element", //$NON-NLS-1$ //$NON-NLS-2$
+			 "name", "components", //$NON-NLS-1$ //$NON-NLS-2$
+			 "targetNamespace", "##targetNamespace" //$NON-NLS-1$ //$NON-NLS-2$
 		   });		
 		addAnnotation
 		  (getApplication_Mixed(), 
@@ -457,7 +459,7 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 		   {
 			 "kind", "elementWildcard", //$NON-NLS-1$ //$NON-NLS-2$
 			 "wildcards", "http://www.eclipse.org/emf/2003/XMLType" //$NON-NLS-1$ //$NON-NLS-2$
-		   });
+		   });	
 	}
 
 } //InstanceModel20PackageImpl

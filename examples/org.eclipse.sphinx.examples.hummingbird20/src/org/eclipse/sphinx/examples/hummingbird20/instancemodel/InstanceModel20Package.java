@@ -357,11 +357,11 @@ public interface InstanceModel20Package extends EPackage {
 	EReference getApplication_XSISchemaLocation();
 
 	/**
-	 * Returns the meta object for the attribute list '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application#getMixedOuterContent <em>Mixed Outer Content</em>}'.
+	 * Returns the meta object for the attribute list '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application <em>Mixed Outer Content</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute list '<em>Mixed Outer Content</em>'.
-	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application#getMixedOuterContent()
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application
 	 * @see #getApplication()
 	 * @generated
 	 */
