@@ -16,6 +16,7 @@
 package org.eclipse.sphinx.testutils;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,10 +29,15 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.EcoreEList;
-import org.eclipse.emf.ecore.util.EcoreUtil.EqualityHelper;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
+import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
+
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterators;
 
 /**
  * This class is a copied and modified version of {@link EqualityHelper} and provides a set of equality assert methods
@@ -287,37 +293,53 @@ public class EcoreEqualityAssert extends Assert {
 	}
 
 	/**
-	 * Asserts that the two feature maps are equal.
+	 * Asserts that the two feature maps are equal ignoring XML features like text, comments, processing instructions or
+	 * CDATA.
 	 * 
 	 * @since 0.7.0
 	 */
 	protected static void assertEqualFeatureMaps(FeatureMap featureMap1, FeatureMap featureMap2) {
-		// If they don't have the same size, the feature maps aren't equal.
+		Iterator<Entry> i1 = featureMap1.iterator();
+		Iterator<Entry> i2 = featureMap2.iterator();
+
+		Predicate<Entry> isXmlFeature = new Predicate<Entry>() {
+			public boolean apply(Entry e) {
+				EStructuralFeature f = e.getEStructuralFeature();
+				return f == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION
+						|| f == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT 
+						|| f == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA
+						|| f == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT;
+			}
+		};
+		Predicate<Entry> isNoXmlFeature = Predicates.not(isXmlFeature);
+
+		// Filter out XML features using the predicate previously created
 		//
-		int size = featureMap1.size();
-		assertTrue(
-				"Feature map " + featureMap1.toString() + " and feature map " + featureMap2.toString() + " don't have same size: "
-						+ featureMap1.size() + " <-> " + featureMap2.size() + ".", size == featureMap2.size());
+		i1 = Iterators.filter(i1, isNoXmlFeature);
+		i2 = Iterators.filter(i2, isNoXmlFeature);
 
-		// Compare entries in order.
+		int i = 0;
+
+		// Compare entries in order as long as both iterators are not exhausted.
 		//
-		for (int i = 0; i < size; i++) {
-			// If entries don't have the same feature, the feature maps aren't equal.
-			//
-			EStructuralFeature feature = featureMap1.getEStructuralFeature(i);
-			assertTrue("Feature at position " + i + " of feature map " + featureMap1.toString() + " and feature at same position of feature map "
-					+ featureMap2.toString() + " are not the same: " + feature.getName() + " <-> " + featureMap2.getEStructuralFeature(i).getName()
-					+ ".", feature == featureMap2.getEStructuralFeature(i));
+		while (i1.hasNext() && i2.hasNext()) {
+			Entry e1 = i1.next();
+			Entry e2 = i2.next();
 
-			Object value1 = featureMap1.getValue(i);
-			Object value2 = featureMap2.getValue(i);
+			assertTrue("Feature at position " + i + " of feature map " + featureMap1 + " and feature at same position of feature map " + featureMap2
+					+ " are not the same: " + e1.getEStructuralFeature().getName() + " <-> " + e2.getEStructuralFeature().getName() + ".",
+					e1.getEStructuralFeature() == e2.getEStructuralFeature());
 
-			assertEqualFeatureMapValues(value1, value2, feature);
+			assertEqualFeatureMapValues(e1.getValue(), e2.getValue(), e1.getEStructuralFeature());
+
+			i++;
 		}
 
-		// There is no reason they aren't equals.
+		// Ensure that both iterators are exhausted if not one map contains more features than the other
 		//
-		return;
+		if (i1.hasNext() != false || i2.hasNext() != false) {
+			fail("Feature map " + featureMap1 + " and feature map " + featureMap2 + " don't have the same number of non-XML features.");
+		}
 	}
 
 	/**
