@@ -32,7 +32,7 @@ public class RootElementTest extends AbstractTestCase {
 		Map<Object, Object> options = new HashMap<Object, Object>();
 		options.put(XMLResource.OPTION_ENCODING, "UTF-8");
 
-		String wc = "RootTest/WithComments.instancemodel";
+		String wc = "RootElementTest/WithComments.instancemodel";
 
 		Application a = (Application) loadInputFile(wc, rf, options);
 
