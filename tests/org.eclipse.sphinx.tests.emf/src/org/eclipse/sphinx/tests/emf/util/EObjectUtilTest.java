@@ -554,7 +554,7 @@ public class EObjectUtilTest extends AbstractTestCase {
 		assertEquals(newText, EObjectUtil.getMixedText(description.getMixed()));
 		hb20Application.setDescription(description);
 
-		saveWorkingFile(workingFileName, hb20Application, new Hummingbird20ResourceFactoryImpl());
+		saveWorkingFile(workingFileName, hb20Application, new Hummingbird20ResourceFactoryImpl(), null);
 
 		Application savedHb20Application = (Application) loadWorkingFile(workingFileName, new Hummingbird20ResourceFactoryImpl(), null);
 		assertNotNull(savedHb20Application);

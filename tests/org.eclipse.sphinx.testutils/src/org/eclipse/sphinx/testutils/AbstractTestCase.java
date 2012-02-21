@@ -14,7 +14,9 @@
  */
 package org.eclipse.sphinx.testutils;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -111,8 +113,8 @@ public abstract class AbstractTestCase extends TestCase {
 		return resource.getContents().get(0);
 	}
 
-	protected void saveWorkingFile(String fileName, EObject modelRoot, ResourceFactoryImpl resourceFactory) throws Exception {
-		saveFile(getTestFileAccessor().getWorkingFileURI(fileName), modelRoot, resourceFactory, null);
+	protected void saveWorkingFile(String fileName, EObject modelRoot, ResourceFactoryImpl resourceFactory, Map<?, ?> options) throws Exception {
+		saveFile(getTestFileAccessor().getWorkingFileURI(fileName), modelRoot, resourceFactory, options);
 	}
 
 	// TODO Enable external resourceSet to be handed in
@@ -123,6 +125,29 @@ public abstract class AbstractTestCase extends TestCase {
 		resource.save(options);
 
 		assertHasNoSaveProblems(resource);
+	}
+
+	protected String loadInputFileAsString(String fileName) throws Exception {
+		return loadFileAsString(getTestFileAccessor().openInputFileInputStream(fileName));
+	}
+
+	protected String loadWorkingFileAsString(String fileName) throws Exception {
+		return loadFileAsString(getTestFileAccessor().openWorkingFileInputStream(fileName));
+	}
+
+	protected String loadFileAsString(InputStream inputStream) throws Exception {
+		inputStream = new BufferedInputStream(inputStream);
+		try {
+			byte[] buffer = new byte[1024];
+			int bufferLength;
+			StringBuilder content = new StringBuilder();
+			while ((bufferLength = inputStream.read(buffer)) > -1) {
+				content.append(new String(buffer, 0, bufferLength));
+			}
+			return content.toString();
+		} finally {
+			inputStream.close();
+		}
 	}
 
 	protected ScopingResourceSetImpl createDefaultResourceSet() {
