@@ -31,6 +31,7 @@ public class RootElementTest extends AbstractTestCase {
 
 		Map<Object, Object> options = new HashMap<Object, Object>();
 		options.put(XMLResource.OPTION_ENCODING, "UTF-8");
+		options.put(XMLResource.OPTION_SUPPRESS_DOCUMENT_ROOT, Boolean.TRUE);
 
 		String wc = "RootElementTest/WithComments.instancemodel";
 
@@ -40,8 +41,6 @@ public class RootElementTest extends AbstractTestCase {
 
 		String expected = loadInputFileAsString(wc);
 
-		// Workaround for known EMF bug which causes that last text content is ignored by
-		// org.eclipse.emf.ecore.xmi.impl.XMLHandler.
 		expected = expected.replace("<!-- comment 3 -->\r\n", "<!-- comment 3 -->");
 
 		// Workaround for the issue that the description element moves to the front due to the fact that the Application
