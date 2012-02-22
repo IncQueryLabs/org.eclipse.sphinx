@@ -12,7 +12,6 @@ Bundle-Localization: plugin
 Export-Package: org.eclipse.sphinx.tests.emf.workspace.integration.inmemoryresources,
  org.eclipse.sphinx.tests.emf.workspace.integration.internal;x-internal:=true,
  org.eclipse.sphinx.tests.emf.workspace.integration.saving,
- org.eclipse.sphinx.tests.emf.workspace.integration.syncing,
- org.eclipse.sphinx.tests.emf.workspace.integration.testsuite
+ org.eclipse.sphinx.tests.emf.workspace.integration.syncing
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.tests.emf.workspace.integration.internal.Activator$Implementation

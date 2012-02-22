@@ -18,7 +18,6 @@ Export-Package: org.eclipse.sphinx.tests.emf.comparators,
  org.eclipse.sphinx.tests.emf.metamodel,
  org.eclipse.sphinx.tests.emf.metamodel.descs,
  org.eclipse.sphinx.tests.emf.metamodel.mocks,
- org.eclipse.sphinx.tests.emf.properties,
- org.eclipse.sphinx.tests.emf.testsuite
+ org.eclipse.sphinx.tests.emf.properties
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.tests.emf.internal.Activator$Implementation

@@ -7,7 +7,6 @@ Require-Bundle: org.eclipse.sphinx.testutils,
  org.eclipse.sphinx.examples.hummingbird20
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.sphinx.tests.platform.internal;x-internal:=true,
- org.eclipse.sphinx.tests.platform.testsuite,
  org.eclipse.sphinx.tests.platform.util
 Bundle-Localization: plugin
 Bundle-Vendor: %providerName
