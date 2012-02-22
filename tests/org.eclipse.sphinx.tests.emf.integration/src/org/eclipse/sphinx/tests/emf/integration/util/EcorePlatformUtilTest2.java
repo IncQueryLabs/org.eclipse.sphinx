@@ -667,10 +667,13 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 			assertNotNull(modelRoot20A_1);
 
 			Entry entry = modelRoot20A_1.getMixed().get(0);
+
 			assertNotNull(entry);
+			assertEquals(InstanceModel20Package.Literals.APPLICATION__COMPONENTS, entry.getEStructuralFeature());
+
 			resResources = EcorePlatformUtil.getResourcesInModel(entry, true);
-			// Wrapper of this entry is not an EObject
-			assertTrue(resResources.isEmpty());
+
+			assertEquals(resources20FromHbProject20_A, resResources.size());
 		}
 
 	}
@@ -1820,7 +1823,8 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		// New resources in new ResourceSet
 		{
 			ResourceSetImpl testResourceSet = new ScopingResourceSetImpl();
-			org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application testApplication20 = InstanceModel20Factory.eINSTANCE.createApplication();
+			org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application testApplication20 = InstanceModel20Factory.eINSTANCE
+					.createApplication();
 			Application testApplication10 = Hummingbird10Factory.eINSTANCE.createApplication();
 			Platform testPlatform = TypeModel20Factory.eINSTANCE.createPlatform();
 			Model umlModel = UMLFactory.eINSTANCE.createModel();
@@ -2908,7 +2912,8 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		// New resources in new ResourceSet
 		{
 			ResourceSetImpl testResourceSet = new ScopingResourceSetImpl();
-			org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application testApplication20 = InstanceModel20Factory.eINSTANCE.createApplication();
+			org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application testApplication20 = InstanceModel20Factory.eINSTANCE
+					.createApplication();
 			Application testApplication10 = Hummingbird10Factory.eINSTANCE.createApplication();
 			Platform testPlatform = TypeModel20Factory.eINSTANCE.createPlatform();
 			Model umlModel = UMLFactory.eINSTANCE.createModel();

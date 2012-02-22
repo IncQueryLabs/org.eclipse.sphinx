@@ -27,7 +27,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
@@ -35,7 +34,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
@@ -1635,18 +1633,17 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		assertFalse(modelRoot20A_1.getMixed().isEmpty());
 		Entry testEntry = modelRoot20A_1.getMixed().get(0);
 
-		// Returned file is NULL because the value of the entry is a primitive type
-		// When the value is an EObject we will be able to get the underlying file.
+		assertEquals(InstanceModel20Package.Literals.APPLICATION__COMPONENTS, testEntry.getEStructuralFeature());
+
 		IFile file = EcorePlatformUtil.getFile(testEntry);
-		assertNull(file);
-		// // --------------------------------------------------------------------
-		// // The Entry is an EObject
-		// // --------------------------------------------------------------------
-		// // Given Entry is NULL
+		assertNotNull(file);
+
+		// Given Entry is NULL
 		Entry nullEntry = null;
 		assertNull(EcorePlatformUtil.getFile(nullEntry));
-		// // --------------------------------------------------------------------
-		// // Given Entry belong to unloaded resource
+
+		// --------------------------------------------------------------------
+		// Given Entry belong to unloaded resource
 		IFile hbFile20_20A_1 = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
 		ModelLoadManager.INSTANCE.unloadFile(hbFile20_20A_1, false, new NullProgressMonitor());
 		assertNull(EcorePlatformUtil.getFile(testEntry));
@@ -2000,10 +1997,11 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		assertNotNull(modelRoot20A_1);
 		assertFalse(modelRoot20A_1.getMixed().isEmpty());
 		Entry testEntry = modelRoot20A_1.getMixed().get(0);
+
+		assertEquals(InstanceModel20Package.Literals.APPLICATION__COMPONENTS, testEntry.getEStructuralFeature());
+
 		Resource resource = EcorePlatformUtil.getResource(testEntry);
-		assertNull(resource);
-		// --------------------------------------------------------------------
-		// Entry has value is an EObject
+		assertEquals(hbResource20A_1, resource);
 
 		// --------------------------------------------------------------------
 		// Input is NULL

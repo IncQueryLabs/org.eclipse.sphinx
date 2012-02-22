@@ -46,6 +46,9 @@ public class RootElementTest extends AbstractTestCase {
 		expected = expected.replace("<description>DescriptionText</description>", "");
 		expected = expected.replace("name=\"Application\">", "name=\"Application\"><description>DescriptionText</description>");
 
+		// Normalize line breaks for test portability
+		expected = expected.replace("\r\n", System.getProperty("line.separator"));
+
 		String actual = loadWorkingFileAsString(wc);
 
 		assertEquals(expected, actual);
