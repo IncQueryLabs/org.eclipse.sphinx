@@ -41,8 +41,6 @@ public class RootElementTest extends AbstractTestCase {
 
 		String expected = loadInputFileAsString(wc);
 
-		expected = expected.replace("<!-- comment 3 -->\r\n", "<!-- comment 3 -->");
-
 		// Workaround for the issue that the description element moves to the front due to the fact that the Application
 		// element inherits from Identifiable and that inherited features are serialized first.
 		expected = expected.replace("<description>DescriptionText</description>", "");
