@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,11 +16,16 @@ package org.eclipse.sphinx.examples.hummingbird20.typemodel.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
 import org.eclipse.emf.ecore.util.EcoreUtil;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.IdentifiableImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Port;
@@ -42,7 +47,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
  *
  * @generated
  */
-public class PortImpl extends IdentifiableImpl implements Port {
+public class PortImpl extends IdentifiableImpl implements Port
+{
 	/**
 	 * The cached value of the '{@link #getRequiredInterface() <em>Required Interface</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -98,7 +104,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected PortImpl() {
+	protected PortImpl()
+	{
 		super();
 	}
 
@@ -108,7 +115,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * @generated
 	 */
 	@Override
-	protected EClass eStaticClass() {
+	protected EClass eStaticClass()
+	{
 		return TypeModel20Package.Literals.PORT;
 	}
 
@@ -117,7 +125,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ComponentType getOwner() {
+	public ComponentType getOwner()
+	{
 		if (eContainerFeatureID() != TypeModel20Package.PORT__OWNER) return null;
 		return (ComponentType)eContainer();
 	}
@@ -127,7 +136,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetOwner(ComponentType newOwner, NotificationChain msgs) {
+	public NotificationChain basicSetOwner(ComponentType newOwner, NotificationChain msgs)
+	{
 		msgs = eBasicSetContainer((InternalEObject)newOwner, TypeModel20Package.PORT__OWNER, msgs);
 		return msgs;
 	}
@@ -137,7 +147,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setOwner(ComponentType newOwner) {
+	public void setOwner(ComponentType newOwner)
+	{
 		if (newOwner != eInternalContainer() || (eContainerFeatureID() != TypeModel20Package.PORT__OWNER && newOwner != null))
 		{
 			if (EcoreUtil.isAncestor(this, newOwner))
@@ -159,7 +170,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Interface getRequiredInterface() {
+	public Interface getRequiredInterface()
+	{
 		if (requiredInterface != null && requiredInterface.eIsProxy())
 		{
 			InternalEObject oldRequiredInterface = (InternalEObject)requiredInterface;
@@ -178,7 +190,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Interface basicGetRequiredInterface() {
+	public Interface basicGetRequiredInterface()
+	{
 		return requiredInterface;
 	}
 
@@ -187,7 +200,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetRequiredInterface(Interface newRequiredInterface, NotificationChain msgs) {
+	public NotificationChain basicSetRequiredInterface(Interface newRequiredInterface, NotificationChain msgs)
+	{
 		Interface oldRequiredInterface = requiredInterface;
 		requiredInterface = newRequiredInterface;
 		if (eNotificationRequired())
@@ -203,7 +217,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setRequiredInterface(Interface newRequiredInterface) {
+	public void setRequiredInterface(Interface newRequiredInterface)
+	{
 		if (newRequiredInterface != requiredInterface)
 		{
 			NotificationChain msgs = null;
@@ -223,7 +238,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public int getMinProviderCount() {
+	public int getMinProviderCount()
+	{
 		return minProviderCount;
 	}
 
@@ -232,7 +248,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setMinProviderCount(int newMinProviderCount) {
+	public void setMinProviderCount(int newMinProviderCount)
+	{
 		int oldMinProviderCount = minProviderCount;
 		minProviderCount = newMinProviderCount;
 		if (eNotificationRequired())
@@ -244,7 +261,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public int getMaxProviderCount() {
+	public int getMaxProviderCount()
+	{
 		return maxProviderCount;
 	}
 
@@ -253,7 +271,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setMaxProviderCount(int newMaxProviderCount) {
+	public void setMaxProviderCount(int newMaxProviderCount)
+	{
 		int oldMaxProviderCount = maxProviderCount;
 		maxProviderCount = newMaxProviderCount;
 		if (eNotificationRequired())
@@ -266,7 +285,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PORT__OWNER:
@@ -287,7 +307,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PORT__OWNER:
@@ -304,7 +325,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
+	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs)
+	{
 		switch (eContainerFeatureID())
 		{
 			case TypeModel20Package.PORT__OWNER:
@@ -319,7 +341,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * @generated
 	 */
 	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+	public Object eGet(int featureID, boolean resolve, boolean coreType)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PORT__OWNER:
@@ -341,7 +364,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * @generated
 	 */
 	@Override
-	public void eSet(int featureID, Object newValue) {
+	public void eSet(int featureID, Object newValue)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PORT__OWNER:
@@ -366,7 +390,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * @generated
 	 */
 	@Override
-	public void eUnset(int featureID) {
+	public void eUnset(int featureID)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PORT__OWNER:
@@ -391,7 +416,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(int featureID) {
+	public boolean eIsSet(int featureID)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PORT__OWNER:
@@ -412,7 +438,8 @@ public class PortImpl extends IdentifiableImpl implements Port {
 	 * @generated
 	 */
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());

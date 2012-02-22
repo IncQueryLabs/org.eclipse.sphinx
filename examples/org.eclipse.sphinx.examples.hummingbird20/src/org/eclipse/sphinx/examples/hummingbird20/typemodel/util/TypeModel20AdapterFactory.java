@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,15 +14,15 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.typemodel.util;
 
-
-
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
 
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 
 import org.eclipse.emf.ecore.EObject;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.*;
 
 /**
@@ -33,7 +33,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.*;
  * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package
  * @generated
  */
-public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
+public class TypeModel20AdapterFactory extends AdapterFactoryImpl
+{
 	/**
 	 * The cached model package.
 	 * <!-- begin-user-doc -->
@@ -48,7 +49,8 @@ public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public TypeModel20AdapterFactory() {
+	public TypeModel20AdapterFactory()
+	{
 		if (modelPackage == null)
 		{
 			modelPackage = TypeModel20Package.eINSTANCE;
@@ -64,7 +66,8 @@ public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	@Override
-	public boolean isFactoryForType(Object object) {
+	public boolean isFactoryForType(Object object)
+	{
 		if (object == modelPackage)
 		{
 			return true;
@@ -131,7 +134,8 @@ public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	@Override
-	public Adapter createAdapter(Notifier target) {
+	public Adapter createAdapter(Notifier target)
+	{
 		return modelSwitch.doSwitch((EObject)target);
 	}
 
@@ -146,7 +150,8 @@ public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform
 	 * @generated
 	 */
-	public Adapter createPlatformAdapter() {
+	public Adapter createPlatformAdapter()
+	{
 		return null;
 	}
 
@@ -160,7 +165,8 @@ public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType
 	 * @generated
 	 */
-	public Adapter createComponentTypeAdapter() {
+	public Adapter createComponentTypeAdapter()
+	{
 		return null;
 	}
 
@@ -174,7 +180,8 @@ public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Port
 	 * @generated
 	 */
-	public Adapter createPortAdapter() {
+	public Adapter createPortAdapter()
+	{
 		return null;
 	}
 
@@ -188,7 +195,8 @@ public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface
 	 * @generated
 	 */
-	public Adapter createInterfaceAdapter() {
+	public Adapter createInterfaceAdapter()
+	{
 		return null;
 	}
 
@@ -202,7 +210,8 @@ public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter
 	 * @generated
 	 */
-	public Adapter createParameterAdapter() {
+	public Adapter createParameterAdapter()
+	{
 		return null;
 	}
 
@@ -216,7 +225,8 @@ public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
 	 * @see org.eclipse.sphinx.examples.hummingbird20.common.Identifiable
 	 * @generated
 	 */
-	public Adapter createIdentifiableAdapter() {
+	public Adapter createIdentifiableAdapter()
+	{
 		return null;
 	}
 
@@ -228,7 +238,8 @@ public class TypeModel20AdapterFactory extends AdapterFactoryImpl {
 	 * @return the new adapter.
 	 * @generated
 	 */
-	public Adapter createEObjectAdapter() {
+	public Adapter createEObjectAdapter()
+	{
 		return null;
 	}
 

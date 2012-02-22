@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,10 +14,11 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.typemodel;
 
-
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
+
 import org.eclipse.emf.ecore.util.FeatureMap;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 
 /**
@@ -39,7 +40,8 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
  * @model extendedMetaData="kind='mixed'"
  * @generated
  */
-public interface Platform extends Identifiable {
+public interface Platform extends Identifiable
+{
 	/**
 	 * Returns the value of the '<em><b>Component Types</b></em>' containment reference list.
 	 * The list contents are of type {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType}.

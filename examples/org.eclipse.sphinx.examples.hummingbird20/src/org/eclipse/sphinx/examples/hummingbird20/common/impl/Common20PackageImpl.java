@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,15 +19,22 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
+
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
 import org.eclipse.sphinx.examples.hummingbird20.common.Description;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
+
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
+
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.InstanceModel20PackageImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20PackageImpl;
 
 /**
@@ -36,7 +43,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20Packa
  * <!-- end-user-doc -->
  * @generated
  */
-public class Common20PackageImpl extends EPackageImpl implements Common20Package {
+public class Common20PackageImpl extends EPackageImpl implements Common20Package
+{
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -66,7 +74,8 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	 * @see #init()
 	 * @generated
 	 */
-	private Common20PackageImpl() {
+	private Common20PackageImpl()
+	{
 		super(eNS_URI, Common20Factory.eINSTANCE);
 	}
 
@@ -89,7 +98,8 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	 * @see #initializePackageContents()
 	 * @generated
 	 */
-	public static Common20Package init() {
+	public static Common20Package init()
+	{
 		if (isInited) return (Common20Package)EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI);
 
 		// Obtain or create and register package
@@ -129,7 +139,8 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getIdentifiable() {
+	public EClass getIdentifiable()
+	{
 		return identifiableEClass;
 	}
 
@@ -138,7 +149,8 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getIdentifiable_Name() {
+	public EAttribute getIdentifiable_Name()
+	{
 		return (EAttribute)identifiableEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -147,7 +159,8 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getIdentifiable_Description() {
+	public EReference getIdentifiable_Description()
+	{
 		return (EReference)identifiableEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -156,7 +169,8 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getDescription() {
+	public EClass getDescription()
+	{
 		return descriptionEClass;
 	}
 
@@ -165,7 +179,8 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getDescription_Mixed() {
+	public EAttribute getDescription_Mixed()
+	{
 		return (EAttribute)descriptionEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -174,7 +189,8 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Common20Factory getCommon20Factory() {
+	public Common20Factory getCommon20Factory()
+	{
 		return (Common20Factory)getEFactoryInstance();
 	}
 
@@ -192,7 +208,8 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void createPackageContents() {
+	public void createPackageContents()
+	{
 		if (isCreated) return;
 		isCreated = true;
 
@@ -219,7 +236,8 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void initializePackageContents() {
+	public void initializePackageContents()
+	{
 		if (isInitialized) return;
 		isInitialized = true;
 
@@ -256,7 +274,8 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void createExtendedMetaDataAnnotations() {
+	protected void createExtendedMetaDataAnnotations()
+	{
 		String source = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData"; //$NON-NLS-1$		
 		addAnnotation
 		  (descriptionEClass, 

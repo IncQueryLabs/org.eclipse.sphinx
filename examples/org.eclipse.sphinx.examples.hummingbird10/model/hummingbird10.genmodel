@@ -11,7 +11,8 @@
     rootImplementsInterface="" testsDirectory="" testSuiteClass="" importerID="org.eclipse.emf.importer.ecore"
     complianceLevel="5.0" copyrightFields="false" providerRootExtendsClass="org.eclipse.sphinx.emf.edit.ExtendedItemProviderAdapter"
     editPluginID="org.eclipse.sphinx.examples.hummingbird10.edit" editorPluginID="org.eclipse.sphinx.examples.hummingbird10.editor"
-    testsPluginID="org.eclipse.sphinx.examples.hummingbird10.editor" language="" classNamePattern="">
+    testsPluginID="org.eclipse.sphinx.examples.hummingbird10.editor" runtimeVersion="2.6"
+    language="" classNamePattern="">
   <foreignModel>hummingbird10.ecore</foreignModel>
   <modelPluginVariables>org.eclipse.sphinx.emf</modelPluginVariables>
   <modelPluginVariables>org.eclipse.sphinx.examples.hummingbird.ide</modelPluginVariables>

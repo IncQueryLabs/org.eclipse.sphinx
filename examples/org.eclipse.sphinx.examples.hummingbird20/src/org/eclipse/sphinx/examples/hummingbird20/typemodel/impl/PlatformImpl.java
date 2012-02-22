@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,19 +17,25 @@ package org.eclipse.sphinx.examples.hummingbird20.typemodel.impl;
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.EStringToStringMapEntryImpl;
+
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EcoreEMap;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.InternalEList;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.IdentifiableImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
@@ -51,7 +57,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
  *
  * @generated
  */
-public class PlatformImpl extends IdentifiableImpl implements Platform {
+public class PlatformImpl extends IdentifiableImpl implements Platform
+{
 	/**
 	 * The cached value of the '{@link #getComponentTypes() <em>Component Types</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
@@ -97,7 +104,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected PlatformImpl() {
+	protected PlatformImpl()
+	{
 		super();
 	}
 
@@ -107,7 +115,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * @generated
 	 */
 	@Override
-	protected EClass eStaticClass() {
+	protected EClass eStaticClass()
+	{
 		return TypeModel20Package.Literals.PLATFORM;
 	}
 
@@ -116,7 +125,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<ComponentType> getComponentTypes() {
+	public EList<ComponentType> getComponentTypes()
+	{
 		if (componentTypes == null)
 		{
 			componentTypes = new EObjectContainmentEList<ComponentType>(ComponentType.class, this, TypeModel20Package.PLATFORM__COMPONENT_TYPES);
@@ -129,7 +139,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<Interface> getInterfaces() {
+	public EList<Interface> getInterfaces()
+	{
 		if (interfaces == null)
 		{
 			interfaces = new EObjectContainmentEList<Interface>(Interface.class, this, TypeModel20Package.PLATFORM__INTERFACES);
@@ -142,7 +153,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public FeatureMap getMixed() {
+	public FeatureMap getMixed()
+	{
 		if (mixed == null)
 		{
 			mixed = new BasicFeatureMap(this, TypeModel20Package.PLATFORM__MIXED);
@@ -155,7 +167,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EMap<String, String> getXSISchemaLocation() {
+	public EMap<String, String> getXSISchemaLocation()
+	{
 		if (xSISchemaLocation == null)
 		{
 			xSISchemaLocation = new EcoreEMap<String,String>(EcorePackage.Literals.ESTRING_TO_STRING_MAP_ENTRY, EStringToStringMapEntryImpl.class, this, TypeModel20Package.PLATFORM__XSI_SCHEMA_LOCATION);
@@ -169,7 +182,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PLATFORM__COMPONENT_TYPES:
@@ -190,7 +204,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * @generated
 	 */
 	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+	public Object eGet(int featureID, boolean resolve, boolean coreType)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PLATFORM__COMPONENT_TYPES:
@@ -214,7 +229,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void eSet(int featureID, Object newValue) {
+	public void eSet(int featureID, Object newValue)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PLATFORM__COMPONENT_TYPES:
@@ -241,7 +257,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * @generated
 	 */
 	@Override
-	public void eUnset(int featureID) {
+	public void eUnset(int featureID)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PLATFORM__COMPONENT_TYPES:
@@ -266,7 +283,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(int featureID) {
+	public boolean eIsSet(int featureID)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PLATFORM__COMPONENT_TYPES:
@@ -287,7 +305,8 @@ public class PlatformImpl extends IdentifiableImpl implements Platform {
 	 * @generated
 	 */
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());

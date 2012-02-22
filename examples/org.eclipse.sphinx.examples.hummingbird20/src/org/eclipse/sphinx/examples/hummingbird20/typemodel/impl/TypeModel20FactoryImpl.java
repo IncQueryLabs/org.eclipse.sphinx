@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,28 +17,29 @@ package org.eclipse.sphinx.examples.hummingbird20.typemodel.impl;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
+
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.*;
-import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
-import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
-import org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter;
-import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
-import org.eclipse.sphinx.examples.hummingbird20.typemodel.Port;
-import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Factory;
-import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
+ * <!-- begin-user-doc -->
+ * An implementation of the model <b>Factory</b>.
+ * <!-- end-user-doc -->
  * @generated
  */
-public class TypeModel20FactoryImpl extends EFactoryImpl implements TypeModel20Factory {
+public class TypeModel20FactoryImpl extends EFactoryImpl implements TypeModel20Factory
+{
 	/**
 	 * Creates the default factory implementation.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public static TypeModel20Factory init() {
+	public static TypeModel20Factory init()
+	{
 		try
 		{
 			TypeModel20Factory theTypeModel20Factory = (TypeModel20Factory)EPackage.Registry.INSTANCE.getEFactory("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel"); //$NON-NLS-1$ 
@@ -56,19 +57,23 @@ public class TypeModel20FactoryImpl extends EFactoryImpl implements TypeModel20F
 
 	/**
 	 * Creates an instance of the factory.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public TypeModel20FactoryImpl() {
+	public TypeModel20FactoryImpl()
+	{
 		super();
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
-	public EObject create(EClass eClass) {
+	public EObject create(EClass eClass)
+	{
 		switch (eClass.getClassifierID())
 		{
 			case TypeModel20Package.PLATFORM: return createPlatform();
@@ -82,66 +87,80 @@ public class TypeModel20FactoryImpl extends EFactoryImpl implements TypeModel20F
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Platform createPlatform() {
+	public Platform createPlatform()
+	{
 		PlatformImpl platform = new PlatformImpl();
 		return platform;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ComponentType createComponentType() {
+	public ComponentType createComponentType()
+	{
 		ComponentTypeImpl componentType = new ComponentTypeImpl();
 		return componentType;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Port createPort() {
+	public Port createPort()
+	{
 		PortImpl port = new PortImpl();
 		return port;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Interface createInterface() {
+	public Interface createInterface()
+	{
 		InterfaceImpl interface_ = new InterfaceImpl();
 		return interface_;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Parameter createParameter() {
+	public Parameter createParameter()
+	{
 		ParameterImpl parameter = new ParameterImpl();
 		return parameter;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public TypeModel20Package getTypeModel20Package() {
+	public TypeModel20Package getTypeModel20Package()
+	{
 		return (TypeModel20Package)getEPackage();
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @deprecated
 	 * @generated
 	 */
 	@Deprecated
-	public static TypeModel20Package getPackage() {
+	public static TypeModel20Package getPackage()
+	{
 		return TypeModel20Package.eINSTANCE;
 	}
 
-} // TypeModel20FactoryImpl
+} //TypeModel20FactoryImpl

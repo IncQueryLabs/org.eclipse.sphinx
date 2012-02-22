@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,18 +18,25 @@ import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.common.util.EList;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.InternalEList;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.IdentifiableImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 
 /**
@@ -48,7 +55,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
  *
  * @generated
  */
-public class ComponentImpl extends IdentifiableImpl implements Component {
+public class ComponentImpl extends IdentifiableImpl implements Component
+{
 	/**
 	 * The cached value of the '{@link #getType() <em>Type</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -94,7 +102,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected ComponentImpl() {
+	protected ComponentImpl()
+	{
 		super();
 	}
 
@@ -104,7 +113,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * @generated
 	 */
 	@Override
-	protected EClass eStaticClass() {
+	protected EClass eStaticClass()
+	{
 		return InstanceModel20Package.Literals.COMPONENT;
 	}
 
@@ -113,7 +123,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ComponentType getType() {
+	public ComponentType getType()
+	{
 		if (type != null && type.eIsProxy())
 		{
 			InternalEObject oldType = (InternalEObject)type;
@@ -132,7 +143,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ComponentType basicGetType() {
+	public ComponentType basicGetType()
+	{
 		return type;
 	}
 
@@ -141,7 +153,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setType(ComponentType newType) {
+	public void setType(ComponentType newType)
+	{
 		ComponentType oldType = type;
 		type = newType;
 		if (eNotificationRequired())
@@ -153,7 +166,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<Connection> getOutgoingConnections() {
+	public EList<Connection> getOutgoingConnections()
+	{
 		if (outgoingConnections == null)
 		{
 			outgoingConnections = new EObjectContainmentWithInverseEList<Connection>(Connection.class, this, InstanceModel20Package.COMPONENT__OUTGOING_CONNECTIONS, InstanceModel20Package.CONNECTION__SOURCE_COMPONENT);
@@ -166,7 +180,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Connection getIncomingConnections() {
+	public Connection getIncomingConnections()
+	{
 		if (incomingConnections != null && incomingConnections.eIsProxy())
 		{
 			InternalEObject oldIncomingConnections = (InternalEObject)incomingConnections;
@@ -185,7 +200,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Connection basicGetIncomingConnections() {
+	public Connection basicGetIncomingConnections()
+	{
 		return incomingConnections;
 	}
 
@@ -194,7 +210,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetIncomingConnections(Connection newIncomingConnections, NotificationChain msgs) {
+	public NotificationChain basicSetIncomingConnections(Connection newIncomingConnections, NotificationChain msgs)
+	{
 		Connection oldIncomingConnections = incomingConnections;
 		incomingConnections = newIncomingConnections;
 		if (eNotificationRequired())
@@ -210,7 +227,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setIncomingConnections(Connection newIncomingConnections) {
+	public void setIncomingConnections(Connection newIncomingConnections)
+	{
 		if (newIncomingConnections != incomingConnections)
 		{
 			NotificationChain msgs = null;
@@ -230,7 +248,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<ParameterValue> getParameterValues() {
+	public EList<ParameterValue> getParameterValues()
+	{
 		if (parameterValues == null)
 		{
 			parameterValues = new EObjectContainmentEList<ParameterValue>(ParameterValue.class, this, InstanceModel20Package.COMPONENT__PARAMETER_VALUES);
@@ -245,7 +264,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.COMPONENT__OUTGOING_CONNECTIONS:
@@ -264,7 +284,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.COMPONENT__OUTGOING_CONNECTIONS:
@@ -283,7 +304,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * @generated
 	 */
 	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+	public Object eGet(int featureID, boolean resolve, boolean coreType)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.COMPONENT__TYPE:
@@ -307,7 +329,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void eSet(int featureID, Object newValue) {
+	public void eSet(int featureID, Object newValue)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.COMPONENT__TYPE:
@@ -334,7 +357,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * @generated
 	 */
 	@Override
-	public void eUnset(int featureID) {
+	public void eUnset(int featureID)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.COMPONENT__TYPE:
@@ -359,7 +383,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component {
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(int featureID) {
+	public boolean eIsSet(int featureID)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.COMPONENT__TYPE:

@@ -33,7 +33,6 @@ import org.eclipse.emf.ecore.util.EcoreEMap;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.InternalEList;
 
-import org.eclipse.emf.ecore.xml.type.ProcessingInstruction;
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.IdentifiableImpl;
 
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;

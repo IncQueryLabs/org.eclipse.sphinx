@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,13 +14,13 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.common.util;
 
-
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
 
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 
 import org.eclipse.emf.ecore.EObject;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.*;
 
 /**
@@ -31,7 +31,8 @@ import org.eclipse.sphinx.examples.hummingbird20.common.*;
  * @see org.eclipse.sphinx.examples.hummingbird20.common.Common20Package
  * @generated
  */
-public class Common20AdapterFactory extends AdapterFactoryImpl {
+public class Common20AdapterFactory extends AdapterFactoryImpl
+{
 	/**
 	 * The cached model package.
 	 * <!-- begin-user-doc -->
@@ -46,7 +47,8 @@ public class Common20AdapterFactory extends AdapterFactoryImpl {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Common20AdapterFactory() {
+	public Common20AdapterFactory()
+	{
 		if (modelPackage == null)
 		{
 			modelPackage = Common20Package.eINSTANCE;
@@ -62,7 +64,8 @@ public class Common20AdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	@Override
-	public boolean isFactoryForType(Object object) {
+	public boolean isFactoryForType(Object object)
+	{
 		if (object == modelPackage)
 		{
 			return true;
@@ -109,7 +112,8 @@ public class Common20AdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	@Override
-	public Adapter createAdapter(Notifier target) {
+	public Adapter createAdapter(Notifier target)
+	{
 		return modelSwitch.doSwitch((EObject)target);
 	}
 
@@ -124,7 +128,8 @@ public class Common20AdapterFactory extends AdapterFactoryImpl {
 	 * @see org.eclipse.sphinx.examples.hummingbird20.common.Identifiable
 	 * @generated
 	 */
-	public Adapter createIdentifiableAdapter() {
+	public Adapter createIdentifiableAdapter()
+	{
 		return null;
 	}
 
@@ -138,7 +143,8 @@ public class Common20AdapterFactory extends AdapterFactoryImpl {
 	 * @see org.eclipse.sphinx.examples.hummingbird20.common.Description
 	 * @generated
 	 */
-	public Adapter createDescriptionAdapter() {
+	public Adapter createDescriptionAdapter()
+	{
 		return null;
 	}
 
@@ -150,7 +156,8 @@ public class Common20AdapterFactory extends AdapterFactoryImpl {
 	 * @return the new adapter.
 	 * @generated
 	 */
-	public Adapter createEObjectAdapter() {
+	public Adapter createEObjectAdapter()
+	{
 		return null;
 	}
 

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,10 +16,14 @@ package org.eclipse.sphinx.examples.hummingbird20.common.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
 import org.eclipse.sphinx.emf.ecore.ExtendedEObjectImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
 import org.eclipse.sphinx.examples.hummingbird20.common.Description;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
@@ -38,7 +42,8 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
  *
  * @generated
  */
-public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Identifiable {
+public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Identifiable
+{
 	/**
 	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -74,7 +79,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected IdentifiableImpl() {
+	protected IdentifiableImpl()
+	{
 		super();
 	}
 
@@ -84,7 +90,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * @generated
 	 */
 	@Override
-	protected EClass eStaticClass() {
+	protected EClass eStaticClass()
+	{
 		return Common20Package.Literals.IDENTIFIABLE;
 	}
 
@@ -93,7 +100,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
 
@@ -102,7 +110,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setName(String newName) {
+	public void setName(String newName)
+	{
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
@@ -114,7 +123,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Description getDescription() {
+	public Description getDescription()
+	{
 		return description;
 	}
 
@@ -123,7 +133,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetDescription(Description newDescription, NotificationChain msgs) {
+	public NotificationChain basicSetDescription(Description newDescription, NotificationChain msgs)
+	{
 		Description oldDescription = description;
 		description = newDescription;
 		if (eNotificationRequired())
@@ -139,7 +150,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setDescription(Description newDescription) {
+	public void setDescription(Description newDescription)
+	{
 		if (newDescription != description)
 		{
 			NotificationChain msgs = null;
@@ -160,7 +172,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
+	{
 		switch (featureID)
 		{
 			case Common20Package.IDENTIFIABLE__DESCRIPTION:
@@ -175,7 +188,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * @generated
 	 */
 	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+	public Object eGet(int featureID, boolean resolve, boolean coreType)
+	{
 		switch (featureID)
 		{
 			case Common20Package.IDENTIFIABLE__NAME:
@@ -192,7 +206,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * @generated
 	 */
 	@Override
-	public void eSet(int featureID, Object newValue) {
+	public void eSet(int featureID, Object newValue)
+	{
 		switch (featureID)
 		{
 			case Common20Package.IDENTIFIABLE__NAME:
@@ -211,7 +226,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * @generated
 	 */
 	@Override
-	public void eUnset(int featureID) {
+	public void eUnset(int featureID)
+	{
 		switch (featureID)
 		{
 			case Common20Package.IDENTIFIABLE__NAME:
@@ -230,7 +246,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(int featureID) {
+	public boolean eIsSet(int featureID)
+	{
 		switch (featureID)
 		{
 			case Common20Package.IDENTIFIABLE__NAME:
@@ -247,7 +264,8 @@ public abstract class IdentifiableImpl extends ExtendedEObjectImpl implements Id
 	 * @generated
 	 */
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());

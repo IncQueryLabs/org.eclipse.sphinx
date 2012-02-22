@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,14 +16,20 @@ package org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
 import org.eclipse.emf.ecore.util.EcoreUtil;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.IdentifiableImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Port;
 
 /**
@@ -41,7 +47,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.Port;
  *
  * @generated
  */
-public class ConnectionImpl extends IdentifiableImpl implements Connection {
+public class ConnectionImpl extends IdentifiableImpl implements Connection
+{
 	/**
 	 * The cached value of the '{@link #getSourcePort() <em>Source Port</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -67,7 +74,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected ConnectionImpl() {
+	protected ConnectionImpl()
+	{
 		super();
 	}
 
@@ -77,7 +85,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * @generated
 	 */
 	@Override
-	protected EClass eStaticClass() {
+	protected EClass eStaticClass()
+	{
 		return InstanceModel20Package.Literals.CONNECTION;
 	}
 
@@ -86,7 +95,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Component getSourceComponent() {
+	public Component getSourceComponent()
+	{
 		if (eContainerFeatureID() != InstanceModel20Package.CONNECTION__SOURCE_COMPONENT) return null;
 		return (Component)eContainer();
 	}
@@ -96,7 +106,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetSourceComponent(Component newSourceComponent, NotificationChain msgs) {
+	public NotificationChain basicSetSourceComponent(Component newSourceComponent, NotificationChain msgs)
+	{
 		msgs = eBasicSetContainer((InternalEObject)newSourceComponent, InstanceModel20Package.CONNECTION__SOURCE_COMPONENT, msgs);
 		return msgs;
 	}
@@ -106,7 +117,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setSourceComponent(Component newSourceComponent) {
+	public void setSourceComponent(Component newSourceComponent)
+	{
 		if (newSourceComponent != eInternalContainer() || (eContainerFeatureID() != InstanceModel20Package.CONNECTION__SOURCE_COMPONENT && newSourceComponent != null))
 		{
 			if (EcoreUtil.isAncestor(this, newSourceComponent))
@@ -128,7 +140,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Port getSourcePort() {
+	public Port getSourcePort()
+	{
 		if (sourcePort != null && sourcePort.eIsProxy())
 		{
 			InternalEObject oldSourcePort = (InternalEObject)sourcePort;
@@ -147,7 +160,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Port basicGetSourcePort() {
+	public Port basicGetSourcePort()
+	{
 		return sourcePort;
 	}
 
@@ -156,7 +170,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setSourcePort(Port newSourcePort) {
+	public void setSourcePort(Port newSourcePort)
+	{
 		Port oldSourcePort = sourcePort;
 		sourcePort = newSourcePort;
 		if (eNotificationRequired())
@@ -168,7 +183,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Component getTargetComponent() {
+	public Component getTargetComponent()
+	{
 		if (targetComponent != null && targetComponent.eIsProxy())
 		{
 			InternalEObject oldTargetComponent = (InternalEObject)targetComponent;
@@ -187,7 +203,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Component basicGetTargetComponent() {
+	public Component basicGetTargetComponent()
+	{
 		return targetComponent;
 	}
 
@@ -196,7 +213,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetTargetComponent(Component newTargetComponent, NotificationChain msgs) {
+	public NotificationChain basicSetTargetComponent(Component newTargetComponent, NotificationChain msgs)
+	{
 		Component oldTargetComponent = targetComponent;
 		targetComponent = newTargetComponent;
 		if (eNotificationRequired())
@@ -212,7 +230,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setTargetComponent(Component newTargetComponent) {
+	public void setTargetComponent(Component newTargetComponent)
+	{
 		if (newTargetComponent != targetComponent)
 		{
 			NotificationChain msgs = null;
@@ -233,7 +252,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:
@@ -254,7 +274,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:
@@ -271,7 +292,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
+	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs)
+	{
 		switch (eContainerFeatureID())
 		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:
@@ -286,7 +308,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * @generated
 	 */
 	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+	public Object eGet(int featureID, boolean resolve, boolean coreType)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:
@@ -307,7 +330,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * @generated
 	 */
 	@Override
-	public void eSet(int featureID, Object newValue) {
+	public void eSet(int featureID, Object newValue)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:
@@ -329,7 +353,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * @generated
 	 */
 	@Override
-	public void eUnset(int featureID) {
+	public void eUnset(int featureID)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:
@@ -351,7 +376,8 @@ public class ConnectionImpl extends IdentifiableImpl implements Connection {
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(int featureID) {
+	public boolean eIsSet(int featureID)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.CONNECTION__SOURCE_COMPONENT:

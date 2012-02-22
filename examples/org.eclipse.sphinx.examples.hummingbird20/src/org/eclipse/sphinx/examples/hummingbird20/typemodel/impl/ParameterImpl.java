@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,9 +15,13 @@
 package org.eclipse.sphinx.examples.hummingbird20.typemodel.impl;
 
 import org.eclipse.emf.common.notify.Notification;
+
 import org.eclipse.emf.ecore.EClass;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.IdentifiableImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
 
@@ -35,7 +39,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
  *
  * @generated
  */
-public class ParameterImpl extends IdentifiableImpl implements Parameter {
+public class ParameterImpl extends IdentifiableImpl implements Parameter
+{
 	/**
 	 * The default value of the '{@link #getDataType() <em>Data Type</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -81,7 +86,8 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected ParameterImpl() {
+	protected ParameterImpl()
+	{
 		super();
 	}
 
@@ -91,7 +97,8 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter {
 	 * @generated
 	 */
 	@Override
-	protected EClass eStaticClass() {
+	protected EClass eStaticClass()
+	{
 		return TypeModel20Package.Literals.PARAMETER;
 	}
 
@@ -100,7 +107,8 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getDataType() {
+	public String getDataType()
+	{
 		return dataType;
 	}
 
@@ -109,7 +117,8 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setDataType(String newDataType) {
+	public void setDataType(String newDataType)
+	{
 		String oldDataType = dataType;
 		dataType = newDataType;
 		if (eNotificationRequired())
@@ -121,7 +130,8 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public boolean isOptional() {
+	public boolean isOptional()
+	{
 		return optional;
 	}
 
@@ -130,7 +140,8 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setOptional(boolean newOptional) {
+	public void setOptional(boolean newOptional)
+	{
 		boolean oldOptional = optional;
 		optional = newOptional;
 		if (eNotificationRequired())
@@ -143,7 +154,8 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter {
 	 * @generated
 	 */
 	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+	public Object eGet(int featureID, boolean resolve, boolean coreType)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PARAMETER__DATA_TYPE:
@@ -160,7 +172,8 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter {
 	 * @generated
 	 */
 	@Override
-	public void eSet(int featureID, Object newValue) {
+	public void eSet(int featureID, Object newValue)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PARAMETER__DATA_TYPE:
@@ -179,7 +192,8 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter {
 	 * @generated
 	 */
 	@Override
-	public void eUnset(int featureID) {
+	public void eUnset(int featureID)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PARAMETER__DATA_TYPE:
@@ -198,7 +212,8 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter {
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(int featureID) {
+	public boolean eIsSet(int featureID)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.PARAMETER__DATA_TYPE:
@@ -215,7 +230,8 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter {
 	 * @generated
 	 */
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,12 +14,11 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.instancemodel;
 
-
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 
 import org.eclipse.emf.ecore.util.FeatureMap;
-import org.eclipse.emf.ecore.xml.type.ProcessingInstruction;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 
 /**
@@ -43,7 +42,8 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
  *        extendedMetaData="kind='mixed'"
  * @generated
  */
-public interface Application extends Identifiable {
+public interface Application extends Identifiable
+{
 	/**
 	 * Returns the value of the '<em><b>Components</b></em>' containment reference list.
 	 * The list contents are of type {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component}.
@@ -56,7 +56,7 @@ public interface Application extends Identifiable {
 	 * @return the value of the '<em>Components</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getApplication_Components()
 	 * @model containment="true" required="true" transient="true" volatile="true" derived="true"
-	 *        extendedMetaData="kind='element' name='components' targetNamespace='##targetNamespace'"
+	 *        extendedMetaData="kind='element'"
 	 * @generated
 	 */
 	EList<Component> getComponents();

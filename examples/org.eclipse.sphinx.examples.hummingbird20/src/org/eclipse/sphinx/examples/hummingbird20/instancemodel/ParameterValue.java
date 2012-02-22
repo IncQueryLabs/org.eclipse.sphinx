@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.instancemodel;
 
-
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter;
 
 /**
@@ -35,7 +35,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter;
  * @model
  * @generated
  */
-public interface ParameterValue extends Identifiable {
+public interface ParameterValue extends Identifiable
+{
 	/**
 	 * Returns the value of the '<em><b>Type</b></em>' reference.
 	 * <!-- begin-user-doc -->

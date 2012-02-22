@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,12 +15,17 @@
 package org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl;
 
 import org.eclipse.emf.common.notify.Notification;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.IdentifiableImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter;
 
 /**
@@ -37,7 +42,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter;
  *
  * @generated
  */
-public class ParameterValueImpl extends IdentifiableImpl implements ParameterValue {
+public class ParameterValueImpl extends IdentifiableImpl implements ParameterValue
+{
 	/**
 	 * The cached value of the '{@link #getType() <em>Type</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -73,7 +79,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected ParameterValueImpl() {
+	protected ParameterValueImpl()
+	{
 		super();
 	}
 
@@ -83,7 +90,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 * @generated
 	 */
 	@Override
-	protected EClass eStaticClass() {
+	protected EClass eStaticClass()
+	{
 		return InstanceModel20Package.Literals.PARAMETER_VALUE;
 	}
 
@@ -92,7 +100,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Parameter getType() {
+	public Parameter getType()
+	{
 		if (type != null && type.eIsProxy())
 		{
 			InternalEObject oldType = (InternalEObject)type;
@@ -111,7 +120,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Parameter basicGetType() {
+	public Parameter basicGetType()
+	{
 		return type;
 	}
 
@@ -120,7 +130,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setType(Parameter newType) {
+	public void setType(Parameter newType)
+	{
 		Parameter oldType = type;
 		type = newType;
 		if (eNotificationRequired())
@@ -132,7 +143,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getValue() {
+	public String getValue()
+	{
 		return value;
 	}
 
@@ -141,7 +153,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setValue(String newValue) {
+	public void setValue(String newValue)
+	{
 		String oldValue = value;
 		value = newValue;
 		if (eNotificationRequired())
@@ -154,7 +167,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 * @generated
 	 */
 	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+	public Object eGet(int featureID, boolean resolve, boolean coreType)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.PARAMETER_VALUE__TYPE:
@@ -172,7 +186,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 * @generated
 	 */
 	@Override
-	public void eSet(int featureID, Object newValue) {
+	public void eSet(int featureID, Object newValue)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.PARAMETER_VALUE__TYPE:
@@ -191,7 +206,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 * @generated
 	 */
 	@Override
-	public void eUnset(int featureID) {
+	public void eUnset(int featureID)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.PARAMETER_VALUE__TYPE:
@@ -210,7 +226,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(int featureID) {
+	public boolean eIsSet(int featureID)
+	{
 		switch (featureID)
 		{
 			case InstanceModel20Package.PARAMETER_VALUE__TYPE:
@@ -227,7 +244,8 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	 * @generated
 	 */
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,17 +19,24 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
+
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.Common20PackageImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20PackageImpl;
 
 /**
@@ -38,7 +45,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20Packa
  * <!-- end-user-doc -->
  * @generated
  */
-public class InstanceModel20PackageImpl extends EPackageImpl implements InstanceModel20Package {
+public class InstanceModel20PackageImpl extends EPackageImpl implements InstanceModel20Package
+{
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -82,7 +90,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * @see #init()
 	 * @generated
 	 */
-	private InstanceModel20PackageImpl() {
+	private InstanceModel20PackageImpl()
+	{
 		super(eNS_URI, InstanceModel20Factory.eINSTANCE);
 	}
 
@@ -105,7 +114,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * @see #initializePackageContents()
 	 * @generated
 	 */
-	public static InstanceModel20Package init() {
+	public static InstanceModel20Package init()
+	{
 		if (isInited) return (InstanceModel20Package)EPackage.Registry.INSTANCE.getEPackage(InstanceModel20Package.eNS_URI);
 
 		// Obtain or create and register package
@@ -145,7 +155,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getApplication() {
+	public EClass getApplication()
+	{
 		return applicationEClass;
 	}
 
@@ -154,7 +165,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getApplication_Components() {
+	public EReference getApplication_Components()
+	{
 		return (EReference)applicationEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -163,7 +175,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getApplication_Mixed() {
+	public EAttribute getApplication_Mixed()
+	{
 		return (EAttribute)applicationEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -172,7 +185,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getApplication_XSISchemaLocation() {
+	public EReference getApplication_XSISchemaLocation()
+	{
 		return (EReference)applicationEClass.getEStructuralFeatures().get(2);
 	}
 
@@ -191,7 +205,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getComponent() {
+	public EClass getComponent()
+	{
 		return componentEClass;
 	}
 
@@ -200,7 +215,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getComponent_Type() {
+	public EReference getComponent_Type()
+	{
 		return (EReference)componentEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -209,7 +225,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getComponent_OutgoingConnections() {
+	public EReference getComponent_OutgoingConnections()
+	{
 		return (EReference)componentEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -218,7 +235,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getComponent_IncomingConnections() {
+	public EReference getComponent_IncomingConnections()
+	{
 		return (EReference)componentEClass.getEStructuralFeatures().get(2);
 	}
 
@@ -227,7 +245,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getComponent_ParameterValues() {
+	public EReference getComponent_ParameterValues()
+	{
 		return (EReference)componentEClass.getEStructuralFeatures().get(3);
 	}
 
@@ -236,7 +255,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getConnection() {
+	public EClass getConnection()
+	{
 		return connectionEClass;
 	}
 
@@ -245,7 +265,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getConnection_SourceComponent() {
+	public EReference getConnection_SourceComponent()
+	{
 		return (EReference)connectionEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -254,7 +275,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getConnection_SourcePort() {
+	public EReference getConnection_SourcePort()
+	{
 		return (EReference)connectionEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -263,7 +285,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getConnection_TargetComponent() {
+	public EReference getConnection_TargetComponent()
+	{
 		return (EReference)connectionEClass.getEStructuralFeatures().get(2);
 	}
 
@@ -272,7 +295,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getParameterValue() {
+	public EClass getParameterValue()
+	{
 		return parameterValueEClass;
 	}
 
@@ -281,7 +305,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getParameterValue_Type() {
+	public EReference getParameterValue_Type()
+	{
 		return (EReference)parameterValueEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -290,7 +315,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getParameterValue_Value() {
+	public EAttribute getParameterValue_Value()
+	{
 		return (EAttribute)parameterValueEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -299,7 +325,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public InstanceModel20Factory getInstanceModel20Factory() {
+	public InstanceModel20Factory getInstanceModel20Factory()
+	{
 		return (InstanceModel20Factory)getEFactoryInstance();
 	}
 
@@ -317,7 +344,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void createPackageContents() {
+	public void createPackageContents()
+	{
 		if (isCreated) return;
 		isCreated = true;
 
@@ -358,7 +386,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void initializePackageContents() {
+	public void initializePackageContents()
+	{
 		if (isInitialized) return;
 		isInitialized = true;
 
@@ -418,7 +447,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void createExtendedMetaDataAnnotations() {
+	protected void createExtendedMetaDataAnnotations()
+	{
 		String source = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData"; //$NON-NLS-1$		
 		addAnnotation
 		  (applicationEClass, 
@@ -432,9 +462,7 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 		   source, 
 		   new String[] 
 		   {
-			 "kind", "element", //$NON-NLS-1$ //$NON-NLS-2$
-			 "name", "components", //$NON-NLS-1$ //$NON-NLS-2$
-			 "targetNamespace", "##targetNamespace" //$NON-NLS-1$ //$NON-NLS-2$
+			 "kind", "element" //$NON-NLS-1$ //$NON-NLS-2$
 		   });		
 		addAnnotation
 		  (getApplication_Mixed(), 

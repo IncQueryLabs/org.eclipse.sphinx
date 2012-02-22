@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,12 +19,19 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
+
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.Common20PackageImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
+
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.InstanceModel20PackageImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter;
@@ -39,7 +46,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
  * <!-- end-user-doc -->
  * @generated
  */
-public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20Package {
+public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20Package
+{
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -90,7 +98,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * @see #init()
 	 * @generated
 	 */
-	private TypeModel20PackageImpl() {
+	private TypeModel20PackageImpl()
+	{
 		super(eNS_URI, TypeModel20Factory.eINSTANCE);
 	}
 
@@ -113,7 +122,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * @see #initializePackageContents()
 	 * @generated
 	 */
-	public static TypeModel20Package init() {
+	public static TypeModel20Package init()
+	{
 		if (isInited) return (TypeModel20Package)EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI);
 
 		// Obtain or create and register package
@@ -153,7 +163,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getPlatform() {
+	public EClass getPlatform()
+	{
 		return platformEClass;
 	}
 
@@ -162,7 +173,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getPlatform_ComponentTypes() {
+	public EReference getPlatform_ComponentTypes()
+	{
 		return (EReference)platformEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -171,7 +183,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getPlatform_Interfaces() {
+	public EReference getPlatform_Interfaces()
+	{
 		return (EReference)platformEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -180,7 +193,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getPlatform_Mixed() {
+	public EAttribute getPlatform_Mixed()
+	{
 		return (EAttribute)platformEClass.getEStructuralFeatures().get(2);
 	}
 
@@ -189,7 +203,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getPlatform_XSISchemaLocation() {
+	public EReference getPlatform_XSISchemaLocation()
+	{
 		return (EReference)platformEClass.getEStructuralFeatures().get(3);
 	}
 
@@ -198,7 +213,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getComponentType() {
+	public EClass getComponentType()
+	{
 		return componentTypeEClass;
 	}
 
@@ -207,7 +223,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getComponentType_ProvidedInterfaces() {
+	public EReference getComponentType_ProvidedInterfaces()
+	{
 		return (EReference)componentTypeEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -216,7 +233,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getComponentType_Ports() {
+	public EReference getComponentType_Ports()
+	{
 		return (EReference)componentTypeEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -225,7 +243,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getComponentType_Parameters() {
+	public EReference getComponentType_Parameters()
+	{
 		return (EReference)componentTypeEClass.getEStructuralFeatures().get(2);
 	}
 
@@ -234,7 +253,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getPort() {
+	public EClass getPort()
+	{
 		return portEClass;
 	}
 
@@ -243,7 +263,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getPort_Owner() {
+	public EReference getPort_Owner()
+	{
 		return (EReference)portEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -252,7 +273,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getPort_RequiredInterface() {
+	public EReference getPort_RequiredInterface()
+	{
 		return (EReference)portEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -261,7 +283,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getPort_MinProviderCount() {
+	public EAttribute getPort_MinProviderCount()
+	{
 		return (EAttribute)portEClass.getEStructuralFeatures().get(2);
 	}
 
@@ -270,7 +293,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getPort_MaxProviderCount() {
+	public EAttribute getPort_MaxProviderCount()
+	{
 		return (EAttribute)portEClass.getEStructuralFeatures().get(3);
 	}
 
@@ -279,7 +303,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getInterface() {
+	public EClass getInterface()
+	{
 		return interfaceEClass;
 	}
 
@@ -288,7 +313,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getInterface_ProvidingComponentTypes() {
+	public EReference getInterface_ProvidingComponentTypes()
+	{
 		return (EReference)interfaceEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -297,7 +323,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getInterface_RequiringPorts() {
+	public EReference getInterface_RequiringPorts()
+	{
 		return (EReference)interfaceEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -306,7 +333,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getParameter() {
+	public EClass getParameter()
+	{
 		return parameterEClass;
 	}
 
@@ -315,7 +343,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getParameter_DataType() {
+	public EAttribute getParameter_DataType()
+	{
 		return (EAttribute)parameterEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -324,7 +353,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getParameter_Optional() {
+	public EAttribute getParameter_Optional()
+	{
 		return (EAttribute)parameterEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -333,7 +363,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public TypeModel20Factory getTypeModel20Factory() {
+	public TypeModel20Factory getTypeModel20Factory()
+	{
 		return (TypeModel20Factory)getEFactoryInstance();
 	}
 
@@ -351,7 +382,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void createPackageContents() {
+	public void createPackageContents()
+	{
 		if (isCreated) return;
 		isCreated = true;
 
@@ -396,7 +428,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void initializePackageContents() {
+	public void initializePackageContents()
+	{
 		if (isInitialized) return;
 		isInitialized = true;
 
@@ -460,7 +493,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void createExtendedMetaDataAnnotations() {
+	protected void createExtendedMetaDataAnnotations()
+	{
 		String source = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData"; //$NON-NLS-1$		
 		addAnnotation
 		  (platformEClass, 

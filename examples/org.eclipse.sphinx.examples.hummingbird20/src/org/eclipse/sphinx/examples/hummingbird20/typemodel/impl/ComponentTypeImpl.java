@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,14 +17,19 @@ package org.eclipse.sphinx.examples.hummingbird20.typemodel.impl;
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.common.util.EList;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.impl.IdentifiableImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter;
@@ -46,7 +51,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
  *
  * @generated
  */
-public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType {
+public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
+{
 	/**
 	 * The cached value of the '{@link #getProvidedInterfaces() <em>Provided Interfaces</em>}' reference list.
 	 * <!-- begin-user-doc -->
@@ -82,7 +88,8 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected ComponentTypeImpl() {
+	protected ComponentTypeImpl()
+	{
 		super();
 	}
 
@@ -92,7 +99,8 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 * @generated
 	 */
 	@Override
-	protected EClass eStaticClass() {
+	protected EClass eStaticClass()
+	{
 		return TypeModel20Package.Literals.COMPONENT_TYPE;
 	}
 
@@ -101,7 +109,8 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<Interface> getProvidedInterfaces() {
+	public EList<Interface> getProvidedInterfaces()
+	{
 		if (providedInterfaces == null)
 		{
 			providedInterfaces = new EObjectWithInverseResolvingEList.Unsettable.ManyInverse<Interface>(Interface.class, this, TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES, TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES);
@@ -114,7 +123,8 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void unsetProvidedInterfaces() {
+	public void unsetProvidedInterfaces()
+	{
 		if (providedInterfaces != null) ((InternalEList.Unsettable<?>)providedInterfaces).unset();
 	}
 
@@ -123,7 +133,8 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public boolean isSetProvidedInterfaces() {
+	public boolean isSetProvidedInterfaces()
+	{
 		return providedInterfaces != null && ((InternalEList.Unsettable<?>)providedInterfaces).isSet();
 	}
 
@@ -132,7 +143,8 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<Port> getPorts() {
+	public EList<Port> getPorts()
+	{
 		if (ports == null)
 		{
 			ports = new EObjectContainmentWithInverseEList<Port>(Port.class, this, TypeModel20Package.COMPONENT_TYPE__PORTS, TypeModel20Package.PORT__OWNER);
@@ -145,7 +157,8 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<Parameter> getParameters() {
+	public EList<Parameter> getParameters()
+	{
 		if (parameters == null)
 		{
 			parameters = new EObjectContainmentEList<Parameter>(Parameter.class, this, TypeModel20Package.COMPONENT_TYPE__PARAMETERS);
@@ -160,7 +173,8 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
@@ -177,7 +191,8 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
@@ -196,7 +211,8 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 * @generated
 	 */
 	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+	public Object eGet(int featureID, boolean resolve, boolean coreType)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
@@ -216,7 +232,8 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void eSet(int featureID, Object newValue) {
+	public void eSet(int featureID, Object newValue)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
@@ -241,7 +258,8 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 * @generated
 	 */
 	@Override
-	public void eUnset(int featureID) {
+	public void eUnset(int featureID)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
@@ -263,7 +281,8 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(int featureID) {
+	public boolean eIsSet(int featureID)
+	{
 		switch (featureID)
 		{
 			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:

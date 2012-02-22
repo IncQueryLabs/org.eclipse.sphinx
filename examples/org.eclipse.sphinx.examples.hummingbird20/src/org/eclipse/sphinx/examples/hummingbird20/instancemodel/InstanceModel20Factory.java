@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,7 +24,8 @@ import org.eclipse.emf.ecore.EFactory;
  * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package
  * @generated
  */
-public interface InstanceModel20Factory extends EFactory {
+public interface InstanceModel20Factory extends EFactory
+{
 	/**
 	 * The singleton instance of the factory.
 	 * <!-- begin-user-doc -->

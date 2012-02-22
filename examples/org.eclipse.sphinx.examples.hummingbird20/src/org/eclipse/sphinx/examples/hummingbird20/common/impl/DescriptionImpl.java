@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,6 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.common.impl;
 
-
-
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.ecore.EClass;
@@ -24,7 +22,9 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.InternalEList;
+
 import org.eclipse.sphinx.emf.ecore.ExtendedEObjectImpl;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
 import org.eclipse.sphinx.examples.hummingbird20.common.Description;
 
@@ -41,7 +41,8 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Description;
  *
  * @generated
  */
-public class DescriptionImpl extends ExtendedEObjectImpl implements Description {
+public class DescriptionImpl extends ExtendedEObjectImpl implements Description
+{
 	/**
 	 * The cached value of the '{@link #getMixed() <em>Mixed</em>}' attribute list.
 	 * <!-- begin-user-doc -->
@@ -57,7 +58,8 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected DescriptionImpl() {
+	protected DescriptionImpl()
+	{
 		super();
 	}
 
@@ -67,7 +69,8 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description 
 	 * @generated
 	 */
 	@Override
-	protected EClass eStaticClass() {
+	protected EClass eStaticClass()
+	{
 		return Common20Package.Literals.DESCRIPTION;
 	}
 
@@ -76,7 +79,8 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public FeatureMap getMixed() {
+	public FeatureMap getMixed()
+	{
 		if (mixed == null)
 		{
 			mixed = new BasicFeatureMap(this, Common20Package.DESCRIPTION__MIXED);
@@ -90,7 +94,8 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description 
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
+	{
 		switch (featureID)
 		{
 			case Common20Package.DESCRIPTION__MIXED:
@@ -105,7 +110,8 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description 
 	 * @generated
 	 */
 	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+	public Object eGet(int featureID, boolean resolve, boolean coreType)
+	{
 		switch (featureID)
 		{
 			case Common20Package.DESCRIPTION__MIXED:
@@ -121,7 +127,8 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description 
 	 * @generated
 	 */
 	@Override
-	public void eSet(int featureID, Object newValue) {
+	public void eSet(int featureID, Object newValue)
+	{
 		switch (featureID)
 		{
 			case Common20Package.DESCRIPTION__MIXED:
@@ -137,7 +144,8 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description 
 	 * @generated
 	 */
 	@Override
-	public void eUnset(int featureID) {
+	public void eUnset(int featureID)
+	{
 		switch (featureID)
 		{
 			case Common20Package.DESCRIPTION__MIXED:
@@ -153,7 +161,8 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description 
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(int featureID) {
+	public boolean eIsSet(int featureID)
+	{
 		switch (featureID)
 		{
 			case Common20Package.DESCRIPTION__MIXED:
@@ -168,7 +177,8 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description 
 	 * @generated
 	 */
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
