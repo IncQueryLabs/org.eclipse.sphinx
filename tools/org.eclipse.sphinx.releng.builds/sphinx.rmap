@@ -112,7 +112,7 @@
 			</uri>
 		</provider>
 		<provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false" resolutionFilter="(&amp;(tp.present=false)(tp.release=helios))">
-			<uri format="{0}/tools/orbit/downloads/drops/R20100519200754/updateSite">
+			<uri format="{0}/tools/orbit/downloads/drops/R20110523182458/updateSite">
 				<bc:propertyRef key="eclipse.mirror"/>
 			</uri>
 		</provider>
