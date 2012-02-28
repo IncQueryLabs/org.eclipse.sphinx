@@ -11,34 +11,31 @@
 <unit id="org.apache.xml.resolver" version="1.2.0.v201005080400"/>
 <unit id="org.apache.xml.serializer" version="2.7.1.v201005080400"/>
 <unit id="org.jdom" version="1.1.1.v201101151400"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20110523182458/repository/"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20120119162704/repository"/>
 </location>
 <location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="3.7.1.M20110909-1335"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.5.0.v20110530-7P7NFUFFLWUl76mart"/>
+<unit id="org.eclipse.sdk.ide" version="3.7.2.M20120208-0800"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.5.1.v20111216-1653-7P7NFUIFIbaUcU77s0KQWHw5HZTZ"/>
 <repository location="http://download.eclipse.org/eclipse/updates/3.7"/>
 </location>
 <location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
-<unit id="org.eclipse.emf.compare.sdk.feature.group" version="1.2.1.v20110913-0926"/>
+<unit id="org.eclipse.emf.compare.sdk.feature.group" version="1.2.2.v20120214-0915"/>
 <unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.5.1.v20110823-1800-777T19A_WsXmjNatPxcrPm1rOKlH"/>
 <unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.5.0.v20110502-1600-67O-96SGR55YJeZPedcQnghI6uFA"/>
-<unit id="org.eclipse.emf.sdk.feature.group" version="2.7.1.v20110913-1526"/>
+<unit id="org.eclipse.emf.sdk.feature.group" version="2.7.2.v20120130-0943"/>
 <unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.5.0.v20110426-2159-47D08xGD6ExNBM7CIJa3CIKK9t84"/>
 <unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.5.0.v20110607-1200-67N09E9QnChoWswz-3wf_rz0kQ8Y"/>
-<unit id="org.eclipse.graphiti.sdk.feature.feature.group" version="0.8.1.v20110912-1027"/>
+<unit id="org.eclipse.graphiti.sdk.feature.feature.group" version="0.8.2.v20120215-0845"/>
 <unit id="org.eclipse.team.svn.feature.group" version="0.7.9.I20110819-1700"/>
 <unit id="org.eclipse.uml2.sdk.feature.group" version="3.2.1.v201109082252"/>
-<unit id="org.eclipse.xsd.sdk.feature.group" version="2.7.0.v20110606-0949"/>
+<unit id="org.eclipse.xsd.sdk.feature.group" version="2.7.1.v20120130-0943"/>
 <repository location="http://download.eclipse.org/releases/indigo"/>
 </location>
-<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
-<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.2.1.v201110310946"/>
-<unit id="com.google.guava" version="0.0.0"/>
-<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases"/>
-</location>
 <location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.xpand.sdk.feature.group" version="1.2.1.v201111080523"/>
-<repository location="https://hudson.eclipse.org/hudson/job/Xpand-nightly-HEAD/752/artifact/xpand.p2.repository"/>
+<unit id="com.google.guava" version="10.0.1.1"/>
+<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.2.1.v201201310331"/>
+<unit id="org.eclipse.xpand.sdk.feature.group" version="1.2.1.v201201310338"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/milestones"/>
 </location>
 <location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
 <unit id="org.eclipse.gmf.sdk.feature.group" version="2.3.0.v20100508-1742-777B-95pDcLakRvph3PMwwfmjSTZ"/>
