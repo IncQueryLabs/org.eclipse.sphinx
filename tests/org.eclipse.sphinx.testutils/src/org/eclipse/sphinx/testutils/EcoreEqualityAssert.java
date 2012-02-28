@@ -299,45 +299,45 @@ public class EcoreEqualityAssert extends Assert {
 	 * @since 0.7.0
 	 */
 	protected static void assertEqualFeatureMaps(FeatureMap featureMap1, FeatureMap featureMap2) {
-		Iterator<Entry> i1 = featureMap1.iterator();
-		Iterator<Entry> i2 = featureMap2.iterator();
+		Iterator<Entry> iter1 = featureMap1.iterator();
+		Iterator<Entry> iter2 = featureMap2.iterator();
 
 		Predicate<Entry> isXmlFeature = new Predicate<Entry>() {
-			public boolean apply(Entry e) {
-				EStructuralFeature f = e.getEStructuralFeature();
-				return f == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION
-						|| f == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT 
-						|| f == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA
-						|| f == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT;
+			public boolean apply(Entry entry) {
+				EStructuralFeature feature = entry.getEStructuralFeature();
+				return feature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION
+						|| feature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT
+						|| feature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA
+						|| feature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT;
 			}
 		};
 		Predicate<Entry> isNoXmlFeature = Predicates.not(isXmlFeature);
 
 		// Filter out XML features using the predicate previously created
 		//
-		i1 = Iterators.filter(i1, isNoXmlFeature);
-		i2 = Iterators.filter(i2, isNoXmlFeature);
+		iter1 = Iterators.filter(iter1, isNoXmlFeature);
+		iter2 = Iterators.filter(iter2, isNoXmlFeature);
 
 		int i = 0;
 
 		// Compare entries in order as long as both iterators are not exhausted.
 		//
-		while (i1.hasNext() && i2.hasNext()) {
-			Entry e1 = i1.next();
-			Entry e2 = i2.next();
+		while (iter1.hasNext() && iter2.hasNext()) {
+			Entry entry1 = iter1.next();
+			Entry entry2 = iter2.next();
 
 			assertTrue("Feature at position " + i + " of feature map " + featureMap1 + " and feature at same position of feature map " + featureMap2
-					+ " are not the same: " + e1.getEStructuralFeature().getName() + " <-> " + e2.getEStructuralFeature().getName() + ".",
-					e1.getEStructuralFeature() == e2.getEStructuralFeature());
+					+ " are not the same: " + entry1.getEStructuralFeature().getName() + " <-> " + entry2.getEStructuralFeature().getName() + ".",
+					entry1.getEStructuralFeature() == entry2.getEStructuralFeature());
 
-			assertEqualFeatureMapValues(e1.getValue(), e2.getValue(), e1.getEStructuralFeature());
+			assertEqualFeatureMapValues(entry1.getValue(), entry2.getValue(), entry1.getEStructuralFeature());
 
 			i++;
 		}
 
 		// Ensure that both iterators are exhausted if not one map contains more features than the other
 		//
-		if (i1.hasNext() != false || i2.hasNext() != false) {
+		if (iter1.hasNext() != false || iter2.hasNext() != false) {
 			fail("Feature map " + featureMap1 + " and feature map " + featureMap2 + " don't have the same number of non-XML features.");
 		}
 	}
