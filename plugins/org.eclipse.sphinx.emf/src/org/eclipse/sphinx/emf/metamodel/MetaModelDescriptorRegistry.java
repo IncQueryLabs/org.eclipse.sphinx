@@ -135,7 +135,16 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 	private Map<String, String> fContentTypeIdCache = new HashMap<String, String>();
 
-	private Map<EPackage, IMetaModelDescriptor> fPackageMetaModelDescriptorCache = new HashMap<EPackage, IMetaModelDescriptor>();
+	private Map<String, Pattern> patternCache = new LinkedHashMap<String, Pattern>() {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		protected boolean removeEldestEntry(java.util.Map.Entry<String, Pattern> eldest) {
+			// keep up to 100 entries in the cache
+			return size() > 100;
+		}
+	};
 
 	/**
 	 * Private constructor for the singleton pattern.
@@ -145,6 +154,22 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	private MetaModelDescriptorRegistry() {
 		readContributedDescriptors();
 		readContributedTargetMetaModelDescriptorProviders();
+	}
+
+	/**
+	 * Get a pattern from the cache, creating one if necessary
+	 * 
+	 * @param regexp
+	 * @return
+	 */
+	private Pattern getPattern(String regexp) {
+		if (patternCache.containsKey(regexp)) {
+			return patternCache.get(regexp);
+		} else {
+			Pattern p = Pattern.compile(regexp);
+			patternCache.put(regexp, p);
+			return p;
+		}
 	}
 
 	private IExtensionRegistry getExtensionRegistry() {
@@ -849,32 +874,13 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 */
 	public IMetaModelDescriptor getDescriptor(EPackage ePackage) {
 		if (ePackage != null) {
-			synchronized (fPackageMetaModelDescriptorCache) {
-				IMetaModelDescriptor mmDescriptor = fPackageMetaModelDescriptorCache.get(ePackage);
-
-				if (mmDescriptor == null) {
-					// not cached
-					final String nsURI = ePackage.getNsURI();
-
-					mmDescriptor = NO_MM;
-
-					if (nsURI != null) {
-						mmDescriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
-							public boolean accept(IMetaModelDescriptor descriptor) {
-								return matchesEPackageNsURIPattern(descriptor, nsURI);
-							}
-						});
+			final String nsURI = ePackage.getNsURI();
+			if (nsURI != null) {
+				return getDescriptor(ANY_MM, new IDescriptorFilter() {
+					public boolean accept(IMetaModelDescriptor descriptor) {
+						return getPattern(descriptor.getEPackageNsURIPattern()).matcher(nsURI).matches();
 					}
-
-					fPackageMetaModelDescriptorCache.put(ePackage, mmDescriptor);
-				}
-
-				if (mmDescriptor == NO_MM) {
-					// cached but no descriptor could be found earlier
-					return null;
-				} else {
-					return mmDescriptor;
-				}
+				});
 			}
 		}
 		return null;
@@ -924,25 +930,25 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	public IMetaModelDescriptor getDescriptor(final URI namespaceURI) {
 		if (namespaceURI != null) {
 			synchronized (fMetaModelDescriptors) {
-				final String namespaceURIString = namespaceURI.toString();
+				final String namespaceURIStr = namespaceURI.toString();
 				IMetaModelDescriptor mmDescriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
 					public boolean accept(IMetaModelDescriptor mmDescriptor) {
-						if (namespaceURIString.equals(mmDescriptor.getNamespace())) {
+						if (getPattern(mmDescriptor.getNamespace()).matcher(namespaceURIStr).matches()) {
 							return true;
 						}
-						if (matchesEPackageNsURIPattern(mmDescriptor, namespaceURIString)) {
+						if (getPattern(mmDescriptor.getEPackageNsURIPattern()).matcher(namespaceURIStr).matches()) {
 							return true;
 						}
 						for (URI compatibleNamepaceURI : mmDescriptor.getCompatibleNamespaceURIs()) {
-							if (namespaceURIString.equals(compatibleNamepaceURI.toString())) {
+							if (getPattern(compatibleNamepaceURI.toString()).matcher(namespaceURIStr).matches()) {
 								return true;
 							}
 						}
 						for (IMetaModelDescriptor compatibleResourceVersionDescriptor : mmDescriptor.getCompatibleResourceVersionDescriptors()) {
-							if (namespaceURIString.equals(compatibleResourceVersionDescriptor.getNamespace())) {
+							if (getPattern(compatibleResourceVersionDescriptor.getNamespace()).matcher(namespaceURIStr).matches()) {
 								return true;
 							}
-							if (matchesEPackageNsURIPattern(compatibleResourceVersionDescriptor, namespaceURIString)) {
+							if (getPattern(compatibleResourceVersionDescriptor.getEPackageNsURIPattern()).matcher(namespaceURIStr).matches()) {
 								return true;
 							}
 						}
@@ -954,7 +960,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 				if (mmDescriptor == null) {
 					// Try to retrieve Ecore model behind given namespace and dynamically create a new meta-model
 					// descriptor
-					EPackage ePackage = EPackage.Registry.INSTANCE.getEPackage(namespaceURIString);
+					EPackage ePackage = EPackage.Registry.INSTANCE.getEPackage(namespaceURIStr);
 					if (ePackage != null) {
 						mmDescriptor = createDescriptor(ePackage);
 						addDescriptor(mmDescriptor);
@@ -1154,19 +1160,19 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 				IMetaModelDescriptor mmDescriptor = getDescriptor(new URI(resourceNamespace));
 				if (mmDescriptor != null) {
 					// Newly created resources typically match implemented metamodel version exactly
-					if (resourceNamespace.equals(mmDescriptor.getNamespace())) {
+					if (resourceNamespace.matches(mmDescriptor.getNamespace())) {
 						return mmDescriptor;
 					}
-					if (matchesEPackageNsURIPattern(mmDescriptor, resourceNamespace)) {
+					if (resourceNamespace.matches(mmDescriptor.getEPackageNsURIPattern())) {
 						return mmDescriptor;
 					}
 
 					// Resource version is older than but compatible with metamodel version
 					for (IMetaModelDescriptor compatibleResourceVersionDescriptor : mmDescriptor.getCompatibleResourceVersionDescriptors()) {
-						if (resourceNamespace.equals(compatibleResourceVersionDescriptor.getNamespace())) {
+						if (resourceNamespace.matches(compatibleResourceVersionDescriptor.getNamespace())) {
 							return compatibleResourceVersionDescriptor;
 						}
-						if (matchesEPackageNsURIPattern(compatibleResourceVersionDescriptor, resourceNamespace)) {
+						if (resourceNamespace.matches(compatibleResourceVersionDescriptor.getEPackageNsURIPattern())) {
 							return compatibleResourceVersionDescriptor;
 						}
 					}
@@ -1176,16 +1182,6 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
 		return null;
-	}
-
-	private static boolean matchesEPackageNsURIPattern(IMetaModelDescriptor mmDescriptor, String nsURI) {
-		if (mmDescriptor instanceof AbstractMetaModelDescriptor) {
-			// use precompiled pattern if possible
-			AbstractMetaModelDescriptor ammDescriptor = (AbstractMetaModelDescriptor) mmDescriptor;
-			return ammDescriptor.getEPackageNsURIPatternCompiled().matcher(nsURI).matches();
-		} else {
-			return nsURI.matches(mmDescriptor.getEPackageNsURIPattern());
-		}
 	}
 
 	/**

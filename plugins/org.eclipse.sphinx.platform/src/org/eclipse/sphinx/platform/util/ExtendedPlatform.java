@@ -37,6 +37,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceRuleFactory;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -655,15 +656,10 @@ public final class ExtendedPlatform {
 	 * @param referencedProjects
 	 * @since 0.7.0
 	 */
-	private static void collectReferencedProjects(IProject project, Set<IProject> allReferencedProjects) {
-		if (project.isAccessible() && allReferencedProjects.add(project)) {
-			try {
-				for (IProject p : project.getReferencedProjects()) {
-					collectReferencedProjects(p, allReferencedProjects);
-				}
-			} catch (CoreException ex) {
-				PlatformLogUtil.logAsError(Activator.getDefault(), ex);
-				return;
+	private static void collectReferencedProjects(IProject project, Set<IProject> referencedProjects) {
+		if (project.isAccessible() && referencedProjects.add(project)) {
+			for (IProject p : getReferencedProjectsSafely(project)) {
+				collectReferencedProjects(p, referencedProjects);
 			}
 		}
 	}
@@ -1202,14 +1198,6 @@ public final class ExtendedPlatform {
 			return Arrays.asList(contentType.getFileSpecs(IContentTypeSettings.FILE_EXTENSION_SPEC));
 		}
 		return Collections.emptySet();
-	}
-
-	public static boolean isContentTypeApplicable(String contentTypeId, IFile file) {
-		IContentType contentType = Platform.getContentTypeManager().getContentType(contentTypeId);
-		if (contentType != null) {
-			return contentType.isAssociatedWith(file.getName());
-		}
-		return false;
 	}
 
 	/**

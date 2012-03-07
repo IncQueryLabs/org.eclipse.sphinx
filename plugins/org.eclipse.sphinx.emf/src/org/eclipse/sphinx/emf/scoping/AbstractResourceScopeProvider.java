@@ -48,25 +48,25 @@ public abstract class AbstractResourceScopeProvider implements IResourceScopePro
 	 */
 	public boolean hasApplicableFileExtension(IFile file) {
 		Assert.isNotNull(file);
+		// Reject files without extension
+		String extension = file.getFullPath().getFileExtension();
+		if (extension == null) {
+			return false;
+		}
+
 		// Check if the given file's extension matches one of the extensions associated with one of the content types
 		// that are supported by one of the metamodel descriptors which this resource scope provider is used for
 		for (IMetaModelDescriptor mmDescriptor : ResourceScopeProviderRegistry.INSTANCE.getMetaModelDescriptorsFor(this)) {
 			for (String contentTypeId : mmDescriptor.getContentTypeIds()) {
-				if (ExtendedPlatform.isContentTypeApplicable(contentTypeId, file)) {
+				if (ExtendedPlatform.getContentTypeFileExtensions(contentTypeId).contains(extension)) {
 					return true;
 				}
 			}
 			for (String compatibleContentTypeId : mmDescriptor.getCompatibleContentTypeIds()) {
-				if (ExtendedPlatform.isContentTypeApplicable(compatibleContentTypeId, file)) {
+				if (ExtendedPlatform.getContentTypeFileExtensions(compatibleContentTypeId).contains(extension)) {
 					return true;
 				}
 			}
-		}
-
-		// Reject files without extension
-		String extension = file.getFileExtension();
-		if (extension == null) {
-			return false;
 		}
 
 		// Check if the given file's extension matches one of the extensions which are associated with a target

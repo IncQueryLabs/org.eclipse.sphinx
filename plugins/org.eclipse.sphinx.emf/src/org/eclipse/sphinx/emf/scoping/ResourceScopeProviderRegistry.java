@@ -238,7 +238,13 @@ public class ResourceScopeProviderRegistry {
 	 */
 	public boolean isNotInAnyScope(IFile file) {
 		if (file != null) {
-			for (IResourceScopeProvider provider : fMetaModelDescriptorsForResourceScopeProviders.keySet()) {
+			/*
+			 * Performance optimization: Create a separate HashSet for all contributed ResourceScopeProviders instead of
+			 * directly iterating over fContributedResourceScopeProviders.values() in order to avoid repeated processing
+			 * of same ResourceScopeProvider.
+			 */
+			Set<IResourceScopeProvider> allResourceScopeProviders = new HashSet<IResourceScopeProvider>(fContributedResourceScopeProviders.values());
+			for (IResourceScopeProvider provider : allResourceScopeProviders) {
 				if (provider.isApplicableTo(file)) {
 					return false;
 				}
@@ -253,8 +259,8 @@ public class ResourceScopeProviderRegistry {
 	 * file} is a model file based on a metamodel that is described by a {@link IMetaModelDescriptor metamodel
 	 * descriptor}. The applicable {@link IResourceScopeProvider resource scope provider} for such model files is either
 	 * one that has been specifically contributed to the underlying {@link IMetaModelDescriptor metamodel descriptor}
-	 * via the org.eclipse.sphinx.emf.resourceScopeProviders extension point or a
-	 * {@link #getDefaultResourceScopeProvider() default resource scope provider}.
+	 * via the org.eclipse.sphinx.emf.resourceScopeProviders extension point or a {@link #getDefaultResourceScopeProvider()
+	 * default resource scope provider}.
 	 * <p>
 	 * This method is guaranteed to have a very little performance overhead. It can be used by clients to optimize the
 	 * retrieval of the {@link IResourceScope resource scope}s for large amounts of model and/or non-model {@link IFile

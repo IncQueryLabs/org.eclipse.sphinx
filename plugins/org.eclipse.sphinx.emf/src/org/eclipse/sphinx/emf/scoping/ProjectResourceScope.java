@@ -16,103 +16,20 @@
 package org.eclipse.sphinx.emf.scoping;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.HashSet;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.platform.resources.DefaultResourceChangeHandler;
-import org.eclipse.sphinx.platform.resources.ResourceDeltaVisitor;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public class ProjectResourceScope extends AbstractResourceScope {
 
-	static class ReferencedProjectsCache {
-		class InvalidationListener implements IResourceChangeListener {
-			public void resourceChanged(IResourceChangeEvent event) {
-				try {
-					IResourceDelta delta = event.getDelta();
-					if (delta != null) {
-						IResourceDeltaVisitor visitor = new ResourceDeltaVisitor(event.getType(), new DefaultResourceChangeHandler() {
-							@Override
-							public void handleProjectCreated(int eventType, IProject project) {
-								invalidate();
-							}
-
-							@Override
-							public void handleProjectOpened(int eventType, IProject project) {
-								invalidate();
-							}
-
-							@Override
-							public void handleProjectRenamed(int eventType, IProject oldProject, IProject newProject) {
-								invalidate();
-							}
-
-							@Override
-							public void handleProjectDescriptionChanged(int eventType, IProject project) {
-								invalidate();
-							}
-
-							@Override
-							public void handleProjectClosed(int eventType, IProject project) {
-								invalidate();
-							}
-
-							@Override
-							public void handleProjectRemoved(int eventType, IProject project) {
-								invalidate();
-							}
-						});
-
-						delta.accept(visitor);
-					}
-				} catch (CoreException ex) {
-					PlatformLogUtil.logAsError(Activator.getDefault(), ex);
-				}
-			}
-		}
-
-		Map<IProject, Collection<IProject>> cache = new WeakHashMap<IProject, Collection<IProject>>();
-
-		ReferencedProjectsCache() {
-			ResourcesPlugin.getWorkspace().addResourceChangeListener(new InvalidationListener());
-		}
-
-		synchronized Collection<IProject> get(IProject p) {
-			Collection<IProject> referencedProjects = cache.get(p);
-
-			if (referencedProjects == null) {
-				referencedProjects = ExtendedPlatform.getAllReferencedProjects(p);
-
-				cache.put(p, referencedProjects);
-			}
-
-			return referencedProjects;
-		}
-
-		synchronized void invalidate() {
-			cache.clear();
-		}
-	}
-
 	protected IProject rootProject;
-
-	protected ReferencedProjectsCache referencedProjectsCache;
 
 	public ProjectResourceScope(IResource resource) {
 		Assert.isNotNull(resource);
@@ -145,30 +62,23 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getReferencingRoots()
 	 */
-	@SuppressWarnings("unchecked")
 	public Collection<IResource> getReferencingRoots() {
+		HashSet<IResource> dependingRoots = new HashSet<IResource>();
 		if (rootProject != null) {
-			Collection<?> allReferencingProjects = ExtendedPlatform.getAllReferencingProjects(rootProject);
-			return (Collection<IResource>) allReferencingProjects;
-		} else {
-			return Collections.emptySet();
+			dependingRoots.addAll(ExtendedPlatform.getAllReferencingProjects(rootProject));
 		}
+		return dependingRoots;
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getReferencedRoots()
 	 */
-	@SuppressWarnings("unchecked")
 	public Collection<IResource> getReferencedRoots() {
+		HashSet<IResource> dependingRoots = new HashSet<IResource>();
 		if (rootProject != null) {
-			if (referencedProjectsCache == null) {
-				referencedProjectsCache = new ReferencedProjectsCache();
-			}
-			Collection<?> allReferencingProjects = referencedProjectsCache.get(rootProject);
-			return (Collection<IResource>) allReferencingProjects;
-		} else {
-			return Collections.emptySet();
+			dependingRoots.addAll(ExtendedPlatform.getAllReferencedProjects(rootProject));
 		}
+		return dependingRoots;
 	}
 
 	/*
