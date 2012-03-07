@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.PlatformObject;
@@ -53,6 +54,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 
 	private URI fNamespaceURI;
 	private String fEPackageNsURIPattern;
+	private Pattern fEPackageNsURIPatternCompiled;
 	private EPackage fRootEPackage = null;
 	private Collection<EPackage> fEPackages = null;
 	private List<String> fContentTypeIds;
@@ -236,6 +238,13 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 		return fEPackageNsURIPattern;
 	}
 
+	protected Pattern getEPackageNsURIPatternCompiled() {
+		if (fEPackageNsURIPatternCompiled == null) {
+			initEPackageNsURIPattern();
+		}
+		return fEPackageNsURIPatternCompiled;
+	}
+
 	/**
 	 * Initializes the URI pattern used for determining if an EPackage belongs to the meta-model or not.
 	 */
@@ -249,6 +258,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 			buffer.append(fVersionData.getEPackageNsURIPostfixPattern());
 		}
 		fEPackageNsURIPattern = buffer.toString();
+		fEPackageNsURIPatternCompiled = Pattern.compile(fEPackageNsURIPattern);
 	}
 
 	/*
@@ -266,11 +276,15 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	protected void initEPackages() {
 		Set<EPackage> ePackages = new HashSet<EPackage>();
 		Set<String> safeNsURIs = new HashSet<String>(getEPackageRegistry().keySet());
+
+		initEPackageNsURIPattern();
+
 		for (String nsURI : safeNsURIs) {
-			if (nsURI.matches(getEPackageNsURIPattern())) {
+			if (fEPackageNsURIPatternCompiled.matcher(nsURI).matches()) {
 				ePackages.add(getEPackageRegistry().getEPackage(nsURI));
 			}
 		}
+
 		fEPackages = Collections.unmodifiableSet(ePackages);
 	}
 
