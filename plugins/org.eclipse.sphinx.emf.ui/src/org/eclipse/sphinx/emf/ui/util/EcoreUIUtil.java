@@ -202,10 +202,12 @@ public class EcoreUIUtil {
 		if (editorInput instanceof IURIEditorInput) {
 			IURIEditorInput uriEditorInput = (IURIEditorInput) editorInput;
 			java.net.URI uri = uriEditorInput.getURI();
-			try {
-				return URI.createFileURI(uri.toURL().getFile());
-			} catch (MalformedURLException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			if (uri != null) {
+				try {
+					return URI.createFileURI(uri.toURL().getFile());
+				} catch (MalformedURLException ex) {
+					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+				}
 			}
 		}
 		if (editorInput != null) {
