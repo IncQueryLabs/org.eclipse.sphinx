@@ -14,6 +14,8 @@
  */
 package org.eclipse.sphinx.testutils;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.Collections;
@@ -38,13 +40,14 @@ import org.osgi.framework.Bundle;
 public class AutoTestSuite {
 
 	public static Test suite() {
-		String pluginPattern = System.getProperty("autotestsuite.plugin.pattern");
-		if (pluginPattern != null) {
-			TestSuite testSuite = new TestSuite(pluginPattern);
+		// 1: look first for a regexp pattern
+		String property = System.getProperty("autotestsuite.plugin.pattern");
+		if (property != null) {
+			TestSuite testSuite = new TestSuite(property);
 
 			Bundle[] bs = Activator.getPlugin().getBundle().getBundleContext().getBundles();
 			for (Bundle b : bs) {
-				if (b.getSymbolicName().matches(pluginPattern)) {
+				if (b.getSymbolicName().matches(property)) {
 					TestSuite ts = new TestSuite(b.getSymbolicName());
 
 					setup(ts, b);
@@ -54,20 +57,60 @@ public class AutoTestSuite {
 			}
 
 			return testSuite;
-		} else {
-			String pluginName = System.getProperty("autotestsuite.plugin");
+		}
 
-			Bundle plugin = Platform.getBundle(pluginName);
+		// 1: look for a single plugin
+		property = System.getProperty("autotestsuite.plugin");
+		if (property != null) {
 
-			TestSuite ts = new TestSuite(pluginName);
-
-			setup(ts, plugin);
-
+			TestSuite ts = new TestSuite(property);
+			setup(ts, Platform.getBundle(property));
 			return ts;
 		}
+
+		property = System.getProperty("autotestsuite.plugins");
+		if (property != null) {
+			if (property.startsWith("@")) {
+				try {
+					TestSuite testSuite = new TestSuite("Running tests from " + property);
+					BufferedReader reader = new BufferedReader(new FileReader(property.substring(1)));
+					try {
+						String line = reader.readLine();
+						while (line != null) {
+							line = line.trim();
+							if (line.length() > 0 && line.charAt(0) != '#') {
+								// process this line
+								TestSuite ts = new TestSuite(line);
+								setup(ts, Platform.getBundle(line));
+								testSuite.addTest(ts);
+							}
+							line = reader.readLine();
+						}
+					} finally {
+						reader.close();
+					}
+					return testSuite;
+				} catch (Exception ex) {
+					throw new AssertionError(ex);
+				}
+			} else {
+				String[] plugins = property.split(",");
+				TestSuite testSuite = new TestSuite("Running tests from " + plugins.length + " plugins");
+				for (String pluginName : plugins) {
+					TestSuite ts = new TestSuite(pluginName);
+
+					setup(ts, Platform.getBundle(pluginName));
+
+					testSuite.addTest(ts);
+				}
+				return testSuite;
+			}
+		}
+
+		throw new AssertionError(
+				"Exactly one of the system properties 'autotestsuite.plugin.pattern', 'autotestsuite.plugin' or 'autotestsuite.plugins' need to be set");
 	}
 
-	@SuppressWarnings("unchecked")
 	private static void setup(TestSuite ts, Bundle plugin) {
 		Enumeration<URL> entries = plugin.findEntries("/", "*.class", true);
 
