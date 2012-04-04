@@ -28,6 +28,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sphinx.testutils.internal.Activator;
+import org.junit.Assert;
 import org.junit.internal.runners.ErrorReportingRunner;
 import org.junit.internal.runners.JUnit38ClassRunner;
 import org.junit.runner.Request;
@@ -64,7 +65,9 @@ public class AutoTestSuite {
 		if (property != null) {
 
 			TestSuite ts = new TestSuite(property);
-			setup(ts, Platform.getBundle(property));
+			Bundle bundle = Platform.getBundle(property);
+			Assert.assertNotNull("Cannot locate bundle " + property, bundle);
+			setup(ts, bundle);
 			return ts;
 		}
 
@@ -81,7 +84,9 @@ public class AutoTestSuite {
 							if (line.length() > 0 && line.charAt(0) != '#') {
 								// process this line
 								TestSuite ts = new TestSuite(line);
-								setup(ts, Platform.getBundle(line));
+								Bundle bundle = Platform.getBundle(line);
+								Assert.assertNotNull("Cannot locate bundle " + line, bundle);
+								setup(ts, bundle);
 								testSuite.addTest(ts);
 							}
 							line = reader.readLine();
@@ -99,7 +104,9 @@ public class AutoTestSuite {
 				for (String pluginName : plugins) {
 					TestSuite ts = new TestSuite(pluginName);
 
-					setup(ts, Platform.getBundle(pluginName));
+					Bundle bundle = Platform.getBundle(pluginName);
+					Assert.assertNotNull("Cannot locate bundle " + pluginName, bundle);
+					setup(ts, bundle);
 
 					testSuite.addTest(ts);
 				}
