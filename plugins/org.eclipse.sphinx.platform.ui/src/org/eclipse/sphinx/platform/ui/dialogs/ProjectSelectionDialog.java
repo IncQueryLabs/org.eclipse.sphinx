@@ -28,6 +28,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.sphinx.platform.ui.internal.Activator;
 import org.eclipse.sphinx.platform.util.StatusInfo;
@@ -44,6 +45,9 @@ import org.eclipse.ui.dialogs.SelectionStatusDialog;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
+/**
+ * @see org.eclipse.jdt.internal.ui.preferences.ProjectSelectionDialog
+ */
 public class ProjectSelectionDialog extends SelectionStatusDialog {
 
 	// the visual selection widget group
@@ -103,7 +107,8 @@ public class ProjectSelectionDialog extends SelectionStatusDialog {
 
 		fTableViewer.setLabelProvider(new WorkbenchLabelProvider());
 		fTableViewer.setContentProvider(new BaseWorkbenchContentProvider());
-		// fTableViewer.setComparator();
+		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=168226
+		fTableViewer.setComparator(new ViewerComparator(String.CASE_INSENSITIVE_ORDER));
 		fTableViewer.getControl().setFont(font);
 
 		Button checkbox = new Button(composite, SWT.CHECK);
@@ -122,6 +127,19 @@ public class ProjectSelectionDialog extends SelectionStatusDialog {
 		boolean doFilter = !dialogSettings.getBoolean(DIALOG_SETTINGS_SHOW_ALL) && !fProjectsWithSpecifics.isEmpty();
 		checkbox.setSelection(doFilter);
 		updateFilter(doFilter);
+
+		// always filter out closed projects
+		fTableViewer.addFilter(new ViewerFilter() {
+			@Override
+			public boolean select(Viewer viewer, Object parentElement, Object element) {
+				if (element instanceof IProject) {
+					IProject project = (IProject) element;
+					return project.isAccessible();
+				} else {
+					return true;
+				}
+			}
+		});
 
 		fTableViewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
 
