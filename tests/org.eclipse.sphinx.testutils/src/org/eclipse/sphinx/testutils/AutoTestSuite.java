@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2011 BMW Car IT and others.
+ * Copyright (c) 2008-2011 BMW Car IT, Continental Engineering Services and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,17 +9,22 @@
  * 
  * Contributors: 
  *     BMW Car IT - Initial API and implementation
+ *     Continental Engineering Services - Added support for autotestsuite.plugins property
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.testutils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
@@ -41,18 +46,16 @@ import org.osgi.framework.Bundle;
 public class AutoTestSuite {
 
 	public static Test suite() {
-		// 1: look first for a regexp pattern
-		String property = System.getProperty("autotestsuite.plugin.pattern");
-		if (property != null) {
-			TestSuite testSuite = new TestSuite(property);
+		// look first for a regexp pattern
+		String pluginPatternProperty = System.getProperty("autotestsuite.plugin.pattern");
+		if (pluginPatternProperty != null) {
+			TestSuite testSuite = new TestSuite(pluginPatternProperty);
 
 			Bundle[] bs = Activator.getPlugin().getBundle().getBundleContext().getBundles();
 			for (Bundle b : bs) {
-				if (b.getSymbolicName().matches(property)) {
+				if (b.getSymbolicName().matches(pluginPatternProperty)) {
 					TestSuite ts = new TestSuite(b.getSymbolicName());
-
 					setup(ts, b);
-
 					testSuite.addTest(ts);
 				}
 			}
@@ -60,55 +63,27 @@ public class AutoTestSuite {
 			return testSuite;
 		}
 
-		// 1: look for a single plugin
-		property = System.getProperty("autotestsuite.plugin");
-		if (property != null) {
-
-			TestSuite ts = new TestSuite(property);
-			Bundle bundle = Platform.getBundle(property);
-			Assert.assertNotNull("Cannot locate bundle " + property, bundle);
-			setup(ts, bundle);
-			return ts;
+		// look for a single plugin
+		String pluginProperty = System.getProperty("autotestsuite.plugin");
+		if (pluginProperty != null) {
+			return setup(pluginProperty);
 		}
 
-		property = System.getProperty("autotestsuite.plugins");
-		if (property != null) {
-			if (property.startsWith("@")) {
-				try {
-					TestSuite testSuite = new TestSuite("Running tests from " + property);
-					BufferedReader reader = new BufferedReader(new FileReader(property.substring(1)));
-					try {
-						String line = reader.readLine();
-						while (line != null) {
-							line = line.trim();
-							if (line.length() > 0 && line.charAt(0) != '#') {
-								// process this line
-								TestSuite ts = new TestSuite(line);
-								Bundle bundle = Platform.getBundle(line);
-								Assert.assertNotNull("Cannot locate bundle " + line, bundle);
-								setup(ts, bundle);
-								testSuite.addTest(ts);
-							}
-							line = reader.readLine();
-						}
-					} finally {
-						reader.close();
-					}
-					return testSuite;
-				} catch (Exception ex) {
-					throw new AssertionError(ex);
+		// look for a comma-separated plugin list or a file reference
+		String pluginsProperty = System.getProperty("autotestsuite.plugins");
+		if (pluginsProperty != null) {
+			if (pluginsProperty.startsWith("@")) {
+				TestSuite testSuite = new TestSuite("Running tests from " + pluginsProperty);
+				Iterable<String> lines = readLines(new File(pluginsProperty.substring(1)));
+				for (String line : lines) {
+					testSuite.addTest(setup(line));
 				}
+				return testSuite;
 			} else {
-				String[] plugins = property.split(",");
+				String[] plugins = pluginsProperty.split(",");
 				TestSuite testSuite = new TestSuite("Running tests from " + plugins.length + " plugins");
 				for (String pluginName : plugins) {
-					TestSuite ts = new TestSuite(pluginName);
-
-					Bundle bundle = Platform.getBundle(pluginName);
-					Assert.assertNotNull("Cannot locate bundle " + pluginName, bundle);
-					setup(ts, bundle);
-
-					testSuite.addTest(ts);
+					testSuite.addTest(setup(pluginName));
 				}
 				return testSuite;
 			}
@@ -118,6 +93,7 @@ public class AutoTestSuite {
 				"Exactly one of the system properties 'autotestsuite.plugin.pattern', 'autotestsuite.plugin' or 'autotestsuite.plugins' need to be set");
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void setup(TestSuite ts, Bundle plugin) {
 		Enumeration<URL> entries = plugin.findEntries("/", "*.class", true);
 
@@ -155,6 +131,14 @@ public class AutoTestSuite {
 		}
 
 		log("Found " + i + " test classes in '" + plugin.getSymbolicName() + "'.");
+	}
+
+	private static TestSuite setup(String pluginName) {
+		TestSuite ts = new TestSuite(pluginName);
+		Bundle bundle = Platform.getBundle(pluginName);
+		Assert.assertNotNull("Cannot locate bundle " + pluginName, bundle);
+		setup(ts, bundle);
+		return ts;
 	}
 
 	private static Class<?> loadClass(Bundle b, String classname) throws ClassNotFoundException {
@@ -199,6 +183,28 @@ public class AutoTestSuite {
 	private static boolean isAbstract(Class<?> c) {
 		int modifiers = c.getModifiers();
 		return (modifiers & Modifier.ABSTRACT) > 0;
+	}
+
+	private static Iterable<String> readLines(File file) {
+		List<String> lines = new ArrayList<String>();
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			try {
+				String line = reader.readLine();
+				while (line != null) {
+					line = line.trim();
+					if (line.length() > 0 && line.charAt(0) != '#') {
+						lines.add(line);
+					}
+					line = reader.readLine();
+				}
+			} finally {
+				reader.close();
+			}
+		} catch (IOException ex) {
+			throw new AssertionError(ex);
+		}
+		return lines;
 	}
 
 	private static void log(String message) {
