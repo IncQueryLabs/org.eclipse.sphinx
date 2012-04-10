@@ -56,6 +56,7 @@ import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
 import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
 import org.eclipse.xpand2.XpandExecutionContextImpl;
 import org.eclipse.xpand2.XpandFacade;
+import org.eclipse.xpand2.XpandUtil;
 import org.eclipse.xpand2.output.Outlet;
 import org.eclipse.xpand2.output.OutputImpl;
 import org.eclipse.xtend.expression.ResourceManager;
@@ -340,7 +341,7 @@ public class XpandJob extends WorkspaceJob {
 
 							// Update resource manager with file encoding information for next Xpand file to be
 							// evaluated
-							IFile definitionFile = XtendXpandUtil.getUnderlyingFile(request.getDefinitionName(),
+							IFile definitionFile = XtendXpandUtil.getUnderlyingFile(XpandUtil.withoutLastSegment(request.getDefinitionName()),
 									IXtendXpandConstants.TEMPLATE_EXTENSION, workspaceResourceLoader);
 							if (definitionFile != null) {
 								try {
