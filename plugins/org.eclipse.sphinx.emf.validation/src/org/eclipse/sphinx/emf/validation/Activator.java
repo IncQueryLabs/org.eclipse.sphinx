@@ -16,7 +16,6 @@ package org.eclipse.sphinx.emf.validation;
 
 import java.util.HashMap;
 
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IWorkspace;
@@ -28,6 +27,7 @@ import org.eclipse.sphinx.emf.validation.bridge.extensions.RulesExtCache;
 import org.eclipse.sphinx.emf.validation.bridge.extensions.RulesExtInternal;
 import org.eclipse.sphinx.emf.validation.evalidator.adapter.EValidatorAdapter;
 import org.eclipse.sphinx.emf.validation.listeners.ResourceURIChangeListener;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.osgi.framework.BundleContext;
 
 /**
