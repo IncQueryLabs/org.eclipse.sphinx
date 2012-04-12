@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
@@ -36,7 +37,6 @@ import org.eclipse.emf.validation.service.IBatchValidator;
 import org.eclipse.emf.validation.service.IConstraintFilter;
 import org.eclipse.emf.validation.service.ITraversalStrategy;
 import org.eclipse.emf.validation.service.ModelValidationService;
-import org.eclipse.sphinx.emf.validation.Activator;
 import org.eclipse.sphinx.emf.validation.diagnostic.ExtendedDiagnostic;
 import org.eclipse.sphinx.emf.validation.preferences.IValidationPreferences;
 
@@ -71,7 +71,6 @@ public class EValidatorAdapter extends EObjectValidator {
 	/**
 	 * Implements validation by delegation to the EMF validation framework using 'context' filter.
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean validate(EClass eClass, final EObject eObject, final DiagnosticChain diagnostics, final Map<Object, Object> context,
 			final Set<IConstraintFilter> filters) {
 
@@ -79,7 +78,8 @@ public class EValidatorAdapter extends EObjectValidator {
 		// former call to super.validate(eClass, eObject, diagnostics, context);
 
 		// Let's check if EMF default rules should be checked
-		boolean isEMFRulesActivated = Activator.getDefault().getPluginPreferences().getBoolean(IValidationPreferences.PREF_ENABLE_EMF_DEFAULT_RULES);
+		boolean isEMFRulesActivated = Platform.getPreferencesService().getBoolean(org.eclipse.sphinx.emf.validation.Activator.PLUGIN_ID,
+				IValidationPreferences.PREF_ENABLE_EMF_DEFAULT_RULES, IValidationPreferences.PREF_ENABLE_EMF_DEFAULT_RULES_DEFAULT, null);
 
 		if (isEMFRulesActivated) {
 			if (eClass.eContainer() == getEPackage()) {
@@ -112,7 +112,7 @@ public class EValidatorAdapter extends EObjectValidator {
 				TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(eObject);
 				if (editingDomain != null) {
 					final EObject tgt = eObject;
-					RunnableWithResult run = new RunnableWithResult.Impl() {
+					RunnableWithResult<IStatus> run = new RunnableWithResult.Impl<IStatus>() {
 						public void run() {
 							IStatus status = Status.OK_STATUS;
 

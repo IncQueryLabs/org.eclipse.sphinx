@@ -36,7 +36,6 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.validation.markers.IValidationMarker;
-import org.eclipse.sphinx.emf.validation.preferences.IValidationPreferences;
 import org.eclipse.sphinx.emf.validation.ui.Activator;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
@@ -47,6 +46,7 @@ import org.eclipse.ui.activities.ActivityManagerEvent;
 import org.eclipse.ui.activities.IActivityManagerListener;
 import org.eclipse.ui.handlers.IHandlerActivation;
 import org.eclipse.ui.handlers.IHandlerService;
+import org.eclipse.ui.internal.ide.IDEInternalPreferences;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 import com.ibm.icu.text.MessageFormat;
@@ -371,7 +371,7 @@ public class ValidationView extends MarkerView {
 	 */
 	@Override
 	String getMarkerEnablementPreferenceName() {
-		return IValidationPreferences.PREF_LIMIT_PROBLEMS;
+		return IDEInternalPreferences.LIMIT_PROBLEMS;
 	}
 
 	/*
@@ -380,7 +380,7 @@ public class ValidationView extends MarkerView {
 	 */
 	@Override
 	String getMarkerLimitPreferenceName() {
-		return IValidationPreferences.PREF_PROBLEMS_LIMIT;
+		return IDEInternalPreferences.PROBLEMS_LIMIT;
 	}
 
 	/*
@@ -389,7 +389,7 @@ public class ValidationView extends MarkerView {
 	 */
 	@Override
 	String getFiltersPreferenceName() {
-		return IValidationPreferences.PREF_PROBLEMS_FILTERS;
+		return IDEInternalPreferences.PROBLEMS_FILTERS;
 	}
 
 	/*

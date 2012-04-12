@@ -397,7 +397,6 @@ public class ValidationMarkerManager {
 
 			Workspace workspace = (Workspace) resource.getWorkspace();
 			try {
-
 				workspace.prepareOperation(rule, null);
 				// ResourceInfo info = workspace.getResourceInfo(resource.getFullPath(), false, false);
 				workspace.beginOperation(true);
@@ -410,9 +409,7 @@ public class ValidationMarkerManager {
 			} catch (CoreException ex) {
 				PlatformLogUtil.logAsWarning(Activator.getDefault(),
 						NLS.bind(Messages.warningProblemWithMarkerOperationOnResource, resource.getLocationURI().toString()));
-			}
-
-			finally {
+			} finally {
 				try {
 					workspace.endOperation(rule, false, null);
 				} catch (CoreException ex) {
@@ -478,7 +475,7 @@ public class ValidationMarkerManager {
 		List<IMarker> result = new ArrayList<IMarker>();
 		for (IMarker current : allMarkers) {
 			if (current != null && current.exists()) {
-				tmp = ValidationUtil.splitURI(((String) current.getAttribute(EValidator.URI_ATTRIBUTE)));
+				tmp = ValidationUtil.splitURI((String) current.getAttribute(EValidator.URI_ATTRIBUTE));
 				if (tmp != null && tmp.length == 2) {
 					markerURI = tmp[0];
 					markerEObjType = tmp[1];
@@ -512,7 +509,7 @@ public class ValidationMarkerManager {
 					}
 				}
 			} else {
-				String msg = NLS.bind(Messages.warningNoSuchMarker, (current == null ? "???" : current.getId())); //$NON-NLS-1$
+				String msg = NLS.bind(Messages.warningNoSuchMarker, current == null ? "???" : current.getId()); //$NON-NLS-1$
 				PlatformLogUtil.logAsWarning(Activator.getDefault(), msg);
 			}
 		}
