@@ -8,7 +8,7 @@ Require-Bundle: org.junit4;bundle-version="4.5.0";visibility:=reexport,
  org.junit;bundle-version="3.8.2";visibility:=reexport,
  org.eclipse.sphinx.emf;visibility:=reexport,
  org.eclipse.sphinx.emf.workspace;visibility:=reexport,
- com.google.guava;bundle-version="10.0.1"
+ com.google.guava
 Export-Package: org.eclipse.sphinx.testutils,
  org.eclipse.sphinx.testutils.internal;x-internal:=true
 Bundle-Vendor: %providerName
