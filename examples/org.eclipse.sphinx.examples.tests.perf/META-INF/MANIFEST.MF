@@ -4,8 +4,7 @@ Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.sphinx.examples.tests.perf;singleton:=true
 Bundle-Version: 0.7.0.qualifier
 Bundle-Activator: org.eclipse.sphinx.examples.tests.perf.internal.Activator$Implementation
-Require-Bundle: org.junit,
- org.eclipse.sphinx.testutils.integration
+Require-Bundle: org.eclipse.sphinx.testutils.integration
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.sphinx.examples.tests.perf,
