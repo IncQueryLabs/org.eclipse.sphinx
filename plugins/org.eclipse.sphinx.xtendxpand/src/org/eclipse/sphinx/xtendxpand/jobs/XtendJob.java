@@ -345,7 +345,7 @@ public class XtendJob extends Job {
 
 							// Update resource manager with file encoding information for next Xtend file to be
 							// evaluated
-							IFile extensionFile = XtendXpandUtil.getUnderlyingFile(XpandUtil.withoutLastSegment(request.getExtensionName()),
+							IFile extensionFile = XtendXpandUtil.getUnderlyingFile(request.getExtensionName(),
 									IXtendXpandConstants.EXTENSION_EXTENSION, workspaceResourceLoader);
 							if (extensionFile != null) {
 								try {
