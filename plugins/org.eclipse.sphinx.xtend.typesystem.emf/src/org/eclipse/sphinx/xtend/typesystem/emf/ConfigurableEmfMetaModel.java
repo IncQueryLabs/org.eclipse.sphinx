@@ -34,7 +34,7 @@ public class ConfigurableEmfMetaModel extends EmfRegistryMetaModel {
 	private Collection<EPackage> allEPackages = null;
 
 	/*
-	 * !! Important Note !! This method must be placed before #addMetaModelDescriptor(IMetaModelDescriptor) so as to
+	 * !! Important Note !! This method must be named other to #addMetaModelDescriptor(IMetaModelDescriptor) so as to
 	 * make sure that it can be found when ConfigurableEmfMetaModel is instantiated as bean in MWE workflows and
 	 * initialized with metamodel descriptor identifiers.
 	 */
