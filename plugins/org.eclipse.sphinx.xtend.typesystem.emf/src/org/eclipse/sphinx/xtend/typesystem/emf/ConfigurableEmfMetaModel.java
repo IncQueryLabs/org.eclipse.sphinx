@@ -38,7 +38,7 @@ public class ConfigurableEmfMetaModel extends EmfRegistryMetaModel {
 	 * make sure that it can be found when ConfigurableEmfMetaModel is instantiated as bean in MWE workflows and
 	 * initialized with metamodel descriptor identifiers.
 	 */
-	public void addMetaModelDescriptor(String mmDescriptorId) {
+	public void addMetaModelDescriptorId(String mmDescriptorId) {
 		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(mmDescriptorId);
 		if (mmDescriptor != null) {
 			metaModelDescriptors.add(mmDescriptor);
