@@ -22,6 +22,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.AssertionFailedException;
@@ -40,7 +43,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.osgi.util.NLS;
@@ -1332,6 +1334,31 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		String outsideWorkspaceLocation = file.getAbsolutePath();
 		URI outsideWorkspaceURI = URI.createFileURI(outsideWorkspaceLocation);
 		assertEquals(outsideWorkspaceURI, EcoreResourceUtil.convertToPlatformResourceURI(outsideWorkspaceURI));
+
+		// =====================================================
+		// The given URI references to a location that exists in the workspace but does not physically reside under the
+		// workspace root
+		String projectName = "test_project";
+		File projectFile = File.createTempFile(projectName, null);
+		projectFile.delete();
+		projectFile.mkdir();
+		String testFileName = "test.txt";
+		File testFile = new File(projectFile, testFileName);
+		testFile.createNewFile();
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IProject project = workspace.getRoot().getProject(projectName);
+		IProjectDescription projectDescription = workspace.newProjectDescription(projectName);
+		IPath projectPath = new Path(projectFile.getAbsolutePath());
+		projectDescription.setLocation(projectPath);
+		project.create(projectDescription, null);
+
+		// getCanonicalPath instead of getAbsolutePath to avoid that the returned path will contain short windows path
+		// names. Conversion of paths with short names (e.g. PROGRA~1) does not work since Eclipse internally use
+		// non-shortened paths.
+		URI testFileUri = URI.createFileURI(testFile.getCanonicalPath());
+		assertEquals(URI.createPlatformResourceURI(projectName + "/" + testFileName, false),
+				EcoreResourceUtil.convertToPlatformResourceURI(testFileUri));
 	}
 
 	/**
