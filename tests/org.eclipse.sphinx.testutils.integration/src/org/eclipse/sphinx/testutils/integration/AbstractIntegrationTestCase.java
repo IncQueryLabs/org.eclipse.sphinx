@@ -1415,7 +1415,10 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			doneListener.wait(Integer.parseInt(SCHEDULED_JOB_TIMEOUT));
 
 			if (doneListener.done == false) {
-				job.getThread().interrupt();
+				Thread thread = job.getThread();
+				if (thread != null) {
+					job.getThread().interrupt();
+				}
 			}
 		}
 
