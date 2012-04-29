@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.6"?>
+
+<target name="Sphinx Eclipse 4.2">
+<locations>
+<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
+<unit id="com.google.guava" version="10.0.1.v201203051515"/>
+<unit id="javax.xml" version="1.3.4.v201005080400"/>
+<unit id="org.apache.commons.cli" version="1.2.0.v201105210650"/>
+<unit id="org.apache.commons.lang" version="2.4.0.v201005080502"/>
+<unit id="org.apache.xerces" version="2.9.0.v201101211617"/>
+<unit id="org.apache.xml.resolver" version="1.2.0.v201005080400"/>
+<unit id="org.apache.xml.serializer" version="2.7.1.v201005080400"/>
+<unit id="org.jdom" version="1.1.1.v201101151400"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20120428190502/repository"/>
+</location>
+<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
+<unit id="org.eclipse.sdk.ide" version="4.2.0.I20120315-1300"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20120305-1541-7P7OFvNFLWUl7Dqyq6OBBmS"/>
+<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.0.I20120314-1800"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.2milestones"/>
+</location>
+<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
+<unit id="org.eclipse.emf.compare.sdk.feature.group" version="1.3.0.v20120131-1039"/>
+<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.2.1.v201203200442"/>
+<unit id="org.eclipse.emf.sdk.feature.group" version="2.8.0.v20120319-0555"/>
+<unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.5.0.v20110502-1600-777T-9AZP-F1cMhjSqjhYl0eU20D"/>
+<unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.5.0.v20110502-1600-67O-96SGR55YJeZPedcQnghI6uFA"/>
+<unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.5.0.v20110426-2159-47D08xGD6ExNBM7CIJa3CIKK9t84"/>
+<unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.5.0.v20110607-1200-67N09E9QnChoWswz-3wf_rz0kQ8Y"/>
+<unit id="org.eclipse.gmf.tooling.feature.group" version="2.4.0.201108160853"/>
+<unit id="org.eclipse.graphiti.sdk.feature.feature.group" version="0.9.0.v20120321-0814"/>
+<unit id="org.eclipse.team.svn.feature.group" version="0.7.9.I20120316-1700"/>
+<unit id="org.eclipse.uml2.sdk.feature.group" version="4.0.0.v20120319-1109"/>
+<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.4.0.v201111021744-7H7GFeBDxumUpsh5kisTlJz-fi9HpWXKpRuTESU"/>
+<unit id="org.eclipse.xpand.sdk.feature.group" version="1.2.1.v201203200457"/>
+<unit id="org.eclipse.xsd.sdk.feature.group" version="2.8.0.v20120319-0555"/>
+<repository location="http://download.eclipse.org/releases/staging"/>
+</location>
+</locations>
+<environment>
+<nl>en_EN</nl>
+</environment>
+<launcherArgs>
+<vmArgs>-Xms128m -Xmx512m -XX:PermSize=256M -XX:MaxPermSize=512M</vmArgs>
+</launcherArgs>
+</target>
