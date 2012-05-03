@@ -16,6 +16,7 @@ package org.eclipse.sphinx.gmf.runtime.ui.editor;
 
 import org.eclipse.gmf.runtime.diagram.ui.resources.editor.parts.DiagramDocumentEditor;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider;
+import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -55,20 +56,16 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 	 * @return
 	 */
 	protected ISaveablesLifecycleListener createModelSaveablesLifecycleListener() {
-		ISaveablesLifecycleListener saveablesLifecycleListener = new ISaveablesLifecycleListener() {
-			ISaveablesLifecycleListener siteSaveablesLifecycleListener = (ISaveablesLifecycleListener) getSite().getService(
-					ISaveablesLifecycleListener.class);
-
+		return new SiteNotifyingSaveablesLifecycleListener(this) {
+			@Override
 			public void handleLifecycleEvent(SaveablesLifecycleEvent event) {
+				super.handleLifecycleEvent(event);
+
 				if (event.getEventType() == SaveablesLifecycleEvent.DIRTY_CHANGED) {
 					firePropertyChange(IEditorPart.PROP_DIRTY);
 				}
-				// Create new event as in org.eclipse.ui.internal.navigator.NavigatorSaveablesService.LifecycleListener
-				event = new SaveablesLifecycleEvent(BasicDiagramDocumentEditor.this, event.getEventType(), event.getSaveables(), event.isForce());
-				siteSaveablesLifecycleListener.handleLifecycleEvent(event);
 			}
 		};
-		return saveablesLifecycleListener;
 	}
 
 	@Override
