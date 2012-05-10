@@ -31,6 +31,7 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.scoping.IResourceScopeProvider;
 import org.eclipse.sphinx.emf.scoping.ResourceScopeProviderRegistry;
+import org.eclipse.sphinx.platform.resources.MarkerJob;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
@@ -77,7 +78,7 @@ public class ResourceScopeValidationService {
 				try {
 					if (file != null && file.isAccessible() && file.isSynchronized(IResource.DEPTH_ONE)) {
 						// Delete old resource scoping problem marker if any
-						Activator.getPlugin().getMarkerJob().deleteMarker(file, IResourceScopeMarker.RESOURCE_SCOPING_PROBLEM);
+						MarkerJob.INSTANCE.addDeleteMarkerTask(file, IResourceScopeMarker.RESOURCE_SCOPING_PROBLEM);
 
 						/*
 						 * Performance optimization: Check if current file is a potential model file by investigating
@@ -96,7 +97,7 @@ public class ResourceScopeValidationService {
 									// Delete all other old problem markers - as resource is a model resource and
 									// out of
 									// scope they most likely make no longer any sense
-									Activator.getPlugin().getMarkerJob().deleteMarker(file, null);
+									MarkerJob.INSTANCE.addDeleteMarkerTask(file, null);
 
 									// Create new resource scoping problem maker
 									createProblemMarkerForDiagnostic(file, diagnostic);
@@ -111,7 +112,7 @@ public class ResourceScopeValidationService {
 				progress.worked(1);
 			}
 
-			Activator.getPlugin().getMarkerJob().schedule();
+			MarkerJob.INSTANCE.schedule();
 		}
 	}
 
@@ -128,7 +129,7 @@ public class ResourceScopeValidationService {
 			mseverity = IMarker.SEVERITY_WARNING;
 		}
 
-		Activator.getPlugin().getMarkerJob().createMarker(file, IResourceScopeMarker.RESOURCE_SCOPING_PROBLEM, mseverity, diagnostic.getMessage());
+		MarkerJob.INSTANCE.addCreateMarkerTask(file, IResourceScopeMarker.RESOURCE_SCOPING_PROBLEM, mseverity, diagnostic.getMessage());
 	}
 
 	/**

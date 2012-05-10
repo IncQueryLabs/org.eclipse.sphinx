@@ -264,7 +264,7 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 		return rootElementComments;
 	}
 
-	public void seTargetNamespaceExcludePatterns(String... targetNamespaceExcludePatterns) {
+	public void setTargetNamespaceExcludePatterns(String... targetNamespaceExcludePatterns) {
 		this.targetNamespaceExcludePatterns = targetNamespaceExcludePatterns;
 	}
 }

@@ -33,14 +33,12 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
 import org.eclipse.sphinx.emf.scoping.IResourceScopeProvider;
 import org.eclipse.sphinx.emf.scoping.ResourceScopeProviderRegistry;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
-import org.eclipse.sphinx.platform.resources.ResourceSyncMarkers;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 
 /**
@@ -102,7 +100,7 @@ public class ModelDescriptorRegistry {
 			 * triggered by EMF in org.eclipse.emf.ecore.resource.impl.PlatformResourceURIHandlerImpl.WorkbenchHelper.
 			 * createPlatformResourceInputStream(String, Map<?, ?>).
 			 */
-			boolean isSynchronized = ResourceSyncMarkers.updateMarker(Activator.getDefault().getMarkerJob(), file);
+			boolean isSynchronized = ExtendedPlatform.isSynchronized(file);
 			if (isSynchronized) {
 				IModelDescriptor modelDescriptor = internalGetModel(file);
 				if (modelDescriptor == null) {

@@ -198,7 +198,7 @@ public class EcoreUIUtil {
 	public static URI getURIFromEditorInput(IEditorInput editorInput) {
 		if (editorInput instanceof FileEditorInput) {
 			FileEditorInput fileEditorInput = (FileEditorInput) editorInput;
-			return URI.createPlatformResourceURI(fileEditorInput.getFile().getFullPath().toString(), false);
+			return URI.createPlatformResourceURI(fileEditorInput.getFile().getFullPath().toString(), true);
 		}
 		if (editorInput instanceof URIEditorInput) {
 			return ((URIEditorInput) editorInput).getURI();

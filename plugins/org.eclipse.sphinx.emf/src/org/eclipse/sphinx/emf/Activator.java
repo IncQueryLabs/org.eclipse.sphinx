@@ -22,7 +22,6 @@ import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelperAdapterF
 import org.eclipse.sphinx.emf.internal.model.ModelDescriptorRegistryInitializer;
 import org.eclipse.sphinx.emf.internal.model.ModelDescriptorSynchronizer;
 import org.eclipse.sphinx.emf.scoping.ResourceScopeMarkerSynchronizer;
-import org.eclipse.sphinx.platform.resources.MarkerJob;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -83,8 +82,6 @@ public final class Activator extends EMFPlugin {
 
 		private InstanceScope instanceScope;
 
-		private MarkerJob markerJob;
-
 		/**
 		 * Creates an instance.
 		 */
@@ -125,21 +122,6 @@ public final class Activator extends EMFPlugin {
 				instanceScope = new InstanceScope();
 			}
 			return instanceScope;
-		}
-
-		/**
-		 * Returns the shared marker job instance that can be used to asynchronously manipulate resource markers to
-		 * avoid deadlocks. After registering manipulations with the marker job the job must be explicitly scheduled by
-		 * the caller.
-		 * 
-		 * @return The shared marker job instance.
-		 */
-		public MarkerJob getMarkerJob() {
-			if (markerJob == null) {
-				markerJob = new MarkerJob();
-			}
-
-			return markerJob;
 		}
 
 		/**

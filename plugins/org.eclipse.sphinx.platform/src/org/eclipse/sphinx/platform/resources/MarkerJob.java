@@ -38,7 +38,7 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
  * markers.
  * <p>
  * The job maintains an internal queue of marker manipulation tasks when the job gets executed this queue will be
- * processed.
+ * processed. To execute the job asynchronously use the {@link MarkerJob#schedule() schedule method}.
  */
 public class MarkerJob extends WorkspaceJob {
 
@@ -72,12 +72,21 @@ public class MarkerJob extends WorkspaceJob {
 		}
 	}
 
+	/**
+	 * Singleton instance of marker job that can be used to manipulate resource markers asynchronously without risking
+	 * to run into deadlocks. After queuing marker manipulations with this marker job instance it must be explicitly
+	 * scheduled by the caller.
+	 * 
+	 * @see MarkerJob#schedule()
+	 */
+	public static final MarkerJob INSTANCE = new MarkerJob();
+
 	protected Queue<MarkerTask> taskQueue = new ConcurrentLinkedQueue<MarkerTask>();
 
 	/**
-	 * Creates a new marker job instance.
+	 * Protected constructor for the singleton pattern that prevents from instantiation by clients.
 	 */
-	public MarkerJob() {
+	protected MarkerJob() {
 		super(PlatformMessages.job_updatingProblemMarkers);
 		setSystem(true);
 		setPriority(Job.BUILD);
@@ -118,7 +127,7 @@ public class MarkerJob extends WorkspaceJob {
 	 *            the marker message
 	 * @see IResource#createMarker(String)
 	 */
-	public void createMarker(IResource resource, String type, int severity, String message) {
+	public void addCreateMarkerTask(IResource resource, String type, int severity, String message) {
 		CreateMarkerTask cmt = new CreateMarkerTask();
 		cmt.resource = resource;
 		cmt.type = type;
@@ -141,7 +150,7 @@ public class MarkerJob extends WorkspaceJob {
 	 *            {@link IMarker#setAttributes(Map)}.
 	 * @see IResource#createMarker(String)
 	 */
-	public void createMarker(IResource resource, String type, Map<String, Object> attributes) {
+	public void addCreateMarkerTask(IResource resource, String type, Map<String, Object> attributes) {
 		CreateMarkerTask cmt = new CreateMarkerTask();
 		cmt.resource = resource;
 		cmt.type = type;
@@ -160,7 +169,7 @@ public class MarkerJob extends WorkspaceJob {
 	 *            the marker type to delete
 	 * @see IResource#deleteMarkers(String, boolean, int)
 	 */
-	public void deleteMarker(IResource resource, String type) {
+	public void addDeleteMarkerTask(IResource resource, String type) {
 		DeleteMarkerTask dmt = new DeleteMarkerTask();
 		dmt.resource = resource;
 		dmt.type = type;

@@ -47,6 +47,7 @@ import org.eclipse.sphinx.emf.resource.XMLIntegrityException;
 import org.eclipse.sphinx.emf.resource.XMLValidityException;
 import org.eclipse.sphinx.emf.resource.XMLWellformednessException;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.platform.resources.MarkerJob;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.xml.sax.SAXParseException;
 
@@ -152,10 +153,10 @@ public class ResourceProblemMarkerService {
 				try {
 					// Remove old problem makers
 					if (file.isAccessible()) {
-						Activator.getPlugin().getMarkerJob().deleteMarker(file, IMarker.PROBLEM);
-						Activator.getPlugin().getMarkerJob().deleteMarker(file, IXMLMarker.XML_WELLFORMEDNESS_PROBLEM);
-						Activator.getPlugin().getMarkerJob().deleteMarker(file, IXMLMarker.XML_VALIDITY_PROBLEM);
-						Activator.getPlugin().getMarkerJob().deleteMarker(file, IXMLMarker.XML_INTEGRITY_PROBLEM);
+						MarkerJob.INSTANCE.addDeleteMarkerTask(file, IMarker.PROBLEM);
+						MarkerJob.INSTANCE.addDeleteMarkerTask(file, IXMLMarker.XML_WELLFORMEDNESS_PROBLEM);
+						MarkerJob.INSTANCE.addDeleteMarkerTask(file, IXMLMarker.XML_VALIDITY_PROBLEM);
+						MarkerJob.INSTANCE.addDeleteMarkerTask(file, IXMLMarker.XML_INTEGRITY_PROBLEM);
 					}
 
 					Exception error = filesWithErrors.get(file);
@@ -171,7 +172,7 @@ public class ResourceProblemMarkerService {
 				progress.worked(1);
 			}
 
-			Activator.getPlugin().getMarkerJob().schedule();
+			MarkerJob.INSTANCE.schedule();
 		}
 	}
 
@@ -326,7 +327,7 @@ public class ResourceProblemMarkerService {
 				updateProblemMarkersInEditingDomain(editingDomain, resourcesToUpdate, progress.newChild(1));
 			}
 
-			Activator.getPlugin().getMarkerJob().schedule();
+			MarkerJob.INSTANCE.schedule();
 		}
 	}
 
@@ -347,10 +348,10 @@ public class ResourceProblemMarkerService {
 					if (file != null) {
 						// Remove old problem makers related to resource loading and saving
 						if (file.isAccessible()) {
-							Activator.getPlugin().getMarkerJob().deleteMarker(file, IMarker.PROBLEM);
-							Activator.getPlugin().getMarkerJob().deleteMarker(file, IXMLMarker.XML_WELLFORMEDNESS_PROBLEM);
-							Activator.getPlugin().getMarkerJob().deleteMarker(file, IXMLMarker.XML_VALIDITY_PROBLEM);
-							Activator.getPlugin().getMarkerJob().deleteMarker(file, IXMLMarker.XML_INTEGRITY_PROBLEM);
+							MarkerJob.INSTANCE.addDeleteMarkerTask(file, IMarker.PROBLEM);
+							MarkerJob.INSTANCE.addDeleteMarkerTask(file, IXMLMarker.XML_WELLFORMEDNESS_PROBLEM);
+							MarkerJob.INSTANCE.addDeleteMarkerTask(file, IXMLMarker.XML_VALIDITY_PROBLEM);
+							MarkerJob.INSTANCE.addDeleteMarkerTask(file, IXMLMarker.XML_INTEGRITY_PROBLEM);
 						}
 
 						ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
@@ -470,7 +471,7 @@ public class ResourceProblemMarkerService {
 		// Does file exist?
 		if (file.isAccessible()) {
 			// Create new problem marker with previously calculated type and attributes
-			Activator.getPlugin().getMarkerJob().createMarker(file, type, attributes);
+			MarkerJob.INSTANCE.addCreateMarkerTask(file, type, attributes);
 		} else {
 			// Use error log for errors of non-existing files or in-memory resources
 			Integer effectiveSeverity = (Integer) attributes.get(IMarker.SEVERITY);
@@ -501,7 +502,7 @@ public class ResourceProblemMarkerService {
 		// Does file exist?
 		if (file.isAccessible()) {
 			// Create new problem marker with previously calculated type and attributes
-			Activator.getPlugin().getMarkerJob().createMarker(file, type, attributes);
+			MarkerJob.INSTANCE.addCreateMarkerTask(file, type, attributes);
 		} else {
 			// Use error log for errors of non-existing files or in-memory resources
 			Integer effectiveSeverity = (Integer) attributes.get(IMarker.SEVERITY);

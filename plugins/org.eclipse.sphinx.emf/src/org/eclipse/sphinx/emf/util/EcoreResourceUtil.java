@@ -182,7 +182,7 @@ public final class EcoreResourceUtil {
 				// located below the workspace root.
 				IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(uri.toFileString()));
 				if (file != null) {
-					return URI.createPlatformResourceURI(file.getFullPath().toString(), false);
+					return URI.createPlatformResourceURI(file.getFullPath().toString(), true);
 				}
 			}
 
@@ -341,7 +341,7 @@ public final class EcoreResourceUtil {
 	public static String readTargetNamespace(URIConverter uriConverter, URI uri, String... targetNamespaceExcludePatterns) {
 		XMLRootElementHandler handler = new XMLRootElementHandler();
 		if (targetNamespaceExcludePatterns != null) {
-			handler.seTargetNamespaceExcludePatterns(targetNamespaceExcludePatterns);
+			handler.setTargetNamespaceExcludePatterns(targetNamespaceExcludePatterns);
 		}
 		readRootElement(uriConverter, uri, handler);
 		return handler.getTargetNamespace();

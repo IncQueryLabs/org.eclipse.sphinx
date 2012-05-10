@@ -32,6 +32,7 @@ import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.internal.scoping.ResourceScopeValidationService;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
+import org.eclipse.sphinx.platform.resources.MarkerJob;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
@@ -91,7 +92,7 @@ public class ModelDescriptorRegistryInitializer extends Job {
 
 			// schedule the marker job in order to process markers that might have been created in
 			// org.eclipse.sphinx.emf.model.ModelDescriptorRegistry.addModel(IFile)
-			Activator.getPlugin().getMarkerJob().schedule();
+			MarkerJob.INSTANCE.schedule();
 
 			ResourceScopeValidationService.INSTANCE.validateFiles(analyzedFiles, progress.newChild(10));
 
