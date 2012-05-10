@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys, BMW Car IT, Continental Engineering Services, itemis and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT, Continental Engineering Services, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,8 @@
  *     BMW Car IT - Added/Updated javadoc
  *     Conti - [353487] - Performance of ExtendedPlatform.isPlatformPrivateResource
  *     itemis - [357965] Scheduling rules for saving new resources must be scoped to enclosing project 
+ *     BMW Car IT - [373481] Performance optimizations for model loading
+ * 
  * </copyright>
  */
 package org.eclipse.sphinx.platform.util;
@@ -37,7 +39,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceRuleFactory;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -656,10 +657,15 @@ public final class ExtendedPlatform {
 	 * @param referencedProjects
 	 * @since 0.7.0
 	 */
-	private static void collectReferencedProjects(IProject project, Set<IProject> referencedProjects) {
-		if (project.isAccessible() && referencedProjects.add(project)) {
-			for (IProject p : getReferencedProjectsSafely(project)) {
-				collectReferencedProjects(p, referencedProjects);
+	private static void collectReferencedProjects(IProject project, Set<IProject> allReferencedProjects) {
+		if (project.isAccessible() && allReferencedProjects.add(project)) {
+			try {
+				for (IProject p : project.getReferencedProjects()) {
+					collectReferencedProjects(p, allReferencedProjects);
+				}
+			} catch (CoreException ex) {
+				PlatformLogUtil.logAsError(Activator.getDefault(), ex);
+				return;
 			}
 		}
 	}
@@ -692,7 +698,7 @@ public final class ExtendedPlatform {
 	 */
 	private static void collectReferencingProjects(IProject project, Set<IProject> referencingProjects) {
 		if (project.isAccessible() && referencingProjects.add(project)) {
-			for (IProject p : getReferencingProjectsSafely(project)) {
+			for (IProject p : project.getReferencingProjects()) {
 				collectReferencingProjects(p, referencingProjects);
 			}
 		}
@@ -989,6 +995,10 @@ public final class ExtendedPlatform {
 		// Retrieve encoded content type id
 		String rawContentTypeId = internalGetCachedContentTypeId(file);
 
+		if (rawContentTypeId == null) {
+			return null;
+		}
+
 		// Decode cached content type id and return it
 		if (rawContentTypeId.intern() != NO_CONTENT_TYPE_ID) {
 			// Ensure backward compatibility
@@ -1198,6 +1208,31 @@ public final class ExtendedPlatform {
 			return Arrays.asList(contentType.getFileSpecs(IContentTypeSettings.FILE_EXTENSION_SPEC));
 		}
 		return Collections.emptySet();
+	}
+
+	/**
+	 * Returns wether the given content type is applicable to the passed in file. Applicability will be checked based on
+	 * the filename/extension. The contents of the file will not be considered which would induce a massive performance
+	 * overhead.
+	 * 
+	 * @param contentTypeId
+	 *            The identifier of the content type to check for applicability
+	 * @param file
+	 *            The file to check for applicability
+	 * @return true if the content is applicable false if file is null or a content with the specified ID cannot be
+	 *         found by the platform content type manager
+	 * @see Platform#getContentTypeManager()
+	 * @see IContentType#isAssociatedWith(String)
+	 */
+	public static boolean isContentTypeApplicable(String contentTypeId, IFile file) {
+		if (file == null) {
+			return false;
+		}
+		IContentType contentType = Platform.getContentTypeManager().getContentType(contentTypeId);
+		if (contentType == null) {
+			return false;
+		}
+		return contentType.isAssociatedWith(file.getName());
 	}
 
 	/**

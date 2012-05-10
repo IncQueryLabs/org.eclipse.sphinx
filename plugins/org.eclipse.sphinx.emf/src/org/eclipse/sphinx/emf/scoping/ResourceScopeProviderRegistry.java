@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - [373481] Performance optimizations for model loading
  * 
  * </copyright>
  */
@@ -280,13 +281,7 @@ public class ResourceScopeProviderRegistry {
 	 */
 	public boolean hasApplicableFileExtension(IFile file) {
 		if (file != null) {
-			/*
-			 * Performance optimization: Create a separate HashSet for all contributed ResourceScopeProviders instead of
-			 * directly iterating over fContributedResourceScopeProviders.values() in order to avoid repeated processing
-			 * of same ResourceScopeProvider.
-			 */
-			Set<IResourceScopeProvider> allResourceScopeProviders = new HashSet<IResourceScopeProvider>(fContributedResourceScopeProviders.values());
-			for (IResourceScopeProvider provider : allResourceScopeProviders) {
+			for (IResourceScopeProvider provider : fMetaModelDescriptorsForResourceScopeProviders.keySet()) {
 				if (provider.hasApplicableFileExtension(file)) {
 					return true;
 				}

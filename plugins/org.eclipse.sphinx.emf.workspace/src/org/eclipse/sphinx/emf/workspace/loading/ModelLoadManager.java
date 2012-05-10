@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  * 
  * </copyright>
  */
@@ -751,7 +752,7 @@ public final class ModelLoadManager {
 					}
 
 					// Load files into editing domain
-					SubMonitor loadProgress = progress.newChild(85).setWorkRemaining(filesToLoadInEditingDomain.size());
+					SubMonitor loadProgress = progress.newChild(80).setWorkRemaining(filesToLoadInEditingDomain.size());
 					Set<IFile> loadedFiles = new HashSet<IFile>();
 					Map<IFile, Exception> failedFiles = new HashMap<IFile, Exception>();
 					for (IFile file : filesToLoadInEditingDomain) {
@@ -786,14 +787,14 @@ public final class ModelLoadManager {
 					}
 
 					// Handle problems that may have been encountered during loading
-					ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(failedFiles, true, null);
+					ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(failedFiles, progress.newChild(10));
 
 					if (proxyHelper != null) {
 						// Update unresolved proxy blacklist according to newly loaded files
 						updateUnresolvedProxyBlackList(loadedFiles, proxyHelper.getBlackList());
 
 						// Perform a performance-optimized resolution of fragment-based proxies
-						forceProxyResolution(loadedFiles, proxyHelper.getLookupResolver(), progress.newChild(15));
+						forceProxyResolution(loadedFiles, proxyHelper.getLookupResolver(), progress.newChild(10));
 
 						// Re-enable resolution of fragment-based proxies
 						proxyHelper.setIgnoreFragmentBasedProxies(false);
@@ -845,7 +846,7 @@ public final class ModelLoadManager {
 			progress.worked(10);
 
 			// Request resolution of all proxies in given resources
-			SubMonitor resolveProxiesProgress = progress.newChild(90).setWorkRemaining(files.size());
+			SubMonitor resolveProxiesProgress = progress.newChild(80).setWorkRemaining(files.size());
 			for (Resource resource : resources) {
 				resolveProxiesProgress.subTask(NLS.bind(Messages.subtask_resolvingProxiesInResource, resource.getURI().toPlatformString(true)));
 
@@ -862,7 +863,7 @@ public final class ModelLoadManager {
 		}
 
 		// Handle problems that may have been encountered during proxy resolution
-		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resources, true, null);
+		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resources, progress.newChild(10));
 
 		// Perform a full garbage collection
 		ExtendedPlatform.performGarbageCollection();

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  * 
  * </copyright>
  */
@@ -24,18 +25,12 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.Resource.Diagnostic;
 import org.eclipse.emf.ecore.xmi.XMIException;
@@ -52,10 +47,7 @@ import org.eclipse.sphinx.emf.resource.XMLIntegrityException;
 import org.eclipse.sphinx.emf.resource.XMLValidityException;
 import org.eclipse.sphinx.emf.resource.XMLWellformednessException;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
-import org.eclipse.sphinx.platform.messages.PlatformMessages;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
-import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -146,84 +138,40 @@ public class ResourceProblemMarkerService {
 	 * @see #PROXY_URI_INTEGRITY_PROBLEM
 	 * @see IMarker#PROBLEM
 	 */
-	public void updateProblemMarkers(final Map<IFile, Exception> filesWithErrors, boolean async, final IProgressMonitor monitor) {
+	public void updateProblemMarkers(final Map<IFile, Exception> filesWithErrors, final IProgressMonitor monitor) {
 		Assert.isNotNull(filesWithErrors);
 
 		if (!filesWithErrors.isEmpty() && Platform.isRunning()) {
-			if (async) {
-				Job job = new WorkspaceJob(PlatformMessages.job_updatingProblemMarkers) {
-					@Override
-					public IStatus runInWorkspace(IProgressMonitor monitor) {
-						try {
-							runUpdateProblemMarkers(filesWithErrors, monitor);
-							return Status.OK_STATUS;
-						} catch (OperationCanceledException ex) {
-							return Status.CANCEL_STATUS;
-						} catch (Exception ex) {
-							return StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
-						}
-					}
+			SubMonitor progress = SubMonitor.convert(monitor, filesWithErrors.size());
 
-					@Override
-					public boolean belongsTo(Object family) {
-						return IExtendedPlatformConstants.FAMILY_LONG_RUNNING.equals(family);
-					}
-				};
+			for (IFile file : filesWithErrors.keySet()) {
+				if (progress.isCanceled()) {
+					return;
+				}
 
-				/*
-				 * !! Important Note !! Updating problem marker jobs must be scheduled on workspace root to avoid that
-				 * multiple of them run in parallel. Otherwise they would cause deadlocks even though the files which
-				 * they are acting upon are different. The reason is that the IFile#createMarker() and
-				 * IMarker#setAttributes() methods being called by the updating problem marker jobs try to start an
-				 * exclusive workspace operation which is scheduled upon the marker rule of each underlying file. But
-				 * for some reason which we don't understand marker rules of file are always null... (see
-				 * org.eclipse.core.internal.resources.Rules#markerRule for details)
-				 */
-				job.setPriority(Job.BUILD);
-				job.setRule(ResourcesPlugin.getWorkspace().getRoot());
-				job.setSystem(true);
-				job.schedule();
-			} else {
 				try {
-					runUpdateProblemMarkers(filesWithErrors, monitor);
-				} catch (OperationCanceledException ex) {
-					// Ignore exception
-				}
-			}
-		}
-	}
+					// Remove old problem makers
+					if (file.isAccessible()) {
+						Activator.getPlugin().getMarkerJob().deleteMarker(file, IMarker.PROBLEM);
+						Activator.getPlugin().getMarkerJob().deleteMarker(file, IXMLMarker.XML_WELLFORMEDNESS_PROBLEM);
+						Activator.getPlugin().getMarkerJob().deleteMarker(file, IXMLMarker.XML_VALIDITY_PROBLEM);
+						Activator.getPlugin().getMarkerJob().deleteMarker(file, IXMLMarker.XML_INTEGRITY_PROBLEM);
+					}
 
-	protected void runUpdateProblemMarkers(Map<IFile, Exception> filesWithErrors, IProgressMonitor monitor) throws OperationCanceledException {
-		Assert.isNotNull(filesWithErrors);
-		SubMonitor progress = SubMonitor.convert(monitor, filesWithErrors.size());
-		if (progress.isCanceled()) {
-			throw new OperationCanceledException();
-		}
-
-		for (IFile file : filesWithErrors.keySet()) {
-			try {
-				// Remove old problem makers
-				if (file.isAccessible()) {
-					file.deleteMarkers(IMarker.PROBLEM, false, IResource.DEPTH_ZERO);
-					file.deleteMarkers(IXMLMarker.XML_WELLFORMEDNESS_PROBLEM, false, IResource.DEPTH_ZERO);
-					file.deleteMarkers(IXMLMarker.XML_VALIDITY_PROBLEM, false, IResource.DEPTH_ZERO);
-					file.deleteMarkers(IXMLMarker.XML_INTEGRITY_PROBLEM, false, IResource.DEPTH_ZERO);
+					Exception error = filesWithErrors.get(file);
+					if (error instanceof XMIException) {
+						createProblemMarkerForDiagnostic(file, null, (XMIException) error, IMarker.SEVERITY_ERROR);
+					} else {
+						createProblemMarkerForException(file, error, IMarker.SEVERITY_ERROR);
+					}
+				} catch (CoreException ex) {
+					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 				}
 
-				Exception error = filesWithErrors.get(file);
-				if (error instanceof XMIException) {
-					createProblemMarkerForDiagnostic(file, null, (XMIException) error, IMarker.SEVERITY_ERROR);
-				} else {
-					createProblemMarkerForException(file, error, IMarker.SEVERITY_ERROR);
-				}
-			} catch (CoreException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+				progress.worked(1);
 			}
 
-			progress.worked(1);
-			if (progress.isCanceled()) {
-				throw new OperationCanceledException();
-			}
+			Activator.getPlugin().getMarkerJob().schedule();
 		}
 	}
 
@@ -282,9 +230,9 @@ public class ResourceProblemMarkerService {
 	 * @see #PROXY_URI_INTEGRITY_PROBLEM
 	 * @see IMarker#PROBLEM
 	 */
-	public void updateProblemMarkers(Resource resource, boolean async, final IProgressMonitor monitor) {
+	public void updateProblemMarkers(Resource resource, final IProgressMonitor monitor) {
 		if (resource != null) {
-			updateProblemMarkers(Collections.singleton(resource), async, monitor);
+			updateProblemMarkers(Collections.singleton(resource), monitor);
 		}
 	}
 
@@ -350,77 +298,35 @@ public class ResourceProblemMarkerService {
 	 * @see #PROXY_URI_INTEGRITY_PROBLEM
 	 * @see IMarker#PROBLEM
 	 */
-	public void updateProblemMarkers(final Collection<Resource> resources, boolean async, final IProgressMonitor monitor) {
+	public void updateProblemMarkers(final Collection<Resource> resources, final IProgressMonitor monitor) {
 		Assert.isNotNull(resources);
 
 		if (!resources.isEmpty() && Platform.isRunning()) {
-			if (async) {
-				Job job = new WorkspaceJob(PlatformMessages.job_updatingProblemMarkers) {
-					@Override
-					public IStatus runInWorkspace(IProgressMonitor monitor) {
-						try {
-							runUpdateProblemMarkers(resources, monitor);
-							return Status.OK_STATUS;
-						} catch (OperationCanceledException ex) {
-							return Status.CANCEL_STATUS;
-						} catch (Exception ex) {
-							return StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
-						}
-					}
-
-					@Override
-					public boolean belongsTo(Object family) {
-						return IExtendedPlatformConstants.FAMILY_LONG_RUNNING.equals(family);
-					}
-				};
-
-				/*
-				 * !! Important Note !! Updating problem marker jobs must be scheduled on workspace root to avoid that
-				 * multiple of them run in parallel. Otherwise they would cause deadlocks even though the files which
-				 * they are acting upon are different. The reason is that the IFile#createMarker() and
-				 * IMarker#setAttributes() methods being called by the updating problem marker jobs try to start an
-				 * exclusive workspace operation which is scheduled upon the marker rule of each underlying file. But
-				 * for some reason which we don't understand marker rules of file are always null... (see
-				 * org.eclipse.core.internal.resources.Rules#markerRule for details)
-				 */
-				job.setPriority(Job.BUILD);
-				job.setRule(ResourcesPlugin.getWorkspace().getRoot());
-				job.setSystem(true);
-				job.schedule();
-			} else {
-				try {
-					runUpdateProblemMarkers(resources, monitor);
-				} catch (OperationCanceledException ex) {
-					// Ignore exception
+			// Collect resources to update problem markers for in sets of resources per editing domain; tolerate
+			// resources
+			// that aren't in any editing domain
+			final Map<TransactionalEditingDomain, Collection<Resource>> resourcesToUpdate = new HashMap<TransactionalEditingDomain, Collection<Resource>>();
+			for (Resource resource : resources) {
+				TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resource);
+				Collection<Resource> resourcesToUpdateInEditingDomain = resourcesToUpdate.get(editingDomain);
+				if (resourcesToUpdateInEditingDomain == null) {
+					resourcesToUpdateInEditingDomain = new HashSet<Resource>();
+					resourcesToUpdate.put(editingDomain, resourcesToUpdateInEditingDomain);
 				}
+				resourcesToUpdateInEditingDomain.add(resource);
 			}
-		}
-	}
 
-	protected void runUpdateProblemMarkers(Collection<Resource> resources, IProgressMonitor monitor) throws OperationCanceledException {
-		Assert.isNotNull(resources);
-
-		// Collect resources to update problem markers for in sets of resources per editing domain; tolerate resources
-		// that aren't in any editing domain
-		final Map<TransactionalEditingDomain, Collection<Resource>> resourcesToUpdate = new HashMap<TransactionalEditingDomain, Collection<Resource>>();
-		for (Resource resource : resources) {
-			TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resource);
-			Collection<Resource> resourcesToUpdateInEditingDomain = resourcesToUpdate.get(editingDomain);
-			if (resourcesToUpdateInEditingDomain == null) {
-				resourcesToUpdateInEditingDomain = new HashSet<Resource>();
-				resourcesToUpdate.put(editingDomain, resourcesToUpdateInEditingDomain);
+			// Update problem markers of resources in each editing domain
+			SubMonitor progress = SubMonitor.convert(monitor, resourcesToUpdate.keySet().size());
+			if (progress.isCanceled()) {
+				return;
 			}
-			resourcesToUpdateInEditingDomain.add(resource);
-		}
 
-		// Update problem markers of resources in each editing domain
-		SubMonitor progress = SubMonitor.convert(monitor, resourcesToUpdate.keySet().size());
-		if (progress.isCanceled()) {
-			throw new OperationCanceledException();
-		}
+			for (final TransactionalEditingDomain editingDomain : resourcesToUpdate.keySet()) {
+				updateProblemMarkersInEditingDomain(editingDomain, resourcesToUpdate, progress.newChild(1));
+			}
 
-		for (final TransactionalEditingDomain editingDomain : resourcesToUpdate.keySet()) {
-			updateProblemMarkersInEditingDomain(editingDomain, resourcesToUpdate, progress.newChild(1));
+			Activator.getPlugin().getMarkerJob().schedule();
 		}
 	}
 
@@ -437,44 +343,40 @@ public class ResourceProblemMarkerService {
 				}
 
 				for (Resource resource : resourcesToUpdateInEditingDomain) {
-					try {
-						IFile file = EcorePlatformUtil.getFile(resource);
-						if (file != null) {
-							// Remove old problem makers related to resource loading and saving
-							if (file.isAccessible()) {
-								file.deleteMarkers(IMarker.PROBLEM, false, IResource.DEPTH_ZERO);
-								file.deleteMarkers(IXMLMarker.XML_WELLFORMEDNESS_PROBLEM, false, IResource.DEPTH_ZERO);
-								file.deleteMarkers(IXMLMarker.XML_VALIDITY_PROBLEM, false, IResource.DEPTH_ZERO);
-								file.deleteMarkers(IXMLMarker.XML_INTEGRITY_PROBLEM, false, IResource.DEPTH_ZERO);
-							}
+					IFile file = EcorePlatformUtil.getFile(resource);
+					if (file != null) {
+						// Remove old problem makers related to resource loading and saving
+						if (file.isAccessible()) {
+							Activator.getPlugin().getMarkerJob().deleteMarker(file, IMarker.PROBLEM);
+							Activator.getPlugin().getMarkerJob().deleteMarker(file, IXMLMarker.XML_WELLFORMEDNESS_PROBLEM);
+							Activator.getPlugin().getMarkerJob().deleteMarker(file, IXMLMarker.XML_VALIDITY_PROBLEM);
+							Activator.getPlugin().getMarkerJob().deleteMarker(file, IXMLMarker.XML_INTEGRITY_PROBLEM);
+						}
 
-							ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
-							int maxCount = extendedResource != null ? (Integer) extendedResource.getProblemHandlingOptions().get(
-									ExtendedResource.OPTION_MAX_PROBLEM_MARKER_COUNT) : ExtendedResource.OPTION_MAX_PROBLEM_MARKER_COUNT_UNLIMITED;
-							int count = 0;
+						ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
+						int maxCount = extendedResource != null ? (Integer) extendedResource.getProblemHandlingOptions().get(
+								ExtendedResource.OPTION_MAX_PROBLEM_MARKER_COUNT) : ExtendedResource.OPTION_MAX_PROBLEM_MARKER_COUNT_UNLIMITED;
+						int count = 0;
 
-							// Handle errors
-							ArrayList<Diagnostic> safeErrors = new ArrayList<Diagnostic>(resource.getErrors());
-							for (Iterator<Diagnostic> iter = safeErrors.iterator(); iter.hasNext() && count != maxCount; count++) {
-								try {
-									createProblemMarkerForDiagnostic(file, extendedResource, iter.next(), IMarker.SEVERITY_ERROR);
-								} catch (Exception ex) {
-									PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-								}
-							}
-
-							// Handle warnings
-							ArrayList<Diagnostic> safeWarnings = new ArrayList<Diagnostic>(resource.getWarnings());
-							for (Iterator<Diagnostic> iter = safeWarnings.iterator(); iter.hasNext() && count != maxCount; count++) {
-								try {
-									createProblemMarkerForDiagnostic(file, extendedResource, iter.next(), IMarker.SEVERITY_WARNING);
-								} catch (Exception ex) {
-									PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-								}
+						// Handle errors
+						ArrayList<Diagnostic> safeErrors = new ArrayList<Diagnostic>(resource.getErrors());
+						for (Iterator<Diagnostic> iter = safeErrors.iterator(); iter.hasNext() && count != maxCount; count++) {
+							try {
+								createProblemMarkerForDiagnostic(file, extendedResource, iter.next(), IMarker.SEVERITY_ERROR);
+							} catch (Exception ex) {
+								PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 							}
 						}
-					} catch (CoreException ex) {
-						PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+
+						// Handle warnings
+						ArrayList<Diagnostic> safeWarnings = new ArrayList<Diagnostic>(resource.getWarnings());
+						for (Iterator<Diagnostic> iter = safeWarnings.iterator(); iter.hasNext() && count != maxCount; count++) {
+							try {
+								createProblemMarkerForDiagnostic(file, extendedResource, iter.next(), IMarker.SEVERITY_WARNING);
+							} catch (Exception ex) {
+								PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+							}
+						}
 					}
 
 					progress.worked(1);
@@ -568,8 +470,7 @@ public class ResourceProblemMarkerService {
 		// Does file exist?
 		if (file.isAccessible()) {
 			// Create new problem marker with previously calculated type and attributes
-			IMarker marker = file.createMarker(type);
-			marker.setAttributes(attributes);
+			Activator.getPlugin().getMarkerJob().createMarker(file, type, attributes);
 		} else {
 			// Use error log for errors of non-existing files or in-memory resources
 			Integer effectiveSeverity = (Integer) attributes.get(IMarker.SEVERITY);
@@ -600,8 +501,7 @@ public class ResourceProblemMarkerService {
 		// Does file exist?
 		if (file.isAccessible()) {
 			// Create new problem marker with previously calculated type and attributes
-			IMarker marker = file.createMarker(type);
-			marker.setAttributes(attributes);
+			Activator.getPlugin().getMarkerJob().createMarker(file, type, attributes);
 		} else {
 			// Use error log for errors of non-existing files or in-memory resources
 			Integer effectiveSeverity = (Integer) attributes.get(IMarker.SEVERITY);

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - Avoid usage of Object.finalize
  * 
  * </copyright>
  */
@@ -103,17 +104,13 @@ public class URIChangeListenerRegistry {
 		}
 	}
 
+	/**
+	 * @param listener
+	 */
 	public void removeListener(IURIChangeListener listener) {
 		if (listener != null) {
 			fURIChangeListeners.remove(listener);
 		}
-	}
-
-	/**
-	 * @param listener
-	 */
-	public void removeListerner(IURIChangeListener listener) {
-		fURIChangeListeners.remove(listener);
 	}
 
 	private Set<String> getOverriddenURIChangeListenerIds(IConfigurationElement[] configElements) {

@@ -17,7 +17,6 @@ package org.eclipse.sphinx.emf.internal.expressions;
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;

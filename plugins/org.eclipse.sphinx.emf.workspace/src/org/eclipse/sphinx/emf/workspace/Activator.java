@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,15 +9,15 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - Avoid usage of Object.finalize
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace;
 
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.util.ResourceLocator;
+import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.emf.workspace.syncing.ModelSynchronizer;
 import org.osgi.framework.BundleContext;
 
@@ -92,34 +92,28 @@ public final class Activator extends EMFPlugin {
 		public void start(BundleContext context) throws Exception {
 			super.start(context);
 			startWorkspaceSynchronizing();
+			ModelSaveManager.INSTANCE.start();
 		}
 
 		@Override
 		public void stop(BundleContext context) throws Exception {
 			super.stop(context);
+			ModelSaveManager.INSTANCE.stop();
 			stopWorkspaceSynchronizing();
 		}
 
 		/**
-		 * Starts automatic synchronization of models wrt resource changes in the workspace. Supports
-		 * loading/unloading/reloading of complete models when underlying projects are
-		 * created/opened/renamed/closed/deleted or their description or settings are changed as well as
-		 * loading/unloading/reloading of individual model resources when underlying files are created/changed/deleted.
+		 * @see ModelSynchronizer#start()
 		 */
 		public void startWorkspaceSynchronizing() {
-			ResourcesPlugin.getWorkspace().addResourceChangeListener(
-					ModelSynchronizer.INSTANCE,
-					IResourceChangeEvent.PRE_BUILD | IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE
-							| IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.POST_CHANGE);
+			ModelSynchronizer.INSTANCE.start();
 		}
 
 		/**
-		 * Stops automatic synchronization of models wrt resource changes in the workspace.
-		 * 
-		 * @see #startWorkspaceSynchronizing()
+		 * @see ModelSynchronizer#stop()
 		 */
 		public void stopWorkspaceSynchronizing() {
-			ResourcesPlugin.getWorkspace().removeResourceChangeListener(ModelSynchronizer.INSTANCE);
+			ModelSynchronizer.INSTANCE.stop();
 		}
 	}
 }

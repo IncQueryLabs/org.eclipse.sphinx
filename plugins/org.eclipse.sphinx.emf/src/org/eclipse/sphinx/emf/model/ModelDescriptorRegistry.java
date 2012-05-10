@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  * 
  * </copyright>
  */
@@ -32,12 +33,14 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
 import org.eclipse.sphinx.emf.scoping.IResourceScopeProvider;
 import org.eclipse.sphinx.emf.scoping.ResourceScopeProviderRegistry;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
+import org.eclipse.sphinx.platform.resources.ResourceSyncMarkers;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 
 /**
@@ -92,9 +95,19 @@ public class ModelDescriptorRegistry {
 		 * lengthy but useless processing of the same.
 		 */
 		if (!ResourceScopeProviderRegistry.INSTANCE.isNotInAnyScope(file)) {
-			IModelDescriptor modelDescriptor = internalGetModel(file);
-			if (modelDescriptor == null) {
-				internalAddModel(file);
+			/*
+			 * Only work with synchronized files to avoid automatic synchronization that will be triggered if the file
+			 * needs to be read for content type detection (see
+			 * org.eclipse.sphinx.platform.util.ExtendedPlatform.getContentTypeId(IFile)). Automatic synchronization is
+			 * triggered by EMF in org.eclipse.emf.ecore.resource.impl.PlatformResourceURIHandlerImpl.WorkbenchHelper.
+			 * createPlatformResourceInputStream(String, Map<?, ?>).
+			 */
+			boolean isSynchronized = ResourceSyncMarkers.updateMarker(Activator.getDefault().getMarkerJob(), file);
+			if (isSynchronized) {
+				IModelDescriptor modelDescriptor = internalGetModel(file);
+				if (modelDescriptor == null) {
+					internalAddModel(file);
+				}
 			}
 		}
 	}
@@ -272,9 +285,7 @@ public class ModelDescriptorRegistry {
 						}
 					}
 				}
-
 			}
-
 		}
 		return null;
 	}

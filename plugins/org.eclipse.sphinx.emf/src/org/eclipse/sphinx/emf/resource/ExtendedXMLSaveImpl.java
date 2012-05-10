@@ -363,8 +363,7 @@ public class ExtendedXMLSaveImpl extends XMLSaveImpl {
 			}
 		}
 
-		for (EPackage package1 : packages) {
-			EPackage ePackage = package1;
+		for (EPackage ePackage : packages) {
 			if (ePackage != noNamespacePackage && ePackage != XMLNamespacePackage.eINSTANCE
 					&& !ExtendedMetaData.XMLNS_URI.equals(ePackage.getNsURI())) {
 				String nsURI = extendedMetaData == null ? ePackage.getNsURI() : extendedMetaData.getNamespace(ePackage);

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  * 
  * </copyright>
  */
@@ -27,9 +28,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.xmi.XMIException;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.Activator;
@@ -303,7 +302,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 				}
 
 				// Handle problems that may have been encountered during proxy resolution
-				ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resource, true, null);
+				ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resource, null);
 			}
 
 			return null;
@@ -377,7 +376,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 		}
 
 		// Handle problems that may have been encountered during proxy resolution
-		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resources, true, null);
+		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resources, null);
 
 		return resolvedEObject;
 	}

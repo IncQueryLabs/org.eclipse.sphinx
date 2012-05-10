@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - Avoid usage of Object.finalize
  * 
  * </copyright>
  */
@@ -27,6 +28,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.ResourceSetChangeEvent;
 import org.eclipse.emf.transaction.ResourceSetListenerImpl;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.workspace.Activator;
 import org.eclipse.sphinx.platform.resources.DefaultResourceChangeHandler;
@@ -44,13 +46,20 @@ public class URIChangeDetector extends ResourceSetListenerImpl implements IResou
 	 * Default constructor.
 	 */
 	public URIChangeDetector() {
+	}
+
+	@Override
+	public void setTarget(TransactionalEditingDomain domain) {
+		super.setTarget(domain);
+
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
+	public void unsetTarget(TransactionalEditingDomain domain) {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
-		super.finalize();
+
+		super.unsetTarget(domain);
 	}
 
 	/*

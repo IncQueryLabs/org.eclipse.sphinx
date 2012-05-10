@@ -15,7 +15,6 @@
 package org.eclipse.sphinx.emf.scoping;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.sphinx.emf.internal.scoping.IResourceScopeMarker;
 import org.eclipse.sphinx.platform.resources.syncing.IResourceSyncRequest;
 
 public interface IResourceScopeMarkerSyncRequest extends IResourceSyncRequest {

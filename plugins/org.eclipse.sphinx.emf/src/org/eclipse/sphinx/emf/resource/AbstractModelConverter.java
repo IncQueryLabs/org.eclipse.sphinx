@@ -83,9 +83,9 @@ public abstract class AbstractModelConverter implements IModelConverter {
 		String resourceNamespace = EcoreResourceUtil.readModelNamespace(resource);
 		boolean matching = false;
 		if (resourceNamespace != null) {
-			matching = resourceNamespace.matches(getResourceVersionDescriptor().getNamespace());
+			matching = resourceNamespace.equals(getResourceVersionDescriptor().getNamespace());
 			if (!matching) {
-				matching = resourceNamespace.matches(getResourceVersionDescriptor().getEPackageNsURIPattern());
+				matching = getResourceVersionDescriptor().matchesEPackageNsURIPattern(resourceNamespace);
 			}
 		}
 		return matching;
@@ -211,7 +211,7 @@ public abstract class AbstractModelConverter implements IModelConverter {
 		// Write converted DOM structure into an output stream which is connected to a new input stream
 		PipedInputStream pipedInputStream = new PipedInputStream();
 		final PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream);
-		final XMLOutputter out = new XMLOutputter(Format.getPrettyFormat());
+		final XMLOutputter out = new XMLOutputter(Format.getRawFormat());
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -299,7 +299,7 @@ public abstract class AbstractModelConverter implements IModelConverter {
 			}
 
 			// Write converted DOM structure into given XML output stream
-			new XMLOutputter(Format.getPrettyFormat()).output(document, outputStream);
+			new XMLOutputter(Format.getRawFormat()).output(document, outputStream);
 		} catch (Exception ex) {
 			throw new Resource.IOWrappedException(ex);
 		}

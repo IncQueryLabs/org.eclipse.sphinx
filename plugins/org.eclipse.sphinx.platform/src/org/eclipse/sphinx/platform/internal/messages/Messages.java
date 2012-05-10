@@ -35,6 +35,8 @@ public class Messages extends NLS {
 	public static String perfLog_$0$1$2$3statEventToStringSimple;
 	public static String perfLog_$0$1$2$3statEventToStringWithRunCount;
 
+	public static String warning_resourceIsOutOfSync;
+
 	static {
 		// Load message values from bundle file
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

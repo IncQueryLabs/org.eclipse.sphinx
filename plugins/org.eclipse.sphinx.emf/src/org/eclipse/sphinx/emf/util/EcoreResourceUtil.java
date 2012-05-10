@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2011 See4sys, BMW Car IT, itemis and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,9 @@
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
- *     itemis - [357962] Make sure that problems occurring when saving model elements in a new resource are not recorded as errors/warnings on resource 
+ *     itemis - [357962] Make sure that problems occurring when saving model elements in a new resource are not recorded as errors/warnings on resource
+ *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
+ * 
  * </copyright>
  */
 package org.eclipse.sphinx.emf.util;
@@ -34,9 +36,11 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.notify.Notifier;
@@ -171,7 +175,17 @@ public final class EcoreResourceUtil {
 		if (uri.isPlatformResource()) {
 			return uri;
 		} else {
-			// Try to convert given URI to platform resource URI
+			if (Platform.isRunning()) {
+				// Try to convert given URI to platform resource URI
+				// Use getFileForLocation instead of a simple match against the workspace root location so that also
+				// cases are covered where resources are part of the workspace but not physically (filesystem level)
+				// located below the workspace root.
+				IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(uri.toFileString()));
+				if (file != null) {
+					return URI.createPlatformResourceURI(file.getFullPath().toString(), false);
+				}
+			}
+
 			return getURIConverter().normalize(uri);
 		}
 	}
@@ -228,6 +242,31 @@ public final class EcoreResourceUtil {
 		return false;
 	}
 
+	private static XMLRootElementHandler readRootElement(URIConverter uriConverter, URI uri, XMLRootElementHandler handler) {
+		if (handler == null) {
+			handler = new XMLRootElementHandler();
+		}
+		if (exists(uri)) {
+			InputStream inputStream = null;
+			try {
+				uriConverter = uriConverter != null ? uriConverter : new ExtensibleURIConverterImpl();
+				inputStream = uriConverter.createInputStream(uri);
+				handler.parseContents(inputStream);
+			} catch (SAXException ex) {
+				// Ignore parse exceptions because we might be face to non-XML files or XML files
+				// which are not well-formed - that's o.k. simply return null
+			} catch (IOException ex) {
+				// Ignore I/O exceptions because we might be face to non-XML files or XML files
+				// which are not well-formed - that's o.k. simply return null
+			} catch (Exception ex) {
+				PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
+			} finally {
+				ExtendedPlatform.safeClose(inputStream);
+			}
+		}
+		return handler;
+	}
+
 	/**
 	 * Reads the model namespace (i.e. XML namespace) of given {@link Resource resource}. Returns a meaningful result
 	 * only if given {@link Resource resource} is an XML document.
@@ -258,28 +297,8 @@ public final class EcoreResourceUtil {
 	 *         question is either a non-XML file or an XML file which is not well-formed or has no model namespace.
 	 */
 	public static String readModelNamespace(URIConverter uriConverter, URI uri) {
-		String namespace = null;
-		if (exists(uri)) {
-			InputStream inputStream = null;
-			try {
-				uriConverter = uriConverter != null ? uriConverter : new ExtensibleURIConverterImpl();
-				inputStream = uriConverter.createInputStream(uri);
-				XMLRootElementHandler handler = new XMLRootElementHandler();
-				handler.parseContents(inputStream);
-				namespace = handler.getRootElementNamespace();
-			} catch (SAXException ex) {
-				// Ignore parse exceptions because we might be face to non-XML files or XML files
-				// which are not well-formed - that's o.k. simply return null
-			} catch (IOException ex) {
-				// Ignore I/O exceptions because we might be face to non-XML files or XML files
-				// which are not well-formed - that's o.k. simply return null
-			} catch (Exception ex) {
-				PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
-			} finally {
-				ExtendedPlatform.safeClose(inputStream);
-			}
-		}
-		return namespace;
+		XMLRootElementHandler handler = readRootElement(uriConverter, uri, null);
+		return handler.getRootElementNamespace();
 	}
 
 	/**
@@ -320,31 +339,12 @@ public final class EcoreResourceUtil {
 	}
 
 	public static String readTargetNamespace(URIConverter uriConverter, URI uri, String... targetNamespaceExcludePatterns) {
-		String targetNamespace = null;
-		if (exists(uri)) {
-			InputStream inputStream = null;
-			try {
-				uriConverter = uriConverter != null ? uriConverter : new ExtensibleURIConverterImpl();
-				inputStream = uriConverter.createInputStream(uri);
-				XMLRootElementHandler handler = new XMLRootElementHandler();
-				if (targetNamespaceExcludePatterns != null) {
-					handler.seTargetNamespaceExcludePatterns(targetNamespaceExcludePatterns);
-				}
-				handler.parseContents(inputStream);
-				targetNamespace = handler.getTargetNamespace();
-			} catch (SAXException ex) {
-				// Ignore parse exceptions because we might be face to non-XML files or XML files
-				// which are not well-formed - that's o.k. simply return null
-			} catch (IOException ex) {
-				// Ignore I/O exceptions because we might be face to non-XML files or XML files
-				// which are not well-formed - that's o.k. simply return null
-			} catch (Exception ex) {
-				PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
-			} finally {
-				ExtendedPlatform.safeClose(inputStream);
-			}
+		XMLRootElementHandler handler = new XMLRootElementHandler();
+		if (targetNamespaceExcludePatterns != null) {
+			handler.seTargetNamespaceExcludePatterns(targetNamespaceExcludePatterns);
 		}
-		return targetNamespace;
+		readRootElement(uriConverter, uri, handler);
+		return handler.getTargetNamespace();
 	}
 
 	/**
@@ -376,30 +376,8 @@ public final class EcoreResourceUtil {
 	 *         found.
 	 */
 	public static Collection<String> readRootElementComments(URIConverter uriConverter, URI uri) {
-		Collection<String> comments = new ArrayList<String>();
-
-		if (exists(uri)) {
-			InputStream inputStream = null;
-			try {
-				uriConverter = uriConverter != null ? uriConverter : new ExtensibleURIConverterImpl();
-				inputStream = uriConverter.createInputStream(uri);
-				XMLRootElementHandler handler = new XMLRootElementHandler();
-				// Parse and retrieve comments above root element
-				handler.parseContents(inputStream, true);
-				comments = handler.getRootElementComments();
-			} catch (SAXException ex) {
-				// Ignore parse exceptions because we might be face to non-XML files or XML files
-				// which are not well-formed - that's o.k. simply return null
-			} catch (IOException ex) {
-				// Ignore I/O exceptions because we might be face to non-XML files or XML files
-				// which are not well-formed - that's o.k. simply return null
-			} catch (Exception ex) {
-				PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
-			} finally {
-				ExtendedPlatform.safeClose(inputStream);
-			}
-		}
-		return comments;
+		XMLRootElementHandler handler = readRootElement(uriConverter, uri, null);
+		return handler.getRootElementComments();
 	}
 
 	/**
@@ -435,27 +413,8 @@ public final class EcoreResourceUtil {
 	 *         location.
 	 */
 	public static Map<String, String> readSchemaLocationEntries(URIConverter uriConverter, URI uri) {
-		String schemaLocation = null;
-		if (exists(uri)) {
-			InputStream inputStream = null;
-			try {
-				uriConverter = uriConverter != null ? uriConverter : new ExtensibleURIConverterImpl();
-				inputStream = uriConverter.createInputStream(uri);
-				XMLRootElementHandler handler = new XMLRootElementHandler();
-				handler.parseContents(inputStream);
-				schemaLocation = handler.getSchemaLocation();
-			} catch (SAXException ex) {
-				// Ignore parse exceptions because we might be face to non-XML files or XML files
-				// which are not well-formed - that's o.k. simply return null
-			} catch (IOException ex) {
-				// Ignore I/O exceptions because we might be face to non-XML files or XML files
-				// which are not well-formed - that's o.k. simply return null
-			} catch (Exception ex) {
-				PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
-			} finally {
-				ExtendedPlatform.safeClose(inputStream);
-			}
-		}
+		XMLRootElementHandler handler = readRootElement(uriConverter, uri, null);
+		String schemaLocation = handler.getSchemaLocation();
 		Map<String, String> schemaLocationEntries = new HashMap<String, String>();
 		if (schemaLocation != null) {
 			String[] schemaLocationTokens = schemaLocation.split(" "); //$NON-NLS-1$

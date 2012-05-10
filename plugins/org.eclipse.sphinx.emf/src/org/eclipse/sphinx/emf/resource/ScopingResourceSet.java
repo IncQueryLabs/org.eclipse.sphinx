@@ -20,7 +20,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.sphinx.emf.scoping.IResourceScope;
 
 /**
  * A scoping {@linkplain ResourceSet resource set} that uses {@linkplain IResourceScope scopes}

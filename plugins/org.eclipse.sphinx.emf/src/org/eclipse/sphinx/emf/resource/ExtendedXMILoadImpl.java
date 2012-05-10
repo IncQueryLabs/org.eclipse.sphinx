@@ -18,9 +18,6 @@
 package org.eclipse.sphinx.emf.resource;
 
 import org.eclipse.emf.ecore.xmi.XMLHelper;
-import org.eclipse.emf.ecore.xmi.impl.SAXXMIHandler;
-import org.eclipse.emf.ecore.xmi.impl.XMILoadImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**

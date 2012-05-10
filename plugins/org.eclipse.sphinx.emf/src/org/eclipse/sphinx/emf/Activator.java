@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,20 +9,20 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - Avoid usage of Object.finalize
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.emf;
 
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.util.ResourceLocator;
+import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelperAdapterFactory;
 import org.eclipse.sphinx.emf.internal.model.ModelDescriptorRegistryInitializer;
 import org.eclipse.sphinx.emf.internal.model.ModelDescriptorSynchronizer;
 import org.eclipse.sphinx.emf.scoping.ResourceScopeMarkerSynchronizer;
+import org.eclipse.sphinx.platform.resources.MarkerJob;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -83,6 +83,8 @@ public final class Activator extends EMFPlugin {
 
 		private InstanceScope instanceScope;
 
+		private MarkerJob markerJob;
+
 		/**
 		 * Creates an instance.
 		 */
@@ -99,16 +101,18 @@ public final class Activator extends EMFPlugin {
 
 			startWorkspaceSynchronizing();
 
-			ModelDescriptorRegistryInitializer modelDescriptorRegistryInitializer = new ModelDescriptorRegistryInitializer();
-			modelDescriptorRegistryInitializer.setPriority(Job.BUILD);
-			modelDescriptorRegistryInitializer.schedule();
+			new ModelDescriptorRegistryInitializer().schedule();
+
+			ProxyHelperAdapterFactory.INSTANCE.start();
 		}
 
 		@Override
 		public void stop(BundleContext context) throws Exception {
-			super.stop(context);
+			ProxyHelperAdapterFactory.INSTANCE.stop();
 
 			stopWorkspaceSynchronizing();
+
+			super.stop(context);
 		}
 
 		/**
@@ -124,21 +128,29 @@ public final class Activator extends EMFPlugin {
 		}
 
 		/**
+		 * Returns the shared marker job instance that can be used to asynchronously manipulate resource markers to
+		 * avoid deadlocks. After registering manipulations with the marker job the job must be explicitly scheduled by
+		 * the caller.
+		 * 
+		 * @return The shared marker job instance.
+		 */
+		public MarkerJob getMarkerJob() {
+			if (markerJob == null) {
+				markerJob = new MarkerJob();
+			}
+
+			return markerJob;
+		}
+
+		/**
 		 * Starts automatic synchronization of models wrt resource changes in the workspace. Supports
 		 * loading/unloading/reloading of complete models when underlying projects are
 		 * created/opened/renamed/closed/deleted or their description or settings are changed as well as
 		 * loading/unloading/reloading of individual model resources when underlying files are created/changed/deleted.
 		 */
 		public void startWorkspaceSynchronizing() {
-			ResourcesPlugin.getWorkspace().addResourceChangeListener(
-					ModelDescriptorSynchronizer.INSTANCE,
-					IResourceChangeEvent.PRE_BUILD | IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE
-							| IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.POST_CHANGE);
-
-			ResourcesPlugin.getWorkspace().addResourceChangeListener(
-					ResourceScopeMarkerSynchronizer.INSTANCE,
-					IResourceChangeEvent.PRE_BUILD | IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE
-							| IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.POST_CHANGE);
+			ModelDescriptorSynchronizer.INSTANCE.start();
+			ResourceScopeMarkerSynchronizer.INSTANCE.start();
 		}
 
 		/**
@@ -147,8 +159,8 @@ public final class Activator extends EMFPlugin {
 		 * @see #startWorkspaceSynchronizing()
 		 */
 		public void stopWorkspaceSynchronizing() {
-			ResourcesPlugin.getWorkspace().removeResourceChangeListener(ModelDescriptorSynchronizer.INSTANCE);
-			ResourcesPlugin.getWorkspace().removeResourceChangeListener(ResourceScopeMarkerSynchronizer.INSTANCE);
+			ModelDescriptorSynchronizer.INSTANCE.stop();
+			ResourceScopeMarkerSynchronizer.INSTANCE.stop();
 		}
 	}
 }

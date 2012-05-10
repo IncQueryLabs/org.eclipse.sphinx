@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - Avoid usage of Object.finalize
  * 
  * </copyright>
  */
@@ -41,15 +42,18 @@ public class ProxyHelperAdapterFactory extends AdapterFactoryImpl implements ITr
 
 	// Protected default constructor for singleton pattern
 	protected ProxyHelperAdapterFactory() {
+	}
+
+	public void start() {
 		if (Platform.isRunning()) {
 			EditingDomainFactoryListenerRegistry.INSTANCE.addListener(MetaModelDescriptorRegistry.ANY_MM, null, this, null);
 		}
 	}
 
-	@Override
-	protected void finalize() throws Throwable {
-		EditingDomainFactoryListenerRegistry.INSTANCE.removeListener(this);
-		super.finalize();
+	public void stop() {
+		if (Platform.isRunning()) {
+			EditingDomainFactoryListenerRegistry.INSTANCE.removeListener(this);
+		}
 	}
 
 	/*
@@ -94,8 +98,8 @@ public class ProxyHelperAdapterFactory extends AdapterFactoryImpl implements ITr
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener#postCreateEditingDomain(org.eclipse
-	 * .emf.transaction.TransactionalEditingDomain)
+	 * org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener#postCreateEditingDomain(org.
+	 * eclipse .emf.transaction.TransactionalEditingDomain)
 	 */
 	public void postCreateEditingDomain(TransactionalEditingDomain editingDomain) {
 		// Nothing to do
@@ -103,8 +107,8 @@ public class ProxyHelperAdapterFactory extends AdapterFactoryImpl implements ITr
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener#preDisposeEditingDomain(org.eclipse
-	 * .emf.transaction.TransactionalEditingDomain)
+	 * org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener#preDisposeEditingDomain(org.
+	 * eclipse .emf.transaction.TransactionalEditingDomain)
 	 */
 	public void preDisposeEditingDomain(TransactionalEditingDomain editingDomain) {
 		Adapter adapter = EcoreUtil.getExistingAdapter(editingDomain.getResourceSet(), ProxyHelper.class);

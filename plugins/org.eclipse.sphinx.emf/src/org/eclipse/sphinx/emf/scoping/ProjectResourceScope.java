@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2011 See4sys, itemis and others.
+ * Copyright (c) 2008-2012 See4sys, itemis, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,13 +10,14 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
+ *     BMW Car IT - [373481] Performance optimizations for model loading. Added referenced projects cache.
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.emf.scoping;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -24,6 +25,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.sphinx.emf.scoping.ProjectResourceScopeProvider.IReferencedProjectsProvider;
+import org.eclipse.sphinx.emf.scoping.ProjectResourceScopeProvider.ReferencedProjectsProvider;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 
@@ -31,9 +34,16 @@ public class ProjectResourceScope extends AbstractResourceScope {
 
 	protected IProject rootProject;
 
+	// use a non-caching provider by default
+	protected IReferencedProjectsProvider referencedProjectsProvider = new ReferencedProjectsProvider();
+
 	public ProjectResourceScope(IResource resource) {
 		Assert.isNotNull(resource);
 		rootProject = resource.getProject();
+	}
+
+	void setReferencedProjectsProvider(IReferencedProjectsProvider referencedProjectsProvider) {
+		this.referencedProjectsProvider = referencedProjectsProvider;
 	}
 
 	/*
@@ -62,23 +72,27 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getReferencingRoots()
 	 */
+	@SuppressWarnings("unchecked")
 	public Collection<IResource> getReferencingRoots() {
-		HashSet<IResource> dependingRoots = new HashSet<IResource>();
 		if (rootProject != null) {
-			dependingRoots.addAll(ExtendedPlatform.getAllReferencingProjects(rootProject));
+			Collection<?> allReferencingProjects = ExtendedPlatform.getAllReferencingProjects(rootProject);
+			return (Collection<IResource>) allReferencingProjects;
+		} else {
+			return Collections.emptySet();
 		}
-		return dependingRoots;
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getReferencedRoots()
 	 */
+	@SuppressWarnings("unchecked")
 	public Collection<IResource> getReferencedRoots() {
-		HashSet<IResource> dependingRoots = new HashSet<IResource>();
 		if (rootProject != null) {
-			dependingRoots.addAll(ExtendedPlatform.getAllReferencedProjects(rootProject));
+			Collection<?> allReferencedProjects = referencedProjectsProvider.get(rootProject);
+			return (Collection<IResource>) allReferencedProjects;
+		} else {
+			return Collections.emptySet();
 		}
-		return dependingRoots;
 	}
 
 	/*

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 BMW Car IT, See4sys and others.
+ * Copyright (c) 2008-2012 BMW Car IT, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     BMW Car IT - Initial API and implementation
  *     See4sys - Added support for EPackage URIs and inheritance of descriptors
+ *     BMW Car IT - [373481] Performance optimizations for model loading
  * 
  * </copyright>
  */
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.PlatformObject;
@@ -52,7 +54,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	private String fName = null;
 
 	private URI fNamespaceURI;
-	private String fEPackageNsURIPattern;
+	private Pattern fEPackageNsURIPattern;
 	private EPackage fRootEPackage = null;
 	private Collection<EPackage> fEPackages = null;
 	private List<String> fContentTypeIds;
@@ -229,11 +231,20 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEPackageNsURIPattern()
 	 */
+	@Deprecated
 	public String getEPackageNsURIPattern() {
 		if (fEPackageNsURIPattern == null) {
 			initEPackageNsURIPattern();
 		}
-		return fEPackageNsURIPattern;
+		return fEPackageNsURIPattern.pattern();
+	}
+
+
+	public boolean matchesEPackageNsURIPattern(String uri) {
+		if (fEPackageNsURIPattern == null) {
+			initEPackageNsURIPattern();
+		}
+		return fEPackageNsURIPattern.matcher(uri).matches();
 	}
 
 	/**
@@ -248,7 +259,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 			buffer.append(URI_SEGMENT_SEPARATOR);
 			buffer.append(fVersionData.getEPackageNsURIPostfixPattern());
 		}
-		fEPackageNsURIPattern = buffer.toString();
+		fEPackageNsURIPattern = Pattern.compile(buffer.toString());
 	}
 
 	/*
@@ -266,11 +277,13 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	protected void initEPackages() {
 		Set<EPackage> ePackages = new HashSet<EPackage>();
 		Set<String> safeNsURIs = new HashSet<String>(getEPackageRegistry().keySet());
+
 		for (String nsURI : safeNsURIs) {
-			if (nsURI.matches(getEPackageNsURIPattern())) {
+			if (matchesEPackageNsURIPattern(nsURI)) {
 				ePackages.add(getEPackageRegistry().getEPackage(nsURI));
 			}
 		}
+
 		fEPackages = Collections.unmodifiableSet(ePackages);
 	}
 

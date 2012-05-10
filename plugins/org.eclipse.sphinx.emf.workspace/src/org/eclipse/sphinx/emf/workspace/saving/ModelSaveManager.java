@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - Avoid usage of Object.finalize
  * 
  * </copyright>
  */
@@ -65,24 +66,30 @@ public class ModelSaveManager {
 
 	private IURIChangeListener uriChangeListener = new IURIChangeListener() {
 		public void uriChanged(URIChangeEvent event) {
-			if (event != null) {
-				HashSet<Resource> dirtyResources = new HashSet<Resource>();
-				Resource changedResource = (Resource) event.getSource();
-				if (changedResource != null) {
-					List<URIChangeNotification> notifications = event.getNotifications();
-					for (URIChangeNotification notification : notifications) {
-						EObject newEObject = notification.getNewEObject();
-						Collection<Setting> inverseReferences = EObjectUtil.getInverseReferences(newEObject, true);
-						for (Setting inverseReference : inverseReferences) {
-							Resource referringResource = inverseReference.getEObject().eResource();
-							if (!changedResource.equals(referringResource) && !dirtyResources.contains(referringResource)
-									&& !SaveIndicatorUtil.isDirty(WorkspaceEditingDomainUtil.getEditingDomain(referringResource), referringResource)) {
-								SaveIndicatorUtil.setDirty(WorkspaceEditingDomainUtil.getEditingDomain(referringResource), referringResource);
-								dirtyResources.add(referringResource);
-							}
-						}
+			if (event == null) {
+				return;
+			}
+
+			HashSet<Resource> dirtyResources = new HashSet<Resource>();
+			Resource changedResource = (Resource) event.getSource();
+
+			if (changedResource == null) {
+				return;
+			}
+
+			List<URIChangeNotification> notifications = event.getNotifications();
+			for (URIChangeNotification notification : notifications) {
+				EObject newEObject = notification.getNewEObject();
+				Collection<Setting> inverseReferences = EObjectUtil.getInverseReferences(newEObject, true);
+				for (Setting inverseReference : inverseReferences) {
+					Resource referringResource = inverseReference.getEObject().eResource();
+					if (!changedResource.equals(referringResource) && !dirtyResources.contains(referringResource)
+							&& !SaveIndicatorUtil.isDirty(WorkspaceEditingDomainUtil.getEditingDomain(referringResource), referringResource)) {
+						SaveIndicatorUtil.setDirty(WorkspaceEditingDomainUtil.getEditingDomain(referringResource), referringResource);
+						dirtyResources.add(referringResource);
 					}
 				}
+
 			}
 		}
 	};
@@ -91,13 +98,14 @@ public class ModelSaveManager {
 	 * Private constructor for singleton pattern.
 	 */
 	private ModelSaveManager() {
+	}
+
+	public void start() {
 		URIChangeListenerRegistry.INSTANCE.addListener(uriChangeListener);
 	}
 
-	@Override
-	protected void finalize() throws Throwable {
+	public void stop() {
 		URIChangeListenerRegistry.INSTANCE.removeListener(uriChangeListener);
-		super.finalize();
 	}
 
 	/**

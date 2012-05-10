@@ -16,19 +16,11 @@ package org.eclipse.sphinx.emf.resource;
 
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
-import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
-import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 
 /**
  * A set of additional services for EMF {@link Resource resources} including memory-optimized unloading, proxy creation

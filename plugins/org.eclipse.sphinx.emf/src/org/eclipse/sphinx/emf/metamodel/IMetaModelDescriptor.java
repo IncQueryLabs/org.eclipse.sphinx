@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 BMW Car IT, See4sys and others.
+ * Copyright (c) 2008-2012 BMW Car IT, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     BMW Car IT - Initial API and implementation
  *     See4sys - Added pattern for descriptors' label and support for EPackage URIs
+ *     BMW Car IT - [373481] Performance optimizations for model loading
  * 
  * </copyright>
  */
@@ -111,8 +112,22 @@ public interface IMetaModelDescriptor {
 	 * 
 	 * @return The pattern describing all EPackages associated with the meta-model described.
 	 * @since 0.7.0
+	 * @deprecated use {@link IMetaModelDescriptor#matchesEPackageNsURIPattern(String)} instead
 	 */
+	@Deprecated
 	String getEPackageNsURIPattern();
+
+	/**
+	 * Returns true if the passed in URI matches the namespace pattern for the EPackages associated of with the
+	 * described meta-model. The pattern is used to resolve the EPackages which are associated with the meta-model
+	 * described. Any registered EPackage with a namespace matching the pattern is considered to be associated with the
+	 * described meta-model.
+	 * 
+	 * @return true if the passed in URI matches the namespace pattern for the EPackages associated of with the
+	 *         described meta-model.
+	 * @since 0.7.0
+	 */
+	boolean matchesEPackageNsURIPattern(String uri);
 
 	/**
 	 * Returns the set of {@link org.eclipse.emf.ecore.EPackage}s which are associated with the described

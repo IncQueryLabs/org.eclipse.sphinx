@@ -16,17 +16,14 @@
 package org.eclipse.sphinx.emf.resource;
 
 import java.io.IOException;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.Resource.Diagnostic;
-import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.sphinx.emf.internal.resource.URIResourceCacheUpdater;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
@@ -41,14 +38,6 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl {
 
 	public ExtendedResourceSetImpl() {
 		uriResourceMap = new WeakHashMap<URI, Resource>();
-	}
-
-	/**
-	 * Installs a map for caching the resource {@link #getResource(URI, boolean) associated} with a specific URI.
-	 */
-	@Override
-	public Map<URI, Resource> getURIResourceMap() {
-		return uriResourceMap;
 	}
 
 	// Overridden to remove attempt to find uncached resources by normalizing their URIs and comparing them to the URIs

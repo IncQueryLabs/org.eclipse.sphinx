@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
+ *     BMW Car IT - Avoid usage of Object.finalize
  * 
  * </copyright>
  */
@@ -60,20 +62,24 @@ public class ResourceProblemHandler extends ResourceSetListenerImpl implements I
 	public ResourceProblemHandler() {
 		super(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__IS_LOADED).or(
 				NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResourceSet(), ResourceSet.RESOURCE_SET__RESOURCES)));
+	}
+
+	@Override
+	public void setTarget(TransactionalEditingDomain domain) {
+		super.setTarget(domain);
+
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 	}
 
-	/*
-	 * @see java.lang.Object#finalize()
-	 */
 	@Override
-	protected void finalize() throws Throwable {
+	public void unsetTarget(TransactionalEditingDomain domain) {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
-		super.finalize();
+
+		super.unsetTarget(domain);
 	}
 
 	/*
-	 * @seeorg.eclipse.emf.transaction.ResourceSetListenerImpl#resourceSetChanged(org.eclipse.emf.transaction.
+	 * @see org.eclipse.emf.transaction.ResourceSetListenerImpl#resourceSetChanged(org.eclipse.emf.transaction.
 	 * ResourceSetChangeEvent)
 	 */
 	@Override
@@ -121,7 +127,7 @@ public class ResourceProblemHandler extends ResourceSetListenerImpl implements I
 	}
 
 	protected void handleLoadedResources(Collection<Resource> resources) {
-		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resources, true, null);
+		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resources, null);
 	}
 
 	/*
@@ -178,6 +184,6 @@ public class ResourceProblemHandler extends ResourceSetListenerImpl implements I
 	}
 
 	protected void handleSavedResources(Collection<Resource> resources) {
-		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resources, true, null);
+		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resources, null);
 	}
 }

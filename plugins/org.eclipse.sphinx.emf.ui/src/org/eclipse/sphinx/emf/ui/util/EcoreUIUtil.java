@@ -35,7 +35,6 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.sphinx.emf.ui.actions.providers.OpenWithMenu;
 import org.eclipse.sphinx.emf.ui.internal.Activator;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
@@ -45,6 +44,7 @@ import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IURIEditorInput;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 
 /**
  * 
@@ -196,6 +196,10 @@ public class EcoreUIUtil {
 	}
 
 	public static URI getURIFromEditorInput(IEditorInput editorInput) {
+		if (editorInput instanceof FileEditorInput) {
+			FileEditorInput fileEditorInput = (FileEditorInput) editorInput;
+			return URI.createPlatformResourceURI(fileEditorInput.getFile().getFullPath().toString(), false);
+		}
 		if (editorInput instanceof URIEditorInput) {
 			return ((URIEditorInput) editorInput).getURI();
 		}

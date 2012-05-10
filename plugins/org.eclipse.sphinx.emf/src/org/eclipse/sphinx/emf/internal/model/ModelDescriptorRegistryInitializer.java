@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  * 
  * </copyright>
  */
@@ -51,6 +52,7 @@ public class ModelDescriptorRegistryInitializer extends Job {
 
 	public ModelDescriptorRegistryInitializer() {
 		super(Messages.job_initializingModelDescriptorRegistry);
+		setPriority(Job.BUILD);
 	}
 
 	@Override
@@ -73,11 +75,12 @@ public class ModelDescriptorRegistryInitializer extends Job {
 				for (IFile file : files) {
 					progress2.subTask(NLS.bind(Messages.subtask_analyzingFile, file.getFullPath().toString()));
 
-					// Don't create model descriptors for files that do not exist at this point
-					if (file.isAccessible()) {
-						ModelDescriptorRegistry.INSTANCE.addModel(file);
+					if (analyzedFiles.add(file)) {
+						// Don't create model descriptors for files that do not exist at this point
+						if (file.isAccessible()) {
+							ModelDescriptorRegistry.INSTANCE.addModel(file);
+						}
 					}
-					analyzedFiles.add(file);
 
 					progress2.worked(1);
 					if (progress2.isCanceled()) {
@@ -86,9 +89,14 @@ public class ModelDescriptorRegistryInitializer extends Job {
 				}
 			}
 
-			ResourceScopeValidationService.INSTANCE.validateFiles(analyzedFiles, false, progress.newChild(10));
+			// schedule the marker job in order to process markers that might have been created in
+			// org.eclipse.sphinx.emf.model.ModelDescriptorRegistry.addModel(IFile)
+			Activator.getPlugin().getMarkerJob().schedule();
+
+			ResourceScopeValidationService.INSTANCE.validateFiles(analyzedFiles, progress.newChild(10));
 
 			ExtendedPlatform.persistContentTypeIdProperties(analyzedFiles, true, null);
+
 			return Status.OK_STATUS;
 		} catch (OperationCanceledException ex) {
 			return Status.CANCEL_STATUS;

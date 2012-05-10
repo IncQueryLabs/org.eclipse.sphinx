@@ -24,17 +24,17 @@ public abstract class AbstractEclipsePreference<T> implements IEclipsePreference
 	/**
 	 * Qualifier of the preference.
 	 */
-	protected String qualifier;
+	protected final String qualifier;
 
 	/**
 	 * Key of the preference.
 	 */
-	protected String key;
+	protected final String key;
 
 	/**
 	 * Default string value for the preference.
 	 */
-	protected String defaultValueAsString;
+	protected final String defaultValueAsString;
 
 	/**
 	 * Constructor of the class. Records the qualifier and the key that identify the preference, and the default value.

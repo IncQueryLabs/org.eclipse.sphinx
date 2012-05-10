@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2011 BMW Car IT, See4sys, itemis and others.
+ * Copyright (c) 2008-2012 BMW Car IT, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@
  *     itemis - [348544] OMG XMI files with embedded model content are not recognized as model files
  *     itemis - [348820] Performance-optimized content type detection in MetaModelDescriptorRegistry ignores file extensions
  *     Conti  - [349675] Performance improvements of MetaModelDescriptorRegistry
+ *     BMW Car IT - [373481] Performance optimizations for model loading
  *
  * </copyright>
  */
@@ -40,6 +41,7 @@ import org.eclipse.core.internal.content.ContentType;
 import org.eclipse.core.internal.content.ContentTypeHandler;
 import org.eclipse.core.internal.content.ContentTypeManager;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -135,16 +137,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 	private Map<String, String> fContentTypeIdCache = new HashMap<String, String>();
 
-	private Map<String, Pattern> patternCache = new LinkedHashMap<String, Pattern>() {
-
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		protected boolean removeEldestEntry(java.util.Map.Entry<String, Pattern> eldest) {
-			// keep up to 100 entries in the cache
-			return size() > 100;
-		}
-	};
+	private Map<EPackage, IMetaModelDescriptor> fPackageMetaModelDescriptorCache = new HashMap<EPackage, IMetaModelDescriptor>();
 
 	/**
 	 * Private constructor for the singleton pattern.
@@ -154,22 +147,6 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	private MetaModelDescriptorRegistry() {
 		readContributedDescriptors();
 		readContributedTargetMetaModelDescriptorProviders();
-	}
-
-	/**
-	 * Get a pattern from the cache, creating one if necessary
-	 * 
-	 * @param regexp
-	 * @return
-	 */
-	private Pattern getPattern(String regexp) {
-		if (patternCache.containsKey(regexp)) {
-			return patternCache.get(regexp);
-		} else {
-			Pattern p = Pattern.compile(regexp);
-			patternCache.put(regexp, p);
-			return p;
-		}
 	}
 
 	private IExtensionRegistry getExtensionRegistry() {
@@ -874,13 +851,34 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 */
 	public IMetaModelDescriptor getDescriptor(EPackage ePackage) {
 		if (ePackage != null) {
-			final String nsURI = ePackage.getNsURI();
-			if (nsURI != null) {
-				return getDescriptor(ANY_MM, new IDescriptorFilter() {
-					public boolean accept(IMetaModelDescriptor descriptor) {
-						return getPattern(descriptor.getEPackageNsURIPattern()).matcher(nsURI).matches();
+			synchronized (fPackageMetaModelDescriptorCache) {
+				IMetaModelDescriptor mmDescriptor = fPackageMetaModelDescriptorCache.get(ePackage);
+
+				if (mmDescriptor == null) {
+					// not cached
+					final String nsURI = ePackage.getNsURI();
+
+					if (nsURI != null) {
+						mmDescriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
+							public boolean accept(IMetaModelDescriptor descriptor) {
+								return descriptor.matchesEPackageNsURIPattern(nsURI);
+							}
+						});
 					}
-				});
+
+					if (mmDescriptor != null) {
+						fPackageMetaModelDescriptorCache.put(ePackage, mmDescriptor);
+					} else {
+						fPackageMetaModelDescriptorCache.put(ePackage, NO_MM);
+					}
+				}
+
+				if (mmDescriptor == NO_MM) {
+					// cached but no descriptor could be found earlier
+					return null;
+				} else {
+					return mmDescriptor;
+				}
 			}
 		}
 		return null;
@@ -930,25 +928,25 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	public IMetaModelDescriptor getDescriptor(final URI namespaceURI) {
 		if (namespaceURI != null) {
 			synchronized (fMetaModelDescriptors) {
-				final String namespaceURIStr = namespaceURI.toString();
+				final String namespaceURIString = namespaceURI.toString();
 				IMetaModelDescriptor mmDescriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
 					public boolean accept(IMetaModelDescriptor mmDescriptor) {
-						if (getPattern(mmDescriptor.getNamespace()).matcher(namespaceURIStr).matches()) {
+						if (namespaceURIString.equals(mmDescriptor.getNamespace())) {
 							return true;
 						}
-						if (getPattern(mmDescriptor.getEPackageNsURIPattern()).matcher(namespaceURIStr).matches()) {
+						if (mmDescriptor.matchesEPackageNsURIPattern(namespaceURIString)) {
 							return true;
 						}
 						for (URI compatibleNamepaceURI : mmDescriptor.getCompatibleNamespaceURIs()) {
-							if (getPattern(compatibleNamepaceURI.toString()).matcher(namespaceURIStr).matches()) {
+							if (namespaceURIString.equals(compatibleNamepaceURI.toString())) {
 								return true;
 							}
 						}
 						for (IMetaModelDescriptor compatibleResourceVersionDescriptor : mmDescriptor.getCompatibleResourceVersionDescriptors()) {
-							if (getPattern(compatibleResourceVersionDescriptor.getNamespace()).matcher(namespaceURIStr).matches()) {
+							if (namespaceURIString.equals(compatibleResourceVersionDescriptor.getNamespace())) {
 								return true;
 							}
-							if (getPattern(compatibleResourceVersionDescriptor.getEPackageNsURIPattern()).matcher(namespaceURIStr).matches()) {
+							if (compatibleResourceVersionDescriptor.matchesEPackageNsURIPattern(namespaceURIString)) {
 								return true;
 							}
 						}
@@ -960,7 +958,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 				if (mmDescriptor == null) {
 					// Try to retrieve Ecore model behind given namespace and dynamically create a new meta-model
 					// descriptor
-					EPackage ePackage = EPackage.Registry.INSTANCE.getEPackage(namespaceURIStr);
+					EPackage ePackage = EPackage.Registry.INSTANCE.getEPackage(namespaceURIString);
 					if (ePackage != null) {
 						mmDescriptor = createDescriptor(ePackage);
 						addDescriptor(mmDescriptor);
@@ -1065,7 +1063,9 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * 
 	 * @return A {@link Collection collection} with all file types associated with a {@link IMetaModelDescriptor target
 	 *         meta-model descriptor} or an empty {@link Collection collection} if no such exist.
+	 * @deprecated use {@link MetaModelDescriptorRegistry#isContentTypeOfTargetDescriptorsApplicable(IFile)} instead
 	 */
+	@Deprecated
 	public Collection<String> getFileExtensionsAssociatedWithTargetDescriptors() {
 		Collection<String> extensions = new HashSet<String>(2);
 		extensions.addAll(fFileExtensionToTargetMetaModelDescriptorProviderIds.keySet());
@@ -1075,6 +1075,40 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		return Collections.unmodifiableCollection(extensions);
 	}
 
+	/**
+	 * Returns true if the extension of the passed in file matches any extension of all file types which are associated
+	 * with a {@link IMetaModelDescriptor target meta-model descriptor}. Matching is done against both file extensions
+	 * for which a {@link IMetaModelDescriptor target meta-model descriptor} has been specified directly and file
+	 * extensions supported by content types for which a {@link IMetaModelDescriptor target meta-model descriptor} has
+	 * been defined.
+	 * 
+	 * @return true if the extensions any target descriptor content type match the passed in file's extension. false if
+	 *         the file is null or has no extension.
+	 */
+	public boolean isContentTypeOfTargetDescriptorsApplicable(IFile file) {
+		if (file == null) {
+			return false;
+		}
+
+		String extension = file.getFileExtension();
+		if (extension == null) {
+			return false;
+		}
+
+		for (String contentTypeId : fContentTypeIdToTargetMetaModelDescriptorProviderIds.keySet()) {
+			if (contentTypeId.equals(file.getFileExtension())) {
+				return true;
+			}
+			for (String contentTypeExtension : ExtendedPlatform.getContentTypeFileExtensions(contentTypeId)) {
+				if (contentTypeExtension.equals(extension)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	private ITargetMetaModelDescriptorProvider getTargetMetaModelDescriptorProvider(IFile file) {
 		try {
 			ITargetMetaModelDescriptorProvider provider = null;
@@ -1082,6 +1116,12 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 				String fileExtension = file.getFileExtension();
 				provider = fFileExtensionToTargetMetaModelDescriptorProviderIds.get(fileExtension);
 				if (provider == null) {
+					// Abort for files that are not in-sync. Reading the model namespace would trigger a refresh for
+					// out-of-sync files which would then trigger the model synchronizer via its resource change
+					// listener. This is not desirable at this point.
+					if (file.isSynchronized(IResource.DEPTH_ONE) == false) {
+						return null;
+					}
 					String contentTypeId = fastGetContentTypeId(file);
 					provider = fContentTypeIdToTargetMetaModelDescriptorProviderIds.get(contentTypeId);
 				}
@@ -1160,19 +1200,19 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 				IMetaModelDescriptor mmDescriptor = getDescriptor(new URI(resourceNamespace));
 				if (mmDescriptor != null) {
 					// Newly created resources typically match implemented metamodel version exactly
-					if (resourceNamespace.matches(mmDescriptor.getNamespace())) {
+					if (resourceNamespace.equals(mmDescriptor.getNamespace())) {
 						return mmDescriptor;
 					}
-					if (resourceNamespace.matches(mmDescriptor.getEPackageNsURIPattern())) {
+					if (mmDescriptor.matchesEPackageNsURIPattern(resourceNamespace)) {
 						return mmDescriptor;
 					}
 
 					// Resource version is older than but compatible with metamodel version
 					for (IMetaModelDescriptor compatibleResourceVersionDescriptor : mmDescriptor.getCompatibleResourceVersionDescriptors()) {
-						if (resourceNamespace.matches(compatibleResourceVersionDescriptor.getNamespace())) {
+						if (resourceNamespace.equals(compatibleResourceVersionDescriptor.getNamespace())) {
 							return compatibleResourceVersionDescriptor;
 						}
-						if (resourceNamespace.matches(compatibleResourceVersionDescriptor.getEPackageNsURIPattern())) {
+						if (compatibleResourceVersionDescriptor.matchesEPackageNsURIPattern(resourceNamespace)) {
 							return compatibleResourceVersionDescriptor;
 						}
 					}
