@@ -132,9 +132,9 @@ public class ProjectResourceScopeProvider extends AbstractResourceScopeProvider 
 	protected ProjectResourceScope createScope(IResource resource) {
 		ProjectResourceScope scope = new ProjectResourceScope(resource);
 		configureScope(scope);
-		return new ProjectResourceScope(resource);
+		return scope;
 	}
-	
+
 	protected void configureScope(ProjectResourceScope scope) {
 		scope.setReferencedProjectsProvider(referencedProjectsCache);
 	}

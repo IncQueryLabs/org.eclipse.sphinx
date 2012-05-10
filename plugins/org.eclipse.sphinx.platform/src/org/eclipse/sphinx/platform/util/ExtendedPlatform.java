@@ -13,6 +13,7 @@
  *     Conti - [353487] - Performance of ExtendedPlatform.isPlatformPrivateResource
  *     itemis - [357965] Scheduling rules for saving new resources must be scoped to enclosing project 
  *     BMW Car IT - [373481] Performance optimizations for model loading
+ *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  * 
  * </copyright>
  */
@@ -37,6 +38,7 @@ import org.eclipse.core.internal.resources.ResourceException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -65,6 +67,8 @@ import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.internal.Activator;
 import org.eclipse.sphinx.platform.internal.messages.Messages;
 import org.eclipse.sphinx.platform.resources.AbstractResourceVisitor;
+import org.eclipse.sphinx.platform.resources.IResourceSyncMarker;
+import org.eclipse.sphinx.platform.resources.MarkerJob;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
@@ -665,7 +669,6 @@ public final class ExtendedPlatform {
 				}
 			} catch (CoreException ex) {
 				PlatformLogUtil.logAsError(Activator.getDefault(), ex);
-				return;
 			}
 		}
 	}
@@ -696,10 +699,10 @@ public final class ExtendedPlatform {
 	 * @param referencingProjects
 	 * @since 0.7.0
 	 */
-	private static void collectReferencingProjects(IProject project, Set<IProject> referencingProjects) {
-		if (project.isAccessible() && referencingProjects.add(project)) {
+	private static void collectReferencingProjects(IProject project, Set<IProject> allReferencingProjects) {
+		if (project.isAccessible() && allReferencingProjects.add(project)) {
 			for (IProject p : project.getReferencingProjects()) {
-				collectReferencingProjects(p, referencingProjects);
+				collectReferencingProjects(p, allReferencingProjects);
 			}
 		}
 	}
@@ -1371,5 +1374,30 @@ public final class ExtendedPlatform {
 		job.setPriority(Job.SHORT);
 		job.setSystem(true);
 		job.schedule();
+	}
+
+	/**
+	 * Checks wether the resource is in-sync with the file system and updates its out-of-sync marker accordingly. If the
+	 * resource is out-of-sync a problem marker is created otherwise any previously existing markers are removed. This
+	 * method will not synchronize the resource.
+	 * 
+	 * @param markerJob
+	 *            the marker job that will be used to asynchronously create or delete markers
+	 * @param resource
+	 *            the resource to check
+	 * @return true if the resource is in-sync false otherwise.
+	 * @see IResourceSyncMarker#RESOURCE_SYNC_PROBLEM
+	 */
+	public static boolean isSynchronized(IResource resource) {
+		if (resource.isSynchronized(IResource.DEPTH_ZERO)) {
+			// remove out-of-sync markers that may have been created previously
+			MarkerJob.INSTANCE.addDeleteMarkerTask(resource, IResourceSyncMarker.RESOURCE_SYNC_PROBLEM);
+			return true;
+		} else {
+			// create an out-of-sync marker warning the user
+			MarkerJob.INSTANCE.addCreateMarkerTask(resource, IResourceSyncMarker.RESOURCE_SYNC_PROBLEM, IMarker.SEVERITY_WARNING,
+					NLS.bind(Messages.warning_resourceIsOutOfSync, resource.getFullPath()));
+			return false;
+		}
 	}
 }

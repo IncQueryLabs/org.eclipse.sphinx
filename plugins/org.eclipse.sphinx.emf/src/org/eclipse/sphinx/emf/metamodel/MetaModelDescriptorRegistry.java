@@ -1095,14 +1095,16 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			return false;
 		}
 
+		if (fFileExtensionToTargetMetaModelDescriptorProviderIds.keySet().contains(extension)) {
+			return true;
+		}
+
 		for (String contentTypeId : fContentTypeIdToTargetMetaModelDescriptorProviderIds.keySet()) {
 			if (contentTypeId.equals(file.getFileExtension())) {
 				return true;
 			}
-			for (String contentTypeExtension : ExtendedPlatform.getContentTypeFileExtensions(contentTypeId)) {
-				if (contentTypeExtension.equals(extension)) {
-					return true;
-				}
+			if (ExtendedPlatform.isContentTypeApplicable(contentTypeId, file)) {
+				return true;
 			}
 		}
 
