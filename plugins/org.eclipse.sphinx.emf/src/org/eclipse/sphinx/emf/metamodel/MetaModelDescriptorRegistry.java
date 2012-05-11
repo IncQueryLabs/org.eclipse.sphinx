@@ -1100,9 +1100,6 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		}
 
 		for (String contentTypeId : fContentTypeIdToTargetMetaModelDescriptorProviderIds.keySet()) {
-			if (contentTypeId.equals(file.getFileExtension())) {
-				return true;
-			}
 			if (ExtendedPlatform.isContentTypeApplicable(contentTypeId, file)) {
 				return true;
 			}
