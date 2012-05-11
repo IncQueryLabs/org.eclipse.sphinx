@@ -174,20 +174,20 @@ public final class EcoreResourceUtil {
 		// Already a platform resource URI?
 		if (uri.isPlatformResource()) {
 			return uri;
-		} else {
-			if (Platform.isRunning()) {
-				// Try to convert given URI to platform resource URI
-				// Use getFileForLocation instead of a simple match against the workspace root location so that also
-				// cases are covered where resources are part of the workspace but not physically (filesystem level)
-				// located below the workspace root.
-				IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(uri.toFileString()));
-				if (file != null) {
-					return URI.createPlatformResourceURI(file.getFullPath().toString(), true);
-				}
-			}
-
-			return getURIConverter().normalize(uri);
 		}
+
+		if (uri.isFile() && Platform.isRunning()) {
+			// Try to convert given URI to platform resource URI
+			// Use getFileForLocation instead of a simple match against the workspace root location so that also
+			// cases are covered where resources are part of the workspace but not physically (filesystem level)
+			// located below the workspace root.
+			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(uri.toFileString()));
+			if (file != null) {
+				return URI.createPlatformResourceURI(file.getFullPath().toString(), true);
+			}
+		}
+
+		return getURIConverter().normalize(uri);
 	}
 
 	/**
@@ -242,7 +242,7 @@ public final class EcoreResourceUtil {
 		return false;
 	}
 
-	private static XMLRootElementHandler readRootElement(URIConverter uriConverter, URI uri, XMLRootElementHandler handler) {
+	private static XMLRootElementHandler readRootElement(URIConverter uriConverter, URI uri, XMLRootElementHandler handler, boolean useLexicalHandler) {
 		if (handler == null) {
 			handler = new XMLRootElementHandler();
 		}
@@ -251,7 +251,7 @@ public final class EcoreResourceUtil {
 			try {
 				uriConverter = uriConverter != null ? uriConverter : new ExtensibleURIConverterImpl();
 				inputStream = uriConverter.createInputStream(uri);
-				handler.parseContents(inputStream);
+				handler.parseContents(inputStream, useLexicalHandler);
 			} catch (SAXException ex) {
 				// Ignore parse exceptions because we might be face to non-XML files or XML files
 				// which are not well-formed - that's o.k. simply return null
@@ -297,7 +297,7 @@ public final class EcoreResourceUtil {
 	 *         question is either a non-XML file or an XML file which is not well-formed or has no model namespace.
 	 */
 	public static String readModelNamespace(URIConverter uriConverter, URI uri) {
-		XMLRootElementHandler handler = readRootElement(uriConverter, uri, null);
+		XMLRootElementHandler handler = readRootElement(uriConverter, uri, null, false);
 		return handler.getRootElementNamespace();
 	}
 
@@ -343,7 +343,7 @@ public final class EcoreResourceUtil {
 		if (targetNamespaceExcludePatterns != null) {
 			handler.setTargetNamespaceExcludePatterns(targetNamespaceExcludePatterns);
 		}
-		readRootElement(uriConverter, uri, handler);
+		readRootElement(uriConverter, uri, handler, false);
 		return handler.getTargetNamespace();
 	}
 
@@ -376,7 +376,7 @@ public final class EcoreResourceUtil {
 	 *         found.
 	 */
 	public static Collection<String> readRootElementComments(URIConverter uriConverter, URI uri) {
-		XMLRootElementHandler handler = readRootElement(uriConverter, uri, null);
+		XMLRootElementHandler handler = readRootElement(uriConverter, uri, null, true);
 		return handler.getRootElementComments();
 	}
 
@@ -413,7 +413,7 @@ public final class EcoreResourceUtil {
 	 *         location.
 	 */
 	public static Map<String, String> readSchemaLocationEntries(URIConverter uriConverter, URI uri) {
-		XMLRootElementHandler handler = readRootElement(uriConverter, uri, null);
+		XMLRootElementHandler handler = readRootElement(uriConverter, uri, null, false);
 		String schemaLocation = handler.getSchemaLocation();
 		Map<String, String> schemaLocationEntries = new HashMap<String, String>();
 		if (schemaLocation != null) {
