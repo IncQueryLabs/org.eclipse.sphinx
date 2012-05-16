@@ -98,9 +98,9 @@ public final class Activator extends EMFPlugin {
 
 			startWorkspaceSynchronizing();
 
-			new ModelDescriptorRegistryInitializer().schedule();
-
 			ProxyHelperAdapterFactory.INSTANCE.start();
+
+			new ModelDescriptorRegistryInitializer().schedule();
 		}
 
 		@Override

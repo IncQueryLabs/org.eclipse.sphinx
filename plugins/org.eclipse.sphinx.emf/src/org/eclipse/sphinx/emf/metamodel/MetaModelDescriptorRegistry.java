@@ -17,6 +17,7 @@
  *     itemis - [348820] Performance-optimized content type detection in MetaModelDescriptorRegistry ignores file extensions
  *     Conti  - [349675] Performance improvements of MetaModelDescriptorRegistry
  *     BMW Car IT - [373481] Performance optimizations for model loading
+ *     BMW Car IT - Lazy extension initialization
  *
  * </copyright>
  */
@@ -120,33 +121,35 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	private IExtensionRegistry fExtensionRegistry;
 
 	/**
+	 * Flag to track lazy initialization.
+	 */
+	private boolean isInitialized = false;
+
+	/**
 	 * The contributed meta-model descriptors.
 	 */
-	private Map<String, IMetaModelDescriptor> fMetaModelDescriptors = Collections.synchronizedMap(new LinkedHashMap<String, IMetaModelDescriptor>());
+	private final Map<String, IMetaModelDescriptor> fMetaModelDescriptors = Collections
+			.synchronizedMap(new LinkedHashMap<String, IMetaModelDescriptor>());
 
 	/**
 	 * The contributed target meta-model descriptor providers.
 	 */
-	private Map<String, ITargetMetaModelDescriptorProvider> fContentTypeIdToTargetMetaModelDescriptorProviderIds = new HashMap<String, ITargetMetaModelDescriptorProvider>();
+	private final Map<String, ITargetMetaModelDescriptorProvider> fContentTypeIdToTargetMetaModelDescriptorProviders = new HashMap<String, ITargetMetaModelDescriptorProvider>();
 
-	private Map<String, ITargetMetaModelDescriptorProvider> fFileExtensionToTargetMetaModelDescriptorProviderIds = new HashMap<String, ITargetMetaModelDescriptorProvider>();
+	private final Map<String, ITargetMetaModelDescriptorProvider> fFileExtensionToTargetMetaModelDescriptorProviders = new HashMap<String, ITargetMetaModelDescriptorProvider>();
 
-	private Map<String, ITargetMetaModelDescriptorProvider> fAllTargetMetaModelDescriptorProviders = new HashMap<String, ITargetMetaModelDescriptorProvider>();
+	private final Map<String, ITargetMetaModelDescriptorProvider> fAllTargetMetaModelDescriptorProviders = new HashMap<String, ITargetMetaModelDescriptorProvider>();
 
-	private FileMetaModelDescriptorCache fFileMetaModelDescriptorCache = new FileMetaModelDescriptorCache();
+	private final FileMetaModelDescriptorCache fFileMetaModelDescriptorCache = new FileMetaModelDescriptorCache();
 
-	private Map<String, String> fContentTypeIdCache = new HashMap<String, String>();
+	private final Map<String, String> fContentTypeIdCache = new HashMap<String, String>();
 
-	private Map<EPackage, IMetaModelDescriptor> fPackageMetaModelDescriptorCache = new HashMap<EPackage, IMetaModelDescriptor>();
+	private final Map<EPackage, IMetaModelDescriptor> fPackageMetaModelDescriptorCache = new HashMap<EPackage, IMetaModelDescriptor>();
 
 	/**
 	 * Private constructor for the singleton pattern.
-	 * <p>
-	 * Asks for the synchronized reading of contributions to <em>Meta-Model Descriptors</em> extension point.
 	 */
 	private MetaModelDescriptorRegistry() {
-		readContributedDescriptors();
-		readContributedTargetMetaModelDescriptorProviders();
 	}
 
 	private IExtensionRegistry getExtensionRegistry() {
@@ -160,8 +163,12 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	// Only used for testing
 	public void setExtensionRegistry(IExtensionRegistry extensionRegistry) {
 		fExtensionRegistry = extensionRegistry;
-		fMetaModelDescriptors.clear();
-		readContributedDescriptors();
+		isInitialized = true;
+		getMetaModelDescriptors().clear();
+		getContentTypeIdToTargetMetaModelDescriptorProviders().clear();
+		getFileExtensionToTargetMetaModelDescriptorProviders().clear();
+		getAllTargetMetaModelDescriptorProviders().clear();
+		isInitialized = false;
 	}
 
 	/**
@@ -237,11 +244,11 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 				PlatformLogUtil.logAsWarning(Activator.getPlugin(),
 						new RuntimeException(NLS.bind(Messages.warning_mmDescriptorHasNoIdentifier, mmDescriptor.getName())));
 			}
-			if (fMetaModelDescriptors.containsKey(id)) {
+			if (getMetaModelDescriptors().containsKey(id)) {
 				PlatformLogUtil.logAsWarning(Activator.getPlugin(),
 						new RuntimeException(NLS.bind(Messages.warning_mmDescriptorIdentifierNotUnique, id)));
 			}
-			fMetaModelDescriptors.put(id, mmDescriptor);
+			getMetaModelDescriptors().put(id, mmDescriptor);
 		}
 	}
 
@@ -323,49 +330,49 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException(Messages.warning_targetMetaModelDescriptorProviderWithoutId));
 			return false;
 		}
-		if (fAllTargetMetaModelDescriptorProviders.containsKey(id)) {
+		if (getAllTargetMetaModelDescriptorProviders().containsKey(id)) {
 			PlatformLogUtil.logAsWarning(Activator.getPlugin(),
 					new RuntimeException(NLS.bind(Messages.warning_targetMetaModelDescriptorProviderIdNotUnique, id)));
 			return false;
 		}
 
-		fAllTargetMetaModelDescriptorProviders.put(id, targetMetaModelDescriptorProvider);
+		getAllTargetMetaModelDescriptorProviders().put(id, targetMetaModelDescriptorProvider);
 		return true;
 	}
 
 	private void addTargetDescriptorProviderForFileExtension(String fileExtension,
 			ITargetMetaModelDescriptorProvider targetMetaModelDescriptorProvider) {
 		Assert.isNotNull(targetMetaModelDescriptorProvider);
-		Assert.isLegal(fAllTargetMetaModelDescriptorProviders.containsValue(targetMetaModelDescriptorProvider));
+		Assert.isLegal(getAllTargetMetaModelDescriptorProviders().containsValue(targetMetaModelDescriptorProvider));
 
 		if (fileExtension == null) {
 			PlatformLogUtil.logAsWarning(Activator.getPlugin(),
 					new RuntimeException(NLS.bind(Messages.warning_fileExtensionForTargetMetaModelDescriptorProviderMustNotBeNull, fileExtension)));
 		}
-		if (fFileExtensionToTargetMetaModelDescriptorProviderIds.containsKey(fileExtension)) {
+		if (getFileExtensionToTargetMetaModelDescriptorProviders().containsKey(fileExtension)) {
 			PlatformLogUtil.logAsWarning(Activator.getPlugin(),
 					new RuntimeException(NLS.bind(Messages.warning_fileExtensionForTargetMetaModelDescriptorProviderNotUnique, fileExtension)));
 		}
 
-		fFileExtensionToTargetMetaModelDescriptorProviderIds.put(fileExtension, targetMetaModelDescriptorProvider);
+		getFileExtensionToTargetMetaModelDescriptorProviders().put(fileExtension, targetMetaModelDescriptorProvider);
 	}
 
 	private void addTargetDescriptorProviderForContentTypeId(String contentTypeId,
 			ITargetMetaModelDescriptorProvider targetMetaModelDescriptorProvider) {
 		Assert.isNotNull(targetMetaModelDescriptorProvider);
-		Assert.isLegal(fAllTargetMetaModelDescriptorProviders.containsValue(targetMetaModelDescriptorProvider));
+		Assert.isLegal(getAllTargetMetaModelDescriptorProviders().containsValue(targetMetaModelDescriptorProvider));
 
 		if (contentTypeId == null) {
 			PlatformLogUtil.logAsWarning(Activator.getPlugin(),
 					new RuntimeException(NLS.bind(Messages.warning_contentTypeIdForTargetMetaModelDescriptorProviderMustNotBeNull, contentTypeId)));
 
 		}
-		if (fContentTypeIdToTargetMetaModelDescriptorProviderIds.containsKey(contentTypeId)) {
+		if (getContentTypeIdToTargetMetaModelDescriptorProviders().containsKey(contentTypeId)) {
 			PlatformLogUtil.logAsWarning(Activator.getPlugin(),
 					new RuntimeException(NLS.bind(Messages.warning_contentTypeIdForTargetMetaModelDescriptorProviderNotUnique, contentTypeId)));
 		}
 
-		fContentTypeIdToTargetMetaModelDescriptorProviderIds.put(contentTypeId, targetMetaModelDescriptorProvider);
+		getContentTypeIdToTargetMetaModelDescriptorProviders().put(contentTypeId, targetMetaModelDescriptorProvider);
 	}
 
 	/*
@@ -427,8 +434,8 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	public <T extends IMetaModelDescriptor> List<T> getDescriptors(T mmDescriptor, boolean sorted) {
 		List<T> descriptors = new ArrayList<T>();
 		if (mmDescriptor != null) {
-			synchronized (fMetaModelDescriptors) {
-				for (IMetaModelDescriptor descriptor : fMetaModelDescriptors.values()) {
+			synchronized (getMetaModelDescriptors()) {
+				for (IMetaModelDescriptor descriptor : getMetaModelDescriptors().values()) {
 					if (mmDescriptor == ANY_MM || mmDescriptor.getClass().isInstance(descriptor)) {
 						@SuppressWarnings("unchecked")
 						T desc = (T) descriptor;
@@ -466,7 +473,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		if (ANY_MM.getIdentifier().equals(identifier)) {
 			return ANY_MM;
 		}
-		return fMetaModelDescriptors.get(identifier);
+		return getMetaModelDescriptors().get(identifier);
 	}
 
 	/**
@@ -481,10 +488,11 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 		List<IMetaModelDescriptor> mmDescriptors = new ArrayList<IMetaModelDescriptor>();
 		if (idPattern != null) {
-			synchronized (fMetaModelDescriptors) {
-				for (String identifier : fMetaModelDescriptors.keySet()) {
-					if (identifier.matches(idPattern)) {
-						mmDescriptors.add(fMetaModelDescriptors.get(identifier));
+			Pattern pattern = Pattern.compile(idPattern);
+			synchronized (getMetaModelDescriptors()) {
+				for (Map.Entry<String, IMetaModelDescriptor> entry : getMetaModelDescriptors().entrySet()) {
+					if (pattern.matcher(entry.getKey()).matches()) {
+						mmDescriptors.add(entry.getValue());
 					}
 				}
 			}
@@ -927,7 +935,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 */
 	public IMetaModelDescriptor getDescriptor(final URI namespaceURI) {
 		if (namespaceURI != null) {
-			synchronized (fMetaModelDescriptors) {
+			synchronized (getMetaModelDescriptors()) {
 				final String namespaceURIString = namespaceURI.toString();
 				IMetaModelDescriptor mmDescriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
 					public boolean accept(IMetaModelDescriptor mmDescriptor) {
@@ -1012,9 +1020,9 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 				if (i < descriptors.size() - 1) {
 					// there is a very good chance that the next descriptor lookup to trigger the same descriptor,
 					// as a a result, moving the descriptor to the last position could improve the performance
-					synchronized (fMetaModelDescriptors) {
-						fMetaModelDescriptors.remove(descriptor.getIdentifier());
-						fMetaModelDescriptors.put(descriptor.getIdentifier(), descriptor);
+					synchronized (getMetaModelDescriptors()) {
+						getMetaModelDescriptors().remove(descriptor.getIdentifier());
+						getMetaModelDescriptors().put(descriptor.getIdentifier(), descriptor);
 					}
 				}
 				return descriptor;
@@ -1068,8 +1076,8 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	@Deprecated
 	public Collection<String> getFileExtensionsAssociatedWithTargetDescriptors() {
 		Collection<String> extensions = new HashSet<String>(2);
-		extensions.addAll(fFileExtensionToTargetMetaModelDescriptorProviderIds.keySet());
-		for (String contentTypeId : fContentTypeIdToTargetMetaModelDescriptorProviderIds.keySet()) {
+		extensions.addAll(getFileExtensionToTargetMetaModelDescriptorProviders().keySet());
+		for (String contentTypeId : getContentTypeIdToTargetMetaModelDescriptorProviders().keySet()) {
 			extensions.addAll(ExtendedPlatform.getContentTypeFileExtensions(contentTypeId));
 		}
 		return Collections.unmodifiableCollection(extensions);
@@ -1095,11 +1103,11 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			return false;
 		}
 
-		if (fFileExtensionToTargetMetaModelDescriptorProviderIds.keySet().contains(extension)) {
+		if (getFileExtensionToTargetMetaModelDescriptorProviders().keySet().contains(extension)) {
 			return true;
 		}
 
-		for (String contentTypeId : fContentTypeIdToTargetMetaModelDescriptorProviderIds.keySet()) {
+		for (String contentTypeId : getContentTypeIdToTargetMetaModelDescriptorProviders().keySet()) {
 			if (ExtendedPlatform.isContentTypeApplicable(contentTypeId, file)) {
 				return true;
 			}
@@ -1113,7 +1121,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			ITargetMetaModelDescriptorProvider provider = null;
 			if (file != null) {
 				String fileExtension = file.getFileExtension();
-				provider = fFileExtensionToTargetMetaModelDescriptorProviderIds.get(fileExtension);
+				provider = getFileExtensionToTargetMetaModelDescriptorProviders().get(fileExtension);
 				if (provider == null) {
 					// Abort for files that are not in-sync. Reading the model namespace would trigger a refresh for
 					// out-of-sync files which would then trigger the model synchronizer via its resource change
@@ -1122,7 +1130,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 						return null;
 					}
 					String contentTypeId = fastGetContentTypeId(file);
-					provider = fContentTypeIdToTargetMetaModelDescriptorProviderIds.get(contentTypeId);
+					provider = getContentTypeIdToTargetMetaModelDescriptorProviders().get(contentTypeId);
 				}
 			}
 			return provider;
@@ -1221,6 +1229,35 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
 		return null;
+	}
+
+	private synchronized void lazyInitialization() {
+		if (isInitialized == false) {
+			// already set isInitialized to true before actual initializaton to avoid infinite recursion
+			isInitialized = true;
+			readContributedDescriptors();
+			readContributedTargetMetaModelDescriptorProviders();
+		}
+	}
+
+	private Map<String, IMetaModelDescriptor> getMetaModelDescriptors() {
+		lazyInitialization();
+		return fMetaModelDescriptors;
+	}
+
+	private Map<String, ITargetMetaModelDescriptorProvider> getContentTypeIdToTargetMetaModelDescriptorProviders() {
+		lazyInitialization();
+		return fContentTypeIdToTargetMetaModelDescriptorProviders;
+	}
+
+	private Map<String, ITargetMetaModelDescriptorProvider> getFileExtensionToTargetMetaModelDescriptorProviders() {
+		lazyInitialization();
+		return fFileExtensionToTargetMetaModelDescriptorProviders;
+	}
+
+	private Map<String, ITargetMetaModelDescriptorProvider> getAllTargetMetaModelDescriptorProviders() {
+		lazyInitialization();
+		return fAllTargetMetaModelDescriptorProviders;
 	}
 
 	/**
@@ -1382,4 +1419,5 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			super("org.eclipse.sphinx.emf.metamodel.no", "http://no.mm", "No metamodel"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
+
 }

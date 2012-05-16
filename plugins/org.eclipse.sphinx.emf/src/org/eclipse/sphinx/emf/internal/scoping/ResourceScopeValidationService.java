@@ -21,18 +21,15 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.util.Diagnostic;
-import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.scoping.IResourceScopeProvider;
 import org.eclipse.sphinx.emf.scoping.ResourceScopeProviderRegistry;
 import org.eclipse.sphinx.platform.resources.MarkerJob;
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
  * Provides methods validating for validating {@link IFile}s with regard to their {@link IResourceScope resource scope}
@@ -75,38 +72,33 @@ public class ResourceScopeValidationService {
 					return;
 				}
 
-				try {
-					if (file != null && file.isAccessible() && file.isSynchronized(IResource.DEPTH_ONE)) {
-						// Delete old resource scoping problem marker if any
-						MarkerJob.INSTANCE.addDeleteMarkerTask(file, IResourceScopeMarker.RESOURCE_SCOPING_PROBLEM);
+				if (file != null && file.isAccessible() && file.isSynchronized(IResource.DEPTH_ONE)) {
+					// Delete old resource scoping problem marker if any
+					MarkerJob.INSTANCE.addDeleteMarkerTask(file, IResourceScopeMarker.RESOURCE_SCOPING_PROBLEM);
 
-						/*
-						 * Performance optimization: Check if current file is a potential model file by investigating
-						 * it's extension. This helps excluding obvious non-model files right away and avoids
-						 * potentially lengthy but useless processing of the same.
-						 */
-						if (ResourceScopeProviderRegistry.INSTANCE.hasApplicableFileExtension(file)) {
-							// Retrieve resource scope provider associated with given file
-							IMetaModelDescriptor effectiveDescriptor = MetaModelDescriptorRegistry.INSTANCE.getEffectiveDescriptor(file);
-							IResourceScopeProvider resourceScopeProvider = ResourceScopeProviderRegistry.INSTANCE
-									.getResourceScopeProvider(effectiveDescriptor);
-							if (resourceScopeProvider != null) {
-								// Validate file in terms of resource scoping
-								Diagnostic diagnostic = resourceScopeProvider.validate(file);
-								if (diagnostic != null && !diagnostic.equals(Diagnostic.OK_INSTANCE)) {
-									// Delete all other old problem markers - as resource is a model resource and
-									// out of
-									// scope they most likely make no longer any sense
-									MarkerJob.INSTANCE.addDeleteMarkerTask(file, null);
+					/*
+					 * Performance optimization: Check if current file is a potential model file by investigating it's
+					 * extension. This helps excluding obvious non-model files right away and avoids potentially lengthy
+					 * but useless processing of the same.
+					 */
+					if (ResourceScopeProviderRegistry.INSTANCE.hasApplicableFileExtension(file)) {
+						// Retrieve resource scope provider associated with given file
+						IMetaModelDescriptor effectiveDescriptor = MetaModelDescriptorRegistry.INSTANCE.getEffectiveDescriptor(file);
+						IResourceScopeProvider resourceScopeProvider = ResourceScopeProviderRegistry.INSTANCE
+								.getResourceScopeProvider(effectiveDescriptor);
+						if (resourceScopeProvider != null) {
+							// Validate file in terms of resource scoping
+							Diagnostic diagnostic = resourceScopeProvider.validate(file);
+							if (diagnostic != null && !diagnostic.equals(Diagnostic.OK_INSTANCE)) {
+								// Delete all other old problem markers - as resource is a model resource and
+								// out of scope they most likely make no longer any sense
+								MarkerJob.INSTANCE.addDeleteMarkerTask(file, null);
 
-									// Create new resource scoping problem maker
-									createProblemMarkerForDiagnostic(file, diagnostic);
-								}
+								// Create new resource scoping problem maker
+								createProblemMarkerForDiagnostic(file, diagnostic);
 							}
 						}
 					}
-				} catch (CoreException ex) {
-					PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
 				}
 
 				progress.worked(1);
@@ -116,7 +108,7 @@ public class ResourceScopeValidationService {
 		}
 	}
 
-	private void createProblemMarkerForDiagnostic(IFile file, Diagnostic diagnostic) throws CoreException {
+	private void createProblemMarkerForDiagnostic(IFile file, Diagnostic diagnostic) {
 		Assert.isNotNull(file);
 		Assert.isLegal(file.isAccessible());
 		Assert.isNotNull(diagnostic);
@@ -152,24 +144,22 @@ public class ResourceScopeValidationService {
 					return;
 				}
 
-				try {
-					if (file != null && file.isAccessible()) {
-						/*
-						 * Performance optimization: Check if current file is a potential model file by investigating
-						 * it's extension. This helps excluding obvious non-model files right away and avoids
-						 * potentially lengthy but useless processing of the same.
-						 */
-						if (ResourceScopeProviderRegistry.INSTANCE.hasApplicableFileExtension(file)) {
-							// Delete old resource scoping problem maker if any
-							file.deleteMarkers(IResourceScopeMarker.RESOURCE_SCOPING_PROBLEM, true, IResource.DEPTH_ZERO);
-						}
+				if (file != null && file.isAccessible()) {
+					/*
+					 * Performance optimization: Check if current file is a potential model file by investigating it's
+					 * extension. This helps excluding obvious non-model files right away and avoids potentially lengthy
+					 * but useless processing of the same.
+					 */
+					if (ResourceScopeProviderRegistry.INSTANCE.hasApplicableFileExtension(file)) {
+						// Delete old resource scoping problem maker if any
+						MarkerJob.INSTANCE.addDeleteMarkerTask(file, IResourceScopeMarker.RESOURCE_SCOPING_PROBLEM);
 					}
-				} catch (CoreException ex) {
-					PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
 				}
 
 				progress.worked(1);
 			}
 		}
+
+		MarkerJob.INSTANCE.schedule();
 	}
 }

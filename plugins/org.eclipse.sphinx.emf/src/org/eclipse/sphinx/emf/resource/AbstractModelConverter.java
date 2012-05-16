@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2011 See4sys, BMW Car IT, itemis and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
  *     itemis - [344145] AbstractModelConverter should build document from XMLInputSource with systemId and publicId set
+ *     BMW Car IT - Make sure JDOM uses platform specific line separator instead of always using Windows \r\n.
  *      
  * </copyright>
  */
@@ -61,6 +62,8 @@ import org.xml.sax.helpers.DefaultHandler;
 public abstract class AbstractModelConverter implements IModelConverter {
 
 	public abstract Object getResourceVersionFromPreferences(IProject project);
+
+	private final Format format = Format.getRawFormat().setLineSeparator(System.getProperty("line.separator")); //$NON-NLS-1$
 
 	public boolean isLoadConverterFor(XMLResource resource, Map<?, ?> options) {
 		if (resource == null) {
@@ -211,7 +214,7 @@ public abstract class AbstractModelConverter implements IModelConverter {
 		// Write converted DOM structure into an output stream which is connected to a new input stream
 		PipedInputStream pipedInputStream = new PipedInputStream();
 		final PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream);
-		final XMLOutputter out = new XMLOutputter(Format.getRawFormat());
+		final XMLOutputter out = new XMLOutputter(format);
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -299,7 +302,7 @@ public abstract class AbstractModelConverter implements IModelConverter {
 			}
 
 			// Write converted DOM structure into given XML output stream
-			new XMLOutputter(Format.getRawFormat()).output(document, outputStream);
+			new XMLOutputter(format).output(document, outputStream);
 		} catch (Exception ex) {
 			throw new Resource.IOWrappedException(ex);
 		}

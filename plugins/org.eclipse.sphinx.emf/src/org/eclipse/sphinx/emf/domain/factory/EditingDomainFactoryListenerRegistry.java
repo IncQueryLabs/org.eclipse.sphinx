@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     BMW Car IT - Lazy extension initialization
  * 
  * </copyright>
  */
@@ -62,6 +63,11 @@ public class EditingDomainFactoryListenerRegistry {
 	private static final String ATTR_MMDESC_ID_PATTERN = "metaModelDescriptorIdPattern"; //$NON-NLS-1$
 
 	/**
+	 * Flag to track lazy initialization.
+	 */
+	private boolean isInitialized = false;
+
+	/**
 	 * The registered {@linkplain ITransactionalEditingDomainFactoryListener editing domain factory listener}s or
 	 * {@linkplain ListenerDescriptor listener descriptor}s
 	 */
@@ -110,7 +116,7 @@ public class EditingDomainFactoryListenerRegistry {
 	 * Private constructor for singleton pattern.
 	 */
 	private EditingDomainFactoryListenerRegistry() {
-		readContributedEditingDomainFactoryListeners();
+
 	}
 
 	/**
@@ -239,6 +245,13 @@ public class EditingDomainFactoryListenerRegistry {
 	 *         that match the specified {@linkplain IMetaModelDescriptor meta-model descriptor}.
 	 */
 	public Collection<ITransactionalEditingDomainFactoryListener> getListeners(IMetaModelDescriptor mmDescriptor) {
+		synchronized (this) {
+			if (isInitialized == false) {
+				readContributedEditingDomainFactoryListeners();
+				isInitialized = true;
+			}
+		}
+
 		// Retrieve editing domain factory listeners registered upon specified meta-model descriptor or one of its super
 		// descriptors
 		Set<ITransactionalEditingDomainFactoryListener> listeners = new HashSet<ITransactionalEditingDomainFactoryListener>();
