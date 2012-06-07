@@ -11,7 +11,7 @@
 <unit id="org.apache.xml.resolver" version="1.2.0.v201005080400"/>
 <unit id="org.apache.xml.serializer" version="2.7.1.v201005080400"/>
 <unit id="org.jdom" version="1.1.1.v201101151400"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20120119162704/repository"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20120526062928/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="3.6.2.M20110210-1200"/>
@@ -30,10 +30,10 @@
 <unit id="org.eclipse.xsd.sdk.feature.group" version="2.6.0.v20100914-1218"/>
 <repository location="http://download.eclipse.org/releases/helios"/>
 </location>
-<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
 <unit id="com.google.guava" version="10.0.1.v201203051515"/>
-<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.2.1.v201205080411"/>
-<unit id="org.eclipse.xpand.sdk.feature.group" version="1.2.1.v201205080442"/>
+<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.2.1.v201206050410"/>
+<unit id="org.eclipse.xpand.sdk.feature.group" version="1.2.1.v201206050419"/>
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/milestones"/>
 </location>
 </locations>
