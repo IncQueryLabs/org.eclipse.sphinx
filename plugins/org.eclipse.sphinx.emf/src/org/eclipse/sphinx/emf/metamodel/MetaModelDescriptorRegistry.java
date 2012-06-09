@@ -113,7 +113,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	/**
 	 * The namespace pattern for OMG-defined XMI formats.
 	 */
-	private static final Pattern OMG_XMI_NAMESPACE_PATTERN = Pattern.compile("http://schema\\.omg\\.org/spec/XMI/.*"); //$NON-NLS-1$
+	private static final Pattern OMG_XMI_NAMESPACE_PATTERN = Pattern.compile("http://(schema|www)\\.omg\\.org(/spec)?/XMI.*"); //$NON-NLS-1$
 
 	/**
 	 * The extension registry.
