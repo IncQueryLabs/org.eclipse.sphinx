@@ -54,27 +54,47 @@ public class ExtendedOutlet extends Outlet {
 		setPath(container);
 	}
 
-	public ExtendedOutlet(String name, IContainer container) {
-		setName(name);
-		setPath(container);
-	}
-
 	public ExtendedOutlet(String pathExpression) {
 		setPathExpression(pathExpression, null);
 	}
 
-	public ExtendedOutlet(String name, String pathExpression) {
-		setName(name);
+	public ExtendedOutlet(String pathExpression, boolean protectedRegion) {
 		setPathExpression(pathExpression, null);
+		setProtectedRegion(protectedRegion);
 	}
 
 	public ExtendedOutlet(String pathExpression, IProject project) {
 		setPathExpression(pathExpression, project);
 	}
 
-	public ExtendedOutlet(String name, String pathExpression, IProject project) {
-		setName(name);
+	public ExtendedOutlet(String pathExpression, IProject project, boolean protectedRegion) {
 		setPathExpression(pathExpression, project);
+		setProtectedRegion(protectedRegion);
+	}
+
+	public ExtendedOutlet(String name, IContainer container) {
+		this(container);
+		setName(name);
+	}
+
+	public ExtendedOutlet(String name, String pathExpression) {
+		this((String) null);
+		setName(name);
+	}
+
+	public ExtendedOutlet(String name, String pathExpression, boolean protectedRegion) {
+		this(pathExpression, protectedRegion);
+		setName(name);
+	}
+
+	public ExtendedOutlet(String name, String pathExpression, IProject project) {
+		this(pathExpression, project);
+		setName(name);
+	}
+
+	public ExtendedOutlet(String name, String pathExpression, IProject project, boolean protectedRegion) {
+		this(pathExpression, project, protectedRegion);
+		setName(name);
 	}
 
 	public void setProtectedRegion(boolean protectedRegion) {
