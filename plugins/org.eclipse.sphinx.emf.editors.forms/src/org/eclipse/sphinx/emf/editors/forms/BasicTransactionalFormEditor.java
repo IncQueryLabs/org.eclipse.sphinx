@@ -641,7 +641,9 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 								(TransactionalEditingDomain) editingDomain, adapterFactory));
 						contentOutlineViewer.setInput(modelRoot);
 					} else {
-						contentOutlineViewer.setInput(null);
+						if (contentOutlineViewer.getContentProvider() != null) {
+							contentOutlineViewer.setInput(null);
+						}
 					}
 
 					// Make sure our popups work
