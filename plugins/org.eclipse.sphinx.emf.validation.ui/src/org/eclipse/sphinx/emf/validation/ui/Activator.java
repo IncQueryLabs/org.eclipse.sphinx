@@ -20,6 +20,7 @@ import java.util.Hashtable;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -128,7 +129,7 @@ public class Activator extends AbstractUIPlugin {
 	public IPreferenceStore getPreferenceStore() {
 		if (corePreferenceStore == null) {
 			org.eclipse.sphinx.emf.validation.Activator coreActivator = org.eclipse.sphinx.emf.validation.Activator.getDefault();
-			corePreferenceStore = new ScopedPreferenceStore(coreActivator.getInstanceScope(), coreActivator.getBundle().getSymbolicName());
+			corePreferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, coreActivator.getBundle().getSymbolicName());
 		}
 		return corePreferenceStore;
 	}

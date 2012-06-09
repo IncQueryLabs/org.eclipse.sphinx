@@ -14,18 +14,12 @@
  */
 package org.eclipse.sphinx.emf.validation;
 
-import java.util.HashMap;
-
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Plugin;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.sphinx.emf.validation.bridge.extensions.RulesExtCache;
-import org.eclipse.sphinx.emf.validation.bridge.extensions.RulesExtInternal;
-import org.eclipse.sphinx.emf.validation.evalidator.adapter.EValidatorAdapter;
 import org.eclipse.sphinx.emf.validation.listeners.ResourceURIChangeListener;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.osgi.framework.BundleContext;
@@ -43,8 +37,6 @@ public class Activator extends Plugin {
 
 	/** the resource listener on URI changes */
 	private static IResourceChangeListener resourceChangeListener = null;
-
-	private InstanceScope instanceScope;
 
 	/**
 	 * The constructor
@@ -105,23 +97,5 @@ public class Activator extends Plugin {
 	 */
 	public static Activator getDefault() {
 		return plugin;
-	}
-
-	/**
-	 * Add EValidator for each registered model to the EValidator registry.
-	 */
-	protected void eValidatorSetting() {
-		HashMap<String, RulesExtInternal> extRuleCacheMap = RulesExtCache.getSingleton().getRulesExtInternals();
-
-		for (RulesExtInternal r : extRuleCacheMap.values()) {
-			EValidator.Registry.INSTANCE.put(r.getRootModelClass().getEPackage(), new EValidatorAdapter());
-		}
-	}
-
-	public InstanceScope getInstanceScope() {
-		if (instanceScope == null) {
-			instanceScope = new InstanceScope();
-		}
-		return instanceScope;
 	}
 }
