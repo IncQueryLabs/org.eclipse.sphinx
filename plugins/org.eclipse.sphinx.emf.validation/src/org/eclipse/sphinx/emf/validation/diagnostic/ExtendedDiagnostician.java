@@ -351,7 +351,6 @@ public class ExtendedDiagnostician extends Diagnostician {
 		rootObject = null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public String getObjectLabel(final EObject eObject) {
 
@@ -359,15 +358,14 @@ public class ExtendedDiagnostician extends Diagnostician {
 
 		final TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(eObject);
 		if (editingDomain != null) {
-
-			RunnableWithResult run = new RunnableWithResult.Impl() {
+			RunnableWithResult<String> runnable = new RunnableWithResult.Impl<String>() {
 				public void run() {
 					setResult(doGetObjectLabel(editingDomain, eObject));
 				}
 			};
 
 			try {
-				result = (String) editingDomain.runExclusive(run);
+				result = TransactionUtil.runExclusive(editingDomain, runnable);
 			} catch (InterruptedException ex) {
 			}
 		} else {

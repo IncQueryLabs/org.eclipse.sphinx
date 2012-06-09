@@ -23,7 +23,7 @@ public class ValidationPreferenceInitializer extends AbstractPreferenceInitializ
 
 	@Override
 	public void initializeDefaultPreferences() {
-		IEclipsePreferences defaultNode = new DefaultScope().getNode(Activator.getDefault().getBundle().getSymbolicName());
+		IEclipsePreferences defaultNode = DefaultScope.INSTANCE.getNode(Activator.getDefault().getBundle().getSymbolicName());
 		defaultNode.putBoolean(IValidationPreferences.PREF_ENABLE_AUTOMATIC_VALIDATION,
 				IValidationPreferences.PREF_ENABLE_AUTOMATIC_VALIDATION_DEFAULT);
 		defaultNode.putBoolean(IValidationPreferences.PREF_ENABLE_EMF_DEFAULT_RULES, IValidationPreferences.PREF_ENABLE_EMF_DEFAULT_RULES_DEFAULT);
