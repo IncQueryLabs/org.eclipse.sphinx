@@ -24,11 +24,24 @@ public class MetaModelVersionData {
 	private String fName;
 
 	/**
-	 * @deprecated see {@link MetaModelVersionData#getOrdinal()}
+	 * @deprecated See {@link MetaModelVersionData#getOrdinal()} for details.
 	 */
 	@Deprecated
 	private int fOrdinal;
 
+	public MetaModelVersionData(String nsPostfix, String ePackageNsURIPostfixPattern, String name) {
+		Assert.isNotNull(name);
+
+		fNsPostfix = nsPostfix;
+		fEPackageNsURIPostfixPattern = ePackageNsURIPostfixPattern;
+		fName = name;
+	}
+
+	/**
+	 * @deprecated Use #MetaModelVersionData(String, String, String) instead. See
+	 *             {@link MetaModelVersionData#getOrdinal()} for details.
+	 */
+	@Deprecated
 	public MetaModelVersionData(String nsPostfix, String ePackageNsURIPostfixPattern, String name, int ordinal) {
 		Assert.isNotNull(name);
 
@@ -44,18 +57,18 @@ public class MetaModelVersionData {
 
 	/**
 	 * @deprecated Instead of relying on this ordinal with unclear semantics meta models should provide a subclass which
-	 *             defines its own version number semantics. See bug 363915 for more details.
+	 *             defines its own version number semantics (see bug #363915 for details).
 	 */
 	@Deprecated
 	public int getOrdinal() {
 		return fOrdinal;
 	}
 
-	public String getName() {
-		return fName;
-	}
-
 	public String getEPackageNsURIPostfixPattern() {
 		return fEPackageNsURIPostfixPattern;
+	}
+
+	public String getName() {
+		return fName;
 	}
 }
