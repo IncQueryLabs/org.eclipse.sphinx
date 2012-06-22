@@ -231,6 +231,10 @@ public abstract class AbstractFormPage extends FormPage {
 		}
 	}
 
+	protected boolean canCreateFormContent() {
+		return pageInput != null;
+	}
+
 	@Override
 	protected final synchronized void createFormContent(final IManagedForm managedForm) {
 		if (!created && !creating) {
@@ -243,7 +247,7 @@ public abstract class AbstractFormPage extends FormPage {
 
 			// Initialize page input
 			setPageInput(getPageInputFromEditor());
-			if (managedForm != null && pageInput != null) {
+			if (managedForm != null && canCreateFormContent()) {
 				// Set form title
 				managedForm.getForm().setText(getTitle());
 
@@ -319,7 +323,7 @@ public abstract class AbstractFormPage extends FormPage {
 		return !created;
 	}
 
-/**
+	/**
 	 * Sets the active section on this page.
 	 * 
 	 * @param section
@@ -328,7 +332,7 @@ public abstract class AbstractFormPage extends FormPage {
 		activeSection = section;
 	}
 
-/**
+	/**
 	 * @return the active section in this page (e.g. the section which have the focus).
 	 */
 	public IFormSection getActiveSection() {
