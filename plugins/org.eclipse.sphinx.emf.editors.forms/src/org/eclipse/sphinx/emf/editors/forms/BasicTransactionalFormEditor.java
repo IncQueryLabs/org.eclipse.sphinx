@@ -1236,30 +1236,33 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			}
 
 			private void handleModelRootResourceLoaded() {
-				getSite().getShell().getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						// Discard undo context and reset dirty state
-						IOperationHistory operationHistory = getOperationHistory();
-						if (operationHistory != null) {
-							operationHistory.dispose(undoContext, true, true, true);
+				IWorkbenchPartSite site = getSite();
+				if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
+					site.getShell().getDisplay().asyncExec(new Runnable() {
+						public void run() {
+							// Discard undo context and reset dirty state
+							IOperationHistory operationHistory = getOperationHistory();
+							if (operationHistory != null) {
+								operationHistory.dispose(undoContext, true, true, true);
+							}
+
+							// Update this editor's dirty state
+							firePropertyChange(IEditorPart.PROP_DIRTY);
+
+							// Update editor part name
+							setPartName(getEditorInputName());
+							setTitleImage(getEditorInputImage());
+
+							// Refresh editor if its currently active or schedule refresh when it gets
+							// activated next time
+							if (getActionBarContributor().getActiveEditor() == BasicTransactionalFormEditor.this) {
+								refreshActivePage();
+							} else {
+								refreshOnActivation = true;
+							}
 						}
-
-						// Update this editor's dirty state
-						firePropertyChange(IEditorPart.PROP_DIRTY);
-
-						// Update editor part name
-						setPartName(getEditorInputName());
-						setTitleImage(getEditorInputImage());
-
-						// Refresh editor if its currently active or schedule refresh when it gets
-						// activated next time
-						if (getActionBarContributor().getActiveEditor() == BasicTransactionalFormEditor.this) {
-							refreshActivePage();
-						} else {
-							refreshOnActivation = true;
-						}
-					}
-				});
+					});
+				}
 			}
 
 			@Override
@@ -1294,21 +1297,24 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			}
 
 			private void handleModelRootResourceMoved(final URI newResourceURI) {
-				getSite().getShell().getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						// Discard undo context
-						IOperationHistory operationHistory = getOperationHistory();
-						if (operationHistory != null) {
-							operationHistory.dispose(undoContext, true, true, true);
+				IWorkbenchPartSite site = getSite();
+				if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
+					site.getShell().getDisplay().asyncExec(new Runnable() {
+						public void run() {
+							// Discard undo context
+							IOperationHistory operationHistory = getOperationHistory();
+							if (operationHistory != null) {
+								operationHistory.dispose(undoContext, true, true, true);
+							}
+
+							// Update this editor's dirty state
+							firePropertyChange(IEditorPart.PROP_DIRTY);
+
+							// Update editor input
+							updateEditorInput(newResourceURI);
 						}
-
-						// Update this editor's dirty state
-						firePropertyChange(IEditorPart.PROP_DIRTY);
-
-						// Update editor input
-						updateEditorInput(newResourceURI);
-					}
-				});
+					});
+				}
 			}
 
 			@Override
@@ -1459,7 +1465,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			private void handleOperationAboutToExecute(final IUndoableOperation operation) {
 				if (operation.canUndo()) {
 					IWorkbenchPartSite site = getSite();
-					if (site != null) {
+					if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
 						site.getShell().getDisplay().syncExec(new Runnable() {
 							public void run() {
 								if (isActivePart() || isMyActivePropertySheetPage()) {
@@ -1481,27 +1487,30 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			}
 
 			private void handleOperationFinished(final IUndoableOperation operation) {
-				getSite().getShell().getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						if (isActivePart() || isMyActivePropertySheetPage()) {
-							// Try to select the affected objects
-							if (operation instanceof EMFCommandOperation) {
-								Command command = ((EMFCommandOperation) operation).getCommand();
-								if (command != null) {
-									setSelectionToViewer(command.getAffectedObjects());
+				IWorkbenchPartSite site = getSite();
+				if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
+					site.getShell().getDisplay().asyncExec(new Runnable() {
+						public void run() {
+							if (isActivePart() || isMyActivePropertySheetPage()) {
+								// Try to select the affected objects
+								if (operation instanceof EMFCommandOperation) {
+									Command command = ((EMFCommandOperation) operation).getCommand();
+									if (command != null) {
+										setSelectionToViewer(command.getAffectedObjects());
+									}
 								}
 							}
+
+							// Update editor input
+							URI newModelRootURI = EcoreUtil.getURI((EObject) getModelRoot());
+							updateEditorInput(newModelRootURI);
+
+							// Update editor part name
+							setPartName(getEditorInputName());
+							setTitleImage(getEditorInputImage());
 						}
-
-						// Update editor input
-						URI newModelRootURI = EcoreUtil.getURI((EObject) getModelRoot());
-						updateEditorInput(newModelRootURI);
-
-						// Update editor part name
-						setPartName(getEditorInputName());
-						setTitleImage(getEditorInputImage());
-					}
-				});
+					});
+				}
 			}
 		};
 	}
