@@ -25,7 +25,7 @@ Contributors:
       </descriptor>
       <targetDescriptorProvider
             class="org.eclipse.sphinx.graphiti.workspace.metamodel.GraphitiTargetMetaModelDescriptorProvider"
-            id="org.artop.ecl.graphiti.workspace.metamodel.graphitiTargetMetaModelDescriptorProvider">
+            id="org.eclipse.sphinx.graphiti.workspace.metamodel.graphitiTargetMetaModelDescriptorProvider">
          <contentType
                id="org.eclipse.sphinx.graphiti.diagramFile">
          </contentType>
