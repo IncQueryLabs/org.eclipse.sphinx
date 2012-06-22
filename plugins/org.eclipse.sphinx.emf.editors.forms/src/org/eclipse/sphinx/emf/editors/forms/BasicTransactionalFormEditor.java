@@ -1633,17 +1633,20 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				ModelLoadManager.INSTANCE.loadModel(modelDescriptor, true, null);
 
 				// Create temporary page indicating that editor input is being loaded
-				try {
-					loadingEditorInputPage = createLoadingEditorInputPage();
-					addPage(loadingEditorInputPage);
-				} catch (PartInitException ex) {
-					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+				loadingEditorInputPage = createLoadingEditorInputPage();
+				if (loadingEditorInputPage != null) {
+					try {
+						addPage(loadingEditorInputPage);
+					} catch (PartInitException ex) {
+						PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+					}
+					return;
 				}
 			}
-		} else {
-			// Create editor pages normally
-			super.createPages();
 		}
+
+		// Create editor pages normally
+		super.createPages();
 	}
 
 	protected IFormPage createLoadingEditorInputPage() {
