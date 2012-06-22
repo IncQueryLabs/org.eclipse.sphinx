@@ -304,16 +304,20 @@ public class ValidationUtil {
 			return;
 		}
 
-		String blameObject = "UpdateMarkers"; //$NON-NLS-1$
-		ValidationPerformanceStats.INSTANCE.startNewEvent(ValidationPerformanceStats.ValidationEvent.EVENT_UPDATE_PROBLEM_MARKERS, blameObject);
-
 		WorkspaceJob job = new WorkspaceJob(Messages.job_HandlingDiagnostics) {
 			@Override
 			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+				String blameObject = "UpdateMarkers"; //$NON-NLS-1$
+				ValidationPerformanceStats.INSTANCE.startNewEvent(ValidationPerformanceStats.ValidationEvent.EVENT_UPDATE_PROBLEM_MARKERS,
+						blameObject);
+
 				ValidationMarkerManager markerManager = ValidationMarkerManager.getInstance();
 				for (Diagnostic diag : diagnostics) {
 					markerManager.handleDiagnostic(diag);
 				}
+
+				ValidationPerformanceStats.INSTANCE.endEvent(ValidationPerformanceStats.ValidationEvent.EVENT_UPDATE_PROBLEM_MARKERS, blameObject);
+
 				return Status.OK_STATUS;
 			}
 		};
@@ -331,11 +335,5 @@ public class ValidationUtil {
 		job.setRule(new MultiRule(myRules.toArray(new ISchedulingRule[myRules.size()])));
 		job.setPriority(Job.BUILD);
 		job.schedule();
-		try {
-			job.join();
-		} catch (InterruptedException ex) {
-			// ignore
-		}
-		ValidationPerformanceStats.INSTANCE.endEvent(ValidationPerformanceStats.ValidationEvent.EVENT_UPDATE_PROBLEM_MARKERS, blameObject);
 	}
 }
