@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.extended;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,7 +27,9 @@ import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptorDecorator;
 import org.eclipse.emf.edit.provider.ViewerNotification;
+import org.eclipse.sphinx.emf.edit.ExtendedItemPropertyDescriptor;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.edit.ConnectionItemProvider;
@@ -108,5 +111,39 @@ public class ExtendedConnectionItemProvider extends ConnectionItemProvider {
 				});
 			}
 		}
+	}
+
+	@Override
+	protected void addSourcePortPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(new ExtendedItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+				getResourceLocator(), getString("_UI_Connection_sourcePort_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_Connection_sourcePort_feature", "_UI_Connection_type"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				InstanceModel20Package.Literals.CONNECTION__SOURCE_PORT, true, false, true, null, null, null) {
+			@Override
+			public Collection<?> getChoiceOfValues(Object object) {
+				Connection connection = (Connection) object;
+
+				// No option if the connection is not correctly defined or the components don't have a type
+				Component sourceComponent = connection.getSourceComponent();
+				if (sourceComponent == null || sourceComponent.getType() == null) {
+					return null;
+				}
+				Component targetComponent = connection.getTargetComponent();
+				if (targetComponent == null || targetComponent.getType() == null) {
+					return null;
+				}
+
+				// Return ports that fit target component provided interfaces
+				List<Port> sourcePorts = sourceComponent.getType().getPorts();
+				List<Port> availablePorts = new ArrayList<Port>();
+				for (Port port : sourcePorts) {
+					if (targetComponent.getType().getProvidedInterfaces() != null && port.getRequiredInterface() != null
+							&& targetComponent.getType().getProvidedInterfaces().contains(port.getRequiredInterface())) {
+						availablePorts.add(port);
+					}
+				}
+				return availablePorts;
+			}
+		});
 	}
 }
