@@ -20,8 +20,9 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.emf.ecore.EClass;
@@ -50,6 +51,8 @@ public class EValidatorAdapter extends EObjectValidator {
 	 */
 	private final IBatchValidator batchValidator;
 
+	private static Boolean emfIntrinsicConstraints = null;
+
 	/**
 	 * Initializes me.
 	 */
@@ -63,9 +66,64 @@ public class EValidatorAdapter extends EObjectValidator {
 
 	}
 
+	/**
+	 * Return the value of the preference to check EMF default rules.
+	 * 
+	 * @return
+	 */
+	protected static Boolean areEMFIntrinsicConstraintsEnabled() {
+		/*
+		 * Performance optimization: Read preference value only once and cache it to avoid repeated reads at every
+		 * validation constraint evaluation. Install a preference change listener to update cached preference value when
+		 * it changes.
+		 */
+		if (emfIntrinsicConstraints == null) {
+			IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(org.eclipse.sphinx.emf.validation.Activator.PLUGIN_ID);
+			if (prefs != null) {
+				emfIntrinsicConstraints = prefs.getBoolean(IValidationPreferences.PREF_ENABLE_EMF_DEFAULT_RULES,
+						IValidationPreferences.PREF_ENABLE_EMF_DEFAULT_RULES_DEFAULT);
+
+				prefs.addPreferenceChangeListener(new IEclipsePreferences.IPreferenceChangeListener() {
+					public void preferenceChange(org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent event) {
+						String key = event.getKey();
+						if (key.equals(IValidationPreferences.PREF_ENABLE_EMF_DEFAULT_RULES)) {
+							Object newValue = event.getNewValue();
+							if (newValue == null) {
+								emfIntrinsicConstraints = Boolean.FALSE;
+							} else {
+								emfIntrinsicConstraints = Boolean.valueOf(newValue.toString());
+							}
+						}
+					}
+				});
+			}
+		}
+		return emfIntrinsicConstraints;
+	}
+
 	@Override
 	public boolean validate(EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		return validate(eObject.eClass(), eObject, diagnostics, context);
+	}
+
+	/**
+	 * Validates the default rules from EMF, if the corresponding preference is enabled.
+	 */
+	protected void validateEMFRules(EClass eClass, final EObject eObject, final DiagnosticChain diagnostics, final Map<Object, Object> context) {
+		// Let's check if EMF default rules should be checked
+
+		if (areEMFIntrinsicConstraintsEnabled() == Boolean.TRUE) {
+			if (eClass.eContainer() == getEPackage()) {
+				validate(eClass.getClassifierID(), eObject, diagnostics, context);
+			} else {
+				List<EClass> eSuperTypes = eClass.getESuperTypes();
+				if (eSuperTypes.isEmpty()) {
+					validate_EveryDefaultConstraint(eObject, diagnostics, context);
+				} else {
+					// validate(eSuperTypes.get(0), eObject, diagnostics, context);
+				}
+			}
+		}
 	}
 
 	/**
@@ -78,21 +136,8 @@ public class EValidatorAdapter extends EObjectValidator {
 		// former call to super.validate(eClass, eObject, diagnostics, context);
 
 		// Let's check if EMF default rules should be checked
-		boolean isEMFRulesActivated = Platform.getPreferencesService().getBoolean(org.eclipse.sphinx.emf.validation.Activator.PLUGIN_ID,
-				IValidationPreferences.PREF_ENABLE_EMF_DEFAULT_RULES, IValidationPreferences.PREF_ENABLE_EMF_DEFAULT_RULES_DEFAULT, null);
 
-		if (isEMFRulesActivated) {
-			if (eClass.eContainer() == getEPackage()) {
-				validate(eClass.getClassifierID(), eObject, diagnostics, context);
-			} else {
-				List<EClass> eSuperTypes = eClass.getESuperTypes();
-				if (eSuperTypes.isEmpty()) {
-					validate_EveryDefaultConstraint(eObject, diagnostics, context);
-				} else {
-					// validate(eSuperTypes.get(0), eObject, diagnostics, context);
-				}
-			}
-		}
+		validateEMFRules(eClass, eObject, diagnostics, context);
 
 		// Ok, Now let's validate our rules.
 

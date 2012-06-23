@@ -32,6 +32,7 @@ public class RulesExtReader {
 	final static public String ATT_RULE_EXT_MODELCLASS = "class"; //$NON-NLS-1$
 	final static public String ATT_RULE_EXT_MARKER = "id"; //$NON-NLS-1$
 	final static public String ATT_RULE_EXT_FILTER = "filter"; //$NON-NLS-1$
+	final static public String ATT_RULE_EXT_VALIDATORCLASS = "validatorAdapterClass"; //$NON-NLS-1$
 
 	private static RulesExtReader rulesExtReader = null;
 
@@ -80,35 +81,35 @@ public class RulesExtReader {
 
 	// TODO Re-organise method's body.
 	private boolean readElement(IConfigurationElement element, RulesExtInternal tgt) {
-		int r = 0;
+		int errorCount = 0;
 
 		if (element.getName().equals(TAG_RULE_EXT)) {
 			if (element.getAttribute(ATT_RULE_EXT_MARKER) != null) {
 				tgt.setMarker(element.getAttribute(ATT_RULE_EXT_MARKER));
 			} else {
 				logMissingAttribute(element, ATT_RULE_EXT_MARKER);
-				r++;
+				errorCount++;
 			}
 
 			if (element.getAttribute(ATT_RULE_EXT_FILTER) != null) {
 				tgt.setFilter(element.getAttribute(ATT_RULE_EXT_FILTER));
 			} else {
 				logMissingAttribute(element, ATT_RULE_EXT_FILTER);
-				r++;
+				errorCount++;
 			}
 
 			if (element.getAttribute(ATT_RULE_EXT_NAME) != null) {
 				tgt.setModelID(element.getAttribute(ATT_RULE_EXT_NAME));
 			} else {
 				logMissingAttribute(element, ATT_RULE_EXT_NAME);
-				r++;
+				errorCount++;
 			}
 
 			if (element.getAttribute(ATT_RULE_EXT_NSURI) != null) {
 				tgt.setNsURI(URI.createURI(element.getAttribute(ATT_RULE_EXT_NSURI), true));
 			} else {
 				logMissingAttribute(element, ATT_RULE_EXT_NSURI);
-				r++;
+				errorCount++;
 			}
 
 			// Let's check if the namespace is ok
@@ -120,11 +121,11 @@ public class RulesExtReader {
 				} catch (WrappedException e) {
 					String msg = NLS.bind(Messages.errNsURIRootPackageObject, tgt.getNsURI());
 					logError(element, new WrappedException(msg, e));
-					r++;
+					errorCount++;
 				} catch (ExceptionInInitializerError e) {
 					String msg = NLS.bind(Messages.errNsURIRootPackageObject, tgt.getNsURI());
 					logError(element, new ExceptionInInitializerError(msg));
-					r++;
+					errorCount++;
 				}
 			}
 
@@ -140,7 +141,22 @@ public class RulesExtReader {
 				}
 			} else {
 				logMissingAttribute(element, ATT_RULE_EXT_MODELCLASS);
-				r++;
+				errorCount++;
+			}
+
+			if (element.getAttribute(ATT_RULE_EXT_VALIDATORCLASS) != null) {
+				// optional attribute
+				String validatorAdapterClassName = element.getAttribute(ATT_RULE_EXT_VALIDATORCLASS);
+				if (validatorAdapterClassName != null && validatorAdapterClassName.length() > 0) {
+					// try to instantiate it
+					try {
+						Object validatorAdapter = element.createExecutableExtension(ATT_RULE_EXT_VALIDATORCLASS);
+						tgt.setValidatorAdapter(validatorAdapter);
+					} catch (Exception ex) {
+						logError(element, NLS.bind(Messages.errWrongValidatorAdapter, new Object[] { validatorAdapterClassName, ex }));
+					} finally {
+					}
+				}
 			}
 
 		} else {
@@ -148,12 +164,12 @@ public class RulesExtReader {
 			return false;
 		}
 
-		if (r != 0) {
+		if (errorCount != 0) {
 			logError(element, NLS.bind(Messages.errOnExtensionModelNotRegistered, tgt.getModelId()));
 			tgt = null;
 		}
 
-		return r == 0 ? true : false;
+		return errorCount == 0;
 
 	}
 
@@ -161,58 +177,24 @@ public class RulesExtReader {
 	 * Logs the error in the desktop log using the provided text and the information in the configuration element.
 	 */
 	protected void logError(IConfigurationElement element, String text) {
-
-		// IExtension extension = element.getDeclaringExtension();
-
-		// PlatformLogUtil.logAsError(Activator.getDefault(), NLS.bind(Messages.errOnExtensionIntro, new Object[] {
-		// extension.getContributor().getName(), extension.getExtensionPointUniqueIdentifier() })
-		// + " " + text); //$NON-NLS-1$
-
-		return;
-	}
-
-	/**
-	 * Logs the error in the desktop log using the provided text and the information in the configuration element.
-	 */
-	protected void logError(IConfigurationElement element, Exception e) {
-
-		String msg = e.getMessage();
-
 		IExtension extension = element.getDeclaringExtension();
-		msg += "\n" //$NON-NLS-1$
-				+ NLS.bind(Messages.errOnExtensionIntro,
-						new Object[] { extension.getContributor().getName(), extension.getExtensionPointUniqueIdentifier() });
-
-		// PlatformLogUtil.logAsError(Activator.getDefault(), new Exception(msg));
-
-		return;
-	}
-
-	/**
-	 * Logs the error in the desktop log using the provided text and the information in the configuration element.
-	 */
-	protected void logError(IConfigurationElement element, ExceptionInInitializerError e) {
-
-		String msg = e.getMessage();
-
-		IExtension extension = element.getDeclaringExtension();
-		msg += "\n" //$NON-NLS-1$
-				+ NLS.bind(Messages.errOnExtensionIntro,
-						new Object[] { extension.getContributor().getName(), extension.getExtensionPointUniqueIdentifier() });
-
+		String msg = NLS.bind(Messages.errOnExtensionIntro, new Object[] { extension.getExtensionPointUniqueIdentifier(),
+				extension.getContributor().getName(), text });
 		PlatformLogUtil.logAsError(Activator.getDefault(), new Exception(msg));
+	}
 
-		return;
+	/**
+	 * Logs the error in the desktop log using the provided text and the information in the configuration element.
+	 */
+	protected void logError(IConfigurationElement element, Throwable throwable) {
+		logError(element, throwable.getMessage());
 	}
 
 	/**
 	 * Logs a very common error when a required attribute is missing.
 	 */
 	protected void logMissingAttribute(IConfigurationElement element, String attributeName) {
-
 		logError(element, NLS.bind(Messages.errMissingAttributeOnExtensionPoint, attributeName));
-
-		return;
 	}
 
 }

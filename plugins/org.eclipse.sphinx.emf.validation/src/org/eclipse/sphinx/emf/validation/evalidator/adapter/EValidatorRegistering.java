@@ -16,7 +16,6 @@ package org.eclipse.sphinx.emf.validation.evalidator.adapter;
 
 import java.util.HashMap;
 
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -31,6 +30,7 @@ import org.eclipse.sphinx.emf.validation.bridge.extensions.RulesExtCache;
 import org.eclipse.sphinx.emf.validation.bridge.extensions.RulesExtInternal;
 import org.eclipse.sphinx.emf.validation.bridge.util.RulesExtReader;
 import org.eclipse.sphinx.emf.validation.util.Messages;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public class EValidatorRegistering {
 
@@ -102,10 +102,15 @@ public class EValidatorRegistering {
 				}
 				EPackage targetPackage = eClass.getEPackage();
 				if (targetPackage == null) {
-					PlatformLogUtil.logAsError(Activator.getDefault(), NLS.bind(Messages.__EValidatorRegstering_NoSuchPackage, new Object[] {
-							r.getNsURI(), r.getModelId() }));
+					PlatformLogUtil.logAsError(Activator.getDefault(),
+							NLS.bind(Messages.__EValidatorRegstering_NoSuchPackage, new Object[] { r.getNsURI(), r.getModelId() }));
 				} else { // All is OK
-					EValidator.Registry.INSTANCE.put(r.getRootModelClass().getEPackage(), new EValidatorAdapter());
+					Object validatorAdapter = r.getValidatorAdapter();
+					if (validatorAdapter == null) {
+						// let the default EValidatorAdapter to be used
+						validatorAdapter = new EValidatorAdapter();
+					}
+					EValidator.Registry.INSTANCE.put(r.getRootModelClass().getEPackage(), validatorAdapter);
 				}
 			}
 		}

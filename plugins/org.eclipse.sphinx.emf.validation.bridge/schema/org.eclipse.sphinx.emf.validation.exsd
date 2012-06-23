@@ -91,6 +91,16 @@ extension point. If not, defined constraint on object without inheritance from i
                </appInfo>
             </annotation>
          </attribute>
+         <attribute name="validatorAdapterClass" type="string">
+            <annotation>
+               <documentation>
+                  Custom implementation of the validator adapter.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.sphinx.emf.validation.evalidator.adapter.EValidatorAdapter:"/>
+               </appInfo>
+            </annotation>
+         </attribute>
          <attribute name="filter" type="string" use="required">
             <annotation>
                <documentation>

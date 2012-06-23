@@ -18,17 +18,13 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 
-	private static final String BUNDLE_NAME = "messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.eclipse.sphinx.emf.validation.util.messages"; //$NON-NLS-1$
 
 	public static String __EValidatorRegstering_NoSuchPackage;
 	public static String warningNoSuchMarker;
 	public static String warningProblemWithMarkerOperationOnResource;
 	public static String warningProblemWithWorkspaceOperation;
 	public static String noMessageAvailableForThisMarker;
-
-	public static String CSV_Report_Null_FileName;
-	public static String CSV_Report_Null_Resource;
-	public static String CSV_Report_Null_diagnostic;
 
 	static {
 		// load message values from bundle file

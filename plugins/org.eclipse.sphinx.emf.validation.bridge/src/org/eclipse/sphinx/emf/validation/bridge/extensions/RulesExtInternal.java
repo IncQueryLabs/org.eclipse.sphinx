@@ -14,13 +14,13 @@
  */
 package org.eclipse.sphinx.emf.validation.bridge.extensions;
 
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.sphinx.emf.validation.bridge.Activator;
 import org.eclipse.sphinx.emf.validation.bridge.util.Messages;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
  * internal class to store contribution to ExtensionPoint
@@ -34,6 +34,7 @@ public class RulesExtInternal {
 	private String rootModelEClassifierName = null;
 	private String rootModelObjectName;
 	private String filter;
+	private Object validatorAdapter = null;
 
 	/**
 	 * accessor
@@ -164,6 +165,24 @@ public class RulesExtInternal {
 	 */
 	public void setRootModelObjectName(String value) {
 		rootModelObjectName = value;
+	}
+
+	/**
+	 * accessor
+	 * 
+	 * @return the instance of the validator adapter class
+	 */
+	public Object getValidatorAdapter() {
+		return validatorAdapter;
+	}
+
+	/**
+	 * writer
+	 * 
+	 * @param validatorAdapter
+	 */
+	public void setValidatorAdapter(Object validatorAdapter) {
+		this.validatorAdapter = validatorAdapter;
 	}
 
 	/**
