@@ -33,4 +33,9 @@ public class ExtendedInstanceModel20ItemProviderAdapterFactory extends InstanceM
 	public Adapter createConnectionAdapter() {
 		return new ExtendedConnectionItemProvider(this);
 	}
+
+	@Override
+	public Adapter createApplicationAdapter() {
+		return new ExtendedApplicationItemProvider(this);
+	}
 }

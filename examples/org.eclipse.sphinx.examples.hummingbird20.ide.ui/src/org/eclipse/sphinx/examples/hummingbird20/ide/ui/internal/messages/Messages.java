@@ -26,6 +26,7 @@ public class Messages extends NLS {
 	public static String label_Parameters_TransientNode;
 	public static String label_ParameterValues_TransientNode;
 	public static String label_Ports_TransientNode;
+	public static String label_Components_TransientNode;
 
 	static {
 		// Initialize resource bundle
