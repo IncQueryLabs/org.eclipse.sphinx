@@ -5,8 +5,8 @@
 <locations>
 <location includeAllPlatforms="false" includeMode="planner" includeSource="false" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="3.6.2.M20110210-1200"/>
-<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.0.M20110210-1200"/>
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.4.2.R36x_v20110125-7N7K7bF8zk1BAKMh0iz0t94miBLY"/>
+<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.0.M20110210-1200"/>
 <repository location="http://download.eclipse.org/eclipse/updates/3.6"/>
 </location>
 <location includeAllPlatforms="false" includeMode="planner" includeSource="false" type="InstallableUnit">
