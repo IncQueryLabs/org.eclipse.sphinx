@@ -17,19 +17,15 @@
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.sphinx.core" version="0.7.0"/>
-      <import feature="org.eclipse.sphinx.emf.navigators" version="0.7.0"/>
-      <import feature="org.eclipse.sphinx.emf.editors.forms" version="0.7.0"/>
-      <import feature="org.eclipse.sphinx.emf.compare" version="0.7.0"/>
-      <import feature="org.eclipse.sphinx.xtendxpand" version="0.7.0"/>
-      <import feature="org.eclipse.sphinx.examples.core" version="0.7.0"/>
-      <import plugin="org.apache.commons.logging"/>
-      <import plugin="org.antlr.runtime"/>
-   </requires>
-
    <plugin
          id="org.eclipse.sphinx.examples.hummingbird.ide"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.examples.hummingbird.ide.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -43,7 +39,21 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.sphinx.examples.hummingbird.ide.ui.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.sphinx.examples.hummingbird10"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.examples.hummingbird10.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -57,7 +67,21 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.sphinx.examples.hummingbird10.edit.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.sphinx.examples.hummingbird10.editor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.examples.hummingbird10.editor.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -71,7 +95,21 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.sphinx.examples.hummingbird20.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.sphinx.examples.hummingbird20.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.examples.hummingbird20.edit.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -85,7 +123,21 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.sphinx.examples.hummingbird20.editor.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.sphinx.examples.hummingbird.compare"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.examples.hummingbird.compare.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -99,7 +151,21 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.sphinx.examples.hummingbird20.codegen.xpand.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.sphinx.examples.hummingbird20.transform.xtend"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.examples.hummingbird20.transform.xtend.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -113,7 +179,21 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.sphinx.examples.hummingbird10.ide.ui.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.sphinx.examples.hummingbird20.ide.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.examples.hummingbird20.ide.ui.source"
          download-size="0"
          install-size="0"
          version="0.0.0"

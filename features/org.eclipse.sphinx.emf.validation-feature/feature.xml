@@ -17,12 +17,6 @@
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.xsd" version="2.6.0"/>
-      <import feature="org.eclipse.emf.validation" version="1.4.0"/>
-      <import feature="org.eclipse.sphinx.core" version="0.7.0"/>
-   </requires>
-
    <plugin
          id="org.eclipse.sphinx.emf.validation"
          download-size="0"

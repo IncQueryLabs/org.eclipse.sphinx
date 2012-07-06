@@ -17,12 +17,6 @@
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.team.svn" version="0.7.9"/>
-      <import feature="org.eclipse.sphinx.core" version="0.7.0"/>
-      <import feature="org.eclipse.sphinx.emf.compare" version="0.7.0"/>
-   </requires>
-
    <plugin
          id="org.eclipse.sphinx.emf.compare.team.subversive.ui"
          download-size="0"

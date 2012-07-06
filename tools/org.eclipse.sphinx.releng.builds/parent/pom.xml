@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<prerequisites>
+		<maven>3.0</maven>
+	</prerequisites>
+	<groupId>org.eclipse.sphinx.releng</groupId>
+	<artifactId>org.eclipse.sphinx.releng.parent</artifactId>
+	<version>0.7.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Sphinx Parent</name>
+	<url>http://www.eclipse.org/sphinx</url>
+	<description>Integrated modeling tool platform that eases the development of IDE-like tool support for modeling languages used in software and systems development</description>
+	<licenses>
+		<license>
+			<name>Eclipse Public License v1.0</name>
+			<comments>
+       All rights reserved.
+
+       This program and the accompanying materials are made
+       available under the terms of the Eclipse Public License v1.0
+       which accompanies this distribution, and is available at
+       http://www.eclipse.org/legal/epl-v10.htm
+			</comments>
+		</license>
+	</licenses>
+	<organization>
+		<name>Eclipse</name>
+		<url>http://www.eclipse.org</url>
+	</organization>
+	<scm>
+		<developerConnection>scm:svn:https://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx</developerConnection>
+	</scm>
+	<issueManagement>
+		<system>Eclipse Bugzilla</system>
+		<url>https://bugs.eclipse.org/bugs</url>
+	</issueManagement>
+	<ciManagement>
+		<url>https://hudson.eclipse.org/hudson</url>
+		<system>Eclipse Hudson</system>
+	</ciManagement>
+	<properties>
+		<tycho-version>0.15.0</tycho-version>
+	</properties>
+	<repositories>
+		<repository>
+			<id>eclipse-updates</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/eclipse/updates/${platform-version}</url>
+		</repository>
+		<repository>
+			<id>release-train-updates</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/${platform-version-name}</url>
+		</repository>
+		<repository>
+			<id>orbit-updates</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit-version}/repository</url>
+		</repository>
+	</repositories>
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<!-- Workaround for https://issues.sonatype.org/browse/TYCHO-168; required 
+			for that dependencies of source features - i.e., the generated source plug-ins 
+			- can be resolved -->
+		<resources>
+			<resource>
+				<directory>src</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<encoding>ISO-8859-1</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<resolver>p2</resolver>
+					<environments>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+					</environments>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-source-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<executions>
+					<execution>
+						<id>plugin-source</id>
+						<goals>
+							<goal>plugin-source</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<testFailureIgnore>true</testFailureIgnore>
+					<excludes>
+						<!-- Test mojo matches TestProject be default and treats it as PojoTest -->
+						<exclude>**/Test*.class</exclude>
+					</excludes>
+					<useUIHarness>false</useUIHarness>
+					<useUIThread>false</useUIThread>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>platform-indigo</id>
+			<properties>
+				<platform-version>3.7</platform-version>
+				<platform-version-name>indigo</platform-version-name>
+				<orbit-version>R20120526062928</orbit-version>
+			</properties>
+			<repositories>
+				<repository>
+					<id>xtext-updates</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases</url>
+				</repository>
+			</repositories>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>platform-juno</id>
+			<properties>
+				<platform-version>4.2</platform-version>
+				<platform-version-name>juno</platform-version-name>
+				<orbit-version>R20120526062928</orbit-version>
+			</properties>
+		</profile>
+	</profiles>
+</project>

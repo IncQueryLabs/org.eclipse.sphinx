@@ -17,10 +17,6 @@
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.sphinx.core" version="0.7.0"/>
-   </requires>
-
    <plugin
          id="org.eclipse.sphinx.examples.actions"
          download-size="0"
@@ -29,7 +25,21 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.sphinx.examples.actions.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.sphinx.examples.common.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.examples.common.ui.source"
          download-size="0"
          install-size="0"
          version="0.0.0"

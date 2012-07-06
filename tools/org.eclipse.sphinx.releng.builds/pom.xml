@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.eclipse.sphinx.releng</groupId>
+		<artifactId>org.eclipse.sphinx.releng.parent</artifactId>
+		<version>0.7.0-SNAPSHOT</version>
+		<relativePath>./parent/pom.xml</relativePath>
+	</parent>
+	<groupId>org.eclipse.sphinx.releng</groupId>
+	<artifactId>org.eclipse.sphinx.releng.builds</artifactId>
+	<version>0.7.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<modules>
+		<module>./parent</module>
+		
+		<!-- Plug-ins -->
+		<module>../org.eclipse.sphinx.emf</module>
+		<module>../org.eclipse.sphinx.emf.compare</module>
+		<module>../org.eclipse.sphinx.emf.compare.team.subversive.ui</module>
+		<module>../org.eclipse.sphinx.emf.compare.ui</module>
+		<module>../org.eclipse.sphinx.emf.editors.forms</module>
+		<module>../org.eclipse.sphinx.emf.explorer</module>
+		<module>../org.eclipse.sphinx.emf.mwe</module>
+		<module>../org.eclipse.sphinx.emf.ui</module>
+		<module>../org.eclipse.sphinx.emf.validation</module>
+		<module>../org.eclipse.sphinx.emf.validation.bridge</module>
+		<module>../org.eclipse.sphinx.emf.validation.ui</module>
+		<module>../org.eclipse.sphinx.emf.workspace</module>
+		<module>../org.eclipse.sphinx.emf.workspace.ui</module>
+		<module>../org.eclipse.sphinx.gmf.runtime.ui</module>
+		<module>../org.eclipse.sphinx.gmf.workspace</module>
+		<module>../org.eclipse.sphinx.platform</module>
+		<module>../org.eclipse.sphinx.platform.ui</module>
+		<module>../org.eclipse.sphinx.xtend.typesystem.emf</module>
+		<module>../org.eclipse.sphinx.xtend.typesystem.emf.ui</module>
+		<module>../org.eclipse.sphinx.xtendxpand</module>
+		<module>../org.eclipse.sphinx.xtendxpand.ui</module>
+		
+		<!-- Examples -->
+		<module>../org.eclipse.sphinx.examples.actions</module>
+		<module>../org.eclipse.sphinx.examples.codegen.xpand.ui</module>
+		<module>../org.eclipse.sphinx.examples.common.ui</module>
+		<module>../org.eclipse.sphinx.examples.explorer</module>
+		<module>../org.eclipse.sphinx.examples.hummingbird.compare</module>
+		<module>../org.eclipse.sphinx.examples.hummingbird.ide</module>
+		<module>../org.eclipse.sphinx.examples.hummingbird.ide.ui</module>
+		<module>../org.eclipse.sphinx.examples.hummingbird10</module>
+		<module>../org.eclipse.sphinx.examples.hummingbird10.edit</module>
+		<module>../org.eclipse.sphinx.examples.hummingbird10.editor</module>
+		<module>../org.eclipse.sphinx.examples.hummingbird10.ide.ui</module>
+		<module>../org.eclipse.sphinx.examples.hummingbird20</module>
+		<module>../org.eclipse.sphinx.examples.hummingbird20.codegen.xpand</module>
+		<module>../org.eclipse.sphinx.examples.hummingbird20.edit</module>
+		<module>../org.eclipse.sphinx.examples.hummingbird20.editor</module>
+		<module>../org.eclipse.sphinx.examples.hummingbird20.ide.ui</module>
+		<module>../org.eclipse.sphinx.examples.hummingbird20.transform.xtend</module>
+		<module>../org.eclipse.sphinx.examples.tests.perf</module>
+		<module>../org.eclipse.sphinx.examples.transform.xtend.ui</module>
+		<module>../org.eclipse.sphinx.examples.uml2.ide</module>
+		<module>../org.eclipse.sphinx.examples.uml2.ide.ui</module>
+		<module>../org.eclipse.sphinx.examples.validation.ui</module>
+
+		<!-- Tests -->
+		<module>../org.eclipse.sphinx.tests.emf</module>
+		<module>../org.eclipse.sphinx.tests.emf.integration</module>
+		<module>../org.eclipse.sphinx.tests.emf.ui.integration</module>
+		<module>../org.eclipse.sphinx.tests.emf.workspace</module>
+		<module>../org.eclipse.sphinx.tests.emf.workspace.integration</module>
+		<module>../org.eclipse.sphinx.tests.platform</module>
+		<module>../org.eclipse.sphinx.tests.platform.integration</module>
+		<module>../org.eclipse.sphinx.tests.xtendxpand.integration</module>
+		<module>../org.eclipse.sphinx.testutils</module>
+		<module>../org.eclipse.sphinx.testutils.integration</module>
+		<module>../org.eclipse.sphinx.testutils.integration.referenceworkspace</module>
+		<module>../org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand</module>
+		
+		<!-- Documentation -->
+		<module>../org.eclipse.sphinx.doc.isv</module>
+
+		<!-- Features -->
+		<module>../org.eclipse.sphinx.core-feature</module>
+		<module>../org.eclipse.sphinx.emf.compare-feature</module>
+		<module>../org.eclipse.sphinx.emf.compare.team.subversive-feature</module>
+		<module>../org.eclipse.sphinx.emf.editors.forms-feature</module>
+		<module>../org.eclipse.sphinx.emf.navigators-feature</module>
+		<module>../org.eclipse.sphinx.emf.validation-feature</module>
+		<module>../org.eclipse.sphinx.gmf.editors-feature</module>
+		<module>../org.eclipse.sphinx.xtendxpand-feature</module>
+		
+		<module>../org.eclipse.sphinx.examples.core-feature</module>
+		<module>../org.eclipse.sphinx.examples.metamodels.hummingbird-feature</module>
+		<module>../org.eclipse.sphinx.examples.metamodels.uml2-feature</module>
+		<module>../org.eclipse.sphinx.examples.navigators-feature</module>
+		<module>../org.eclipse.sphinx.examples.validation-feature</module>
+		<module>../org.eclipse.sphinx.examples.xtendxpand-feature</module>
+
+		<module>../org.eclipse.sphinx-feature</module>
+		<module>../org.eclipse.sphinx.source-feature</module>
+		<module>../org.eclipse.sphinx.doc-feature</module>
+		<module>../org.eclipse.sphinx.sdk-feature</module>
+		<module>../org.eclipse.sphinx.examples-feature</module>
+		<module>../org.eclipse.sphinx.tests-feature</module>
+		<module>../org.eclipse.sphinx.testutils-feature</module>
+		<module>../org.eclipse.sphinx.thirdparty-feature</module>
+		
+		<module>./repository</module>
+	</modules>
+</project>

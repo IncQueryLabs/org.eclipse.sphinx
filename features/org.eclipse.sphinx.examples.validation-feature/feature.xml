@@ -17,12 +17,15 @@
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.sphinx.emf.validation" version="0.7.0"/>
-   </requires>
-
    <plugin
          id="org.eclipse.sphinx.examples.validation.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.examples.validation.ui.source"
          download-size="0"
          install-size="0"
          version="0.0.0"

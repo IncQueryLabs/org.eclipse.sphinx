@@ -21,10 +21,6 @@
          id="org.eclipse.sphinx.testutils"
          version="0.0.0"/>
 
-   <requires>
-      <import plugin="com.google.guava"/>
-   </requires>
-
    <plugin
          id="org.eclipse.sphinx.tests.emf"
          download-size="0"

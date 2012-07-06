@@ -41,8 +41,4 @@
          id="org.eclipse.sphinx.examples.metamodels.uml2"
          version="0.0.0"/>
 
-   <requires>
-      <import feature="org.eclipse.sphinx" version="0.7.0"/>
-   </requires>
-
 </feature>

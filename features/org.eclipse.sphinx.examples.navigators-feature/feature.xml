@@ -17,10 +17,6 @@
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.sphinx.emf.navigators" version="0.7.0"/>
-   </requires>
-
    <plugin
          id="org.eclipse.sphinx.examples.explorer"
          download-size="0"

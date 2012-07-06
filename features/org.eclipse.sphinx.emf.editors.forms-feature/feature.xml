@@ -17,10 +17,6 @@
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.sphinx.core" version="0.7.0"/>
-   </requires>
-
    <plugin
          id="org.eclipse.sphinx.emf.editors.forms"
          download-size="0"

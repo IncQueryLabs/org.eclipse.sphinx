@@ -17,10 +17,6 @@
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.sphinx.xtendxpand" version="0.7.0"/>
-   </requires>
-
    <plugin
          id="org.eclipse.sphinx.examples.codegen.xpand.ui"
          download-size="0"
@@ -29,7 +25,21 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.sphinx.examples.codegen.xpand.ui.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.sphinx.examples.transform.xtend.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.examples.transform.xtend.ui.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
