@@ -94,7 +94,7 @@
 		<module>../../features/org.eclipse.sphinx.examples.metamodels.uml2-feature</module>
 		<module>../../features/org.eclipse.sphinx.examples.navigators-feature</module>
 		<module>../../features/org.eclipse.sphinx.examples.validation-feature</module>
-		<module>../org.eclipse.sphinx.examples.xtendxpand-feature</module>
+		<module>../../features/org.eclipse.sphinx.examples.xtendxpand-feature</module>
 
 		<module>../../features/org.eclipse.sphinx-feature</module>
 		<module>../../features/org.eclipse.sphinx.source-feature</module>
