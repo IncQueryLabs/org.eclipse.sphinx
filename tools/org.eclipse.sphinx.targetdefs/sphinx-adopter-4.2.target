@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.6"?>
+
+<target name="Sphinx Adopter Target 4.2" sequenceNumber="0">
+<locations>
+<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.sdk.ide" version="4.2.0.I20120608-1400"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20120522-1813-7P7OG2BFLWUl7UmbVUO9iCm"/>
+<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.0.I20120608-1400"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.2"/>
+</location>
+<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<repository location="http://download.eclipse.org/releases/juno"/>
+</location>
+<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.sphinx.sdk.feature.group" version="0.7.0.20120516-0815"/>
+<unit id="org.eclipse.sphinx.examples.feature.group" version="0.7.0.20120516-0815"/>
+<repository location="http://download.eclipse.org/sphinx/updates/interim"/>
+</location>
+</locations>
+<launcherArgs>
+<vmArgs>-Xms128m -Xmx512m -XX:PermSize=256M -XX:MaxPermSize=512M</vmArgs>
+</launcherArgs>
+</target>
