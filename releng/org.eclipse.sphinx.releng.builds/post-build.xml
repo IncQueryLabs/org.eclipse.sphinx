@@ -77,13 +77,13 @@
 
 	<target name="download-eclipse-platform-under-windows" if="runs.under.windows">
 		<mkdir dir="./downloads" />
-		<get src="http://artfiles.org/eclipse.org//eclipse/downloads/drops/R-${build.eclipse.revision}-${build.eclipse.timestamp}/eclipse-platform-${build.eclipse.revision}-win32${arch.suffix}.zip" dest="./downloads" usetimestamp="true" />
+		<get src="http://artfiles.org/eclipse.org//eclipse/downloads/drops/R-${build.eclipse.revision}-${build.eclipse.timestamp}/eclipse-platform-${build.eclipse.revision}-win32${arch.suffix}.zip" dest="./downloads" usetimestamp="true" verbose="true" />
 		<unzip src="./downloads/eclipse-platform-${build.eclipse.revision}-win32${arch.suffix}.zip" dest="." />
 	</target>
 
 	<target name="download-eclipse-platform-under-unix" if="runs.under.unix">
 		<mkdir dir="./downloads" />
-		<get src="http://artfiles.org/eclipse.org//eclipse/downloads/drops/R-${build.eclipse.revision}-${build.eclipse.timestamp}/eclipse-platform-${build.eclipse.revision}-linux-gtk${arch.suffix}.tar.gz" dest="./downloads" usetimestamp="true" />
+		<get src="http://artfiles.org/eclipse.org//eclipse/downloads/drops/R-${build.eclipse.revision}-${build.eclipse.timestamp}/eclipse-platform-${build.eclipse.revision}-linux-gtk${arch.suffix}.tar.gz" dest="./downloads/eclipse-platform-${build.eclipse.revision}-linux-gtk${arch.suffix}.tar.gz" usetimestamp="true" verbose="true" />
 		<untar src="./downloads/eclipse-platform-${build.eclipse.revision}-linux-gtk${arch.suffix}.tar.gz" dest="." compression="gzip" />
 		<chmod file="./eclipse/eclipse" perm="a+x" />
 		<chmod dir="./eclipse" includes="**/*.so" perm="a+x" />
