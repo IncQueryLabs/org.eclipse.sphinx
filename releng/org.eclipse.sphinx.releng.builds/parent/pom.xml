@@ -153,6 +153,7 @@
 					</excludes>
 					<useUIHarness>false</useUIHarness>
 					<useUIThread>false</useUIThread>
+					<argLine>${test-vmargs}</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -182,6 +183,28 @@
 				<platform-version>4.2</platform-version>
 				<platform-version-name>juno</platform-version-name>
 				<orbit-version>R20120526062928</orbit-version>
+			</properties>
+		</profile>
+		<profile>
+			<id>os-macosx</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<properties>
+				<test-vmargs>-Xmx512m -XX:MaxPermSize=256m -XstartOnFirstThread</test-vmargs>
+			</properties>
+		</profile>
+		<profile>
+			<id>os-other</id>
+			<activation>
+				<os>
+					<family>!mac</family>
+				</os>
+			</activation>
+			<properties>
+				<test-vmargs>-Xmx512m -XX:MaxPermSize=256m</test-vmargs>
 			</properties>
 		</profile>
 	</profiles>
