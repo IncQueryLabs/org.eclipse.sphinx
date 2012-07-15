@@ -166,8 +166,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		 * org.eclipse.ui.internal.progress.ProgressMonitorFocusJobDialog#show(Job, Shell) and
 		 * org.eclipse.jface.dialogs.ProgressMonitorDialog#aboutToRun() for details)
 		 */
-		InstanceScope instanceScope = new InstanceScope();
-		IEclipsePreferences workbenchPrefs = instanceScope.getNode("org.eclipse.ui.workbench");
+		IEclipsePreferences workbenchPrefs = InstanceScope.INSTANCE.getNode("org.eclipse.ui.workbench");
 		workbenchPrefs.put("RUN_IN_BACKGROUND", Boolean.TRUE.toString());
 
 		waitForModelLoading();
@@ -190,7 +189,9 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		org.eclipse.sphinx.emf.workspace.Activator.getPlugin().stopWorkspaceSynchronizing();
 
 		importMissingReferenceProjectsToWorkspace();
-		// In case previous test failed and tearDown() were not called, projects are still closed, open them
+
+		// In case previous test failed and tearDown() was not called, some projects may still be closed - so open all
+		// of them to be on the safe side
 		synchronizedOpenAllProjects();
 
 		importMissingReferenceFilesToWorkspace();
@@ -206,7 +207,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			waitForModelLoading();
 			assertReferenceWorkspaceClosed();
 		} else {
-
 			ModelLoadManager.INSTANCE.loadWorkspace(false, null);
 			waitForModelLoading();
 			assertReferenceWorkspaceInitialized();
