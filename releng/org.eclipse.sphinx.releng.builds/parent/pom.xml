@@ -41,23 +41,23 @@
 		<system>Eclipse Hudson</system>
 	</ciManagement>
 	<properties>
-		<tycho-version>0.15.0</tycho-version>
+		<tycho.version>0.15.0</tycho.version>
 	</properties>
 	<repositories>
 		<repository>
 			<id>eclipse-updates</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/${platform-version}</url>
+			<url>http://download.eclipse.org/eclipse/updates/${platform.version}</url>
 		</repository>
 		<repository>
 			<id>release-train-updates</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/${platform-version-name}</url>
+			<url>http://download.eclipse.org/releases/${platform.version.name}</url>
 		</repository>
 		<repository>
 			<id>orbit-updates</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit-version}/repository</url>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.version}/repository</url>
 		</repository>
 	</repositories>
 	<build>
@@ -85,13 +85,13 @@
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
-				<version>${tycho-version}</version>
+				<version>${tycho.version}</version>
 				<extensions>true</extensions>
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
-				<version>${tycho-version}</version>
+				<version>${tycho.version}</version>
 				<configuration>
 					<resolver>p2</resolver>
 					<environments>
@@ -131,7 +131,7 @@
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-source-plugin</artifactId>
-				<version>${tycho-version}</version>
+				<version>${tycho.version}</version>
 				<executions>
 					<execution>
 						<id>plugin-source</id>
@@ -144,7 +144,7 @@
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
-				<version>${tycho-version}</version>
+				<version>${tycho.version}</version>
 				<configuration>
 					<testFailureIgnore>true</testFailureIgnore>
 					<excludes>
@@ -153,7 +153,7 @@
 					</excludes>
 					<useUIHarness>false</useUIHarness>
 					<useUIThread>false</useUIThread>
-					<argLine>${test-vmargs}</argLine>
+					<argLine>${tycho.surefire.vmargs}</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -162,9 +162,9 @@
 		<profile>
 			<id>platform-indigo</id>
 			<properties>
-				<platform-version>3.7</platform-version>
-				<platform-version-name>indigo</platform-version-name>
-				<orbit-version>R20120526062928</orbit-version>
+				<platform.version>3.7</platform.version>
+				<platform.version.name>indigo</platform.version.name>
+				<orbit.version>R20120526062928</orbit.version>
 			</properties>
 			<repositories>
 				<repository>
@@ -180,9 +180,9 @@
 		<profile>
 			<id>platform-juno</id>
 			<properties>
-				<platform-version>4.2</platform-version>
-				<platform-version-name>juno</platform-version-name>
-				<orbit-version>R20120526062928</orbit-version>
+				<platform.version>4.2</platform.version>
+				<platform.version.name>juno</platform.version.name>
+				<orbit.version>R20120526062928</orbit.version>
 			</properties>
 		</profile>
 		<profile>
@@ -193,7 +193,7 @@
 				</os>
 			</activation>
 			<properties>
-				<test-vmargs>-Xmx512m -XX:MaxPermSize=256m -XstartOnFirstThread</test-vmargs>
+				<tycho.surefire.vmargs>-Xmx512m -XX:MaxPermSize=256m -XstartOnFirstThread</tycho.surefire.vmargs>
 			</properties>
 		</profile>
 		<profile>
@@ -204,7 +204,7 @@
 				</os>
 			</activation>
 			<properties>
-				<test-vmargs>-Xmx512m -XX:MaxPermSize=256m</test-vmargs>
+				<tycho.surefire.vmargs>-Xmx512m -XX:MaxPermSize=256m</tycho.surefire.vmargs>
 			</properties>
 		</profile>
 	</profiles>

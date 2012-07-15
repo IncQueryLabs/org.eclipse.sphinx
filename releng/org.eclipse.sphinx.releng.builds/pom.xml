@@ -16,94 +16,94 @@
 		<module>./parent</module>
 
 		<!-- Plug-ins -->
-		<module>${plugins-path}/org.eclipse.sphinx.emf</module>
-		<module>${plugins-path}/org.eclipse.sphinx.emf.compare</module>
-		<module>${plugins-path}/org.eclipse.sphinx.emf.compare.team.subversive.ui</module>
-		<module>${plugins-path}/org.eclipse.sphinx.emf.compare.ui</module>
-		<module>${plugins-path}/org.eclipse.sphinx.emf.editors.forms</module>
-		<module>${plugins-path}/org.eclipse.sphinx.emf.explorer</module>
-		<module>${plugins-path}/org.eclipse.sphinx.emf.mwe</module>
-		<module>${plugins-path}/org.eclipse.sphinx.emf.ui</module>
-		<module>${plugins-path}/org.eclipse.sphinx.emf.validation</module>
-		<module>${plugins-path}/org.eclipse.sphinx.emf.validation.bridge</module>
-		<module>${plugins-path}/org.eclipse.sphinx.emf.validation.ui</module>
-		<module>${plugins-path}/org.eclipse.sphinx.emf.workspace</module>
-		<module>${plugins-path}/org.eclipse.sphinx.emf.workspace.ui</module>
-		<module>${plugins-path}/org.eclipse.sphinx.gmf.runtime.ui</module>
-		<module>${plugins-path}/org.eclipse.sphinx.gmf.workspace</module>
-		<module>${plugins-path}/org.eclipse.sphinx.platform</module>
-		<module>${plugins-path}/org.eclipse.sphinx.platform.ui</module>
-		<module>${plugins-path}/org.eclipse.sphinx.xtend.typesystem.emf</module>
-		<module>${plugins-path}/org.eclipse.sphinx.xtend.typesystem.emf.ui</module>
-		<module>${plugins-path}/org.eclipse.sphinx.xtendxpand</module>
-		<module>${plugins-path}/org.eclipse.sphinx.xtendxpand.ui</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.emf</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.emf.compare</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.emf.compare.team.subversive.ui</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.emf.compare.ui</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.emf.editors.forms</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.emf.explorer</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.emf.mwe</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.emf.ui</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.emf.validation</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.emf.validation.bridge</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.emf.validation.ui</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.emf.workspace</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.emf.workspace.ui</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.gmf.runtime.ui</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.gmf.workspace</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.platform</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.platform.ui</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.xtend.typesystem.emf</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.xtend.typesystem.emf.ui</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.xtendxpand</module>
+		<module>${workspace.plugins.path}/org.eclipse.sphinx.xtendxpand.ui</module>
 
 		<!-- Examples -->
-		<module>${examples-path}/org.eclipse.sphinx.examples.actions</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.codegen.xpand.ui</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.common.ui</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.explorer</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.hummingbird.compare</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.hummingbird.ide</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.hummingbird.ide.ui</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.hummingbird10</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.hummingbird10.edit</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.hummingbird10.editor</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.hummingbird10.ide.ui</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.hummingbird20</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.hummingbird20.codegen.xpand</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.hummingbird20.edit</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.hummingbird20.editor</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.hummingbird20.ide.ui</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.hummingbird20.transform.xtend</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.tests.perf</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.transform.xtend.ui</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.uml2.ide</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.uml2.ide.ui</module>
-		<module>${examples-path}/org.eclipse.sphinx.examples.validation.ui</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.actions</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.codegen.xpand.ui</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.common.ui</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.explorer</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.hummingbird.compare</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.hummingbird.ide</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.hummingbird.ide.ui</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.hummingbird10</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.hummingbird10.edit</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.hummingbird10.editor</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.hummingbird10.ide.ui</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.hummingbird20</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.hummingbird20.codegen.xpand</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.hummingbird20.edit</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.hummingbird20.editor</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.hummingbird20.ide.ui</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.hummingbird20.transform.xtend</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.tests.perf</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.transform.xtend.ui</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.uml2.ide</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.uml2.ide.ui</module>
+		<module>${workspace.examples.path}/org.eclipse.sphinx.examples.validation.ui</module>
 
 		<!-- Tests -->
-		<module>${tests-path}/org.eclipse.sphinx.tests.emf</module>
-		<module>${tests-path}/org.eclipse.sphinx.tests.emf.integration</module>
-		<module>${tests-path}/org.eclipse.sphinx.tests.emf.ui.integration</module>
-		<module>${tests-path}/org.eclipse.sphinx.tests.emf.workspace</module>
-		<module>${tests-path}/org.eclipse.sphinx.tests.emf.workspace.integration</module>
-		<module>${tests-path}/org.eclipse.sphinx.tests.platform</module>
-		<module>${tests-path}/org.eclipse.sphinx.tests.platform.integration</module>
-		<module>${tests-path}/org.eclipse.sphinx.tests.xtendxpand.integration</module>
-		<module>${tests-path}/org.eclipse.sphinx.testutils</module>
-		<module>${tests-path}/org.eclipse.sphinx.testutils.integration</module>
-		<module>${tests-path}/org.eclipse.sphinx.testutils.integration.referenceworkspace</module>
-		<module>${tests-path}/org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand</module>
+		<module>${workspace.tests.path}/org.eclipse.sphinx.tests.emf</module>
+		<module>${workspace.tests.path}/org.eclipse.sphinx.tests.emf.integration</module>
+		<module>${workspace.tests.path}/org.eclipse.sphinx.tests.emf.ui.integration</module>
+		<module>${workspace.tests.path}/org.eclipse.sphinx.tests.emf.workspace</module>
+		<module>${workspace.tests.path}/org.eclipse.sphinx.tests.emf.workspace.integration</module>
+		<module>${workspace.tests.path}/org.eclipse.sphinx.tests.platform</module>
+		<module>${workspace.tests.path}/org.eclipse.sphinx.tests.platform.integration</module>
+		<module>${workspace.tests.path}/org.eclipse.sphinx.tests.xtendxpand.integration</module>
+		<module>${workspace.tests.path}/org.eclipse.sphinx.testutils</module>
+		<module>${workspace.tests.path}/org.eclipse.sphinx.testutils.integration</module>
+		<module>${workspace.tests.path}/org.eclipse.sphinx.testutils.integration.referenceworkspace</module>
+		<module>${workspace.tests.path}/org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand</module>
 
 		<!-- Documentation -->
-		<module>${docs-path}/org.eclipse.sphinx.doc.isv</module>
+		<module>${workspace.docs.path}/org.eclipse.sphinx.doc.isv</module>
 
 		<!-- Features -->
-		<module>${features-path}/org.eclipse.sphinx.core-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.emf.compare-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.emf.compare.team.subversive-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.emf.editors.forms-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.emf.navigators-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.emf.validation-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.gmf.editors-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.xtendxpand-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.core-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.emf.compare-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.emf.compare.team.subversive-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.emf.editors.forms-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.emf.navigators-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.emf.validation-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.gmf.editors-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.xtendxpand-feature</module>
 
-		<module>${features-path}/org.eclipse.sphinx.examples.core-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.examples.metamodels.hummingbird-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.examples.metamodels.uml2-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.examples.navigators-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.examples.validation-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.examples.xtendxpand-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.examples.core-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.examples.metamodels.hummingbird-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.examples.metamodels.uml2-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.examples.navigators-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.examples.validation-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.examples.xtendxpand-feature</module>
 
-		<module>${features-path}/org.eclipse.sphinx-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.source-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.doc-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.sdk-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.examples-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.tests-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.testutils-feature</module>
-		<module>${features-path}/org.eclipse.sphinx.thirdparty-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.source-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.doc-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.sdk-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.examples-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.tests-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.testutils-feature</module>
+		<module>${workspace.features.path}/org.eclipse.sphinx.thirdparty-feature</module>
 
 		<module>./repository</module>
 	</modules>
@@ -111,30 +111,30 @@
 		<profile>
 			<id>execution-local</id>
 			<properties>
-				<plugins-path>../</plugins-path>
-				<examples-path>../</examples-path>
-				<tests-path>../</tests-path>
-				<docs-path>../</docs-path>
-				<features-path>../</features-path>
+				<workspace.plugins.path>../</workspace.plugins.path>
+				<workspace.examples.path>../</workspace.examples.path>
+				<workspace.tests.path>../</workspace.tests.path>
+				<workspace.docs.path>../</workspace.docs.path>
+				<workspace.features.path>../</workspace.features.path>
 			</properties>
 			<activation>
 				<file>
-					<missing>../../releng/${project.artifactId}}/.project</missing>
+					<missing>../../releng/${project.artifactId}/.project</missing>
 				</file>
 			</activation>
 		</profile>
 		<profile>
 			<id>execution-ci-server</id>
 			<properties>
-				<plugins-path>../../plugins</plugins-path>
-				<examples-path>../../examples</examples-path>
-				<tests-path>../../tests</tests-path>
-				<docs-path>../../docs</docs-path>
-				<features-path>../../features</features-path>
+				<workspace.plugins.path>../../plugins</workspace.plugins.path>
+				<workspace.examples.path>../../examples</workspace.examples.path>
+				<workspace.tests.path>../../tests</workspace.tests.path>
+				<workspace.docs.path>../../docs</workspace.docs.path>
+				<workspace.features.path>../../features</workspace.features.path>
 			</properties>
 			<activation>
 				<file>
-					<exists>../../releng/${project.artifactId}}/.project</exists>
+					<exists>../../releng/${project.artifactId}/.project</exists>
 				</file>
 			</activation>
 		</profile>
