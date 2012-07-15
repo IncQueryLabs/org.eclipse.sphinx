@@ -1477,14 +1477,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		}
 	}
 
-	/**
-	 * @deprecated Use {@link AbstractIntegrationTestCase#importExternalResourceToWorkspace(File, IContainer)} instead.
-	 */
-	@Deprecated
-	protected void importReferenceResourceToWorkspace(File referenceSource, IContainer targetContainer) throws Exception {
-		importExternalResourceToWorkspace(referenceSource, targetContainer);
-	}
-
 	protected void importExternalResourceToWorkspace(File externalResource, IContainer targetContainer) throws Exception {
 		assertNotNull(externalResource);
 		assertNotNull(targetContainer);
@@ -1526,6 +1518,13 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 						}
 					}
 				}
+
+				// Override the file's encoding in case that specific file encoding rules apply
+				Map<String, String> encodingRules = getFileEncodingRules();
+				String extension = importedFile.getFileExtension();
+				if (encodingRules.containsKey(extension)) {
+					importedFile.setCharset(encodingRules.get(extension), null); //$NON-NLS-1$
+				}
 			}
 		}
 	}
@@ -1566,6 +1565,10 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				parentContainer = folder;
 			}
 		}
+	}
+
+	protected Map<String, String> getFileEncodingRules() {
+		return Collections.emptyMap();
 	}
 
 	protected void synchronizedImportExternalResourceToWorkspace(final File externalResource, final IContainer targetContainer) throws Exception {
