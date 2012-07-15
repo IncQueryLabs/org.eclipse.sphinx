@@ -176,9 +176,10 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		initReferenceWorkspace();
 
 		// Unzip reference workspace from archive if needed
-		if (needToUnzipArchiveFile()) {
+		if (needToUnzipReferenceWorkspaceArchive()) {
+			synchronizedDeleteWorkspace();
 			deleteExternalResource(referenceWorkspaceTempDir);
-			unzipArchiveFile();
+			unzipReferenceWorkspaceArchive();
 		} else {
 			loadReferenceWorkspaceSourceDir();
 		}
@@ -410,7 +411,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 *         if reference workspace archive is newer than existing unzipped reference workspace in temporary
 	 *         directory; <code>false</code> otherwise.
 	 */
-	boolean needToUnzipArchiveFile() throws Exception {
+	private boolean needToUnzipReferenceWorkspaceArchive() throws Exception {
 		java.net.URI referenceWorkspaceInputFileURI = getReferenceWorkspaceFileAccessor().getInputFileURI(
 				internalRefWks.getReferenceWorkspaceArchiveFileName(), true);
 		File referenceWorkspaceArchive = null;
@@ -540,7 +541,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		return missingReferenceFiles;
 	}
 
-	private void unzipArchiveFile() throws CoreException {
+	private void unzipReferenceWorkspaceArchive() throws CoreException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				ZipArchiveImporter zipArchiveImpoter = new ZipArchiveImporter();
