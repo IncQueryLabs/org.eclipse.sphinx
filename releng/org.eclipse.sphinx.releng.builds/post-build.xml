@@ -1,4 +1,4 @@
-<project name="org.eclipse.sphinx.releng.builds" default="build-all">
+<project name="org.eclipse.sphinx.releng.builds" default="all">
 
 	<property environment="env" />
 
@@ -71,7 +71,7 @@
 		<echo>arch.suffix=${arch.suffix}</echo>
 	</target>
 	
-	<target name="build-all" depends="echoprops, build-downloads"/>
+	<target name="all" depends="echoprops, build-downloads"/>
 
 	<target name="download-eclipse-platform" depends="download-eclipse-platform-under-windows, download-eclipse-platform-under-unix" />
 
