@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.eclipse.sphinx.releng</groupId>
@@ -14,7 +14,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>./parent</module>
-		
+
 		<!-- Plug-ins -->
 		<module>${plugins-path}/org.eclipse.sphinx.emf</module>
 		<module>${plugins-path}/org.eclipse.sphinx.emf.compare</module>
@@ -37,7 +37,7 @@
 		<module>${plugins-path}/org.eclipse.sphinx.xtend.typesystem.emf.ui</module>
 		<module>${plugins-path}/org.eclipse.sphinx.xtendxpand</module>
 		<module>${plugins-path}/org.eclipse.sphinx.xtendxpand.ui</module>
-		
+
 		<!-- Examples -->
 		<module>${examples-path}/org.eclipse.sphinx.examples.actions</module>
 		<module>${examples-path}/org.eclipse.sphinx.examples.codegen.xpand.ui</module>
@@ -75,7 +75,7 @@
 		<module>${tests-path}/org.eclipse.sphinx.testutils.integration</module>
 		<module>${tests-path}/org.eclipse.sphinx.testutils.integration.referenceworkspace</module>
 		<module>${tests-path}/org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand</module>
-		
+
 		<!-- Documentation -->
 		<module>${docs-path}/org.eclipse.sphinx.doc.isv</module>
 
@@ -88,7 +88,7 @@
 		<module>${features-path}/org.eclipse.sphinx.emf.validation-feature</module>
 		<module>${features-path}/org.eclipse.sphinx.gmf.editors-feature</module>
 		<module>${features-path}/org.eclipse.sphinx.xtendxpand-feature</module>
-		
+
 		<module>${features-path}/org.eclipse.sphinx.examples.core-feature</module>
 		<module>${features-path}/org.eclipse.sphinx.examples.metamodels.hummingbird-feature</module>
 		<module>${features-path}/org.eclipse.sphinx.examples.metamodels.uml2-feature</module>
@@ -104,7 +104,7 @@
 		<module>${features-path}/org.eclipse.sphinx.tests-feature</module>
 		<module>${features-path}/org.eclipse.sphinx.testutils-feature</module>
 		<module>${features-path}/org.eclipse.sphinx.thirdparty-feature</module>
-		
+
 		<module>./repository</module>
 	</modules>
 	<profiles>
@@ -118,7 +118,9 @@
 				<features-path>../</features-path>
 			</properties>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<file>
+					<missing>../../releng/${project.artifactId}}/.project</missing>
+				</file>
 			</activation>
 		</profile>
 		<profile>
@@ -130,6 +132,11 @@
 				<docs-path>../../docs</docs-path>
 				<features-path>../../features</features-path>
 			</properties>
+			<activation>
+				<file>
+					<exists>../../releng/${project.artifactId}}/.project</exists>
+				</file>
+			</activation>
 		</profile>
 	</profiles>
 </project>
