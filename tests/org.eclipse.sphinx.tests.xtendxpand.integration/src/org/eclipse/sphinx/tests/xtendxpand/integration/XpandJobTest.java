@@ -27,6 +27,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.sphinx.tests.xtendxpand.integration.internal.Activator;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandTestReferenceWorkspace;
 import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
@@ -62,6 +64,7 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		XpandJob xpandJob = new XpandJob("Xpand Job", metaModel, xpandEvaluationRequest); //$NON-NLS-1$
 		xpandJob.setWorkspaceResourceLoader(new BasicWorkspaceResourceLoader());
 		IStatus xpandStatus = xpandJob.runInWorkspace(new NullProgressMonitor());
+		PlatformLogUtil.logAsInfo(Activator.getPlugin(), "File encoding of " + xptFile.getFullPath() + ":" + xptFile.getCharset());
 		assertEquals(Status.OK_STATUS, xpandStatus);
 
 		// Load generated resource from current working directory and verify its content
