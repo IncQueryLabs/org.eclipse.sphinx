@@ -173,9 +173,6 @@
 					<url>http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases</url>
 				</repository>
 			</repositories>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 		</profile>
 		<profile>
 			<id>platform-juno</id>
