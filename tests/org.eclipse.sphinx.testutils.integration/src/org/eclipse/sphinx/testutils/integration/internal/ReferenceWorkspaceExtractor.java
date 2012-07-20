@@ -14,15 +14,10 @@
  */
 package org.eclipse.sphinx.testutils.integration.internal;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.URI;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
@@ -108,22 +103,6 @@ public class ReferenceWorkspaceExtractor {
 			}
 		} finally {
 			out.close();
-		}
-	}
-
-	private void saveInputStreamToFile(InputStream in, File targetFile, String charsetName) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, charsetName));
-		Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetFile), charsetName));
-		try {
-			String line;
-			String lineSeparator = System.getProperty("line.separator"); //$NON-NLS-1$
-			while ((line = reader.readLine()) != null) {
-				writer.write(line);
-				writer.write(lineSeparator);
-			}
-		} finally {
-			writer.close();
-			reader.close();
 		}
 	}
 }
