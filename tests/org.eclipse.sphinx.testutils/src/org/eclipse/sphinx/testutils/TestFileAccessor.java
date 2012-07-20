@@ -36,8 +36,30 @@ import org.eclipse.emf.common.util.URI;
 @SuppressWarnings("nls")
 public class TestFileAccessor {
 
-	private static final String INPUT_DIR = "resources" + IPath.SEPARATOR + "input";
+	public static void copyInputStreamToFile(InputStream in, File targetFile) throws IOException {
+		OutputStream out = new FileOutputStream(targetFile);
+		try {
+			// Transfer bytes from in to out
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = in.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+		} finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+				if (out != null) {
+					out.close();
+				}
+			} catch (IOException ex) {
+				// Ignore exception
+			}
+		}
+	}
 
+	private static final String INPUT_DIR = "resources" + IPath.SEPARATOR + "input";
 	private static final String BUNDLE_RESOURCE_SCHEME = "bundleresource";
 	private static final String BUNDLE_ENTRY_SCHEME = "bundleentry";
 
@@ -109,26 +131,7 @@ public class TestFileAccessor {
 	public File createWorkingCopyOfInputFile(String inputFileName) throws IOException {
 		InputStream in = openInputFileInputStream(inputFileName);
 		File workingCopyOfInputFile = createWorkingFile(inputFileName);
-		OutputStream out = new FileOutputStream(workingCopyOfInputFile);
-		try {
-			// Transfer bytes from in to out
-			byte[] buf = new byte[1024];
-			int len;
-			while ((len = in.read(buf)) > 0) {
-				out.write(buf, 0, len);
-			}
-		} finally {
-			try {
-				if (in != null) {
-					in.close();
-				}
-				if (out != null) {
-					out.close();
-				}
-			} catch (IOException e) {
-				// ignore
-			}
-		}
+		copyInputStreamToFile(in, workingCopyOfInputFile);
 		return workingCopyOfInputFile;
 	}
 

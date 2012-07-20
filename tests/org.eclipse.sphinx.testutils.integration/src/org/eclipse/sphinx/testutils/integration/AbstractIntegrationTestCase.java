@@ -87,7 +87,7 @@ import org.eclipse.sphinx.testutils.integration.internal.IInternalReferenceWorks
 import org.eclipse.sphinx.testutils.integration.internal.ReferenceEditingDomainDescriptor;
 import org.eclipse.sphinx.testutils.integration.internal.ReferenceModelDescriptor;
 import org.eclipse.sphinx.testutils.integration.internal.ReferenceProjectDescriptor;
-import org.eclipse.sphinx.testutils.integration.internal.ZipArchiveImporter;
+import org.eclipse.sphinx.testutils.integration.internal.ReferenceWorkspaceExtractor;
 
 @SuppressWarnings("nls")
 public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace> extends TestCase {
@@ -125,8 +125,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		// Complement name of temporary reference workspace directory with version suffix to avoid that reference
 		// workspaces originating from different development streams (i.e., platform versions) get mixed up in same
 		// temporary directory
-		String referenceWorkspaceTempDirName = referenceWorkspaceTempDirBaseName + "-"
-				+ Activator.getPlugin().getBundle().getVersion().toString().replaceFirst("\\.qualifier", "");
+		String referenceWorkspaceTempDirName = referenceWorkspaceTempDirBaseName + "-" + Activator.getPlugin().getBundle().getVersion();
 
 		referenceWorkspaceTempDir = new File(tempDir, referenceWorkspaceTempDirName);
 		if (!referenceWorkspaceTempDir.exists()) {
@@ -176,10 +175,10 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		initReferenceWorkspace();
 
 		// Unzip reference workspace from archive if needed
-		if (needToUnzipReferenceWorkspaceArchive()) {
+		if (needToExtractReferenceWorkspaceArchive()) {
 			synchronizedDeleteWorkspace();
 			deleteExternalResource(referenceWorkspaceTempDir);
-			unzipReferenceWorkspaceArchive();
+			extractReferenceWorkspaceArchive();
 		} else {
 			loadReferenceWorkspaceSourceDir();
 		}
@@ -406,12 +405,12 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	/**
 	 * Checks if it is necessary to unzip reference workspace from archive.
 	 * 
-	 * @return <code>true</code> if the reference archive file was not already unzipped and reference workspace source
-	 *         root directory path was not already saved to the referenceWorkspaceSourceRootDirectory.properties file or
-	 *         if reference workspace archive is newer than existing unzipped reference workspace in temporary
+	 * @return <code>true</code> if the reference workspace archive was not already unzipped and reference workspace
+	 *         source root directory path was not already saved to the referenceWorkspaceSourceRootDirectory.properties
+	 *         file or if reference workspace archive is newer than existing unzipped reference workspace in temporary
 	 *         directory; <code>false</code> otherwise.
 	 */
-	private boolean needToUnzipReferenceWorkspaceArchive() throws Exception {
+	private boolean needToExtractReferenceWorkspaceArchive() throws Exception {
 		java.net.URI referenceWorkspaceInputFileURI = getReferenceWorkspaceFileAccessor().getInputFileURI(
 				internalRefWks.getReferenceWorkspaceArchiveFileName(), true);
 		File referenceWorkspaceArchive = null;
@@ -419,9 +418,8 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			referenceWorkspaceArchive = new File(referenceWorkspaceInputFileURI);
 		}
 		File propertiesFile = new File(referenceWorkspaceTempDir, REFERENCE_WORKSPACE_PROPERTIES_FILE_NAME);
-		return !(referenceWorkspaceTempDir.exists() && propertiesFile.exists()) || referenceWorkspaceArchive != null
+		return !propertiesFile.exists() || referenceWorkspaceArchive != null
 				&& referenceWorkspaceArchive.lastModified() > referenceWorkspaceTempDir.lastModified();
-
 	}
 
 	private TestFileAccessor getReferenceWorkspaceFileAccessor() {
@@ -541,14 +539,13 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		return missingReferenceFiles;
 	}
 
-	private void unzipReferenceWorkspaceArchive() throws CoreException {
+	private void extractReferenceWorkspaceArchive() throws CoreException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
-				ZipArchiveImporter zipArchiveImpoter = new ZipArchiveImporter();
-				zipArchiveImpoter.unzipArchiveFile(getReferenceWorkspaceFileAccessor(), internalRefWks.getReferenceWorkspaceArchiveFileName(),
-						referenceWorkspaceTempDir.getPath());
-
-				referenceWorkspaceSourceDir = new File(zipArchiveImpoter.getDirectoryRoot());
+				ReferenceWorkspaceExtractor extractor = new ReferenceWorkspaceExtractor();
+				extractor.extract(getReferenceWorkspaceFileAccessor(), internalRefWks.getReferenceWorkspaceArchiveFileName(),
+						referenceWorkspaceTempDir);
+				referenceWorkspaceSourceDir = extractor.getExtractedWorkspaceRootDirectory();
 
 				try {
 					saveReferenceWorkspaceSourceDir();
@@ -1502,28 +1499,24 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				InputStream externalFileContents = new FileInputStream(externalResource);
 				if (importedFile.exists()) {
 					// Overwrite old file's contents
+					importedFile.setCharset(null, null);
 					importedFile.setContents(externalFileContents, true, false, null);
 				} else {
 					// Create new file in target container
 					try {
 						importedFile.create(externalFileContents, true, null);
+						importedFile.setCharset(null, null);
 					} catch (Exception ex) {
 						// Exception complaining that imported file already exists?
 						if (ex.getMessage().contains("already exists")) {
 							// Overwrite existing file's contents
 							externalFileContents = new FileInputStream(externalResource);
+							importedFile.setCharset(null, null);
 							importedFile.setContents(externalFileContents, true, false, null);
 						} else {
 							throw ex;
 						}
 					}
-				}
-
-				// Override the file's encoding in case that specific file encoding rules apply
-				Map<String, String> encodingRules = getFileEncodingRules();
-				String extension = importedFile.getFileExtension();
-				if (encodingRules.containsKey(extension)) {
-					importedFile.setCharset(encodingRules.get(extension), null); //$NON-NLS-1$
 				}
 			}
 		}
@@ -1565,10 +1558,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				parentContainer = folder;
 			}
 		}
-	}
-
-	protected Map<String, String> getFileEncodingRules() {
-		return Collections.emptyMap();
 	}
 
 	protected void synchronizedImportExternalResourceToWorkspace(final File externalResource, final IContainer targetContainer) throws Exception {
