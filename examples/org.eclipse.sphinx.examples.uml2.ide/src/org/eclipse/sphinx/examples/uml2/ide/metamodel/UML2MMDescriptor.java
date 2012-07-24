@@ -19,8 +19,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor;
+import org.eclipse.sphinx.emf.metamodel.MetaModelVersionData;
 import org.eclipse.sphinx.examples.uml2.ide.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
@@ -104,6 +106,10 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 		super(ID, NAMESPACE, NAME);
 	}
 
+	protected UML2MMDescriptor(String identifier, MetaModelVersionData versionData) {
+		super(identifier, BASE_NAMESPACE, versionData);
+	}
+
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor#getCompatibleNamespaceURIs()
 	 */
@@ -146,5 +152,20 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 		contentTypeIds.add(OMG_XMI_BASE_CONTENT_TYPE_ID + "_2_2"); //$NON-NLS-1$
 		contentTypeIds.add(OMG_CMOF_CONTENT_TYPE_ID);
 		return contentTypeIds;
+	}
+
+	@Override
+	public boolean matchesEPackageNsURIPattern(String uri) {
+		boolean matches = super.matchesEPackageNsURIPattern(uri);
+		if (!matches) {
+			for (URI namespaceURI : getCompatibleNamespaceURIs()) {
+				Pattern pattern = Pattern.compile(namespaceURI.toString());
+				matches = pattern.matcher(uri).matches();
+				if (matches) {
+					return true;
+				}
+			}
+		}
+		return matches;
 	}
 }
