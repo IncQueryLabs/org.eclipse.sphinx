@@ -9,7 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
- *     itemis - Added support for UML models stored in OMG XMI and CMOF files
+ *     itemis - Added support for UML models stored in OMG XMI and CMOF files and upgraded versions of namespace and content type to 4.0.0 in order to support Eclipse Juno
  * 
  * </copyright>
  */
