@@ -861,32 +861,19 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		if (ePackage != null) {
 			synchronized (fPackageMetaModelDescriptorCache) {
 				IMetaModelDescriptor mmDescriptor = fPackageMetaModelDescriptorCache.get(ePackage);
-
 				if (mmDescriptor == null) {
-					// not cached
-					final String nsURI = ePackage.getNsURI();
-
-					if (nsURI != null) {
-						mmDescriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
-							public boolean accept(IMetaModelDescriptor descriptor) {
-								return descriptor.matchesEPackageNsURIPattern(nsURI);
-							}
-						});
-					}
-
-					if (mmDescriptor != null) {
-						fPackageMetaModelDescriptorCache.put(ePackage, mmDescriptor);
-					} else {
-						fPackageMetaModelDescriptorCache.put(ePackage, NO_MM);
+					try {
+						mmDescriptor = getDescriptor(new URI(ePackage.getNsURI()));
+						if (mmDescriptor != null) {
+							fPackageMetaModelDescriptorCache.put(ePackage, mmDescriptor);
+						} else {
+							fPackageMetaModelDescriptorCache.put(ePackage, NO_MM);
+						}
+					} catch (URISyntaxException ex) {
+						PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 					}
 				}
-
-				if (mmDescriptor == NO_MM) {
-					// cached but no descriptor could be found earlier
-					return null;
-				} else {
-					return mmDescriptor;
-				}
+				return mmDescriptor != NO_MM ? mmDescriptor : null;
 			}
 		}
 		return null;
