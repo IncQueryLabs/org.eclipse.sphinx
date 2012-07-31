@@ -18,8 +18,8 @@
 <repository location="http://download.eclipse.org/releases/juno"/>
 </location>
 <location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sphinx.sdk.feature.group" version="0.7.0.20120516-0815"/>
-<unit id="org.eclipse.sphinx.examples.feature.group" version="0.7.0.20120516-0815"/>
+<unit id="org.eclipse.sphinx.sdk.feature.group" version="0.7.0.201207310837"/>
+<unit id="org.eclipse.sphinx.examples.feature.group" version="0.7.0.201207310837"/>
 <repository location="http://download.eclipse.org/sphinx/updates/interim"/>
 </location>
 </locations>
