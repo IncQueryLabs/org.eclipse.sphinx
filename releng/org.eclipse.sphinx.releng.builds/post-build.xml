@@ -70,8 +70,8 @@
 
 		<echo>arch.suffix=${arch.suffix}</echo>
 	</target>
-	
-	<target name="all" depends="echoprops, build-downloads"/>
+
+	<target name="all" depends="echoprops, build-downloads" />
 
 	<target name="download-eclipse-platform" depends="download-eclipse-platform-under-windows, download-eclipse-platform-under-unix" />
 
@@ -95,7 +95,7 @@
 
 	<target name="build-downloads" depends="setup-build-eclipse">
 		<!-- Invoke do-build-downloads target using Eclipse Ant runner 
-		     so as to have access to Ant tasks that are provided by or contributed to Eclipse -->
+			 so as to have access to Ant tasks that are provided by or contributed to Eclipse -->
 		<exec executable="./eclipse/eclipse" failonerror="true" timeout="900000" taskname="eclipse">
 			<arg line="-noSplash" />
 			<arg line="-application org.eclipse.ant.core.antRunner" />
@@ -104,7 +104,7 @@
 		</exec>
 	</target>
 
-	<target name="do-build-downloads">
+	<target name="do-build-downloads" depends="detect-sphinx-version">
 		<delete dir="./target/downloads" />
 
 		<echo message="Packaging downloadable archived Sphinx Update Site" />
@@ -149,5 +149,31 @@
 		<zip destfile="./target/downloads/mdt-sphinx-testutils-${sphinx.version}.${env.BUILD_ID}.zip">
 			<zipfileset dir="./target/downloads/sphinx.testutils.runnable" excludes="eclipse/*.jar" />
 		</zip>
+	</target>
+
+	<target name="detect-sphinx-version">
+		<!-- Sphinx version to be build -->
+		<loadfile srcFile="./pom.xml" property="sphinx.version">
+			<filterchain>
+				<linecontainsregexp>
+					<regexp pattern="\d+.\d+.\d+-SNAPSHOT" />
+				</linecontainsregexp>
+				<tokenfilter>
+					<replaceregex replace='\2' pattern='(.*)(\d+.\d+.\d+)(-SNAPSHOT)(.*)' />
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
+		<!-- FIXME use one loadfile -->
+		<!-- Maven build type dependent postfix for build artifact file names -->
+		<loadfile srcFile="./pom.xml" property="mvn.build.type.postfix">
+			<filterchain>
+				<linecontainsregexp>
+					<regexp pattern="\d+.\d+.\d+-SNAPSHOT" />
+				</linecontainsregexp>
+				<tokenfilter>
+					<replaceregex replace='\3' pattern='(.*)(\d+.\d+.\d+)(-SNAPSHOT)(.*)' />
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
 	</target>
 </project>
