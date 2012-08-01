@@ -1,5 +1,0 @@
-setpreference targetPlatformPath=${user.dir}/tp
-import -P buckminster.properties sphinx.cquery
-build
-perform -P buckminster.properties org.eclipse.sphinx.parent#site.p2
-junit -P buckminster.properties -l org.eclipse.sphinx.testutils/launch/AutoTestSuite.launch -o junit-output.xml --stdout --flatXML
