@@ -19,10 +19,13 @@ import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
+import org.eclipse.ui.ISaveableFilter;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.Saveable;
 
 /**
  * Implementation of {@linkplain IWorkbenchListener workbench listener} that is responsible for opening a dialog to
@@ -56,7 +59,14 @@ public class CloseWorkbenchListener implements IWorkbenchListener {
 							}
 						}
 						if (window != null) {
-							canceled[0] = !PlatformUI.getWorkbench().saveAll(window, window, null, true);
+							/*
+							 * !!! Important Note !!! Up to Eclipse version 3.8 the
+							 * Workbench.saveAll(IShellProvider,IRunnableContext,ISaveableFilter,boolean) method's
+							 * implementation was robust enough to handle a call where the ISaveableFilter is null. This
+							 * has changed in Eclipse 4. For that reason, we pass a new instance of AllSaveablesFilter
+							 * that indicates we should save all dirty saveables instead of null.
+							 */
+							canceled[0] = !PlatformUI.getWorkbench().saveAll(window, window, new AllSaveablesFilter(), true);
 						}
 					}
 				});
@@ -73,5 +83,15 @@ public class CloseWorkbenchListener implements IWorkbenchListener {
 		// or all of them before proceeding with the save operation)
 		ModelSaveManager.INSTANCE.setSaved(ResourcesPlugin.getWorkspace().getRoot());
 		return true;
+	}
+
+	/**
+	 * This class provides a filter for saving all dirty saveables.
+	 */
+	private class AllSaveablesFilter implements ISaveableFilter {
+
+		public boolean select(Saveable saveable, IWorkbenchPart[] containingParts) {
+			return saveable.isDirty();
+		}
 	}
 }
