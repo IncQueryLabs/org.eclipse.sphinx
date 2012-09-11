@@ -49,4 +49,8 @@
          id="org.eclipse.sphinx.xtendxpand"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.sphinx.emf.editors.forms.nebula"
+         version="0.0.0"/>
+
 </feature>
