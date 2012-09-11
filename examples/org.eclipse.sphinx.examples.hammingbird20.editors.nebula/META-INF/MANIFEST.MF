@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.sphinx.examples.hammingbird20.editors.nebula;singleton:=true
+Bundle-Version: 0.7.0.qualifier
+Bundle-Localization: plugin
+Bundle-Vendor: %providerName
+Bundle-ActivationPolicy: lazy
+Export-Package: org.eclipse.sphinx.examples.hammingbird20.editors.nebula.internal;x-internal:=true,
+ org.eclipse.sphinx.examples.hammingbird20.editors.nebula.sections
+Bundle-Activator: org.eclipse.sphinx.examples.hammingbird20.editors.nebula.internal.Activator$Implementation
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.eclipse.emf.common,
+ org.eclipse.sphinx.emf.editors.forms.nebula,
+ org.eclipse.sphinx.examples.hummingbird20.edit
