@@ -37,6 +37,11 @@
 <unit id="org.jdom" version="1.1.1.v201101151400"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20120526062928/repository/"/>
 </location>
+<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.feature.feature.group" version="1.0.0.201208281846"/>
+<unit id="org.eclipse.nebula.examples.release.feature.feature.group" version="1.0.4.201208281846"/>
+<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
+</location>
 </locations>
 <environment>
 <nl>en_EN</nl>
