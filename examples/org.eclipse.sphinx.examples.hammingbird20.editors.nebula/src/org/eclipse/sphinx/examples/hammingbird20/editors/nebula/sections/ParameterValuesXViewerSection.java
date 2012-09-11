@@ -68,7 +68,7 @@ public class ParameterValuesXViewerSection extends BasicXViewerSection {
 							if (childrenFeatures == null) {
 								super.getChildrenFeatures(object);
 								// Consider only parameter value children of component
-								childrenFeatures.add(InstanceModel20Package.Literals.COMPONENT__PARAMETER_VALUES);
+								childrenFeatures.remove(InstanceModel20Package.Literals.COMPONENT__OUTGOING_CONNECTIONS);
 							}
 							return childrenFeatures;
 						};
