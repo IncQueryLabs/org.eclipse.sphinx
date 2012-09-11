@@ -17,6 +17,11 @@
 <unit id="org.eclipse.sphinx.examples.feature.group" version="0.7.0.201207310837"/>
 <repository location="http://download.eclipse.org/sphinx/updates/interim"/>
 </location>
+<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.feature.feature.group" version="1.0.0.201208281846"/>
+<unit id="org.eclipse.nebula.examples.release.feature.feature.group" version="1.0.4.201208281846"/>
+<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
+</location>
 </locations>
 <launcherArgs>
 <vmArgs>-Xms128m -Xmx512m -XX:PermSize=256M -XX:MaxPermSize=512M</vmArgs>
