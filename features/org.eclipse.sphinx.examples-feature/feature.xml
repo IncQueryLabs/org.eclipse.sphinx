@@ -41,4 +41,8 @@
          id="org.eclipse.sphinx.examples.metamodels.uml2"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.sphinx.examples.editors.forms.nebula"
+         version="0.0.0"/>
+
 </feature>
