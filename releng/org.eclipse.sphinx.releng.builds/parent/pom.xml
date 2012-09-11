@@ -59,6 +59,11 @@
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.version}/repository</url>
 		</repository>
+		<repository>
+			<id>nebula-updates</id>
+			<layout>p2</layout>
+			<url>Eclipse Nebula Plugin Update Site - http://download.eclipse.org/technology/nebula/snapshot</url>
+		</repository>
 	</repositories>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
