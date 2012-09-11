@@ -14,8 +14,16 @@
  */
 package org.eclipse.sphinx.emf.editors.forms.sections;
 
+import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.ui.viewer.IViewerProvider;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.ui.action.EditingDomainActionBarContributor;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryContentProvider;
+import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryLabelProvider;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredViewer;
@@ -91,5 +99,31 @@ public abstract class AbstractViewerFormSection extends AbstractFormSection impl
 		if (actionBarContributor instanceof BasicTransactionalEditorActionBarContributor) {
 			((BasicTransactionalEditorActionBarContributor) actionBarContributor).setGlobalActionHandlers();
 		}
+	}
+
+	protected IContentProvider createContentProvider() {
+		if (sectionInput instanceof EObject) {
+			AdapterFactory adapterFactory = getCustomAdapterFactory();
+			EditingDomain editingDomain = formPage.getTransactionalFormEditor().getEditingDomain();
+			if (adapterFactory != null && editingDomain instanceof TransactionalEditingDomain) {
+				return new TransactionalAdapterFactoryContentProvider((TransactionalEditingDomain) editingDomain, adapterFactory);
+			}
+		}
+		return formPage.getContentProvider();
+	}
+
+	protected IBaseLabelProvider createLabelProvider() {
+		if (sectionInput instanceof EObject) {
+			AdapterFactory adapterFactory = getCustomAdapterFactory();
+			EditingDomain editingDomain = formPage.getTransactionalFormEditor().getEditingDomain();
+			if (adapterFactory != null && editingDomain instanceof TransactionalEditingDomain) {
+				return new TransactionalAdapterFactoryLabelProvider((TransactionalEditingDomain) editingDomain, adapterFactory);
+			}
+		}
+		return formPage.getLabelProvider();
+	}
+
+	protected AdapterFactory getCustomAdapterFactory() {
+		return null;
 	}
 }
