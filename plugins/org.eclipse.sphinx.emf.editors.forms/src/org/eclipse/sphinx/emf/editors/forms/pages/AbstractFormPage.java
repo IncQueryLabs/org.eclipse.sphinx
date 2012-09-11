@@ -85,6 +85,10 @@ public abstract class AbstractFormPage extends FormPage {
 
 	protected List<IFormMessageProvider> messageProviders = new ArrayList<IFormMessageProvider>();
 
+	protected ITreeContentProvider contentProvider;
+
+	protected ILabelProvider labelProvider;
+
 	protected IPropertyListener inputChangeListener = new IPropertyListener() {
 		public void propertyChanged(Object source, int propId) {
 			if (source.equals(getEditor()) && AbstractFormPage.this.equals(((FormEditor) source).getActivePageInstance())
@@ -187,6 +191,14 @@ public abstract class AbstractFormPage extends FormPage {
 	}
 
 	public ITreeContentProvider getContentProvider() {
+		if (contentProvider == null) {
+			contentProvider = createContentProvider();
+		}
+
+		return contentProvider;
+	}
+
+	protected ITreeContentProvider createContentProvider() {
 		EditingDomain editingDomain = getTransactionalFormEditor().getEditingDomain();
 		if (editingDomain instanceof TransactionalEditingDomain) {
 			AdapterFactory adapterFactory = getTransactionalFormEditor().getAdapterFactory();
@@ -198,6 +210,13 @@ public abstract class AbstractFormPage extends FormPage {
 	}
 
 	public ILabelProvider getLabelProvider() {
+		if (labelProvider == null) {
+			labelProvider = createLabelProvider();
+		}
+		return labelProvider;
+	}
+
+	protected ILabelProvider createLabelProvider() {
 		EditingDomain editingDomain = getTransactionalFormEditor().getEditingDomain();
 		if (editingDomain instanceof TransactionalEditingDomain) {
 			AdapterFactory adapterFactory = getTransactionalFormEditor().getAdapterFactory();

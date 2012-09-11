@@ -131,24 +131,4 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 	protected IBaseLabelProvider createLabelProvider() {
 		return new BasicModelXViewerLabelProvider((XViewer) viewer, formPage.getItemDelegator());
 	}
-
-	// TODO Pull this up to AbstractViewerFormSection
-	// TODO Provide caching field for content provider in AbstractFormPage see
-	// org.eclipse.sphinx.emf.editors.forms.pages.AbstractFormPage.getContentProvider()
-
-	// TODO Provide caching field for item delegator in BasicTransactionalFormEditor see
-	// org.eclipse.sphinx.emf.editors.forms.BasicTransactionalFormEditor.getItemDelegator()
-
-	// TODO Do same things for label provider
-	// protected IContentProvider createContentProvider() {
-	// if (sectionInput instanceof EObject) {
-	// AdapterFactory adapterFactory = getCustomAdapterFactory();
-	// EditingDomain editingDomain = formPage.getTransactionalFormEditor().getEditingDomain();
-	// if (adapterFactory != null && editingDomain instanceof TransactionalEditingDomain) {
-	// return new TransactionalAdapterFactoryContentProvider((TransactionalEditingDomain) editingDomain,
-	// adapterFactory);
-	// }
-	// }
-	// return formPage.getContentProvider();
-	// }
 }

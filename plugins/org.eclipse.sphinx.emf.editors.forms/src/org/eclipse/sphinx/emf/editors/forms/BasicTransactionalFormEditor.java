@@ -240,6 +240,8 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	protected SaveablesProvider modelSaveablesProvider;
 
+	protected AdapterFactoryItemDelegator itemDelegator;
+
 	/**
 	 * This listens for when Outline and Properties view become active/inactive
 	 */
@@ -1617,6 +1619,13 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	}
 
 	public AdapterFactoryItemDelegator getItemDelegator() {
+		if (itemDelegator == null) {
+			itemDelegator = createItemDelegator();
+		}
+		return itemDelegator;
+	}
+
+	protected AdapterFactoryItemDelegator createItemDelegator() {
 		AdapterFactory adapterFactory = getAdapterFactory();
 		if (adapterFactory != null) {
 			return new AdapterFactoryItemDelegator(adapterFactory);
