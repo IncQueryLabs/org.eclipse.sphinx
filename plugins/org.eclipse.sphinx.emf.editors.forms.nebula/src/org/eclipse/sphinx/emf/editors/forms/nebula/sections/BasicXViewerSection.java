@@ -64,7 +64,6 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 		return 1;
 	}
 
-	// TODO Provide appropriate overriding points
 	@Override
 	protected void createSectionClientContent(final IManagedForm managedForm, final SectionPart sectionPart, Composite sectionClient) {
 		Assert.isNotNull(managedForm);
@@ -72,22 +71,10 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 		Assert.isNotNull(sectionClient);
 
 		// Define table columns
-		XViewerFactory xViewerFactory = new XViewerFactory(value.eClass().getName()) {
-			public boolean isAdmin() {
-				return true;
-			}
-		};
-		registerColumns(xViewerFactory);
+		XViewerFactory xViewerFactory = createXViewerFactory(sectionClient);
 
 		// Create table viewer
-		final BasicTransactionalFormEditor formEditor = formPage.getTransactionalFormEditor();
-		XViewer xViewer = new XViewer(sectionClient, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER, xViewerFactory) {
-			@Override
-			public void setSelection(ISelection selection) {
-				selection = !SelectionUtil.getStructuredSelection(selection).isEmpty() ? selection : formEditor.getDefaultSelection();
-				super.setSelection(selection);
-			}
-		};
+		XViewer xViewer = createXViewer(sectionClient, xViewerFactory);
 		viewer = xViewer;
 		GridData layoutData = new GridData(GridData.FILL_BOTH);
 		layoutData.minimumWidth = 640;
@@ -98,6 +85,29 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 		xViewer.setLabelProvider(createLabelProvider());
 
 		xViewer.setInput(sectionInput);
+	}
+
+	protected XViewer createXViewer(Composite sectionClient, XViewerFactory xViewerFactory) {
+		final BasicTransactionalFormEditor formEditor = formPage.getTransactionalFormEditor();
+		XViewer xViewer = new XViewer(sectionClient, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER, xViewerFactory) {
+			@Override
+			public void setSelection(ISelection selection) {
+				selection = !SelectionUtil.getStructuredSelection(selection).isEmpty() ? selection : formEditor.getDefaultSelection();
+				super.setSelection(selection);
+			}
+		};
+		return xViewer;
+	}
+
+	protected XViewerFactory createXViewerFactory(Composite sectionClient) {
+		XViewerFactory xViewerFactory = new XViewerFactory(value.eClass().getName()) {
+			public boolean isAdmin() {
+				return true;
+			}
+		};
+
+		registerColumns(xViewerFactory);
+		return xViewerFactory;
 	}
 
 	protected void registerColumns(XViewerFactory xViewerFactory) {
