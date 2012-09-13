@@ -141,4 +141,12 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 	protected IBaseLabelProvider createLabelProvider() {
 		return new BasicModelXViewerLabelProvider((XViewer) viewer, formPage.getItemDelegator());
 	}
+
+	/**
+	 * Register actions for providing custom menu actions. Sub classes should override this method for implementing
+	 * custom action menus.
+	 */
+	protected void registerActions() {
+		// Do nothing by default.
+	}
 }
