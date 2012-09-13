@@ -85,6 +85,9 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 		xViewer.setLabelProvider(createLabelProvider());
 
 		xViewer.setInput(sectionInput);
+
+		// Register actions
+		registerActions();
 	}
 
 	protected XViewer createXViewer(Composite sectionClient, XViewerFactory xViewerFactory) {
