@@ -36,6 +36,10 @@ public class BasicModelXViewerLabelProvider extends XViewerLabelProvider impleme
 	private final XViewer viewer;
 	private final AdapterFactoryItemDelegator itemDelegator;
 
+	public BasicModelXViewerLabelProvider(XViewer viewer) {
+		this(viewer, null);
+	}
+
 	public BasicModelXViewerLabelProvider(XViewer viewer, AdapterFactoryItemDelegator itemDelegator) {
 		super(viewer);
 		this.viewer = viewer;
@@ -43,16 +47,19 @@ public class BasicModelXViewerLabelProvider extends XViewerLabelProvider impleme
 	}
 
 	public void addListener(ILabelProviderListener listener) {
+		// do nothing
+	}
+
+	public void removeListener(ILabelProviderListener listener) {
+		// do nothing
 	}
 
 	public void dispose() {
+		// do nothing
 	}
 
 	public boolean isLabelProperty(Object element, String property) {
 		return false;
-	}
-
-	public void removeListener(ILabelProviderListener listener) {
 	}
 
 	@Override
@@ -83,14 +90,17 @@ public class BasicModelXViewerLabelProvider extends XViewerLabelProvider impleme
 	protected IItemPropertyDescriptor findPropertyDescriptorFor(Object object, String id) {
 		Assert.isNotNull(id);
 
-		List<IItemPropertyDescriptor> propertyDescriptors = itemDelegator.getPropertyDescriptors(object);
-		if (propertyDescriptors != null) {
-			for (IItemPropertyDescriptor propertyDescriptor : propertyDescriptors) {
-				if (id.equals(propertyDescriptor.getId(object))) {
-					return propertyDescriptor;
+		if (itemDelegator != null) {
+			List<IItemPropertyDescriptor> propertyDescriptors = itemDelegator.getPropertyDescriptors(object);
+			if (propertyDescriptors != null) {
+				for (IItemPropertyDescriptor propertyDescriptor : propertyDescriptors) {
+					if (id.equals(propertyDescriptor.getId(object))) {
+						return propertyDescriptor;
+					}
 				}
 			}
 		}
+
 		return null;
 	}
 
