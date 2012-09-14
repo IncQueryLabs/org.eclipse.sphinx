@@ -55,14 +55,14 @@
 			<url>http://download.eclipse.org/releases/${platform.version.name}</url>
 		</repository>
 		<repository>
-			<id>orbit-updates</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.version}/repository</url>
-		</repository>
-		<repository>
 			<id>nebula-updates</id>
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/technology/nebula/snapshot</url>
+		</repository>
+		<repository>
+			<id>orbit-updates</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.version}/repository</url>
 		</repository>
 	</repositories>
 	<build>
@@ -131,18 +131,6 @@
 							<arch>x86_64</arch>
 						</environment>
 					</environments>
-					<!-- Workaround for dependency to org.eclipse.objectteams.otdt.core.patch.feature.group 
-						from org.eclipse.jdt.core problem (see http://comments.gmane.org/gmane.comp.ide.eclipse.tycho.user/1398 
-						for details) -->
-					<dependency-resolution>
-						<extraRequirements>
-							<requirement>
-								<type>p2-installable-unit</type>
-								<id>org.eclipse.jdt.feature.group</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-						</extraRequirements>
-					</dependency-resolution>
 				</configuration>
 			</plugin>
 			<plugin>
