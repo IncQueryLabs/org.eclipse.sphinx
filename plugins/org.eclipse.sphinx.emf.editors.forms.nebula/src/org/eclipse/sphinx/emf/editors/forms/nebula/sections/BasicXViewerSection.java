@@ -41,22 +41,33 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.SectionPart;
 
 // TODO Provide this as a field rather than a section
-// TODO Pull this into Sphinx; find a solution to Nebula releng problem
-// TODO Get rid of obsolete AbstractViewerFormSection#isEmpty() and AbstractFormPage#isEmpty() methods
 public class BasicXViewerSection extends AbstractViewerFormSection {
 
-	protected EObject value;
+	protected EObject exampleValue;
+	protected XViewerFactory xViewerFactory;
 
-	public BasicXViewerSection(AbstractFormPage formPage, Object sectionInput, EObject value) {
-		this(formPage, sectionInput, value, SWT.NONE);
+	public BasicXViewerSection(AbstractFormPage formPage, Object sectionInput, EObject exampleValue) {
+		this(formPage, sectionInput, exampleValue, SWT.NONE);
 	}
 
-	public BasicXViewerSection(AbstractFormPage formPage, Object sectionInput, EObject value, int style) {
+	public BasicXViewerSection(AbstractFormPage formPage, Object sectionInput, EObject exampleValue, int style) {
 		super(formPage, sectionInput, style);
 
-		Assert.isNotNull(value);
+		Assert.isNotNull(exampleValue);
 
-		this.value = value;
+		this.exampleValue = exampleValue;
+	}
+
+	public BasicXViewerSection(AbstractFormPage formPage, Object sectionInput, XViewerFactory xViewerFactory) {
+		this(formPage, sectionInput, xViewerFactory, SWT.NONE);
+	}
+
+	public BasicXViewerSection(AbstractFormPage formPage, Object sectionInput, XViewerFactory xViewerFactory, int style) {
+		super(formPage, sectionInput, style);
+
+		Assert.isNotNull(xViewerFactory);
+
+		this.xViewerFactory = xViewerFactory;
 	}
 
 	@Override
@@ -70,8 +81,11 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 		Assert.isNotNull(sectionPart);
 		Assert.isNotNull(sectionClient);
 
-		// Define table columns
-		XViewerFactory xViewerFactory = createXViewerFactory(sectionClient);
+		// Create xViewer factory and define table columns if necessary
+		if (xViewerFactory == null) {
+			xViewerFactory = createXViewerFactory();
+			registerColumns(xViewerFactory);
+		}
 
 		// Create table viewer
 		XViewer xViewer = createXViewer(sectionClient, xViewerFactory);
@@ -85,9 +99,6 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 		xViewer.setLabelProvider(createLabelProvider());
 
 		xViewer.setInput(sectionInput);
-
-		// Register actions
-		registerActions();
 	}
 
 	protected XViewer createXViewer(Composite sectionClient, XViewerFactory xViewerFactory) {
@@ -102,29 +113,31 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 		return xViewer;
 	}
 
-	protected XViewerFactory createXViewerFactory(Composite sectionClient) {
-		XViewerFactory xViewerFactory = new XViewerFactory(value.eClass().getName()) {
+	protected XViewerFactory createXViewerFactory() {
+		XViewerFactory xViewerFactory = new XViewerFactory(exampleValue.eClass().getName()) {
 			public boolean isAdmin() {
 				return true;
 			}
 		};
 
-		registerColumns(xViewerFactory);
 		return xViewerFactory;
 	}
 
 	protected void registerColumns(XViewerFactory xViewerFactory) {
-		List<IItemPropertyDescriptor> propertyDescriptors = formPage.getItemDelegator().getPropertyDescriptors(value);
+		List<IItemPropertyDescriptor> propertyDescriptors = formPage.getItemDelegator().getPropertyDescriptors(exampleValue);
 		for (IItemPropertyDescriptor propertyDescriptor : propertyDescriptors) {
-			if (propertyDescriptor.getFeature(value) instanceof EAttribute) {
-				xViewerFactory.registerColumns(new XViewerColumn(propertyDescriptor.getId(value).toString(),
-						propertyDescriptor.getDisplayName(value), 50, SWT.LEFT, true, getSortDataType(propertyDescriptor, value), false,
-						propertyDescriptor.getDescription(value)));
+			if (propertyDescriptor.getFeature(exampleValue) instanceof EAttribute) {
+				xViewerFactory.registerColumns(new XViewerColumn(propertyDescriptor.getId(exampleValue).toString(), propertyDescriptor
+						.getDisplayName(exampleValue), 50, SWT.LEFT, true, getSortDataType(propertyDescriptor, exampleValue), false,
+						propertyDescriptor.getDescription(exampleValue)));
 			}
 		}
 	}
 
 	protected SortDataType getSortDataType(IItemPropertyDescriptor propertyDescriptor, Object object) {
+		Assert.isNotNull(propertyDescriptor);
+		Assert.isNotNull(object);
+
 		EClassifier propertyType = ((EStructuralFeature) propertyDescriptor.getFeature(object)).getEType();
 		if (propertyType == EcorePackage.eINSTANCE.getEDate()) {
 			return SortDataType.Date;
@@ -143,13 +156,5 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 	@Override
 	protected IBaseLabelProvider createLabelProvider() {
 		return new BasicModelXViewerLabelProvider((XViewer) viewer, formPage.getItemDelegator());
-	}
-
-	/**
-	 * Register actions for providing custom menu actions. Sub classes should override this method for implementing
-	 * custom action menus.
-	 */
-	protected void registerActions() {
-		// Do nothing by default.
 	}
 }
