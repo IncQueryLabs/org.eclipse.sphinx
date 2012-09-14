@@ -131,6 +131,18 @@
 							<arch>x86_64</arch>
 						</environment>
 					</environments>
+					<!-- Workaround for dependency to org.eclipse.objectteams.otdt.core.patch.feature.group 
+						from org.eclipse.jdt.core problem (see http://comments.gmane.org/gmane.comp.ide.eclipse.tycho.user/1398 
+						for details) -->
+					<dependency-resolution>
+						<extraRequirements>
+							<requirement>
+								<type>p2-installable-unit</type>
+								<id>org.eclipse.jdt.feature.group</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+						</extraRequirements>
+					</dependency-resolution>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -195,7 +207,8 @@
 				</os>
 			</activation>
 			<properties>
-				<tycho.surefire.vmargs>-Xmx512m -XX:MaxPermSize=256m -XstartOnFirstThread</tycho.surefire.vmargs>
+				<tycho.surefire.vmargs>-Xmx512m -XX:MaxPermSize=256m
+					-XstartOnFirstThread</tycho.surefire.vmargs>
 			</properties>
 		</profile>
 		<profile>
