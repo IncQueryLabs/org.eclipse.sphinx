@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.eclipse.sphinx.examples.hummingbird20.editors.nebula.Hummingbird20ComponentFormEditor"
+            contributorClass="org.eclipse.sphinx.emf.editors.forms.BasicTransactionalEditorActionBarContributor"
+            extensions="Component"
+            id="org.eclipse.sphinx.examples.hammingbird20.editors.parameterValues"
+            name="Parameter values">
+      </editor>
+   </extension>
+
+</plugin>
