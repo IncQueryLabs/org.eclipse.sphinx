@@ -64,10 +64,11 @@ public abstract class AbstractViewerFormSection extends AbstractFormSection impl
 	}
 
 	@Override
-	protected Composite createSectionClient(final IManagedForm managedForm, final SectionPart sectionPart) {
-		Composite composite = doCreateSectionClient(managedForm, sectionPart);
-		// viewer is set after calling doCreateSectionClient(managedForm, sectionPart)
+	protected Composite doCreateSectionClient(final IManagedForm managedForm, final SectionPart sectionPart) {
+		Composite composite = super.doCreateSectionClient(managedForm, sectionPart);
+
 		if (viewer != null) {
+			// Register viewer as selection provider
 			formPage.getTransactionalFormEditor().setSelectionProvider(viewer);
 			viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 				public void selectionChanged(SelectionChangedEvent event) {
@@ -75,6 +76,9 @@ public abstract class AbstractViewerFormSection extends AbstractFormSection impl
 					formPage.getTransactionalFormEditor().setSelectionProvider(viewer);
 				}
 			});
+
+			// Create viewer context menu
+			createViewerContextMenu();
 		}
 		return composite;
 	}
@@ -125,5 +129,12 @@ public abstract class AbstractViewerFormSection extends AbstractFormSection impl
 
 	protected AdapterFactory getCustomAdapterFactory() {
 		return null;
+	}
+
+	/**
+	 * Creates context menu for viewer.
+	 */
+	protected void createViewerContextMenu() {
+		// Do nothing by default.
 	}
 }
