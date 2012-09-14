@@ -9,7 +9,7 @@
 		<relativePath>../../releng/org.eclipse.sphinx.releng.builds/parent/pom.xml</relativePath>
 	</parent>
 	<groupId>org.eclipse.sphinx.plugins</groupId>
-	<artifactId>org.eclipse.sphinx.emf.editors.forms.xviewer</artifactId>
+	<artifactId>org.eclipse.sphinx.emf.editors.forms.nebula</artifactId>
 	<version>0.7.0-SNAPSHOT</version>
 	<packaging>eclipse-plugin</packaging>
 </project>
