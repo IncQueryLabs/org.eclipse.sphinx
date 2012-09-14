@@ -62,7 +62,7 @@
 		<repository>
 			<id>nebula-updates</id>
 			<layout>p2</layout>
-			<url>Eclipse Nebula Plugin Update Site - http://download.eclipse.org/technology/nebula/snapshot</url>
+			<url>http://download.eclipse.org/technology/nebula/snapshot</url>
 		</repository>
 	</repositories>
 	<build>
