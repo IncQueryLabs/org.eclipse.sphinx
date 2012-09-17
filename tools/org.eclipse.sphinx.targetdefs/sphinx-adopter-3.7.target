@@ -1,30 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.6"?>
-
-<target name="Sphinx Adopter Target 3.7" sequenceNumber="0">
+<?pde version="3.8"?><target name="Sphinx Adopter Target 3.7" sequenceNumber="0">
 <locations>
-<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="3.7.2.M20120208-0800"/>
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.5.1.v20111216-1653-7P7NFUIFIbaUcU77s0KQWHw5HZTZ"/>
 <unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.0.M20120208-0800"/>
 <repository location="http://download.eclipse.org/eclipse/updates/3.7"/>
 </location>
-<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <repository location="http://download.eclipse.org/releases/indigo"/>
 </location>
-<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.2.1.v201206110920"/>
 <unit id="org.eclipse.xpand.sdk.feature.group" version="1.2.1.v201206110941"/>
 <repository location="http://download.eclipse.org/releases/juno"/>
 </location>
-<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.feature.feature.group" version="1.0.0.201208281846"/>
 <unit id="org.eclipse.nebula.examples.release.feature.feature.group" version="1.0.4.201208281846"/>
 <repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
 </location>
-<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sphinx.sdk.feature.group" version="0.7.0.201207310837"/>
-<unit id="org.eclipse.sphinx.examples.feature.group" version="0.7.0.201207310837"/>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.sphinx.sdk.feature.group" version="0.7.0.201209142345"/>
+<unit id="org.eclipse.sphinx.examples.feature.group" version="0.7.0.201209142345"/>
 <repository location="http://download.eclipse.org/sphinx/updates/interim"/>
 </location>
 </locations>
