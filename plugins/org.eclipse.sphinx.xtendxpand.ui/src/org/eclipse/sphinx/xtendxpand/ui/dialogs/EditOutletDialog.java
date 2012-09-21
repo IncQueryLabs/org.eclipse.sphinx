@@ -123,7 +123,7 @@ public class EditOutletDialog extends StatusDialog {
 		parent.setLayoutData(layoutData);
 
 		createLabel(parent, Messages.label_name, 1);
-		nameText = createText(parent, GridData.BEGINNING, 1);
+		nameText = createText(parent, GridData.FILL_HORIZONTAL, 1);
 		nameText.setEditable(editableName);
 		if (outlet.getName() != null) {
 			nameText.setText(outlet.getName());
