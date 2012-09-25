@@ -18,10 +18,13 @@
  */
 package org.eclipse.sphinx.xtendxpand.jobs;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -251,7 +254,7 @@ public class CheckJob extends Job {
 
 			// Execute validation
 			long startTime = System.currentTimeMillis();
-			final Issues issues = new IssuesImpl();
+			final Issues diagIssues = new IssuesImpl();
 			final Map<TransactionalEditingDomain, Collection<CheckEvaluationRequest>> requests = getCheckEvaluationRequests();
 			for (final TransactionalEditingDomain editingDomain : requests.keySet()) {
 
@@ -263,7 +266,8 @@ public class CheckJob extends Job {
 
 							// Evaluate check files
 							for (IFile file : request.getCheckFiles()) {
-								log.info("Check model with '" + file.getFullPath().makeRelative() + "'"); //$NON-NLS-1$ //$NON-NLS-2$ //);
+
+								preCheck(request, file);
 
 								// Update resource manager with file encoding information for next Check file to be
 								// evaluated
@@ -275,7 +279,10 @@ public class CheckJob extends Job {
 
 								// Evaluate current check file
 								String path = file.getProjectRelativePath().removeFileExtension().toString();
-								CheckFacade.checkAll(path, request.getModelObjects(), execCtx, issues, false);
+								CheckFacade.checkAll(path, request.getModelObjects(), execCtx, diagIssues, false);
+
+								// Handle errors or warnings if any
+								postCheck(request, file, diagIssues);
 							}
 						}
 					}
@@ -290,17 +297,11 @@ public class CheckJob extends Job {
 			long duration = System.currentTimeMillis() - startTime;
 
 			// Log errors and warnings encountered during validation and return appropriate status
-			if (issues.hasErrors()) {
+			if (diagIssues.hasErrors()) {
 				log.error("Check model failed in " + duration + "ms!"); //$NON-NLS-1$ //$NON-NLS-2$
-				for (MWEDiagnostic error : issues.getErrors()) {
-					log.error(error.getMessage());
-				}
 				return StatusUtil.createErrorStatus(Activator.getPlugin(), "Check model failed with errors"); //$NON-NLS-1$
 			}
-			if (issues.hasWarnings()) {
-				for (MWEDiagnostic warning : issues.getWarnings()) {
-					log.warn(warning.getMessage());
-				}
+			if (diagIssues.hasWarnings()) {
 				return StatusUtil.createWarningStatus(Activator.getPlugin(), "Check model failed with warnings"); //$NON-NLS-1$
 			}
 
@@ -313,6 +314,31 @@ public class CheckJob extends Job {
 		} finally {
 			// Always uninstall resource loader again
 			uninstallResourceLoader();
+		}
+	}
+
+	protected void preCheck(CheckEvaluationRequest request, IFile checkFile) {
+		log.info("Check model with '" + checkFile.getFullPath().makeRelative() + "'"); //$NON-NLS-1$ //$NON-NLS-2$ //);
+	}
+
+	protected void postCheck(CheckEvaluationRequest request, IFile checkFile, Issues diagIssues) {
+		List<MWEDiagnostic> diagnostics = new ArrayList<MWEDiagnostic>();
+		diagnostics.addAll(Arrays.asList(diagIssues.getErrors()));
+		diagnostics.addAll(Arrays.asList(diagIssues.getWarnings()));
+		for (Iterator<MWEDiagnostic> iterator = diagnostics.iterator(); iterator.hasNext();) {
+			MWEDiagnostic diagnostic = iterator.next();
+			String message = diagnostic.getMessage() + (iterator.hasNext() ? "" : "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+			switch (diagnostic.getSeverity()) {
+			case IStatus.ERROR:
+				log.error(message);
+				break;
+			case IStatus.WARNING:
+				log.warn(message);
+				break;
+			default:
+				break;
+			}
+			diagIssues.add(diagnostic);
 		}
 	}
 
