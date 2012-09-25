@@ -296,17 +296,7 @@ public class CheckJob extends Job {
 			}
 			long duration = System.currentTimeMillis() - startTime;
 
-			// Log errors and warnings encountered during validation and return appropriate status
-			if (diagIssues.hasErrors()) {
-				log.error("Check model failed in " + duration + "ms!"); //$NON-NLS-1$ //$NON-NLS-2$
-				return StatusUtil.createErrorStatus(Activator.getPlugin(), "Check model failed with errors"); //$NON-NLS-1$
-			}
-			if (diagIssues.hasWarnings()) {
-				return StatusUtil.createWarningStatus(Activator.getPlugin(), "Check model failed with warnings"); //$NON-NLS-1$
-			}
-
-			log.info("Check model completed in " + duration + "ms!"); //$NON-NLS-1$ //$NON-NLS-2$
-			return Status.OK_STATUS;
+			return endCheck(diagIssues, duration);
 		} catch (OperationCanceledException exception) {
 			return Status.CANCEL_STATUS;
 		} catch (Exception ex) {
@@ -340,6 +330,20 @@ public class CheckJob extends Job {
 			}
 			diagIssues.add(diagnostic);
 		}
+	}
+
+	protected IStatus endCheck(final Issues diagIssues, long duration) {
+		// Log errors and warnings encountered during validation and return appropriate status
+		if (diagIssues.hasErrors()) {
+			log.error("Check model failed in " + duration + "ms!\n"); //$NON-NLS-1$ //$NON-NLS-2$
+			return StatusUtil.createErrorStatus(Activator.getPlugin(), "Check model failed with errors"); //$NON-NLS-1$
+		}
+		if (diagIssues.hasWarnings()) {
+			return StatusUtil.createWarningStatus(Activator.getPlugin(), "Check model failed with warnings"); //$NON-NLS-1$
+		}
+
+		log.info("Check model completed in " + duration + "ms!\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		return Status.OK_STATUS;
 	}
 
 	/**
