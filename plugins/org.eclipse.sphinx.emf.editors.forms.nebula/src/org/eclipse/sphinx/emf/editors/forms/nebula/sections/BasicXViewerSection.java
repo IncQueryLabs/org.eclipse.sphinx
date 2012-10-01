@@ -29,6 +29,7 @@ import org.eclipse.nebula.widgets.xviewer.XViewer;
 import org.eclipse.nebula.widgets.xviewer.XViewerColumn;
 import org.eclipse.nebula.widgets.xviewer.XViewerColumn.SortDataType;
 import org.eclipse.nebula.widgets.xviewer.XViewerFactory;
+import org.eclipse.nebula.widgets.xviewer.edit.XViewerEditAdapter;
 import org.eclipse.sphinx.emf.editors.forms.BasicTransactionalFormEditor;
 import org.eclipse.sphinx.emf.editors.forms.nebula.providers.BasicModelXViewerLabelProvider;
 import org.eclipse.sphinx.emf.editors.forms.pages.AbstractFormPage;
@@ -44,6 +45,7 @@ import org.eclipse.ui.forms.SectionPart;
 public class BasicXViewerSection extends AbstractViewerFormSection {
 
 	protected EObject exampleValue;
+
 	protected XViewerFactory xViewerFactory;
 
 	public BasicXViewerSection(AbstractFormPage formPage, Object sectionInput, EObject exampleValue) {
@@ -110,7 +112,21 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 				super.setSelection(selection);
 			}
 		};
+
+		// Adds editing support
+		XViewerEditAdapter xViewerEditAdapter = createXViewerEditAdapter();
+		if (xViewerEditAdapter != null) {
+			xViewer.setXViewerEditAdapter(xViewerEditAdapter);
+		}
+
 		return xViewer;
+	}
+
+	/**
+	 * Returns null by default. Sub classes can provide a concrete implementation to handle editing support.
+	 */
+	protected XViewerEditAdapter createXViewerEditAdapter() {
+		return null;
 	}
 
 	protected XViewerFactory createXViewerFactory() {
