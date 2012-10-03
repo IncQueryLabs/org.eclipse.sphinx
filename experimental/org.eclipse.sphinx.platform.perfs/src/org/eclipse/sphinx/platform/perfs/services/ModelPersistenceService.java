@@ -1,0 +1,65 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2012 itemis and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     itemis - Initial API and implementation
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.platform.perfs.services;
+
+import java.io.File;
+
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+
+public class ModelPersistenceService {
+
+	private ResourceSet resourceSet = new ResourceSetImpl();
+
+	/**
+	 * Singleton instance.
+	 */
+	public static ModelPersistenceService INSTANCE = new ModelPersistenceService();
+
+	/*
+	 * Private default constructor for singleton pattern
+	 */
+	private ModelPersistenceService() {
+	}
+
+	public Resource getResource(File file) {
+		Assert.isNotNull(file);
+
+		URI uri = URI.createFileURI(file.getAbsolutePath());
+		try {
+			return resourceSet.getResource(uri, true);
+		} catch (RuntimeException ex) {
+			// Remove potentially created resource for problematic file from resource set
+			Resource resource = resourceSet.getResource(uri, false);
+			if (resource != null) {
+				resourceSet.getResources().remove(resource);
+			}
+			throw ex;
+		}
+	}
+
+	public Resource createResource(File file) {
+		Assert.isNotNull(file);
+
+		return resourceSet.createResource(URI.createFileURI(file.getAbsolutePath()));
+	}
+
+	public ResourceSet getResourceSet() {
+		return resourceSet;
+	}
+}
