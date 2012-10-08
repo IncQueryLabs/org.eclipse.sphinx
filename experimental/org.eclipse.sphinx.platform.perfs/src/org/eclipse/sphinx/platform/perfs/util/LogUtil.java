@@ -20,9 +20,11 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.platform.perfs.Measurement;
 import org.eclipse.sphinx.platform.perfs.PerformanceStats;
 import org.eclipse.sphinx.platform.perfs.internal.Activator;
+import org.eclipse.sphinx.platform.perfs.internal.messages.Messages;
 
 public final class LogUtil {
 
@@ -68,7 +70,6 @@ public final class LogUtil {
 
 	private static String getLogMesage(Measurement measurement) {
 		Assert.isNotNull(measurement);
-
-		return "Performance Stats for '" + measurement.getName() + "': " + measurement.getTotal() / (long) 1e6 + " ms";
+		return NLS.bind(Messages.msg_PeformanceStatistics, measurement.getName(), measurement.getTotal() / (long) 1e6);
 	}
 }

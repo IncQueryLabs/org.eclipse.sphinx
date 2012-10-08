@@ -9,7 +9,8 @@ Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.sphinx.platform.perfs,
  org.eclipse.sphinx.platform.perfs.impl,
- org.eclipse.sphinx.platform.perfs.internal,
+ org.eclipse.sphinx.platform.perfs.internal;x-internal:=true,
+ org.eclipse.sphinx.platform.perfs.internal.messages;x-internal:=true,
  org.eclipse.sphinx.platform.perfs.services,
  org.eclipse.sphinx.platform.perfs.util
 Require-Bundle: org.eclipse.core.runtime,
