@@ -78,7 +78,7 @@ public class ExtendedOutlet extends Outlet {
 	}
 
 	public ExtendedOutlet(String name, String pathExpression) {
-		this((String) null);
+		this(pathExpression);
 		setName(name);
 	}
 
