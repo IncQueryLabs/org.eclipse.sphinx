@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ecore:EPackage xmi:version="2.0"
-    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="hummingbird20"
-    nsURI="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1" nsPrefix="hb">
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="hummingbird20" nsURI="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1"
+    nsPrefix="hb">
   <eSubpackages name="common" nsURI="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common"
       nsPrefix="cn">
     <eClassifiers xsi:type="ecore:EClass" name="Identifiable" abstract="true">
@@ -84,12 +83,7 @@
         <details key="kind" value="mixed"/>
       </eAnnotations>
       <eStructuralFeatures xsi:type="ecore:EReference" name="components" lowerBound="1"
-          upperBound="-1" eType="#//instancemodel/Component" volatile="true" transient="true"
-          derived="true" containment="true">
-        <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-          <details key="kind" value="element"/>
-        </eAnnotations>
-      </eStructuralFeatures>
+          upperBound="-1" eType="#//instancemodel/Component" volatile="true" containment="true"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="mixed" unique="false"
           upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFeatureMapEntry">
         <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">

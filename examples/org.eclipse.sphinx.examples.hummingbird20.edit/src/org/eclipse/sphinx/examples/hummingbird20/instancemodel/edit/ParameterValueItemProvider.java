@@ -67,8 +67,7 @@ public class ParameterValueItemProvider
 	 */
 	@Override
 	public List<IItemPropertyDescriptor> getPropertyDescriptors(Object object) {
-		if (itemPropertyDescriptors == null)
-		{
+		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
 			addTypePropertyDescriptor(object);
@@ -157,8 +156,7 @@ public class ParameterValueItemProvider
 	public void notifyChanged(Notification notification) {
 		updateChildren(notification);
 
-		switch (notification.getFeatureID(ParameterValue.class))
-		{
+		switch (notification.getFeatureID(ParameterValue.class)) {
 			case InstanceModel20Package.PARAMETER_VALUE__VALUE:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;

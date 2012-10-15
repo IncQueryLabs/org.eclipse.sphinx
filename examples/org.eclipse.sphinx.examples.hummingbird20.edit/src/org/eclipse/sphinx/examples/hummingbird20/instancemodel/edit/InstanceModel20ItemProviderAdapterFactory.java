@@ -97,8 +97,7 @@ public class InstanceModel20ItemProviderAdapterFactory extends InstanceModel20Ad
 	 */
 	@Override
 	public Adapter createApplicationAdapter() {
-		if (applicationItemProvider == null)
-		{
+		if (applicationItemProvider == null) {
 			applicationItemProvider = new ApplicationItemProvider(this);
 		}
 
@@ -121,8 +120,7 @@ public class InstanceModel20ItemProviderAdapterFactory extends InstanceModel20Ad
 	 */
 	@Override
 	public Adapter createComponentAdapter() {
-		if (componentItemProvider == null)
-		{
+		if (componentItemProvider == null) {
 			componentItemProvider = new ComponentItemProvider(this);
 		}
 
@@ -145,8 +143,7 @@ public class InstanceModel20ItemProviderAdapterFactory extends InstanceModel20Ad
 	 */
 	@Override
 	public Adapter createConnectionAdapter() {
-		if (connectionItemProvider == null)
-		{
+		if (connectionItemProvider == null) {
 			connectionItemProvider = new ConnectionItemProvider(this);
 		}
 
@@ -169,8 +166,7 @@ public class InstanceModel20ItemProviderAdapterFactory extends InstanceModel20Ad
 	 */
 	@Override
 	public Adapter createParameterValueAdapter() {
-		if (parameterValueItemProvider == null)
-		{
+		if (parameterValueItemProvider == null) {
 			parameterValueItemProvider = new ParameterValueItemProvider(this);
 		}
 
@@ -225,11 +221,9 @@ public class InstanceModel20ItemProviderAdapterFactory extends InstanceModel20Ad
 	 */
 	@Override
 	public Object adapt(Object object, Object type) {
-		if (isFactoryForType(type))
-		{
+		if (isFactoryForType(type)) {
 			Object adapter = super.adapt(object, type);
-			if (!(type instanceof Class<?>) || (((Class<?>)type).isInstance(adapter)))
-			{
+			if (!(type instanceof Class<?>) || (((Class<?>)type).isInstance(adapter))) {
 				return adapter;
 			}
 		}
@@ -266,8 +260,7 @@ public class InstanceModel20ItemProviderAdapterFactory extends InstanceModel20Ad
 	public void fireNotifyChanged(Notification notification) {
 		changeNotifier.fireNotifyChanged(notification);
 
-		if (parentAdapterFactory != null)
-		{
+		if (parentAdapterFactory != null) {
 			parentAdapterFactory.fireNotifyChanged(notification);
 		}
 	}
