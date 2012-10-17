@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Sphinx Eclipse 4.2" sequenceNumber="0">
+<?pde version="3.8"?>
+
+<target name="Sphinx Eclipse 4.2" sequenceNumber="0">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="4.2.0.I20120608-1400"/>
+<unit id="org.eclipse.sdk.ide" version="4.2.1.M20120914-1800"/>
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20120522-1813-7P7OG2BFLWUl7UmbVUO9iCm"/>
-<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.0.I20120608-1400"/>
+<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.0.M20120914-1800"/>
 <repository location="http://download.eclipse.org/eclipse/updates/4.2"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
