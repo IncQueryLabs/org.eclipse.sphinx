@@ -18,7 +18,7 @@ Contributors:
 
 <plugin>
 
-  <!-- Common navigator viewer content binding contribution for Hummingbird models -->
+  <!-- Common navigator viewer content binding contribution for Hummingbird 1.0 models -->
 
   <extension point="org.eclipse.ui.navigator.viewer">
     <viewerContentBinding viewerId="org.eclipse.sphinx.examples.explorer.views.modelExplorer">
@@ -81,13 +81,5 @@ Contributors:
          </dropAssistant>      
       </navigatorContent>
    </extension>
-   
-   <!-- Form editor with tabbed property sheet contribution for Hummingbird models -->
-   
-  
-   <!-- Overlay icon for projects with Hummingbird nature -->
-   
-
-   <!-- Label decorator indicating Hummingbird metamodel version supported by projects with Hummingbird nature -->
 
 </plugin>
