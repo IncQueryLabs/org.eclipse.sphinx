@@ -61,19 +61,19 @@ Contributors:
                         value="org\.eclipse\.sphinx\.examples\.hummingbird20\..*">
                   </test>
                </and>
+               <and>
+                  <instanceof
+                        value="org.eclipse.emf.ecore.EObject">
+                  </instanceof>
+                  <test
+                        property="org.eclipse.sphinx.emf.classNameMatches"
+                        value="org\.eclipse\.sphinx\.examples\.hummingbird20\..*">
+                  </test>
+               </and>
             </or>
-            <and>
-               <instanceof
-                     value="org.eclipse.emf.ecore.EObject">
-               </instanceof>
-               <test
-                     property="org.eclipse.sphinx.emf.classNameMatches"
-                     value="org\.eclipse\.sphinx\.examples\.hummingbird20\..*">
-               </test>
-            </and>
          </possibleChildren>
          <dropAssistant 
-               id="org.eclipse.sphinx.examples.hummingbird.ide.ui.navigatorContent.dropAssistant.hummingbird"
+               id="org.eclipse.sphinx.examples.hummingbird20.ide.ui.navigatorContent.dropAssistant.hummingbird"
                class="org.eclipse.sphinx.emf.explorer.BasicDropAdapterAssistant">
             <possibleDropTargets>
                <instanceof value="org.eclipse.emf.ecore.EObject"/>
