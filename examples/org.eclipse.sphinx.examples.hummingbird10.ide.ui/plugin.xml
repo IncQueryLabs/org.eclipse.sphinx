@@ -34,7 +34,7 @@ Contributors:
          point="org.eclipse.ui.navigator.navigatorContent">
       <navigatorContent
             id="org.eclipse.sphinx.examples.hummingbird10.ide.ui.navigatorContent.hummingbird"
-            name="%sphinx.examples.hummingbird10.ide.ui.navigatorContent.hummingbird"
+            name="%sphinx.examples.hummingbird10.ide.ui.navigatorContent.hummingbird.name"
             activeByDefault="true"
             contentProvider="org.eclipse.sphinx.examples.hummingbird10.ide.ui.providers.ExtendedExplorerContentProvider"
             labelProvider="org.eclipse.sphinx.examples.hummingbird10.ide.ui.providers.ExtendedExplorerLabelProvider"
