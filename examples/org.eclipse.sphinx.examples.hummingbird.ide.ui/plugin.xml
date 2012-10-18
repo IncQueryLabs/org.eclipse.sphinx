@@ -18,16 +18,6 @@ Contributors:
 
 <plugin>
 
-  <!-- Common navigator viewer content binding contribution for Hummingbird models -->
-
-  <extension point="org.eclipse.ui.navigator.viewer">
-    <viewerContentBinding viewerId="org.eclipse.sphinx.examples.explorer.views.modelExplorer">
-      <includes>
-        <contentExtension pattern="org.eclipse.sphinx.examples.hummingbird.ide.ui.navigatorContent.hummingbird" />
-      </includes>
-    </viewerContentBinding>
-  </extension>
-   
    <!-- Form editor with tabbed property sheet contribution for Hummingbird models -->
    
    <extension
