@@ -149,8 +149,7 @@ public class PortImpl extends IdentifiableImpl implements Port
 	 */
 	public void setOwner(ComponentType newOwner)
 	{
-		if (newOwner != eInternalContainer() || (eContainerFeatureID() != TypeModel20Package.PORT__OWNER && newOwner != null))
-		{
+		if (newOwner != eInternalContainer() || (eContainerFeatureID() != TypeModel20Package.PORT__OWNER && newOwner != null)) {
 			if (EcoreUtil.isAncestor(this, newOwner))
 				throw new IllegalArgumentException("Recursive containment not allowed for " + toString()); //$NON-NLS-1$
 			NotificationChain msgs = null;
@@ -172,12 +171,10 @@ public class PortImpl extends IdentifiableImpl implements Port
 	 */
 	public Interface getRequiredInterface()
 	{
-		if (requiredInterface != null && requiredInterface.eIsProxy())
-		{
+		if (requiredInterface != null && requiredInterface.eIsProxy()) {
 			InternalEObject oldRequiredInterface = (InternalEObject)requiredInterface;
 			requiredInterface = (Interface)eResolveProxy(oldRequiredInterface);
-			if (requiredInterface != oldRequiredInterface)
-			{
+			if (requiredInterface != oldRequiredInterface) {
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE, TypeModel20Package.PORT__REQUIRED_INTERFACE, oldRequiredInterface, requiredInterface));
 			}
@@ -204,8 +201,7 @@ public class PortImpl extends IdentifiableImpl implements Port
 	{
 		Interface oldRequiredInterface = requiredInterface;
 		requiredInterface = newRequiredInterface;
-		if (eNotificationRequired())
-		{
+		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, TypeModel20Package.PORT__REQUIRED_INTERFACE, oldRequiredInterface, newRequiredInterface);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
@@ -219,8 +215,7 @@ public class PortImpl extends IdentifiableImpl implements Port
 	 */
 	public void setRequiredInterface(Interface newRequiredInterface)
 	{
-		if (newRequiredInterface != requiredInterface)
-		{
+		if (newRequiredInterface != requiredInterface) {
 			NotificationChain msgs = null;
 			if (requiredInterface != null)
 				msgs = ((InternalEObject)requiredInterface).eInverseRemove(this, TypeModel20Package.INTERFACE__REQUIRING_PORTS, Interface.class, msgs);
@@ -287,8 +282,7 @@ public class PortImpl extends IdentifiableImpl implements Port
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.PORT__OWNER:
 				if (eInternalContainer() != null)
 					msgs = eBasicRemoveFromContainer(msgs);
@@ -309,8 +303,7 @@ public class PortImpl extends IdentifiableImpl implements Port
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.PORT__OWNER:
 				return basicSetOwner(null, msgs);
 			case TypeModel20Package.PORT__REQUIRED_INTERFACE:
@@ -327,8 +320,7 @@ public class PortImpl extends IdentifiableImpl implements Port
 	@Override
 	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs)
 	{
-		switch (eContainerFeatureID())
-		{
+		switch (eContainerFeatureID()) {
 			case TypeModel20Package.PORT__OWNER:
 				return eInternalContainer().eInverseRemove(this, TypeModel20Package.COMPONENT_TYPE__PORTS, ComponentType.class, msgs);
 		}
@@ -343,8 +335,7 @@ public class PortImpl extends IdentifiableImpl implements Port
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.PORT__OWNER:
 				return getOwner();
 			case TypeModel20Package.PORT__REQUIRED_INTERFACE:
@@ -366,8 +357,7 @@ public class PortImpl extends IdentifiableImpl implements Port
 	@Override
 	public void eSet(int featureID, Object newValue)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.PORT__OWNER:
 				setOwner((ComponentType)newValue);
 				return;
@@ -392,8 +382,7 @@ public class PortImpl extends IdentifiableImpl implements Port
 	@Override
 	public void eUnset(int featureID)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.PORT__OWNER:
 				setOwner((ComponentType)null);
 				return;
@@ -418,8 +407,7 @@ public class PortImpl extends IdentifiableImpl implements Port
 	@Override
 	public boolean eIsSet(int featureID)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.PORT__OWNER:
 				return getOwner() != null;
 			case TypeModel20Package.PORT__REQUIRED_INTERFACE:

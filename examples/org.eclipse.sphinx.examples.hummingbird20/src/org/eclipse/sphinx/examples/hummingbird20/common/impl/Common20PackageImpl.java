@@ -280,15 +280,13 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 		addAnnotation
 		  (descriptionEClass, 
 		   source, 
-		   new String[] 
-		   {
+		   new String[] {
 			 "kind", "mixed" //$NON-NLS-1$ //$NON-NLS-2$
 		   });		
 		addAnnotation
 		  (getDescription_Mixed(), 
 		   source, 
-		   new String[] 
-		   {
+		   new String[] {
 			 "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
 			 "kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
 		   });

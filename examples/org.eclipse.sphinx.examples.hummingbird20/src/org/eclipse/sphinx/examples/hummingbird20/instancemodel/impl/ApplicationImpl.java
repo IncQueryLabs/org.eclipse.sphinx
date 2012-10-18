@@ -29,6 +29,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.EStringToStringMapEntryImpl;
 
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EcoreEMap;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.InternalEList;
@@ -57,6 +58,16 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Pa
  */
 public class ApplicationImpl extends IdentifiableImpl implements Application
 {
+	/**
+	 * The cached value of the '{@link #getComponents() <em>Components</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getComponents()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<Component> components;
+
 	/**
 	 * The cached value of the '{@link #getMixed() <em>Mixed</em>}' attribute list.
 	 * <!-- begin-user-doc -->
@@ -115,7 +126,10 @@ public class ApplicationImpl extends IdentifiableImpl implements Application
 	 */
 	public EList<Component> getComponents()
 	{
-		return getMixed().list(InstanceModel20Package.Literals.APPLICATION__COMPONENTS);
+		if (components == null) {
+			components = new EObjectContainmentEList<Component>(Component.class, this, InstanceModel20Package.APPLICATION__COMPONENTS);
+		}
+		return components;
 	}
 
 	/**
@@ -125,8 +139,7 @@ public class ApplicationImpl extends IdentifiableImpl implements Application
 	 */
 	public FeatureMap getMixed()
 	{
-		if (mixed == null)
-		{
+		if (mixed == null) {
 			mixed = new BasicFeatureMap(this, InstanceModel20Package.APPLICATION__MIXED);
 		}
 		return mixed;
@@ -139,8 +152,7 @@ public class ApplicationImpl extends IdentifiableImpl implements Application
 	 */
 	public EMap<String, String> getXSISchemaLocation()
 	{
-		if (xSISchemaLocation == null)
-		{
+		if (xSISchemaLocation == null) {
 			xSISchemaLocation = new EcoreEMap<String,String>(EcorePackage.Literals.ESTRING_TO_STRING_MAP_ENTRY, EStringToStringMapEntryImpl.class, this, InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION);
 		}
 		return xSISchemaLocation;
@@ -153,8 +165,7 @@ public class ApplicationImpl extends IdentifiableImpl implements Application
 	 */
 	public FeatureMap getMixedOuterContent()
 	{
-		if (mixedOuterContent == null)
-		{
+		if (mixedOuterContent == null) {
 			mixedOuterContent = new BasicFeatureMap(this, InstanceModel20Package.APPLICATION__MIXED_OUTER_CONTENT);
 		}
 		return mixedOuterContent;
@@ -168,8 +179,7 @@ public class ApplicationImpl extends IdentifiableImpl implements Application
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case InstanceModel20Package.APPLICATION__COMPONENTS:
 				return ((InternalEList<?>)getComponents()).basicRemove(otherEnd, msgs);
 			case InstanceModel20Package.APPLICATION__MIXED:
@@ -190,8 +200,7 @@ public class ApplicationImpl extends IdentifiableImpl implements Application
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case InstanceModel20Package.APPLICATION__COMPONENTS:
 				return getComponents();
 			case InstanceModel20Package.APPLICATION__MIXED:
@@ -216,8 +225,7 @@ public class ApplicationImpl extends IdentifiableImpl implements Application
 	@Override
 	public void eSet(int featureID, Object newValue)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case InstanceModel20Package.APPLICATION__COMPONENTS:
 				getComponents().clear();
 				getComponents().addAll((Collection<? extends Component>)newValue);
@@ -243,8 +251,7 @@ public class ApplicationImpl extends IdentifiableImpl implements Application
 	@Override
 	public void eUnset(int featureID)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case InstanceModel20Package.APPLICATION__COMPONENTS:
 				getComponents().clear();
 				return;
@@ -269,10 +276,9 @@ public class ApplicationImpl extends IdentifiableImpl implements Application
 	@Override
 	public boolean eIsSet(int featureID)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case InstanceModel20Package.APPLICATION__COMPONENTS:
-				return !getComponents().isEmpty();
+				return components != null && !components.isEmpty();
 			case InstanceModel20Package.APPLICATION__MIXED:
 				return mixed != null && !mixed.isEmpty();
 			case InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION:

@@ -81,8 +81,7 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description
 	 */
 	public FeatureMap getMixed()
 	{
-		if (mixed == null)
-		{
+		if (mixed == null) {
 			mixed = new BasicFeatureMap(this, Common20Package.DESCRIPTION__MIXED);
 		}
 		return mixed;
@@ -96,8 +95,7 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case Common20Package.DESCRIPTION__MIXED:
 				return ((InternalEList<?>)getMixed()).basicRemove(otherEnd, msgs);
 		}
@@ -112,8 +110,7 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case Common20Package.DESCRIPTION__MIXED:
 				if (coreType) return getMixed();
 				return ((FeatureMap.Internal)getMixed()).getWrapper();
@@ -129,8 +126,7 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description
 	@Override
 	public void eSet(int featureID, Object newValue)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case Common20Package.DESCRIPTION__MIXED:
 				((FeatureMap.Internal)getMixed()).set(newValue);
 				return;
@@ -146,8 +142,7 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description
 	@Override
 	public void eUnset(int featureID)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case Common20Package.DESCRIPTION__MIXED:
 				getMixed().clear();
 				return;
@@ -163,8 +158,7 @@ public class DescriptionImpl extends ExtendedEObjectImpl implements Description
 	@Override
 	public boolean eIsSet(int featureID)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case Common20Package.DESCRIPTION__MIXED:
 				return mixed != null && !mixed.isEmpty();
 		}

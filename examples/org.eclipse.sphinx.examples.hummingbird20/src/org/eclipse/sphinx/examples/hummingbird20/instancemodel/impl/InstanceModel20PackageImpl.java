@@ -413,7 +413,7 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(applicationEClass, Application.class, "Application", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEReference(getApplication_Components(), this.getComponent(), null, "components", null, 1, -1, Application.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getApplication_Components(), this.getComponent(), null, "components", null, 1, -1, Application.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(getApplication_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, Application.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEReference(getApplication_XSISchemaLocation(), theEcorePackage.getEStringToStringMapEntry(), null, "xSISchemaLocation", null, 0, -1, Application.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(getApplication_MixedOuterContent(), ecorePackage.getEFeatureMapEntry(), "mixedOuterContent", null, 0, -1, Application.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
@@ -453,38 +453,27 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 		addAnnotation
 		  (applicationEClass, 
 		   source, 
-		   new String[] 
-		   {
+		   new String[] {
 			 "kind", "mixed" //$NON-NLS-1$ //$NON-NLS-2$
-		   });		
-		addAnnotation
-		  (getApplication_Components(), 
-		   source, 
-		   new String[] 
-		   {
-			 "kind", "element" //$NON-NLS-1$ //$NON-NLS-2$
 		   });		
 		addAnnotation
 		  (getApplication_Mixed(), 
 		   source, 
-		   new String[] 
-		   {
+		   new String[] {
 			 "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
 			 "kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
 		   });		
 		addAnnotation
 		  (getApplication_XSISchemaLocation(), 
 		   source, 
-		   new String[] 
-		   {
+		   new String[] {
 			 "name", "xsi:schemaLocation", //$NON-NLS-1$ //$NON-NLS-2$
 			 "kind", "element" //$NON-NLS-1$ //$NON-NLS-2$
 		   });		
 		addAnnotation
 		  (getApplication_MixedOuterContent(), 
 		   source, 
-		   new String[] 
-		   {
+		   new String[] {
 			 "kind", "elementWildcard", //$NON-NLS-1$ //$NON-NLS-2$
 			 "wildcards", "http://www.eclipse.org/emf/2003/XMLType" //$NON-NLS-1$ //$NON-NLS-2$
 		   });	

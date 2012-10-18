@@ -111,8 +111,7 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 */
 	public EList<Interface> getProvidedInterfaces()
 	{
-		if (providedInterfaces == null)
-		{
+		if (providedInterfaces == null) {
 			providedInterfaces = new EObjectWithInverseResolvingEList.Unsettable.ManyInverse<Interface>(Interface.class, this, TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES, TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES);
 		}
 		return providedInterfaces;
@@ -145,8 +144,7 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 */
 	public EList<Port> getPorts()
 	{
-		if (ports == null)
-		{
+		if (ports == null) {
 			ports = new EObjectContainmentWithInverseEList<Port>(Port.class, this, TypeModel20Package.COMPONENT_TYPE__PORTS, TypeModel20Package.PORT__OWNER);
 		}
 		return ports;
@@ -159,8 +157,7 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	 */
 	public EList<Parameter> getParameters()
 	{
-		if (parameters == null)
-		{
+		if (parameters == null) {
 			parameters = new EObjectContainmentEList<Parameter>(Parameter.class, this, TypeModel20Package.COMPONENT_TYPE__PARAMETERS);
 		}
 		return parameters;
@@ -175,8 +172,7 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
 				return ((InternalEList<InternalEObject>)(InternalEList<?>)getProvidedInterfaces()).basicAdd(otherEnd, msgs);
 			case TypeModel20Package.COMPONENT_TYPE__PORTS:
@@ -193,8 +189,7 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
 				return ((InternalEList<?>)getProvidedInterfaces()).basicRemove(otherEnd, msgs);
 			case TypeModel20Package.COMPONENT_TYPE__PORTS:
@@ -213,8 +208,7 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
 				return getProvidedInterfaces();
 			case TypeModel20Package.COMPONENT_TYPE__PORTS:
@@ -234,8 +228,7 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	@Override
 	public void eSet(int featureID, Object newValue)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
 				getProvidedInterfaces().clear();
 				getProvidedInterfaces().addAll((Collection<? extends Interface>)newValue);
@@ -260,8 +253,7 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	@Override
 	public void eUnset(int featureID)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
 				unsetProvidedInterfaces();
 				return;
@@ -283,8 +275,7 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	@Override
 	public boolean eIsSet(int featureID)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
 				return isSetProvidedInterfaces();
 			case TypeModel20Package.COMPONENT_TYPE__PORTS:

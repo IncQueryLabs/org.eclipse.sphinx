@@ -52,8 +52,7 @@ public class Common20Switch<T>
 	 */
 	public Common20Switch()
 	{
-		if (modelPackage == null)
-		{
+		if (modelPackage == null) {
 			modelPackage = Common20Package.eINSTANCE;
 		}
 	}
@@ -79,12 +78,10 @@ public class Common20Switch<T>
 	 */
 	protected T doSwitch(EClass theEClass, EObject theEObject)
 	{
-		if (theEClass.eContainer() == modelPackage)
-		{
+		if (theEClass.eContainer() == modelPackage) {
 			return doSwitch(theEClass.getClassifierID(), theEObject);
 		}
-		else
-		{
+		else {
 			List<EClass> eSuperTypes = theEClass.getESuperTypes();
 			return
 				eSuperTypes.isEmpty() ?
@@ -102,17 +99,14 @@ public class Common20Switch<T>
 	 */
 	protected T doSwitch(int classifierID, EObject theEObject)
 	{
-		switch (classifierID)
-		{
-			case Common20Package.IDENTIFIABLE:
-			{
+		switch (classifierID) {
+			case Common20Package.IDENTIFIABLE: {
 				Identifiable identifiable = (Identifiable)theEObject;
 				T result = caseIdentifiable(identifiable);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case Common20Package.DESCRIPTION:
-			{
+			case Common20Package.DESCRIPTION: {
 				Description description = (Description)theEObject;
 				T result = caseDescription(description);
 				if (result == null) result = defaultCase(theEObject);

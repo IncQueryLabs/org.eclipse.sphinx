@@ -54,8 +54,7 @@ public class InstanceModel20Switch<T>
 	 */
 	public InstanceModel20Switch()
 	{
-		if (modelPackage == null)
-		{
+		if (modelPackage == null) {
 			modelPackage = InstanceModel20Package.eINSTANCE;
 		}
 	}
@@ -81,12 +80,10 @@ public class InstanceModel20Switch<T>
 	 */
 	protected T doSwitch(EClass theEClass, EObject theEObject)
 	{
-		if (theEClass.eContainer() == modelPackage)
-		{
+		if (theEClass.eContainer() == modelPackage) {
 			return doSwitch(theEClass.getClassifierID(), theEObject);
 		}
-		else
-		{
+		else {
 			List<EClass> eSuperTypes = theEClass.getESuperTypes();
 			return
 				eSuperTypes.isEmpty() ?
@@ -104,34 +101,29 @@ public class InstanceModel20Switch<T>
 	 */
 	protected T doSwitch(int classifierID, EObject theEObject)
 	{
-		switch (classifierID)
-		{
-			case InstanceModel20Package.APPLICATION:
-			{
+		switch (classifierID) {
+			case InstanceModel20Package.APPLICATION: {
 				Application application = (Application)theEObject;
 				T result = caseApplication(application);
 				if (result == null) result = caseIdentifiable(application);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case InstanceModel20Package.COMPONENT:
-			{
+			case InstanceModel20Package.COMPONENT: {
 				Component component = (Component)theEObject;
 				T result = caseComponent(component);
 				if (result == null) result = caseIdentifiable(component);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case InstanceModel20Package.CONNECTION:
-			{
+			case InstanceModel20Package.CONNECTION: {
 				Connection connection = (Connection)theEObject;
 				T result = caseConnection(connection);
 				if (result == null) result = caseIdentifiable(connection);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case InstanceModel20Package.PARAMETER_VALUE:
-			{
+			case InstanceModel20Package.PARAMETER_VALUE: {
 				ParameterValue parameterValue = (ParameterValue)theEObject;
 				T result = caseParameterValue(parameterValue);
 				if (result == null) result = caseIdentifiable(parameterValue);

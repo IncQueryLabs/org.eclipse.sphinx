@@ -499,23 +499,20 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 		addAnnotation
 		  (platformEClass, 
 		   source, 
-		   new String[] 
-		   {
+		   new String[] {
 			 "kind", "mixed" //$NON-NLS-1$ //$NON-NLS-2$
 		   });		
 		addAnnotation
 		  (getPlatform_Mixed(), 
 		   source, 
-		   new String[] 
-		   {
+		   new String[] {
 			 "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
 			 "kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
 		   });		
 		addAnnotation
 		  (getPlatform_XSISchemaLocation(), 
 		   source, 
-		   new String[] 
-		   {
+		   new String[] {
 			 "name", "xsi:schemaLocation" //$NON-NLS-1$ //$NON-NLS-2$
 		   });
 	}

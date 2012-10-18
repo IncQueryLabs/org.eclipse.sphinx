@@ -55,8 +55,7 @@ public interface Application extends Identifiable
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Components</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getApplication_Components()
-	 * @model containment="true" required="true" transient="true" volatile="true" derived="true"
-	 *        extendedMetaData="kind='element'"
+	 * @model containment="true" required="true"
 	 * @generated
 	 */
 	EList<Component> getComponents();

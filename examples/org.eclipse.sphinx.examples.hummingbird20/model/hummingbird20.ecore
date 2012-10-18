@@ -83,7 +83,7 @@
         <details key="kind" value="mixed"/>
       </eAnnotations>
       <eStructuralFeatures xsi:type="ecore:EReference" name="components" lowerBound="1"
-          upperBound="-1" eType="#//instancemodel/Component" volatile="true" containment="true"/>
+          upperBound="-1" eType="#//instancemodel/Component" containment="true"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="mixed" unique="false"
           upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFeatureMapEntry">
         <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">

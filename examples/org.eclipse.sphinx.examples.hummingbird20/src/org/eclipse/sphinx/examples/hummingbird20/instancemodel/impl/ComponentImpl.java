@@ -125,12 +125,10 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	 */
 	public ComponentType getType()
 	{
-		if (type != null && type.eIsProxy())
-		{
+		if (type != null && type.eIsProxy()) {
 			InternalEObject oldType = (InternalEObject)type;
 			type = (ComponentType)eResolveProxy(oldType);
-			if (type != oldType)
-			{
+			if (type != oldType) {
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE, InstanceModel20Package.COMPONENT__TYPE, oldType, type));
 			}
@@ -168,8 +166,7 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	 */
 	public EList<Connection> getOutgoingConnections()
 	{
-		if (outgoingConnections == null)
-		{
+		if (outgoingConnections == null) {
 			outgoingConnections = new EObjectContainmentWithInverseEList<Connection>(Connection.class, this, InstanceModel20Package.COMPONENT__OUTGOING_CONNECTIONS, InstanceModel20Package.CONNECTION__SOURCE_COMPONENT);
 		}
 		return outgoingConnections;
@@ -182,12 +179,10 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	 */
 	public Connection getIncomingConnections()
 	{
-		if (incomingConnections != null && incomingConnections.eIsProxy())
-		{
+		if (incomingConnections != null && incomingConnections.eIsProxy()) {
 			InternalEObject oldIncomingConnections = (InternalEObject)incomingConnections;
 			incomingConnections = (Connection)eResolveProxy(oldIncomingConnections);
-			if (incomingConnections != oldIncomingConnections)
-			{
+			if (incomingConnections != oldIncomingConnections) {
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE, InstanceModel20Package.COMPONENT__INCOMING_CONNECTIONS, oldIncomingConnections, incomingConnections));
 			}
@@ -214,8 +209,7 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	{
 		Connection oldIncomingConnections = incomingConnections;
 		incomingConnections = newIncomingConnections;
-		if (eNotificationRequired())
-		{
+		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, InstanceModel20Package.COMPONENT__INCOMING_CONNECTIONS, oldIncomingConnections, newIncomingConnections);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
@@ -229,8 +223,7 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	 */
 	public void setIncomingConnections(Connection newIncomingConnections)
 	{
-		if (newIncomingConnections != incomingConnections)
-		{
+		if (newIncomingConnections != incomingConnections) {
 			NotificationChain msgs = null;
 			if (incomingConnections != null)
 				msgs = ((InternalEObject)incomingConnections).eInverseRemove(this, InstanceModel20Package.CONNECTION__TARGET_COMPONENT, Connection.class, msgs);
@@ -250,8 +243,7 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	 */
 	public EList<ParameterValue> getParameterValues()
 	{
-		if (parameterValues == null)
-		{
+		if (parameterValues == null) {
 			parameterValues = new EObjectContainmentEList<ParameterValue>(ParameterValue.class, this, InstanceModel20Package.COMPONENT__PARAMETER_VALUES);
 		}
 		return parameterValues;
@@ -266,8 +258,7 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case InstanceModel20Package.COMPONENT__OUTGOING_CONNECTIONS:
 				return ((InternalEList<InternalEObject>)(InternalEList<?>)getOutgoingConnections()).basicAdd(otherEnd, msgs);
 			case InstanceModel20Package.COMPONENT__INCOMING_CONNECTIONS:
@@ -286,8 +277,7 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case InstanceModel20Package.COMPONENT__OUTGOING_CONNECTIONS:
 				return ((InternalEList<?>)getOutgoingConnections()).basicRemove(otherEnd, msgs);
 			case InstanceModel20Package.COMPONENT__INCOMING_CONNECTIONS:
@@ -306,8 +296,7 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case InstanceModel20Package.COMPONENT__TYPE:
 				if (resolve) return getType();
 				return basicGetType();
@@ -331,8 +320,7 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	@Override
 	public void eSet(int featureID, Object newValue)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case InstanceModel20Package.COMPONENT__TYPE:
 				setType((ComponentType)newValue);
 				return;
@@ -359,8 +347,7 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	@Override
 	public void eUnset(int featureID)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case InstanceModel20Package.COMPONENT__TYPE:
 				setType((ComponentType)null);
 				return;
@@ -385,8 +372,7 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	@Override
 	public boolean eIsSet(int featureID)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case InstanceModel20Package.COMPONENT__TYPE:
 				return type != null;
 			case InstanceModel20Package.COMPONENT__OUTGOING_CONNECTIONS:

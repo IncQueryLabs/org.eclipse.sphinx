@@ -40,16 +40,13 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 	 */
 	public static InstanceModel20Factory init()
 	{
-		try
-		{
+		try {
 			InstanceModel20Factory theInstanceModel20Factory = (InstanceModel20Factory)EPackage.Registry.INSTANCE.getEFactory("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel"); //$NON-NLS-1$ 
-			if (theInstanceModel20Factory != null)
-			{
+			if (theInstanceModel20Factory != null) {
 				return theInstanceModel20Factory;
 			}
 		}
-		catch (Exception exception)
-		{
+		catch (Exception exception) {
 			EcorePlugin.INSTANCE.log(exception);
 		}
 		return new InstanceModel20FactoryImpl();
@@ -74,8 +71,7 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 	@Override
 	public EObject create(EClass eClass)
 	{
-		switch (eClass.getClassifierID())
-		{
+		switch (eClass.getClassifierID()) {
 			case InstanceModel20Package.APPLICATION: return createApplication();
 			case InstanceModel20Package.COMPONENT: return createComponent();
 			case InstanceModel20Package.CONNECTION: return createConnection();

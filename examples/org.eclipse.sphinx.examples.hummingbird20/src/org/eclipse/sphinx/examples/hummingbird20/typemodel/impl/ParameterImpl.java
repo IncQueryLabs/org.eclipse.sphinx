@@ -156,8 +156,7 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.PARAMETER__DATA_TYPE:
 				return getDataType();
 			case TypeModel20Package.PARAMETER__OPTIONAL:
@@ -174,8 +173,7 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter
 	@Override
 	public void eSet(int featureID, Object newValue)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.PARAMETER__DATA_TYPE:
 				setDataType((String)newValue);
 				return;
@@ -194,8 +192,7 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter
 	@Override
 	public void eUnset(int featureID)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.PARAMETER__DATA_TYPE:
 				setDataType(DATA_TYPE_EDEFAULT);
 				return;
@@ -214,8 +211,7 @@ public class ParameterImpl extends IdentifiableImpl implements Parameter
 	@Override
 	public boolean eIsSet(int featureID)
 	{
-		switch (featureID)
-		{
+		switch (featureID) {
 			case TypeModel20Package.PARAMETER__DATA_TYPE:
 				return DATA_TYPE_EDEFAULT == null ? dataType != null : !DATA_TYPE_EDEFAULT.equals(dataType);
 			case TypeModel20Package.PARAMETER__OPTIONAL:

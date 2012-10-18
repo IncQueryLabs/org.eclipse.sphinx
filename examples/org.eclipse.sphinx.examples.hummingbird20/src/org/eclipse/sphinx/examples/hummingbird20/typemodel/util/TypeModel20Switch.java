@@ -54,8 +54,7 @@ public class TypeModel20Switch<T>
 	 */
 	public TypeModel20Switch()
 	{
-		if (modelPackage == null)
-		{
+		if (modelPackage == null) {
 			modelPackage = TypeModel20Package.eINSTANCE;
 		}
 	}
@@ -81,12 +80,10 @@ public class TypeModel20Switch<T>
 	 */
 	protected T doSwitch(EClass theEClass, EObject theEObject)
 	{
-		if (theEClass.eContainer() == modelPackage)
-		{
+		if (theEClass.eContainer() == modelPackage) {
 			return doSwitch(theEClass.getClassifierID(), theEObject);
 		}
-		else
-		{
+		else {
 			List<EClass> eSuperTypes = theEClass.getESuperTypes();
 			return
 				eSuperTypes.isEmpty() ?
@@ -104,42 +101,36 @@ public class TypeModel20Switch<T>
 	 */
 	protected T doSwitch(int classifierID, EObject theEObject)
 	{
-		switch (classifierID)
-		{
-			case TypeModel20Package.PLATFORM:
-			{
+		switch (classifierID) {
+			case TypeModel20Package.PLATFORM: {
 				Platform platform = (Platform)theEObject;
 				T result = casePlatform(platform);
 				if (result == null) result = caseIdentifiable(platform);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case TypeModel20Package.COMPONENT_TYPE:
-			{
+			case TypeModel20Package.COMPONENT_TYPE: {
 				ComponentType componentType = (ComponentType)theEObject;
 				T result = caseComponentType(componentType);
 				if (result == null) result = caseIdentifiable(componentType);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case TypeModel20Package.PORT:
-			{
+			case TypeModel20Package.PORT: {
 				Port port = (Port)theEObject;
 				T result = casePort(port);
 				if (result == null) result = caseIdentifiable(port);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case TypeModel20Package.INTERFACE:
-			{
+			case TypeModel20Package.INTERFACE: {
 				Interface interface_ = (Interface)theEObject;
 				T result = caseInterface(interface_);
 				if (result == null) result = caseIdentifiable(interface_);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case TypeModel20Package.PARAMETER:
-			{
+			case TypeModel20Package.PARAMETER: {
 				Parameter parameter = (Parameter)theEObject;
 				T result = caseParameter(parameter);
 				if (result == null) result = caseIdentifiable(parameter);
