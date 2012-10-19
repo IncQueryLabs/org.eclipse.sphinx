@@ -21,28 +21,18 @@ public class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.gmf.runtime.ui.internal.messages.messages"; //$NON-NLS-1$
 
+	public static String error_IncorrectInput;
+	public static String error_DiagramLoading;
+	public static String error_NoDiagramInResource;
+	public static String error_UnsynchronizedFileSave;
+	public static String task_SaveDiagram;
+	public static String task_SaveNextResource;
+	public static String task_SaveAsOperation;
+
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
 
 	private Messages() {
 	}
-
-	public static String error_IncorrectInput;
-
-	public static String error_HandleElementContentChanged;
-
-	public static String error_IsModifiable;
-
-	public static String error_DiagramLoading;
-
-	public static String error_NoDiagramInResource;
-
-	public static String error_UnsynchronizedFileSave;
-
-	public static String task_SaveDiagram;
-
-	public static String task_SaveNextResource;
-
-	public static String task_SaveAsOperation;
 }
