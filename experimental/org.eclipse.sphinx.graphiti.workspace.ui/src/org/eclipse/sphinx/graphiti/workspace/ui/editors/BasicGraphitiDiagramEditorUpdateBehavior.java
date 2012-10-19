@@ -24,11 +24,11 @@ import java.util.Set;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
 import org.eclipse.core.commands.operations.IUndoContext;
-import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
@@ -74,6 +74,7 @@ import org.eclipse.ui.PlatformUI;
  * 
  * @author lajmi
  */
+@SuppressWarnings("restriction")
 public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehavior implements IAdaptable, IEditingDomainProvider,
 		IOperationHistoryListener {
 
@@ -417,7 +418,6 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 	/**
 	 * Shows a dialog that asks if conflicting changes should be discarded.
 	 */
-	@SuppressWarnings("restriction")
 	@Override
 	public boolean handleDirtyConflict() {
 		return MessageDialog.openQuestion(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), Messages.DiscardChangesDialog_0_xmsg,
@@ -678,9 +678,9 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 		}
 	}
 
-	@SuppressWarnings("restriction")
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class adapter) {
-		return AdapterManager.getDefault().getAdapter(this, adapter);
+		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}
 }

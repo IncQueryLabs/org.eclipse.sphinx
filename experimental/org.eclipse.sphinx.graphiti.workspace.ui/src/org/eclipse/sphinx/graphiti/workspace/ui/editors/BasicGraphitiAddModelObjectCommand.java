@@ -116,7 +116,7 @@ public class BasicGraphitiAddModelObjectCommand extends AbstractCommand {
 			EList<EReference> eAllReferences = candidateObject.eClass().getEAllReferences();
 			for (EReference candidateRef : eAllReferences) {
 				// Feature is reference
-				if (candidateRef instanceof EReference && candidateRef.isContainment()) {
+				if (candidateRef.isContainment()) {
 					// Reference is a containment
 					@SuppressWarnings("unchecked")
 					EList<EObject> childs = (EList<EObject>) candidateObject.eGet(candidateRef);
@@ -146,7 +146,7 @@ public class BasicGraphitiAddModelObjectCommand extends AbstractCommand {
 			EList<EReference> eAllReferences = candidateObject.eClass().getEAllReferences();
 			for (EReference candidateRef : eAllReferences) {
 				// Feature is reference
-				if (candidateRef instanceof EReference && !candidateRef.isContainment()) {
+				if (!candidateRef.isContainment()) {
 					@SuppressWarnings("unchecked")
 					EList<EObject> referencedObjects = (EList<EObject>) candidateObject.eGet(candidateRef);
 					if (referencedObjects != null) {
@@ -158,8 +158,8 @@ public class BasicGraphitiAddModelObjectCommand extends AbstractCommand {
 								// stored
 								ctx = new AddConnectionContext(null, null);
 								ctx.putProperty(candidateRef.getName(), candidateObject);
-								ctx.putProperty("sourceAnchor", candidateObject);
-								ctx.putProperty("targetAnchor", referenced);
+								ctx.putProperty("sourceAnchor", candidateObject); //$NON-NLS-1$
+								ctx.putProperty("targetAnchor", referenced); //$NON-NLS-1$
 								ctx.setNewObject(candidateObject);
 								ctx.setTargetContainer(parent);
 								ctx.setLocation(x, y);
