@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [392426]: Avoid to have multiple instances of same custom adapter factory
  * 
  * </copyright>
  */
@@ -21,8 +22,6 @@ public class ExtendedExplorerContentProvider extends BasicExplorerContentProvide
 
 	@Override
 	protected AdapterFactory getCustomAdapterFactory() {
-		// TODO Think of sharing composed item provider adapter factory between content and label provider (e.g. by
-		// using using viewer.getData(key))
-		return new Hummingbird10ItemProviderAdapterFactory();
+		return Hummingbird10ItemProviderAdapterFactory.INSTANCE;
 	}
 }

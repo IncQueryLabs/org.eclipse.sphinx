@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [392426]: Avoid to have multiple instances of same custom adapter factory
  * 
  * </copyright>
  */
@@ -18,6 +19,11 @@ import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.sphinx.examples.hummingbird10.ide.ui.providers.extended.ExtendedHummingbird10ItemProviderAdapterFactory;
 
 public class Hummingbird10ItemProviderAdapterFactory extends ComposedAdapterFactory {
+
+	/**
+	 * Singleton instance.
+	 */
+	public static final Hummingbird10ItemProviderAdapterFactory INSTANCE = new Hummingbird10ItemProviderAdapterFactory();
 
 	public Hummingbird10ItemProviderAdapterFactory() {
 		super(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
