@@ -89,4 +89,25 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 		}
 		return new Saveable[0];
 	}
+
+	/*
+	 * Overridden to deactivate sanity checking and avoid that diagram file can be synchronized/reloaded by this diagram
+	 * editor (see #sanityCheckState() and #handleEditorInputChanged() for details). This is actually not necessary as
+	 * reloading of diagram and domain model files is already taken in charge by Sphinx model synchronizer.
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.parts.DiagramDocumentEditor#enableSanityChecking(boolean)
+	 */
+	@Override
+	protected void enableSanityChecking(boolean enable) {
+		super.enableSanityChecking(false);
+	}
+
+	@Override
+	public void dispose() {
+		if (modelSaveablesProvider != null) {
+			modelSaveablesProvider.dispose();
+		}
+
+		super.dispose();
+	}
 }

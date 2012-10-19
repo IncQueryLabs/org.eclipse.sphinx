@@ -74,12 +74,69 @@ import org.eclipse.sphinx.emf.workspace.saving.IModelDirtyChangeListener;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.gmf.runtime.ui.internal.Activator;
 import org.eclipse.sphinx.gmf.runtime.ui.internal.messages.Messages;
+import org.eclipse.sphinx.gmf.workspace.metamodel.GMFNotationDescriptor;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 
 public class BasicDocumentProvider extends AbstractDocumentProvider implements IDiagramDocumentProvider {
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#createElementInfo(java.
+	 * lang.Object)
+	 */
+	@Override
+	protected ElementInfo createElementInfo(Object element) throws CoreException {
+		if (!(element instanceof IEditorInput)) {
+			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
+					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
+					null));
+		}
+		IEditorInput editorInput = (IEditorInput) element;
+		IDiagramDocument document = (IDiagramDocument) createDocument(editorInput);
+
+		GMFResourceInfo info = new GMFResourceInfo(document, editorInput);
+		info.setModificationStamp(computeModificationStamp(info));
+		info.fStatus = null;
+		return info;
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#createDocument(java.lang
+	 * .Object)
+	 */
+	@Override
+	protected IDocument createDocument(Object element) throws CoreException {
+		if (!(element instanceof IEditorInput)) {
+			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
+					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
+					null));
+		}
+		IEditorInput editorInput = (IEditorInput) element;
+		IDocument document = createEmptyDocument();
+		if (document instanceof IDiagramDocument) {
+			((IDiagramDocument) document).setEditingDomain(getEditingDomain(editorInput));
+		}
+		setDocumentContent(document, editorInput);
+		setupDocument(element, document);
+		return document;
+	}
+
+	/**
+	 * Sets up the given document as it would be provided for the given element. The content of the document is not
+	 * changed. This default implementation is empty. Subclasses may re-implement.
+	 * 
+	 * @param element
+	 *            the blue-print element
+	 * @param document
+	 *            the document to set up
+	 */
+	protected void setupDocument(Object element, IDocument document) {
+		// for subclasses
+	}
 
 	private long computeModificationStamp(GMFResourceInfo info) {
 		int result = 0;
@@ -92,6 +149,268 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 			}
 		}
 		return result;
+	}
+
+	/*
+	 * @see org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#createEmptyDocument()
+	 */
+	@Override
+	protected IDocument createEmptyDocument() {
+		return new DiagramDocument();
+	}
+
+	protected void setDocumentContent(IDocument document, IEditorInput element) throws CoreException {
+		URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(element);
+		if (editorInputURI == null) {
+			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
+					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
+					null));
+		}
+
+		IDiagramDocument diagramDocument = (IDiagramDocument) document;
+		Diagram diagram = loadDiagram(diagramDocument.getEditingDomain(), editorInputURI);
+		if (diagram == null) {
+			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, Messages.error_NoDiagramInResource,
+					new RuntimeException(Messages.error_NoDiagramInResource)));
+		}
+
+		document.setContent(diagram);
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#getModificationStamp(java
+	 * .lang.Object)
+	 */
+	@Override
+	public long getModificationStamp(Object element) {
+		GMFResourceInfo info = getGMFResourceInfo(element);
+		if (info != null) {
+			return computeModificationStamp(info);
+		}
+		return super.getModificationStamp(element);
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#isDeleted(java.lang.Object)
+	 */
+	@Override
+	public boolean isDeleted(Object element) {
+		IDiagramDocument document = getDiagramDocument(element);
+		if (document != null) {
+			Resource diagramResource = document.getDiagram().eResource();
+			if (diagramResource != null) {
+				IFile file = WorkspaceSynchronizer.getFile(diagramResource);
+				return file == null || file.getLocation() == null || !file.getLocation().toFile().exists();
+			}
+		}
+		return super.isDeleted(element);
+	}
+
+	public GMFResourceInfo getGMFResourceInfo(Object editorInput) {
+		return (GMFResourceInfo) super.getElementInfo(editorInput);
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#disposeElementInfo(java
+	 * .lang.Object, org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider.ElementInfo)
+	 */
+	@Override
+	protected void disposeElementInfo(Object element, ElementInfo info) {
+		if (info instanceof GMFResourceInfo) {
+			GMFResourceInfo resourceSetInfo = (GMFResourceInfo) info;
+			resourceSetInfo.dispose();
+		}
+		super.disposeElementInfo(element, info);
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#doValidateState(java.lang
+	 * .Object, java.lang.Object)
+	 */
+	@Override
+	protected void doValidateState(Object element, Object computationContext) throws CoreException {
+		// Just validate the file behind the editor and do not iterate overall resources in the resource set
+		IFile file = EcoreUIUtil.getFileFromEditorInput((IEditorInput) element);
+		if (file != null && file.exists()) {
+			Collection<org.eclipse.core.resources.IFile> files2Validate = Collections.singletonList(file);
+			ResourcesPlugin.getWorkspace().validateEdit(files2Validate.toArray(new IFile[files2Validate.size()]), computationContext);
+		}
+		super.doValidateState(element, computationContext);
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#isReadOnly(java.lang.Object
+	 * )
+	 */
+	@Override
+	public boolean isReadOnly(Object element) {
+		GMFResourceInfo info = getGMFResourceInfo(element);
+		if (info != null) {
+			if (info.isUpdateCache()) {
+				try {
+					updateCache(element);
+				} catch (CoreException ex) {
+					// Error message to log was initially taken from
+					// org.eclipse.gmf.runtime.diagram.ui.resources.editor.ide.internal.l10n.EditorMessages.StorageDocumentProvider_isModifiable
+					PlatformLogUtil.logAsError(Activator.getPlugin(), Messages.error_IsModifiable + ex);
+				}
+			}
+			return info.isReadOnly();
+		}
+		return super.isReadOnly(element);
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#isModifiable(java.lang.
+	 * Object)
+	 */
+	@Override
+	public boolean isModifiable(Object element) {
+		if (!isStateValidated(element)) {
+			if (element instanceof FileEditorInput || element instanceof URIEditorInput) {
+				return true;
+			}
+		}
+		GMFResourceInfo info = getGMFResourceInfo(element);
+		if (info != null) {
+			if (info.isUpdateCache()) {
+				try {
+					updateCache(element);
+				} catch (CoreException ex) {
+					// Error message to log was initially taken from
+					// org.eclipse.gmf.runtime.diagram.ui.resources.editor.ide.internal.l10n.EditorMessages.StorageDocumentProvider_isModifiable
+					PlatformLogUtil.logAsError(Activator.getPlugin(), Messages.error_IsModifiable + ex);
+				}
+			}
+			return info.isModifiable();
+		}
+		return super.isModifiable(element);
+	}
+
+	protected void updateCache(Object element) throws CoreException {
+		GMFResourceInfo info = getGMFResourceInfo(element);
+		if (info != null) {
+			IFile file = EcorePlatformUtil.getFile(getDiagramResource(info));
+			if (file != null && file.isReadOnly()) {
+				info.setReadOnly(true);
+				info.setModifiable(false);
+				return;
+			}
+			info.setReadOnly(false);
+			info.setModifiable(true);
+			return;
+		}
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#doUpdateStateCache(java
+	 * .lang.Object)
+	 */
+	@Override
+	protected void doUpdateStateCache(Object element) throws CoreException {
+		GMFResourceInfo info = getGMFResourceInfo(element);
+		if (info != null) {
+			info.setUpdateCache(true);
+		}
+		super.doUpdateStateCache(element);
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#isSynchronized(java.lang
+	 * .Object)
+	 */
+	@Override
+	public boolean isSynchronized(Object element) {
+		GMFResourceInfo info = getGMFResourceInfo(element);
+		if (info != null) {
+			return info.isSynchronized();
+		}
+		return super.isSynchronized(element);
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#getResetRule(java.lang.
+	 * Object)
+	 */
+	@Override
+	protected ISchedulingRule getResetRule(Object element) {
+		GMFResourceInfo info = getGMFResourceInfo(element);
+		if (info != null) {
+			Collection<org.eclipse.core.runtime.jobs.ISchedulingRule> rules = new ArrayList<org.eclipse.core.runtime.jobs.ISchedulingRule>();
+			IFile file = EcorePlatformUtil.getFile(getDiagramResource(info));
+			if (file != null) {
+				rules.add(ResourcesPlugin.getWorkspace().getRuleFactory().modifyRule(file));
+			}
+			return new MultiRule(rules.toArray(new ISchedulingRule[rules.size()]));
+		}
+		return null;
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#getSaveRule(java.lang.Object
+	 * )
+	 */
+	@Override
+	protected ISchedulingRule getSaveRule(Object element) {
+		GMFResourceInfo info = getGMFResourceInfo(element);
+		if (info != null) {
+			Collection<org.eclipse.core.runtime.jobs.ISchedulingRule> rules = new ArrayList<org.eclipse.core.runtime.jobs.ISchedulingRule>();
+			IFile file = EcorePlatformUtil.getFile(getDiagramResource(info));
+			if (file != null) {
+				rules.add(computeSchedulingRule(file));
+			}
+			return new MultiRule(rules.toArray(new ISchedulingRule[rules.size()]));
+		}
+		return null;
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#getSynchronizeRule(java
+	 * .lang.Object)
+	 */
+	@Override
+	protected ISchedulingRule getSynchronizeRule(Object element) {
+		GMFResourceInfo info = getGMFResourceInfo(element);
+		if (info != null) {
+			Collection<org.eclipse.core.runtime.jobs.ISchedulingRule> rules = new ArrayList<org.eclipse.core.runtime.jobs.ISchedulingRule>();
+			IFile file = EcorePlatformUtil.getFile(getDomainResource(info));
+			if (file != null) {
+				rules.add(ResourcesPlugin.getWorkspace().getRuleFactory().refreshRule(file));
+			}
+			return new MultiRule(rules.toArray(new ISchedulingRule[rules.size()]));
+		}
+		return null;
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#getValidateStateRule(java
+	 * .lang.Object)
+	 */
+	@Override
+	protected ISchedulingRule getValidateStateRule(Object element) {
+		GMFResourceInfo info = getGMFResourceInfo(element);
+		if (info != null) {
+
+			Collection<org.eclipse.core.runtime.jobs.ISchedulingRule> files = new ArrayList<org.eclipse.core.runtime.jobs.ISchedulingRule>();
+			IFile file = EcorePlatformUtil.getFile(getDiagramResource(info));
+			if (file != null) {
+				files.add(file);
+			}
+			return ResourcesPlugin.getWorkspace().getRuleFactory().validateEditRule(files.toArray(new IFile[files.size()]));
+		}
+		return null;
 	}
 
 	private ISchedulingRule computeSchedulingRule(IResource toCreateOrModify) {
@@ -112,65 +431,11 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		return ResourcesPlugin.getWorkspace().getRuleFactory().createRule(toCreateOrModify);
 	}
 
-	/**
-	 * 
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#doSynchronize(java.lang
+	 * .Object, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	@Override
-	protected ElementInfo createElementInfo(Object element) throws CoreException {
-		if (!(element instanceof IEditorInput)) {
-			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
-					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
-					null));
-		}
-		IEditorInput editorInput = (IEditorInput) element;
-		IDiagramDocument document = (IDiagramDocument) createDocument(editorInput);
-
-		GMFResourceInfo info = new GMFResourceInfo(document, editorInput);
-		info.setModificationStamp(computeModificationStamp(info));
-		info.fStatus = null;
-		return info;
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	protected IDocument createDocument(Object element) throws CoreException {
-		if (!(element instanceof IEditorInput)) {
-			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
-					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
-					null));
-		}
-		IEditorInput editorInput = (IEditorInput) element;
-		IDocument document = createEmptyDocument(editorInput);
-
-		setDocumentContent(document, editorInput);
-		setupDocument(element, document);
-		return document;
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	protected IDocument createEmptyDocument() {
-		return null;
-	}
-
-	/**
-	 * @param editorInput
-	 * @return
-	 */
-	protected IDocument createEmptyDocument(IEditorInput editorInput) {
-		DiagramDocument document = new DiagramDocument();
-		try {
-			document.setEditingDomain(getEditingDomain(editorInput));
-		} catch (CoreException e) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), e);
-		}
-		return document;
-	}
-
 	@Override
 	protected void doSynchronize(Object element, IProgressMonitor monitor) throws CoreException {
 		GMFResourceInfo info = getGMFResourceInfo(element);
@@ -181,6 +446,12 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		super.doSynchronize(element, monitor);
 	}
 
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#doSaveDocument(org.eclipse
+	 * .core.runtime.IProgressMonitor, java.lang.Object,
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.IDocument, boolean)
+	 */
 	@Override
 	protected void doSaveDocument(IProgressMonitor monitor, Object element, IDocument document, boolean overwrite) throws CoreException {
 		if (element instanceof IEditorInput) {
@@ -193,7 +464,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 				info.stopResourceListening();
 				fireElementStateChanging(element);
 				try {
-					// Saving diagram
 					monitor.beginTask(Messages.task_SaveDiagram, info.getResourceSet().getResources().size() + 1);
 					ModelSaveManager.INSTANCE.saveModel(getDiagramResource(info), getSaveOptions(), false, monitor);
 					monitor.done();
@@ -205,6 +475,17 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 					info.startResourceListening();
 				}
 			} else {
+				URI newResoruceURI = null;
+				if (element instanceof IEditorInput) {
+					newResoruceURI = EcoreUIUtil.getURIFromEditorInput((IEditorInput) element);
+				}
+				if (newResoruceURI == null) {
+					fireElementStateChangeFailed(element);
+					throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0,
+							"Unable to retrieve diagram URI from input element " + element, //$NON-NLS-1$ 
+							null));
+				}
+
 				if (false == document instanceof IDiagramDocument) {
 					fireElementStateChangeFailed(element);
 					throw new CoreException(
@@ -214,12 +495,11 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 									0,
 									"Incorrect document used: " + document + " instead of org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.IDiagramDocument", null)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-				URI newResoruceURI = EcoreUIUtil.getURIFromEditorInput((IEditorInput) element);
 
 				IDiagramDocument diagramDocument = (IDiagramDocument) document;
 				final Diagram diagramCopy = EcoreUtil.copy(diagramDocument.getDiagram());
 				EcorePlatformUtil.saveNewModelResource(diagramDocument.getEditingDomain(), EcorePlatformUtil.getFile(newResoruceURI).getFullPath(),
-						getDiagramContentType(), diagramCopy, false, monitor);
+						GMFNotationDescriptor.GMF_DIAGRAM_CONTENT_TYPE_ID, diagramCopy, false, monitor);
 			}
 		} else {
 			fireElementStateChangeFailed(element);
@@ -227,125 +507,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
 					null));
 		}
-	}
-
-	/**
-	 * Subclasses should implement this method.
-	 * 
-	 * @return
-	 */
-	protected Map<?, ?> getSaveOptions() {
-		return Collections.emptyMap();
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	protected void doValidateState(Object element, Object computationContext) throws CoreException {
-		// Just validate the file behind the editor and do not iterate overall resources in the resource set
-		IFile file = EcoreUIUtil.getFileFromEditorInput((IEditorInput) element);
-		if (file != null && file.exists()) {
-			Collection<org.eclipse.core.resources.IFile> files2Validate = Collections.singletonList(file);
-			ResourcesPlugin.getWorkspace().validateEdit(files2Validate.toArray(new IFile[files2Validate.size()]), computationContext);
-		}
-		super.doValidateState(element, computationContext);
-	}
-
-	@Override
-	protected void doUpdateStateCache(Object element) throws CoreException {
-		GMFResourceInfo info = getGMFResourceInfo(element);
-		if (info != null) {
-			info.setUpdateCache(true);
-		}
-		super.doUpdateStateCache(element);
-	}
-
-	/**
-	 *
-	 */
-	@Override
-	protected void disposeElementInfo(Object element, ElementInfo info) {
-		if (info instanceof GMFResourceInfo) {
-			GMFResourceInfo resourceSetInfo = (GMFResourceInfo) info;
-			resourceSetInfo.dispose();
-		}
-		super.disposeElementInfo(element, info);
-	}
-
-	protected TransactionalEditingDomain getEditingDomain(IEditorInput editorInput) throws CoreException {
-		return WorkspaceEditingDomainUtil.getEditingDomain(EcoreUIUtil.getFileFromEditorInput(editorInput));
-	}
-
-	@Override
-	protected ISchedulingRule getSaveRule(Object element) {
-		GMFResourceInfo info = getGMFResourceInfo(element);
-		if (info != null) {
-			Collection<org.eclipse.core.runtime.jobs.ISchedulingRule> rules = new ArrayList<org.eclipse.core.runtime.jobs.ISchedulingRule>();
-			IFile file = EcorePlatformUtil.getFile(getDiagramResource(info));
-			if (file != null) {
-				rules.add(computeSchedulingRule(file));
-			}
-			return new MultiRule(rules.toArray(new ISchedulingRule[rules.size()]));
-		}
-		return null;
-	}
-
-	@Override
-	protected ISchedulingRule getResetRule(Object element) {
-		GMFResourceInfo info = getGMFResourceInfo(element);
-		if (info != null) {
-			Collection<org.eclipse.core.runtime.jobs.ISchedulingRule> rules = new ArrayList<org.eclipse.core.runtime.jobs.ISchedulingRule>();
-			IFile file = EcorePlatformUtil.getFile(getDiagramResource(info));
-			if (file != null) {
-				rules.add(ResourcesPlugin.getWorkspace().getRuleFactory().modifyRule(file));
-			}
-			return new MultiRule(rules.toArray(new ISchedulingRule[rules.size()]));
-		}
-		return null;
-	}
-
-	@Override
-	protected ISchedulingRule getSynchronizeRule(Object element) {
-		GMFResourceInfo info = getGMFResourceInfo(element);
-		if (info != null) {
-			Collection<org.eclipse.core.runtime.jobs.ISchedulingRule> rules = new ArrayList<org.eclipse.core.runtime.jobs.ISchedulingRule>();
-			IFile file = EcorePlatformUtil.getFile(getDomainResource(info));
-			if (file != null) {
-				rules.add(ResourcesPlugin.getWorkspace().getRuleFactory().refreshRule(file));
-			}
-			return new MultiRule(rules.toArray(new ISchedulingRule[rules.size()]));
-		}
-		return null;
-	}
-
-	@Override
-	protected ISchedulingRule getValidateStateRule(Object element) {
-		GMFResourceInfo info = getGMFResourceInfo(element);
-		if (info != null) {
-
-			Collection<org.eclipse.core.runtime.jobs.ISchedulingRule> files = new ArrayList<org.eclipse.core.runtime.jobs.ISchedulingRule>();
-			IFile file = EcorePlatformUtil.getFile(getDiagramResource(info));
-			if (file != null) {
-				files.add(file);
-			}
-			return ResourcesPlugin.getWorkspace().getRuleFactory().validateEditRule(files.toArray(new IFile[files.size()]));
-		}
-		return null;
-	}
-
-	/**
-	 * @param info
-	 * @return
-	 */
-	protected URI getURI(GMFResourceInfo info) {
-		IEditorInput editorInput = info.getEditorInput();
-		return EcoreUIUtil.getURIFromEditorInput(editorInput);
-	}
-
-	@Override
-	protected IRunnableContext getOperationRunner(IProgressMonitor monitor) {
-		return null;
 	}
 
 	protected void handleElementChanged(GMFResourceInfo info, Resource changedResource, IProgressMonitor monitor) {
@@ -376,9 +537,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		fireElementContentReplaced(info.getEditorInput());
 	}
 
-	/**
-	 * 
-	 */
 	protected void handleElementMoved(IEditorInput input, URI uri) {
 		if (input instanceof FileEditorInput) {
 			IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(URI.decode(uri.path())).removeFirstSegments(1));
@@ -389,42 +547,59 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		fireElementMoved(input, new URIEditorInput(uri));
 	}
 
-	protected void handleElementRemoved(IEditorInput input) {
-		fireElementDeleted(input);
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.IDiagramDocumentProvider#createInputWithEditingDomain
+	 * (org.eclipse.ui.IEditorInput, org.eclipse.emf.transaction.TransactionalEditingDomain)
+	 */
+	public IEditorInput createInputWithEditingDomain(IEditorInput editorInput, TransactionalEditingDomain domain) {
+		return editorInput;
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.IDiagramDocumentProvider#getDiagramDocument(java
+	 * .lang.Object)
+	 */
+	public IDiagramDocument getDiagramDocument(Object element) {
+		IDocument doc = getDocument(element);
+		if (doc instanceof IDiagramDocument) {
+			return (IDiagramDocument) doc;
+		}
+		return null;
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#getOperationRunner(org.
+	 * eclipse.core.runtime.IProgressMonitor)
+	 */
+	@Override
+	protected IRunnableContext getOperationRunner(IProgressMonitor monitor) {
+		return null;
+	}
+
+	protected TransactionalEditingDomain getEditingDomain(IEditorInput editorInput) throws CoreException {
+		IFile file = EcoreUIUtil.getFileFromEditorInput(editorInput);
+		return WorkspaceEditingDomainUtil.getEditingDomain(file);
+	}
+
+	protected Map<?, ?> getLoadOptions() {
+		return Collections.emptyMap();
 	}
 
 	/**
-	 * Sets up the given document as it would be provided for the given element. The content of the document is not
-	 * changed. This default implementation is empty. Subclasses may re-implement.
+	 * Subclasses should implement this method.
 	 * 
-	 * @param element
-	 *            the blue-print element
-	 * @param document
-	 *            the document to set up
+	 * @return
 	 */
-	protected void setupDocument(Object element, IDocument document) {
-		// for subclasses
+	protected Map<?, ?> getSaveOptions() {
+		return Collections.emptyMap();
 	}
 
-	/**
-	 *
-	 */
-	protected void setDocumentContent(IDocument document, IEditorInput element) throws CoreException {
-		URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(element);
-		if (editorInputURI == null) {
-			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
-					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
-					null));
-		}
-
-		IDiagramDocument diagramDocument = (IDiagramDocument) document;
-		Diagram diagram = loadDiagram(diagramDocument.getEditingDomain(), editorInputURI);
-		if (diagram == null) {
-			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, Messages.error_NoDiagramInResource,
-					new RuntimeException(Messages.error_NoDiagramInResource)));
-		}
-
-		document.setContent(diagram);
+	protected URI getURI(GMFResourceInfo info) {
+		IEditorInput editorInput = info.getEditorInput();
+		return EcoreUIUtil.getURIFromEditorInput(editorInput);
 	}
 
 	protected Diagram loadDiagram(final TransactionalEditingDomain editingDomain, final URI uri) {
@@ -450,10 +625,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		return null;
 	}
 
-	protected Map<?, ?> getLoadOptions() {
-		return Collections.emptyMap();
-	}
-
 	protected Resource getDiagramResource(GMFResourceInfo info) {
 		IDocument document = info.fDocument;
 		if (document instanceof IDiagramDocument) {
@@ -472,24 +643,15 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		return null;
 	}
 
-	/**
-	 * 
-	 */
-	protected void updateCache(Object element) throws CoreException {
-		GMFResourceInfo info = getGMFResourceInfo(element);
-		if (info != null) {
-			IFile file = EcorePlatformUtil.getFile(getDiagramResource(info));
-			if (file != null && file.isReadOnly()) {
-				info.setReadOnly(true);
-				info.setModifiable(false);
-				return;
-			}
-			info.setReadOnly(false);
-			info.setModifiable(true);
-			return;
-		}
+	protected void handleElementRemoved(IEditorInput input) {
+		fireElementDeleted(input);
 	}
 
+	/*
+	 * @see
+	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#canSaveDocument(java.lang
+	 * .Object)
+	 */
 	@Override
 	public boolean canSaveDocument(Object element) {
 		Resource diagramResource = getDiagramResource(getGMFResourceInfo(element));
@@ -497,116 +659,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 			return ModelSaveManager.INSTANCE.isDirty(diagramResource);
 		}
 		return super.canSaveDocument(element);
-	}
-
-	public String getDiagramContentType() {
-		return null;
-	}
-
-	/**
-	 * 
-	 */
-	public IEditorInput createInputWithEditingDomain(IEditorInput editorInput, TransactionalEditingDomain domain) {
-		return editorInput;
-	}
-
-	/**
-	 * 
-	 */
-	public IDiagramDocument getDiagramDocument(Object element) {
-		IDocument doc = getDocument(element);
-		if (doc instanceof IDiagramDocument) {
-			return (IDiagramDocument) doc;
-		}
-		return null;
-	}
-
-	/**
-	 *
-	 */
-	@Override
-	public long getModificationStamp(Object element) {
-		GMFResourceInfo info = getGMFResourceInfo(element);
-		if (info != null) {
-			return computeModificationStamp(info);
-		}
-		return super.getModificationStamp(element);
-	}
-
-	/**
-	 * 
-	 */
-	public GMFResourceInfo getGMFResourceInfo(Object editorInput) {
-		return (GMFResourceInfo) super.getElementInfo(editorInput);
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	public boolean isDeleted(Object element) {
-		IDiagramDocument document = getDiagramDocument(element);
-		if (document != null) {
-			Resource diagramResource = document.getDiagram().eResource();
-			if (diagramResource != null) {
-				IFile file = WorkspaceSynchronizer.getFile(diagramResource);
-				return file == null || file.getLocation() == null || !file.getLocation().toFile().exists();
-			}
-		}
-		return super.isDeleted(element);
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	public boolean isReadOnly(Object element) {
-		GMFResourceInfo info = getGMFResourceInfo(element);
-		if (info != null) {
-			if (info.isUpdateCache()) {
-				try {
-					updateCache(element);
-				} catch (CoreException ex) {
-					// Error message to log was initially taken from
-					// org.eclipse.gmf.runtime.diagram.ui.resources.editor.ide.internal.l10n.EditorMessages.StorageDocumentProvider_isModifiable
-					PlatformLogUtil.logAsError(Activator.getPlugin(), Messages.error_IsModifiable + ex);
-				}
-			}
-			return info.isReadOnly();
-		}
-		return super.isReadOnly(element);
-	}
-
-	@Override
-	public boolean isModifiable(Object element) {
-		if (!isStateValidated(element)) {
-			if (element instanceof FileEditorInput || element instanceof URIEditorInput) {
-				return true;
-			}
-		}
-		GMFResourceInfo info = getGMFResourceInfo(element);
-		if (info != null) {
-			if (info.isUpdateCache()) {
-				try {
-					updateCache(element);
-				} catch (CoreException ex) {
-					// Error message to log was initially taken from
-					// org.eclipse.gmf.runtime.diagram.ui.resources.editor.ide.internal.l10n.EditorMessages.StorageDocumentProvider_isModifiable
-					PlatformLogUtil.logAsError(Activator.getPlugin(), Messages.error_IsModifiable + ex);
-				}
-			}
-			return info.isModifiable();
-		}
-		return super.isModifiable(element);
-	}
-
-	@Override
-	public boolean isSynchronized(Object element) {
-		GMFResourceInfo info = getGMFResourceInfo(element);
-		if (info != null) {
-			return info.isSynchronized();
-		}
-		return super.isSynchronized(element);
 	}
 
 	protected class GMFResourceInfo extends ElementInfo {
