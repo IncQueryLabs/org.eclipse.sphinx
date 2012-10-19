@@ -1,14 +1,14 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2011 See4sys and others.
+ * Copyright (c) 2012 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors: 
- *     See4sys - Initial API and implementation
+ *     itemis - Initial API and implementation
  * 
  * </copyright>
  */
@@ -24,11 +24,11 @@ import java.util.Set;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
 import org.eclipse.core.commands.operations.IUndoContext;
-import org.eclipse.core.commands.operations.OperationHistoryEvent;
+import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
@@ -46,14 +46,19 @@ import org.eclipse.emf.edit.domain.IEditingDomainProvider;
 import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.workspace.IWorkspaceCommandStack;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.ui.editor.DefaultUpdateBehavior;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
-import org.eclipse.graphiti.ui.editor.IDiagramEditorBehavior;
 import org.eclipse.graphiti.ui.internal.Messages;
-import org.eclipse.graphiti.ui.internal.T;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.graphiti.workspace.ui.internal.Activator;
+import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
@@ -64,7 +69,12 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
 
-public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implements IDiagramEditorBehavior, IEditingDomainProvider,
+/**
+ * An extension of the default behaviour of Graphiti editors
+ * 
+ * @author lajmi
+ */
+public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehavior implements IAdaptable, IEditingDomainProvider,
 		IOperationHistoryListener {
 
 	/**
@@ -100,20 +110,21 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 	/**
 	 * The update adapter is added to every {@link Resource} adapters in the {@link ResourceSet} of the
 	 * {@link TransactionalEditingDomain}. When notified, it adds an
-	 * {@link BasicGraphitiDiagramEditorBehavior#updateAdapter} to the adapters of the ResourceSet.
+	 * {@link BasicGraphitiDiagramEditorUpdateBehavior#updateAdapter} to the adapters of the ResourceSet.
 	 * 
-	 * @see BasicGraphitiDiagramEditorBehavior#initializeEditingDomain(TransactionalEditingDomain)
+	 * @see BasicGraphitiDiagramEditorUpdateBehavior#initializeEditingDomain(TransactionalEditingDomain)
 	 */
 	private ResourceSetUpdateAdapter resourceSetUpdateAdapter;
 
 	/**
-	 * Is toggled by {@link BasicGraphitiDiagramEditorBehavior#updateAdapter}.
+	 * Is toggled by {@link BasicGraphitiDiagramEditorUpdateBehavior#updateAdapter}.
 	 */
 	protected boolean resourceDeleted = false;
 
 	/**
 	 * @return the resourceDeleted
 	 */
+	@Override
 	public boolean isResourceDeleted() {
 		return resourceDeleted;
 	}
@@ -122,18 +133,20 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 	 * @param resourceDeleted
 	 *            the resourceDeleted to set
 	 */
+	@Override
 	public void setResourceDeleted(boolean resourceDeleted) {
 		this.resourceDeleted = resourceDeleted;
 	}
 
 	/**
-	 * Is toggled by {@link BasicGraphitiDiagramEditorBehavior#updateAdapter}.
+	 * Is toggled by {@link BasicGraphitiDiagramEditorUpdateBehavior#updateAdapter}.
 	 */
 	private boolean resourceChanged = false;
 
 	/**
 	 * @return the resourceChanged
 	 */
+	@Override
 	public boolean isResourceChanged() {
 		return resourceChanged;
 	}
@@ -142,6 +155,7 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 	 * @param resourceChanged
 	 *            the resourceChanged to set
 	 */
+	@Override
 	public void setResourceChanged(boolean resourceChanged) {
 		this.resourceChanged = resourceChanged;
 	}
@@ -152,9 +166,23 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 	 * @param editorPart
 	 *            the part this model editor works on
 	 */
-	public BasicGraphitiDiagramEditorBehavior(IEditorPart editorPart) {
-		super();
+	public BasicGraphitiDiagramEditorUpdateBehavior(IEditorPart editorPart) {
+		super((DiagramEditor) editorPart);
 		this.editorPart = editorPart;
+	}
+
+	/**
+	 * Created the {@link TransactionalEditingDomain} that shall be used within the diagram editor and initializes it by
+	 * delegating to {@link #initializeEditingDomain(TransactionalEditingDomain)}.
+	 */
+	@Override
+	protected void createEditingDomain() {
+		IEditorInput editorInput = ((BasicGraphitiDiagramEditor) diagramEditor).getDiagramEditorInput();
+		if (editorInput instanceof DiagramEditorInput) {
+			URI uri = EcoreUIUtil.getURIFromEditorInput(editorInput);
+			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
+			initializeEditingDomain(editingDomain);
+		}
 	}
 
 	/**
@@ -163,7 +191,8 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 	 * @param domain
 	 *            The {@link TransactionalEditingDomain} that is used within this model editor
 	 */
-	private void initializeEditingDomain(TransactionalEditingDomain domain) {
+	@Override
+	protected void initializeEditingDomain(TransactionalEditingDomain domain) {
 		editingDomain = domain;
 		final ResourceSet resourceSet = domain.getResourceSet();
 
@@ -171,7 +200,9 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 		resourceSet.eAdapters().add(resourceSetUpdateAdapter);
 
 		for (final Resource r : resourceSet.getResources()) {
-			r.eAdapters().add(updateAdapter);
+			if (r != null) {
+				r.eAdapters().add(updateAdapter);
+			}
 		}
 	}
 
@@ -228,9 +259,6 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 	private final Adapter updateAdapter = new AdapterImpl() {
 		@Override
 		public void notifyChanged(Notification msg) {
-			if (!isAdapterActive()) {
-				return;
-			}
 			if (msg.getFeatureID(Resource.class) == Resource.RESOURCE__IS_LOADED) {
 				if (msg.getNewBooleanValue() == Boolean.FALSE) {
 					final Resource resource = (Resource) msg.getNotifier();
@@ -241,7 +269,6 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 						final IEditorPart activeEditor = editorPart.getSite().getPage().getActiveEditor();
 						if (activeEditor == editorPart) {
 							getShell().getDisplay().asyncExec(new Runnable() {
-
 								public void run() {
 									handleActivate();
 								}
@@ -252,10 +279,10 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 						if (!isDirty()) {
 							final IEditorInput editorInput = editorPart.getEditorInput();
 							if (editorInput instanceof DiagramEditorInput) {
-								final DiagramEditorInput input = (DiagramEditorInput) editorInput;
 								EObject eObject = null;
 								try {
-									eObject = input.getEObject();
+									// Retrieve the object from the editor input
+									eObject = (EObject) diagramEditor.getAdapter(Diagram.class);
 								} catch (final Exception e) {
 									// Exception getting object --> object probably deleted
 									startCloseEditorJob();
@@ -271,12 +298,13 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 							setResourceDeleted(true);
 							final IEditorPart activeEditor = editorPart.getSite().getPage().getActiveEditor();
 							if (activeEditor == editorPart) {
-								getShell().getDisplay().asyncExec(new Runnable() {
-
-									public void run() {
-										handleActivate();
-									}
-								});
+								if (getShell() != null && getShell().getDisplay() != null) {
+									getShell().getDisplay().asyncExec(new Runnable() {
+										public void run() {
+											handleActivate();
+										}
+									});
+								}
 							}
 						}
 					}
@@ -286,12 +314,14 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 		}
 
 		private void startCloseEditorJob() {
-			Display.getDefault().asyncExec(new Runnable() {
-
-				public void run() {
-					closeEditor();
-				}
-			});
+			Display display = ExtendedPlatformUI.getDisplay();
+			if (display != null) {
+				display.asyncExec(new Runnable() {
+					public void run() {
+						closeEditor();
+					}
+				});
+			}
 		}
 	};
 
@@ -308,12 +338,16 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 		page.closeEditor(editorPart, false);
 	}
 
-	private boolean adapterActive;
+	@Override
+	protected boolean isAdapterActive() {
+		return false;
+	}
 
 	/**
 	 * Handles activation of the editor.
 	 */
-	private void handleActivate() {
+	@Override
+	public void handleActivate() {
 		if (isResourceDeleted()) {
 			if (handleDirtyConflict()) {
 				closeEditor();
@@ -328,20 +362,10 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 	}
 
 	/**
-	 * @return
-	 */
-	protected boolean isAdapterActive() {
-		return adapterActive;
-	}
-
-	private void setAdapterActive(boolean b) {
-		adapterActive = b;
-	}
-
-	/**
 	 * Handles what to do with changed resources on activation.
 	 */
-	private void handleChangedResources() {
+	@Override
+	public void handleChangedResources() {
 		if (!isDirty() || handleDirtyConflict()) {
 			getOperationHistory().dispose(getUndoContext(), true, true, true);
 
@@ -383,9 +407,8 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 			if (diagnostic.getSeverity() != Diagnostic.OK) {
 				try {
 					markerHelper.createMarkers(diagnostic);
-					T.racer().error(diagnostic.getMessage(), diagnostic.getException());
-				} catch (final CoreException exception) {
-					T.racer().error(exception.getMessage(), exception);
+				} catch (final CoreException ex) {
+					PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
 				}
 			}
 		}
@@ -394,7 +417,9 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 	/**
 	 * Shows a dialog that asks if conflicting changes should be discarded.
 	 */
-	private boolean handleDirtyConflict() {
+	@SuppressWarnings("restriction")
+	@Override
+	public boolean handleDirtyConflict() {
 		return MessageDialog.openQuestion(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), Messages.DiscardChangesDialog_0_xmsg,
 				Messages.DiscardChangesDialog_1_xmsg);
 	}
@@ -404,6 +429,7 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 	 * 
 	 * @return The {@link TransactionalEditingDomain} that is used within this editor
 	 */
+	@Override
 	public TransactionalEditingDomain getEditingDomain() {
 		return editingDomain;
 	}
@@ -474,7 +500,7 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 	}
 
 	/**
-	 * Initialises this editor with the given editor site and input. If a dirtyStateUpdater is provided, it will be
+	 * Initializes this editor with the given editor site and input. If a dirtyStateUpdater is provided, it will be
 	 * registered such that it toggles the editor's dirty state.
 	 * 
 	 * @param site
@@ -487,7 +513,7 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 	}
 
 	/**
-	 * Initialises this editor with the given editor site and input. If a dirtyStateUpdater is provided, it will be
+	 * Initializes this editor with the given editor site and input. If a dirtyStateUpdater is provided, it will be
 	 * registered such that it toggles the editor's dirty state.
 	 * 
 	 * @param site
@@ -525,6 +551,7 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 		getOperationHistory().addOperationHistoryListener(this);
 	}
 
+	@Override
 	public void dispose() {
 		updateProblemIndication = false;
 
@@ -541,10 +568,6 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 			object.eAdapters().remove(elementDeleteListener);
 			EcorePlatformUtil.unloadFile(editingDomain, EcorePlatformUtil.getFile(object));
 		}
-
-		// Remove references
-		editingDomain = null;
-		editorPart = null;
 	}
 
 	/**
@@ -593,12 +616,6 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 		@Override
 		public void notifyChanged(Notification msg) {
 			final IEditorPart part = editorPart;
-			if (T.racer().debug()) {
-				final String editorName = part.getTitle();
-				T.racer().debug("Delete listener called of editor " //$NON-NLS-1$
-						+ editorName + " with events " + msg.toString()); //$NON-NLS-1$
-			}
-
 			final IEditorInput in = part.getEditorInput();
 			if (in != null) {
 				final IEditorSite site = part.getEditorSite();
@@ -627,10 +644,6 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 						if (obj == null || EcoreUtil.getRootContainer(obj) == null) {
 							// object is gone so try to close
 							final IWorkbenchPage page = site.getPage();
-							if (T.racer().debug()) {
-								final String editorName = part.getTitle();
-								T.racer().debug("Closing editor " + editorName); //$NON-NLS-1$
-							}
 							page.closeEditor(part, false);
 						}
 					}
@@ -665,7 +678,9 @@ public class BasicGraphitiDiagramEditorBehavior extends PlatformObject implement
 		}
 	}
 
-	public void historyNotification(OperationHistoryEvent event) {
-
+	@SuppressWarnings("restriction")
+	@Override
+	public Object getAdapter(Class adapter) {
+		return AdapterManager.getDefault().getAdapter(this, adapter);
 	}
 }

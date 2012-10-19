@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2011 See4sys and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,20 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
- * 
- * </copyright>
- */
-/**
- * <copyright>
- * 
- * Copyright (c) 2008-2011 See4sys and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
- *     See4sys - Initial API and implementation
+ *     itemis - [392424] Migrate Sphinx integration of Graphiti to Graphiti 0.9.x
  * 
  * </copyright>
  */
@@ -50,6 +37,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 public abstract class AbstractDiagramRootWizardPage extends AbstractWizardPage {
 
@@ -73,7 +61,7 @@ public abstract class AbstractDiagramRootWizardPage extends AbstractWizardPage {
 	}
 
 	@Override
-	protected void doCreateControl(Composite parent) {
+	protected Control doCreateControl(Composite parent) {
 
 		Composite topLevel = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
@@ -100,6 +88,8 @@ public abstract class AbstractDiagramRootWizardPage extends AbstractWizardPage {
 		});
 		validateRules();
 		setControl(topLevel);
+
+		return topLevel;
 	}
 
 	@Override
