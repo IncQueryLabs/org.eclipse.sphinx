@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,10 +9,11 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [392424] Migrate Sphinx integration of Graphiti to Graphiti 0.9.x
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti;
+package org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.internal;
 
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.ui.EclipseUIPlugin;

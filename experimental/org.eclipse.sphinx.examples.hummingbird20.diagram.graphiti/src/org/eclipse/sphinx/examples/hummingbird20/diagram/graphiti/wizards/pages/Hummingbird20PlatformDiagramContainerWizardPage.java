@@ -1,3 +1,18 @@
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     See4sys - Initial API and implementation
+ *     itemis - [392424] Migrate Sphinx integration of Graphiti to Graphiti 0.9.x
+ * 
+ * </copyright>
+ */
 package org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.wizards.pages;
 
 import java.util.MissingResourceException;
@@ -16,11 +31,11 @@ public class Hummingbird20PlatformDiagramContainerWizardPage extends AbstractDia
 
 	@Override
 	protected String doGetTitle() throws MissingResourceException {
-		return Hummingbird20PlatformDiagramTypeProvider.DIAGRAM_TYPE;
+		return Hummingbird20PlatformDiagramTypeProvider.DIAGRAM_TYPE_TYPE;
 	}
 
 	@Override
 	protected String doGetDescription() throws MissingResourceException {
-		return NLS.bind(Messages.Hummingbird20DiagramContainerWizardPage_PageDescription, Hummingbird20PlatformDiagramTypeProvider.DIAGRAM_TYPE);
+		return NLS.bind(Messages.Hummingbird20DiagramContainerWizardPage_PageDescription, Hummingbird20PlatformDiagramTypeProvider.DIAGRAM_TYPE_TYPE);
 	}
 }

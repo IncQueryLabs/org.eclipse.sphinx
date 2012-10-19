@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti;singleton:=true
 Bundle-Version: 0.7.0.qualifier
-Bundle-Activator: org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.Activator$Implementation
+Bundle-Activator: org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.internal.Activator$Implementation
 Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.common,
@@ -13,11 +13,21 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.graphiti,
  org.eclipse.graphiti.ui,
  org.eclipse.sphinx.graphiti.workspace.ui,
- org.eclipse.sphinx.examples.hummingbird20
+ org.eclipse.sphinx.examples.hummingbird20,
+ org.eclipse.graphiti.examples.common,
+ org.eclipse.sphinx.examples.hummingbird20.edit,
+ org.eclipse.sphinx.emf.wizard
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti;x-internal:=true,
- org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features.add,
+Export-Package: org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features.add,
  org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features.create,
- org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.providers
+ org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features.custom,
+ org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features.delete,
+ org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features.layout,
+ org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features.move,
+ org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.features.update,
+ org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.providers,
+ org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.util,
+ org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.wizards,
+ org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.wizards.pages
 Bundle-Localization: plugin
