@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [392464] Finish up Sphinx editor socket for GMF-based graphical editors
  * 
  * </copyright>
  */
@@ -28,7 +29,6 @@ import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -68,7 +68,6 @@ import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
-import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.emf.workspace.saving.IModelDirtyChangeListener;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.gmf.runtime.ui.internal.Activator;
@@ -348,20 +347,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 
 	/*
 	 * @see
-	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#isSynchronized(java.lang
-	 * .Object)
-	 */
-	@Override
-	public boolean isSynchronized(Object element) {
-		GMFResourceInfo info = getGMFResourceInfo(element);
-		if (info != null) {
-			return info.isSynchronized();
-		}
-		return super.isSynchronized(element);
-	}
-
-	/*
-	 * @see
 	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#getResetRule(java.lang.
 	 * Object)
 	 */
@@ -391,24 +376,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 			IFile file = WorkspaceSynchronizer.getFile(resource);
 			if (file != null) {
 				return computeSchedulingRule(file);
-			}
-		}
-		return null;
-	}
-
-	/*
-	 * @see
-	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#getSynchronizeRule(java
-	 * .lang.Object)
-	 */
-	@Override
-	protected ISchedulingRule getSynchronizeRule(Object element) {
-		GMFResourceInfo info = getGMFResourceInfo(element);
-		if (info != null) {
-			Resource resource = getDomainResource(info);
-			IFile file = WorkspaceSynchronizer.getFile(resource);
-			if (file != null) {
-				return ResourcesPlugin.getWorkspace().getRuleFactory().refreshRule(file);
 			}
 		}
 		return null;
@@ -454,22 +421,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 
 	/*
 	 * @see
-	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#doSynchronize(java.lang
-	 * .Object, org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	@Override
-	protected void doSynchronize(Object element, IProgressMonitor monitor) throws CoreException {
-		GMFResourceInfo info = getGMFResourceInfo(element);
-		if (info != null) {
-			Resource resource = getDiagramResource(info);
-			handleElementChanged(info, resource, monitor);
-			return;
-		}
-		super.doSynchronize(element, monitor);
-	}
-
-	/*
-	 * @see
 	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#doSaveDocument(org.eclipse
 	 * .core.runtime.IProgressMonitor, java.lang.Object,
 	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.IDocument, boolean)
@@ -478,11 +429,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	protected void doSaveDocument(IProgressMonitor monitor, Object element, IDocument document, boolean overwrite) throws CoreException {
 		GMFResourceInfo info = getGMFResourceInfo(element);
 		if (info != null) {
-			if (!overwrite && !info.isSynchronized()) {
-				throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), IResourceStatus.OUT_OF_SYNC_LOCAL,
-						Messages.error_UnsynchronizedFileSave, null));
-			}
-			info.stopResourceListening();
 			fireElementStateChanging(element);
 			try {
 				Resource resource = getDiagramResource(info);
@@ -491,8 +437,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 			} catch (RuntimeException ex) {
 				fireElementStateChangeFailed(element);
 				throw ex;
-			} finally {
-				info.startResourceListening();
 			}
 		} else {
 			if (false == element instanceof FileEditorInput && false == element instanceof URIEditorInput) {
@@ -521,16 +465,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	}
 
 	protected void handleElementChanged(GMFResourceInfo info, Resource changedResource, IProgressMonitor monitor) {
-		IFile file = WorkspaceSynchronizer.getFile(changedResource);
-		if (file != null) {
-			try {
-				file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-			} catch (CoreException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
-		}
-		ModelLoadManager.INSTANCE.reloadFile(file, true, monitor);// changedResource.unload();
-
 		fireElementContentAboutToBeReplaced(info.getEditorInput());
 		removeUnchangedElementListeners(info.getEditorInput(), info);
 		info.fStatus = null;
@@ -638,8 +572,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	protected class GMFResourceInfo extends ElementInfo {
 
 		private long myModificationStamp = IResource.NULL_STAMP;
-		private WorkspaceSynchronizer mySynchronizer;
-		private final Collection<Resource> myUnSynchronizedResources = new ArrayList<Resource>();
 		private final IDiagramDocument myDocument;
 		private final IEditorInput myEditorInput;
 		private boolean myUpdateCache = true;
@@ -657,7 +589,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 			EObject element = document.getDiagram().getElement();
 			domainModelResourceURI = element != null ? element.eResource().getURI() : null;
 			addTransactionalEditingDomainListeners(document.getEditingDomain());
-			startResourceListening();
 		}
 
 		protected void addTransactionalEditingDomainListeners(TransactionalEditingDomain editingDomain) {
@@ -744,30 +675,8 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		}
 
 		public void dispose() {
-			stopResourceListening();
 			removeTransactionalEditingDomainListeners(myDocument.getEditingDomain());
 			EcorePlatformUtil.unloadFile(myDocument.getEditingDomain(), EcoreUIUtil.getFileFromEditorInput(myEditorInput));
-		}
-
-		public boolean isSynchronized() {
-			return myUnSynchronizedResources.size() == 0;
-		}
-
-		public void setUnSynchronized(Resource resource) {
-			myUnSynchronizedResources.add(resource);
-		}
-
-		public void setSynchronized(Resource resource) {
-			myUnSynchronizedResources.remove(resource);
-		}
-
-		public final void stopResourceListening() {
-			mySynchronizer.dispose();
-			mySynchronizer = null;
-		}
-
-		public final void startResourceListening() {
-			mySynchronizer = new WorkspaceSynchronizer(getEditingDomain(), new SynchronizerDelegate());
 		}
 
 		public boolean isUpdateCache() {
@@ -798,12 +707,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 
 			public boolean handleResourceChanged(final Resource resource) {
 				if (myDocument.getDiagram().eResource() == resource) {
-					synchronized (GMFResourceInfo.this) {
-						if (GMFResourceInfo.this.fCanBeSaved) {
-							setUnSynchronized(resource);
-							return true;
-						}
-					}
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							handleElementChanged(GMFResourceInfo.this, myDocument.getDiagram().eResource(), null);
@@ -815,12 +718,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 
 			public boolean handleResourceDeleted(Resource resource) {
 				if (myDocument.getDiagram().eResource() == resource) {
-					synchronized (GMFResourceInfo.this) {
-						if (GMFResourceInfo.this.fCanBeSaved) {
-							setUnSynchronized(resource);
-							return true;
-						}
-					}
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							fireElementDeleted(getEditorInput());
@@ -832,12 +729,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 
 			public boolean handleResourceMoved(Resource resource, final URI newURI) {
 				if (myDocument.getDiagram().getElement().eResource() == resource) {
-					synchronized (GMFResourceInfo.this) {
-						if (GMFResourceInfo.this.fCanBeSaved) {
-							setUnSynchronized(resource);
-							return true;
-						}
-					}
 					if (myDocument.getDiagram().eResource() == resource) {
 						Display.getDefault().asyncExec(new Runnable() {
 							public void run() {
@@ -857,7 +748,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		}
 	}
 
-	// FIXME aakar remove this listener
 	private class AffectedObjectsListener implements IOperationHistoryListener {
 
 		private final GMFResourceInfo myInfo;
@@ -892,9 +782,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 					if (modified != myInfo.fCanBeSaved) {
 						myInfo.fCanBeSaved = modified;
 						dirtyStateChanged = true;
-					}
-					if (!resource.isModified()) {
-						myInfo.setSynchronized(resource);
 					}
 				}
 				if (dirtyStateChanged) {

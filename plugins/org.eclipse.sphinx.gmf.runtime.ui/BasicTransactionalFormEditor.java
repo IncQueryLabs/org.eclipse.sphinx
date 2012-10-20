@@ -332,37 +332,30 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	protected void addTransactionalEditingDomainListeners(TransactionalEditingDomain editingDomain) {
 		if (editingDomain != null) {
-			// This commandStackListener is enough when the resource resides outside the workspace
-			if (getEditorInput() instanceof FileStoreEditorInput) {
-				commandStackListener = createCommandStackListener();
-				Assert.isNotNull(commandStackListener);
-				editingDomain.getCommandStack().addCommandStackListener(commandStackListener);
-			} else {
-				// Create and register ResourceSetChangedListener that detects loaded resources
-				resourceLoadedListener = createResourceLoadedListener();
-				Assert.isNotNull(resourceLoadedListener);
-				editingDomain.addResourceSetListener(resourceLoadedListener);
+			// Create and register ResourceSetChangedListener that detects loaded resources
+			resourceLoadedListener = createResourceLoadedListener();
+			Assert.isNotNull(resourceLoadedListener);
+			editingDomain.addResourceSetListener(resourceLoadedListener);
 
-				// Create and register ResourceSetChangedListener that detects renamed or moved resources
-				resourceMovedListener = createResourceMovedListener();
-				Assert.isNotNull(resourceMovedListener);
-				editingDomain.addResourceSetListener(resourceMovedListener);
+			// Create and register ResourceSetChangedListener that detects renamed or moved resources
+			resourceMovedListener = createResourceMovedListener();
+			Assert.isNotNull(resourceMovedListener);
+			editingDomain.addResourceSetListener(resourceMovedListener);
 
-				// Create and register ResourceSetChangedListener that detects removed resources
-				resourceRemovedListener = createResourceRemovedListener();
-				Assert.isNotNull(resourceRemovedListener);
-				editingDomain.addResourceSetListener(resourceRemovedListener);
+			// Create and register ResourceSetChangedListener that detects removed resources
+			resourceRemovedListener = createResourceRemovedListener();
+			Assert.isNotNull(resourceRemovedListener);
+			editingDomain.addResourceSetListener(resourceRemovedListener);
 
-				// Create and register ResourceSetChangedListener that detects removed objects
-				objectRemovedListener = createObjectRemovedListener();
-				Assert.isNotNull(objectRemovedListener);
-				editingDomain.addResourceSetListener(objectRemovedListener);
+			// Create and register ResourceSetChangedListener that detects removed objects
+			objectRemovedListener = createObjectRemovedListener();
+			Assert.isNotNull(objectRemovedListener);
+			editingDomain.addResourceSetListener(objectRemovedListener);
 
-				// Create and register IOperationHistoryListener that detects changed objects
-				affectedObjectsListener = createAffectedObjectsListener();
-				Assert.isNotNull(affectedObjectsListener);
-				((IWorkspaceCommandStack) editingDomain.getCommandStack()).getOperationHistory().addOperationHistoryListener(affectedObjectsListener);
-			}
+			// Create and register IOperationHistoryListener that detects changed objects
+			affectedObjectsListener = createAffectedObjectsListener();
+			Assert.isNotNull(affectedObjectsListener);
+			((IWorkspaceCommandStack) editingDomain.getCommandStack()).getOperationHistory().addOperationHistoryListener(affectedObjectsListener);
 		}
 	}
 
@@ -383,10 +376,6 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			if (affectedObjectsListener != null) {
 				IOperationHistory operationHistory = ((IWorkspaceCommandStack) editingDomain.getCommandStack()).getOperationHistory();
 				operationHistory.removeOperationHistoryListener(affectedObjectsListener);
-			}
-			if (commandStackListener != null) {
-				IWorkspaceCommandStack commandStack = (IWorkspaceCommandStack) editingDomain.getCommandStack();
-				commandStack.removeCommandStackListener(commandStackListener);
 			}
 		}
 	}
