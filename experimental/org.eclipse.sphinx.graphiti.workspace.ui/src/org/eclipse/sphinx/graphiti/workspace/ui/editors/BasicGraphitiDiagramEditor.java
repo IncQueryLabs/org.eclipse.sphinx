@@ -159,9 +159,10 @@ public class BasicGraphitiDiagramEditor extends DiagramEditor implements ISaveab
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		// Ignore. This method is not called because BasicGraphitiEditor implements
-		// ISaveablesSource. All saves will go through the ISaveablesSource /
-		// Saveable protocol.
+		// Do nothing. This method is not called because BasicDiagramEditor implements ISaveablesSource. All
+		// saves will therefore go through the ISaveablesSource/Saveable protocol instead (see
+		// org.eclipse.ui.internal.SaveableHelper#savePart(ISaveablePart, IWorkbenchPart, IWorkbenchWindow, boolean) for
+		// details).
 	}
 
 	private Object getDiagramRoot() {
