@@ -43,16 +43,13 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
  * An abstract implementation of a Graphiti diagram creation wizard.
- * 
- * @author lajmi
- *
  */
 public abstract class AbstractGraphitiDiagramNewWizard extends AbstractModelNewWizard {
 
 	protected String graphitiDiagramType;
-	
+
 	protected String emfContentType;
-	
+
 	protected List<String> businessObjectsFileExtension;
 
 	public AbstractGraphitiDiagramNewWizard() {
@@ -62,7 +59,7 @@ public abstract class AbstractGraphitiDiagramNewWizard extends AbstractModelNewW
 		// Set diagram type if redefined in subclasses
 		initDiagramType();
 	}
-	
+
 	/**
 	 * This initializes the metamodel package
 	 */

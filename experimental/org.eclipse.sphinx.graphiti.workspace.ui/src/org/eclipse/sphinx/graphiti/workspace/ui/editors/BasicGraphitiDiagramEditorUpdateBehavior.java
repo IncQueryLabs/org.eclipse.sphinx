@@ -15,35 +15,22 @@
 package org.eclipse.sphinx.graphiti.workspace.ui.editors;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
 import org.eclipse.core.commands.operations.IUndoContext;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
-import org.eclipse.emf.common.ui.MarkerHelper;
-import org.eclipse.emf.common.util.BasicDiagnostic;
-import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.domain.IEditingDomainProvider;
-import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.workspace.IWorkspaceCommandStack;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -56,9 +43,7 @@ import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
-import org.eclipse.sphinx.graphiti.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
@@ -71,9 +56,11 @@ import org.eclipse.ui.PlatformUI;
 
 /**
  * An extension of the default behaviour of Graphiti editors
- * 
- * @author lajmi
  */
+// FIXME Remove traditional workspace synchronization copied from DefaultUpdateBehavior (updateAdapter,
+// resourceSetUpdateAdapter, handleActivate(), handleChangedResource(), handleDirtyConflict(), etc.) and use
+// ModelEditorInputSynchronizer instead
+// FIXME Override init() and suppress installation of the default implementation's updateAdapter
 @SuppressWarnings("restriction")
 public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehavior implements IAdaptable, IEditingDomainProvider,
 		IOperationHistoryListener {
@@ -92,21 +79,6 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 	 * Closes editor if model object is deleted.
 	 */
 	private ElementDeleteListener elementDeleteListener = null;
-
-	/**
-	 * Is responsible for creating workspace resource markers presented in Eclipse's Problems View.
-	 */
-	private final MarkerHelper markerHelper = new EditUIMarkerHelper();
-
-	/**
-	 * Map to store the diagnostic associated with a resource.
-	 */
-	private final Map<Resource, Diagnostic> resourceToDiagnosticMap = new LinkedHashMap<Resource, Diagnostic>();
-
-	/**
-	 * Controls whether the problem indication should be updated.
-	 */
-	private boolean updateProblemIndication = true;
 
 	/**
 	 * The update adapter is added to every {@link Resource} adapters in the {@link ResourceSet} of the
@@ -206,52 +178,6 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 			}
 		}
 	}
-
-	/**
-	 * Adapter used to update the problem indication when resources are demanded loaded.
-	 */
-	private final EContentAdapter problemIndicationAdapter = new EContentAdapter() {
-		@Override
-		public void notifyChanged(Notification notification) {
-			if (notification.getNotifier() instanceof Resource) {
-				switch (notification.getFeatureID(Resource.class)) {
-				case Resource.RESOURCE__IS_LOADED:
-				case Resource.RESOURCE__ERRORS:
-				case Resource.RESOURCE__WARNINGS: {
-					final Resource resource = (Resource) notification.getNotifier();
-					final Diagnostic diagnostic = analyzeResourceProblems(resource, null);
-					if (diagnostic.getSeverity() != Diagnostic.OK) {
-						resourceToDiagnosticMap.put(resource, diagnostic);
-					} else {
-						resourceToDiagnosticMap.remove(resource);
-					}
-
-					if (updateProblemIndication) {
-						getShell().getDisplay().asyncExec(new Runnable() {
-
-							public void run() {
-								updateProblemIndication();
-							}
-						});
-					}
-					break;
-				}
-				}
-			} else {
-				super.notifyChanged(notification);
-			}
-		}
-
-		@Override
-		protected void setTarget(Resource target) {
-			basicSetTarget(target);
-		}
-
-		@Override
-		protected void unsetTarget(Resource target) {
-			basicUnsetTarget(target);
-		}
-	};
 
 	private Shell getShell() {
 		return editorPart.getSite().getShell();
@@ -370,8 +296,6 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 		if (!isDirty() || handleDirtyConflict()) {
 			getOperationHistory().dispose(getUndoContext(), true, true, true);
 
-			updateProblemIndication = false;
-
 			// Disable adapter temporarily.
 			setAdapterActive(false);
 			try {
@@ -383,34 +307,6 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 				refreshEditorContent();
 			} finally {
 				setAdapterActive(true);
-			}
-			updateProblemIndication = true;
-			updateProblemIndication();
-		}
-	}
-
-	/**
-	 * Updates the problems indication with the information described in the specified diagnostic.
-	 */
-	// FIXME (aakar) Should be reworked !
-	private void updateProblemIndication() {
-		if (updateProblemIndication && editingDomain != null) {
-			final BasicDiagnostic diagnostic = new BasicDiagnostic(Diagnostic.OK, Activator.getPlugin().getSymbolicName(), 0, null,
-					new Object[] { editingDomain.getResourceSet() });
-			for (final Diagnostic childDiagnostic : resourceToDiagnosticMap.values()) {
-				if (childDiagnostic.getSeverity() != Diagnostic.OK) {
-					diagnostic.add(childDiagnostic);
-				}
-			}
-			if (markerHelper.hasMarkers(editingDomain.getResourceSet())) {
-				markerHelper.deleteMarkers(editingDomain.getResourceSet());
-			}
-			if (diagnostic.getSeverity() != Diagnostic.OK) {
-				try {
-					markerHelper.createMarkers(diagnostic);
-				} catch (final CoreException ex) {
-					PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
-				}
 			}
 		}
 	}
@@ -435,26 +331,6 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 	}
 
 	/**
-	 * Returns a diagnostic describing the errors and warnings listed in the resource and the specified exception (if
-	 * any).
-	 */
-	public Diagnostic analyzeResourceProblems(Resource resource, Exception exception) {
-		if ((!resource.getErrors().isEmpty() || !resource.getWarnings().isEmpty()) && editingDomain != null) {
-			final IFile file = EcorePlatformUtil.getFile(resource);
-			final String fileName = file != null ? file.getFullPath().toString() : "unknown name"; //$NON-NLS-1$
-			final BasicDiagnostic basicDiagnostic = new BasicDiagnostic(Diagnostic.ERROR, Activator.getPlugin().getSymbolicName(), 0,
-					"Problems encountered in file " + fileName, new Object[] { exception == null ? (Object) resource : exception }); //$NON-NLS-1$
-			basicDiagnostic.merge(EcoreUtil.computeDiagnostic(resource, true));
-			return basicDiagnostic;
-		} else if (exception != null) {
-			return new BasicDiagnostic(Diagnostic.ERROR, Activator.getPlugin().getSymbolicName(), 0, "Problems encountered in file", //$NON-NLS-1$ 
-					new Object[] { exception });
-		} else {
-			return Diagnostic.OK_INSTANCE;
-		}
-	}
-
-	/**
 	 * @return the editor's dirty state
 	 * @see ISaveablePart#isDirty()
 	 */
@@ -465,26 +341,6 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 			return ModelSaveManager.INSTANCE.isDirty(diagramResource);
 		}
 		return false;
-	}
-
-	/**
-	 * This is for implementing {@link IEditorPart} and simply saves the model file.
-	 * 
-	 * @param progressMonitor
-	 *            The {@link IProgressMonitor} progress monitor
-	 */
-	public Resource[] doSave(IProgressMonitor progressMonitor) {
-		// Save only resources that have actually changed.
-		final Map<Object, Object> saveOptions = new HashMap<Object, Object>();
-		saveOptions.put(Resource.OPTION_SAVE_ONLY_IF_CHANGED, Resource.OPTION_SAVE_ONLY_IF_CHANGED_MEMORY_BUFFER);
-		final Set<Resource> savedResources = new HashSet<Resource>();
-
-		updateProblemIndication = false;
-		ModelSaveManager.INSTANCE.saveModel(getDiagramResource(), saveOptions, false, progressMonitor);
-		updateProblemIndication = true;
-		updateProblemIndication();
-		// TODO (aakar) check ??
-		return savedResources.toArray(new Resource[savedResources.size()]);
 	}
 
 	private IOperationHistory getOperationHistory() {
@@ -499,62 +355,8 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 		return history;
 	}
 
-	/**
-	 * Initializes this editor with the given editor site and input. If a dirtyStateUpdater is provided, it will be
-	 * registered such that it toggles the editor's dirty state.
-	 * 
-	 * @param site
-	 *            the editor site
-	 * @param input
-	 *            the editor's input, preferably a {@link DiagramEditorInput}
-	 */
-	public void init(IEditorSite site, IEditorInput editorInput) {
-		init(site, editorInput, null);
-	}
-
-	/**
-	 * Initializes this editor with the given editor site and input. If a dirtyStateUpdater is provided, it will be
-	 * registered such that it toggles the editor's dirty state.
-	 * 
-	 * @param site
-	 *            the editor site
-	 * @param input
-	 *            the editor's input, preferably a {@link DiagramEditorInput}
-	 * @param dirtyStateUpdater
-	 *            an optional operation for toggling the dirty state, which is called at the appropriate time. Its
-	 *            implementation should contain a call <code>firePropertyChange(IEditorPart.PROP_DIRTY)</code>.
-	 * @throws PartInitException
-	 *             if the initialisation fails
-	 */
-	/**
-	 * @param site
-	 * @param editorInput
-	 * @param dirtyStateUpdater
-	 */
-	public void init(IEditorSite site, IEditorInput editorInput, Runnable dirtyStateUpdater) {
-		// Retrieve the object from the editor input
-		final EObject object = (EObject) editorInput.getAdapter(EObject.class);
-
-		// Resolve the URI behind the editor input via the editor resource set
-		final TransactionalEditingDomain ed = (TransactionalEditingDomain) editorInput.getAdapter(TransactionalEditingDomain.class);
-		initializeEditingDomain(ed);
-
-		// Problem analysis
-		editingDomain.getResourceSet().eAdapters().add(problemIndicationAdapter);
-
-		// Register for object deletion
-		if (object != null) {
-			elementDeleteListener = new ElementDeleteListener();
-			object.eAdapters().add(elementDeleteListener);
-		}
-
-		getOperationHistory().addOperationHistoryListener(this);
-	}
-
 	@Override
 	public void dispose() {
-		updateProblemIndication = false;
-
 		// Remove all the registered listeners
 		editingDomain.getResourceSet().eAdapters().remove(resourceSetUpdateAdapter);
 		getOperationHistory().removeOperationHistoryListener(this);
@@ -566,6 +368,8 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 		EObject object = (EObject) editorPart.getEditorInput().getAdapter(EObject.class);
 		if (object != null) {
 			object.eAdapters().remove(elementDeleteListener);
+			// FIXME Check if this should really be done here or not better in
+			// BasicGraphitiDiagramEditorPersistencyBehavior
 			EcorePlatformUtil.unloadFile(editingDomain, EcorePlatformUtil.getFile(object));
 		}
 	}

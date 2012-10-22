@@ -35,9 +35,7 @@ import org.eclipse.graphiti.ui.internal.dnd.ObjectsTransferDropTargetListener;
 import org.eclipse.jface.viewers.ISelection;
 
 /**
- * A cusomized listener for managing drag & drop feature.
- * 
- * @author lajmi
+ * A customized listener for managing drag & drop feature.
  */
 @SuppressWarnings("restriction")
 public class BasicGraphitiObjectTransferDropTargetListener extends ObjectsTransferDropTargetListener {

@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.ui.URIEditorInput;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -57,14 +56,13 @@ import org.eclipse.ui.ISaveablesSource;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.Saveable;
 import org.eclipse.ui.SaveablesLifecycleEvent;
-import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.navigator.SaveablesProvider;
 
 /**
  * An extended Graphiti diagram that manages Sphinx resources.
- * 
- * @author lajmi
  */
+// FIXME Suppress default marker behavior as handling of resource load error/warnings is already done centrally by
+// Sphinx ResourceProblemHandler
 @SuppressWarnings("restriction")
 public class BasicGraphitiDiagramEditor extends DiagramEditor implements ISaveablesSource {
 
@@ -151,10 +149,6 @@ public class BasicGraphitiDiagramEditor extends DiagramEditor implements ISaveab
 
 	@Override
 	public boolean isDirty() {
-		// For resources outside the workspace
-		if (getEditorInput() instanceof FileStoreEditorInput && ((FileStoreEditorInput) getEditorInput()).exists()) {
-			return ((BasicCommandStack) getEditingDomain().getCommandStack()).isSaveNeeded();
-		}
 		Object diagramRoot = getDiagramRoot();
 		if (diagramRoot instanceof EObject) {
 			// Return true if the model, this editor or both are dirty
@@ -172,23 +166,19 @@ public class BasicGraphitiDiagramEditor extends DiagramEditor implements ISaveab
 
 	private Object getDiagramRoot() {
 		URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
-		return getEObject(editorInputURI);
+		return loadDiagram(editorInputURI);
 	}
 
-	protected EObject getEObject(final URI uri) {
+	// TODO Return actual type
+	// FIXME Check if "getDiagram" wouldn't be sufficient given that this method is only called from isDirty()
+	// FIXME Check if this shouldn't be replaced by a delegation to BasicGraphitiDiagramEditorPersistencyBehavior
+	protected EObject loadDiagram(final URI uri) {
 		final TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
-		final boolean loadOnDemand = getEditorInput() instanceof FileStoreEditorInput ? true : false;
 		if (editingDomain != null) {
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
 					public void run() {
-						if (uri.hasFragment()) {
-							// TODO : remove that!
-							setResult(EcoreResourceUtil.getModelFragment(editingDomain.getResourceSet(), uri, loadOnDemand));
-						} else {
-							// TODO: Get back to getModelRoot and add support for asynchronous loading and refresh
-							setResult(EcoreResourceUtil.loadModelRoot(editingDomain.getResourceSet(), uri, Collections.emptyMap()));
-						}
+						setResult(EcoreResourceUtil.loadModelRoot(editingDomain.getResourceSet(), uri, Collections.emptyMap()));
 					}
 				});
 			} catch (InterruptedException ex) {

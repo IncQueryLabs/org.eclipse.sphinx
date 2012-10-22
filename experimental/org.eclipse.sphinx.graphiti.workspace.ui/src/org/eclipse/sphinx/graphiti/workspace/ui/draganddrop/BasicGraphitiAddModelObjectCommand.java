@@ -41,8 +41,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 /**
  * Extended Graphiti command to manage the initial set of business objects and connections to be transfered by drag &
  * drop feature
- * 
- * @author lajmi
  */
 @SuppressWarnings("restriction")
 public class BasicGraphitiAddModelObjectCommand extends AbstractCommand {

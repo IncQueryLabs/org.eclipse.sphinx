@@ -26,13 +26,11 @@ import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DefaultPersistencyBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
-import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
-import org.eclipse.sphinx.emf.workspace.domain.WorkspaceEditingDomainManager;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.graphiti.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -69,7 +67,7 @@ public class BasicGraphitiDiagramEditorPersistencyBehavior extends DefaultPersis
 	}
 
 	protected EObject getEObject(final URI uri) {
-		final TransactionalEditingDomain editingDomain = getEditingDomain(uri);
+		final TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
 		final boolean loadOnDemand = diagramEditor.getEditorInput() instanceof FileStoreEditorInput ? true : false;
 		if (editingDomain != null) {
 			try {
@@ -91,23 +89,11 @@ public class BasicGraphitiDiagramEditorPersistencyBehavior extends DefaultPersis
 		return null;
 	}
 
-	protected TransactionalEditingDomain getEditingDomain(final URI uri) {
-		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
-		if (editingDomain == null && diagramEditor.getEditorInput() instanceof FileStoreEditorInput) {
-			// If the file has been deleted
-			if (((FileStoreEditorInput) diagramEditor.getEditorInput()).exists()) {
-				String modelNamespace = EcoreResourceUtil.readModelNamespace(null, EcoreUIUtil.getURIFromEditorInput(diagramEditor.getEditorInput()));
-				editingDomain = WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping().getEditingDomain(null,
-						MetaModelDescriptorRegistry.INSTANCE.getDescriptor(java.net.URI.create(modelNamespace)));
-			}
-		}
-		return editingDomain;
-	}
-
 	/**
 	 * @return The root object of the model part that is currently being edited in this editor or <code>null</code> if
 	 *         no such is available.
 	 */
+	// TODO Return actual type
 	public EObject getDiagramRoot() {
 		if (diagramRoot == null || diagramRoot.eIsProxy() || diagramRoot.eResource() == null || !diagramRoot.eResource().isLoaded()) {
 			URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(diagramEditor.getEditorInput());
