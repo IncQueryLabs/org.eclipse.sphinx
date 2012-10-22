@@ -15,9 +15,11 @@
  */
 package org.eclipse.sphinx.gmf.runtime.ui.editor;
 
+import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.gmf.runtime.diagram.ui.resources.editor.parts.DiagramDocumentEditor;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
+import org.eclipse.sphinx.gmf.runtime.ui.internal.editor.ModelEditorUndoContextManager;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -31,6 +33,7 @@ import org.eclipse.ui.navigator.SaveablesProvider;
 public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements ISaveablesSource {
 
 	protected SaveablesProvider modelSaveablesProvider;
+	protected ModelEditorUndoContextManager undoContextManager;
 
 	public BasicDiagramDocumentEditor() {
 		super(true);
@@ -43,8 +46,11 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
+
 		modelSaveablesProvider = createModelSaveablesProvider();
 		modelSaveablesProvider.init(createModelSaveablesLifecycleListener());
+
+		undoContextManager = new ModelEditorUndoContextManager(site, this, getEditingDomain());
 	}
 
 	protected SaveablesProvider createModelSaveablesProvider() {
@@ -77,10 +83,16 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 		return false;
 	}
 
+	/*
+	 * @see org.eclipse.ui.ISaveablesSource#getActiveSaveables()
+	 */
 	public Saveable[] getActiveSaveables() {
 		return getSaveables();
 	}
 
+	/*
+	 * @see org.eclipse.ui.ISaveablesSource#getSaveables()
+	 */
 	public Saveable[] getSaveables() {
 		if (modelSaveablesProvider != null) {
 			Saveable saveable = modelSaveablesProvider.getSaveable(getDiagram().eResource());
@@ -89,6 +101,17 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 			}
 		}
 		return new Saveable[0];
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Object getAdapter(Class key) {
+		if (key.equals(IUndoContext.class)) {
+			// Used by undo/redo actions to get their undo context
+			return undoContextManager.getUndoContext();
+		} else {
+			return super.getAdapter(key);
+		}
 	}
 
 	/*
@@ -103,12 +126,17 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 		super.enableSanityChecking(false);
 	}
 
+	/*
+	 * @see org.eclipse.gmf.runtime.diagram.ui.resources.editor.parts.DiagramDocumentEditor#dispose()
+	 */
 	@Override
 	public void dispose() {
+		if (undoContextManager != null) {
+			undoContextManager.dispose();
+		}
 		if (modelSaveablesProvider != null) {
 			modelSaveablesProvider.dispose();
 		}
-
 		super.dispose();
 	}
 }
