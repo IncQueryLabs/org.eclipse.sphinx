@@ -79,6 +79,8 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 		};
 	}
 
+	// FIXME Make sure that diagram changes don't get lost when closing the editor; either by user prompt for saving or
+	// by not unloading diagram resource when closing diagram document editor
 	@Override
 	public boolean isSaveOnCloseNeeded() {
 		// Model-based editors don't need to be saved when being closed even if the model is dirty, because they don't
@@ -103,7 +105,7 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 
 			// Add saveable of diagram
 			Diagram diagram = getDiagram();
-			Saveable diagramSaveable = modelSaveablesProvider.getSaveable(diagram.eResource());
+			Saveable diagramSaveable = modelSaveablesProvider.getSaveable(diagram);
 			if (diagramSaveable != null) {
 				saveables.add(diagramSaveable);
 			}

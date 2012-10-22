@@ -35,6 +35,7 @@ import org.eclipse.emf.common.ui.URIEditorInput;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
@@ -48,6 +49,7 @@ import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
@@ -56,6 +58,7 @@ import org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChange
 import org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChangeHandler;
 import org.eclipse.sphinx.gmf.runtime.ui.internal.editor.ModelEditorInputSynchronizer;
 import org.eclipse.sphinx.gmf.runtime.ui.internal.messages.Messages;
+import org.eclipse.sphinx.gmf.workspace.metamodel.GMFNotationDescriptor;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
@@ -314,7 +317,6 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.AbstractDocumentProvider#getSaveRule(java.lang.Object
 	 * )
 	 */
-	// TODO Check if this method can be left empty given that BasicDiagramDocumentEditor is an ISaveablesSource
 	@Override
 	protected ISchedulingRule getSaveRule(Object element) {
 		DiagramElementInfo info = getDiagramElementInfo(element);
@@ -374,10 +376,44 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	 */
 	@Override
 	protected void doSaveDocument(IProgressMonitor monitor, Object element, IDocument document, boolean overwrite) throws CoreException {
-		// Do nothing. This method is not called because BasicDiagramDocumentEditor implements ISaveablesSource. All
-		// saves will therefore go through the ISaveablesSource/Saveable protocol instead (see
-		// org.eclipse.ui.internal.SaveableHelper#savePart(ISaveablePart, IWorkbenchPart, IWorkbenchWindow, boolean) for
-		// details).
+		DiagramElementInfo info = getDiagramElementInfo(element);
+		if (info != null) {
+			// Perform regular save operation
+			fireElementStateChanging(element);
+			try {
+				Resource diagramResource = info.getDiagramResource();
+				ModelSaveManager.INSTANCE.saveModel(diagramResource, getSaveOptions(), false, monitor);
+				Resource domainModelResource = info.getDomainModelResource();
+				ModelSaveManager.INSTANCE.saveModel(domainModelResource, false, monitor);
+			} catch (RuntimeException ex) {
+				fireElementStateChangeFailed(element);
+				throw ex;
+			}
+		} else {
+			// Perform save as operation
+			if (false == element instanceof FileEditorInput && false == element instanceof URIEditorInput) {
+				fireElementStateChangeFailed(element);
+				throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
+						new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
+						null));
+			}
+			URI newResoruceURI = EcoreUIUtil.getURIFromEditorInput((IEditorInput) element);
+
+			if (false == document instanceof IDiagramDocument) {
+				fireElementStateChangeFailed(element);
+				throw new CoreException(
+						new Status(
+								IStatus.ERROR,
+								Activator.getPlugin().getSymbolicName(),
+								0,
+								"Incorrect document used: " + document + " instead of org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.IDiagramDocument", null)); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			IDiagramDocument diagramDocument = (IDiagramDocument) document;
+
+			final Diagram diagramCopy = EcoreUtil.copy(diagramDocument.getDiagram());
+			EcorePlatformUtil.saveNewModelResource(diagramDocument.getEditingDomain(), EcorePlatformUtil.getFile(newResoruceURI).getFullPath(),
+					GMFNotationDescriptor.GMF_DIAGRAM_CONTENT_TYPE_ID, diagramCopy, false, monitor);
+		}
 	}
 
 	/*
