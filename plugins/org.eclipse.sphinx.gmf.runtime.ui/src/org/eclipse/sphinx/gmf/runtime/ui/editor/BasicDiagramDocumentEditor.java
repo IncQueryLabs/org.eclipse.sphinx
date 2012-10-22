@@ -15,8 +15,12 @@
  */
 package org.eclipse.sphinx.gmf.runtime.ui.editor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.gmf.runtime.diagram.ui.resources.editor.parts.DiagramDocumentEditor;
+import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
 import org.eclipse.sphinx.gmf.runtime.ui.internal.editor.ModelEditorUndoContextManager;
@@ -95,10 +99,22 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 	 */
 	public Saveable[] getSaveables() {
 		if (modelSaveablesProvider != null) {
-			Saveable saveable = modelSaveablesProvider.getSaveable(getDiagram().eResource());
-			if (saveable != null) {
-				return new Saveable[] { saveable };
+			List<Saveable> saveables = new ArrayList<Saveable>(2);
+
+			// Add saveable of diagram
+			Diagram diagram = getDiagram();
+			Saveable diagramSaveable = modelSaveablesProvider.getSaveable(diagram.eResource());
+			if (diagramSaveable != null) {
+				saveables.add(diagramSaveable);
 			}
+
+			// Add saveable of domain model
+			Saveable domainModelSaveable = modelSaveablesProvider.getSaveable(diagram.getElement());
+			if (domainModelSaveable != null) {
+				saveables.add(domainModelSaveable);
+			}
+
+			return saveables.toArray(new Saveable[saveables.size()]);
 		}
 		return new Saveable[0];
 	}
