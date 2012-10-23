@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
+import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Factory;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
@@ -340,7 +341,7 @@ public class EObjectUtilTest extends AbstractTestCase {
 
 		List<EClassifier> testList = new ArrayList<EClassifier>();
 		testList = EObjectUtil.getAnnotatedEClassifiers(hb20ModelRoot1.eClass().getEPackage(), ExtendedMetaData.ANNOTATION_URI, "kind", "mixed");
-		assertEquals(1, testList.size());
+		assertEquals(2, testList.size());
 
 		testList = EObjectUtil.getAnnotatedEClassifiers(hb20ModelRoot1.eClass().getEPackage(), ExtendedMetaData.ANNOTATION_URI, "Name", "mixed");
 		assertTrue(testList.isEmpty());
