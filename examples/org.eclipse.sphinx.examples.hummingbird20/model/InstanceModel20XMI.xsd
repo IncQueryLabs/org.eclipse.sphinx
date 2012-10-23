@@ -56,7 +56,7 @@
   <xsd:element name="ParameterValue" type="im:ParameterValue"/>
   <xsd:complexType name="ParameterExpresssion">
     <xsd:choice maxOccurs="unbounded" minOccurs="0">
-      <xsd:element ref="xmi:Extension"/>
+       <xsd:element name="expressions" type="im:Formula"/>
     </xsd:choice>
     <xsd:attribute ref="xmi:id"/>
     <xsd:attributeGroup ref="xmi:ObjectAttribs"/>
