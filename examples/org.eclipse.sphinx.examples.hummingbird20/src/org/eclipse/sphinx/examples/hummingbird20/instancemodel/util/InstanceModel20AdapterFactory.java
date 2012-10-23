@@ -101,6 +101,14 @@ public class InstanceModel20AdapterFactory extends AdapterFactoryImpl
 				return createParameterValueAdapter();
 			}
 			@Override
+			public Adapter caseParameterExpresssion(ParameterExpresssion object) {
+				return createParameterExpresssionAdapter();
+			}
+			@Override
+			public Adapter caseFormula(Formula object) {
+				return createFormulaAdapter();
+			}
+			@Override
 			public Adapter caseIdentifiable(Identifiable object) {
 				return createIdentifiableAdapter();
 			}
@@ -182,6 +190,34 @@ public class InstanceModel20AdapterFactory extends AdapterFactoryImpl
 	 */
 	public Adapter createParameterValueAdapter()
 	{
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion <em>Parameter Expresssion</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion
+	 * @generated
+	 */
+	public Adapter createParameterExpresssionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Formula <em>Formula</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.Formula
+	 * @generated
+	 */
+	public Adapter createFormulaAdapter() {
 		return null;
 	}
 

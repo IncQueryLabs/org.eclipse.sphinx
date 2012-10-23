@@ -32,6 +32,7 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getOutgoingConnections <em>Outgoing Connections</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getIncomingConnections <em>Incoming Connections</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getParameterValues <em>Parameter Values</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getParameterExpressions <em>Parameter Expressions</em>}</li>
  * </ul>
  * </p>
  *
@@ -128,5 +129,21 @@ public interface Component extends Identifiable
 	 * @generated
 	 */
 	EList<ParameterValue> getParameterValues();
+
+	/**
+	 * Returns the value of the '<em><b>Parameter Expressions</b></em>' containment reference list.
+	 * The list contents are of type {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Parameter Expressions</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Parameter Expressions</em>' containment reference list.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getComponent_ParameterExpressions()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<ParameterExpresssion> getParameterExpressions();
 
 } // Component

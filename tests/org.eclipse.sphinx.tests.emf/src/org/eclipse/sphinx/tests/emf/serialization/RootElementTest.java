@@ -34,21 +34,9 @@ public class RootElementTest extends AbstractTestCase {
 		options.put(XMLResource.OPTION_SUPPRESS_DOCUMENT_ROOT, Boolean.TRUE);
 
 		String wc = "RootElementTest/WithComments.instancemodel";
-
 		Application a = (Application) loadInputFile(wc, rf, options);
-
 		saveWorkingFile(wc, a, rf, options);
-
 		String expected = loadInputFileAsString(wc);
-
-		// Workaround for the issue that the description element moves to the front due to the fact that the Application
-		// element inherits from Identifiable and that inherited features are serialized first.
-		expected = expected.replace("<description>DescriptionText</description>", "");
-		expected = expected.replace("name=\"Application\">", "name=\"Application\"><description>DescriptionText</description>");
-
-		// Normalize line breaks for test portability
-		expected = expected.replace("\r\n", System.getProperty("line.separator"));
-
 		String actual = loadWorkingFileAsString(wc);
 
 		assertEquals(expected, actual);

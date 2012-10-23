@@ -174,6 +174,52 @@ public class InstanceModel20ItemProviderAdapterFactory extends InstanceModel20Ad
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected ParameterExpresssionItemProvider parameterExpresssionItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createParameterExpresssionAdapter() {
+		if (parameterExpresssionItemProvider == null) {
+			parameterExpresssionItemProvider = new ParameterExpresssionItemProvider(this);
+		}
+
+		return parameterExpresssionItemProvider;
+	}
+
+	/**
+	 * This keeps track of the one adapter used for all {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Formula} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected FormulaItemProvider formulaItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Formula}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createFormulaAdapter() {
+		if (formulaItemProvider == null) {
+			formulaItemProvider = new FormulaItemProvider(this);
+		}
+
+		return formulaItemProvider;
+	}
+
+	/**
 	 * This returns the root adapter factory that contains this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -276,6 +322,8 @@ public class InstanceModel20ItemProviderAdapterFactory extends InstanceModel20Ad
 		if (componentItemProvider != null) componentItemProvider.dispose();
 		if (connectionItemProvider != null) connectionItemProvider.dispose();
 		if (parameterValueItemProvider != null) parameterValueItemProvider.dispose();
+		if (parameterExpresssionItemProvider != null) parameterExpresssionItemProvider.dispose();
+		if (formulaItemProvider != null) formulaItemProvider.dispose();
 	}
 
 }

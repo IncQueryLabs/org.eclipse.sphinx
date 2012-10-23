@@ -27,6 +27,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
@@ -34,6 +35,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
@@ -56,6 +58,7 @@ import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird10.Interface;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Port;
@@ -1630,10 +1633,18 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application modelRoot20A_1 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) hbResource20A_1
 				.getContents().get(0);
 		assertNotNull(modelRoot20A_1);
-		assertFalse(modelRoot20A_1.getMixed().isEmpty());
-		Entry testEntry = modelRoot20A_1.getMixed().get(0);
 
-		assertEquals(InstanceModel20Package.Literals.APPLICATION__COMPONENTS, testEntry.getEStructuralFeature());
+		assertFalse(modelRoot20A_1.getComponents().isEmpty());
+		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component component = modelRoot20A_1.getComponents().get(0);
+		assertNotNull(component);
+
+		assertFalse(component.getParameterExpressions().isEmpty());
+		ParameterExpresssion parameterExpresssion = component.getParameterExpressions().get(0);
+		assertNotNull(parameterExpresssion);
+		assertFalse(parameterExpresssion.getMixed().isEmpty());
+		Entry testEntry = parameterExpresssion.getMixed().get(0);
+
+		assertEquals(InstanceModel20Package.Literals.PARAMETER_EXPRESSSION__EXPRESSIONS, testEntry.getEStructuralFeature());
 
 		IFile file = EcorePlatformUtil.getFile(testEntry);
 		assertNotNull(file);
@@ -1995,10 +2006,18 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application modelRoot20A_1 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) hbResource20A_1
 				.getContents().get(0);
 		assertNotNull(modelRoot20A_1);
-		assertFalse(modelRoot20A_1.getMixed().isEmpty());
-		Entry testEntry = modelRoot20A_1.getMixed().get(0);
 
-		assertEquals(InstanceModel20Package.Literals.APPLICATION__COMPONENTS, testEntry.getEStructuralFeature());
+		assertFalse(modelRoot20A_1.getComponents().isEmpty());
+		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component component = modelRoot20A_1.getComponents().get(0);
+		assertNotNull(component);
+
+		assertFalse(component.getParameterExpressions().isEmpty());
+		ParameterExpresssion parameterExpresssion = component.getParameterExpressions().get(0);
+		assertNotNull(parameterExpresssion);
+		assertFalse(parameterExpresssion.getMixed().isEmpty());
+		Entry testEntry = parameterExpresssion.getMixed().get(0);
+
+		assertEquals(InstanceModel20Package.Literals.PARAMETER_EXPRESSSION__EXPRESSIONS, testEntry.getEStructuralFeature());
 
 		Resource resource = EcorePlatformUtil.getResource(testEntry);
 		assertEquals(hbResource20A_1, resource);

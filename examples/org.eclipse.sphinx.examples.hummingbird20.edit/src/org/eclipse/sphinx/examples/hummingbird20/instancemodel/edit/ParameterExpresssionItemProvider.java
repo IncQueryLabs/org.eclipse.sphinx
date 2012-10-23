@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,8 +20,16 @@ import java.util.List;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
+
 import org.eclipse.emf.common.util.ResourceLocator;
+
 import org.eclipse.emf.ecore.EStructuralFeature;
+
+import org.eclipse.emf.ecore.util.FeatureMapUtil;
+
+import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
+import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
+
 import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
@@ -30,20 +38,24 @@ import org.eclipse.emf.edit.provider.IItemPropertySource;
 import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
 import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.emf.edit.provider.ViewerNotification;
+
 import org.eclipse.sphinx.examples.hummingbird20.common.edit.IdentifiableItemProvider;
+import org.eclipse.sphinx.emf.edit.ExtendedItemProviderAdapter;
+
 import org.eclipse.sphinx.examples.hummingbird20.edit.Activator;
-import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
+
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion;
 
 /**
- * This is the item provider adapter for a {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component} object.
+ * This is the item provider adapter for a {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion} object.
  * <!-- begin-user-doc -->
  * <!-- end-user-doc -->
  * @generated
  */
-public class ComponentItemProvider
-	extends IdentifiableItemProvider
+public class ParameterExpresssionItemProvider
+	extends ExtendedItemProviderAdapter
 	implements
 		IEditingDomainItemProvider,
 		IStructuredItemContentProvider,
@@ -56,7 +68,7 @@ public class ComponentItemProvider
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ComponentItemProvider(AdapterFactory adapterFactory) {
+	public ParameterExpresssionItemProvider(AdapterFactory adapterFactory) {
 		super(adapterFactory);
 	}
 
@@ -71,54 +83,8 @@ public class ComponentItemProvider
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
-			addTypePropertyDescriptor(object);
-			addIncomingConnectionsPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
-	}
-
-	/**
-	 * This adds a property descriptor for the Type feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addTypePropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_Component_type_feature"), //$NON-NLS-1$
-				 getString("_UI_PropertyDescriptor_description", "_UI_Component_type_feature", "_UI_Component_type"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				 InstanceModel20Package.Literals.COMPONENT__TYPE,
-				 true,
-				 false,
-				 true,
-				 null,
-				 null,
-				 null));
-	}
-
-	/**
-	 * This adds a property descriptor for the Incoming Connections feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addIncomingConnectionsPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_Component_incomingConnections_feature"), //$NON-NLS-1$
-				 getString("_UI_PropertyDescriptor_description", "_UI_Component_incomingConnections_feature", "_UI_Component_type"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				 InstanceModel20Package.Literals.COMPONENT__INCOMING_CONNECTIONS,
-				 true,
-				 false,
-				 true,
-				 null,
-				 null,
-				 null));
 	}
 
 	/**
@@ -133,9 +99,7 @@ public class ComponentItemProvider
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
-			childrenFeatures.add(InstanceModel20Package.Literals.COMPONENT__OUTGOING_CONNECTIONS);
-			childrenFeatures.add(InstanceModel20Package.Literals.COMPONENT__PARAMETER_VALUES);
-			childrenFeatures.add(InstanceModel20Package.Literals.COMPONENT__PARAMETER_EXPRESSIONS);
+			childrenFeatures.add(InstanceModel20Package.Literals.PARAMETER_EXPRESSSION__MIXED);
 		}
 		return childrenFeatures;
 	}
@@ -154,14 +118,14 @@ public class ComponentItemProvider
 	}
 
 	/**
-	 * This returns Component.gif.
+	 * This returns ParameterExpresssion.gif.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public Object getImage(Object object) {
-		return overlayImage(object, getResourceLocator().getImage("full/obj16/Component")); //$NON-NLS-1$
+		return overlayImage(object, getResourceLocator().getImage("full/obj16/ParameterExpresssion")); //$NON-NLS-1$
 	}
 
 	/**
@@ -172,10 +136,7 @@ public class ComponentItemProvider
 	 */
 	@Override
 	public String getText(Object object) {
-		String label = ((Component)object).getName();
-		return label == null || label.length() == 0 ?
-			getString("_UI_Component_type") : //$NON-NLS-1$
-			getString("_UI_Component_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
+		return getString("_UI_ParameterExpresssion_type"); //$NON-NLS-1$
 	}
 
 	/**
@@ -189,10 +150,8 @@ public class ComponentItemProvider
 	public void notifyChanged(Notification notification) {
 		updateChildren(notification);
 
-		switch (notification.getFeatureID(Component.class)) {
-			case InstanceModel20Package.COMPONENT__OUTGOING_CONNECTIONS:
-			case InstanceModel20Package.COMPONENT__PARAMETER_VALUES:
-			case InstanceModel20Package.COMPONENT__PARAMETER_EXPRESSIONS:
+		switch (notification.getFeatureID(ParameterExpresssion.class)) {
+			case InstanceModel20Package.PARAMETER_EXPRESSSION__MIXED:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
 				return;
 		}
@@ -212,18 +171,38 @@ public class ComponentItemProvider
 
 		newChildDescriptors.add
 			(createChildParameter
-				(InstanceModel20Package.Literals.COMPONENT__OUTGOING_CONNECTIONS,
-				 InstanceModel20Factory.eINSTANCE.createConnection()));
+				(InstanceModel20Package.Literals.PARAMETER_EXPRESSSION__MIXED,
+				 FeatureMapUtil.createEntry
+					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT,
+					 ""))); //$NON-NLS-1$
 
 		newChildDescriptors.add
 			(createChildParameter
-				(InstanceModel20Package.Literals.COMPONENT__PARAMETER_VALUES,
-				 InstanceModel20Factory.eINSTANCE.createParameterValue()));
+				(InstanceModel20Package.Literals.PARAMETER_EXPRESSSION__MIXED,
+				 FeatureMapUtil.createEntry
+					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT,
+					 ""))); //$NON-NLS-1$
 
 		newChildDescriptors.add
 			(createChildParameter
-				(InstanceModel20Package.Literals.COMPONENT__PARAMETER_EXPRESSIONS,
-				 InstanceModel20Factory.eINSTANCE.createParameterExpresssion()));
+				(InstanceModel20Package.Literals.PARAMETER_EXPRESSSION__MIXED,
+				 FeatureMapUtil.createEntry
+					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION,
+					 XMLTypeFactory.eINSTANCE.createProcessingInstruction())));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(InstanceModel20Package.Literals.PARAMETER_EXPRESSSION__MIXED,
+				 FeatureMapUtil.createEntry
+					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA,
+					 ""))); //$NON-NLS-1$
+
+		newChildDescriptors.add
+			(createChildParameter
+				(InstanceModel20Package.Literals.PARAMETER_EXPRESSSION__MIXED,
+				 FeatureMapUtil.createEntry
+					(InstanceModel20Package.Literals.PARAMETER_EXPRESSSION__EXPRESSIONS,
+					 InstanceModel20Factory.eINSTANCE.createFormula())));
 	}
 
 	/**

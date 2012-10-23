@@ -76,6 +76,8 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 			case InstanceModel20Package.COMPONENT: return createComponent();
 			case InstanceModel20Package.CONNECTION: return createConnection();
 			case InstanceModel20Package.PARAMETER_VALUE: return createParameterValue();
+			case InstanceModel20Package.PARAMETER_EXPRESSSION: return createParameterExpresssion();
+			case InstanceModel20Package.FORMULA: return createFormula();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
@@ -123,6 +125,26 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 	{
 		ParameterValueImpl parameterValue = new ParameterValueImpl();
 		return parameterValue;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ParameterExpresssion createParameterExpresssion() {
+		ParameterExpresssionImpl parameterExpresssion = new ParameterExpresssionImpl();
+		return parameterExpresssion;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Formula createFormula() {
+		FormulaImpl formula = new FormulaImpl();
+		return formula;
 	}
 
 	/**

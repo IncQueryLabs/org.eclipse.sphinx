@@ -35,6 +35,7 @@ import org.eclipse.sphinx.examples.hummingbird20.common.impl.IdentifiableImpl;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
 
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
@@ -50,6 +51,7 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ComponentImpl#getOutgoingConnections <em>Outgoing Connections</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ComponentImpl#getIncomingConnections <em>Incoming Connections</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ComponentImpl#getParameterValues <em>Parameter Values</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ComponentImpl#getParameterExpressions <em>Parameter Expressions</em>}</li>
  * </ul>
  * </p>
  *
@@ -96,6 +98,16 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	 * @ordered
 	 */
 	protected EList<ParameterValue> parameterValues;
+
+	/**
+	 * The cached value of the '{@link #getParameterExpressions() <em>Parameter Expressions</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getParameterExpressions()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<ParameterExpresssion> parameterExpressions;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -254,6 +266,18 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EList<ParameterExpresssion> getParameterExpressions() {
+		if (parameterExpressions == null) {
+			parameterExpressions = new EObjectContainmentEList<ParameterExpresssion>(ParameterExpresssion.class, this, InstanceModel20Package.COMPONENT__PARAMETER_EXPRESSIONS);
+		}
+		return parameterExpressions;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs)
@@ -284,6 +308,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 				return basicSetIncomingConnections(null, msgs);
 			case InstanceModel20Package.COMPONENT__PARAMETER_VALUES:
 				return ((InternalEList<?>)getParameterValues()).basicRemove(otherEnd, msgs);
+			case InstanceModel20Package.COMPONENT__PARAMETER_EXPRESSIONS:
+				return ((InternalEList<?>)getParameterExpressions()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -307,6 +333,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 				return basicGetIncomingConnections();
 			case InstanceModel20Package.COMPONENT__PARAMETER_VALUES:
 				return getParameterValues();
+			case InstanceModel20Package.COMPONENT__PARAMETER_EXPRESSIONS:
+				return getParameterExpressions();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -335,6 +363,10 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 				getParameterValues().clear();
 				getParameterValues().addAll((Collection<? extends ParameterValue>)newValue);
 				return;
+			case InstanceModel20Package.COMPONENT__PARAMETER_EXPRESSIONS:
+				getParameterExpressions().clear();
+				getParameterExpressions().addAll((Collection<? extends ParameterExpresssion>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -360,6 +392,9 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 			case InstanceModel20Package.COMPONENT__PARAMETER_VALUES:
 				getParameterValues().clear();
 				return;
+			case InstanceModel20Package.COMPONENT__PARAMETER_EXPRESSIONS:
+				getParameterExpressions().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -381,6 +416,8 @@ public class ComponentImpl extends IdentifiableImpl implements Component
 				return incomingConnections != null;
 			case InstanceModel20Package.COMPONENT__PARAMETER_VALUES:
 				return parameterValues != null && !parameterValues.isEmpty();
+			case InstanceModel20Package.COMPONENT__PARAMETER_EXPRESSIONS:
+				return parameterExpressions != null && !parameterExpressions.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

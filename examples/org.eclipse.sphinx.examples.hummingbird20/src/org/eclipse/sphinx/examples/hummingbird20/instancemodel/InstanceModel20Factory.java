@@ -71,6 +71,24 @@ public interface InstanceModel20Factory extends EFactory
 	ParameterValue createParameterValue();
 
 	/**
+	 * Returns a new object of class '<em>Parameter Expresssion</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Parameter Expresssion</em>'.
+	 * @generated
+	 */
+	ParameterExpresssion createParameterExpresssion();
+
+	/**
+	 * Returns a new object of class '<em>Formula</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Formula</em>'.
+	 * @generated
+	 */
+	Formula createFormula();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

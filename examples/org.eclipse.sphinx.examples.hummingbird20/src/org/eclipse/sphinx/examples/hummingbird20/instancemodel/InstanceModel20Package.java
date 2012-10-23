@@ -208,13 +208,22 @@ public interface InstanceModel20Package extends EPackage
 	int COMPONENT__PARAMETER_VALUES = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 3;
 
 	/**
+	 * The feature id for the '<em><b>Parameter Expressions</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPONENT__PARAMETER_EXPRESSIONS = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 4;
+
+	/**
 	 * The number of structural features of the '<em>Component</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int COMPONENT_FEATURE_COUNT = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 4;
+	int COMPONENT_FEATURE_COUNT = Common20Package.IDENTIFIABLE_FEATURE_COUNT + 5;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ConnectionImpl <em>Connection</em>}' class.
@@ -337,6 +346,72 @@ public interface InstanceModel20Package extends EPackage
 
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ParameterExpresssionImpl <em>Parameter Expresssion</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ParameterExpresssionImpl
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.InstanceModel20PackageImpl#getParameterExpresssion()
+	 * @generated
+	 */
+	int PARAMETER_EXPRESSSION = 4;
+
+	/**
+	 * The feature id for the '<em><b>Mixed</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PARAMETER_EXPRESSSION__MIXED = 0;
+
+	/**
+	 * The feature id for the '<em><b>Expressions</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PARAMETER_EXPRESSSION__EXPRESSIONS = 1;
+
+	/**
+	 * The number of structural features of the '<em>Parameter Expresssion</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PARAMETER_EXPRESSSION_FEATURE_COUNT = 2;
+
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.FormulaImpl <em>Formula</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.FormulaImpl
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.InstanceModel20PackageImpl#getFormula()
+	 * @generated
+	 */
+	int FORMULA = 5;
+
+	/**
+	 * The feature id for the '<em><b>Value</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMULA__VALUE = 0;
+
+	/**
+	 * The number of structural features of the '<em>Formula</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMULA_FEATURE_COUNT = 1;
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application <em>Application</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -445,6 +520,17 @@ public interface InstanceModel20Package extends EPackage
 	EReference getComponent_ParameterValues();
 
 	/**
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getParameterExpressions <em>Parameter Expressions</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Parameter Expressions</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getParameterExpressions()
+	 * @see #getComponent()
+	 * @generated
+	 */
+	EReference getComponent_ParameterExpressions();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection <em>Connection</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -518,6 +604,59 @@ public interface InstanceModel20Package extends EPackage
 	 * @generated
 	 */
 	EAttribute getParameterValue_Value();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion <em>Parameter Expresssion</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Parameter Expresssion</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion
+	 * @generated
+	 */
+	EClass getParameterExpresssion();
+
+	/**
+	 * Returns the meta object for the attribute list '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion#getMixed <em>Mixed</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>Mixed</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion#getMixed()
+	 * @see #getParameterExpresssion()
+	 * @generated
+	 */
+	EAttribute getParameterExpresssion_Mixed();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion#getExpressions <em>Expressions</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Expressions</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion#getExpressions()
+	 * @see #getParameterExpresssion()
+	 * @generated
+	 */
+	EReference getParameterExpresssion_Expressions();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Formula <em>Formula</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Formula</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.Formula
+	 * @generated
+	 */
+	EClass getFormula();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Formula#getValue <em>Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Value</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.Formula#getValue()
+	 * @see #getFormula()
+	 * @generated
+	 */
+	EAttribute getFormula_Value();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -627,6 +766,14 @@ public interface InstanceModel20Package extends EPackage
 		EReference COMPONENT__PARAMETER_VALUES = eINSTANCE.getComponent_ParameterValues();
 
 		/**
+		 * The meta object literal for the '<em><b>Parameter Expressions</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference COMPONENT__PARAMETER_EXPRESSIONS = eINSTANCE.getComponent_ParameterExpressions();
+
+		/**
 		 * The meta object literal for the '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ConnectionImpl <em>Connection</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -685,6 +832,50 @@ public interface InstanceModel20Package extends EPackage
 		 * @generated
 		 */
 		EAttribute PARAMETER_VALUE__VALUE = eINSTANCE.getParameterValue_Value();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ParameterExpresssionImpl <em>Parameter Expresssion</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ParameterExpresssionImpl
+		 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.InstanceModel20PackageImpl#getParameterExpresssion()
+		 * @generated
+		 */
+		EClass PARAMETER_EXPRESSSION = eINSTANCE.getParameterExpresssion();
+
+		/**
+		 * The meta object literal for the '<em><b>Mixed</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute PARAMETER_EXPRESSSION__MIXED = eINSTANCE.getParameterExpresssion_Mixed();
+
+		/**
+		 * The meta object literal for the '<em><b>Expressions</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference PARAMETER_EXPRESSSION__EXPRESSIONS = eINSTANCE.getParameterExpresssion_Expressions();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.FormulaImpl <em>Formula</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.FormulaImpl
+		 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.InstanceModel20PackageImpl#getFormula()
+		 * @generated
+		 */
+		EClass FORMULA = eINSTANCE.getFormula();
+
+		/**
+		 * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FORMULA__VALUE = eINSTANCE.getFormula_Value();
 
 	}
 

@@ -130,6 +130,18 @@ public class InstanceModel20Switch<T>
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case InstanceModel20Package.PARAMETER_EXPRESSSION: {
+				ParameterExpresssion parameterExpresssion = (ParameterExpresssion)theEObject;
+				T result = caseParameterExpresssion(parameterExpresssion);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case InstanceModel20Package.FORMULA: {
+				Formula formula = (Formula)theEObject;
+				T result = caseFormula(formula);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -195,6 +207,36 @@ public class InstanceModel20Switch<T>
 	 */
 	public T caseParameterValue(ParameterValue object)
 	{
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Parameter Expresssion</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Parameter Expresssion</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseParameterExpresssion(ParameterExpresssion object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Formula</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Formula</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseFormula(Formula object) {
 		return null;
 	}
 
