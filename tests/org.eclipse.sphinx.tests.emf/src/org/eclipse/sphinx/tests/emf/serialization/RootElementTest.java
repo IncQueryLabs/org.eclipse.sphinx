@@ -37,6 +37,9 @@ public class RootElementTest extends AbstractTestCase {
 		Application a = (Application) loadInputFile(wc, rf, options);
 		saveWorkingFile(wc, a, rf, options);
 		String expected = loadInputFileAsString(wc);
+
+		// Normalize line breaks for test portability
+		expected = expected.replace("\r\n", System.getProperty("line.separator"));
 		String actual = loadWorkingFileAsString(wc);
 
 		assertEquals(expected, actual);
