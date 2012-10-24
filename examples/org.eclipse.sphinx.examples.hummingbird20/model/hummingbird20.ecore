@@ -146,9 +146,9 @@
           <details key="kind" value="elementWildcard"/>
         </eAnnotations>
       </eStructuralFeatures>
-      <eStructuralFeatures xsi:type="ecore:EReference" name="expressions" upperBound="-1"
-          eType="#//instancemodel/Formula" volatile="true" transient="true" derived="true"
-          containment="true">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="expressions" lowerBound="1"
+          upperBound="-1" eType="#//instancemodel/Formula" volatile="true" transient="true"
+          derived="true" containment="true">
         <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
           <details key="kind" value="element"/>
         </eAnnotations>

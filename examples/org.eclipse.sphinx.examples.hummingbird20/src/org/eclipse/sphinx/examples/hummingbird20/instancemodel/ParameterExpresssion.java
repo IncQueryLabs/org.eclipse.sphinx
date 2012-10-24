@@ -68,7 +68,7 @@ public interface ParameterExpresssion extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Expressions</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getParameterExpresssion_Expressions()
-	 * @model containment="true" transient="true" volatile="true" derived="true"
+	 * @model containment="true" required="true" transient="true" volatile="true" derived="true"
 	 *        extendedMetaData="kind='element'"
 	 * @generated
 	 */
