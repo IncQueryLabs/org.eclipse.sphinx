@@ -34,6 +34,15 @@ public class PerfStatsTestCase extends TestCase {
 		assertNotNull(resource);
 
 		PerfStatsExample.updatePerfsModel(resource, measurements);
+
+		// Save resulting stats model
+		try {
+			resource.save(null);
+		} catch (Exception ex) {
+			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), ex.getMessage(), ex));
+		}
+
+		// Log performance stats
 		PerfStatsExample.logPerfSats(resource);
 	}
 
