@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
+ * Copyright (c) 2008-2012 BMW Car IT, itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
+ *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored
  * 
  * </copyright>
  */
@@ -45,7 +46,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.xmi.XMIException;
 import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.Transaction;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -754,7 +754,6 @@ public final class ModelLoadManager {
 					// Load files into editing domain
 					SubMonitor loadProgress = progress.newChild(80).setWorkRemaining(filesToLoadInEditingDomain.size());
 					Set<IFile> loadedFiles = new HashSet<IFile>();
-					Map<IFile, Exception> failedFiles = new HashMap<IFile, Exception>();
 					for (IFile file : filesToLoadInEditingDomain) {
 						loadProgress.subTask(NLS.bind(Messages.subtask_loadingFile, file.getFullPath().toString()));
 						try {
@@ -765,18 +764,21 @@ public final class ModelLoadManager {
 								EcorePlatformUtil.loadModelRoot(editingDomain, file);
 								loadedFiles.add(file);
 							} catch (Exception ex) {
-								// Ignore exception, it has already been recorded as error on resource and will be
-								// converted to a problem marker later on (see
-								// org.eclipse.sphinx.emf.util.EcoreResourceUtil.loadModelResource(ResourceSet, URI,
-								// Map<?, ?>, boolean) and
-								// org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler for details)
+								// Ignore exception
+								/*
+								 * !! Important Note !! The exception has already been recorded as error on resource and
+								 * will be converted to a problem marker by the resource problem handler later on (see
+								 * org.eclipse.sphinx.emf.util.EcoreResourceUtil#loadModelResource(ResourceSet, URI,
+								 * Map<?, ?>, boolean) and
+								 * org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler#resourceSetChanged(
+								 * ResourceSetChangeEvent)) for details).
+								 */
 							}
 
 							ModelLoadingPerformanceStats.INSTANCE.endEvent(ModelLoadingPerformanceStats.ModelEvent.EVENT_LOAD_FILE, file
 									.getFullPath().toString());
 						} catch (Exception ex) {
-							failedFiles.put(file, new XMIException(NLS.bind(Messages.error_problemOccurredWhenLoadingResource, file.getFullPath()),
-									ex, file.getFullPath().toString(), 1, 1));
+							PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 						}
 
 						loadProgress.worked(1);
@@ -785,9 +787,6 @@ public final class ModelLoadManager {
 						}
 						editingDomain.yield();
 					}
-
-					// Handle problems that may have been encountered during loading
-					ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(failedFiles, progress.newChild(10));
 
 					if (proxyHelper != null) {
 						// Update unresolved proxy blacklist according to newly loaded files

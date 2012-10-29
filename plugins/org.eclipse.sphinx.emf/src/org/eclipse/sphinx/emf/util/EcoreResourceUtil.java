@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 See4sys, BMW Car IT, itemis and others.
+ * Copyright (c) 2008-2012 BMW Car IT, itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
  *     itemis - [357962] Make sure that problems occurring when saving model elements in a new resource are not recorded as errors/warnings on resource
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
+ *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored   
  * 
  * </copyright>
  */
@@ -881,8 +882,14 @@ public final class EcoreResourceUtil {
 		if (resource != null) {
 			try {
 				resource.save(options);
-			} catch (IOException ex) {
+			} catch (Exception ex) {
 				// Record exception as error on resource
+				/*
+				 * !! Important Note !! The main intention behind doing so is to enable the exception to be converted to
+				 * a problem marker by the resource problem handler later on (see
+				 * org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler#resourceChanged(IResourceChangeEvent)
+				 * for details).
+				 */
 				Throwable cause = ex.getCause();
 				Exception exception = cause instanceof Exception ? (Exception) cause : ex;
 				URI uri = resource.getURI();
@@ -1079,12 +1086,12 @@ public final class EcoreResourceUtil {
 						// Restore creation time errors and warnings
 						resource.getErrors().addAll(creationErrors);
 						resource.getWarnings().addAll(creationWarnings);
-					} catch (IOException ex) {
+					} catch (Exception ex) {
 						// Capture errors and warnings encountered during resource load attempt
 						/*
 						 * !! Important note !! This is necessary because the resource's errors and warnings are
-						 * automatically cleared when it gets unloaded. Therefore, if we don't retrieve them at this
-						 * point all encountered errors and warnings encountered during loading would be lost (see
+						 * automatically cleared when it gets unloaded. Therefore, if we didn't retrieve them at this
+						 * point all errors and warnings encountered during loading would be lost (see
 						 * org.eclipse.emf.ecore.resource.impl.ResourceImpl.doUnload() for details)
 						 */
 						List<Diagnostic> loadErrors = new ArrayList<Diagnostic>(resource.getErrors());
@@ -1103,6 +1110,20 @@ public final class EcoreResourceUtil {
 						// Restore load time errors and warnings on resource
 						resource.getErrors().addAll(loadErrors);
 						resource.getWarnings().addAll(loadWarnings);
+
+						// Record exception as error on resource
+						/*
+						 * !! Important Note !! The main intention behind restoring recorded errors and warnings and
+						 * adding the exception as additional error on the already unloaded resource is to enable these
+						 * errors/warnings to be converted to problem markers by the resource problem handler later on
+						 * (see org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler#resourceSetChanged(
+						 * ResourceSetChangeEvent)) for details).
+						 */
+						Throwable cause = ex.getCause();
+						Exception exception = cause instanceof Exception ? (Exception) cause : ex;
+						resource.getErrors().add(
+								new XMIException(NLS.bind(Messages.error_problemOccurredWhenLoadingResource, uri.toString()), exception, uri
+										.toString(), 1, 1));
 
 						// Re-throw exception
 						throw new WrappedException(ex);

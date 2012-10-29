@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2011 See4sys, itemis and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
+ *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored
  * 
  * </copyright>
  */
@@ -71,6 +72,7 @@ import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.resource.ModelResourceDescriptor;
 import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
+import org.eclipse.sphinx.emf.scoping.IResourceScope;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.ReflectUtil;
@@ -1457,16 +1459,17 @@ public final class EcorePlatformUtil {
 								// Mark resource as freshly saved in order to avoid that it gets automatically reloaded
 								SaveIndicatorUtil.setSaved(editingDomain, descriptor.getModelRoot().eResource());
 							} catch (Exception ex) {
-								// Log exception in Error Log
+								// Log exception in error log
 								/*
 								 * !! Important Note !! The exception has already been recorded as error on the resource
-								 * and is principally subject to being converted to a problem marker later on (see
-								 * org.eclipse.sphinx.emf.util.EcoreResourceUtil.saveModelResource(Resource, Map<?,?>)
-								 * and org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler for details).
-								 * However, this is a new resource which had never saved before and does not yet exist
-								 * in the file system. As a consequence, there is no target to which the problem marker
-								 * could be attached and the problem behind this exception would remain unperceiveable
-								 * if we wouldn't log anything at this point.
+								 * and is principally subject to being converted to a problem marker by the resource
+								 * problem handler later on (see
+								 * org.eclipse.sphinx.emf.util.EcoreResourceUtil#saveModelResource(Resource, Map<?,?>)
+								 * and org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler#resourceChanged(
+								 * IResourceChangeEvent) for details). However, this is a new resource which had never
+								 * saved before and does not yet exist in the file system. As a consequence, there is no
+								 * target to which the problem marker could be attached and the problem behind this
+								 * exception would remain unperceiveable if we wouldn't log anything at this point.
 								 */
 								PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 							}
@@ -1725,11 +1728,15 @@ public final class EcorePlatformUtil {
 									// reloaded
 									SaveIndicatorUtil.setSaved(editingDomain, resource);
 								} catch (Exception ex) {
-									// Ignore exception, it has already been recorded as error on resource and will be
-									// converted to a problem marker later on (see
-									// org.eclipse.sphinx.emf.util.EcoreResourceUtil.saveModelResource(Resource,
-									// Map<?,?>) and org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler for
-									// details)
+									// Ignore exception
+									/*
+									 * !! Important Note !! The exception has already been recorded as error on resource
+									 * and will be converted to a problem marker by the resource problem handler later
+									 * on (see org.eclipse.sphinx.emf.util.EcoreResourceUtil#saveModelResource(Resource,
+									 * Map<?,?>) and
+									 * org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler#resourceChanged(
+									 * IResourceChangeEvent) for details).
+									 */
 								}
 
 								progress.worked(1);
