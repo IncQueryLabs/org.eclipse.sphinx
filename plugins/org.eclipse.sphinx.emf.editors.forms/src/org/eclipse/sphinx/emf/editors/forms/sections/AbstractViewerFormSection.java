@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393310] Viewer input for GenericContentsTreeSection should be calculated using content provider
  * 
  * </copyright>
  */
@@ -16,7 +17,6 @@ package org.eclipse.sphinx.emf.editors.forms.sections;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.ui.viewer.IViewerProvider;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.ui.action.EditingDomainActionBarContributor;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -38,6 +38,9 @@ import org.eclipse.ui.forms.SectionPart;
 public abstract class AbstractViewerFormSection extends AbstractFormSection implements IViewerProvider {
 
 	protected StructuredViewer viewer;
+
+	private IContentProvider contentProvider;
+	private IBaseLabelProvider labelProvider;
 
 	public AbstractViewerFormSection(AbstractFormPage formPage, Object sectionInput) {
 		super(formPage, sectionInput);
@@ -105,22 +108,36 @@ public abstract class AbstractViewerFormSection extends AbstractFormSection impl
 		}
 	}
 
+	public IContentProvider getContentProvider() {
+		if (contentProvider == null) {
+			contentProvider = createContentProvider();
+		}
+		return contentProvider;
+	}
+
 	protected IContentProvider createContentProvider() {
-		if (sectionInput instanceof EObject) {
-			AdapterFactory adapterFactory = getCustomAdapterFactory();
+		AdapterFactory adapterFactory = getCustomAdapterFactory();
+		if (adapterFactory != null) {
 			EditingDomain editingDomain = formPage.getTransactionalFormEditor().getEditingDomain();
-			if (adapterFactory != null && editingDomain instanceof TransactionalEditingDomain) {
+			if (editingDomain instanceof TransactionalEditingDomain) {
 				return new TransactionalAdapterFactoryContentProvider((TransactionalEditingDomain) editingDomain, adapterFactory);
 			}
 		}
 		return formPage.getContentProvider();
 	}
 
+	public IBaseLabelProvider getLabelProvider() {
+		if (labelProvider == null) {
+			labelProvider = createLabelProvider();
+		}
+		return labelProvider;
+	}
+
 	protected IBaseLabelProvider createLabelProvider() {
-		if (sectionInput instanceof EObject) {
-			AdapterFactory adapterFactory = getCustomAdapterFactory();
+		AdapterFactory adapterFactory = getCustomAdapterFactory();
+		if (adapterFactory != null) {
 			EditingDomain editingDomain = formPage.getTransactionalFormEditor().getEditingDomain();
-			if (adapterFactory != null && editingDomain instanceof TransactionalEditingDomain) {
+			if (editingDomain instanceof TransactionalEditingDomain) {
 				return new TransactionalAdapterFactoryLabelProvider((TransactionalEditingDomain) editingDomain, adapterFactory);
 			}
 		}

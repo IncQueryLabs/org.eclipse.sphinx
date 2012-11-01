@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,14 +9,15 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393310] Viewer input for GenericContentsTreeSection should be calculated using content provider
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.emf.editors.forms.sections;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -46,9 +47,9 @@ public class GenericContentsTreeSection extends AbstractViewerFormSection {
 	}
 
 	protected Object getSectionInputParent() {
-		if (sectionInput instanceof EObject) {
-			EObject eObject = (EObject) sectionInput;
-			return eObject.eContainer() != null ? eObject.eContainer() : eObject.eResource();
+		IContentProvider contentProvider = getContentProvider();
+		if (contentProvider instanceof ITreeContentProvider) {
+			return ((ITreeContentProvider) contentProvider).getParent(sectionInput);
 		}
 		return null;
 	}
@@ -84,11 +85,11 @@ public class GenericContentsTreeSection extends AbstractViewerFormSection {
 			}
 		};
 		viewer = treeViewer;
-		ITreeContentProvider contentProvider = formPage.getContentProvider();
+		IContentProvider contentProvider = getContentProvider();
 		if (contentProvider != null) {
-			treeViewer.setContentProvider(contentProvider);
+			treeViewer.setContentProvider(getContentProvider());
 		}
-		ILabelProvider labelProvider = formPage.getLabelProvider();
+		IBaseLabelProvider labelProvider = getLabelProvider();
 		if (labelProvider != null) {
 			treeViewer.setLabelProvider(labelProvider);
 		}
@@ -99,7 +100,7 @@ public class GenericContentsTreeSection extends AbstractViewerFormSection {
 				return parentElement != getSectionInputParent() || element == sectionInput;
 			}
 		});
-		treeViewer.setInput(getSectionInputParent());
+		treeViewer.setInput(getViewerInput());
 		formEditor.createContextMenuFor(treeViewer);
 	}
 

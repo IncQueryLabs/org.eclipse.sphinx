@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393310] Viewer input for GenericContentsTreeSection should be calculated using content provider
  * 
  * </copyright>
  */
@@ -37,8 +38,8 @@ import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryConten
 import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryLabelProvider;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.sphinx.emf.editors.forms.BasicTransactionalFormEditor;
 import org.eclipse.sphinx.emf.editors.forms.internal.Activator;
 import org.eclipse.sphinx.emf.editors.forms.sections.IFormSection;
@@ -56,38 +57,23 @@ import org.eclipse.ui.forms.editor.FormPage;
 
 public abstract class AbstractFormPage extends FormPage {
 
-	public static final String VIEW_POINT = "org.eclipse.sphinx.emf.editors.forms.formMessageProvider"; //$NON-NLS-1$
-
-	/**
-	 * The formMessageProvider node name for a configuration element.
-	 * <p>
-	 * Equal to the word: <code>formMessageProvider</code>
-	 * </p>
-	 */
-	public static final String FORMMESSAGEPROVIDER = "formMessageProvider"; //$NON-NLS-1$
-	/**
-	 * The class node name for a configuration element.
-	 * <p>
-	 * Equal to the word: <code>class</code>
-	 * </p>
-	 */
-	public static final String CLASS_ATTR = "class"; //$NON-NLS-1$
+	private static final String EXTP_FORM_MESSAGE_PROVIDERS = "org.eclipse.sphinx.emf.editors.forms.formMessageProvider"; //$NON-NLS-1$
+	private static final String NODE_PROVIDER = "formMessageProvider"; //$NON-NLS-1$
+	private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
 
 	protected Object pageInput = null;
 
-	protected boolean created = false;
+	// TODO Refactor to enum-based creation status
+	private boolean creating = false;
+	private boolean created = false;
 
-	protected boolean creating = false;
-
-	protected List<IFormSection> sections = new ArrayList<IFormSection>();
-
+	private List<IFormSection> sections = new ArrayList<IFormSection>();
 	private IFormSection activeSection;
 
-	protected List<IFormMessageProvider> messageProviders = new ArrayList<IFormMessageProvider>();
+	private IContentProvider contentProvider;
+	private IBaseLabelProvider labelProvider;
 
-	protected ITreeContentProvider contentProvider;
-
-	protected ILabelProvider labelProvider;
+	private List<IFormMessageProvider> messageProviders = new ArrayList<IFormMessageProvider>();
 
 	protected IPropertyListener inputChangeListener = new IPropertyListener() {
 		public void propertyChanged(Object source, int propId) {
@@ -118,7 +104,6 @@ public abstract class AbstractFormPage extends FormPage {
 		}
 	};
 
-	// TODO Replace with ResourceSetListener
 	protected IOperationHistoryListener operationHistoryListener = new IOperationHistoryListener() {
 		public void historyNotification(OperationHistoryEvent event) {
 			switch (event.getEventType()) {
@@ -165,12 +150,13 @@ public abstract class AbstractFormPage extends FormPage {
 		}
 		ValidationProblemMarkersChangeNotifier.INSTANCE.addListener(validationProblemMarkersChangeListener);
 
-		IExtensionPoint extension = Platform.getExtensionRegistry().getExtensionPoint(VIEW_POINT);
+		// TODO Move to separate registry class
+		IExtensionPoint extension = Platform.getExtensionRegistry().getExtensionPoint(EXTP_FORM_MESSAGE_PROVIDERS);
 		messageProviders = new ArrayList<IFormMessageProvider>();
 		for (IConfigurationElement cfgElem : extension.getConfigurationElements()) {
-			if (FORMMESSAGEPROVIDER.equals(cfgElem.getName())) {
+			if (NODE_PROVIDER.equals(cfgElem.getName())) {
 				try {
-					IFormMessageProvider msgProvider = (IFormMessageProvider) cfgElem.createExecutableExtension(CLASS_ATTR);
+					IFormMessageProvider msgProvider = (IFormMessageProvider) cfgElem.createExecutableExtension(ATTR_CLASS);
 					messageProviders.add(msgProvider);
 				} catch (CoreException ex) {
 					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
@@ -190,37 +176,36 @@ public abstract class AbstractFormPage extends FormPage {
 		return getTransactionalFormEditor().getItemDelegator();
 	}
 
-	public ITreeContentProvider getContentProvider() {
+	public IContentProvider getContentProvider() {
 		if (contentProvider == null) {
 			contentProvider = createContentProvider();
 		}
-
 		return contentProvider;
 	}
 
-	protected ITreeContentProvider createContentProvider() {
-		EditingDomain editingDomain = getTransactionalFormEditor().getEditingDomain();
-		if (editingDomain instanceof TransactionalEditingDomain) {
-			AdapterFactory adapterFactory = getTransactionalFormEditor().getAdapterFactory();
-			if (adapterFactory != null) {
+	protected IContentProvider createContentProvider() {
+		AdapterFactory adapterFactory = getTransactionalFormEditor().getAdapterFactory();
+		if (adapterFactory != null) {
+			EditingDomain editingDomain = getTransactionalFormEditor().getEditingDomain();
+			if (editingDomain instanceof TransactionalEditingDomain) {
 				return new TransactionalAdapterFactoryContentProvider((TransactionalEditingDomain) editingDomain, adapterFactory);
 			}
 		}
 		return null;
 	}
 
-	public ILabelProvider getLabelProvider() {
+	public IBaseLabelProvider getLabelProvider() {
 		if (labelProvider == null) {
 			labelProvider = createLabelProvider();
 		}
 		return labelProvider;
 	}
 
-	protected ILabelProvider createLabelProvider() {
-		EditingDomain editingDomain = getTransactionalFormEditor().getEditingDomain();
-		if (editingDomain instanceof TransactionalEditingDomain) {
-			AdapterFactory adapterFactory = getTransactionalFormEditor().getAdapterFactory();
-			if (adapterFactory != null) {
+	protected IBaseLabelProvider createLabelProvider() {
+		AdapterFactory adapterFactory = getTransactionalFormEditor().getAdapterFactory();
+		if (adapterFactory != null) {
+			EditingDomain editingDomain = getTransactionalFormEditor().getEditingDomain();
+			if (editingDomain instanceof TransactionalEditingDomain) {
 				return new TransactionalAdapterFactoryLabelProvider((TransactionalEditingDomain) editingDomain, adapterFactory);
 			}
 		}
@@ -232,8 +217,38 @@ public abstract class AbstractFormPage extends FormPage {
 	 * 
 	 * @return
 	 */
-	public List<IFormSection> getFormSections() {
+	public List<IFormSection> getSections() {
 		return sections;
+	}
+
+	/**
+	 * @deprecated Use {@link #getSections()} instead.
+	 */
+	@Deprecated
+	public List<IFormSection> getFormSections() {
+		return getSections();
+	}
+
+	protected void addSection(IFormSection section) {
+		if (section != null) {
+			sections.add(section);
+		}
+	}
+
+	/**
+	 * Sets the active section on this page.
+	 * 
+	 * @param section
+	 */
+	public void setActiveSection(IFormSection section) {
+		activeSection = section;
+	}
+
+	/**
+	 * @return the active section in this page (e.g. the section which have the focus).
+	 */
+	public IFormSection getActiveSection() {
+		return activeSection;
 	}
 
 	protected Object getPageInputFromEditor() {
@@ -288,12 +303,6 @@ public abstract class AbstractFormPage extends FormPage {
 
 	protected abstract void doCreateFormContent(IManagedForm managedForm);
 
-	protected void addSection(IFormSection section) {
-		if (section != null) {
-			sections.add(section);
-		}
-	}
-
 	@Override
 	public void dispose() {
 		sections.clear();
@@ -340,21 +349,5 @@ public abstract class AbstractFormPage extends FormPage {
 
 	public boolean isEmpty() {
 		return !created;
-	}
-
-	/**
-	 * Sets the active section on this page.
-	 * 
-	 * @param section
-	 */
-	public void setActiveSection(IFormSection section) {
-		activeSection = section;
-	}
-
-	/**
-	 * @return the active section in this page (e.g. the section which have the focus).
-	 */
-	public IFormSection getActiveSection() {
-		return activeSection;
 	}
 }
