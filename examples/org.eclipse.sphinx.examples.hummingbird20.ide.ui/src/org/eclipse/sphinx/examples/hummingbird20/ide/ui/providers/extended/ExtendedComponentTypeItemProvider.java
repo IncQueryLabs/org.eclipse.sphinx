@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393312] Make sure that transient item providers created by extended item providers can be used before the getChildren() method of the latter has been called
  * 
  * </copyright>
  */
@@ -26,10 +27,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.IDisposable;
-import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
+import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.ParametersItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.PortsItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
+import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.edit.ComponentTypeItemProvider;
 
@@ -44,10 +46,10 @@ public class ExtendedComponentTypeItemProvider extends ComponentTypeItemProvider
 
 	@Override
 	public Object getParent(Object object) {
-		Object platform = super.getParent(object);
+		Platform platform = (Platform) super.getParent(object);
 		ExtendedPlatformItemProvider platformItemProvider = (ExtendedPlatformItemProvider) adapterFactory.adapt(platform,
-				IEditingDomainItemProvider.class);
-		return platformItemProvider != null ? platformItemProvider.getComponentTypes() : null;
+				ITreeItemContentProvider.class);
+		return platformItemProvider != null ? platformItemProvider.getComponentTypes(platform) : null;
 	}
 
 	@Override
@@ -60,26 +62,23 @@ public class ExtendedComponentTypeItemProvider extends ComponentTypeItemProvider
 
 	@Override
 	public Collection<?> getChildren(Object object) {
-		if (parametersItemProvider == null) {
-			parametersItemProvider = new ParametersItemProvider(adapterFactory, (ComponentType) object);
-		}
-
-		if (portsItemProvider == null) {
-			portsItemProvider = new PortsItemProvider(adapterFactory, (ComponentType) object);
-		}
-
 		List<Object> children = new ArrayList<Object>(super.getChildren(object));
-		children.add(parametersItemProvider);
-		children.add(portsItemProvider);
-
+		children.add(getParameters((ComponentType) object));
+		children.add(getPorts((ComponentType) object));
 		return children;
 	}
 
-	public Object getParameters() {
+	public ParametersItemProvider getParameters(ComponentType componentType) {
+		if (parametersItemProvider == null) {
+			parametersItemProvider = new ParametersItemProvider(adapterFactory, componentType);
+		}
 		return parametersItemProvider;
 	}
 
-	public Object getPorts() {
+	public PortsItemProvider getPorts(ComponentType componentType) {
+		if (portsItemProvider == null) {
+			portsItemProvider = new PortsItemProvider(adapterFactory, componentType);
+		}
 		return portsItemProvider;
 	}
 
@@ -100,8 +99,9 @@ public class ExtendedComponentTypeItemProvider extends ComponentTypeItemProvider
 				public Collection<?> getAffectedObjects() {
 					Collection<?> affected = super.getAffectedObjects();
 					if (affected.contains(owner)) {
-						affected = Collections.singleton(feature == TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS ? getParameters()
-								: getPorts());
+						affected = Collections
+								.singleton(feature == TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS ? getParameters((ComponentType) owner)
+										: getPorts((ComponentType) owner));
 					}
 					return affected;
 				}

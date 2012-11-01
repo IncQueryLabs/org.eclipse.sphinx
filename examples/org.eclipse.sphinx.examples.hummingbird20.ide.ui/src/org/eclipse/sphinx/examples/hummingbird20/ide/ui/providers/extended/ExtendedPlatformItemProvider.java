@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393312] Make sure that transient item providers created by extended item providers can be used before the getChildren() method of the latter has been called
  * 
  * </copyright>
  */
@@ -51,26 +52,23 @@ public class ExtendedPlatformItemProvider extends PlatformItemProvider {
 
 	@Override
 	public Collection<?> getChildren(Object object) {
-		if (componentTypesItemProvider == null) {
-			componentTypesItemProvider = new ComponentTypesItemProvider(adapterFactory, (Platform) object);
-		}
-
-		if (interfacesItemProvider == null) {
-			interfacesItemProvider = new InterfacesItemProvider(adapterFactory, (Platform) object);
-		}
-
 		List<Object> children = new ArrayList<Object>(super.getChildren(object));
-		children.add(componentTypesItemProvider);
-		children.add(interfacesItemProvider);
-
+		children.add(getComponentTypes((Platform) object));
+		children.add(getInterfaces((Platform) object));
 		return children;
 	}
 
-	public Object getComponentTypes() {
+	public ComponentTypesItemProvider getComponentTypes(Platform platform) {
+		if (componentTypesItemProvider == null) {
+			componentTypesItemProvider = new ComponentTypesItemProvider(adapterFactory, platform);
+		}
 		return componentTypesItemProvider;
 	}
 
-	public Object getInterfaces() {
+	public InterfacesItemProvider getInterfaces(Platform platform) {
+		if (interfacesItemProvider == null) {
+			interfacesItemProvider = new InterfacesItemProvider(adapterFactory, platform);
+		}
 		return interfacesItemProvider;
 	}
 
@@ -91,8 +89,9 @@ public class ExtendedPlatformItemProvider extends PlatformItemProvider {
 				public Collection<?> getAffectedObjects() {
 					Collection<?> affected = super.getAffectedObjects();
 					if (affected.contains(owner)) {
-						affected = Collections.singleton(feature == TypeModel20Package.Literals.PLATFORM__COMPONENT_TYPES ? getComponentTypes()
-								: getInterfaces());
+						affected = Collections
+								.singleton(feature == TypeModel20Package.Literals.PLATFORM__COMPONENT_TYPES ? getComponentTypes((Platform) owner)
+										: getInterfaces((Platform) owner));
 					}
 					return affected;
 				}

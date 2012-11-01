@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,13 +9,15 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393312] Make sure that transient item providers created by extended item providers can be used before the getChildren() method of the latter has been called
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.extended;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
+import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
+import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.edit.InterfaceItemProvider;
 
 public class ExtendedInterfaceItemProvider extends InterfaceItemProvider {
@@ -26,9 +28,9 @@ public class ExtendedInterfaceItemProvider extends InterfaceItemProvider {
 
 	@Override
 	public Object getParent(Object object) {
-		Object platform = super.getParent(object);
+		Platform platform = (Platform) super.getParent(object);
 		ExtendedPlatformItemProvider platformItemProvider = (ExtendedPlatformItemProvider) adapterFactory.adapt(platform,
-				IEditingDomainItemProvider.class);
-		return platformItemProvider != null ? platformItemProvider.getInterfaces() : null;
+				ITreeItemContentProvider.class);
+		return platformItemProvider != null ? platformItemProvider.getInterfaces(platform) : null;
 	}
 }

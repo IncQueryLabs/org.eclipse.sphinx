@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393312] Make sure that transient item providers created by extended item providers can be used before the getChildren() method of the latter has been called
  * 
  * </copyright>
  */
@@ -48,17 +49,15 @@ public class ExtendedApplicationItemProvider extends ApplicationItemProvider {
 
 	@Override
 	public Collection<?> getChildren(Object object) {
-		if (componentsItemProvider == null) {
-			componentsItemProvider = new ComponentsItemProvider(adapterFactory, (Application) object);
-		}
-
 		List<Object> children = new ArrayList<Object>(super.getChildren(object));
-		children.add(componentsItemProvider);
-
+		children.add(getComponents((Application) object));
 		return children;
 	}
 
-	public Object getComponents() {
+	public ComponentsItemProvider getComponents(Application application) {
+		if (componentsItemProvider == null) {
+			componentsItemProvider = new ComponentsItemProvider(adapterFactory, application);
+		}
 		return componentsItemProvider;
 	}
 
@@ -79,7 +78,7 @@ public class ExtendedApplicationItemProvider extends ApplicationItemProvider {
 				public Collection<?> getAffectedObjects() {
 					Collection<?> affected = super.getAffectedObjects();
 					if (affected.contains(owner)) {
-						affected = Collections.singleton(getComponents());
+						affected = Collections.singleton(getComponents((Application) owner));
 					}
 					return affected;
 				}

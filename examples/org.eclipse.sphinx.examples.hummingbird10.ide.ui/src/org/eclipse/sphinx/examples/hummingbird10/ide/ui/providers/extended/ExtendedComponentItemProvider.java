@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393312] Make sure that transient item providers created by extended item providers can be used before the getChildren() method of the latter has been called
  * 
  * </copyright>
  */
@@ -51,26 +52,23 @@ public class ExtendedComponentItemProvider extends ComponentItemProvider {
 
 	@Override
 	public Collection<?> getChildren(Object object) {
-		if (parametersItemProvider == null) {
-			parametersItemProvider = new ParametersItemProvider(adapterFactory, (Component) object);
-		}
-
-		if (outgoingConnectionsItemProvider == null) {
-			outgoingConnectionsItemProvider = new OutgoingConnectionsItemProvider(adapterFactory, (Component) object);
-		}
-
 		List<Object> children = new ArrayList<Object>(super.getChildren(object));
-		children.add(parametersItemProvider);
-		children.add(outgoingConnectionsItemProvider);
-
+		children.add(getParameters((Component) object));
+		children.add(getOutgoingConnections((Component) object));
 		return children;
 	}
 
-	public Object getParameters() {
+	public ParametersItemProvider getParameters(Component component) {
+		if (parametersItemProvider == null) {
+			parametersItemProvider = new ParametersItemProvider(adapterFactory, component);
+		}
 		return parametersItemProvider;
 	}
 
-	public Object getOutgoingConnections() {
+	public OutgoingConnectionsItemProvider getOutgoingConnections(Component component) {
+		if (outgoingConnectionsItemProvider == null) {
+			outgoingConnectionsItemProvider = new OutgoingConnectionsItemProvider(adapterFactory, component);
+		}
 		return outgoingConnectionsItemProvider;
 	}
 
@@ -92,8 +90,9 @@ public class ExtendedComponentItemProvider extends ComponentItemProvider {
 				public Collection<?> getAffectedObjects() {
 					Collection<?> affected = super.getAffectedObjects();
 					if (affected.contains(owner)) {
-						affected = Collections.singleton(feature == Hummingbird10Package.Literals.COMPONENT__PARAMETERS ? getParameters()
-								: getOutgoingConnections());
+						affected = Collections
+								.singleton(feature == Hummingbird10Package.Literals.COMPONENT__PARAMETERS ? getParameters((Component) owner)
+										: getOutgoingConnections((Component) owner));
 					}
 					return affected;
 				}
