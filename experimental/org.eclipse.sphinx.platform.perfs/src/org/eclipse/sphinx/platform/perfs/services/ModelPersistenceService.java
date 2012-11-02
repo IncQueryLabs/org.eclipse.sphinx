@@ -37,6 +37,13 @@ public class ModelPersistenceService {
 	private ModelPersistenceService() {
 	}
 
+	/**
+	 * Returns the EMF resource corresponding to the given file.
+	 * 
+	 * @param file
+	 *            a file.
+	 * @return an EMF resource corresponding to the given file.
+	 */
 	public Resource getResource(File file) {
 		Assert.isNotNull(file);
 
@@ -53,12 +60,24 @@ public class ModelPersistenceService {
 		}
 	}
 
+	/**
+	 * Created an EMF resource corresponding to the given file.
+	 * 
+	 * @param file
+	 *            a file.
+	 * @return the created EMF resource corresponding to the given file.
+	 */
 	public Resource createResource(File file) {
 		Assert.isNotNull(file);
 
 		return resourceSet.createResource(URI.createFileURI(file.getAbsolutePath()));
 	}
 
+	/**
+	 * Returns the resource set to be used.
+	 * 
+	 * @return the resource set to be used.
+	 */
 	public ResourceSet getResourceSet() {
 		return resourceSet;
 	}

@@ -56,10 +56,16 @@ public class PerfStatsExample {
 		return ModelPersistenceService.INSTANCE.getResource(perfsModel);
 	}
 
+	/**
+	 * @return the performance model file.
+	 */
 	public File getPerfsModel() {
 		return perfsModel;
 	}
 
+	/**
+	 * Returns all performance measurements.
+	 */
 	public Collection<Measurement> getPerfMeasurements() {
 		Set<Measurement> measurements = new HashSet<Measurement>();
 

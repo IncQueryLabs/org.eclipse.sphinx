@@ -32,22 +32,55 @@ public final class LogUtil {
 	private LogUtil() {
 	}
 
+	/**
+	 * Logs the given status. The status is distributed to the log listeners installed on this log and then to the log
+	 * listeners installed on the platform.
+	 * 
+	 * @param status
+	 *            the status to log.
+	 */
 	public static void log(IStatus status) {
 		Activator.getPlugin().getLog().log(status);
 	}
 
+	/**
+	 * Adds the given child status to the provided multi status.
+	 * 
+	 * @param status
+	 *            a multi status.
+	 * @param childStatus
+	 *            the child status to be add.
+	 */
 	public static void addStatus(MultiStatus status, IStatus childStatus) {
 		if (status != null && childStatus != null) {
 			status.add(childStatus);
 		}
 	}
 
+	/**
+	 * Logs the given performance statistics, i.e., all contained measurements. The status is distributed to the log
+	 * listeners installed on this log and then to the log listeners installed on the platform.
+	 * 
+	 * @param status
+	 *            the multi status to be used.
+	 * @param perfStats
+	 *            performance statistics.
+	 */
 	public static void log(MultiStatus status, PerformanceStats perfStats) {
 		if (status != null && perfStats != null) {
 			log(status, perfStats.getMeasurements());
 		}
 	}
 
+	/**
+	 * Logs the given performance measurements. The status is distributed to the log listeners installed on this log and
+	 * then to the log listeners installed on the platform.
+	 * 
+	 * @param status
+	 *            the multi status to be used.
+	 * @param measurements
+	 *            a set of performance measurements.
+	 */
 	public static void log(MultiStatus status, Collection<Measurement> measurements) {
 		if (status != null && measurements != null) {
 			for (Measurement measurement : measurements) {

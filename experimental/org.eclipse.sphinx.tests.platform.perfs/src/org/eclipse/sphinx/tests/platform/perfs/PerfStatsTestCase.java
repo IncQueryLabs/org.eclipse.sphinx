@@ -27,6 +27,7 @@ public class PerfStatsTestCase extends TestCase {
 		assertNotNull(perfsModel);
 		assertTrue(perfsModel.exists());
 
+		// Create application data
 		PerfStatsExample application = new PerfStatsExample(perfsModel);
 		Collection<Measurement> measurements = application.getPerfMeasurements();
 
@@ -35,14 +36,14 @@ public class PerfStatsTestCase extends TestCase {
 
 		PerfStatsExample.updatePerfsModel(resource, measurements);
 
-		// Save resulting stats model
+		// Save resulting statistics model
 		try {
 			resource.save(null);
 		} catch (Exception ex) {
 			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), ex.getMessage(), ex));
 		}
 
-		// Log performance stats
+		// Log performance statistics
 		PerfStatsExample.logPerfSats(resource);
 	}
 
