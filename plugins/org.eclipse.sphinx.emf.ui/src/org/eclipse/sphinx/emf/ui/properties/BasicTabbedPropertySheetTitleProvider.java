@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393477] Provider hook for unwrapping elements before letting BasicTabbedPropertySheetTitleProvider retrieve text or image for them
+ *     itemis - [393479] Enable BasicTabbedPropertySheetTitleProvider to retrieve same AdapterFactory as underlying IWorkbenchPart is using
  * 
  * </copyright>
  */
@@ -16,6 +18,7 @@ package org.eclipse.sphinx.emf.ui.properties;
 
 import java.util.Collection;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -49,6 +52,47 @@ import org.eclipse.ui.navigator.INavigatorContentService;
  */
 public class BasicTabbedPropertySheetTitleProvider extends LabelProvider {
 
+	protected class DelegatingDescriptionProvider implements IDescriptionProvider {
+
+		private ILabelProvider labelProvider;
+
+		public DelegatingDescriptionProvider(ILabelProvider labelProvider) {
+			Assert.isNotNull(labelProvider);
+			this.labelProvider = labelProvider;
+		}
+
+		public String getDescription(Object anElement) {
+			if (anElement instanceof IStructuredSelection) {
+				Collection<?> collection = ((IStructuredSelection) anElement).toList();
+				switch (collection.size()) {
+				case 0: {
+					return Messages.label_noObjectSelected;
+				}
+				case 1: {
+					Object object = collection.iterator().next();
+					String text = labelProvider.getText(object);
+					if (text != null && text.length() > 0) {
+						return text;
+					}
+					break;
+				}
+				default: {
+					return NLS.bind(Messages.label_multiObjectSelected, Integer.toString(collection.size()));
+				}
+				}
+			} else {
+				String text = labelProvider.getText(anElement);
+				if (text != null && text.length() > 0) {
+					return text;
+				}
+			}
+
+			// Don't return empty String because otherwise the tabbed property sheet's title bar
+			// looses its background color and becomes entirely blank
+			return " "; //$NON-NLS-1$
+		}
+	}
+
 	private ILabelProvider labelProvider;
 
 	private IDescriptionProvider descriptionProvider;
@@ -77,69 +121,74 @@ public class BasicTabbedPropertySheetTitleProvider extends LabelProvider {
 			IEditingDomainProvider editingDomainProvider = (IEditingDomainProvider) part.getAdapter(IEditingDomainProvider.class);
 			EditingDomain editingDomain = editingDomainProvider.getEditingDomain();
 			if (editingDomain instanceof TransactionalEditingDomain) {
-				AdapterFactory adapterFactory = ((AdapterFactoryEditingDomain) editingDomain).getAdapterFactory();
-				if (adapterFactory != null) {
-					labelProvider = new TransactionalAdapterFactoryLabelProvider((TransactionalEditingDomain) editingDomain, adapterFactory);
-					descriptionProvider = new IDescriptionProvider() {
-						public String getDescription(Object anElement) {
-							if (anElement instanceof IStructuredSelection) {
-								Collection<?> collection = ((IStructuredSelection) anElement).toList();
-								switch (collection.size()) {
-								case 0: {
-									return Messages.label_noObjectSelected;
-								}
-								case 1: {
-									Object object = collection.iterator().next();
-									String text = labelProvider.getText(object);
-									if (text != null && text.length() > 0) {
-										return text;
-									}
-									break;
-								}
-								default: {
-									return NLS.bind(Messages.label_multiObjectSelected, Integer.toString(collection.size()));
-								}
-								}
-							} else {
-								String text = labelProvider.getText(anElement);
-								if (text != null && text.length() > 0) {
-									return text;
-								}
-							}
-
-							// Don't return empty String because otherwise the tabbed property sheet's title bar
-							// looses its background color and becomes entirely blank
-							return " "; //$NON-NLS-1$
-						}
-					};
+				AdapterFactory adapterFactory = (AdapterFactory) part.getAdapter(AdapterFactory.class);
+				if (adapterFactory == null && editingDomain instanceof AdapterFactoryEditingDomain) {
+					adapterFactory = ((AdapterFactoryEditingDomain) editingDomain).getAdapterFactory();
 				}
+				labelProvider = new TransactionalAdapterFactoryLabelProvider((TransactionalEditingDomain) editingDomain, adapterFactory);
+				descriptionProvider = new DelegatingDescriptionProvider(labelProvider);
 			}
 		}
 	}
 
 	/**
-	 * @see org.eclipse.jface.viewers.ILabelProvider#getImage(java.lang.Object)
+	 * Called by {@link #getText(Object)} and {@link #getImage(Object)} to extract the actual element to rendered from
+	 * given {@link Object element}.
+	 * <p>
+	 * This implementation does nothing but just returns the original element. Subclasses may override and extend as
+	 * appropriate.
+	 * </p>
+	 * 
+	 * @param element
+	 *            The element to be unwrapped.
+	 * @return The extracted {@link Object element} if the original element could be successfully unwrapped or the
+	 *         original element otherwise.
+	 */
+	protected Object unwrap(Object element) {
+		return element;
+	}
+
+	/*
+	 * @see org.eclipse.jface.viewers.LabelProvider#getImage(java.lang.Object)
 	 */
 	@Override
-	public Image getImage(Object anElement) {
+	public Image getImage(Object element) {
 		ILabelProvider labelProvider = getLabelProvider();
 		if (labelProvider != null) {
-			if (anElement instanceof IStructuredSelection) {
-				IStructuredSelection structuredSelection = (IStructuredSelection) anElement;
+			if (element instanceof IStructuredSelection) {
+				// Display image only if exactly one element has been selected
+				IStructuredSelection structuredSelection = (IStructuredSelection) element;
 				if (structuredSelection.size() == 1) {
-					return labelProvider.getImage(structuredSelection.getFirstElement());
+					element = unwrap(structuredSelection.getFirstElement());
+					return labelProvider.getImage(element);
 				}
+			} else {
+				Object unwrapped = unwrap(element);
+				return labelProvider.getImage(unwrapped);
 			}
 		}
 		return null;
 	}
 
-	/**
-	 * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
+	/*
+	 * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
 	 */
 	@Override
-	public String getText(Object anElement) {
+	public String getText(Object element) {
 		IDescriptionProvider descriptionProvider = getDescriptionProvider();
-		return descriptionProvider != null ? descriptionProvider.getDescription(anElement) : null;
+		if (descriptionProvider != null) {
+			if (element instanceof IStructuredSelection) {
+				// Unwrap selected element only if exactly one element has been selected
+				IStructuredSelection structuredSelection = (IStructuredSelection) element;
+				if (structuredSelection.size() == 1) {
+					element = unwrap(structuredSelection.getFirstElement());
+				}
+				return descriptionProvider.getDescription(element);
+			} else {
+				Object unwrapped = unwrap(element);
+				return descriptionProvider.getDescription(unwrapped);
+			}
+		}
+		return null;
 	}
 }
