@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393441] SWTException occasionally occurring when BasicTransactionalAdvancedPropertySection is updated
  * 
  * </copyright>
  */
@@ -38,10 +39,12 @@ import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryContentProvider;
 import org.eclipse.emf.transaction.util.TransactionUtil;
+import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.swt.widgets.Composite;
@@ -156,7 +159,7 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 									// Refresh property sheet title through this indirect call to private
 									// TabbedPropertySheetPage#refreshTitleBar() method
 									if (tabbedPropertySheetPage != null) {
-										tabbedPropertySheetPage.labelProviderChanged(null);
+										tabbedPropertySheetPage.labelProviderChanged(new LabelProviderChangedEvent(new BaseLabelProvider()));
 									}
 								}
 
