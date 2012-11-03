@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [392464] Finish up Sphinx editor socket for GMF-based graphical editors
+ *     itemis - [393479] Enable BasicTabbedPropertySheetTitleProvider to retrieve same AdapterFactory as underlying IWorkbenchPart is using
  * 
  * </copyright>
  */
@@ -19,6 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.provider.ItemProviderAdapter;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.diagram.ui.resources.editor.parts.DiagramDocumentEditor;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider;
@@ -124,12 +131,71 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class key) {
-		if (key.equals(IUndoContext.class)) {
+		if (key.equals(AdapterFactory.class)) {
+			return getAdapterFactory();
+		} else if (key.equals(IUndoContext.class)) {
 			// Used by undo/redo actions to get their undo context
 			return undoContextManager.getUndoContext();
 		} else {
 			return super.getAdapter(key);
 		}
+	}
+
+	/**
+	 * Returns the {@link AdapterFactory adapter factory} to be used by this {@link BasicTransactionalFormEditor form
+	 * editor} for creating {@link ItemProviderAdapter item provider}s which control the way how {@link EObject model
+	 * element}s from given <code>editingDomain</code> are displayed and can be edited.
+	 * <p>
+	 * This implementation returns the {@link AdapterFactory adapter factory} which is embedded in the given
+	 * <code>editingDomain</code> by default. Clients which want to use an alternative {@link AdapterFactory adapter
+	 * factory} (e.g., an {@link AdapterFactory adapter factory} that creates {@link ItemProviderAdapter item provider}s
+	 * which are specifically designed for the {@link IEditorPart editor} in which this
+	 * {@link BasicTransactionalFormEditor form editor} is used) may override {@link #getCustomAdapterFactory()} and
+	 * return any {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter
+	 * factory} will then be returned as result by this method.
+	 * </p>
+	 * 
+	 * @param editingDomain
+	 *            The {@link TransactionalEditingDomain editing domain} whose embedded {@link AdapterFactory adapter
+	 *            factory} is to be returned as default. May be left <code>null</code> if
+	 *            {@link #getCustomAdapterFactory()} has been overridden and returns a non-<code>null</code> result.
+	 * @return The {@link AdapterFactory adapter factory} that will be used by this {@link BasicTransactionalFormEditor
+	 *         form editor}. <code>null</code> if no custom {@link AdapterFactory adapter factory} is provided through
+	 *         {@link #getCustomAdapterFactory()} and no <code>editingDomain</code> has been specified.
+	 * @see #getCustomAdapterFactory()
+	 */
+	public AdapterFactory getAdapterFactory() {
+		EditingDomain editingDomain = getEditingDomain();
+		AdapterFactory customAdapterFactory = getCustomAdapterFactory();
+		if (customAdapterFactory != null) {
+			return customAdapterFactory;
+		} else if (editingDomain != null) {
+			return ((AdapterFactoryEditingDomain) editingDomain).getAdapterFactory();
+		}
+		return null;
+	}
+
+	/**
+	 * Returns a custom {@link AdapterFactory adapter factory} to be used by this {@link BasicTransactionalFormEditor
+	 * form editor} for creating {@link ItemProviderAdapter item provider}s which control the way how {@link EObject
+	 * model element}s from given <code>editingDomain</code> are displayed and can be edited.
+	 * <p>
+	 * This implementation returns <code>null</code> as default. Clients which want to use their own
+	 * {@link AdapterFactory adapter factory} (e.g., an {@link AdapterFactory adapter factory} that creates
+	 * {@link ItemProviderAdapter item provider}s which are specifically designed for the {@link IEditorPart editor} in
+	 * which this {@link BasicTransactionalFormEditor form editor} is used) may override this method and return any
+	 * {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter factory} will
+	 * then be returned as result by {@link #getAdapterFactory(TransactionalEditingDomain)}.
+	 * </p>
+	 * 
+	 * @return The custom {@link AdapterFactory adapter factory} that is to be used by this
+	 *         {@link BasicTransactionalFormEditor form editor}. <code>null</code> the default {@link AdapterFactory
+	 *         adapter factory} returned by {@link #getAdapterFactory(TransactionalEditingDomain)} should be used
+	 *         instead.
+	 * @see #getAdapterFactory(TransactionalEditingDomain)
+	 */
+	protected AdapterFactory getCustomAdapterFactory() {
+		return null;
 	}
 
 	/*
