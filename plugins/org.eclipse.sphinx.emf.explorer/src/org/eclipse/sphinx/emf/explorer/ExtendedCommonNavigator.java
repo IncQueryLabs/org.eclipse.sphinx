@@ -284,8 +284,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 	public Object getAdapter(Class adapter) {
 		if (IPropertySheetPage.class == adapter) {
 			return getPropertySheetPage();
-		}
-		if (adapter == IUndoContext.class) {
+		} else if (adapter == IUndoContext.class) {
 			return getUndoContext();
 		}
 		return super.getAdapter(adapter);
@@ -474,6 +473,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 					declaredField.setAccessible(true);
 					Object object = declaredField.get(input);
 					declaredField.setAccessible(oldAccessible);
+					// TODO Switch to using RelectUtil and eliminate #getMethod()
 					Method getViewer = getMethod(object.getClass(), "getViewer"); //$NON-NLS-1$
 					if (getViewer == null) {
 						return Collections.emptyList();
@@ -492,6 +492,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 								if (next instanceof IMarker) {
 									markers.add((IMarker) next);
 								} else if (next.getClass().toString().indexOf("Marker") >= 0) { //$NON-NLS-1$
+									// TODO Switch to using RelectUtil and eliminate #getMethod()
 									Method getMarker = getMethod(next.getClass(), "getMarker"); //$NON-NLS-1$
 									if (getMarker == null) {
 										break;
