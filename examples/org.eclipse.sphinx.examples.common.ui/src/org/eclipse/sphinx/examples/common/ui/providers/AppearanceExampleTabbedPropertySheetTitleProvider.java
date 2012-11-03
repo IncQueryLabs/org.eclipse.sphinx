@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393477] Provider hook for unwrapping elements before letting BasicTabbedPropertySheetTitleProvider retrieve text or image for them
  * 
  * </copyright>
  */
@@ -27,12 +28,17 @@ public class AppearanceExampleTabbedPropertySheetTitleProvider extends BasicTabb
 
 	@Override
 	public String getText(Object element) {
+		String text = super.getText(element);
+
+		// Decorate label with element type name if possible and selection is no multi selection
 		if (element instanceof IStructuredSelection) {
-			IStructuredSelection selection = (IStructuredSelection) element;
-			element = selection.getFirstElement();
+			IStructuredSelection structuredSelection = (IStructuredSelection) element;
+			if (structuredSelection.size() == 1) {
+				Object unwrapped = unwrap(structuredSelection.getFirstElement());
+				return typeNameLabelDecorator.decorateText(text, unwrapped);
+			}
 		}
 
-		String text = super.getText(element);
-		return typeNameLabelDecorator.decorateText(text, element);
+		return text;
 	}
 }

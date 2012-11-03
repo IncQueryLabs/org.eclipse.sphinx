@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [393441] SWTException occasionally occurring when BasicTransactionalAdvancedPropertySection is updated
+ *     itemis - [393477] Provider hook for unwrapping elements before letting BasicTabbedPropertySheetTitleProvider retrieve text or image for them
  * 
  * </copyright>
  */
@@ -62,7 +63,7 @@ import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.eclipse.ui.views.properties.tabbed.AdvancedPropertySection;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
-public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertySection {
+public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertySection implements IPropertySourceProvider {
 
 	protected TabbedPropertySheetPage tabbedPropertySheetPage;
 
@@ -171,49 +172,18 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 		};
 	}
 
+	/*
+	 * @see
+	 * org.eclipse.ui.views.properties.tabbed.AdvancedPropertySection#createControls(org.eclipse.swt.widgets.Composite,
+	 * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
+	 */
 	@Override
 	public void createControls(Composite parent, final TabbedPropertySheetPage tabbedPropertySheetPage) {
 		super.createControls(parent, tabbedPropertySheetPage);
 		this.tabbedPropertySheetPage = tabbedPropertySheetPage;
 
-		// Setup transactional IPropertySourceProvider
-		IPropertySourceProvider propertySourceProvider = new IPropertySourceProvider() {
-			public IPropertySource getPropertySource(Object object) {
-				// Let EMF Edit try to find an IPropertySource adapter
-				/*
-				 * !! Important Note !! Don't use WorkspaceEditingDomainUtil for retrieving editing domain here because
-				 * we only want to handle objects which are eligible to EMF Edit rather than just any object from which
-				 * an editing domain can be retrieved.
-				 */
-				Object unwrapped = AdapterFactoryEditingDomain.unwrap(object);
-				if (unwrapped != null) {
-					TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(unwrapped);
-					if (editingDomain != null) {
-						lastPropertySourceProviderDelegate = createModelPropertySourceProvider(editingDomain);
-						IPropertySource propertySource = lastPropertySourceProviderDelegate.getPropertySource(object);
-						if (propertySource != null) {
-							return new FilteringPropertySource(propertySource);
-						}
-					} else if (lastPropertySourceProviderDelegate != null) {
-						// Assume that object is from same editing domain as the last object that was handled in here
-						IPropertySource propertySource = lastPropertySourceProviderDelegate.getPropertySource(object);
-						if (propertySource != null) {
-							return new FilteringPropertySource(propertySource);
-						}
-					}
-				}
-
-				// Let Eclipse Platform try to find an IPropertySource adapter for objects that are not supported by EMF
-				// Edit
-				if (object instanceof IAdaptable) {
-					IAdaptable adaptable = (IAdaptable) object;
-					return (IPropertySource) adaptable.getAdapter(IPropertySource.class);
-				}
-
-				return null;
-			}
-		};
-		page.setPropertySourceProvider(propertySourceProvider);
+		// Register this class as property source provider
+		page.setPropertySourceProvider(this);
 
 		// Install selection listener and invoke it once in order to make sure that we are in phase with current
 		// selection
@@ -222,13 +192,51 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 		selectionListener.selectionChanged(getPart(), selectionService.getSelection());
 	}
 
+	/*
+	 * @see org.eclipse.ui.views.properties.IPropertySourceProvider#getPropertySource(java.lang.Object)
+	 */
+	public IPropertySource getPropertySource(Object object) {
+		// Let EMF.Edit try to find a property source adapter
+		/*
+		 * !! Important Note !! Don't use WorkspaceEditingDomainUtil for retrieving editing domain here because we only
+		 * want to handle objects which are eligible to EMF Edit rather than just any object from which an editing
+		 * domain can be retrieved.
+		 */
+		Object unwrapped = AdapterFactoryEditingDomain.unwrap(object);
+		if (unwrapped != null) {
+			// Try to retrieve model property source provider for given object and remember it so as to have it at hand
+			// for subsequent objects for which no property source provider can be retrieved (e.g., FeatureMap.Entry
+			// objects with primitive values)
+			TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(unwrapped);
+			if (editingDomain != null) {
+				lastPropertySourceProviderDelegate = createModelPropertySourceProvider(editingDomain);
+			}
+
+			// Try retrieve property source adapter for given object using model property source provider
+			if (lastPropertySourceProviderDelegate != null) {
+				IPropertySource propertySource = lastPropertySourceProviderDelegate.getPropertySource(object);
+				if (propertySource != null) {
+					return new FilteringPropertySource(propertySource);
+				}
+			}
+		}
+
+		// Let Eclipse Platform try to find a property source adapter for objects that are not supported by EMF.Edit
+		if (object instanceof IAdaptable) {
+			IAdaptable adaptable = (IAdaptable) object;
+			return (IPropertySource) adaptable.getAdapter(IPropertySource.class);
+		}
+
+		return null;
+	}
+
 	protected IPropertySourceProvider createModelPropertySourceProvider(TransactionalEditingDomain editingDomain) {
 		Assert.isNotNull(editingDomain);
 
 		AdapterFactory adapterFactory = getAdapterFactory(editingDomain);
 		return new TransactionalAdapterFactoryContentProvider(editingDomain, adapterFactory) {
 			/**
-			 * Overridden to enable implantation of custom cell editor that will be used to edit the value of the given
+			 * Overridden to enable insertion of custom cell editor that will be used to edit the value of the given
 			 * property.
 			 */
 			@Override
@@ -255,59 +263,6 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 				}));
 			}
 		};
-	}
-
-	/**
-	 * Return a custom {@link CellEditor cell editor} to be used for editing the value of given property.
-	 * 
-	 * @param composite
-	 *            The parent control of the {@link CellEditor cell editor} to be created.
-	 * @param object
-	 *            The owner of the {@link IItemPropertyDescriptor property} to be edited.
-	 * @param itemPropertyDescriptor
-	 *            The {@link IItemPropertyDescriptor item descriptor} of the property to be edited.
-	 * @param propertyDescriptor
-	 *            The {@link PropertyDescriptor descriptor} of the property to be edited.
-	 * @return A newly created custom {@link CellEditor cell editor} to be used or <code>null</code> to indicate that
-	 *         default {@link CellEditor cell editor} created by EMF.Edit should be used.
-	 */
-	protected CellEditor createPropertyEditor(Composite composite, Object object, final IItemPropertyDescriptor itemPropertyDescriptor,
-			final PropertyDescriptor propertyDescriptor) {
-		if (object instanceof EObject) {
-			final EObject eObject = (EObject) object;
-			Object feature = itemPropertyDescriptor.getFeature(eObject);
-			if (feature instanceof EReference) {
-				final EReference reference = (EReference) feature;
-				InternalEObject internalEObject = (InternalEObject) eObject;
-				if (!reference.isMany()) {
-					EObject value = (EObject) internalEObject.eGet(reference);
-					if (value != null && value.eIsProxy()) {
-						return new ProxyURICellEditor(composite, eObject, reference, value);
-					}
-				} else {
-					@SuppressWarnings("unchecked")
-					List<EObject> values = (List<EObject>) internalEObject.eGet(reference);
-					for (EObject value : values) {
-						if (value.eIsProxy()) {
-							final ILabelProvider editLabelProvider = propertyDescriptor.getLabelProvider();
-							final Collection<?> choiceOfValues = itemPropertyDescriptor.getChoiceOfValues(eObject);
-							return new ExtendedDialogCellEditor(composite, editLabelProvider) {
-								@Override
-								protected Object openDialogBox(Control cellEditorWindow) {
-									ProxyURIFeatureEditorDialog dialog = new ProxyURIFeatureEditorDialog(cellEditorWindow.getShell(),
-											editLabelProvider, eObject, reference, propertyDescriptor.getDisplayName(), new ArrayList<Object>(
-													choiceOfValues), false, itemPropertyDescriptor.isSortChoices(eObject));
-									dialog.open();
-									return dialog.getResult();
-								}
-							};
-						}
-					}
-				}
-			}
-		}
-
-		return null;
 	}
 
 	/**
@@ -364,6 +319,59 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 	 * @see #getAdapterFactory(TransactionalEditingDomain)
 	 */
 	protected AdapterFactory getCustomAdapterFactory() {
+		return null;
+	}
+
+	/**
+	 * Return a custom {@link CellEditor cell editor} to be used for editing the value of given property.
+	 * 
+	 * @param composite
+	 *            The parent control of the {@link CellEditor cell editor} to be created.
+	 * @param object
+	 *            The owner of the {@link IItemPropertyDescriptor property} to be edited.
+	 * @param itemPropertyDescriptor
+	 *            The {@link IItemPropertyDescriptor item descriptor} of the property to be edited.
+	 * @param propertyDescriptor
+	 *            The {@link PropertyDescriptor descriptor} of the property to be edited.
+	 * @return A newly created custom {@link CellEditor cell editor} to be used or <code>null</code> to indicate that
+	 *         default {@link CellEditor cell editor} created by EMF.Edit should be used.
+	 */
+	protected CellEditor createPropertyEditor(Composite composite, Object object, final IItemPropertyDescriptor itemPropertyDescriptor,
+			final PropertyDescriptor propertyDescriptor) {
+		if (object instanceof EObject) {
+			final EObject eObject = (EObject) object;
+			Object feature = itemPropertyDescriptor.getFeature(eObject);
+			if (feature instanceof EReference) {
+				final EReference reference = (EReference) feature;
+				InternalEObject internalEObject = (InternalEObject) eObject;
+				if (!reference.isMany()) {
+					EObject value = (EObject) internalEObject.eGet(reference);
+					if (value != null && value.eIsProxy()) {
+						return new ProxyURICellEditor(composite, eObject, reference, value);
+					}
+				} else {
+					@SuppressWarnings("unchecked")
+					List<EObject> values = (List<EObject>) internalEObject.eGet(reference);
+					for (EObject value : values) {
+						if (value.eIsProxy()) {
+							final ILabelProvider editLabelProvider = propertyDescriptor.getLabelProvider();
+							final Collection<?> choiceOfValues = itemPropertyDescriptor.getChoiceOfValues(eObject);
+							return new ExtendedDialogCellEditor(composite, editLabelProvider) {
+								@Override
+								protected Object openDialogBox(Control cellEditorWindow) {
+									ProxyURIFeatureEditorDialog dialog = new ProxyURIFeatureEditorDialog(cellEditorWindow.getShell(),
+											editLabelProvider, eObject, reference, propertyDescriptor.getDisplayName(), new ArrayList<Object>(
+													choiceOfValues), false, itemPropertyDescriptor.isSortChoices(eObject));
+									dialog.open();
+									return dialog.getResult();
+								}
+							};
+						}
+					}
+				}
+			}
+		}
+
 		return null;
 	}
 

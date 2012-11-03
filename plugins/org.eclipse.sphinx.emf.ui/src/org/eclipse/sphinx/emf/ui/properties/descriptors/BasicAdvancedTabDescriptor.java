@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,13 +9,17 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393477] Provider hook for unwrapping elements before letting BasicTabbedPropertySheetTitleProvider retrieve text or image for them
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.emf.ui.properties.descriptors;
 
+import java.util.List;
+
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.ui.views.properties.tabbed.AbstractTabDescriptor;
+import org.eclipse.ui.views.properties.tabbed.ISectionDescriptor;
 
 public class BasicAdvancedTabDescriptor extends AbstractTabDescriptor {
 
@@ -28,13 +32,15 @@ public class BasicAdvancedTabDescriptor extends AbstractTabDescriptor {
 		this(id, label, category, null);
 	}
 
-	@SuppressWarnings("unchecked")
 	public BasicAdvancedTabDescriptor(String id, String label, String category, AdapterFactory customAdapterFactory) {
 		this.id = id;
 		this.label = label;
 		this.category = category;
 		this.customAdapterFactory = customAdapterFactory;
-		getSectionDescriptors().add(new BasicAdvancedSectionDescriptor(id + ".sectionDesc", id, customAdapterFactory)); //$NON-NLS-1$
+
+		@SuppressWarnings("unchecked")
+		List<ISectionDescriptor> sectionDescriptors = getSectionDescriptors();
+		sectionDescriptors.add(new BasicAdvancedSectionDescriptor(id + ".sectionDesc", id, customAdapterFactory)); //$NON-NLS-1$
 	}
 
 	public String getId() {
