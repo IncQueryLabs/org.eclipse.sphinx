@@ -16,7 +16,7 @@
 package org.eclipse.sphinx.examples.hummingbird10.ide.ui.providers.extended;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
+import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
 import org.eclipse.sphinx.examples.hummingbird10.edit.ConnectionItemProvider;
 
@@ -30,7 +30,7 @@ public class ExtendedConnectionItemProvider extends ConnectionItemProvider {
 	public Object getParent(Object object) {
 		Component component = (Component) super.getParent(object);
 		ExtendedComponentItemProvider componentItemProvider = (ExtendedComponentItemProvider) adapterFactory.adapt(component,
-				IEditingDomainItemProvider.class);
+				ITreeItemContentProvider.class);
 		return componentItemProvider != null ? componentItemProvider.getOutgoingConnections(component) : null;
 	}
 }

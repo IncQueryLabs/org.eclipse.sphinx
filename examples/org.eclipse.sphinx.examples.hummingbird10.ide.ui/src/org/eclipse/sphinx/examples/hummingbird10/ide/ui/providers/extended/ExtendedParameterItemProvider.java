@@ -16,7 +16,7 @@
 package org.eclipse.sphinx.examples.hummingbird10.ide.ui.providers.extended;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
+import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
 import org.eclipse.sphinx.examples.hummingbird10.edit.ParameterItemProvider;
 
@@ -30,7 +30,7 @@ public class ExtendedParameterItemProvider extends ParameterItemProvider {
 	public Object getParent(Object object) {
 		Component component = (Component) super.getParent(object);
 		ExtendedComponentItemProvider componentTypeItemProvider = (ExtendedComponentItemProvider) adapterFactory.adapt(component,
-				IEditingDomainItemProvider.class);
+				ITreeItemContentProvider.class);
 		return componentTypeItemProvider != null ? componentTypeItemProvider.getParameters(component) : null;
 	}
 }
