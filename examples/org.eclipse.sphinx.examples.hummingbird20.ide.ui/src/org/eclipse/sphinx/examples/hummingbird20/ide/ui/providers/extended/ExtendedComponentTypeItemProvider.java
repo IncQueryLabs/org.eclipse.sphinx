@@ -26,7 +26,6 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.emf.edit.provider.IDisposable;
 import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.ParametersItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.PortsItemProvider;
@@ -112,10 +111,12 @@ public class ExtendedComponentTypeItemProvider extends ComponentTypeItemProvider
 
 	@Override
 	public void dispose() {
-		super.dispose();
-		if (parametersItemProvider != null && portsItemProvider != null) {
-			((IDisposable) parametersItemProvider).dispose();
-			((IDisposable) portsItemProvider).dispose();
+		if (parametersItemProvider != null) {
+			parametersItemProvider.dispose();
 		}
+		if (portsItemProvider != null) {
+			portsItemProvider.dispose();
+		}
+		super.dispose();
 	}
 }

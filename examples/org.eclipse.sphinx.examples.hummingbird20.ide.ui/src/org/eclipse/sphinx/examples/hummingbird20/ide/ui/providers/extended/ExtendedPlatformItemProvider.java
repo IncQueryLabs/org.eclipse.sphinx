@@ -26,7 +26,6 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.emf.edit.provider.IDisposable;
 import org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.ComponentTypesItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.InterfacesItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
@@ -102,10 +101,12 @@ public class ExtendedPlatformItemProvider extends PlatformItemProvider {
 
 	@Override
 	public void dispose() {
-		super.dispose();
-		if (componentTypesItemProvider != null && interfacesItemProvider != null) {
-			((IDisposable) componentTypesItemProvider).dispose();
-			((IDisposable) interfacesItemProvider).dispose();
+		if (componentTypesItemProvider != null) {
+			componentTypesItemProvider.dispose();
 		}
+		if (interfacesItemProvider != null) {
+			interfacesItemProvider.dispose();
+		}
+		super.dispose();
 	}
 }

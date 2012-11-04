@@ -26,7 +26,6 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.emf.edit.provider.IDisposable;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird10.edit.ComponentItemProvider;
@@ -103,10 +102,12 @@ public class ExtendedComponentItemProvider extends ComponentItemProvider {
 
 	@Override
 	public void dispose() {
-		super.dispose();
-		if (parametersItemProvider != null && outgoingConnectionsItemProvider != null) {
-			((IDisposable) parametersItemProvider).dispose();
-			((IDisposable) outgoingConnectionsItemProvider).dispose();
+		if (parametersItemProvider != null) {
+			parametersItemProvider.dispose();
 		}
+		if (outgoingConnectionsItemProvider != null) {
+			outgoingConnectionsItemProvider.dispose();
+		}
+		super.dispose();
 	}
 }

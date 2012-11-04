@@ -26,7 +26,6 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.emf.edit.provider.IDisposable;
 import org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.ComponentsItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
@@ -89,10 +88,9 @@ public class ExtendedApplicationItemProvider extends ApplicationItemProvider {
 
 	@Override
 	public void dispose() {
-		super.dispose();
 		if (componentsItemProvider != null) {
-			((IDisposable) componentsItemProvider).dispose();
+			componentsItemProvider.dispose();
 		}
+		super.dispose();
 	}
-
 }
