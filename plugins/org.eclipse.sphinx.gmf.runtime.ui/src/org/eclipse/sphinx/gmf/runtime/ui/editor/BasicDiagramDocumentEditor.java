@@ -86,14 +86,23 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 		};
 	}
 
-	// FIXME Make sure that diagram changes don't get lost when closing the editor; either by user prompt for saving or
-	// by not unloading diagram resource when closing diagram document editor
+	/*
+	 * @see org.eclipse.ui.part.EditorPart#isSaveOnCloseNeeded()
+	 */
 	@Override
 	public boolean isSaveOnCloseNeeded() {
-		// Model-based editors don't need to be saved when being closed even if the model is dirty, because they don't
-		// own the model. The model is loaded, managed, and saved globally, i.e. it is not destroyed but stays there
-		// when editors are being closed.
-		return false;
+		// Leave default behavior in place which triggers a user prompt when the the editor is closed while it is still
+		// dirty
+		/*
+		 * !! Important Note !! We don't want to return false like
+		 * org.eclipse.sphinx.emf.editors.forms.BasicTransactionalFormEditor does. In contrast to the domain model that
+		 * is kept in memory when form editors are closed we consider that there is no value in doing so for the diagram
+		 * model. We therefore unload the diagram model when the diagram editor is closed (see
+		 * org.eclipse.sphinx.gmf.runtime.ui.editor.document.BasicDocumentProvider.DiagramElementInfo#dispose() for
+		 * details) and consequently must prompt the user to save the latter when closing the diagram editor while it is
+		 * still dirty.
+		 */
+		return super.isSaveOnCloseNeeded();
 	}
 
 	/*
