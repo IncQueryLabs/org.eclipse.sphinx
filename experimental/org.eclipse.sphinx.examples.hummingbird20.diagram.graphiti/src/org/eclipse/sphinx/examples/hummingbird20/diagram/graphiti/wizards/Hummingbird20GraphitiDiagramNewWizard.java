@@ -27,7 +27,7 @@ import org.eclipse.sphinx.graphiti.workspace.metamodel.GraphitiMMDescriptor;
 import org.eclipse.sphinx.graphiti.workspace.ui.wizards.AbstractGraphitiDiagramNewWizard;
 import org.eclipse.ui.IWorkbench;
 
-public class HummingBird20GraphitiDiagramNewWizard extends AbstractGraphitiDiagramNewWizard {
+public class Hummingbird20GraphitiDiagramNewWizard extends AbstractGraphitiDiagramNewWizard {
 
 	protected static final String MODEL_WIZARD_NAME = "Hummingbird20"; //$NON-NLS-1$
 
@@ -35,15 +35,15 @@ public class HummingBird20GraphitiDiagramNewWizard extends AbstractGraphitiDiagr
 
 	protected static final List<String> BO_FILE_EXTENSIONS = Collections.singletonList("typemodel"); //$NON-NLS-1$
 
-	public HummingBird20GraphitiDiagramNewWizard() {
-		super();
+	public Hummingbird20GraphitiDiagramNewWizard() {
+		super(Hummingbird20MMDescriptor.INSTANCE);
 	}
 
 	@Override
 	protected void setEditPluginActivator() {
 		editPlugin = org.eclipse.sphinx.examples.hummingbird20.edit.Activator.INSTANCE;
 	}
-
+	
 	@Override
 	protected void initMetamodelPackage() {
 		metamodelPackage = TypeModel20Package.eINSTANCE;
@@ -55,18 +55,11 @@ public class HummingBird20GraphitiDiagramNewWizard extends AbstractGraphitiDiagr
 	}
 
 	@Override
-	protected void initEMFContentType() {
-		emfContentType = Hummingbird20MMDescriptor.XMI_CONTENT_TYPE_ID;
-	}
-
-	@Override
 	protected void initDiagramType() {
 		graphitiDiagramType = Hummingbird20PlatformDiagramTypeProvider.DIAGRAM_TYPE_TYPE;
 	}
 
-	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		this.workbench = workbench;
 		this.selection = selection;
 		// Create the first page
 		createFileCreationPage(MODEL_WIZARD_NAME, FILE_EXTENSIONS);

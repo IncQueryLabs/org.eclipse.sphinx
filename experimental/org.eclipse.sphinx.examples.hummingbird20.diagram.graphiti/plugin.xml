@@ -56,7 +56,7 @@ Contributors:
        <!-- handle diagram creation from scratch with a root selected by user -->
      <wizard
            category="org.eclipse.sphinx.examples.common.ui.newWizards.category.sphinxExampleWizards"
-           class="org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.wizards.HummingBird20GraphitiDiagramNewWizard"
+           class="org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.wizards.Hummingbird20GraphitiDiagramNewWizard"
            hasPages="true"
            icon="icons/wizban16/CreateFile.png"
            id="org.eclipse.sphinx.examples.hummingbird20.diagram.platform.newWizard2"

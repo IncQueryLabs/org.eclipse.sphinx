@@ -20,16 +20,22 @@ import java.util.List;
 
 import org.eclipse.emf.edit.ui.provider.ExtendedImageRegistry;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird20.diagram.graphiti.internal.Activator;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
 import org.eclipse.sphinx.graphiti.workspace.ui.wizards.AbstractGraphitiDiagramNewWizard;
 import org.eclipse.ui.IWorkbench;
 
+// FIXME Derive this class directly from AbstractModelNewWizard and move it to org.eclipse.sphinx.examples.hummingbird20.ide.ui
 public class Hummingbird20EMFModelNewWizard extends AbstractGraphitiDiagramNewWizard {
 
 	protected static final String MODEL_WIZARD_NAME = "Hummingbird20"; //$NON-NLS-1$
 	public static List<String> FILE_EXTENSIONS = Collections.unmodifiableList(Arrays.asList(Activator.INSTANCE.getString(
 			"_UI_DefaultModelEditorFilenameExtensions").split("\\s*,\\s*"))); //$NON-NLS-1$ //$NON-NLS-2$;
+
+	public Hummingbird20EMFModelNewWizard() {
+		super(Hummingbird20MMDescriptor.INSTANCE);
+	}
 
 	@Override
 	protected void initMetamodelPackage() {
@@ -41,9 +47,11 @@ public class Hummingbird20EMFModelNewWizard extends AbstractGraphitiDiagramNewWi
 		metamodelFactory = TypeModel20Package.eINSTANCE.getTypeModel20Factory();
 	}
 
-	@Override
+	/*
+	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench,
+	 * org.eclipse.jface.viewers.IStructuredSelection)
+	 */
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		this.workbench = workbench;
 		this.selection = selection;
 		setDefaultPageImageDescriptor(ExtendedImageRegistry.INSTANCE.getImageDescriptor(Activator.INSTANCE.getImage("wizban16/NewModel"))); //$NON-NLS-1$
 		// Create the first page
@@ -55,21 +63,15 @@ public class Hummingbird20EMFModelNewWizard extends AbstractGraphitiDiagramNewWi
 	}
 
 	@Override
-	protected void initEMFContentType() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	protected void initDiagramType() {
 		// TODO Auto-generated method stub
 	}
-
+	
 	@Override
 	protected void setEditPluginActivator() {
 		// TODO Auto-generated method stub
-
 	}
-
+	
 	@Override
 	protected void initFileExtensions() {
 		FILE_EXTENSIONS = Collections.unmodifiableList(Arrays.asList(editPlugin
