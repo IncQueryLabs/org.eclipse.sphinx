@@ -28,6 +28,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 /**
  * The Class BasicCreateDiagramWizard.
  */
+// TODO Merge this class into AbstractDiagramNewWizard and create model file or not depending on selection
 public abstract class AbstractCreateDiagramWizard extends BasicNewResourceWizard {
 
 	private static final String WIZARD_WINDOW_TITLE = "New Diagram"; //$NON-NLS-1$

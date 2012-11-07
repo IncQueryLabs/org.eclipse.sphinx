@@ -19,7 +19,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sphinx.graphiti.workspace;visibility:=reexport,
  org.eclipse.sphinx.emf.explorer;visibility:=reexport,
  org.eclipse.graphiti.examples.common,
- org.eclipse.sphinx.emf.wizard
+ org.eclipse.sphinx.emf.ui.wizards
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.sphinx.graphiti.workspace.ui,

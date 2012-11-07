@@ -16,17 +16,12 @@
 package org.eclipse.sphinx.graphiti.workspace.ui.util;
 
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -40,15 +35,12 @@ import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
-import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.graphiti.workspace.metamodel.GraphitiMMDescriptor;
 import org.eclipse.sphinx.graphiti.workspace.ui.editors.BasicGraphitiDiagramEditor;
 import org.eclipse.sphinx.graphiti.workspace.ui.internal.Activator;
-import org.eclipse.sphinx.graphiti.workspace.util.GraphitiResourceUtil;
-import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
@@ -89,14 +81,16 @@ public class DiagramUtil {
 	 * @return
 	 */
 	public static IEditorPart openDiagramEditor(final Diagram diagram, String editorID) {
-		String providerId = GraphitiUi.getExtensionManager().getDiagramTypeProviderId(diagram.getDiagramTypeId());
-		DiagramEditorInput editorInput = new DiagramEditorInput(EcoreUtil.getURI(diagram), providerId);
-		try {
-			return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(editorInput, editorID);
-		} catch (PartInitException e) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), "An error occured while opening default Graphiti editor!"); //$NON-NLS-1$
-			return null;
+		if (diagram != null) {
+			String providerId = GraphitiUi.getExtensionManager().getDiagramTypeProviderId(diagram.getDiagramTypeId());
+			DiagramEditorInput editorInput = new DiagramEditorInput(EcoreUtil.getURI(diagram), providerId);
+			try {
+				return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(editorInput, editorID);
+			} catch (PartInitException ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			}
 		}
+		return null;
 	}
 
 	public static PictogramLink createPictogramLink(Diagram diagram) {
@@ -121,41 +115,18 @@ public class DiagramUtil {
 	 * @return
 	 */
 	public static Diagram createDiagram(IPath containerPath, String diagramFileName, String diagramType, EObject diagramBusinessObject) {
+		Diagram diagram = Graphiti.getPeCreateService().createDiagram(diagramType, diagramFileName, true);
 
-		IContainer container = (IContainer) ResourcesPlugin.getWorkspace().getRoot().findMember(containerPath);
-		if (container == null || !container.isAccessible()) {
-			// NoAccessibleContainerFoundError
-			String error = "CreateDiagramWizard_NoAccessibleContainerFoundError=Diagram Container is not accessible!"; //$NON-NLS-1$
-			IStatus status = new Status(IStatus.ERROR, Activator.getDefault().getSymbolicName(), error);
-			// NoContainerFoundErrorTitle
-			ErrorDialog.openError(ExtendedPlatformUI.getActiveShell(), "No Container Found", null, status); //$NON-NLS-1$
-			return null;
-		}
-
-		final Diagram diagram = Graphiti.getPeCreateService().createDiagram(diagramType, diagramFileName, true);
-
-		// ------ link the DIAGRAM to the root business model
+		// Link the diagram to the root business model
 		PictogramLink link = createPictogramLink(diagram);
 		link.getBusinessObjects().add(diagramBusinessObject);
 
-		final TransactionalEditingDomain domain = WorkspaceEditingDomainUtil.getEditingDomain(diagramBusinessObject);
-		IFile diagramFile = container.getFile(new Path(diagramFileName));
-		final URI uri = URI.createPlatformResourceURI(diagramFile.getFullPath().toString(), true);
-
-		try {
-			WorkspaceTransactionUtil.executeInWriteTransaction(domain, new Runnable() {
-				public void run() {
-					EcoreResourceUtil.saveNewModelResource(domain.getResourceSet(), uri, GraphitiMMDescriptor.GRAPHITI_DIAGRAM_CONTENT_TYPE_ID,
-							diagram, GraphitiResourceUtil.getSaveOptions());
-				}
-			}, "Saving diagram..."); //$NON-NLS-1$
-		} catch (OperationCanceledException ex) {
-
-		} catch (ExecutionException ex) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-		}
+		// Save diagram to new file
+		IFile diagramFile = ResourcesPlugin.getWorkspace().getRoot().getFile(containerPath.append(diagramFileName));
+		TransactionalEditingDomain domain = WorkspaceEditingDomainUtil.getEditingDomain(diagramBusinessObject);
+		EcorePlatformUtil.saveNewModelResource(domain, diagramFile.getFullPath(), GraphitiMMDescriptor.GRAPHITI_DIAGRAM_CONTENT_TYPE_ID, diagram,
+				false, null);
 		return diagram;
-
 	}
 
 	/**
