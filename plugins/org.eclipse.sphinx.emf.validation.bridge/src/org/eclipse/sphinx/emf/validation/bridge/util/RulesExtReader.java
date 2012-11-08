@@ -58,8 +58,10 @@ public class RulesExtReader {
 
 		IConfigurationElement[] configurationElement = ext.getConfigurationElements();
 
-		for (int j = 0; j < configurationElement.length; ++j) {
-			internalReadElement(configurationElement[j], tgt);
+		// FIXME In case that multiple models (alias configuration elements) are contributed via same extension, only
+		// the last one gets captured in through tgt variable
+		for (IConfigurationElement element : configurationElement) {
+			internalReadElement(element, tgt);
 		}
 
 		return tgt;
@@ -69,8 +71,8 @@ public class RulesExtReader {
 		boolean recognized = readElement(element, tgt);
 		if (recognized) {
 			IConfigurationElement[] children = element.getChildren();
-			for (int i = 0; i < children.length; ++i) {
-				internalReadElement(children[i], tgt);
+			for (IConfigurationElement element2 : children) {
+				internalReadElement(element2, tgt);
 			}
 		} else {
 			tgt = null;
