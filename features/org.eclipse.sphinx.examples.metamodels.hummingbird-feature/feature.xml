@@ -172,6 +172,20 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.sphinx.examples.hummingbird20.validation"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.examples.hummingbird20.validation.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.sphinx.examples.hummingbird10.ide.ui"
          download-size="0"
          install-size="0"
