@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2011 See4Sys, itemis and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,8 @@
  *     itemis - Improved application of changed proxy URI to model so as to enable consistent update of the model's dirty state 
  *              without needing to invoke org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager#notifyDirtyChanged(Object) 
  *              and introducing dependency from EMF Runtime Extensions to Workspace Management
- * 
+ *     itemis - [393869] Proxy objects should be removed from model when users delete proxy URI displayed as target for a model 
+ *                       object references in advanced property sheet page
  * </copyright>
  */
 package org.eclipse.sphinx.emf.ui.properties;
