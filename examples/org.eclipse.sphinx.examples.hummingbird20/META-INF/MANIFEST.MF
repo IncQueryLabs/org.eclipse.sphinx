@@ -23,5 +23,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.sphinx.emf;visibility:=reexport,
  org.eclipse.sphinx.examples.hummingbird.ide;visibility:=reexport,
- org.eclipse.emf.ecore.xmi;visibility:=reexport
+ org.eclipse.emf.ecore.xmi;visibility:=reexport,
+ org.eclipse.sphinx.emf.validation
 Bundle-ActivationPolicy: lazy
