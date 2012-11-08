@@ -73,7 +73,7 @@ public final class Activator extends EMFPlugin {
 	/**
 	 * The actual implementation of the Eclipse <b>Plugin</b>. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public static class Implementation extends EclipsePlugin {
 		/**

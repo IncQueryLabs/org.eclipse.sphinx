@@ -92,8 +92,8 @@ Contributors:
                   severity="ERROR"
                   mode="Live"
                   statusCode="103">
-               <description>Checks if the names of interface elements within the same platform are unique.</description>
-               <message>The interface element "{0}" has the same name as another interface element within same platform.</message>
+               <description>Checks if the names of all interfaces within the same platform are unique.</description>
+               <message>The interface "{0}" has the same name as another interface within same platform.</message>
                <target class="Interface">
                   <event name="Set">
                      <feature name="name"/>
@@ -116,8 +116,8 @@ Contributors:
                   severity="ERROR"
                   mode="Live"
                   statusCode="103">
-               <description>Checks if the names of interface elements within the same platform are unique.</description>
-               <message>The interface element "{0}" has the same name as another interface element within same platform.</message>
+               <description>Checks if the names of all interfaces within the same platform are unique.</description>
+               <message>The interface "{0}" has the same name as another interface within same platform.</message>
                <target class="Interface">
                   <event name="Set">
                      <feature name="name"/>
@@ -126,6 +126,30 @@ Contributors:
                     <feature name="name" />
                   </event>
                </target>
+            </constraint>
+            
+            <constraint
+                  id="org.eclipse.sphinx.examples.hummingbird20.validation.constraints.targetComponentOfConnectionsMustProvideInterfaceRequiredByTheirSourcePort"
+                  name="Target component of connections must provide interface required by their source port"
+                  lang="OCL"
+                  severity="ERROR"
+                  mode="Live"
+                  statusCode="104">
+               <description>Checks if the target component of connections provides the interface that is required by their source port.</description>
+               <message>The target component of connection "{0}" does not provide the interface that is required by its source port.</message>
+               <target class="Connection">
+                  <event name="Set">
+                     <feature name="targetComponent"/>
+                  </event>
+                  <event name="Unset">
+                    <feature name="targetComponent" />
+                  </event>
+               </target>
+         
+               <![CDATA[
+                  targetComponent.type.providedInterfaces->includes(sourcePort.requiredInterface)
+               ]]>
+        
             </constraint>
          </constraints>
       </constraintProvider>           
