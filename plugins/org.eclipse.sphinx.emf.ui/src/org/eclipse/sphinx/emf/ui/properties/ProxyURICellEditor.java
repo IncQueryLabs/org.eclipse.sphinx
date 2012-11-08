@@ -66,11 +66,21 @@ public class ProxyURICellEditor extends TextCellEditor {
 		}
 
 		public Object toObject(String valueAsString) {
-			URI proxyURI = URI.createURI(valueAsString);
-			if (!proxyURI.equals(((InternalEObject) value).eProxyURI())) {
-				EFactory factory = value.eClass().getEPackage().getEFactoryInstance();
-				value = factory.create(value.eClass());
-				((InternalEObject) value).eSetProxyURI(proxyURI);
+			if (valueAsString.length() > 0) {
+				// A new proxy URI has been entered; check if it is different from previous one and create a new
+				// corresponding proxy object to get the old one replaced with if so
+				URI proxyURI = URI.createURI(valueAsString);
+				if (value == null || !proxyURI.equals(((InternalEObject) value).eProxyURI())) {
+					EFactory factory = value.eClass().getEPackage().getEFactoryInstance();
+					value = factory.create(value.eClass());
+					((InternalEObject) value).eSetProxyURI(proxyURI);
+				}
+			} else {
+				// Proxy URI has been deleted; check if a proxy URI still existed previously and set proxy object to
+				// null to get the old one removed from model if so
+				if (value != null) {
+					value = null;
+				}
 			}
 			return value;
 		}
