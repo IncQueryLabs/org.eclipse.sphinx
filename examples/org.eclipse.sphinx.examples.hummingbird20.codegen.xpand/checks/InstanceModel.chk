@@ -22,5 +22,5 @@ context instancemodel::ParameterValue
 		value != null && name.length > 0;
 
 context instancemodel::Connection
-	ERROR "Target component '" + targetComponent.name + "' of connection '" + name + "' does not implement interface '" + sourcePort.requiredInterface.name + "' required by source port '" + sourcePort.name + "'" :
+	ERROR "Target component '" + targetComponent.name + "' of connection '" + name + "' does not provide interface '" + sourcePort.requiredInterface.name + "' required by source port '" + sourcePort.name + "'" :
 		targetComponent.type.providedInterfaces.contains(sourcePort.requiredInterface);
