@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
+ * Copyright (c) 2008-2012 itemis, See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Avoid usage of Object.finalize
+ *     itemis - [393268] - [EMF Workspace] The Workspace Model Save Manager should handle pre save actions before saving models
  * 
  * </copyright>
  */
@@ -62,7 +63,12 @@ public class ModelSaveManager {
 	/**
 	 * Listeners of model's dirty state changes.
 	 */
-	private Collection<IModelDirtyChangeListener> modelDirtyChangeListeners = new ArrayList<IModelDirtyChangeListener>();
+	private Collection<IModelSaveLifecycleListener> modelDirtyChangeListeners = new ArrayList<IModelSaveLifecycleListener>();
+
+	/**
+	 * Listeners of model's pre-save.
+	 */
+	private Collection<IModelSaveLifecycleListener> modelPreSaveListeners = new ArrayList<IModelSaveLifecycleListener>();
 
 	private IURIChangeListener uriChangeListener = new IURIChangeListener() {
 		public void uriChanged(URIChangeEvent event) {
@@ -115,7 +121,7 @@ public class ModelSaveManager {
 	 * @param listener
 	 *            the listener to add.
 	 */
-	public void addModelDirtyChangedListener(IModelDirtyChangeListener listener) {
+	public void addModelDirtyChangedListener(IModelSaveLifecycleListener listener) {
 		modelDirtyChangeListeners.add(listener);
 	}
 
@@ -125,8 +131,28 @@ public class ModelSaveManager {
 	 * @param listener
 	 *            the listener to remove.
 	 */
-	public void removeModelDirtyChangedListener(IModelDirtyChangeListener listener) {
+	public void removeModelDirtyChangedListener(IModelSaveLifecycleListener listener) {
 		modelDirtyChangeListeners.remove(listener);
+	}
+
+	/**
+	 * Adds a listener to this model save manager, which will be notified whenever the model is pre-saving.
+	 * 
+	 * @param listener
+	 *            the listener to add.
+	 */
+	public void addModelPreSaveListener(IModelSaveLifecycleListener listener) {
+		modelPreSaveListeners.add(listener);
+	}
+
+	/**
+	 * Removes a IModelSaveLifecycleListener from this model save manager.
+	 * 
+	 * @param listener
+	 *            the listener to remove.
+	 */
+	public void removeModelPreSaveListener(IModelSaveLifecycleListener listener) {
+		modelPreSaveListeners.remove(listener);
 	}
 
 	/**
@@ -140,7 +166,34 @@ public class ModelSaveManager {
 			return;
 		}
 
+		for (IModelSaveLifecycleListener listener : modelDirtyChangeListeners) {
+			for (IModelDescriptor modelDescriptor : getModelDescriptors(source)) {
+				listener.handleDirtyChangedEvent(modelDescriptor);
+			}
+		}
+	}
+
+	/**
+	 * Notifies listeners that given source object's should be pre-saved.
+	 * 
+	 * @param source
+	 *            The source object to be saved.
+	 */
+	public void notifyPreSave(Object source) {
+		if (source == null) {
+			return;
+		}
+
+		for (IModelSaveLifecycleListener listener : modelPreSaveListeners) {
+			for (IModelDescriptor modelDescriptor : getModelDescriptors(source)) {
+				listener.handlePreSaveEvent(modelDescriptor);
+			}
+		}
+	}
+
+	protected Set<IModelDescriptor> getModelDescriptors(Object source) {
 		Set<IModelDescriptor> modelDescriptors = new HashSet<IModelDescriptor>();
+
 		if (source instanceof IModelDescriptor) {
 			modelDescriptors.add((IModelDescriptor) source);
 		} else if (source instanceof IContainer) {
@@ -157,14 +210,8 @@ public class ModelSaveManager {
 				String reason = NLS.bind(Messages.error_unexpectedSourceType, source.getClass().getSimpleName());
 				PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException(PlatformMessages.error_caseNotYetSupported + "\n" + reason)); //$NON-NLS-1$
 			}
-
 		}
-
-		for (IModelDirtyChangeListener listener : modelDirtyChangeListeners) {
-			for (IModelDescriptor modelDescriptor : modelDescriptors) {
-				listener.handleDirtyChangedEvent(modelDescriptor);
-			}
-		}
+		return modelDescriptors;
 	}
 
 	/**
@@ -327,6 +374,7 @@ public class ModelSaveManager {
 	}
 
 	public void saveModel(Resource contextResource, Map<?, ?> saveOptions, boolean async, IProgressMonitor monitor) {
+		notifyPreSave(contextResource);
 		EcorePlatformUtil.saveModel(contextResource, saveOptions, async, monitor);
 		notifyDirtyChanged(contextResource);
 	}
@@ -334,7 +382,7 @@ public class ModelSaveManager {
 	/**
 	 * Saves all modified resources of the model behind given {@linkplain IModelDescriptor model descriptor}.
 	 * 
-	 * @param descriptor
+	 * @param modelDescriptor
 	 *            The descriptor of the model to save.
 	 * @param async
 	 *            If <code>true</code>, model will be saved within a workspace job.
@@ -345,7 +393,20 @@ public class ModelSaveManager {
 		saveModel(modelDescriptor, EcoreResourceUtil.getDefaultSaveOptions(), async, monitor);
 	}
 
+	/**
+	 * Saves all modified resources of the model behind given {@linkplain IModelDescriptor model descriptor}.
+	 * 
+	 * @param modelDescriptor
+	 *            The descriptor of the model to save.
+	 * @param saveOptions
+	 *            the save options to be used.
+	 * @param async
+	 *            If <code>true</code>, model will be saved within a workspace job.
+	 * @param monitor
+	 *            The progress monitor to use for showing save process progress.
+	 */
 	public void saveModel(IModelDescriptor modelDescriptor, Map<?, ?> saveOptions, boolean async, IProgressMonitor monitor) {
+		notifyPreSave(modelDescriptor);
 		EcorePlatformUtil.saveModel(modelDescriptor, saveOptions, async, monitor);
 		notifyDirtyChanged(modelDescriptor);
 	}
@@ -365,7 +426,21 @@ public class ModelSaveManager {
 		saveProject(project, EcoreResourceUtil.getDefaultSaveOptions(), async, monitor);
 	}
 
+	/**
+	 * Saves all modified resources of all models behind given project.
+	 * 
+	 * @param project
+	 *            The project whose models are to be saved.
+	 * @param saveOptions
+	 *            the save options to be used.
+	 * @param async
+	 *            If <code>true</code>, models will be saved within a workspace job.
+	 * @param monitor
+	 *            The progress monitor to use for showing save process progress.
+	 * @since 0.7.0
+	 */
 	public void saveProject(IProject project, Map<?, ?> saveOptions, boolean async, IProgressMonitor monitor) {
+		notifyPreSave(project);
 		EcorePlatformUtil.saveProject(project, saveOptions, async, monitor);
 		notifyDirtyChanged(project);
 	}

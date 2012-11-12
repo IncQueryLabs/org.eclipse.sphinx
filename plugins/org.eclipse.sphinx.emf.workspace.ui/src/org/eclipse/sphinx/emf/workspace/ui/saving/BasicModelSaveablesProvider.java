@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393268] - [EMF Workspace] The Workspace Model Save Manager should handle pre save actions before saving models
  * 
  * </copyright>
  */
@@ -29,7 +30,7 @@ import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.IModelDescriptorChangeListener;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.emf.workspace.saving.IModelDirtyChangeListener;
+import org.eclipse.sphinx.emf.workspace.saving.IModelSaveLifecycleListener;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.swt.widgets.Display;
@@ -114,7 +115,7 @@ public class BasicModelSaveablesProvider extends SaveablesProvider implements IM
 	/**
 	 * The listener to notify when model dirty state changes.
 	 */
-	private IModelDirtyChangeListener modelDirtyChangeListener;
+	private IModelSaveLifecycleListener modelDirtyChangeListener;
 
 	/**
 	 * Returns whether at least one saveable is dirty (among saveables managed by this provider).
@@ -136,24 +137,28 @@ public class BasicModelSaveablesProvider extends SaveablesProvider implements IM
 	}
 
 	/**
-	 * Creates a new {@link IModelDirtyChangeListener}.
+	 * Creates a new {@link IModelSaveLifecycleListener}.
 	 * 
-	 * @return The model dirty state change listener.
+	 * @return The model life cycle listener that handle the dirty state change listener.
 	 */
-	protected IModelDirtyChangeListener createModelDirtyChangeListener() {
-		return new IModelDirtyChangeListener() {
+	protected IModelSaveLifecycleListener createModelSaveLifecycleListener() {
+		return new IModelSaveLifecycleListener() {
 			public void handleDirtyChangedEvent(IModelDescriptor modelDescriptor) {
 				Saveable saveable = getSaveable(modelDescriptor);
 				if (saveable != null) {
 					fireSaveablesLifecycleEventUIThread(saveable, SaveablesLifecycleEvent.DIRTY_CHANGED, true);
 				}
 			}
+
+			public void handlePreSaveEvent(IModelDescriptor modelDescriptor) {
+				// Do nothing by default.
+			}
 		};
 	}
 
 	@Override
 	protected void doInit() {
-		modelDirtyChangeListener = createModelDirtyChangeListener();
+		modelDirtyChangeListener = createModelSaveLifecycleListener();
 		ModelSaveManager.INSTANCE.addModelDirtyChangedListener(modelDirtyChangeListener);
 		ModelDescriptorRegistry.INSTANCE.addModelDescriptorChangeListener(this);
 	}

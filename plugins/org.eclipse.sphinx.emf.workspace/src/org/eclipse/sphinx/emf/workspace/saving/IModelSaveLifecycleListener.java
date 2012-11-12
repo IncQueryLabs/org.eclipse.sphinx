@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [393268] - [EMF Workspace] The Workspace Model Save Manager should handle pre save actions before saving models
  * 
  * </copyright>
  */
@@ -17,10 +18,11 @@ package org.eclipse.sphinx.emf.workspace.saving;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 
 /**
- * Listener for model dirty state change events. {@linkplain ModelSaveManager} notifies such listeners when the dirty
- * state of a {@linkplain IModelDescriptor model} changes (after a modification or a save).
+ * Listener for model save life cycle, e.g., dirty state change or pre-save events. {@linkplain ModelSaveManager}
+ * notifies such listeners when the dirty state of a {@linkplain IModelDescriptor model} changes (after a modification
+ * or a save).
  */
-public interface IModelDirtyChangeListener {
+public interface IModelSaveLifecycleListener {
 
 	/**
 	 * Handles the dirty state changed event that deals with the model whose corresponding descriptor is given in
@@ -38,4 +40,13 @@ public interface IModelDirtyChangeListener {
 	 * @since 0.7.0
 	 */
 	void handleDirtyChangedEvent(IModelDescriptor modelDescriptor);
+
+	/**
+	 * Handles the model pre-save event that deals with the model whose corresponding descriptor is given in parameter.
+	 * 
+	 * @param modelDescriptor
+	 *            The descriptor of the model to save.
+	 * @since 0.7.0
+	 */
+	void handlePreSaveEvent(IModelDescriptor modelDescriptor);
 }
