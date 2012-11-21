@@ -36,17 +36,20 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Pa
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.edit.ComponentItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.edit.InstanceModel20ItemProviderAdapterFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.ui.forms.widgets.ExpandableComposite;
+import org.eclipse.ui.forms.widgets.Section;
 
 public class ParameterValuesXViewerSection extends BasicXViewerSection {
 
 	private static final String XCOL_ID_EXTRA_INFO = "ExtraInfo"; //$NON-NLS-1$
 
 	public ParameterValuesXViewerSection(AbstractFormPage formPage, Object sectionInput) {
-		this(formPage, sectionInput, SWT.NONE);
+		this(formPage, sectionInput, Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 	}
 
 	public ParameterValuesXViewerSection(AbstractFormPage formPage, Object sectionInput, int style) {
 		super(formPage, sectionInput, InstanceModel20Factory.eINSTANCE.createParameterValue(), style);
+
 		title = Messages.title_ParameterValues_Section;
 		description = Messages.desc_ParameterValues_Section;
 	}
@@ -69,6 +72,7 @@ public class ParameterValuesXViewerSection extends BasicXViewerSection {
 								super.getChildrenFeatures(object);
 								// Consider only parameter value children of component
 								childrenFeatures.remove(InstanceModel20Package.Literals.COMPONENT__OUTGOING_CONNECTIONS);
+								childrenFeatures.remove(InstanceModel20Package.Literals.COMPONENT__PARAMETER_EXPRESSIONS);
 							}
 							return childrenFeatures;
 						};
