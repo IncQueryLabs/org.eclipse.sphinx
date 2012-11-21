@@ -29,6 +29,7 @@ import org.eclipse.nebula.widgets.xviewer.XViewer;
 import org.eclipse.nebula.widgets.xviewer.XViewerColumn;
 import org.eclipse.nebula.widgets.xviewer.XViewerColumn.SortDataType;
 import org.eclipse.nebula.widgets.xviewer.XViewerFactory;
+import org.eclipse.nebula.widgets.xviewer.XViewerTextFilter;
 import org.eclipse.nebula.widgets.xviewer.edit.XViewerEditAdapter;
 import org.eclipse.sphinx.emf.editors.forms.BasicTransactionalFormEditor;
 import org.eclipse.sphinx.emf.editors.forms.nebula.providers.BasicModelXViewerLabelProvider;
@@ -40,6 +41,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.SectionPart;
+import org.eclipse.ui.forms.widgets.ExpandableComposite;
+import org.eclipse.ui.forms.widgets.Section;
 
 // TODO Provide this as a field rather than a section
 public class BasicXViewerSection extends AbstractViewerFormSection {
@@ -49,7 +52,7 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 	protected XViewerFactory xViewerFactory;
 
 	public BasicXViewerSection(AbstractFormPage formPage, Object sectionInput, EObject exampleValue) {
-		this(formPage, sectionInput, exampleValue, SWT.NONE);
+		this(formPage, sectionInput, exampleValue, Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 	}
 
 	public BasicXViewerSection(AbstractFormPage formPage, Object sectionInput, EObject exampleValue, int style) {
@@ -61,7 +64,7 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 	}
 
 	public BasicXViewerSection(AbstractFormPage formPage, Object sectionInput, XViewerFactory xViewerFactory) {
-		this(formPage, sectionInput, xViewerFactory, SWT.NONE);
+		this(formPage, sectionInput, xViewerFactory, Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 	}
 
 	public BasicXViewerSection(AbstractFormPage formPage, Object sectionInput, XViewerFactory xViewerFactory, int style) {
@@ -111,6 +114,11 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 				selection = !SelectionUtil.getStructuredSelection(selection).isEmpty() ? selection : formEditor.getDefaultSelection();
 				super.setSelection(selection);
 			}
+
+			@Override
+			public XViewerTextFilter getXViewerTextFilter() {
+				return createXViewerTextFilter(this);
+			}
 		};
 
 		// Adds editing support
@@ -127,6 +135,13 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 	 */
 	protected XViewerEditAdapter createXViewerEditAdapter() {
 		return null;
+	}
+
+	/**
+	 * Override to provide extended filter capabilities.
+	 */
+	protected XViewerTextFilter createXViewerTextFilter(XViewer xViewer) {
+		return new XViewerTextFilter(xViewer);
 	}
 
 	protected XViewerFactory createXViewerFactory() {
