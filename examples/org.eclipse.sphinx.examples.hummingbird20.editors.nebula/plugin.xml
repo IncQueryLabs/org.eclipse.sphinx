@@ -11,5 +11,30 @@
             name="%sphinx.examples.hummingbird20.editors.nebula.parameterValues.name">
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
+      <propertyContributor
+            contributorId="org.eclipse.sphinx.examples.hummingbird20.editors.nebula.parameterValues"
+            labelProvider="org.eclipse.sphinx.emf.ui.properties.BasicTabbedPropertySheetTitleProvider">
+         <propertyCategory
+               category="advanced"></propertyCategory>
+      </propertyContributor>
+   </extension>
+   <extension point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
+    <propertyTabs contributorId="org.eclipse.sphinx.examples.hummingbird20.editors.nebula.parameterValues">
+      <propertyTab label="Advanced"
+                   category="advanced"
+                   id="org.eclipse.sphinx.examples.hummingbird20.editors.nebula.propertyTabs.advanced" />
+      </propertyTabs>
+  </extension>
+  <extension point="org.eclipse.ui.views.properties.tabbed.propertySections">
+    <propertySections contributorId="org.eclipse.sphinx.examples.hummingbird20.editors.nebula.parameterValues">
+      <propertySection class="org.eclipse.sphinx.emf.ui.properties.BasicTransactionalAdvancedPropertySection"
+                       id="org.eclipse.sphinx.examples.hummingbird20.editors.nebula.propertySections.advanced"
+                       tab="org.eclipse.sphinx.examples.hummingbird20.editors.nebula.propertyTabs.advanced">
+        <input type="java.lang.Object" />
+      </propertySection>
+    </propertySections>
+  </extension>
 
 </plugin>

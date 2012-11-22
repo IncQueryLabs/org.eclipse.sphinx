@@ -33,21 +33,22 @@ import org.eclipse.sphinx.emf.editors.forms.pages.AbstractFormPage;
 import org.eclipse.sphinx.examples.hummingbird20.editors.nebula.messages.Messages;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.edit.ComponentItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.edit.InstanceModel20ItemProviderAdapterFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
 
-public class ParameterValuesXViewerSection extends BasicXViewerSection {
+public class GenericParameterValuesXViewerSection extends BasicXViewerSection {
 
 	private static final String XCOL_ID_EXTRA_INFO = "ExtraInfo"; //$NON-NLS-1$
 
-	public ParameterValuesXViewerSection(AbstractFormPage formPage, Object sectionInput) {
+	public GenericParameterValuesXViewerSection(AbstractFormPage formPage, Object sectionInput) {
 		this(formPage, sectionInput, Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 	}
 
-	public ParameterValuesXViewerSection(AbstractFormPage formPage, Object sectionInput, int style) {
+	public GenericParameterValuesXViewerSection(AbstractFormPage formPage, Object sectionInput, int style) {
 		super(formPage, sectionInput, InstanceModel20Factory.eINSTANCE.createParameterValue(), style);
 
 		title = Messages.title_ParameterValues_Section;
@@ -121,7 +122,6 @@ public class ParameterValuesXViewerSection extends BasicXViewerSection {
 	/**
 	 * Addition of an extra column which displaying some calculated information that not part of the model.
 	 */
-
 	@Override
 	protected void registerColumns(XViewerFactory xViewerFactory) {
 		super.registerColumns(xViewerFactory);
@@ -134,11 +134,9 @@ public class ParameterValuesXViewerSection extends BasicXViewerSection {
 		return new BasicModelXViewerLabelProvider((XViewer) viewer, formPage.getItemDelegator()) {
 			@Override
 			public String getColumnText(Object element, XViewerColumn xCol, int columnIndex) throws Exception {
-				// FIXME
-				// if (element instanceof ParameterValue && XCOL_ID_EXTRA_INFO.equals(xCol.getId())) {
-				//					String extraDecimalInfoAsString = "0.117"; //$NON-NLS-1$
-				// return new DecimalFormat("0.00").format(extraDecimalInfoAsString);
-				// }
+				if (element instanceof ParameterValue && XCOL_ID_EXTRA_INFO.equals(xCol.getId())) {
+					return "0.17"; //$NON-NLS-1$
+				}
 				return super.getColumnText(element, xCol, columnIndex);
 			}
 		};

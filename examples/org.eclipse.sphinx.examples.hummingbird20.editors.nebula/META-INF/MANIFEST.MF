@@ -6,7 +6,12 @@ Bundle-Version: 0.7.0.qualifier
 Bundle-Localization: plugin
 Bundle-Vendor: %providerName
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.sphinx.examples.hummingbird20.editors.nebula.internal;x-internal:=true,
+Export-Package: org.eclipse.sphinx.examples.hummingbird20.editors.nebula,
+ org.eclipse.sphinx.examples.hummingbird20.editors.nebula.factory,
+ org.eclipse.sphinx.examples.hummingbird20.editors.nebula.internal;x-internal:=true,
+ org.eclipse.sphinx.examples.hummingbird20.editors.nebula.messages,
+ org.eclipse.sphinx.examples.hummingbird20.editors.nebula.pages,
+ org.eclipse.sphinx.examples.hummingbird20.editors.nebula.providers,
  org.eclipse.sphinx.examples.hummingbird20.editors.nebula.sections
 Bundle-Activator: org.eclipse.sphinx.examples.hummingbird20.editors.nebula.internal.Activator$Implementation
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

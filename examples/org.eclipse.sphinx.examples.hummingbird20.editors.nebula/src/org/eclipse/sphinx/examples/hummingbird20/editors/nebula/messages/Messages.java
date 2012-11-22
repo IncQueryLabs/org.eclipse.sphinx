@@ -20,7 +20,8 @@ public class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.examples.hummingbird20.editors.nebula.messages.messages"; //$NON-NLS-1$
 
-	public static String title_ParameterValues_OverviewPage;
+	public static String title_GenericParameterValues_OverviewPage;
+	public static String title_EditableParameterValues_OverviewPage;
 	public static String title_ParameterValues_Section;
 	public static String desc_ParameterValues_Section;
 

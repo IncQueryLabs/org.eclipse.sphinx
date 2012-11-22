@@ -17,20 +17,20 @@ package org.eclipse.sphinx.examples.hummingbird20.editors.nebula.pages;
 import org.eclipse.sphinx.emf.editors.forms.layouts.LayoutFactory;
 import org.eclipse.sphinx.emf.editors.forms.pages.AbstractFormPage;
 import org.eclipse.sphinx.examples.hummingbird20.editors.nebula.messages.Messages;
-import org.eclipse.sphinx.examples.hummingbird20.editors.nebula.sections.ParameterValuesXViewerSection;
+import org.eclipse.sphinx.examples.hummingbird20.editors.nebula.sections.GenericParameterValuesXViewerSection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 
-public class ParameterValuesOverviewPage extends AbstractFormPage {
+public class GenericParameterValuesOverviewPage extends AbstractFormPage {
 
-	ParameterValuesXViewerSection parameterValuesSection;
+	GenericParameterValuesXViewerSection parameterValuesSection;
 
-	public ParameterValuesOverviewPage(FormEditor editor) {
-		super(editor, Messages.title_ParameterValues_OverviewPage);
+	public GenericParameterValuesOverviewPage(FormEditor editor) {
+		super(editor, Messages.title_GenericParameterValues_OverviewPage);
 	}
 
-	public ParameterValuesOverviewPage(FormEditor editor, String title) {
+	public GenericParameterValuesOverviewPage(FormEditor editor, String title) {
 		super(editor, title);
 	}
 
@@ -48,7 +48,7 @@ public class ParameterValuesOverviewPage extends AbstractFormPage {
 		body.setLayout(LayoutFactory.createFormBodyGridLayout(false, 1));
 
 		// Create model contents tree section
-		parameterValuesSection = new ParameterValuesXViewerSection(this, pageInput);
+		parameterValuesSection = new GenericParameterValuesXViewerSection(this, pageInput);
 		parameterValuesSection.createContent(managedForm, body);
 		addSection(parameterValuesSection);
 	}

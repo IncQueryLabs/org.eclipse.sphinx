@@ -24,7 +24,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.sphinx.emf.editors.forms.BasicTransactionalFormEditor;
 import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
 import org.eclipse.sphinx.examples.hummingbird20.editors.nebula.internal.Activator;
-import org.eclipse.sphinx.examples.hummingbird20.editors.nebula.pages.ParameterValuesOverviewPage;
+import org.eclipse.sphinx.examples.hummingbird20.editors.nebula.pages.EditableParameterValuesOverviewPage;
+import org.eclipse.sphinx.examples.hummingbird20.editors.nebula.pages.GenericParameterValuesOverviewPage;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.graphics.Image;
@@ -40,7 +41,8 @@ public class Hummingbird20ComponentFormEditor extends BasicTransactionalFormEdit
 		try {
 			Object input = getModelRoot();
 			if (input instanceof Component) {
-				addPage(new ParameterValuesOverviewPage(this));
+				addPage(new GenericParameterValuesOverviewPage(this));
+				addPage(new EditableParameterValuesOverviewPage(this));
 			}
 		} catch (PartInitException ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
@@ -77,6 +79,6 @@ public class Hummingbird20ComponentFormEditor extends BasicTransactionalFormEdit
 
 	@Override
 	public boolean isSaveAsAllowed() {
-		return false;
+		return true;
 	}
 }
