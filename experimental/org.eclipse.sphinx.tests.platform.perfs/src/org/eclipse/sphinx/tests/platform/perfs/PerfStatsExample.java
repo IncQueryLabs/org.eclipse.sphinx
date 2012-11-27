@@ -18,20 +18,13 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sphinx.platform.perfs.Measurement;
-import org.eclipse.sphinx.platform.perfs.PerformanceStats;
 import org.eclipse.sphinx.platform.perfs.PerfsFactory;
 import org.eclipse.sphinx.platform.perfs.services.ModelPersistenceService;
-import org.eclipse.sphinx.platform.perfs.util.LogUtil;
 
 public class PerfStatsExample {
 
@@ -83,63 +76,6 @@ public class PerfStatsExample {
 		method2Measurement.stop();
 		measurements.add(method2Measurement);
 		return measurements;
-	}
-
-	/**
-	 * Removes obsolete measurements from performance model and adds given measurements instead.
-	 */
-	public static void updatePerfsModel(Resource resource, Collection<Measurement> measurements) {
-		Assert.isNotNull(resource);
-		Assert.isNotNull(measurements);
-
-		// Retrieve performance stats from given resource
-		PerformanceStats performanceStats = null;
-		for (EObject rootObject : resource.getContents()) {
-			if (rootObject instanceof PerformanceStats) {
-				performanceStats = (PerformanceStats) rootObject;
-				break;
-			}
-		}
-
-		// Create new performance stats if no such was existing so far
-		if (performanceStats == null) {
-			performanceStats = PerfsFactory.eINSTANCE.createPerformanceStats();
-			resource.getContents().add(performanceStats);
-		}
-
-		// Remove obsolete measurements
-		for (Iterator<Measurement> iter = performanceStats.getMeasurements().iterator(); iter.hasNext();) {
-			Measurement measurement = iter.next();
-			for (Measurement currentMeasurement : measurements) {
-				if (measurement.getName() != null && measurement.getName().equals(currentMeasurement.getName())) {
-					iter.remove();
-				}
-			}
-		}
-
-		// Add provided measurements
-		performanceStats.getMeasurements().addAll(measurements);
-	}
-
-	public static void logPerfSats(Resource resource) {
-		Assert.isNotNull(resource);
-
-		// Retrieve performance stats from given resource
-		PerformanceStats performanceStats = null;
-		for (EObject rootObject : resource.getContents()) {
-			if (rootObject instanceof PerformanceStats) {
-				performanceStats = (PerformanceStats) rootObject;
-				break;
-			}
-		}
-
-		if (performanceStats != null) {
-			MultiStatus status = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.INFO, "Performance Statistics", null); //$NON-NLS-1$
-			EList<Measurement> measurements = performanceStats.getMeasurements();
-			if (!measurements.isEmpty()) {
-				LogUtil.log(status, measurements);
-			}
-		}
 	}
 
 	/*

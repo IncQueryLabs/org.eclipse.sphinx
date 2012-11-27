@@ -20,6 +20,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.platform.perfs.Measurement;
 import org.eclipse.sphinx.platform.perfs.PerformanceStats;
@@ -98,6 +101,27 @@ public final class LogUtil {
 
 			// Log the result multi status
 			log(status);
+		}
+	}
+
+	public static void log(Resource resource) {
+		Assert.isNotNull(resource);
+
+		// Retrieve performance stats from given resource
+		PerformanceStats performanceStats = null;
+		for (EObject rootObject : resource.getContents()) {
+			if (rootObject instanceof PerformanceStats) {
+				performanceStats = (PerformanceStats) rootObject;
+				break;
+			}
+		}
+
+		if (performanceStats != null) {
+			MultiStatus status = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.INFO, "Performance Statistics", null); //$NON-NLS-1$
+			EList<Measurement> measurements = performanceStats.getMeasurements();
+			if (!measurements.isEmpty()) {
+				LogUtil.log(status, measurements);
+			}
 		}
 	}
 
