@@ -58,8 +58,7 @@ public abstract class AbstractTestCase extends TestCase {
 		 * org.eclipse.ui.internal.progress.ProgressMonitorFocusJobDialog#show(Job, Shell) and
 		 * org.eclipse.jface.dialogs.ProgressMonitorDialog#aboutToRun() for details)
 		 */
-		InstanceScope instanceScope = new InstanceScope();
-		IEclipsePreferences workbenchPrefs = instanceScope.getNode("org.eclipse.ui.workbench");
+		IEclipsePreferences workbenchPrefs = InstanceScope.INSTANCE.getNode("org.eclipse.ui.workbench");
 		workbenchPrefs.put("RUN_IN_BACKGROUND", Boolean.TRUE.toString());
 
 		ignoreLoadProblems = false;

@@ -93,7 +93,6 @@ public class AutoTestSuite {
 				"Exactly one of the system properties 'autotestsuite.plugin.pattern', 'autotestsuite.plugin' or 'autotestsuite.plugins' need to be set");
 	}
 
-	@SuppressWarnings("unchecked")
 	private static void setup(TestSuite ts, Bundle plugin) {
 		Enumeration<URL> entries = plugin.findEntries("/", "*.class", true);
 
