@@ -60,11 +60,11 @@ public class CloseWorkbenchListener implements IWorkbenchListener {
 						}
 						if (window != null) {
 							/*
-							 * !!! Important Note !!! Up to Eclipse version 3.8 the
+							 * !!! Important Note !!! In Eclipse version 3.8.0, the
 							 * Workbench.saveAll(IShellProvider,IRunnableContext,ISaveableFilter,boolean) method's
-							 * implementation was robust enough to handle a call where the ISaveableFilter is null. This
-							 * has changed in Eclipse 4. For that reason, we pass a new instance of AllSaveablesFilter
-							 * that indicates we should save all dirty saveables instead of null.
+							 * implementation was robust enough to handle a call where the ISaveableFilter is null. For
+							 * that reason, we pass a new instance of AllSaveablesFilter that indicates we should save
+							 * all dirty saveables instead of null.
 							 */
 							canceled[0] = !PlatformUI.getWorkbench().saveAll(window, window, new AllSaveablesFilter(), true);
 						}
