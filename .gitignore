@@ -2,14 +2,11 @@
 /.metadata
 /docs/*/target
 /examples/*/bin
-/examples/*/src-gen
 /examples/*/target
 /experimental/*/bin
-/experimental/*/src-gen
 /experimental/*/target
 /features/*/target
 /plugins/*/bin
-/plugins/*/src-gen
 /plugins/*/target
 /releng/*/target
 /tests/*/bin
