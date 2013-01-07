@@ -107,7 +107,9 @@ public class CreateNewModelProjectJob extends WorkspaceJob {
 		this.project = project;
 		this.location = location;
 		this.metaModelDescriptor = metaModelDescriptor;
-		this.projectWorkspacePreference = (IProjectWorkspacePreference<AbstractMetaModelDescriptor>) projectWorkspacePreference;
+		if (projectWorkspacePreference != null) {
+			this.projectWorkspacePreference = (IProjectWorkspacePreference<AbstractMetaModelDescriptor>) projectWorkspacePreference;
+		}
 	}
 
 	/**
