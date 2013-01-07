@@ -14,11 +14,17 @@
  */
 package org.eclipse.sphinx.emf.workspace.ui.internal;
 
+import java.net.URL;
+
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.ui.EclipseUIPlugin;
 import org.eclipse.emf.common.util.ResourceLocator;
+import org.eclipse.emf.edit.ui.provider.ExtendedImageRegistry;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.sphinx.emf.workspace.ui.internal.saving.CloseWorkbenchListener;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleContext;
 
@@ -107,6 +113,23 @@ public final class Activator extends EMFPlugin {
 			super.stop(context);
 			Job.getJobManager().removeJobChangeListener(ModelLoadingProgressIndicator.INSTANCE);
 			PlatformUI.getWorkbench().removeWorkbenchListener(closeWorkbenchListener);
+		}
+
+		public ImageDescriptor getImageDescriptor(String key) {
+			Object imageURL = getImage(key);
+			if (imageURL instanceof URL) {
+				return getImageDescriptor((URL) imageURL);
+			}
+			return null;
+		}
+
+		public ImageDescriptor getImageDescriptor(URL url) {
+			// FIXME File bug to EMF: Impossible to use ExtendedImageRegistry.INSTANCE when Display.getCurrent() returns
+			// null
+			if (Display.getCurrent() != null) {
+				return ExtendedImageRegistry.INSTANCE.getImageDescriptor(url);
+			}
+			return ImageDescriptor.createFromURL(url);
 		}
 	}
 }

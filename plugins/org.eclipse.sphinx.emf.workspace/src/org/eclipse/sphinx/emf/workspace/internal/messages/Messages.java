@@ -23,7 +23,6 @@ public class Messages extends NLS {
 	/*
 	 * Model loading messages
 	 */
-
 	public static String job_loadingModels;
 	public static String task_loadingModelsInProject;
 	public static String job_loadingModel;
@@ -57,9 +56,13 @@ public class Messages extends NLS {
 	public static String subtask_updatingResourceURI;
 
 	/*
+	 * Project creation
+	 */
+	public static String job_AddProjectNatures;
+	public static String job_creatingNewProject;
+	/*
 	 * Error messages
 	 */
-
 	public static String error_problemOccurredWhenLoadingResource;
 
 	public static String error_createEditingDomainFactory;
@@ -80,7 +83,6 @@ public class Messages extends NLS {
 	/*
 	 * Warning messages
 	 */
-
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

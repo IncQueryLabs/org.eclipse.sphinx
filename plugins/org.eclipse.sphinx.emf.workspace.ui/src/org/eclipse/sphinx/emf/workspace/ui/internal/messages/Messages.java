@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - Added messages for creating new project
  * 
  * </copyright>
  */
@@ -23,9 +24,8 @@ public class Messages extends NLS {
 	/*
 	 * Other messages
 	 */
-
 	public static String error_failedToSaveModelsDuringWorkbenchClosing;
-
+	public static String error_unableToFindPerspective;
 	public static String eobjectMustBeInResource;
 
 	// New Linked Folder
@@ -51,6 +51,24 @@ public class Messages extends NLS {
 
 	public static String wizardNewLinkedFileCreationPage_noParentSelected;
 	public static String wizardNewLinkedFileCreationPage_selectedParentProjectNotOpen;
+
+	// New Project Creation
+	public static String wizardNewProjectCreationPage_newProjectCreationPageNameLabel;
+	public static String wizardNewProjectCreationPage_newProjectNameEmptyLabel;
+	public static String wizardNewProjectCreationPage_newProjectExistsErrorMessage;
+	public static String wizardNewProjectCreationPage_newProjectCaseVariantExistsError;
+	public static String wizardNewProjectCreationPage_location;
+
+	public static String wizardNewProject_newProjectOpeningWindowErrorMessage;
+	public static String wizardNewProject_newProjectPerspSwitchMessageLabel;
+	public static String wizardNewProject_newProjectPerspSwitchMessageWithDescLabel;
+	public static String wizardNewProject_newProjectPerspSwitchTitle;
+	public static String wizardNewProject_newProjectWizardTitle;
+	public static String wizardNewProject_newProjectTitle;
+	public static String wizardNewProject_newProjectDescription;
+	public static String wizardNewProject_newProjectReferenceTitle;
+	public static String wizardNewProject_newProjectReferenceDescription;
+	public static String wizardNewProject_newProjectWindowTitle;
 
 	static {
 		// initialize resource bundle
