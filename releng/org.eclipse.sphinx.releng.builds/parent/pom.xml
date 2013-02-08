@@ -67,26 +67,7 @@
 	</repositories>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
-		<!-- Workaround for https://issues.sonatype.org/browse/TYCHO-168; required 
-			for that dependencies of source features - i.e., the generated source plug-ins 
-			- can be resolved -->
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.5</version>
-				<configuration>
-					<encoding>ISO-8859-1</encoding>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
@@ -158,7 +139,10 @@
 					</excludes>
 					<useUIHarness>false</useUIHarness>
 					<useUIThread>false</useUIThread>
-					<argLine>${tycho.surefire.vmargs}</argLine>
+					<argLine>${tycho.surefire.extra.vmargs}</argLine>
+
+					<!-- Uncomment to remote debug tests run by Maven/Tycho build -->
+					<!--  <argLine>${tycho.surefire.extra.vmargs} -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y</argLine>-->
 				</configuration>
 			</plugin>
 		</plugins>
@@ -195,8 +179,8 @@
 				</os>
 			</activation>
 			<properties>
-				<tycho.surefire.vmargs>-Xmx512m -XX:MaxPermSize=256m
-					-XstartOnFirstThread</tycho.surefire.vmargs>
+				<tycho.surefire.extra.vmargs>-Xmx512m -XX:MaxPermSize=256m
+					-XstartOnFirstThread</tycho.surefire.extra.vmargs>
 			</properties>
 		</profile>
 		<profile>
@@ -207,7 +191,7 @@
 				</os>
 			</activation>
 			<properties>
-				<tycho.surefire.vmargs>-Xmx512m -XX:MaxPermSize=256m</tycho.surefire.vmargs>
+				<tycho.surefire.extra.vmargs>-Xmx512m -XX:MaxPermSize=256m</tycho.surefire.extra.vmargs>
 			</properties>
 		</profile>
 	</profiles>
