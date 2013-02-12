@@ -18,6 +18,11 @@
 	<condition property="build.eclipse.available">
 		<available file="./eclipse" />
 	</condition>
+	<target name="detect-eclipse-downloads-drops-folder-name">
+		<condition property="eclipse.downloads.drops.folder.name" value="drops4" else="drops">
+			<matches string="${build.eclipse.version}" pattern="4\.\d" />
+		</condition>
+	</target>
 
 	<target name="detect-arch-suffix" depends="detect-arch-suffix-under-windows, detect-arch-suffix-under-unix" />
 
@@ -90,7 +95,7 @@
 		</condition>
 	</target>
 
-	<target name="echoprops" description="Echos configuration properties to console" depends="detect-arch-suffix, detect-sphinx-version, detect-mvn-build-type-suffix">
+	<target name="echoprops" description="Echos configuration properties to console" depends="detect-eclipse-downloads-drops-folder-name, detect-arch-suffix, detect-sphinx-version, detect-mvn-build-type-suffix">
 		<echo>ant.version=${ant.version}</echo>
 		<echo>ant.home=${ant.home}</echo>
 		<echo>ant.project.name=${ant.project.name}</echo>
@@ -98,12 +103,15 @@
 		<echo>user.name=${user.name}</echo>
 		<echo>user.home=${user.home}</echo>
 
+		<echo>build.eclipse.version=${build.eclipse.version}</echo>
+		<echo>build.eclipse.version.name=${build.eclipse.version.name}</echo>
 		<echo>build.eclipse.revision=${build.eclipse.revision}</echo>
 		<echo>build.eclipse.timestamp=${build.eclipse.timestamp}</echo>
 
 		<echo>runs.under.windows=${runs.under.windows}</echo>
 		<echo>runs.under.unix=${runs.under.unix}</echo>
 
+		<echo>eclipse.downloads.drops.folder.name=${eclipse.downloads.drops.folder.name}</echo>
 		<echo>arch.suffix=${arch.suffix}</echo>
 		<echo>sphinx.version=${sphinx.version}</echo>
 		<echo>mvn.build.type.suffix=${mvn.build.type.suffix}</echo>
@@ -115,13 +123,13 @@
 
 	<target name="download-eclipse-platform-under-windows" if="runs.under.windows">
 		<mkdir dir="./downloads" />
-		<get src="http://artfiles.org/eclipse.org//eclipse/downloads/drops/R-${build.eclipse.revision}-${build.eclipse.timestamp}/eclipse-platform-${build.eclipse.revision}-win32${arch.suffix}.zip" dest="./downloads" usetimestamp="true" verbose="true" />
+		<get src="http://artfiles.org/eclipse.org//eclipse/downloads/${eclipse.downloads.drops.folder.name}/R-${build.eclipse.revision}-${build.eclipse.timestamp}/eclipse-platform-${build.eclipse.revision}-win32${arch.suffix}.zip" dest="./downloads" usetimestamp="true" />
 		<unzip src="./downloads/eclipse-platform-${build.eclipse.revision}-win32${arch.suffix}.zip" dest="." />
 	</target>
 
 	<target name="download-eclipse-platform-under-unix" if="runs.under.unix">
 		<mkdir dir="./downloads" />
-		<get src="http://artfiles.org/eclipse.org//eclipse/downloads/drops/R-${build.eclipse.revision}-${build.eclipse.timestamp}/eclipse-platform-${build.eclipse.revision}-linux-gtk${arch.suffix}.tar.gz" dest="./downloads/eclipse-platform-${build.eclipse.revision}-linux-gtk${arch.suffix}.tar.gz" usetimestamp="true" verbose="true" />
+		<get src="http://artfiles.org/eclipse.org//eclipse/downloads/${eclipse.downloads.drops.folder.name}/R-${build.eclipse.revision}-${build.eclipse.timestamp}/eclipse-platform-${build.eclipse.revision}-linux-gtk${arch.suffix}.tar.gz" dest="./downloads" usetimestamp="true" />
 		<untar src="./downloads/eclipse-platform-${build.eclipse.revision}-linux-gtk${arch.suffix}.tar.gz" dest="." compression="gzip" />
 		<chmod file="./eclipse/eclipse" perm="a+x" />
 		<chmod dir="./eclipse" includes="**/*.so" perm="a+x" />
