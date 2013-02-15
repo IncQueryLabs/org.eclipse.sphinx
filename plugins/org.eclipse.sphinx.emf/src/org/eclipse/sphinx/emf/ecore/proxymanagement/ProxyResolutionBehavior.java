@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2013 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     itemis - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.ecore.proxymanagement;
@@ -27,15 +27,18 @@ import org.eclipse.sphinx.emf.resource.ScopingResourceSet;
 
 public class ProxyResolutionBehavior {
 
-	protected EObject objectContext;
+	/**
+	 * Singleton instance
+	 */
+	public static final ProxyResolutionBehavior INSTANCE = new ProxyResolutionBehavior();
 
-	public ProxyResolutionBehavior(EObject objectContext) {
-		Assert.isNotNull(objectContext);
-
-		this.objectContext = objectContext;
+	/**
+	 * Protected constructor for the singleton pattern
+	 */
+	protected ProxyResolutionBehavior() {
 	}
 
-	public EObject eResolveProxy(InternalEObject proxy) {
+	public EObject eResolveProxy(EObject contextObject, EObject proxy) {
 		if (proxy == null) {
 			return null;
 		}
@@ -43,26 +46,26 @@ public class ProxyResolutionBehavior {
 			return proxy;
 		}
 
-		Resource resource = objectContext.eResource();
+		Resource resource = contextObject.eResource();
 		if (resource != null) {
 			ResourceSet resourceSet = resource.getResourceSet();
 			if (resourceSet != null) {
-				return eResolveProxyInResourceSet(resourceSet, proxy);
+				return eResolveProxyInResourceSet(resourceSet, contextObject, proxy);
 			}
 		}
 
-		return EcoreUtil.resolve(proxy, objectContext);
+		return EcoreUtil.resolve(proxy, contextObject);
 	}
 
-	protected boolean isNoProxy(InternalEObject proxy) {
-		return proxy.eProxyURI() == null;
+	protected boolean isNoProxy(EObject proxy) {
+		return ((InternalEObject) proxy).eProxyURI() == null;
 	}
 
-	protected EObject eResolveProxyInResourceSet(ResourceSet resourceSet, InternalEObject proxy) {
+	protected EObject eResolveProxyInResourceSet(ResourceSet resourceSet, EObject contextObject, EObject proxy) {
 		Assert.isNotNull(resourceSet);
 		Assert.isNotNull(proxy);
 
-		URI proxyURI = proxy.eProxyURI();
+		URI proxyURI = ((InternalEObject) proxy).eProxyURI();
 
 		// Retrieve proxy helper in order to resolve proxy in a performance-optimized way
 		ProxyHelper proxyHelper = ProxyHelperAdapterFactory.INSTANCE.adapt(resourceSet);
@@ -92,18 +95,16 @@ public class ProxyResolutionBehavior {
 		// Are we in a ScopingResourceSet?
 		if (resourceSet instanceof ScopingResourceSet) {
 			// Delegate to resource scope-aware proxy resolution
-			EObject resolvedEObject = ((ScopingResourceSet) resourceSet).getEObjectInScope(proxyURI, true, objectContext);
+			EObject resolvedEObject = ((ScopingResourceSet) resourceSet).getEObjectInScope(proxyURI, true, contextObject);
 			if (resolvedEObject != null) {
 				return resolvedEObject;
 			}
 		} else {
 			// Delegate to conventional EMF proxy resolution; it may be able to do the job if we are in a conventional
 			// ResourceSet and the proxy URI is not fragment-based
-			if (objectContext instanceof InternalEObject) {
-				EObject resolvedEObject = ((InternalEObject) objectContext).eResolveProxy(proxy);
-				if (resolvedEObject != proxy) {
-					return resolvedEObject;
-				}
+			EObject resolvedEObject = resourceSet.getEObject(proxyURI, true);
+			if (resolvedEObject != proxy) {
+				return resolvedEObject;
 			}
 		}
 

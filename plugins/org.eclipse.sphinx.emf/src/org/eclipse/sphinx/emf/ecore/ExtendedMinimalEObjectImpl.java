@@ -20,22 +20,11 @@ import org.eclipse.sphinx.emf.ecore.proxymanagement.ProxyResolutionBehavior;
 
 public class ExtendedMinimalEObjectImpl extends MinimalEObjectImpl2 {
 
-	protected ProxyResolutionBehavior proxyResolution;
-
-	/**
-	 * Creates a minimal EObject.
-	 */
-	protected ExtendedMinimalEObjectImpl() {
-		super();
-
-		proxyResolution = new ProxyResolutionBehavior(this);
-	}
-
 	/*
 	 * @see org.eclipse.emf.ecore.impl.BasicEObjectImpl#eResolveProxy(org.eclipse.emf.ecore.InternalEObject)
 	 */
 	@Override
 	public EObject eResolveProxy(InternalEObject proxy) {
-		return proxyResolution.eResolveProxy(proxy);
+		return ProxyResolutionBehavior.INSTANCE.eResolveProxy(this, proxy);
 	}
 }

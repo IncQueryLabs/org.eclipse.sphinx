@@ -10,7 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added is proxy check to eResolveProxy
- *     itemis - Externalized and Reworked proxy resolution behavior
+ *     itemis - [397357] [EMF Runtime Extensions] Add org.eclipse.sphinx.emf.ecore.proxymanagement.ProxyResolutionBehavior to handle EObject proxy resolution
  * 
  * </copyright>
  */
@@ -26,19 +26,11 @@ import org.eclipse.sphinx.emf.ecore.proxymanagement.ProxyResolutionBehavior;
  */
 public class ExtendedEObjectImpl extends EObjectImpl {
 
-	protected ProxyResolutionBehavior proxyResolution;
-
-	public ExtendedEObjectImpl() {
-		super();
-
-		proxyResolution = new ProxyResolutionBehavior(this);
-	}
-
 	/*
 	 * @see org.eclipse.emf.ecore.impl.BasicEObjectImpl#eResolveProxy(org.eclipse.emf.ecore.InternalEObject)
 	 */
 	@Override
 	public EObject eResolveProxy(InternalEObject proxy) {
-		return proxyResolution.eResolveProxy(proxy);
+		return ProxyResolutionBehavior.INSTANCE.eResolveProxy(this, proxy);
 	}
 }
