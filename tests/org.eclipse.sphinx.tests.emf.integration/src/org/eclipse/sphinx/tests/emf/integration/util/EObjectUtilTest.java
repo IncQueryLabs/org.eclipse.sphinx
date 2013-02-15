@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.integration.util;
@@ -1571,7 +1572,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 
 		references = EObjectUtil.getInverseReferences(componentType20D_2_1, true);
 		List<EObject> objects = getEObjects(references);
-		assertEquals(5, objects.size());
+		assertEquals(3, objects.size());
 
 		assertFalse(objects.contains(componentType20D_2_2));
 		assertTrue(objects.contains(modelRoot));
@@ -1583,8 +1584,8 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		assertFalse(objects.contains(port20A_2_1));
 		assertFalse(objects.contains(port20A_2_2));
 
-		assertTrue(objects.contains(component20D_3_1));
-		assertTrue(objects.contains(component20E_1_1));
+		assertFalse(objects.contains(component20D_3_1));
+		assertFalse(objects.contains(component20E_1_1));
 		assertFalse(objects.contains(componentType20D_2_2));
 	}
 
