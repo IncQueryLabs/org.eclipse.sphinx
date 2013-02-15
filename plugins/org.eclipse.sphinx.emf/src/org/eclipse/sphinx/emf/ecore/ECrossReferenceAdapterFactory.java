@@ -1,29 +1,39 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2010 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [400895] Provide workarounds for memory leaks caused by EMF's ECrossReferenceAdapter
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.ecore;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
+import org.eclipse.sphinx.platform.util.ReflectUtil;
 
 /**
- * 
+ *
  */
 public class ECrossReferenceAdapterFactory extends AdapterFactoryImpl {
 	/**
@@ -76,7 +86,57 @@ public class ECrossReferenceAdapterFactory extends AdapterFactoryImpl {
 	@Override
 	protected Adapter createAdapter(Notifier target) {
 		if (target instanceof ResourceSet || target instanceof Resource || target instanceof EObject) {
-			return new ECrossReferenceAdapter();
+			return new ECrossReferenceAdapter() {
+				// Overridden to provide workaround for bug ???
+				@Override
+				protected void unsetTarget(Resource target) {
+					List<EObject> contents = target.getContents();
+					for (int i = 0, size = contents.size(); i < size; ++i) {
+						Notifier notifier = contents.get(i);
+						removeAdapter(notifier);
+					}
+					unloadedResources.remove(target);
+				}
+
+				// Overridden to provide workaround for bug ???
+				@Override
+				public void selfAdapt(Notification notification) {
+					Object notifier = notification.getNotifier();
+					if (notifier instanceof Resource) {
+						switch (notification.getFeatureID(Resource.class)) {
+						case Resource.RESOURCE__IS_LOADED: {
+							if (!notification.getNewBooleanValue()) {
+								unloadedResources.add((Resource) notifier);
+								for (Iterator<Map.Entry<EObject, Resource>> i = unloadedEObjects.entrySet().iterator(); i.hasNext();) {
+									Map.Entry<EObject, Resource> entry = i.next();
+									if (entry.getValue() == notifier) {
+										i.remove();
+
+										if (!resolve()) {
+											EObject eObject = entry.getKey();
+											Collection<EStructuralFeature.Setting> settings = inverseCrossReferencer.get(eObject);
+											if (settings != null) {
+												for (EStructuralFeature.Setting setting : settings) {
+													try {
+														ReflectUtil.invokeInvisibleMethod(inverseCrossReferencer, "addProxy", eObject, //$NON-NLS-1$
+																setting.getEObject());
+													} catch (Exception ex) {
+														// Ignore exception
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+							return;
+						}
+						}
+					}
+
+					super.selfAdapt(notification);
+				}
+			};
 		}
 		return null;
 	}
