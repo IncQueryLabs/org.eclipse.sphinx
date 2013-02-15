@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.integration.util;
@@ -48,6 +48,7 @@ import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Factory;
 import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
@@ -657,25 +658,28 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 	 */
 	public void testGetFilteredResourcesFromEntry() {
 		Collection<Resource> resResources = new ArrayList<Resource>();
-		// HB20 Object
-		{
-			IFile file20_20A_1 = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
-			assertNotNull(file20_20A_1);
-			assertTrue(file20_20A_1.isAccessible());
-			org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application modelRoot20A_1 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) EcorePlatformUtil
-					.getModelRoot(file20_20A_1);
-			assertNotNull(modelRoot20A_1);
+		IFile file20_20A_1 = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
+		assertNotNull(file20_20A_1);
+		assertTrue(file20_20A_1.isAccessible());
+		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application modelRoot20A_1 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) EcorePlatformUtil
+				.getModelRoot(file20_20A_1);
+		assertNotNull(modelRoot20A_1);
 
-			Entry entry = modelRoot20A_1.getMixed().get(0);
+		assertFalse(modelRoot20A_1.getComponents().isEmpty());
+		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component component = modelRoot20A_1.getComponents().get(0);
+		assertNotNull(component);
 
-			assertNotNull(entry);
-			assertEquals(InstanceModel20Package.Literals.APPLICATION__COMPONENTS, entry.getEStructuralFeature());
+		assertFalse(component.getParameterExpressions().isEmpty());
+		ParameterExpresssion parameterExpresssion = component.getParameterExpressions().get(0);
+		assertNotNull(parameterExpresssion);
+		assertFalse(parameterExpresssion.getMixed().isEmpty());
+		Entry testEntry = parameterExpresssion.getMixed().get(0);
 
-			resResources = EcorePlatformUtil.getResourcesInModel(entry, true);
+		assertNotNull(testEntry);
+		assertEquals(InstanceModel20Package.Literals.PARAMETER_EXPRESSSION__EXPRESSIONS, testEntry.getEStructuralFeature());
 
-			assertEquals(resources20FromHbProject20_A, resResources.size());
-		}
-
+		resResources = EcorePlatformUtil.getResourcesInModel(testEntry, true);
+		assertEquals(resources20FromHbProject20_A, resResources.size());
 	}
 
 	/**
