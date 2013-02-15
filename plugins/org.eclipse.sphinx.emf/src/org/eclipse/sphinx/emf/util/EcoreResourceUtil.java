@@ -1,20 +1,21 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2012 BMW Car IT, itemis, See4sys and others.
+ *
+ * Copyright (c) 2008-2013 BMW Car IT, itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
  *     itemis - [357962] Make sure that problems occurring when saving model elements in a new resource are not recorded as errors/warnings on resource
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
- *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored   
- * 
+ *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored
+ *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.util;
@@ -937,11 +938,14 @@ public final class EcoreResourceUtil {
 			} catch (Exception ex) {
 				throw new WrappedException(ex);
 			} finally {
-				// Remove resource from ResourceSet
+				// Remove unloaded resource from ResourceSet
 				ResourceSet resourceSet = resource.getResourceSet();
 				if (resourceSet != null) {
 					resourceSet.getResources().remove(resource);
 				}
+
+				// Remove all adapters from unloaded resource
+				resource.eAdapters().clear();
 			}
 		}
 	}

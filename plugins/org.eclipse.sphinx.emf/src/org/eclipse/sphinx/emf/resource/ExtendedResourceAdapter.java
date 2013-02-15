@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.resource;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.util.BasicDiagnostic;
@@ -38,6 +40,8 @@ import org.eclipse.sphinx.platform.util.ReflectUtil;
  * {@link Adapter}-based implementation of {@link ExtendedResource}.
  */
 public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedResource {
+
+	private static final URI EMPTY_URI = URI.createURI(""); //$NON-NLS-1$
 
 	/**
 	 * The map of options that are used to to control the handling of problems encountered while the {@link Resource
@@ -102,32 +106,26 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	public void unloaded(EObject eObject) {
 		// Memory-optimized unload to be performed?
 		if (getDefaultLoadOptions().get(ExtendedResource.OPTION_UNLOAD_MEMORY_OPTIMIZED) == Boolean.TRUE) {
+			// Turn unloaded eObject into a proxy using an as short as possible dummy URI
 			/*
-			 * !! Important Note !! DON'T SET PROXY URIs; they take too much memory and are useless when the complete
-			 * ResourceSet is unloaded, or a self-contained set of resources with no outgoing and incoming
-			 * cross-document references (which typically happens when a project or the entire workbench is closed).
+			 * !! Important Note !! Setting the regular full proxy URI would take way too much memory and is generally
+			 * useless when the complete ResourceSet, or a self-contained set of resources with no outgoing and incoming
+			 * cross-document references gets unloaded (which typically happens when a project or the entire workbench
+			 * is closed). However, we must leave an as short as possible dummy URI in place to make sure that clients
+			 * which access the unloaded eObject for whatever reason subsequently don't end up considering it a regular
+			 * eObject that is still loaded.
 			 */
-
-			// Clear all fields on unloaded EObject to make sure that it gets garbage collected as fast as possible;
-			// prevent MinimalEObjectImpl's internal fields from being cleared so as to make sure that unloaded EObject
-			// can still be identified as proxy
-			try {
-				ReflectUtil.clearAllFields(eObject, new String[] { "eFlags", "eStorage" }); //$NON-NLS-1$ //$NON-NLS-2$
-			} catch (IllegalAccessException ex) {
-				// Ignore exceptions
-			}
-
-			// Leave an as short as possible dummy URI in place; this is necessary to make sure that clients which
-			// access the unloaded EObject subsequently consider it as proxy just as it would be the case after a
-			// regular unload
-			((InternalEObject) eObject).eSetProxyURI(URI.createURI("")); //$NON-NLS-1$
+			((InternalEObject) eObject).eSetProxyURI(EMPTY_URI);
 		} else {
-			// Perform regular unload but enable proxy creation strategy to be overridden
+			// Turn unloaded eObject into a proxy using the regular full proxy URI; enable proxy URI creation to be
+			// customized by delegating it to #getURI()
 			if (!eObject.eIsProxy()) {
 				((InternalEObject) eObject).eSetProxyURI(getURI(eObject));
 			}
-			eObject.eAdapters().clear();
+
 		}
+		// Remove all adapters from unloaded eObject
+		eObject.eAdapters().clear();
 	}
 
 	/*
