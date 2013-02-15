@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.integration.util;
@@ -3889,22 +3890,22 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		assertNotNull(modelRoot20_1);
 		assertTrue(modelRoot20_1.eIsProxy());
 		assertTrue(((InternalEObject) modelRoot20_1).eProxyURI().isEmpty());
-		assertEquals(0, modelRoot20_1.eContents().size());
+		assertEquals(3, modelRoot20_1.eContents().size());
 
 		assertNotNull(modelRoot20_2);
 		assertTrue(modelRoot20_2.eIsProxy());
 		assertTrue(((InternalEObject) modelRoot20_2).eProxyURI().isEmpty());
-		assertEquals(0, modelRoot20_2.eContents().size());
+		assertEquals(5, modelRoot20_2.eContents().size());
 
 		assertNotNull(modelRoot20_4);
 		assertTrue(modelRoot20_4.eIsProxy());
 		assertTrue(((InternalEObject) modelRoot20_4).eProxyURI().isEmpty());
-		assertEquals(0, modelRoot20_4.eContents().size());
+		assertEquals(2, modelRoot20_4.eContents().size());
 
 		assertNotNull(modelRoot20_5);
 		assertTrue(modelRoot20_5.eIsProxy());
 		assertTrue(((InternalEObject) modelRoot20_5).eProxyURI().isEmpty());
-		assertEquals(0, modelRoot20_5.eContents().size());
+		assertEquals(5, modelRoot20_5.eContents().size());
 
 		// ===============================================
 		// Uml File
@@ -4502,17 +4503,17 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		assertNotNull(modelRoot20_1);
 		assertTrue(modelRoot20_1.eIsProxy());
 		assertTrue(((InternalEObject) modelRoot20_1).eProxyURI().isEmpty());
-		assertEquals(0, modelRoot20_1.eContents().size());
+		assertEquals(3, modelRoot20_1.eContents().size());
 
 		assertNotNull(modelRoot20_4);
 		assertTrue(modelRoot20_4.eIsProxy());
 		assertTrue(((InternalEObject) modelRoot20_4).eProxyURI().isEmpty());
-		assertEquals(0, modelRoot20_4.eContents().size());
+		assertEquals(2, modelRoot20_4.eContents().size());
 
 		assertNotNull(modelRoot20_5);
 		assertTrue(modelRoot20_5.eIsProxy());
 		assertTrue(((InternalEObject) modelRoot20_5).eProxyURI().isEmpty());
-		assertEquals(0, modelRoot20_5.eContents().size());
+		assertEquals(5, modelRoot20_5.eContents().size());
 
 		// Unload AllResource of EditingDomain21
 		Collection<Resource> unloadedResources10 = new ArrayList<Resource>();
