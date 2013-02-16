@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys, BMW Car IT and others.
+ * Copyright (c) 2008-2013 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
+ *     itemis - Added #resetEditingDomainMapping() method for safely getting rid of editing domain mapping in integration test tearDown() methods
  * 
  * </copyright>
  */
@@ -25,6 +26,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.WrappedException;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.workspace.Activator;
@@ -67,8 +69,8 @@ public final class WorkspaceEditingDomainManager {
 	/**
 	 * Returns the {@link IWorkspaceEditingDomainMapping} used to associate workspace resources with the
 	 * {@link TransactionalEditingDomain}s they belong to. If a user-defined mapping has been contributed via the
-	 * <tt>org.eclipse.sphinx.emf.workspace.editingDomains</tt> extension point it will be returned right here. Otherwise, it
-	 * defaults to {@link DefaultWorkspaceEditingDomainMapping}.
+	 * <tt>org.eclipse.sphinx.emf.workspace.editingDomains</tt> extension point it will be returned right here.
+	 * Otherwise, it defaults to {@link DefaultWorkspaceEditingDomainMapping}.
 	 * 
 	 * @return The {@link IWorkspaceEditingDomainMapping} currently used by the platform.
 	 * @see #setEditingDomainMapping
@@ -96,9 +98,11 @@ public final class WorkspaceEditingDomainManager {
 	}
 
 	/**
-	 * Enables clients to dynamically register a user-defined {@link IWorkspaceEditingDomainMapping}. It overrides the
-	 * mapping which might have been contributed via the <tt>org.eclipse.sphinx.emf.workspace.editingDomains</tt> extension
-	 * point.
+	 * Enables clients to dynamically register a user-defined {@link IWorkspaceEditingDomainMapping}.
+	 * <p>
+	 * The user-defined {@link IWorkspaceEditingDomainMapping} overrides the mapping that might have been contributed
+	 * via the <tt>org.eclipse.sphinx.emf.workspace.editingDomains</tt> extension point.
+	 * </p>
 	 * 
 	 * @param editingDomainMapping
 	 *            The {@link IWorkspaceEditingDomainMapping} to be used by the platform.
@@ -109,6 +113,26 @@ public final class WorkspaceEditingDomainManager {
 			fEditingDomainMapping.dispose();
 		}
 		fEditingDomainMapping = editingDomainMapping;
+	}
+
+	/**
+	 * Enables clients to dispose current {@link IWorkspaceEditingDomainMapping} and get a new one setup upon next
+	 * access.
+	 * <p>
+	 * The new {@link IWorkspaceEditingDomainMapping} will be either an instance of the
+	 * {@link IWorkspaceEditingDomainMapping} that has been contributed via the
+	 * <tt>org.eclipse.sphinx.emf.workspace.editingDomains</tt> extension point or the
+	 * {@link DefaultWorkspaceEditingDomainMapping}.
+	 * </p>
+	 * 
+	 * @see #getEditingDomainMapping
+	 * @see #setEditingDomainMapping(IWorkspaceEditingDomainMapping)
+	 */
+	public void resetEditingDomainMapping() {
+		if (fEditingDomainMapping != null) {
+			fEditingDomainMapping.dispose();
+		}
+		fEditingDomainMapping = null;
 	}
 
 	/**

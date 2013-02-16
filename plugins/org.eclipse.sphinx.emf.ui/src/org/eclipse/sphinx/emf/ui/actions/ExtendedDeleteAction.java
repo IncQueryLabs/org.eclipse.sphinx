@@ -48,6 +48,7 @@ public class ExtendedDeleteAction extends DeleteAction {
 			if (supportsProxyficationOfRemovedElements(domain)) {
 				removeAllReferences = false;
 			}
+
 			AdapterFactory oldAdapterFactory = null;
 			if (customAdapterFactory != null) {
 				oldAdapterFactory = ((AdapterFactoryEditingDomain) domain).getAdapterFactory();
