@@ -9,6 +9,9 @@
 /plugins/*/bin
 /plugins/*/target
 /releng/*/target
+/releng/*/product/target
+/releng/*/repository/target
 /tests/*/bin
 /tests/*/target
+/tests/*/working-dir
 /tools/*/bin
