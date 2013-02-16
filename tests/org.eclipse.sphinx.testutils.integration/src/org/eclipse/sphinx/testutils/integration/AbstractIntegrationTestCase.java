@@ -182,7 +182,24 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		IEclipsePreferences workbenchPrefs = InstanceScope.INSTANCE.getNode("org.eclipse.ui.workbench");
 		workbenchPrefs.put("RUN_IN_BACKGROUND", Boolean.TRUE.toString());
 
-		// Create workspace
+		// Delete complete or unused projects depending on whether the reference workspace is intended to be reused or
+		// not
+		if (!reuseRefWks) {
+			WorkspaceEditingDomainManager.INSTANCE.resetEditingDomainMapping();
+			assertTrue(WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping().getEditingDomains().isEmpty());
+			assertAllModelResourcesUnloaded();
+
+			synchronizedDeleteWorkspace();
+
+			ModelDescriptorRegistry.INSTANCE.removeModels(ResourcesPlugin.getWorkspace().getRoot());
+			assertTrue(ModelDescriptorRegistry.INSTANCE.getAllModels().size() == 0);
+			assertAllModelDescriptorsRemoved();
+		} else {
+			// Delete un-used reference projects which imported for the previous test
+			synchronizedDeleteProjects(getUnusedReferenceProjects());
+		}
+
+		// Create reference workspace descriptor
 		initReferenceWorkspace();
 
 		// Unzip reference workspace from archive if needed
@@ -193,9 +210,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		} else {
 			loadReferenceWorkspaceSourceDir();
 		}
-
-		// Delete un-used reference projects which imported for the previous test
-		synchronizedDeleteProjects(getUnusedReferenceProjects());
 
 		org.eclipse.sphinx.emf.workspace.Activator.getPlugin().stopWorkspaceSynchronizing();
 
@@ -218,13 +232,14 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			waitForModelLoading();
 			assertReferenceWorkspaceClosed();
 		} else {
-			ModelLoadManager.INSTANCE.loadWorkspace(true, null);
+			ModelLoadManager.INSTANCE.loadWorkspace(false, null);
 			waitForModelLoading();
 			assertReferenceWorkspaceInitialized();
 		}
 
 		// Add ReferenceWorkspaceChangeListener to listening in workspace changes during the test
 		internalRefWks.addReferenceWorkspaceChangeListener(referenceWorkspaceChangeListener);
+
 		org.eclipse.sphinx.emf.workspace.Activator.getPlugin().startWorkspaceSynchronizing();
 	}
 
@@ -236,52 +251,40 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		// TODO Surround with appropriate tracing option
 		// System.out.println(">>> Entering tearDown()");
 
-		if (reuseRefWks) {
-			waitForModelLoading();
+		waitForModelLoading();
 
-			// Remove ResourceProblemListener from all editingDomains
-			internalRefWks.removeResourceSetProblemListener(resourceProblemListener);
-			internalRefWks.removeReferenceWorkspaceChangeListener(referenceWorkspaceChangeListener);
-			// Unload resources which have been changed but not saved yet
-			unloadDirtyResources();
+		// Remove ResourceProblemListener from all editingDomains
+		internalRefWks.removeResourceSetProblemListener(resourceProblemListener);
+		internalRefWks.removeReferenceWorkspaceChangeListener(referenceWorkspaceChangeListener);
+		// Unload resources which have been changed but not saved yet
+		unloadDirtyResources();
 
-			// Projects which have been renamed will be deleted
-			synchronizedDeleteProjects(referenceWorkspaceChangeListener.getRenamedProjects());
+		// Projects which have been renamed will be deleted
+		synchronizedDeleteProjects(referenceWorkspaceChangeListener.getRenamedProjects());
 
-			// Open projects which has been changed during the test
-			synchronizedOpenProjects(detectProjectsToOpen());
+		// Open projects which has been changed during the test
+		synchronizedOpenProjects(detectProjectsToOpen());
 
-			// Delete all files which have been added during the test, including renamed files
-			deleteAddedFiles();
+		// Delete all files which have been added during the test, including renamed files
+		deleteAddedFiles();
 
-			// Delete all files which have been changed during the test
-			deleteChangedFiles();
+		// Delete all files which have been changed during the test
+		deleteChangedFiles();
 
-			// Unload resources are on memory only, these resources are not marked as dirty
-			unloadReourcesOutsideFileDescriptor();
+		// Unload resources are on memory only, these resources are not marked as dirty
+		unloadReourcesOutsideFileDescriptor();
 
-			// If existing Projects' description were changed, reset its by copying contents from reference file
-			resetProjectDescriptions();
+		// If existing Projects' description were changed, reset its by copying contents from reference file
+		resetProjectDescriptions();
 
-			// If existing Projects' setting were changed, reset them by copying contents from reference file
-			resetProjectSettings();
+		// If existing Projects' setting were changed, reset them by copying contents from reference file
+		resetProjectSettings();
 
-			waitForModelLoading();
+		waitForModelLoading();
 
-			// Clear list of resources changed
-			resourceProblemListener.clearHistory();
-			referenceWorkspaceChangeListener.clearHistory();
-		} else {
-			WorkspaceEditingDomainManager.INSTANCE.resetEditingDomainMapping();
-			assertTrue(WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping().getEditingDomains().isEmpty());
-			assertAllModelResourcesUnloaded();
-
-			synchronizedDeleteWorkspace();
-
-			ModelDescriptorRegistry.INSTANCE.removeModels(ResourcesPlugin.getWorkspace().getRoot());
-			assertTrue(ModelDescriptorRegistry.INSTANCE.getAllModels().size() == 0);
-			assertAllModelDescriptorsRemoved();
-		}
+		// Clear list of resources changed
+		resourceProblemListener.clearHistory();
+		referenceWorkspaceChangeListener.clearHistory();
 
 		Job.getJobManager().removeJobChangeListener(modelLoadJobTracer);
 	}
