@@ -162,14 +162,6 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 	private static final String MSG_SHOULD_CREATE = "One loading job should be created for {0}(s) [{1}] with meta-model descriptor \"{2}\"";
 	private static final String MSG_SHOULD_NOT_CREATE = "No loading job should be created for {0}(s) [{1}] with meta-model descriptor \"{2}\"";
 
-	private static <T extends Job> String getCanonicalName(Class<T> jobClass) {
-		String className = jobClass.getCanonicalName();
-		if (className == null || "".equals(className)) {
-			className = getCanonicalName((Class<T>) jobClass.getSuperclass());
-		}
-		return className;
-	}
-
 	private static <T extends Job> String getSimpleName(Class<T> jobClass) {
 		String className = jobClass.getSimpleName();
 		if (className == null || "".equals(className)) {
