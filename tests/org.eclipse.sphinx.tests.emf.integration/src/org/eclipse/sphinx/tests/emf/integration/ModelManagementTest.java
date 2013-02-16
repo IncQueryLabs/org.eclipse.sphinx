@@ -139,6 +139,9 @@ public class ModelManagementTest extends DefaultIntegrationTestCase {
 		synchronizedCloseProject(refWks.hbProject20_D);
 		synchronizedCloseProject(refWks.hbProject10_E);
 		synchronizedCloseProject(refWks.hbProject10_D);
+
+		Thread.sleep(1000);
+
 		// All models of closed projects must have gone
 		assertWorkspaceModelsSizeEquals(modelsCount);
 	}
@@ -157,6 +160,9 @@ public class ModelManagementTest extends DefaultIntegrationTestCase {
 		synchronizedDeleteProject(refWks.hbProject20_D);
 		synchronizedDeleteProject(refWks.hbProject10_E);
 		synchronizedDeleteProject(refWks.hbProject10_D);
+
+		Thread.sleep(1000);
+
 		// All models of closed projects must have gone
 		assertWorkspaceModelsSizeEquals(modelsCount);
 	}

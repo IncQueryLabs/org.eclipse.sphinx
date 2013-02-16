@@ -92,6 +92,10 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 	List<String> hbProject20EResourcesUml2;
 	int resourcesUml2FromHbProject20_E;
 
+	public ScopingResourceSetTest() {
+		super(false);
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -223,7 +227,7 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			IProject contextProject = refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E);
 
 			List<Resource> resourcesInModel10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInModel(contextProject);
-			assertEquals(NLS.bind(message, contextProject.getFullPath()), (resources10FromHbProject10_E + resources10FromHbProject10_D),
+			assertEquals(NLS.bind(message, contextProject.getFullPath()), resources10FromHbProject10_E + resources10FromHbProject10_D,
 					resourcesInModel10.size());
 
 			List<Resource> resourcesInModel20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInModel(contextProject);
@@ -3248,7 +3252,7 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			IProject contextProject = refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E);
 
 			List<Resource> resourcesInScope10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInScope(contextProject);
-			assertEquals(NLS.bind(message, contextProject.getFullPath()), (resources10FromHbProject10_E + resources10FromHbProject10_D),
+			assertEquals(NLS.bind(message, contextProject.getFullPath()), resources10FromHbProject10_E + resources10FromHbProject10_D,
 					resourcesInScope10.size());
 
 			List<Resource> resourcesInScope20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInScope(contextProject);
