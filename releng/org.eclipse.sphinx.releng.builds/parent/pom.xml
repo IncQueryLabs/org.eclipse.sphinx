@@ -69,6 +69,14 @@
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<encoding>ISO-8859-1</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
 				<version>${tycho.version}</version>
@@ -157,7 +165,7 @@
 			<properties>
 				<platform.version>3.7</platform.version>
 				<platform.version.name>indigo</platform.version.name>
-				<orbit.version>R20120526062928</orbit.version>
+				<orbit.version>R20130118183705</orbit.version>
 			</properties>
 			<repositories>
 				<repository>
@@ -172,7 +180,7 @@
 			<properties>
 				<platform.version>4.2</platform.version>
 				<platform.version.name>juno</platform.version.name>
-				<orbit.version>R20120526062928</orbit.version>
+				<orbit.version>R20130118183705</orbit.version>
 			</properties>
 		</profile>
 		<profile>
