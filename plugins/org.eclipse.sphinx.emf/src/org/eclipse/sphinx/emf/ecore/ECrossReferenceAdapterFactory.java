@@ -87,7 +87,7 @@ public class ECrossReferenceAdapterFactory extends AdapterFactoryImpl {
 	protected Adapter createAdapter(Notifier target) {
 		if (target instanceof ResourceSet || target instanceof Resource || target instanceof EObject) {
 			return new ECrossReferenceAdapter() {
-				// Overridden to provide workaround for bug ???
+				// Overridden to provide workaround for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=400887
 				@Override
 				protected void unsetTarget(Resource target) {
 					List<EObject> contents = target.getContents();
@@ -98,7 +98,7 @@ public class ECrossReferenceAdapterFactory extends AdapterFactoryImpl {
 					unloadedResources.remove(target);
 				}
 
-				// Overridden to provide workaround for bug ???
+				// Overridden to provide workaround for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=400891
 				@Override
 				public void selfAdapt(Notification notification) {
 					Object notifier = notification.getNotifier();

@@ -228,14 +228,16 @@ public class ExtendedDiagramEditingDomainFactory extends DiagramEditingDomainFac
 
 	@Override
 	protected void configure(TransactionalEditingDomain domain) {
-		// Make sure that cross-referencing adapter with fix for bugs ??? and ??? is installed
+		// Make sure that cross-referencing adapter with fix for bugs
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=400887 and https://bugs.eclipse.org/bugs/show_bug.cgi?id=400891
+		// is installed
 		ResourceSet resourceSet = domain.getResourceSet();
 		CrossReferenceAdapter adapter = CrossReferenceAdapter.getExistingCrossReferenceAdapter(resourceSet);
 		if (adapter != null) {
 			resourceSet.eAdapters().remove(adapter);
 		}
 		resourceSet.eAdapters().add(new CrossReferenceAdapter() {
-			// Overridden to provide workaround for bug ???
+			// Overridden to provide workaround for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=400887
 			@Override
 			protected void unsetTarget(Resource target) {
 				List<EObject> contents = target.getContents();
@@ -246,7 +248,7 @@ public class ExtendedDiagramEditingDomainFactory extends DiagramEditingDomainFac
 				unloadedResources.remove(target);
 			}
 
-			// Overridden to provide workaround for bug ???
+			// Overridden to provide workaround for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=400891
 			@Override
 			public void selfAdapt(Notification notification) {
 				Object notifier = notification.getNotifier();
