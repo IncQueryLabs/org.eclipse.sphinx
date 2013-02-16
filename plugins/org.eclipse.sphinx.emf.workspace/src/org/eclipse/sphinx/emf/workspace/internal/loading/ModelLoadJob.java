@@ -47,7 +47,7 @@ public abstract class ModelLoadJob extends LoadJob {
 		fProjects = new HashSet<IProject>(projects);
 		// Compute project group if referenced projects must be considered
 		if (includeReferencedProjects) {
-			for (IProject p : fProjects) {
+			for (IProject p : projects) {
 				fProjects.addAll(getProjectGroup(p, false));
 			}
 		}
