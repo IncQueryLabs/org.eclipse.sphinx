@@ -77,6 +77,7 @@ import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
+import org.eclipse.sphinx.emf.workspace.domain.WorkspaceEditingDomainManager;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
@@ -118,7 +119,13 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	private File referenceWorkspaceSourceDir;
 
+	private boolean reuseRefWks;
+
 	public AbstractIntegrationTestCase(String referenceWorkspaceTempDirBaseName) {
+		this(referenceWorkspaceTempDirBaseName, true);
+	}
+
+	public AbstractIntegrationTestCase(String referenceWorkspaceTempDirBaseName, boolean reuseSameReferenceWorkspaceForAllTests) {
 		String tempDirPath = System.getProperty("java.io.tmpdir");
 		File tempDir = new File(tempDirPath);
 
@@ -131,6 +138,8 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		if (!referenceWorkspaceTempDir.exists()) {
 			referenceWorkspaceTempDir.mkdir();
 		}
+
+		reuseRefWks = reuseSameReferenceWorkspaceForAllTests;
 	}
 
 	protected final TestFileAccessor getTestFileAccessor() {
@@ -151,6 +160,10 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 */
 	@Override
 	protected void setUp() throws Exception {
+		// TODO Surround with appropriate tracing option
+		// System.out.println(">>> Entering setUp()");
+
+		Job.getJobManager().addJobChangeListener(modelLoadJobTracer);
 
 		// HACK: Enable workspace preference Window > Preferences > General > Always run in background so as to avoid
 		// excessive creation of progress dialogs by
@@ -167,9 +180,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		 */
 		IEclipsePreferences workbenchPrefs = InstanceScope.INSTANCE.getNode("org.eclipse.ui.workbench");
 		workbenchPrefs.put("RUN_IN_BACKGROUND", Boolean.TRUE.toString());
-
-		waitForModelLoading();
-		Job.getJobManager().addJobChangeListener(modelLoadJobTracer);
 
 		// Create workspace
 		initReferenceWorkspace();
@@ -188,7 +198,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 		org.eclipse.sphinx.emf.workspace.Activator.getPlugin().stopWorkspaceSynchronizing();
 
-		importMissingReferenceProjectsToWorkspace();
+		importMissingReferenceProjectsIntoWorkspace();
 
 		// In case previous test failed and tearDown() was not called, some projects may still be closed - so open all
 		// of them to be on the safe side
@@ -207,7 +217,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			waitForModelLoading();
 			assertReferenceWorkspaceClosed();
 		} else {
-			ModelLoadManager.INSTANCE.loadWorkspace(false, null);
+			ModelLoadManager.INSTANCE.loadWorkspace(true, null);
 			waitForModelLoading();
 			assertReferenceWorkspaceInitialized();
 		}
@@ -222,43 +232,57 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 */
 	@Override
 	protected void tearDown() throws Exception {
+		// TODO Surround with appropriate tracing option
+		// System.out.println(">>> Entering tearDown()");
 
-		waitForModelLoading();
-		// Remove ResourceProblemListener from all editingDomains
-		internalRefWks.removeResourceSetProblemListener(resourceProblemListener);
-		internalRefWks.removeReferenceWorkspaceChangeListener(referenceWorkspaceChangeListener);
-		// Unload resources which have been changed but not saved yet
-		unloadDirtyResources();
+		if (reuseRefWks) {
+			waitForModelLoading();
 
-		// Projects which have been renamed will be deleted
-		synchronizedDeleteProjects(referenceWorkspaceChangeListener.getRenamedProjects());
+			// Remove ResourceProblemListener from all editingDomains
+			internalRefWks.removeResourceSetProblemListener(resourceProblemListener);
+			internalRefWks.removeReferenceWorkspaceChangeListener(referenceWorkspaceChangeListener);
+			// Unload resources which have been changed but not saved yet
+			unloadDirtyResources();
 
-		// Open projects which has been changed during the test
-		synchronizedOpenProjects(detectProjectsToOpen());
+			// Projects which have been renamed will be deleted
+			synchronizedDeleteProjects(referenceWorkspaceChangeListener.getRenamedProjects());
 
-		// Delete all files which have been added during the test, including renamed files
-		deleteAddedFiles();
+			// Open projects which has been changed during the test
+			synchronizedOpenProjects(detectProjectsToOpen());
 
-		// Delete all files which have been changed during the test
-		deleteChangedFiles();
+			// Delete all files which have been added during the test, including renamed files
+			deleteAddedFiles();
 
-		// Unload resources are on memory only, these resources are not marked as dirty
-		unloadReourcesOutsideFileDescriptor();
+			// Delete all files which have been changed during the test
+			deleteChangedFiles();
 
-		// If existing Projects' description were changed, reset its by copying contents from reference file
-		resetProjectDescriptions();
+			// Unload resources are on memory only, these resources are not marked as dirty
+			unloadReourcesOutsideFileDescriptor();
 
-		// If existing Projects' setting were changed, reset them by copying contents from reference file
-		resetProjectSettings();
+			// If existing Projects' description were changed, reset its by copying contents from reference file
+			resetProjectDescriptions();
 
-		waitForModelLoading();
+			// If existing Projects' setting were changed, reset them by copying contents from reference file
+			resetProjectSettings();
 
-		// Clear list of resources changed
-		resourceProblemListener.clearHistory();
-		referenceWorkspaceChangeListener.clearHistory();
+			waitForModelLoading();
+
+			// Clear list of resources changed
+			resourceProblemListener.clearHistory();
+			referenceWorkspaceChangeListener.clearHistory();
+		} else {
+			WorkspaceEditingDomainManager.INSTANCE.resetEditingDomainMapping();
+			assertTrue(WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping().getEditingDomains().isEmpty());
+			assertAllModelResourcesUnloaded();
+
+			synchronizedDeleteWorkspace();
+
+			ModelDescriptorRegistry.INSTANCE.removeModels(ResourcesPlugin.getWorkspace().getRoot());
+			assertTrue(ModelDescriptorRegistry.INSTANCE.getAllModels().size() == 0);
+			assertAllModelDescriptorsRemoved();
+		}
 
 		Job.getJobManager().removeJobChangeListener(modelLoadJobTracer);
-
 	}
 
 	/**
@@ -474,11 +498,27 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		waitForModelLoading();
 	}
 
-	private void importMissingReferenceProjectsToWorkspace() throws Exception {
-		Set<IProject> missingProjects = getMissingReferenceProjects();
-		for (IProject project : missingProjects) {
-			importExternalResourceToWorkspace(new File(referenceWorkspaceSourceDir, project.getName()), project.getParent());
-		}
+	private void importMissingReferenceProjectsIntoWorkspace() throws Exception {
+		waitForModelLoading();
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
+						"Problems encountered while importing missing reference projects into workspace.", new RuntimeException());
+				Set<IProject> missingProjects = getMissingReferenceProjects();
+				for (IProject project : missingProjects) {
+					try {
+						importExternalResourceToWorkspace(new File(referenceWorkspaceSourceDir, project.getName()), project.getParent());
+					} catch (Exception ex) {
+						errorStatus.add(StatusUtil.createErrorStatus(Activator.getDefault(), ex));
+					}
+				}
+				if (errorStatus.getChildren().length > 0) {
+					throw new CoreException(errorStatus);
+				}
+			}
+		};
+		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		waitForModelLoading();
 	}
 
 	private Set<IProject> getMissingReferenceProjects() {
@@ -520,13 +560,29 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	private void importMissingReferenceFilesToWorkspace() throws Exception {
-		for (IFile missingFile : getMissingReferenceFiles()) {
-			File sourceFile = referenceWorkspaceSourceDir;
-			for (String segment : missingFile.getFullPath().segments()) {
-				sourceFile = new File(sourceFile, segment);
+		waitForModelLoading();
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
+						"Problems encountered while importing missing reference projects into workspace.", new RuntimeException());
+				for (IFile missingFile : getMissingReferenceFiles()) {
+					File sourceFile = referenceWorkspaceSourceDir;
+					for (String segment : missingFile.getFullPath().segments()) {
+						sourceFile = new File(sourceFile, segment);
+					}
+					try {
+						importExternalResourceToWorkspace(sourceFile, missingFile.getParent());
+					} catch (Exception ex) {
+						errorStatus.add(StatusUtil.createErrorStatus(Activator.getDefault(), ex));
+					}
+				}
+				if (errorStatus.getChildren().length > 0) {
+					throw new CoreException(errorStatus);
+				}
 			}
-			importExternalResourceToWorkspace(sourceFile, missingFile.getParent());
-		}
+		};
+		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		waitForModelLoading();
 	}
 
 	private Set<IFile> getMissingReferenceFiles() {
@@ -1450,8 +1506,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		public void scheduled(IJobChangeEvent event) {
 			if (isModelLoadingJob(event)) {
 				// TODO Surround with appropriate tracing option
-				// System.out.println("Model loading job '" +
-				// event.getJob().getName() + "' -> SCHEDULED");
+				// System.out.println("Model loading job '" + event.getJob().getName() + "' -> SCHEDULED");
 			}
 		}
 
@@ -1459,8 +1514,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		public void running(IJobChangeEvent event) {
 			if (isModelLoadingJob(event)) {
 				// TODO Surround with appropriate tracing option
-				// System.out.println("Model loading job '" +
-				// event.getJob().getName() + "' -> RUNNING");
+				// System.out.println("Model loading job '" + event.getJob().getName() + "' -> RUNNING");
 			}
 		}
 
@@ -1468,8 +1522,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		public void done(IJobChangeEvent event) {
 			if (isModelLoadingJob(event)) {
 				// TODO Surround with appropriate tracing option
-				// System.out.println("Model loading job '" +
-				// event.getJob().getName() + "' -> DONE");
+				// System.out.println("Model loading job '" + event.getJob().getName() + "' -> DONE");
 			}
 		}
 	}

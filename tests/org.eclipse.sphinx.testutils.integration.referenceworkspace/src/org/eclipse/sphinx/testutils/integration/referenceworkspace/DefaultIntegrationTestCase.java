@@ -28,7 +28,11 @@ import org.eclipse.uml2.uml.UMLFactory;
 public class DefaultIntegrationTestCase extends AbstractIntegrationTestCase<DefaultTestReferenceWorkspace> {
 
 	public DefaultIntegrationTestCase() {
-		super(DefaultTestReferenceWorkspace.class.getName());
+		this(true);
+	}
+
+	public DefaultIntegrationTestCase(boolean reuseSameReferenceWorkspaceForAllTests) {
+		super(DefaultTestReferenceWorkspace.class.getName(), reuseSameReferenceWorkspaceForAllTests);
 	}
 
 	@Override

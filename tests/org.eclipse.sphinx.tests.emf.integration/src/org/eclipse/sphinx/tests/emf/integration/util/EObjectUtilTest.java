@@ -15,12 +15,10 @@
  */
 package org.eclipse.sphinx.tests.emf.integration.util;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -28,7 +26,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -44,7 +41,6 @@ import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
-import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
@@ -69,42 +65,19 @@ import org.eclipse.uml2.uml.PackageableElement;
 
 @SuppressWarnings("nls")
 public class EObjectUtilTest extends DefaultIntegrationTestCase {
-	int hbProject10_A_HummingbirdObjectCount = 0;
-	int hbProject20_B_Uml2ObjectCount = 0;
 
-	List<String> hbProject10AResources10;
-	int resources10FromHbProject10_A;
+	private int hbProject10_A_HummingbirdObjectCount = 0;
+	private int hbProject20_B_Uml2ObjectCount = 0;
 
-	List<String> hbProject20AResources20;
-	int resources20FromHbProject20_A;
+	private List<String> hbProject10AResources10;
+	private int resources10FromHbProject10_A;
 
-	List<String> hbProject20AResourcesUml2;
-	int resourcesUml2FromHbProject20_A;
+	private List<String> hbProject20AResources20;
 
-	List<String> hbProject20BResources20;
-	int resources20FromHbProject20_B;
+	private List<String> hbProject20BResourcesUml2;
+	private int resourcesUml2FromHbProject20_B;
 
-	List<String> hbProject20BResourcesUml2;
-	int resourcesUml2FromHbProject20_B;
-
-	List<String> hbProject20CResources20;
-	int resources20FromHbProject20_C;
-
-	ComponentType componentType20A_2_1;
-	ComponentType componentType20A_2_2;
-	Port port20A_2_1;
-	Port port20A_2_2;
-
-	Component component20A_3_1;
-	Component component20A_3_2;
-	Component component21A_4_1;
-
-	ComponentType componentType20D_2_1;
-	ComponentType componentType20D_2_2;
-	Port port20D_2_1;
-	Port port20D_2_2;
-	Component component20D_3_1;
-	Component component20E_1_1;
+	private List<String> hbProject20CResources20;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -116,25 +89,15 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 
 		hbProject20AResources20 = refWks
 				.getReferenceFileNames(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A, Hummingbird20MMDescriptor.INSTANCE);
-		resources20FromHbProject20_A = hbProject20AResources20.size();
-
-		hbProject20AResourcesUml2 = refWks.getReferenceFileNames(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A, UML2MMDescriptor.INSTANCE);
-		resourcesUml2FromHbProject20_A = hbProject20AResourcesUml2.size();
-
-		hbProject20BResources20 = refWks
-				.getReferenceFileNames(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B, Hummingbird20MMDescriptor.INSTANCE);
-		resources20FromHbProject20_B = hbProject20BResources20.size();
 
 		hbProject20BResourcesUml2 = refWks.getReferenceFileNames(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B, UML2MMDescriptor.INSTANCE);
 		resourcesUml2FromHbProject20_B = hbProject20BResourcesUml2.size();
 
 		hbProject20CResources20 = refWks
 				.getReferenceFileNames(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C, Hummingbird20MMDescriptor.INSTANCE);
-		resources20FromHbProject20_C = hbProject20CResources20.size();
 
 		hbProject10_A_HummingbirdObjectCount = resources10FromHbProject10_A;
 		hbProject20_B_Uml2ObjectCount = resourcesUml2FromHbProject20_B;
-
 	}
 
 	@Override
@@ -1179,6 +1142,10 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// Context: eobject is null
 		proxy = EObjectUtil.proxify(componentType2.eContainer(), componentType2.eContainmentFeature(), null);
 		assertNull(proxy);
+
+		// Unload test resources to clean up partially proxified test models
+		resource20_2.unload();
+		resource20_3.unload();
 	}
 
 	/**
@@ -1288,360 +1255,5 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		assertTrue(hb20Platform_A_2.getComponentTypes().contains(referringComponent_1.getType()));
 		waitForModelLoading();
 
-	}
-
-	/**
-	 * Test methods for {@link EObjectUtil#getInverseReferences(EObject, boolean)}
-	 * 
-	 * @throws ExecutionException
-	 * @throws OperationCanceledException
-	 */
-	public void initTestData() {
-		Resource resource20A_2 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
-
-		assertNotNull(resource20A_2);
-		assertFalse(resource20A_2.getContents().isEmpty());
-		assertEquals(1, resource20A_2.getContents().size());
-		Platform platform20A_2 = (Platform) resource20A_2.getContents().get(0);
-		assertNotNull(platform20A_2);
-		assertEquals(2, platform20A_2.getComponentTypes().size());
-		assertEquals(2, platform20A_2.getInterfaces().size());
-
-		componentType20A_2_1 = platform20A_2.getComponentTypes().get(0);
-		assertFalse(componentType20A_2_1.getPorts().isEmpty());
-		port20A_2_1 = componentType20A_2_1.getPorts().get(0);
-		port20A_2_2 = componentType20A_2_1.getPorts().get(1);
-
-		componentType20A_2_2 = platform20A_2.getComponentTypes().get(1);
-		// ---------------------------------
-		Resource resource20_3 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, false), false);
-
-		assertNotNull(resource20_3);
-		assertFalse(resource20_3.getContents().isEmpty());
-		assertEquals(1, resource20_3.getContents().size());
-		Application application_20A_3 = (Application) resource20_3.getContents().get(0);
-		assertNotNull(application_20A_3);
-		assertEquals(2, application_20A_3.getComponents().size());
-
-		component20A_3_1 = application_20A_3.getComponents().get(0);
-		component20A_3_2 = application_20A_3.getComponents().get(1);
-		// ---------------------------------
-		Resource resource21A_4 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_21_20A_4, false), false);
-
-		assertNotNull(resource21A_4);
-		assertFalse(resource21A_4.getContents().isEmpty());
-		assertEquals(1, resource21A_4.getContents().size());
-		Application application_21A_4 = (Application) resource21A_4.getContents().get(0);
-		assertNotNull(application_21A_4);
-		assertEquals(2, application_21A_4.getComponents().size());
-
-		component21A_4_1 = application_21A_4.getComponents().get(0);
-		// ---------------------------------
-		// hbfile20D_2
-		Resource resource20D_2 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_2, false), false);
-
-		assertNotNull(resource20D_2);
-		assertFalse(resource20D_2.getContents().isEmpty());
-		assertEquals(1, resource20D_2.getContents().size());
-		Platform platform20D_2 = (Platform) resource20D_2.getContents().get(0);
-		assertNotNull(platform20D_2);
-		assertEquals(2, platform20D_2.getComponentTypes().size());
-
-		componentType20D_2_1 = platform20D_2.getComponentTypes().get(0);
-		assertFalse(componentType20D_2_1.getPorts().isEmpty());
-		port20D_2_1 = componentType20D_2_1.getPorts().get(0);
-		port20D_2_2 = componentType20D_2_1.getPorts().get(1);
-
-		componentType20D_2_2 = platform20D_2.getComponentTypes().get(1);
-		// -----------------
-		// hbfile20D_3
-		Resource resource20D_3 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_3, false), false);
-
-		assertNotNull(resource20D_3);
-		assertFalse(resource20D_3.getContents().isEmpty());
-		assertEquals(1, resource20D_3.getContents().size());
-		Application application_20D_3 = (Application) resource20D_3.getContents().get(0);
-		assertNotNull(application_20D_3);
-		assertEquals(2, application_20D_3.getComponents().size());
-
-		component20D_3_1 = application_20D_3.getComponents().get(0);
-		// ----------------------
-		// hbfile20E_1
-		Resource resource20E_1 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, false), false);
-
-		assertNotNull(resource20E_1);
-		assertFalse(resource20E_1.getContents().isEmpty());
-		assertEquals(1, resource20E_1.getContents().size());
-		Application application_20E_1 = (Application) resource20E_1.getContents().get(0);
-		assertNotNull(application_20E_1);
-		assertEquals(2, application_20E_1.getComponents().size());
-
-		component20E_1_1 = application_20E_1.getComponents().get(0);
-	}
-
-	public void testGetInverseReferences_StandAloneProject() throws OperationCanceledException, ExecutionException {
-		initTestData();
-
-		Collection<EStructuralFeature.Setting> references;
-
-		references = EObjectUtil.getInverseReferences(componentType20A_2_1, true);
-		assertFalse(references.isEmpty());
-		List<EObject> objects = getEObjects(references);
-		assertEquals(5, objects.size());
-		assertTrue(objects.contains(componentType20A_2_1.eContainer()));
-		assertTrue(objects.contains(component21A_4_1));
-		assertTrue(objects.contains(component20A_3_1));
-		assertFalse(objects.contains(component20A_3_2));
-		assertTrue(objects.contains(port20A_2_1));
-		assertTrue(objects.contains(port20A_2_2));
-
-		assertFalse(objects.contains(component20D_3_1));
-		assertFalse(objects.contains(componentType20D_2_1));
-		assertFalse(objects.contains(componentType20D_2_2));
-		assertFalse(objects.contains(component20E_1_1));
-		assertFalse(objects.contains(port20D_2_2));
-		assertFalse(objects.contains(port20D_2_1));
-
-		assertFalse(objects.contains(componentType20A_2_2));
-		// ---------------------
-		references.clear();
-		references = EObjectUtil.getInverseReferences(port20A_2_1, true);
-		assertFalse(references.isEmpty());
-		objects = getEObjects(references);
-		assertTrue(objects.contains(componentType20A_2_1));
-
-		assertFalse(objects.contains(componentType20A_2_1.eContainer()));
-		assertFalse(objects.contains(componentType20A_2_2));
-		assertFalse(objects.contains(component21A_4_1));
-		assertFalse(objects.contains(component20A_3_1));
-		assertFalse(objects.contains(component20A_3_2));
-		assertFalse(objects.contains(port20A_2_1));
-		assertFalse(objects.contains(port20A_2_2));
-
-	}
-
-	public void testGetInverseReferences_ProjectWithReferences() throws OperationCanceledException, ExecutionException {
-		initTestData();
-		Collection<EStructuralFeature.Setting> references;
-
-		assertNotNull(EcoreUtil.getRootContainer(componentType20D_2_1));
-		assertNotNull(EcoreUtil.getRootContainer(componentType20D_2_1).eResource());
-		assertNotNull(EcoreUtil.getRootContainer(componentType20D_2_1).eResource().getResourceSet());
-
-		references = EObjectUtil.getInverseReferences(componentType20D_2_1, true);
-		assertFalse(references.isEmpty());
-		List<EObject> objects = getEObjects(references);
-
-		assertFalse(objects.contains(componentType20D_2_2));
-
-		assertFalse(objects.contains(component21A_4_1));
-		assertFalse(objects.contains(component20A_3_1));
-		assertFalse(objects.contains(port20A_2_1));
-		assertFalse(objects.contains(port20A_2_2));
-
-		EObject container = componentType20D_2_1.eContainer();
-		assertNotNull(container);
-		assertTrue(objects.contains(container));
-		assertTrue(objects.contains(component20D_3_1));
-		assertTrue(objects.contains(component20E_1_1));
-		assertTrue(objects.contains(port20D_2_2));
-		assertTrue(objects.contains(port20D_2_1));
-		assertEquals(5, objects.size());
-
-	}
-
-	public void testGetInverseReferences_Proxy() throws OperationCanceledException, ExecutionException {
-		Collection<EStructuralFeature.Setting> references;
-
-		initTestData();
-		// ==============================================
-		// Containment
-		Runnable runnable1 = new Runnable() {
-			public void run() {
-				EcoreUtil.delete(port20D_2_1);
-			}
-		};
-		WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, runnable1, "remove componentType");
-		waitForModelLoading();
-
-		assertTrue(port20D_2_1.eIsProxy());
-		// deleted element was removed
-
-		// with resolved = false
-		references = EObjectUtil.getInverseReferences(componentType20D_2_1, true);
-		List<EObject> objects = getEObjects(references);
-		assertEquals(4, objects.size());
-		EObject container = componentType20D_2_1.eContainer();
-		assertNotNull(container);
-		assertTrue(objects.contains(container));
-		assertTrue(objects.contains(component20D_3_1));
-		assertTrue(objects.contains(component20E_1_1));
-		assertFalse(objects.contains(port20D_2_1));
-		assertTrue(objects.contains(port20D_2_2));
-
-		// with resolved = false
-		references = EObjectUtil.getInverseReferences(componentType20D_2_1, false);
-		objects = getEObjects(references);
-		assertTrue(objects.contains(component20D_3_1));
-		assertTrue(objects.contains(component20E_1_1));
-		assertFalse(objects.contains(port20D_2_1));
-		assertTrue(objects.contains(port20D_2_2));
-		// ----------------------
-		// References
-		Runnable runnable2 = new Runnable() {
-			public void run() {
-				EcoreUtil.delete(component20D_3_1);
-				EcoreUtil.delete(component20E_1_1);
-			}
-		};
-		WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, runnable2, "remove component referecing to context object");
-		waitForModelLoading();
-
-		assertTrue(component20D_3_1.eIsProxy());
-		assertTrue(component20E_1_1.eIsProxy());
-
-		// with resolved = true
-		references.clear();
-		references = EObjectUtil.getInverseReferences(componentType20D_2_1, true);
-		objects = getEObjects(references);
-		assertEquals(4, objects.size());
-		assertTrue(objects.contains(container));
-		assertTrue(objects.contains(component20D_3_1));
-		assertTrue(objects.contains(component20E_1_1));
-		assertFalse(objects.contains(port20D_2_1));
-		assertTrue(objects.contains(port20D_2_2));
-
-		// with resolved = false
-		references.clear();
-		references = EObjectUtil.getInverseReferences(componentType20D_2_1, false);
-		objects = getEObjects(references);
-		assertEquals(4, objects.size());
-		assertTrue(objects.contains(container));
-		assertTrue(objects.contains(component20D_3_1));
-		assertTrue(objects.contains(component20E_1_1));
-		assertFalse(objects.contains(port20D_2_1));
-		assertTrue(objects.contains(port20D_2_2));
-
-	}
-
-	public void testGetInverseReferences_ResourceSetIsNull() throws OperationCanceledException, ExecutionException {
-		initTestData();
-
-		// -------------------------------------------
-		// Context Object is NULL
-		Collection<EStructuralFeature.Setting> references = EObjectUtil.getInverseReferences(null, true);
-		assertNotNull(references);
-		assertTrue(references.isEmpty());
-
-		// -------------------------------------------
-		// Resource is NOT NULL, but it does not belong to any ResourceSet
-		final Resource resource20D_2 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_2, false), false);
-
-		assertNotNull(resource20D_2);
-		assertFalse(resource20D_2.getContents().isEmpty());
-
-		final ResourceSet resourceSet = refWks.editingDomain20.getResourceSet();
-		final EObject modelRoot = componentType20D_2_1.eContainer();
-		assertNotNull(modelRoot);
-
-		Runnable runnable0 = new Runnable() {
-			public void run() {
-				resourceSet.getResources().remove(resource20D_2);
-			}
-		};
-
-		WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, runnable0, "remove componentType");
-		waitForModelLoading();
-
-		assertNotNull(componentType20D_2_1.eResource());
-		assertNull(componentType20D_2_1.eResource().getResourceSet());
-
-		references = EObjectUtil.getInverseReferences(componentType20D_2_1, true);
-		List<EObject> objects = getEObjects(references);
-		assertEquals(3, objects.size());
-
-		assertFalse(objects.contains(componentType20D_2_2));
-		assertTrue(objects.contains(modelRoot));
-		assertTrue(objects.contains(port20D_2_2));
-		assertTrue(objects.contains(port20D_2_1));
-
-		assertFalse(objects.contains(component21A_4_1));
-		assertFalse(objects.contains(component20A_3_1));
-		assertFalse(objects.contains(port20A_2_1));
-		assertFalse(objects.contains(port20A_2_2));
-
-		assertFalse(objects.contains(component20D_3_1));
-		assertFalse(objects.contains(component20E_1_1));
-		assertFalse(objects.contains(componentType20D_2_2));
-	}
-
-	public void testGetInverseReferences_ModelRootIsNull() throws OperationCanceledException, ExecutionException {
-		initTestData();
-		Collection<EStructuralFeature.Setting> references;
-		Resource resource20D_2 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_2, false), false);
-
-		assertNotNull(resource20D_2);
-
-		// Context Object is NOT NULL. But Model Root is NULL;
-		final EObject modelRoot = componentType20D_2_1.eContainer();
-		assertNotNull(modelRoot);
-
-		Runnable runnable2 = new Runnable() {
-			public void run() {
-				EcoreUtil.delete(componentType20D_2_1);
-			}
-		};
-
-		WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, runnable2, "remove componentType");
-		waitForModelLoading();
-
-		references = EObjectUtil.getInverseReferences(componentType20D_2_1, true);
-		assertFalse(references.isEmpty());
-		List<EObject> objects = getEObjects(references);
-		assertEquals(2, objects.size());
-		assertFalse(objects.contains(componentType20D_2_2));
-		assertFalse(objects.contains(modelRoot));
-		assertTrue(objects.contains(port20D_2_2));
-		assertTrue(objects.contains(port20D_2_1));
-
-		assertFalse(objects.contains(component21A_4_1));
-		assertFalse(objects.contains(component20A_3_1));
-		assertFalse(objects.contains(port20A_2_1));
-		assertFalse(objects.contains(port20A_2_2));
-
-		assertFalse(objects.contains(component20D_3_1));
-		assertFalse(objects.contains(componentType20D_2_2));
-		assertFalse(objects.contains(component20E_1_1));
-
-		EcoreResourceUtil.unloadResource(resource20D_2);
-
-	}
-
-	public List<EObject> getEObjects(Collection<EStructuralFeature.Setting> settings) {
-		List<EObject> objects = new ArrayList<EObject>();
-		if (settings != null) {
-			for (Setting setting : settings) {
-				if (setting.getEObject() != null) {
-					objects.add(setting.getEObject());
-				}
-			}
-		}
-		return objects;
 	}
 }
