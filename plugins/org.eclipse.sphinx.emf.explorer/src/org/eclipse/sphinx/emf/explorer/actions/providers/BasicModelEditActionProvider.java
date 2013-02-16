@@ -264,20 +264,6 @@ public class BasicModelEditActionProvider extends BasicActionProvider {
 		return new ExtendedCutAction(getCustomAdapterFactory());
 	}
 
-	/**
-	 * Returns descriptors for all the possible children that can be added to the specified <code>object</code>. For
-	 * that purpose, it adapts the given <code>object</code> to {@link IEditingDomainItemProvider} and delegates the
-	 * actual calculation of possible child descriptors to
-	 * {@link IEditingDomainItemProvider#getNewChildDescriptors(Object, EditingDomain, Object)}.
-	 * <p>
-	 * This implementation returns <code>true</code> by default. Clients may override this method and return
-	 * <code>false</code> if appropriate.
-	 * </p>
-	 * 
-	 * @return <code>true</code> if delete action should clean up all references to deleted model objects,
-	 *         <code>false</code> otherwise.
-	 * @since 0.7.0
-	 */
 	protected boolean removeAllReferencesOnDelete() {
 		return true;
 	}
