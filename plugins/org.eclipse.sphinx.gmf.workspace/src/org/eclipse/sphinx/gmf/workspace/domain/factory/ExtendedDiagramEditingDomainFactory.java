@@ -47,6 +47,8 @@ import org.eclipse.gmf.runtime.emf.core.util.CrossReferenceAdapter;
 import org.eclipse.sphinx.emf.domain.factory.EditingDomainFactoryListenerRegistry;
 import org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.resource.ExtendedResource;
+import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
@@ -262,7 +264,11 @@ public class ExtendedDiagramEditingDomainFactory extends DiagramEditingDomainFac
 								if (entry.getValue() == notifier) {
 									i.remove();
 
-									if (!resolve()) {
+									// Don't keep track of proxies if memory-optimized unload is to be performed -
+									// they would never ever be cleared off again and result in a memory-leak
+									ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt((Resource) notifier);
+									if (extendedResource == null
+											|| extendedResource.getDefaultLoadOptions().get(ExtendedResource.OPTION_UNLOAD_MEMORY_OPTIMIZED) != Boolean.TRUE) {
 										EObject eObject = entry.getKey();
 										Collection<EStructuralFeature.Setting> settings = inverseCrossReferencer.get(eObject);
 										if (settings != null) {
@@ -278,8 +284,8 @@ public class ExtendedDiagramEditingDomainFactory extends DiagramEditingDomainFac
 									}
 								}
 							}
+							return;
 						}
-						return;
 					}
 					}
 				}
