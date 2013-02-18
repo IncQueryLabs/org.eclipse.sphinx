@@ -89,7 +89,7 @@
 				<striplinebreaks/>
 			</filterchain>
 		</loadfile>
-		
+
 		<condition property="mvn.build.type.suffix" value="${mvn.snapshot.suffix}" else="">
 			<isset property="mvn.snapshot.suffix" />
 		</condition>
@@ -140,7 +140,7 @@
 	</target>
 
 	<target name="build-downloads" depends="setup-build-eclipse">
-		<!-- Invoke do-build-downloads target using Eclipse Ant runner 
+		<!-- Invoke do-build-downloads target using Eclipse Ant runner
 			 so as to have access to Ant tasks that are provided by or contributed to Eclipse -->
 		<exec executable="./eclipse/eclipse" failonerror="true" timeout="900000" taskname="eclipse">
 			<arg line="-noSplash" />
@@ -154,7 +154,7 @@
 		<delete dir="./target/downloads" />
 
 		<echo message="Packaging downloadable archived Sphinx Update Site" />
-		<copy file="./repository/target/org.eclipse.sphinx.updates-${sphinx.version}${mvn.build.type.suffix}.zip" tofile="./target/downloads/mdt-sphinx-Update-${sphinx.version}.${env.BUILD_ID}.zip" />
+		<copy file="./repository/target/org.eclipse.sphinx.updates-${sphinx.version}${mvn.build.type.suffix}.zip" tofile="./target/downloads/mdt-sphinx-Update-${sphinx.version}.v${env.BUILD_ID}.zip" />
 
 		<echo message="Packaging downloadable Sphinx SDK" />
 		<p2.mirror source="file:${basedir}/repository/target/repository" destination="file:${basedir}/target/downloads/sphinx.sdk">
@@ -162,7 +162,7 @@
 			<slicingOptions followStrict="true" />
 		</p2.mirror>
 		<p2.repo2runnable source="file:${basedir}/target/downloads/sphinx.sdk" destination="file:${basedir}/target/downloads/sphinx.sdk.runnable/eclipse" />
-		<zip destfile="./target/downloads/mdt-sphinx-SDK-${sphinx.version}.${env.BUILD_ID}.zip">
+		<zip destfile="./target/downloads/mdt-sphinx-SDK-${sphinx.version}.v${env.BUILD_ID}.zip">
 			<zipfileset dir="./target/downloads/sphinx.sdk.runnable" excludes="eclipse/*.jar" />
 		</zip>
 
@@ -172,7 +172,7 @@
 			<slicingOptions followStrict="true" />
 		</p2.mirror>
 		<p2.repo2runnable source="file:${basedir}/target/downloads/sphinx.runtime" destination="file:${basedir}/target/downloads/sphinx.runtime.runnable/eclipse" />
-		<zip destfile="./target/downloads/mdt-sphinx-runtime-${sphinx.version}.${env.BUILD_ID}.zip">
+		<zip destfile="./target/downloads/mdt-sphinx-runtime-${sphinx.version}.v${env.BUILD_ID}.zip">
 			<zipfileset dir="./target/downloads/sphinx.runtime.runnable" excludes="eclipse/*.jar" />
 		</zip>
 
@@ -182,7 +182,7 @@
 			<slicingOptions followStrict="true" />
 		</p2.mirror>
 		<p2.repo2runnable source="file:${basedir}/target/downloads/sphinx.examples" destination="file:${basedir}/target/downloads/sphinx.examples.runnable/eclipse" />
-		<zip destfile="./target/downloads/mdt-sphinx-examples-${sphinx.version}.${env.BUILD_ID}.zip">
+		<zip destfile="./target/downloads/mdt-sphinx-examples-${sphinx.version}.v${env.BUILD_ID}.zip">
 			<zipfileset dir="./target/downloads/sphinx.examples.runnable" excludes="eclipse/*.jar" />
 		</zip>
 
@@ -192,9 +192,9 @@
 			<slicingOptions followStrict="true" />
 		</p2.mirror>
 		<p2.repo2runnable source="file:${basedir}/target/downloads/sphinx.testutils" destination="file:${basedir}/target/downloads/sphinx.testutils.runnable/eclipse" />
-		<zip destfile="./target/downloads/mdt-sphinx-testutils-${sphinx.version}.${env.BUILD_ID}.zip">
+		<zip destfile="./target/downloads/mdt-sphinx-testutils-${sphinx.version}.v${env.BUILD_ID}.zip">
 			<zipfileset dir="./target/downloads/sphinx.testutils.runnable" excludes="eclipse/*.jar" />
 		</zip>
 	</target>
-	
+
 </project>
