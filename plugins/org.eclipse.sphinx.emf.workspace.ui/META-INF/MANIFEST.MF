@@ -16,4 +16,5 @@ Export-Package: org.eclipse.sphinx.emf.workspace.ui.internal;x-internal:=true,
  org.eclipse.sphinx.emf.workspace.ui.internal.saving;x-internal:=true,
  org.eclipse.sphinx.emf.workspace.ui.saving,
  org.eclipse.sphinx.emf.workspace.ui.wizards,
+ org.eclipse.sphinx.emf.workspace.ui.wizards.groups,
  org.eclipse.sphinx.emf.workspace.ui.wizards.pages

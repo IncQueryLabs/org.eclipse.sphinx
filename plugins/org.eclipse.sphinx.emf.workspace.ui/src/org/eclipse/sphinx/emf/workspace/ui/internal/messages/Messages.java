@@ -1,16 +1,16 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - Added messages for creating new project
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.ui.internal.messages;
@@ -26,6 +26,8 @@ public class Messages extends NLS {
 	 */
 	public static String error_failedToSaveModelsDuringWorkbenchClosing;
 	public static String error_unableToFindPerspective;
+	public static String error_fileExtensionMustBeOneOf;
+
 	public static String eobjectMustBeInResource;
 
 	// New Linked Folder
@@ -69,6 +71,36 @@ public class Messages extends NLS {
 	public static String wizardNewProject_newProjectReferenceTitle;
 	public static String wizardNewProject_newProjectReferenceDescription;
 	public static String wizardNewProject_newProjectWindowTitle;
+
+	public static String job_creatingNewModelProject;
+	public static String title_newModelFile;
+	public static String default_modelFileBaseName;
+	public static String message_configureSetting;
+	public static String label_metaModelVersionGroup;
+	public static String label_metaModelVersionAlternate;
+	public static String label_workspaceDefaultMetaModelVersion;
+	public static String metaModelVersion_labelPattern;
+	public static String FilteredItemsSelectionDialog_pattern;
+	public static String error_emptySelectedMM;
+	public static String error_emptySelectedEPackage;
+	public static String error_emptySelectedEClassifier;
+	public static String title_metaModelDescriptorBrowseDialog;
+	public static String title_epackageBrowseDialog;
+	public static String title_eclassifierBrowseDialog;
+	public static String title_newModelCreationPage;
+	public static String description_newModelCreationPage;
+	public static String label_browseButton;
+	public static String description_newModelFileCreationPage;
+	public static String error_requiredProjectNature;
+	public static String title_newModelFileWizard;
+	public static String job_creatingNewModelFile;
+	public static String UI_OpenEditorError_label;
+	public static String label_metaModelComboButtonField;
+	public static String label_epackageComboButtonField;
+	public static String label_eclassifierComboButtonField;
+	public static String defaultMetaModelVersionLabel;
+
+	public static String label_defaultMetaModelVersion;
 
 	static {
 		// initialize resource bundle
