@@ -58,8 +58,8 @@ public class Messages extends NLS {
 	/*
 	 * Project creation
 	 */
-	public static String job_AddProjectNatures;
-	public static String job_creatingNewProject;
+	public static String job_addingProjectNatures;
+	public static String job_creatingNewModelProject;
 	/*
 	 * Error messages
 	 */
