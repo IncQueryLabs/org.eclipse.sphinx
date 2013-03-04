@@ -38,12 +38,12 @@ import org.eclipse.ui.ide.undo.WorkspaceUndoUtil;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 /**
- * 
+ * Basic wizard that creates a new project resource in the workspace. Pages are added. A
+ * {@linkplain createCreateNewModelProjectJob new model project job} is created to create the model project in the
+ * workspace.
+ * <p>
+ * This class may be instantiated and used without further configuration; This class can also be subclassed.
  */
-/**
- * 
- */
-@SuppressWarnings("restriction")
 public class BasicNewModelProjectWizard extends BasicNewProjectResourceWizard {
 
 	protected WizardNewProjectCreationPage mainPage;
@@ -53,11 +53,11 @@ public class BasicNewModelProjectWizard extends BasicNewProjectResourceWizard {
 	protected IMetaModelDescriptor metaModelDescriptor;
 
 	/**
-	 * The id of the {@link IProjectNature project nature}.
+	 * The id of the {@linkplain IProjectNature project nature}.
 	 */
 	private String projectNatureId;
 
-	private IProjectWorkspacePreference<? extends AbstractMetaModelDescriptor> projectWorkspacePreference;
+	private IProjectWorkspacePreference<? extends AbstractMetaModelDescriptor> metaModelVersionPreference;
 
 	/**
 	 * Creates a wizard for creating a new project resource in the workspace.
@@ -67,26 +67,40 @@ public class BasicNewModelProjectWizard extends BasicNewProjectResourceWizard {
 	}
 
 	/**
-	 * Creates a wizard for creating a new project resource in the workspace.
+	 * Creates a wizard for creating a new project resource in the workspace with required project nature id and
+	 * metamodel version preference.
+	 * 
+	 * @param projectNatureId
+	 *            required project nature id
+	 * @param metaModelVersionPreference
+	 *            the required {@linkplain IProjectWorkspacePreference meta-model Version Preference}
 	 */
 	public BasicNewModelProjectWizard(String projectNatureId,
-			IProjectWorkspacePreference<? extends AbstractMetaModelDescriptor> projectWorkspacePreference) {
-		this(null, projectNatureId, projectWorkspacePreference);
+			IProjectWorkspacePreference<? extends AbstractMetaModelDescriptor> metaModelVersionPreference) {
+		this(null, projectNatureId, metaModelVersionPreference);
 	}
 
 	/**
-	 * Creates a wizard for creating a new project resource in the workspace.
+	 * Creates a wizard for creating a new project resource in the workspace with required metamodel descriptor, project
+	 * nature id and metamodel version preference.
+	 * 
+	 * @param metaModelDescriptor
+	 *            the required {@linkplain IMetaModelDescriptor meta-model descriptor}
+	 * @param projectNatureId
+	 *            required project nature id
+	 * @param metaModelVersionPreference
+	 *            the required {@linkplain IProjectWorkspacePreference meta-model Version Preference}
 	 */
 	public BasicNewModelProjectWizard(IMetaModelDescriptor metaModelDescriptor, String projectNatureId,
-			IProjectWorkspacePreference<? extends AbstractMetaModelDescriptor> projectWorkspacePreference) {
+			IProjectWorkspacePreference<? extends AbstractMetaModelDescriptor> metaModelVersionPreference) {
 		super();
 		this.metaModelDescriptor = metaModelDescriptor;
 		this.projectNatureId = projectNatureId;
-		this.projectWorkspacePreference = projectWorkspacePreference;
+		this.metaModelVersionPreference = metaModelVersionPreference;
 	}
 
 	/*
-	 * (non-Javadoc) Method declared on IWizard.
+	 * @see org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard#addPages()
 	 */
 	@Override
 	public void addPages() {
@@ -100,6 +114,12 @@ public class BasicNewModelProjectWizard extends BasicNewProjectResourceWizard {
 		}
 	}
 
+	/**
+	 * Creates the project creation main page.
+	 * 
+	 * @param createWorkingSetGroup
+	 * @return
+	 */
 	protected WizardNewProjectCreationPage createMainPage(final boolean createWorkingSetGroup) {
 		WizardNewProjectCreationPage mainPage = new WizardNewProjectCreationPage("basicNewProjectPage") { //$NON-NLS-1$
 			/*
@@ -120,6 +140,9 @@ public class BasicNewModelProjectWizard extends BasicNewProjectResourceWizard {
 		return mainPage;
 	}
 
+	/**
+	 * Creates the reference page.
+	 */
 	protected WizardNewProjectReferencePage createReferencePage() {
 		WizardNewProjectReferencePage referencePage = new WizardNewProjectReferencePage("basicReferenceProjectPage"); //$NON-NLS-1$
 		referencePage.setTitle(Messages.wizardNewProject_newProjectReferenceTitle);
@@ -128,6 +151,7 @@ public class BasicNewModelProjectWizard extends BasicNewProjectResourceWizard {
 	}
 
 	/*
+	 * Creates a new project, update the perspective, and open in new perspective.
 	 * @see org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard#performFinish()
 	 */
 	@Override
@@ -136,12 +160,12 @@ public class BasicNewModelProjectWizard extends BasicNewProjectResourceWizard {
 		IProject[] referencedProjects = referencePage != null ? referencePage.getReferencedProjects() : null;
 		final IProject projectHandle = mainPage.getProjectHandle();
 
-		CreateNewModelProjectJob job = createCreateNewProjectJob(org.eclipse.sphinx.emf.workspace.internal.messages.Messages.job_creatingNewProject,
-				projectHandle, location);
+		// Create a new project job
+		CreateNewModelProjectJob job = createCreateNewModelProjectJob(projectHandle, location);
 		job.setReferencedProjects(referencedProjects);
 		job.setUIInfoAdaptable(WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
 
-		// reveal the project after creation
+		// Reveal the project after creation
 		job.addJobChangeListener(new JobChangeAdapter() {
 			@Override
 			public void done(IJobChangeEvent event) {
@@ -163,7 +187,18 @@ public class BasicNewModelProjectWizard extends BasicNewProjectResourceWizard {
 		return true;
 	}
 
-	protected CreateNewModelProjectJob createCreateNewProjectJob(String name, IProject project, URI location) {
-		return new CreateNewModelProjectJob(name, project, location, metaModelDescriptor, projectNatureId, projectWorkspacePreference);
+	/**
+	 * Creates a new instance of {@linkplain CreateNewModelProjectJob}. This method may be overridden by clients.
+	 * 
+	 * @param project
+	 *            the {@linkplain IProject project} resource to be created
+	 * @param location
+	 *            the {@linkplain URI location} where the project will be created. If null the default location will be
+	 *            used.
+	 * @return
+	 */
+	protected CreateNewModelProjectJob createCreateNewModelProjectJob(IProject project, URI location) {
+		return new CreateNewModelProjectJob(Messages.job_creatingNewModelProject, project, location, metaModelDescriptor, projectNatureId,
+				metaModelVersionPreference);
 	}
 }
