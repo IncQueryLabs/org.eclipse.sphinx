@@ -1527,7 +1527,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	protected boolean isMyActivePropertySheetPage() {
 		IWorkbenchPart activePart = getSite().getWorkbenchWindow().getPartService().getActivePart();
 		if (activePart instanceof PropertySheet) {
-			return getPropertySheetPage() == ((PropertySheet) activePart).getCurrentPage();
+			return propertySheetPages.contains(((PropertySheet) activePart).getCurrentPage());
 		}
 		return false;
 	}
