@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Sphinx Adopter Target 3.7" sequenceNumber="0">
+<?pde version="3.6"?>
+<target name="Sphinx Adopter Target 3.7" sequenceNumber="0">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="3.7.2.M20120208-0800"/>
@@ -21,8 +22,8 @@
 <repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sphinx.sdk.feature.group" version="0.7.0.201209142345"/>
-<unit id="org.eclipse.sphinx.examples.feature.group" version="0.7.0.201209142345"/>
+<unit id="org.eclipse.sphinx.sdk.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.sphinx.examples.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/sphinx/updates/interim"/>
 </location>
 </locations>
