@@ -55,6 +55,8 @@ public class ModelEditorUndoContextManager implements IDisposable {
 		getOperationHistory().addOperationHistoryListener(undoableOperationBeginListener);
 	}
 
+	// FIXME This method is never called (see
+	// org.eclipse.sphinx.gmf.runtime.ui.editor.BasicDiagramDocumentEditor.getAdapter(Class) for details)
 	public void setTargetPropertySheetPage(IPropertySheetPage targetPropertySheetPage) {
 		this.targetPropertySheetPage = targetPropertySheetPage;
 	}

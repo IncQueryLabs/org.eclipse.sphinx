@@ -140,6 +140,10 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class key) {
+		// FIXME Retrieve IPropertySheetPage created by
+		// org.eclipse.gmf.runtime.diagram.ui.resources.editor.parts.DiagramDocumentEditor.getAdapter(Class) and
+		// register it with
+		// org.eclipse.sphinx.gmf.runtime.ui.internal.editor.ModelEditorUndoContextManager.setTargetPropertySheetPage(IPropertySheetPage)
 		if (key.equals(AdapterFactory.class)) {
 			return getAdapterFactory();
 		} else if (key.equals(IUndoContext.class)) {
