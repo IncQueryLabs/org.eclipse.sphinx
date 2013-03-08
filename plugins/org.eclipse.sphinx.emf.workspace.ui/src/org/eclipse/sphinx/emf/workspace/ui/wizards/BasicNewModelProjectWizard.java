@@ -201,4 +201,20 @@ public class BasicNewModelProjectWizard extends BasicNewProjectResourceWizard {
 		return new CreateNewModelProjectJob(Messages.job_creatingNewModelProject, project, location, metaModelDescriptor, projectNatureId,
 				metaModelVersionPreference);
 	}
+
+	/**
+	 * Creates a new instance of {@linkplain CreateNewModelProjectJob}. This method may be overridden by clients.
+	 * 
+	 * @param project
+	 *            the {@linkplain IProject project} resource to be created
+	 * @param location
+	 *            the {@linkplain URI location} where the project will be created. If null the default location will be
+	 *            used.
+	 * @deprecated Use {@link #createCreateNewModelProjectJob (IProject, URI) instead}
+	 * @return
+	 */
+	@Deprecated
+	protected CreateNewModelProjectJob createCreateNewProjectJob(String name, IProject project, URI location) {
+		return new CreateNewModelProjectJob(name, project, location, metaModelDescriptor, projectNatureId, metaModelVersionPreference);
+	}
 }
