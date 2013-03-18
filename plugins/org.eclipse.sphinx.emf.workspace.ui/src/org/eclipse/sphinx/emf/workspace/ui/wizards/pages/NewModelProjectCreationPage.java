@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     itemis - Initial API and implementation
+ *     itemis - [403693] NewModelProjectCreationPage#createMetaModelVersionGroup() should not return the group object being created
  * 
  * </copyright>
  */
@@ -64,8 +65,8 @@ public class NewModelProjectCreationPage extends WizardNewProjectCreationPage {
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 
-		// add a release group
-		metaModelVersionGroup = createMetaModelVersionGroup((Composite) getControl(), metaModelVersionPreference, metaModelDescriptor);
+		createMetaModelVersionGroup((Composite) getControl(), metaModelVersionPreference, metaModelDescriptor);
+
 		Dialog.applyDialogFont(getControl());
 	}
 
@@ -80,11 +81,10 @@ public class NewModelProjectCreationPage extends WizardNewProjectCreationPage {
 	 *            the {@linkplain IProjectWorkspacePreference projectWorkspacePreference} to be created in this project
 	 * @param mmDescriptor
 	 *            the {@linkplain IMetaModelDescriptor meta-model descriptor} to be created in this project
-	 * @return
 	 */
-	public BasicMetaModelVersionGroup createMetaModelVersionGroup(Composite parent,
+	public void createMetaModelVersionGroup(Composite parent,
 			IProjectWorkspacePreference<? extends AbstractMetaModelDescriptor> metaModelVersionPreference, IMetaModelDescriptor mmDescriptor) {
-		return new BasicMetaModelVersionGroup(parent, metaModelVersionPreference, mmDescriptor);
+		metaModelVersionGroup = new BasicMetaModelVersionGroup(parent, metaModelVersionPreference, mmDescriptor);
 	}
 
 	public IMetaModelDescriptor getMetaModelVersionDescriptor() {
