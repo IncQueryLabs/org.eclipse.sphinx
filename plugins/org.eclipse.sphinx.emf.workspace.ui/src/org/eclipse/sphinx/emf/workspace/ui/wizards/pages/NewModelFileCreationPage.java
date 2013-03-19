@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [403728] NewModelProjectCreationPage and NewModelFileCreationPage should provided hooks for creating additional controls
  *
  * </copyright>
  */
@@ -34,6 +35,7 @@ import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.BasicNewModelFileWizard.NewModelFileProperties;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 
 /**
@@ -73,6 +75,31 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 
 		setTitle(Messages.title_newModelFile);
 		setDescription(Messages.description_newModelFileCreationPage);
+	}
+
+	/*
+	 * @see org.eclipse.ui.dialogs.WizardNewFileCreationPage#createControl(org.eclipse.swt.widgets.Composite)
+	 */
+	@Override
+	public void createControl(Composite parent) {
+		super.createControl(parent);
+		createAdditionalControls((Composite) getControl());
+	}
+
+	/**
+	 * Creates controls for specific project creation options to be placed behind those for file name, container and
+	 * advanced options (which are created by {@link WizardNewFileCreationPage#createControl(Composite)}).
+	 * <p>
+	 * This implementation does nothing.
+	 * </p>
+	 * This method may be overridden by subclasses to provide custom implementations.
+	 * 
+	 * @param parent
+	 *            the parent composite
+	 * @see org.eclipse.ui.dialogs.WizardNewFileCreationPage#createControl(Composite)
+	 */
+	protected void createAdditionalControls(Composite parent) {
+		// Do nothing by default
 	}
 
 	/**

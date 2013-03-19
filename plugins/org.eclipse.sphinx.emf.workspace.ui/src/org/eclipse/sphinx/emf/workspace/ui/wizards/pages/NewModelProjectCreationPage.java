@@ -10,6 +10,7 @@
  * Contributors: 
  *     itemis - Initial API and implementation
  *     itemis - [403693] NewModelProjectCreationPage#createMetaModelVersionGroup() should not return the group object being created
+ *     itemis - [403728] NewModelProjectCreationPage and NewModelFileCreationPage should provided hooks for creating additional controls
  * 
  * </copyright>
  */
@@ -64,16 +65,32 @@ public class NewModelProjectCreationPage extends WizardNewProjectCreationPage {
 	@Override
 	public void createControl(Composite parent) {
 		super.createControl(parent);
+		createAdditionalControls((Composite) getControl());
+	}
 
-		createMetaModelVersionGroup((Composite) getControl(), metaModelVersionPreference, metaModelDescriptor);
+	/**
+	 * Creates controls for specific project creation options to be placed behind those for project name and location
+	 * (which are created by {@link WizardNewProjectCreationPage#createControl(Composite)}).
+	 * <p>
+	 * This implementation creates a {@link BasicMetaModelVersionGroup group} for selecting the metamodel version to be
+	 * assigned to the new project.
+	 * </p>
+	 * This method may be overridden by subclasses to provide enhanced or custom implementations.
+	 * 
+	 * @param parent
+	 *            the parent composite
+	 * @see org.eclipse.ui.dialogs.WizardNewProjectCreationPage#createControl(Composite)
+	 */
+	protected void createAdditionalControls(Composite parent) {
+		createMetaModelVersionGroup(parent, metaModelVersionPreference, metaModelDescriptor);
 
 		Dialog.applyDialogFont(getControl());
 	}
 
 	/**
-	 * Creates a BasicMetaModelVersionGroup release group which composes of fields for the default metamodel version,
-	 * alternate metamodel versions, etc.. This method may be overriden by subclasses to provide specific metamodel
-	 * version group.
+	 * Creates a {@link BasicMetaModelVersionGroup} release group which composes of fields for the default metamodel
+	 * version, alternate metamodel versions, etc.. This method may be overridden by subclasses to provide specific
+	 * metamodel version group.
 	 * 
 	 * @param parent
 	 *            the {@linkplain Composite parent}
