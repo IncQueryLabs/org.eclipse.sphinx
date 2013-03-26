@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +29,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.xmi.XMIException;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.Activator;
@@ -97,7 +100,12 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 			Map<IResourceScope, Set<IMetaModelDescriptor>> contextResourceScopes = getResourceScopes(contextObject, contextResource);
 
 			// Collect resources which belong to same resource scope(s) and metamodel(s) as the context object does
-			HashSet<Resource> resourcesInScope = new HashSet<Resource>();
+			/*
+			 * IMPORTANT: A LinkedHashSet is used to preserve the ordering of the Resources. Using a simple HashSet will
+			 * not preserve the ordering which leads to inconsistent results when implementing Resource merging based on
+			 * the getResourcesInScope() method.
+			 */
+			Set<Resource> resourcesInScope = new LinkedHashSet<Resource>();
 			List<Resource> safeResources = new ArrayList<Resource>(getResources());
 			for (Resource resource : safeResources) {
 				for (IResourceScope contextResourceScope : contextResourceScopes.keySet()) {
@@ -115,7 +123,12 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 			IMetaModelDescriptor contextMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(contextResource);
 
 			// Collect only resources which are located outside workspace
-			Set<Resource> resourcesInScope = new HashSet<Resource>();
+			/*
+			 * IMPORTANT: A LinkedHashSet is used to preserve the ordering of the Resources. Using a simple HashSet will
+			 * not preserve the ordering which leads to inconsistent results when implementing Resource merging based on
+			 * the getResourcesInScope() method.
+			 */
+			Set<Resource> resourcesInScope = new LinkedHashSet<Resource>();
 			List<Resource> safeResources = new ArrayList<Resource>(getResources());
 			for (Resource resource : safeResources) {
 				if (!isPlatformResource(resource)) {
