@@ -21,21 +21,28 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.sphinx.emf.ecore.proxymanagement.resolver.DefaultResourceSetEObjectResolver;
+import org.eclipse.sphinx.emf.ecore.proxymanagement.resolver.IEObjectResolver;
+import org.eclipse.sphinx.emf.ecore.proxymanagement.resolver.ResolveRequest;
+import org.eclipse.sphinx.emf.ecore.proxymanagement.resolver.ScopingResourceSetEObjectResolver;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelper;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelperAdapterFactory;
-import org.eclipse.sphinx.emf.resource.ScopingResourceSet;
 
 public class ProxyResolutionBehavior {
 
 	/**
 	 * Singleton instance
 	 */
-	public static final ProxyResolutionBehavior INSTANCE = new ProxyResolutionBehavior();
+	public static final ProxyResolutionBehavior INSTANCE = new ProxyResolutionBehavior(
+			new ScopingResourceSetEObjectResolver().append(new DefaultResourceSetEObjectResolver()));
+
+	private IEObjectResolver fEObjectResolver;
 
 	/**
 	 * Protected constructor for the singleton pattern
 	 */
-	protected ProxyResolutionBehavior() {
+	protected ProxyResolutionBehavior(IEObjectResolver eObjectResolver) {
+		fEObjectResolver = eObjectResolver;
 	}
 
 	public EObject eResolveProxy(EObject contextObject, EObject proxy) {
@@ -91,27 +98,15 @@ public class ProxyResolutionBehavior {
 				}
 			}
 		}
+		ResolveRequest resolveRequest = new ResolveRequest(proxy, contextObject);
+		resolveRequest.setIncludeUnloadedEObjects(true);
+		EObject resolvedEObject = fEObjectResolver.resolve(resolveRequest);
 
-		// Are we in a ScopingResourceSet?
-		if (resourceSet instanceof ScopingResourceSet) {
-			// Delegate to resource scope-aware proxy resolution
-			EObject resolvedEObject = ((ScopingResourceSet) resourceSet).getEObjectInScope(proxyURI, true, contextObject);
-			if (resolvedEObject != null) {
-				return resolvedEObject;
-			}
-		} else {
-			// Delegate to conventional EMF proxy resolution; it may be able to do the job if we are in a conventional
-			// ResourceSet and the proxy URI is not fragment-based
-			EObject resolvedEObject = resourceSet.getEObject(proxyURI, true);
-			if (resolvedEObject != proxy) {
-				return resolvedEObject;
-			}
-		}
-
-		if (proxyHelper != null) {
+		if (resolvedEObject == proxy && proxyHelper != null) {
 			// Remember proxy as known unresolved proxy
 			proxyHelper.getBlackList().addProxyURI(proxyURI);
 		}
-		return proxy;
+		return resolvedEObject;
 	}
+
 }
