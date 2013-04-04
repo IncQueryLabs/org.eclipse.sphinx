@@ -68,7 +68,8 @@ public abstract class AbstractResourceSetEObjectResolver extends AbstractEObject
 		if (scopeResource == null) {
 			return EMPTY_RESOURCESET;
 		}
-		return scopeResource.getResourceSet();
+		ResourceSet resourceSet = scopeResource.getResourceSet();
+		return resourceSet != null ? resourceSet : EMPTY_RESOURCESET;
 	}
 
 }
