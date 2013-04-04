@@ -76,6 +76,12 @@ public class ProxyResolutionBehaviorTest {
 		assertThat(resolvedEObject, is(expectedResolvedEObject));
 	}
 
+	@Test
+	public void shouldReturnProxyIfCalledOnResouceNotContainedInAResourceSet() {
+		EObject resolvedEObject = fBehaviorUT.eResolveProxy(TypeModel20Factory.eINSTANCE.createInterface(), fProxyToResolve);
+		assertThat(resolvedEObject, is(fProxyToResolve));
+	}
+
 	/**
 	 * A ResourceSet which only contains one Resource containing only one root element.
 	 */
