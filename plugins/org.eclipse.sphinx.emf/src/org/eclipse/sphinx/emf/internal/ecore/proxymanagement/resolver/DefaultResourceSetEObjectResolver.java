@@ -20,7 +20,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 /**
  * An IEObjectResolver which will simply delegate the resolution request to the ResourceSet specified in the request.
  */
-public class DefaultResourceSetEObjectResolver extends ResourceSetEObjectResolver {
+public class DefaultResourceSetEObjectResolver extends AbstractResourceSetEObjectResolver {
 
 	@Override
 	protected EObject delegateRequest(EObjectResolveRequest request, ResourceSet scopeResourceSet) {
