@@ -18,7 +18,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSet;
 
-public class ScopingResourceSetEObjectResolver extends ResourceSetEObjectResolver {
+public class ScopingResourceSetEObjectResolver extends AbstractResourceSetEObjectResolver {
 
 	@Override
 	protected EObject delegateRequest(EObjectResolveRequest request, ResourceSet scopeResourceSet) {

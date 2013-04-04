@@ -23,7 +23,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
  * A basic implementation for {@link EObjectResolver}s which simply delegate the resolution request to the ResouceSet of
  * the scope to search in.
  */
-public abstract class ResourceSetEObjectResolver extends AbstractEObjectResolver {
+public abstract class AbstractResourceSetEObjectResolver extends AbstractEObjectResolver {
 
 	protected static final ResourceSet EMPTY_RESOURCESET = new ResourceSetImpl();
 
