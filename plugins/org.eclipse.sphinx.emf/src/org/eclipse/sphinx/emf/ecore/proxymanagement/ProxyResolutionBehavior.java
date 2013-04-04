@@ -21,12 +21,12 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.sphinx.emf.ecore.proxymanagement.resolver.DefaultResourceSetEObjectResolver;
-import org.eclipse.sphinx.emf.ecore.proxymanagement.resolver.IEObjectResolver;
-import org.eclipse.sphinx.emf.ecore.proxymanagement.resolver.ResolveRequest;
-import org.eclipse.sphinx.emf.ecore.proxymanagement.resolver.ScopingResourceSetEObjectResolver;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelper;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelperAdapterFactory;
+import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.DefaultResourceSetEObjectResolver;
+import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.IEObjectResolver;
+import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.ResolveRequest;
+import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.ScopingResourceSetEObjectResolver;
 
 public class ProxyResolutionBehavior {
 

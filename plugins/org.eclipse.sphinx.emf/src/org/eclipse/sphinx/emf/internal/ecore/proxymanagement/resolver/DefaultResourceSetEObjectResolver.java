@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.ecore.proxymanagement.resolver;
+package org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
