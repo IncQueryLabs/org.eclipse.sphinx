@@ -23,7 +23,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 public class DefaultResourceSetEObjectResolver extends ResourceSetEObjectResolver {
 
 	@Override
-	protected EObject delegateRequest(ResolveRequest request, ResourceSet scopeResourceSet) {
+	protected EObject delegateRequest(EObjectResolveRequest request, ResourceSet scopeResourceSet) {
 		return scopeResourceSet.getEObject(request.getUriToResolve(), request.includeUnloadedEObjects());
 	}
 

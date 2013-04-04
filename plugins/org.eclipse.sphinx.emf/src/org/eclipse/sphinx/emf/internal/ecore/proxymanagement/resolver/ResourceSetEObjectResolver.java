@@ -31,7 +31,7 @@ public abstract class ResourceSetEObjectResolver extends AbstractEObjectResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected boolean canHandle(ResolveRequest request) {
+	protected boolean canHandle(EObjectResolveRequest request) {
 		return canDelegateTo(getScopeResourceSet(request));
 	}
 
@@ -49,7 +49,7 @@ public abstract class ResourceSetEObjectResolver extends AbstractEObjectResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected EObject processRequest(ResolveRequest request) {
+	protected EObject processRequest(EObjectResolveRequest request) {
 		return delegateRequest(request, getScopeResourceSet(request));
 	}
 
@@ -60,9 +60,9 @@ public abstract class ResourceSetEObjectResolver extends AbstractEObjectResolver
 	 *            The ResourceSet containing the set of EObjects in which to search.
 	 * @return The resolved EObject or if the requested EObject can not be resolved a corresponding proxy EObject.
 	 */
-	protected abstract EObject delegateRequest(ResolveRequest request, ResourceSet scopeResourceSet);
+	protected abstract EObject delegateRequest(EObjectResolveRequest request, ResourceSet scopeResourceSet);
 
-	private ResourceSet getScopeResourceSet(ResolveRequest request) {
+	private ResourceSet getScopeResourceSet(EObjectResolveRequest request) {
 		EObject scopeContext = request.getScopeContext();
 		Resource scopeResource = scopeContext.eResource();
 		if (scopeResource == null) {

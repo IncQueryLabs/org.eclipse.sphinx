@@ -34,7 +34,7 @@ public interface IEObjectResolver {
 	 * @return The EObject which is to be resolved or a corresponding proxy EObject if the EObject could not be
 	 *         resolved.
 	 */
-	EObject resolve(ResolveRequest request);
+	EObject resolve(EObjectResolveRequest request);
 
 	/**
 	 * Appends another IEObjectResolver to the delegation chain. The provided IEObjectResolver will be appended to the

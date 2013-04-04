@@ -25,7 +25,7 @@ import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelper;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelperAdapterFactory;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.DefaultResourceSetEObjectResolver;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.IEObjectResolver;
-import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.ResolveRequest;
+import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.EObjectResolveRequest;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.ScopingResourceSetEObjectResolver;
 
 public class ProxyResolutionBehavior {
@@ -98,7 +98,7 @@ public class ProxyResolutionBehavior {
 				}
 			}
 		}
-		ResolveRequest resolveRequest = new ResolveRequest(proxy, contextObject);
+		EObjectResolveRequest resolveRequest = new EObjectResolveRequest(proxy, contextObject);
 		resolveRequest.setIncludeUnloadedEObjects(true);
 		EObject resolvedEObject = fEObjectResolver.resolve(resolveRequest);
 

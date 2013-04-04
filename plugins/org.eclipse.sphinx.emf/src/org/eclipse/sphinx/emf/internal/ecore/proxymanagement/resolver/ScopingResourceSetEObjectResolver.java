@@ -21,7 +21,7 @@ import org.eclipse.sphinx.emf.resource.ScopingResourceSet;
 public class ScopingResourceSetEObjectResolver extends ResourceSetEObjectResolver {
 
 	@Override
-	protected EObject delegateRequest(ResolveRequest request, ResourceSet scopeResourceSet) {
+	protected EObject delegateRequest(EObjectResolveRequest request, ResourceSet scopeResourceSet) {
 		return ((ScopingResourceSet) scopeResourceSet).getEObjectInScope(request.getUriToResolve(), request.includeUnloadedEObjects(),
 				request.getScopeContext());
 	}

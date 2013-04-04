@@ -21,7 +21,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 /**
  * A ResolveRequest specifies a request to find an EObject within a certain set of EObjects.
  */
-public class ResolveRequest {
+public class EObjectResolveRequest {
 
 	private EObject fProxyToResolve;
 	private EObject fScopeContext;
@@ -36,7 +36,7 @@ public class ResolveRequest {
 	 *            An EObject which is to be used to calculate the set of EObjects from which to resolve the specified
 	 *            EObject.
 	 */
-	public ResolveRequest(EObject proxyToResolve, EObject scopeContext) {
+	public EObjectResolveRequest(EObject proxyToResolve, EObject scopeContext) {
 		setProxyToResolve(proxyToResolve);
 		setResolutionScopeContext(scopeContext);
 	}

@@ -27,7 +27,7 @@ public abstract class AbstractEObjectResolver implements IEObjectResolver {
 	/**
 	 * {@inheritDoc}
 	 */
-	public EObject resolve(ResolveRequest request) {
+	public EObject resolve(EObjectResolveRequest request) {
 		if (canHandle(request)) {
 			return processRequestSafely(request);
 		}
@@ -49,7 +49,7 @@ public abstract class AbstractEObjectResolver implements IEObjectResolver {
 		return this;
 	}
 
-	private EObject processRequestSafely(ResolveRequest request) {
+	private EObject processRequestSafely(EObjectResolveRequest request) {
 		EObject resolvedEObject = processRequest(request);
 		if (resolvedEObject != null) {
 			return resolvedEObject;
@@ -64,7 +64,7 @@ public abstract class AbstractEObjectResolver implements IEObjectResolver {
 	 *            Specifies the EObject to find and the set of EObjects in which to search for it.
 	 * @return The resolved EObject or if the requested EObject can not be resolved <code>null</code>.
 	 */
-	protected abstract EObject processRequest(ResolveRequest request);
+	protected abstract EObject processRequest(EObjectResolveRequest request);
 
 	/**
 	 * Determines if this <code>EObjectResolver</code> can handle the <param>request</param> or not.
@@ -74,6 +74,6 @@ public abstract class AbstractEObjectResolver implements IEObjectResolver {
 	 * @return <code>true</code> if this <code>EObjectResolver</code> can handle the request <code>false</code>
 	 *         otherwise.
 	 */
-	protected abstract boolean canHandle(ResolveRequest request);
+	protected abstract boolean canHandle(EObjectResolveRequest request);
 
 }
