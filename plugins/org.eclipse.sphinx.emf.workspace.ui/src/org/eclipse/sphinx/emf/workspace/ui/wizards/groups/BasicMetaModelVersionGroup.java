@@ -327,8 +327,4 @@ public class BasicMetaModelVersionGroup implements IFieldListener, SelectionList
 	public void widgetSelected(SelectionEvent e) {
 		widgetDefaultSelected(e);
 	}
-
-	public void saveDialogSettings() {
-		// do nothing
-	}
 }

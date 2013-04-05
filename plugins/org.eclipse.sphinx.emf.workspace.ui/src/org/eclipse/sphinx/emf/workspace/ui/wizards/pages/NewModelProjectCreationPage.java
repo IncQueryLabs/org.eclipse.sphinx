@@ -1,17 +1,17 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2013 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [403693] NewModelProjectCreationPage#createMetaModelVersionGroup() should not return the group object being created
  *     itemis - [403728] NewModelProjectCreationPage and NewModelFileCreationPage should provided hooks for creating additional controls
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.ui.wizards.pages;
@@ -99,16 +99,12 @@ public class NewModelProjectCreationPage extends WizardNewProjectCreationPage {
 	 * @param mmDescriptor
 	 *            the {@linkplain IMetaModelDescriptor meta-model descriptor} to be created in this project
 	 */
-	public void createMetaModelVersionGroup(Composite parent,
+	protected void createMetaModelVersionGroup(Composite parent,
 			IProjectWorkspacePreference<? extends AbstractMetaModelDescriptor> metaModelVersionPreference, IMetaModelDescriptor mmDescriptor) {
 		metaModelVersionGroup = new BasicMetaModelVersionGroup(parent, metaModelVersionPreference, mmDescriptor);
 	}
 
 	public IMetaModelDescriptor getMetaModelVersionDescriptor() {
 		return metaModelVersionGroup.getMetaModelVersionDescriptor();
-	}
-
-	public void saveDialogSettings() {
-		metaModelVersionGroup.saveDialogSettings();
 	}
 }
