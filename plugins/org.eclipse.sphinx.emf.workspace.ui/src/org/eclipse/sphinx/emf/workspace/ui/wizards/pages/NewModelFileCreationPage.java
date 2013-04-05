@@ -51,7 +51,7 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 
 	protected IStructuredSelection selection;
-	protected NewModelFileProperties newModelFileProperties;
+	protected IMetaModelDescriptor mmDescriptor;
 	protected String requiredProjectNatureId;
 
 	protected boolean loggedNoValidFileExtensionsFoundProblem = false;
@@ -69,7 +69,14 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	 *            the required project nature id
 	 */
 	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, IMetaModelDescriptor mmDescriptor, String requiredProjectNatureId) {
-		this(pageId, selection, new NewModelFileProperties(mmDescriptor), requiredProjectNatureId);
+		super(pageId, selection);
+
+		this.selection = selection;
+		this.mmDescriptor = mmDescriptor;
+		this.requiredProjectNatureId = requiredProjectNatureId;
+
+		setTitle(Messages.title_newModelFile);
+		setDescription(Messages.description_newModelFileCreationPage);
 	}
 
 	/**
@@ -87,13 +94,7 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	 */
 	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, NewModelFileProperties newModelFileProperties,
 			String requiredProjectNatureId) {
-		super(pageId, selection);
-		this.selection = selection;
-		this.newModelFileProperties = newModelFileProperties;
-		this.requiredProjectNatureId = requiredProjectNatureId;
-
-		setTitle(Messages.title_newModelFile);
-		setDescription(Messages.description_newModelFileCreationPage);
+		this(pageId, selection, newModelFileProperties != null ? newModelFileProperties.getMetaModelDescriptor() : null, requiredProjectNatureId);
 	}
 
 	/*
@@ -181,7 +182,10 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	 * new model file properties}
 	 */
 	protected String getNewFileContentTypeId() {
-		return newModelFileProperties.getMetaModelDescriptor().getDefaultContentTypeId();
+		if (mmDescriptor != null) {
+			return mmDescriptor.getDefaultContentTypeId();
+		}
+		return null;
 	}
 
 	/*

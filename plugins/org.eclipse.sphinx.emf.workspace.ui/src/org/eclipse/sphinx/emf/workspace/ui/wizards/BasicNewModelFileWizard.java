@@ -65,11 +65,11 @@ public class BasicNewModelFileWizard extends BasicNewResourceWizard {
 	 * e.g., the NewModelCreationPage sets the property values, and the second page, the NewModelFileCreationPage uses
 	 * the selected property values to create a model file.
 	 */
-	public static class NewModelFileProperties {
+	public class NewModelFileProperties {
 
-		public IMetaModelDescriptor mmDescriptor;
-		public EPackage rootObjectEPackage;
-		public EClassifier rootObjectEClassifier;
+		private IMetaModelDescriptor mmDescriptor;
+		private EPackage rootObjectEPackage;
+		private EClassifier rootObjectEClassifier;
 
 		public NewModelFileProperties() {
 		}
