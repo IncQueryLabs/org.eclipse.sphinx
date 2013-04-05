@@ -10,6 +10,7 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [403728] NewModelProjectCreationPage and NewModelFileCreationPage should provided hooks for creating additional controls
+ *     itemis - [405023] Enable NewModelFileCreationPage to be used without having to pass an instance of NewModelFileProperties to its constructor
  *
  * </copyright>
  */
@@ -30,6 +31,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.BasicNewModelFileWizard.NewModelFileProperties;
@@ -48,10 +50,27 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
  */
 public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 
-	protected boolean loggedNoValidFileExtensionsFoundProblem = false;
-	protected NewModelFileProperties newModelFileProperties;
 	protected IStructuredSelection selection;
+	protected NewModelFileProperties newModelFileProperties;
 	protected String requiredProjectNatureId;
+
+	protected boolean loggedNoValidFileExtensionsFoundProblem = false;
+
+	/**
+	 * Creates a new instance of new model file creation wizard page.
+	 * 
+	 * @param pageId
+	 *            the name of the page
+	 * @param selection
+	 *            the current resource selection
+	 * @param mmDescriptor
+	 *            the {@linkplain IMetaModelDescriptor meta model descriptor} of the model file to be created
+	 * @param requiredProjectNatureId
+	 *            the required project nature id
+	 */
+	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, IMetaModelDescriptor mmDescriptor, String requiredProjectNatureId) {
+		this(pageId, selection, new NewModelFileProperties(mmDescriptor), requiredProjectNatureId);
+	}
 
 	/**
 	 * Creates a new instance of new model file creation wizard page.

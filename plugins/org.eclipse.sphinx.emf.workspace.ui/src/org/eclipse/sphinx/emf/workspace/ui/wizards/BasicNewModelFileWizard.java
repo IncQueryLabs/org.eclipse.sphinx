@@ -9,12 +9,14 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [405023] Enable NewModelFileCreationPage to be used without having to pass an instance of NewModelFileProperties to its constructor
  *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.ui.wizards;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
@@ -51,7 +53,7 @@ public class BasicNewModelFileWizard extends BasicNewResourceWizard {
 	 */
 	protected NewModelFileCreationPage newModelFileCreationPage;
 	protected NewModelCreationPage newModelCreationPage;
-	protected NewModelFileProperties newModelFileProperties = new NewModelFileProperties();
+	protected NewModelFileProperties newModelFileProperties;
 	/**
 	 * Project nature that is required by the preference.
 	 */
@@ -63,11 +65,18 @@ public class BasicNewModelFileWizard extends BasicNewResourceWizard {
 	 * e.g., the NewModelCreationPage sets the property values, and the second page, the NewModelFileCreationPage uses
 	 * the selected property values to create a model file.
 	 */
-	public class NewModelFileProperties {
+	public static class NewModelFileProperties {
 
 		public IMetaModelDescriptor mmDescriptor;
 		public EPackage rootObjectEPackage;
 		public EClassifier rootObjectEClassifier;
+
+		public NewModelFileProperties() {
+		}
+
+		public NewModelFileProperties(IMetaModelDescriptor mmDescriptor) {
+			this.mmDescriptor = mmDescriptor;
+		}
 
 		public IMetaModelDescriptor getMetaModelDescriptor() {
 			return mmDescriptor;
@@ -124,6 +133,8 @@ public class BasicNewModelFileWizard extends BasicNewResourceWizard {
 	 */
 	@Override
 	public void addPages() {
+		newModelFileProperties = new NewModelFileProperties();
+
 		// Create a page for users to choose the meta-model, EPackage and EClassifier of the model to be created
 		newModelCreationPage = new NewModelCreationPage("NewModel", selection, newModelFileProperties); //$NON-NLS-1$
 		addPage(newModelCreationPage);
@@ -179,6 +190,8 @@ public class BasicNewModelFileWizard extends BasicNewResourceWizard {
 	 *         scheduled to be run with the job manager.
 	 */
 	protected Job createCreateNewModelFileJob(IFile modelFile) {
+		Assert.isNotNull(newModelFileProperties);
+
 		return new CreateNewModelFileJob(Messages.job_creatingNewModelFile, modelFile, newModelFileProperties.getMetaModelDescriptor(),
 				newModelFileProperties.getRootObjectEPackage(), newModelFileProperties.getRootObjectEClassifier());
 	}
