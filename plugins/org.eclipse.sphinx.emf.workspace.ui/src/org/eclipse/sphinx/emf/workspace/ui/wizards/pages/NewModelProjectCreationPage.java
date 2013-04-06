@@ -87,7 +87,7 @@ public class NewModelProjectCreationPage<T extends IMetaModelDescriptor> extends
 	 * @see org.eclipse.ui.dialogs.WizardNewProjectCreationPage#createControl(Composite)
 	 */
 	protected void createAdditionalControls(Composite parent) {
-		createMetaModelVersionGroup(parent, baseMetaModelDescriptor, metaModelVersionPreference, metaModelVersionPreferencePageId);
+		createMetaModelVersionGroup(parent);
 
 		Dialog.applyDialogFont(getControl());
 	}
@@ -98,15 +98,8 @@ public class NewModelProjectCreationPage<T extends IMetaModelDescriptor> extends
 	 * 
 	 * @param parent
 	 *            the parent {@linkplain Composite composite}
-	 * @param baseMetaModelDescriptor
-	 *            the base {@linkplain IMetaModelDescriptor meta-model} of the model project to be created
-	 * @param metaModelVersionPreference
-	 *            the metamodel version {@linkplain IProjectWorkspacePreference preference} object
-	 * @param metaModelVersionPreferencePageId
-	 *            the metamodel version preference page id
 	 */
-	protected void createMetaModelVersionGroup(Composite parent, T baseMetaModelDescriptor,
-			IProjectWorkspacePreference<T> metaModelVersionPreference, String metaModelVersionPreferencePageId) {
+	protected void createMetaModelVersionGroup(Composite parent) {
 		metaModelVersionGroup = new BasicMetaModelVersionGroup<T>(parent, baseMetaModelDescriptor, metaModelVersionPreference,
 				metaModelVersionPreferencePageId);
 	}

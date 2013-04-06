@@ -107,14 +107,12 @@ public class BasicNewModelFileWizard extends BasicNewResourceWizard {
 	 * Creates a wizard for creating a new file in the workspace.
 	 */
 	public BasicNewModelFileWizard() {
-		super();
 	}
 
 	/**
 	 * Creates a wizard for creating a new file in the workspace with a required nature id
 	 */
 	public BasicNewModelFileWizard(String requiredProjectNatureId) {
-		super();
 		this.requiredProjectNatureId = requiredProjectNatureId;
 	}
 

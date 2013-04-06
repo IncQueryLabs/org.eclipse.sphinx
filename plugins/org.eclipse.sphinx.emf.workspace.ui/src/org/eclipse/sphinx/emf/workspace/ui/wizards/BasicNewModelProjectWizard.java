@@ -63,7 +63,6 @@ public class BasicNewModelProjectWizard extends BasicNewProjectResourceWizard {
 	 * Creates a wizard for creating a new project resource in the workspace.
 	 */
 	public BasicNewModelProjectWizard() {
-		super();
 	}
 
 	/**
