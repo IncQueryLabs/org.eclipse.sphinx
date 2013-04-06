@@ -12,6 +12,7 @@
  *     itemis - [403693] NewModelProjectCreationPage#createMetaModelVersionGroup() should not return the group object being created
  *     itemis - [403728] NewModelProjectCreationPage and NewModelFileCreationPage should provided hooks for creating additional controls
  *     itemis - [405059] Enable BasicMetaModelVersionGroup to open appropriate model version preference page
+ *     itemis - [405075] Improve type safety of NewModelProjectCreationPage and BasicMetaModelVersionGroup wrt base metamodel descriptor and metamodel version preference
  *
  * </copyright>
  */
@@ -35,13 +36,13 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
  * <code>createMetaModelVersionGroup</code> - method to create the specific metamodel version group for this project
  * creation page
  */
-public class NewModelProjectCreationPage extends WizardNewProjectCreationPage {
+public class NewModelProjectCreationPage<T extends IMetaModelDescriptor> extends WizardNewProjectCreationPage {
 
-	protected IMetaModelDescriptor baseMetaModelDescriptor;
-	protected IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference;
+	protected T baseMetaModelDescriptor;
+	protected IProjectWorkspacePreference<T> metaModelVersionPreference;
 	protected String metaModelVersionPreferencePageId;
 
-	protected BasicMetaModelVersionGroup metaModelVersionGroup;
+	protected BasicMetaModelVersionGroup<T> metaModelVersionGroup;
 
 	/**
 	 * Creates a new instance of the new model project creation wizard page for the specified base metamodel.
@@ -55,8 +56,8 @@ public class NewModelProjectCreationPage extends WizardNewProjectCreationPage {
 	 * @param metaModelVersionPreferencePageId
 	 *            the metamodel version preference page id
 	 */
-	public NewModelProjectCreationPage(String pageName, IMetaModelDescriptor baseMetaModelDescriptor,
-			IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference, String metaModelVersionPreferencePageId) {
+	public NewModelProjectCreationPage(String pageName, T baseMetaModelDescriptor, IProjectWorkspacePreference<T> metaModelVersionPreference,
+			String metaModelVersionPreferencePageId) {
 		super(pageName);
 		this.metaModelVersionPreference = metaModelVersionPreference;
 		this.baseMetaModelDescriptor = baseMetaModelDescriptor;
@@ -104,13 +105,13 @@ public class NewModelProjectCreationPage extends WizardNewProjectCreationPage {
 	 * @param metaModelVersionPreferencePageId
 	 *            the metamodel version preference page id
 	 */
-	protected void createMetaModelVersionGroup(Composite parent, IMetaModelDescriptor baseMetaModelDescriptor,
-			IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference, String metaModelVersionPreferencePageId) {
-		metaModelVersionGroup = new BasicMetaModelVersionGroup(parent, baseMetaModelDescriptor, metaModelVersionPreference,
+	protected void createMetaModelVersionGroup(Composite parent, T baseMetaModelDescriptor,
+			IProjectWorkspacePreference<T> metaModelVersionPreference, String metaModelVersionPreferencePageId) {
+		metaModelVersionGroup = new BasicMetaModelVersionGroup<T>(parent, baseMetaModelDescriptor, metaModelVersionPreference,
 				metaModelVersionPreferencePageId);
 	}
 
-	public IMetaModelDescriptor getMetaModelVersionDescriptor() {
+	public T getMetaModelVersionDescriptor() {
 		return metaModelVersionGroup.getMetaModelVersionDescriptor();
 	}
 }

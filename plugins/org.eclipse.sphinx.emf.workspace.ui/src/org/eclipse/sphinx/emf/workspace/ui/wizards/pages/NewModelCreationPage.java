@@ -10,6 +10,7 @@
  * Contributors: 
  *     itemis - Initial API and implementation
  *     itemis - [400306] Add a NewModelCreationPage class allowing to choose the metamodel, EPackage and EClassifier when creating a new model file
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.ui.wizards.pages;
@@ -381,7 +382,7 @@ public class NewModelCreationPage extends WizardPage {
 	/**
 	 * Creates a ComboButtonField for the choice of meta-model.
 	 */
-	public void createMMComboButtonField(Composite container) {
+	protected void createMMComboButtonField(Composite container) {
 		MMButtonAdapter mmAdapter = new MMButtonAdapter();
 		mmCombo = new ComboButtonField(mmAdapter);
 		mmCombo.setLabelText(Messages.label_metaModelComboButtonField);
@@ -397,7 +398,7 @@ public class NewModelCreationPage extends WizardPage {
 	/**
 	 * Creates a ComboButtonField for the choice of EPackage.
 	 */
-	public void createEPackageComboButtonField(Composite container) {
+	protected void createEPackageComboButtonField(Composite container) {
 		EPkgButtonAdapter pkgAdapter = new EPkgButtonAdapter();
 		ePackageCombo = new ComboButtonField(pkgAdapter);
 		ePackageCombo.setLabelText(Messages.label_epackageComboButtonField);
@@ -413,7 +414,7 @@ public class NewModelCreationPage extends WizardPage {
 	/**
 	 * Creates a ComboButtonField for the choice of EClassifier.
 	 */
-	public void createEClassifierComboButtonField(Composite container) {
+	protected void createEClassifierComboButtonField(Composite container) {
 		EClassifierButtonAdapter classifierAdapter = new EClassifierButtonAdapter();
 		eClassifierCombo = new ComboButtonField(classifierAdapter);
 		eClassifierCombo.setLabelText(Messages.label_eclassifierComboButtonField);

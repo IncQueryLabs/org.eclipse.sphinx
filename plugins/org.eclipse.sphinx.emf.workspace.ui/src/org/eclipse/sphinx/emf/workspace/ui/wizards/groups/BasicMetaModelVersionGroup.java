@@ -10,6 +10,7 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [405059] Enable BasicMetaModelVersionGroup to open appropriate model version preference page
+ *     itemis - [405075] Improve type safety of NewModelProjectCreationPage and BasicMetaModelVersionGroup wrt base metamodel descriptor and metamodel version preference
  *
  * </copyright>
  */
@@ -50,7 +51,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
  * <p>
  * This class is useful for the creation of a new model project wizard page. It can be overridden by clients.
  */
-public class BasicMetaModelVersionGroup implements IFieldListener, SelectionListener {
+public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> {
 
 	protected static final Pattern META_MODEL_NAME_PATTERN = Pattern.compile("(\\w+)( \\d(.\\d(.\\d)?)?)?"); //$NON-NLS-1$
 
@@ -62,17 +63,54 @@ public class BasicMetaModelVersionGroup implements IFieldListener, SelectionList
 	protected static final int WORKSPACE_DEFAULT_METAMODEL_VERSION = 0;
 	protected static final int ALTERNATE_METAMODEL_VERSION = 1;
 
-	private IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference;
+	private IProjectWorkspacePreference<T> metaModelVersionPreference;
 	private String metaModelVersionPreferencePageId;
 
 	protected Group group;
 	protected SelectionButtonField workspaceDefaultMetaModelVersionButton, alternateMetaModelVersionButton;
 	protected ComboField metaModelVersionCombo;
 	protected Link configureWorkspaceSettingsLink;
-	protected List<IMetaModelDescriptor> supportedMetaModelVersions = new ArrayList<IMetaModelDescriptor>();
+	protected List<T> supportedMetaModelVersions = new ArrayList<T>();
 
 	private String metaModelVersionName = null;
 	private String metaModelVersionLabel = null;
+
+	private IFieldListener fieldListener = new IFieldListener() {
+		/*
+		 * @see
+		 * org.eclipse.sphinx.platform.ui.fields.IFieldListener#dialogFieldChanged(org.eclipse.sphinx.platform.ui.fields
+		 * .IField)
+		 */
+		public void dialogFieldChanged(IField field) {
+			updateEnableState();
+			if (field == workspaceDefaultMetaModelVersionButton) {
+				Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_METAMODEL_VERSION_OPTION, WORKSPACE_DEFAULT_METAMODEL_VERSION);
+			} else if (field == alternateMetaModelVersionButton) {
+				Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_METAMODEL_VERSION_OPTION, ALTERNATE_METAMODEL_VERSION);
+			} else if (field == metaModelVersionCombo) {
+				if (alternateMetaModelVersionButton.isSelected()) {
+					storeSelectionState((ComboField) field);
+				}
+			}
+		}
+	};
+
+	private SelectionListener selectionListener = new SelectionListener() {
+		/*
+		 * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
+		 */
+		public void widgetDefaultSelected(SelectionEvent event) {
+			PreferencesUtil.createPreferenceDialogOn(null, metaModelVersionPreferencePageId, new String[] { metaModelVersionPreferencePageId }, null)
+					.open();
+		}
+
+		/*
+		 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
+		 */
+		public void widgetSelected(SelectionEvent event) {
+			widgetDefaultSelected(event);
+		}
+	};
 
 	/**
 	 * Creates a new instance of the metamodel version group. The buttons for the workspace default metamodel version
@@ -88,8 +126,8 @@ public class BasicMetaModelVersionGroup implements IFieldListener, SelectionList
 	 * @param metaModelVersionPreferencePageId
 	 *            the metamodel version preference page id
 	 */
-	public BasicMetaModelVersionGroup(Composite parent, IMetaModelDescriptor baseMetaModelDescriptor,
-			IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference, String metaModelVersionPreferencePageId) {
+	public BasicMetaModelVersionGroup(Composite parent, T baseMetaModelDescriptor, IProjectWorkspacePreference<T> metaModelVersionPreference,
+			String metaModelVersionPreferencePageId) {
 		Assert.isNotNull(metaModelVersionPreference);
 
 		this.metaModelVersionPreference = metaModelVersionPreference;
@@ -108,25 +146,25 @@ public class BasicMetaModelVersionGroup implements IFieldListener, SelectionList
 		workspaceDefaultMetaModelVersionButton.setLabelText(NLS.bind(Messages.label_defaultMetaModelVersion,
 				getWorkspaceDefaultMetaModelVersionLabel(), metaModelVersionPreference.getFromWorkspace().getName()));
 		workspaceDefaultMetaModelVersionButton.fillIntoGrid(group, 2);
-		workspaceDefaultMetaModelVersionButton.addFieldListener(this);
+		workspaceDefaultMetaModelVersionButton.addFieldListener(fieldListener);
 
 		// add a link widget for the workspace settings link
 		configureWorkspaceSettingsLink = new Link(group, SWT.NONE);
 		configureWorkspaceSettingsLink.setFont(group.getFont());
 		configureWorkspaceSettingsLink.setText(MessageFormat.format("<a>{0}</a>", Messages.message_configureSetting)); //$NON-NLS-1$
 		configureWorkspaceSettingsLink.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
-		configureWorkspaceSettingsLink.addSelectionListener(this);
+		configureWorkspaceSettingsLink.addSelectionListener(selectionListener);
 
 		// add a selection button widget for the alternate metamodel version
 		alternateMetaModelVersionButton = new SelectionButtonField(SWT.RADIO);
 		alternateMetaModelVersionButton.setLabelText(getMetaModelVersionAlternateLabel());
 		alternateMetaModelVersionButton.fillIntoGrid(group, 1);
-		alternateMetaModelVersionButton.addFieldListener(this);
+		alternateMetaModelVersionButton.addFieldListener(fieldListener);
 
 		// add a combo widget for the metamodel versions
 		metaModelVersionCombo = new ComboField(SWT.READ_ONLY);
 		metaModelVersionCombo.fillIntoGrid(group, 2);
-		metaModelVersionCombo.addFieldListener(this);
+		metaModelVersionCombo.addFieldListener(fieldListener);
 
 		// set the supported metamodel versions in the combo field as the available items, and set the given
 		// metaModelDescriptor as the selected item
@@ -153,7 +191,7 @@ public class BasicMetaModelVersionGroup implements IFieldListener, SelectionList
 
 	protected String getMetaModelVersionName() {
 		if (metaModelVersionName == null) {
-			IMetaModelDescriptor mmDescriptor = metaModelVersionPreference.getFromWorkspace();
+			T mmDescriptor = metaModelVersionPreference.getFromWorkspace();
 			Matcher matcher = META_MODEL_NAME_PATTERN.matcher(mmDescriptor.getName());
 			if (matcher.find()) {
 				metaModelVersionName = matcher.group(1);
@@ -166,7 +204,7 @@ public class BasicMetaModelVersionGroup implements IFieldListener, SelectionList
 		this.metaModelVersionName = metaModelVersionName;
 	}
 
-	public String getMetaModelVersionLabel() {
+	protected String getMetaModelVersionLabel() {
 		if (metaModelVersionLabel == null) {
 			metaModelVersionLabel = Messages.defaultMetaModelVersionLabel;
 		}
@@ -214,12 +252,12 @@ public class BasicMetaModelVersionGroup implements IFieldListener, SelectionList
 	 * metaModelDescriptor}. Sets the last selected metamodel version descriptor as the selected item of the combo if it
 	 * exists, otherwise uses the default metamodel version descriptor from the workspace.
 	 */
-	public void fillSupportedMetaModelVersions(IMetaModelDescriptor metaModelDescriptor) {
+	protected void fillSupportedMetaModelVersions(T metaModelDescriptor) {
 		supportedMetaModelVersions = MetaModelDescriptorRegistry.INSTANCE.getDescriptors(metaModelDescriptor, true);
 		if (!supportedMetaModelVersions.isEmpty()) {
 			String[] items = new String[supportedMetaModelVersions.size()];
 			for (int index = 0; index < supportedMetaModelVersions.size(); index++) {
-				IMetaModelDescriptor descriptor = supportedMetaModelVersions.get(index);
+				T descriptor = supportedMetaModelVersions.get(index);
 				items[index] = String.format(Messages.metaModelVersion_labelPattern, descriptor.getName(), descriptor.getNamespace());
 			}
 			metaModelVersionCombo.setItems(items);
@@ -230,52 +268,16 @@ public class BasicMetaModelVersionGroup implements IFieldListener, SelectionList
 		if (supportedMetaModelVersions.contains(descriptor)) {
 			metaModelVersionCombo.selectItem(supportedMetaModelVersions.indexOf(descriptor));
 		} else {
-			IMetaModelDescriptor workspaceMetaModelVersion = metaModelVersionPreference.getFromWorkspace();
+			T workspaceMetaModelVersion = metaModelVersionPreference.getFromWorkspace();
 			if (supportedMetaModelVersions.contains(workspaceMetaModelVersion)) {
 				metaModelVersionCombo.selectItem(supportedMetaModelVersions.indexOf(workspaceMetaModelVersion));
 			}
 		}
 	}
 
-	/**
-	 * Gets the last selected metamodel versions from DialogSettings.
-	 */
-	public int getLastSelectedMetaModelVersionOption() {
-		IDialogSettings dialogSettings = Activator.getPlugin().getDialogSettings();
-		if (dialogSettings.get(LAST_SELECTED_METAMODEL_VERSION_OPTION) == null) {
-			return WORKSPACE_DEFAULT_METAMODEL_VERSION;
-		}
-		return dialogSettings.getInt(LAST_SELECTED_METAMODEL_VERSION_OPTION);
-	}
-
-	public void updateEnableState() {
+	protected void updateEnableState() {
 		metaModelVersionCombo.setEnabled(alternateMetaModelVersionButton.isSelected());
 		configureWorkspaceSettingsLink.setEnabled(workspaceDefaultMetaModelVersionButton.isSelected());
-	}
-
-	/**
-	 * Gets the last selected metamodel version identifier from DialogSettings.
-	 */
-	public String getLastSelectedMetaModelVersionIdentifier() {
-		IDialogSettings dialogSettings = Activator.getPlugin().getDialogSettings();
-		return dialogSettings.get(LAST_SELECTED_METAMODEL_VERSION_KEY);
-	}
-
-	/**
-	 * Stores the comboField selected item in DialogSettings.
-	 * 
-	 * @param comboField
-	 *            the {@link ComboField combo field} for the metamodel version resource
-	 */
-	public void storeSelectionState(ComboField comboField) {
-		int index = comboField.getSelectionIndex();
-		if (index > -1) {
-			IMetaModelDescriptor descriptor = supportedMetaModelVersions.get(index);
-			if (descriptor != null) {
-				String item = descriptor.getIdentifier();
-				Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_METAMODEL_VERSION_KEY, item);
-			}
-		}
 	}
 
 	/**
@@ -287,49 +289,52 @@ public class BasicMetaModelVersionGroup implements IFieldListener, SelectionList
 	 * @return the metamodel version descriptor selected from the Combo field if the alternateMetaModelVersionButton
 	 *         button is selected, otherwise return the default metamodel version descriptor
 	 */
-	public IMetaModelDescriptor getMetaModelVersionDescriptor() {
+	public T getMetaModelVersionDescriptor() {
 		if (workspaceDefaultMetaModelVersionButton.isSelected()) {
 			return metaModelVersionPreference.getFromWorkspace();
 		} else if (alternateMetaModelVersionButton.isSelected()) {
 			int index = metaModelVersionCombo.getSelectionIndex();
 			if (index > -1) {
-				IMetaModelDescriptor descriptor = supportedMetaModelVersions.get(index);
+				T descriptor = supportedMetaModelVersions.get(index);
 				return descriptor;
 			}
 		}
 		return null;
 	}
 
-	/*
-	 * @see
-	 * org.eclipse.sphinx.platform.ui.fields.IFieldListener#dialogFieldChanged(org.eclipse.sphinx.platform.ui.fields
-	 * .IField)
+	/**
+	 * Gets the last selected metamodel versions from DialogSettings.
 	 */
-	public void dialogFieldChanged(IField field) {
-		updateEnableState();
-		if (field == workspaceDefaultMetaModelVersionButton) {
-			Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_METAMODEL_VERSION_OPTION, WORKSPACE_DEFAULT_METAMODEL_VERSION);
-		} else if (field == alternateMetaModelVersionButton) {
-			Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_METAMODEL_VERSION_OPTION, ALTERNATE_METAMODEL_VERSION);
-		} else if (field == metaModelVersionCombo) {
-			if (alternateMetaModelVersionButton.isSelected()) {
-				storeSelectionState((ComboField) field);
+	protected int getLastSelectedMetaModelVersionOption() {
+		IDialogSettings dialogSettings = Activator.getPlugin().getDialogSettings();
+		if (dialogSettings.get(LAST_SELECTED_METAMODEL_VERSION_OPTION) == null) {
+			return WORKSPACE_DEFAULT_METAMODEL_VERSION;
+		}
+		return dialogSettings.getInt(LAST_SELECTED_METAMODEL_VERSION_OPTION);
+	}
+
+	/**
+	 * Gets the last selected metamodel version identifier from DialogSettings.
+	 */
+	protected String getLastSelectedMetaModelVersionIdentifier() {
+		IDialogSettings dialogSettings = Activator.getPlugin().getDialogSettings();
+		return dialogSettings.get(LAST_SELECTED_METAMODEL_VERSION_KEY);
+	}
+
+	/**
+	 * Stores the comboField selected item in DialogSettings.
+	 * 
+	 * @param comboField
+	 *            the {@link ComboField combo field} for the metamodel version resource
+	 */
+	protected void storeSelectionState(ComboField comboField) {
+		int index = comboField.getSelectionIndex();
+		if (index > -1) {
+			T descriptor = supportedMetaModelVersions.get(index);
+			if (descriptor != null) {
+				String item = descriptor.getIdentifier();
+				Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_METAMODEL_VERSION_KEY, item);
 			}
 		}
-	}
-
-	/*
-	 * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
-	 */
-	public void widgetDefaultSelected(SelectionEvent event) {
-		PreferencesUtil.createPreferenceDialogOn(null, metaModelVersionPreferencePageId, new String[] { metaModelVersionPreferencePageId }, null)
-				.open();
-	}
-
-	/*
-	 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
-	 */
-	public void widgetSelected(SelectionEvent event) {
-		widgetDefaultSelected(event);
 	}
 }
