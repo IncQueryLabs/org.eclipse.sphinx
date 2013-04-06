@@ -92,6 +92,7 @@ public class Messages extends NLS {
 	public static String label_browseButton;
 	public static String description_newModelFileCreationPage;
 	public static String error_requiredProjectNature;
+	public static String msg_defaultRequiredProjectType;
 	public static String title_newModelFileWizard;
 	public static String job_creatingNewModelFile;
 	public static String UI_OpenEditorError_label;

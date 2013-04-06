@@ -171,10 +171,12 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 
 	protected String getRequiredProjectTypeName() {
 		if (requiredProjectTypeName == null) {
-			IMetaModelDescriptor mmDescriptor = metaModelVersionPreference.getFromWorkspace();
-			Matcher matcher = META_MODEL_NAME_PATTERN.matcher(mmDescriptor.getName());
-			if (matcher.find()) {
-				requiredProjectTypeName = matcher.group(1);
+			if (requiredProjectNatureId != null && metaModelVersionPreference != null) {
+				IMetaModelDescriptor mmDescriptor = metaModelVersionPreference.getFromWorkspace();
+				Matcher matcher = META_MODEL_NAME_PATTERN.matcher(mmDescriptor.getName());
+				if (matcher.find()) {
+					requiredProjectTypeName = matcher.group(1);
+				}
 			}
 		}
 		return requiredProjectTypeName;
@@ -401,7 +403,9 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	}
 
 	protected String getRequiredProjectNatureErrorMessage() {
-		return NLS.bind(Messages.error_requiredProjectNature, getRequiredProjectTypeName());
+		String requiredProjectTypeName = getRequiredProjectTypeName();
+		return NLS.bind(Messages.error_requiredProjectNature, requiredProjectTypeName != null ? requiredProjectTypeName
+				: Messages.msg_defaultRequiredProjectType);
 	}
 
 	protected String getFileExtensionErrorMessage(Collection<String> validFileExtensions) {
