@@ -11,6 +11,7 @@
  *     itemis - Initial API and implementation
  *     itemis - [403693] NewModelProjectCreationPage#createMetaModelVersionGroup() should not return the group object being created
  *     itemis - [403728] NewModelProjectCreationPage and NewModelFileCreationPage should provided hooks for creating additional controls
+ *     itemis - [405059] Enable BasicMetaModelVersionGroup to open appropriate model version preference page
  *
  * </copyright>
  */
@@ -18,7 +19,6 @@ package org.eclipse.sphinx.emf.workspace.ui.wizards.pages;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.groups.BasicMetaModelVersionGroup;
 import org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference;
@@ -37,26 +37,30 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
  */
 public class NewModelProjectCreationPage extends WizardNewProjectCreationPage {
 
+	protected IMetaModelDescriptor baseMetaModelDescriptor;
+	protected IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference;
+	protected String metaModelVersionPreferencePageId;
+
 	protected BasicMetaModelVersionGroup metaModelVersionGroup;
-	protected IProjectWorkspacePreference<? extends AbstractMetaModelDescriptor> metaModelVersionPreference;
-	protected IMetaModelDescriptor metaModelDescriptor;
 
 	/**
-	 * Creates a new instance of {@linkplain IProject project} creation wizard page with given page name, metamodel
-	 * version preference and metamodel descriptor.
+	 * Creates a new instance of the new model project creation wizard page for the specified base metamodel.
 	 * 
 	 * @param pageName
 	 *            the name of this page
+	 * @param baseMetaModelDescriptor
+	 *            the base {@linkplain IMetaModelDescriptor meta-model} of the model project to be created
 	 * @param metaModelVersionPreference
-	 *            the required metamodel version preference
-	 * @param metaModelDescriptor
-	 *            the required metamodel descriptor
+	 *            the metamodel version {@linkplain IProjectWorkspacePreference preference} object
+	 * @param metaModelVersionPreferencePageId
+	 *            the metamodel version preference page id
 	 */
-	public NewModelProjectCreationPage(String pageName,
-			IProjectWorkspacePreference<? extends AbstractMetaModelDescriptor> metaModelVersionPreference, IMetaModelDescriptor metaModelDescriptor) {
+	public NewModelProjectCreationPage(String pageName, IMetaModelDescriptor baseMetaModelDescriptor,
+			IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference, String metaModelVersionPreferencePageId) {
 		super(pageName);
 		this.metaModelVersionPreference = metaModelVersionPreference;
-		this.metaModelDescriptor = metaModelDescriptor;
+		this.baseMetaModelDescriptor = baseMetaModelDescriptor;
+		this.metaModelVersionPreferencePageId = metaModelVersionPreferencePageId;
 	}
 
 	/*
@@ -82,26 +86,28 @@ public class NewModelProjectCreationPage extends WizardNewProjectCreationPage {
 	 * @see org.eclipse.ui.dialogs.WizardNewProjectCreationPage#createControl(Composite)
 	 */
 	protected void createAdditionalControls(Composite parent) {
-		createMetaModelVersionGroup(parent, metaModelVersionPreference, metaModelDescriptor);
+		createMetaModelVersionGroup(parent, baseMetaModelDescriptor, metaModelVersionPreference, metaModelVersionPreferencePageId);
 
 		Dialog.applyDialogFont(getControl());
 	}
 
 	/**
-	 * Creates a {@link BasicMetaModelVersionGroup} release group which composes of fields for the default metamodel
-	 * version, alternate metamodel versions, etc.. This method may be overridden by subclasses to provide specific
-	 * metamodel version group.
+	 * Creates a {@link BasicMetaModelVersionGroup metamodel version group} enabling the metamodel version of the model
+	 * {@link IProject project} under creation to be chosen.
 	 * 
 	 * @param parent
-	 *            the {@linkplain Composite parent}
+	 *            the parent {@linkplain Composite composite}
+	 * @param baseMetaModelDescriptor
+	 *            the base {@linkplain IMetaModelDescriptor meta-model} of the model project to be created
 	 * @param metaModelVersionPreference
-	 *            the {@linkplain IProjectWorkspacePreference projectWorkspacePreference} to be created in this project
-	 * @param mmDescriptor
-	 *            the {@linkplain IMetaModelDescriptor meta-model descriptor} to be created in this project
+	 *            the metamodel version {@linkplain IProjectWorkspacePreference preference} object
+	 * @param metaModelVersionPreferencePageId
+	 *            the metamodel version preference page id
 	 */
-	protected void createMetaModelVersionGroup(Composite parent,
-			IProjectWorkspacePreference<? extends AbstractMetaModelDescriptor> metaModelVersionPreference, IMetaModelDescriptor mmDescriptor) {
-		metaModelVersionGroup = new BasicMetaModelVersionGroup(parent, metaModelVersionPreference, mmDescriptor);
+	protected void createMetaModelVersionGroup(Composite parent, IMetaModelDescriptor baseMetaModelDescriptor,
+			IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference, String metaModelVersionPreferencePageId) {
+		metaModelVersionGroup = new BasicMetaModelVersionGroup(parent, baseMetaModelDescriptor, metaModelVersionPreference,
+				metaModelVersionPreferencePageId);
 	}
 
 	public IMetaModelDescriptor getMetaModelVersionDescriptor() {
