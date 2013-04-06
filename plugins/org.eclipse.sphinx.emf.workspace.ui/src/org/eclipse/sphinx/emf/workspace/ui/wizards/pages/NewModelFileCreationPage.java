@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ListIterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -52,10 +54,14 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
  */
 public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 
+	protected static final Pattern META_MODEL_NAME_PATTERN = Pattern.compile("(\\w+)( \\d(.\\d(.\\d)?)?)?"); //$NON-NLS-1$
+
 	protected IStructuredSelection selection;
 	protected String requiredProjectNatureId;
 	protected IMetaModelDescriptor mmDescriptor = null;
 	protected IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference = null;
+
+	private String requiredProjectTypeName = null;
 
 	protected boolean noValidFileExtensionsForContentTypeIdFoundProblemLoggedOnce = false;
 
@@ -161,6 +167,21 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 			return ResourcesPlugin.getWorkspace().getRoot().getProject(containerFullPath.segment(0));
 		}
 		return null;
+	}
+
+	protected String getRequiredProjectTypeName() {
+		if (requiredProjectTypeName == null) {
+			IMetaModelDescriptor mmDescriptor = metaModelVersionPreference.getFromWorkspace();
+			Matcher matcher = META_MODEL_NAME_PATTERN.matcher(mmDescriptor.getName());
+			if (matcher.find()) {
+				requiredProjectTypeName = matcher.group(1);
+			}
+		}
+		return requiredProjectTypeName;
+	}
+
+	public void setRequiredProjectTypeName(String requiredProjectTypeName) {
+		this.requiredProjectTypeName = requiredProjectTypeName;
 	}
 
 	/**
@@ -380,7 +401,7 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	}
 
 	protected String getRequiredProjectNatureErrorMessage() {
-		return Messages.error_requiredProjectNature;
+		return NLS.bind(Messages.error_requiredProjectNature, getRequiredProjectTypeName());
 	}
 
 	protected String getFileExtensionErrorMessage(Collection<String> validFileExtensions) {
