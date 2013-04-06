@@ -140,7 +140,7 @@ public class BasicNewModelFileWizard extends BasicNewResourceWizard {
 		addPage(newModelCreationPage);
 
 		// Create a model file creation page
-		newModelFileCreationPage = new NewModelFileCreationPage("NewModelFile", selection, newModelFileProperties, requiredProjectNatureId); //$NON-NLS-1$
+		newModelFileCreationPage = new NewModelFileCreationPage("NewModelFile", selection, requiredProjectNatureId, newModelFileProperties); //$NON-NLS-1$
 		addPage(newModelFileCreationPage);
 	}
 

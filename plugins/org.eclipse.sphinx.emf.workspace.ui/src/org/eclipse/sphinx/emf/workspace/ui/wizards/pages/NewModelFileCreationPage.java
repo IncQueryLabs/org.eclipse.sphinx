@@ -18,6 +18,7 @@ package org.eclipse.sphinx.emf.workspace.ui.wizards.pages;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.ListIterator;
 
 import org.eclipse.core.resources.IContainer;
@@ -35,6 +36,7 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.BasicNewModelFileWizard.NewModelFileProperties;
+import org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.widgets.Composite;
@@ -51,10 +53,11 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 
 	protected IStructuredSelection selection;
-	protected IMetaModelDescriptor mmDescriptor;
 	protected String requiredProjectNatureId;
+	protected IMetaModelDescriptor mmDescriptor = null;
+	protected IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference = null;
 
-	protected boolean loggedNoValidFileExtensionsFoundProblem = false;
+	protected boolean noValidFileExtensionsForContentTypeIdFoundProblemLoggedOnce = false;
 
 	/**
 	 * Creates a new instance of new model file creation wizard page.
@@ -63,17 +66,17 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	 *            the name of the page
 	 * @param selection
 	 *            the current resource selection
-	 * @param mmDescriptor
-	 *            the {@linkplain IMetaModelDescriptor meta model descriptor} of the model file to be created
 	 * @param requiredProjectNatureId
 	 *            the required project nature id
+	 * @param mmDescriptor
+	 *            the {@linkplain IMetaModelDescriptor metamodel} behind the model file to be created
 	 */
-	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, IMetaModelDescriptor mmDescriptor, String requiredProjectNatureId) {
+	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, String requiredProjectNatureId, IMetaModelDescriptor mmDescriptor) {
 		super(pageId, selection);
 
 		this.selection = selection;
-		this.mmDescriptor = mmDescriptor;
 		this.requiredProjectNatureId = requiredProjectNatureId;
+		this.mmDescriptor = mmDescriptor;
 
 		setTitle(Messages.title_newModelFile);
 		setDescription(Messages.description_newModelFileCreationPage);
@@ -86,15 +89,39 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	 *            the name of the page
 	 * @param selection
 	 *            the current resource selection
-	 * @param newModelFileProperties
-	 *            the {@linkplain NewModelFileProperties new model file properties} selected by previous page or by
-	 *            initial setting
 	 * @param requiredProjectNatureId
 	 *            the required project nature id
+	 * @param newModelFileProperties
+	 *            the {@linkplain NewModelFileProperties new model file properties} carrying choices from previous
+	 *            wizard page(s)
 	 */
-	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, NewModelFileProperties newModelFileProperties,
-			String requiredProjectNatureId) {
-		this(pageId, selection, newModelFileProperties != null ? newModelFileProperties.getMetaModelDescriptor() : null, requiredProjectNatureId);
+	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, String requiredProjectNatureId,
+			NewModelFileProperties newModelFileProperties) {
+		this(pageId, selection, requiredProjectNatureId, newModelFileProperties != null ? newModelFileProperties.getMetaModelDescriptor() : null);
+	}
+
+	/**
+	 * Creates a new instance of the new model file creation wizard page.
+	 * 
+	 * @param pageId
+	 *            the name of the page
+	 * @param selection
+	 *            the current resource selection
+	 * @param requiredProjectNatureId
+	 *            the required project nature id
+	 * @param metaModelVersionPreference
+	 *            the metamodel version {@linkplain IProjectWorkspacePreference preference}
+	 */
+	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, String requiredProjectNatureId,
+			IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference) {
+		super(pageId, selection);
+
+		this.selection = selection;
+		this.requiredProjectNatureId = requiredProjectNatureId;
+		this.metaModelVersionPreference = metaModelVersionPreference;
+
+		setTitle(Messages.title_newModelFile);
+		setDescription(Messages.description_newModelFileCreationPage);
 	}
 
 	/*
@@ -146,18 +173,56 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	}
 
 	/**
-	 * Gets the unique default new file name which is composed of the default file base name and the default file
-	 * extension. If this file name already exists, try a new base name that appends an integer number with the default
-	 * base name, until one new name that never used before is found.
+	 * Returns a unique default name for the new file to be created which is composed of its
+	 * {@link #getDefaultNewFileBaseName() default base name} and the {@link #getDefaultNewFileExtension() default
+	 * extension}. If this file name already exists new file names are generated by appending an integer number to the
+	 * default base name (or to the default extension if the default base name is omitted) until a new file name has
+	 * been found that is not yet used.
+	 * 
+	 * @see #getDefaultNewFileBaseName()
+	 * @see #getDefaultNewFileExtension()
 	 */
 	protected String getUniqueDefaultNewFileName(IContainer container) {
 		String baseName = getDefaultNewFileBaseName();
 		String extension = getDefaultNewFileExtension();
-		String fileName = baseName + "." + extension; //$NON-NLS-1$
-		for (int i = 1; container.findMember(fileName) != null; ++i) {
-			fileName = baseName + i + "." + extension; //$NON-NLS-1$
+		if (baseName != null || extension != null) {
+			String fileName = createNewFileName(baseName, extension, -1);
+			for (int i = 1; container.findMember(fileName) != null; ++i) {
+				fileName = createNewFileName(baseName, extension, i);
+			}
+			return fileName;
 		}
-		return fileName;
+		return null;
+	}
+
+	/**
+	 * Creates a name for the new file to be created using provided base name, extension and number.
+	 * 
+	 * @param baseName
+	 *            the base name of the new file, or <code>null</code> if new file should have no base name
+	 * @param extension
+	 *            the extension of the new file, or <code>null</code> if new file should have no extension
+	 * @param number
+	 *            a non-negative number to be appended to the new file's base name - or to its extension in case that
+	 *            the former is omitted - or -1 if no number should be appended at all
+	 * @return the new file name
+	 */
+	protected String createNewFileName(String baseName, String extension, int number) {
+		StringBuilder fileName = new StringBuilder();
+		if (baseName != null) {
+			fileName.append(baseName);
+			if (number != -1) {
+				fileName.append(number);
+			}
+		}
+		if (extension != null) {
+			fileName.append("."); //$NON-NLS-1$
+			fileName.append(extension);
+			if (baseName == null && number != -1) {
+				fileName.append(number);
+			}
+		}
+		return fileName.toString();
 	}
 
 	/**
@@ -170,11 +235,30 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	/**
 	 * Returns the default file extension of the new model file to be created.
 	 * 
-	 * @return the first string value of File Extension defined in the ContentType by default. If more than one file
-	 *         extensions are defined in the ContenType, the clients should provide their specific overridden methods.
+	 * @return the first string value of File Extension defined for the content type by default. If more than one file
+	 *         extensions are defined for the content type, the clients should provide their specific overridden
+	 *         methods.
 	 */
 	protected String getDefaultNewFileExtension() {
-		return getValidFileExtensions().iterator().next();
+		if (!getValidFileExtensions().isEmpty()) {
+			return getValidFileExtensions().iterator().next();
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the {@link IMetaModelDescriptor metamodel descriptor} of the new file to be created.
+	 * 
+	 * @return the new file's metamodel descriptor
+	 */
+	protected IMetaModelDescriptor getNewFileMetaModelDescriptor() {
+		if (mmDescriptor != null) {
+			return mmDescriptor;
+		}
+		if (metaModelVersionPreference != null) {
+			return metaModelVersionPreference.get(getContainerProject());
+		}
+		return null;
 	}
 
 	/**
@@ -182,6 +266,7 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	 * new model file properties}
 	 */
 	protected String getNewFileContentTypeId() {
+		IMetaModelDescriptor mmDescriptor = getNewFileMetaModelDescriptor();
 		if (mmDescriptor != null) {
 			return mmDescriptor.getDefaultContentTypeId();
 		}
@@ -210,7 +295,9 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 					setContainerFullPath(((IContainer) selected).getFullPath());
 
 					String fileName = getUniqueDefaultNewFileName((IContainer) selected);
-					setFileName(fileName);
+					if (fileName != null) {
+						setFileName(fileName);
+					}
 				}
 			}
 		}
@@ -226,18 +313,18 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 			return false;
 		}
 
-		// Make sure the model file has a valid extension
-		String fileExtension = new Path(getFileName()).getFileExtension();
-		Collection<String> validFileExtensions = getValidFileExtensions();
-		if (!validFileExtensions.contains(fileExtension)) {
-			setErrorMessage(getFileExtensionErrorMessage(validFileExtensions));
-			return false;
-		}
-
 		// Make sure that we are in a (model) project that has the required nature
 		IProject containerProject = getContainerProject();
 		if (containerProject != null && !hasRequiredProjectNature(containerProject)) {
 			setErrorMessage(getRequiredProjectNatureErrorMessage());
+			return false;
+		}
+
+		// Make sure the model file has a valid extension
+		String fileExtension = new Path(getFileName()).getFileExtension();
+		Collection<String> validFileExtensions = getValidFileExtensions();
+		if (!validFileExtensions.isEmpty() && !validFileExtensions.contains(fileExtension)) {
+			setErrorMessage(getFileExtensionErrorMessage(validFileExtensions));
 			return false;
 		}
 
@@ -252,16 +339,18 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	 */
 	protected Collection<String> getValidFileExtensions() {
 		String contentTypeId = getNewFileContentTypeId();
-		Collection<String> validFileExtensions = ExtendedPlatform.getContentTypeFileExtensions(contentTypeId);
-		if (validFileExtensions.isEmpty()) {
-			if (!loggedNoValidFileExtensionsFoundProblem) {
-				PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException(
-						"No valid file extensions for content type identifer '" + contentTypeId + "' found.")); //$NON-NLS-1$ //$NON-NLS-2$
-				loggedNoValidFileExtensionsFoundProblem = true;
+		if (contentTypeId != null) {
+			Collection<String> validFileExtensions = ExtendedPlatform.getContentTypeFileExtensions(contentTypeId);
+			if (validFileExtensions.isEmpty()) {
+				if (!noValidFileExtensionsForContentTypeIdFoundProblemLoggedOnce) {
+					PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException(
+							"No valid file extensions for content type identifer '" + contentTypeId + "' found.")); //$NON-NLS-1$ //$NON-NLS-2$
+					noValidFileExtensionsForContentTypeIdFoundProblemLoggedOnce = true;
+				}
 			}
+			return validFileExtensions;
 		}
-
-		return validFileExtensions;
+		return Collections.emptySet();
 	}
 
 	/**
