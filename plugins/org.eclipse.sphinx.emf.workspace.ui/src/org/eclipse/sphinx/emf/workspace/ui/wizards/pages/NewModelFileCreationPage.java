@@ -332,28 +332,6 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	}
 
 	/**
-	 * Returns the valid file extensions for model files. They are retrieved from the content type to be used when
-	 * creating new model file.
-	 * 
-	 * @return A collection of valid file extensions for model files
-	 */
-	protected Collection<String> getValidFileExtensions() {
-		String contentTypeId = getNewFileContentTypeId();
-		if (contentTypeId != null) {
-			Collection<String> validFileExtensions = ExtendedPlatform.getContentTypeFileExtensions(contentTypeId);
-			if (validFileExtensions.isEmpty()) {
-				if (!noValidFileExtensionsForContentTypeIdFoundProblemLoggedOnce) {
-					PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException(
-							"No valid file extensions for content type identifer '" + contentTypeId + "' found.")); //$NON-NLS-1$ //$NON-NLS-2$
-					noValidFileExtensionsForContentTypeIdFoundProblemLoggedOnce = true;
-				}
-			}
-			return validFileExtensions;
-		}
-		return Collections.emptySet();
-	}
-
-	/**
 	 * Checks if the specified {@linkplain IProject project} has the required {@linkplain IProjectNature nature} that
 	 * has been provided to this {@linkplain NewModelFileCreationPage}.    
 	 * 
@@ -379,12 +357,34 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 		return false;
 	}
 
-	protected String getFileExtensionErrorMessage(Collection<String> validFileExtensions) {
-		return NLS.bind(Messages.error_fileExtensionMustBeOneOf, convertFileExtensionsToString(validFileExtensions));
+	/**
+	 * Returns the valid file extensions for model files. They are retrieved from the content type to be used when
+	 * creating new model file.
+	 * 
+	 * @return A collection of valid file extensions for model files
+	 */
+	protected Collection<String> getValidFileExtensions() {
+		String contentTypeId = getNewFileContentTypeId();
+		if (contentTypeId != null) {
+			Collection<String> validFileExtensions = ExtendedPlatform.getContentTypeFileExtensions(contentTypeId);
+			if (validFileExtensions.isEmpty()) {
+				if (!noValidFileExtensionsForContentTypeIdFoundProblemLoggedOnce) {
+					PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException(
+							"No valid file extensions for content type identifer '" + contentTypeId + "' found.")); //$NON-NLS-1$ //$NON-NLS-2$
+					noValidFileExtensionsForContentTypeIdFoundProblemLoggedOnce = true;
+				}
+			}
+			return validFileExtensions;
+		}
+		return Collections.emptySet();
 	}
 
 	protected String getRequiredProjectNatureErrorMessage() {
 		return Messages.error_requiredProjectNature;
+	}
+
+	protected String getFileExtensionErrorMessage(Collection<String> validFileExtensions) {
+		return NLS.bind(Messages.error_fileExtension, convertFileExtensionsToString(validFileExtensions));
 	}
 
 	/**

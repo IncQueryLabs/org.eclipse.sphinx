@@ -26,7 +26,7 @@ public class Messages extends NLS {
 	 */
 	public static String error_failedToSaveModelsDuringWorkbenchClosing;
 	public static String error_unableToFindPerspective;
-	public static String error_fileExtensionMustBeOneOf;
+	public static String error_fileExtension;
 
 	public static String eobjectMustBeInResource;
 
