@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     See4sys - Initial API and implementation
- *     itemis - Added messages for creating new project
+ *     itemis - Added messages for creating new model projects and files
  *
  * </copyright>
  */
@@ -25,10 +25,6 @@ public class Messages extends NLS {
 	 * Other messages
 	 */
 	public static String error_failedToSaveModelsDuringWorkbenchClosing;
-	public static String error_unableToFindPerspective;
-	public static String error_fileExtension;
-
-	public static String eobjectMustBeInResource;
 
 	// New Linked Folder
 	public static String wizardNewLinkedFolder_title;
@@ -54,54 +50,53 @@ public class Messages extends NLS {
 	public static String wizardNewLinkedFileCreationPage_noParentSelected;
 	public static String wizardNewLinkedFileCreationPage_selectedParentProjectNotOpen;
 
-	// New Project Creation
-	public static String wizardNewProjectCreationPage_newProjectCreationPageNameLabel;
-	public static String wizardNewProjectCreationPage_newProjectNameEmptyLabel;
-	public static String wizardNewProjectCreationPage_newProjectExistsErrorMessage;
-	public static String wizardNewProjectCreationPage_newProjectCaseVariantExistsError;
-	public static String wizardNewProjectCreationPage_location;
+	// New Model Project
+	public static String wizard_newModelProject_title;
 
-	public static String wizardNewProject_newProjectOpeningWindowErrorMessage;
-	public static String wizardNewProject_newProjectPerspSwitchMessageLabel;
-	public static String wizardNewProject_newProjectPerspSwitchMessageWithDescLabel;
-	public static String wizardNewProject_newProjectPerspSwitchTitle;
-	public static String wizardNewProject_newProjectWizardTitle;
-	public static String wizardNewProject_newProjectTitle;
-	public static String wizardNewProject_newProjectDescription;
-	public static String wizardNewProject_newProjectReferenceTitle;
-	public static String wizardNewProject_newProjectReferenceDescription;
-	public static String wizardNewProject_newProjectWindowTitle;
+	public static String page_newModelProjectCreation_title;
+	public static String page_newModelProjectCreation_description;
 
-	public static String job_creatingNewModelProject;
-	public static String title_newModelFile;
-	public static String default_modelFileBaseName;
-	public static String message_configureSetting;
-	public static String label_metaModelVersionGroup;
-	public static String label_metaModelVersionAlternate;
-	public static String label_workspaceDefaultMetaModelVersion;
-	public static String metaModelVersion_labelPattern;
-	public static String FilteredItemsSelectionDialog_pattern;
-	public static String error_emptySelectedMM;
-	public static String error_emptySelectedEPackage;
-	public static String error_emptySelectedEClassifier;
-	public static String title_metaModelDescriptorBrowseDialog;
-	public static String title_epackageBrowseDialog;
-	public static String title_eclassifierBrowseDialog;
-	public static String title_newModelCreationPage;
-	public static String description_newModelCreationPage;
-	public static String label_browseButton;
-	public static String description_newModelFileCreationPage;
+	public static String group_metaModelVersion_label;
+	public static String button_alternateMetaModelVersion_label;
+	public static String button_workspaceDefaultMetaModelVersion_labelPrefix;
+	public static String button_workspaceDefaultMetaModelVersion_label;
+	public static String combo_metaModelVersion_item;
+	public static String link_configureWorkspaceSettings_label;
+	public static String default_metaModelVersionLabel;
+
+	public static String page_newProjectReference_title;
+	public static String page_newProjectReference_description;
+
+	public static String job_createNewModelProject_name;
+
+	// New Model File
+	public static String wizard_newModelFile_title;
+
+	public static String page_newInitialModelCreation_title;
+	public static String page_newInitialModelCreation_description;
+
+	public static String combo_metaModelDescriptor_label;
+	public static String combo_ePackage_label;
+	public static String combo_eClassifier_label;
+	public static String button_browse_label;
+	public static String dialog_metaModelDescriptorBrowse_title;
+	public static String dialog_ePackageBrowse_title;
+	public static String dialog_eClassifierBrowse_title;
+	public static String dialog_browse_message;
+	public static String error_noMetaModelDescriptorSelected;
+	public static String error_noEPackageSelected;
+	public static String error_noEClassifierSelected;
+
+	public static String page_newModelFileCreation_title;
+	public static String page_newModelFileCreation_description;
+
 	public static String error_requiredProjectNature;
-	public static String msg_defaultRequiredProjectType;
-	public static String title_newModelFileWizard;
-	public static String job_creatingNewModelFile;
-	public static String UI_OpenEditorError_label;
-	public static String label_metaModelComboButtonField;
-	public static String label_epackageComboButtonField;
-	public static String label_eclassifierComboButtonField;
-	public static String defaultMetaModelVersionLabel;
+	public static String error_matchingMetaModelVersion;
+	public static String error_fileExtension;
+	public static String default_modelFileBaseName;
+	public static String default_requiredProjectType;
 
-	public static String label_defaultMetaModelVersion;
+	public static String job_creatingNewModelFile;
 
 	static {
 		// initialize resource bundle

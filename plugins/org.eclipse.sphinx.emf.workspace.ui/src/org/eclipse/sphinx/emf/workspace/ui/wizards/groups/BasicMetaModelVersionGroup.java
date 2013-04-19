@@ -11,6 +11,7 @@
  *     itemis - Initial API and implementation
  *     itemis - [405059] Enable BasicMetaModelVersionGroup to open appropriate model version preference page
  *     itemis - [405075] Improve type safety of NewModelProjectCreationPage and BasicMetaModelVersionGroup wrt base metamodel descriptor and metamodel version preference
+ *     itemis - [406053] Separate class construction of BasicMetaModelVersionGroup and creation of its group content in different methods
  *
  * </copyright>
  */
@@ -34,6 +35,7 @@ import org.eclipse.sphinx.platform.ui.fields.ComboField;
 import org.eclipse.sphinx.platform.ui.fields.IField;
 import org.eclipse.sphinx.platform.ui.fields.IFieldListener;
 import org.eclipse.sphinx.platform.ui.fields.SelectionButtonField;
+import org.eclipse.sphinx.platform.ui.groups.AbstractGroup;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -51,7 +53,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
  * <p>
  * This class is useful for the creation of a new model project wizard page. It can be overridden by clients.
  */
-public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> {
+public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> extends AbstractGroup {
 
 	protected static final Pattern META_MODEL_NAME_PATTERN = Pattern.compile("(\\w+)( \\d(.\\d(.\\d)?)?)?"); //$NON-NLS-1$
 
@@ -65,12 +67,11 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> {
 
 	private IProjectWorkspacePreference<T> metaModelVersionPreference;
 	private String metaModelVersionPreferencePageId;
-
-	protected Group group;
 	protected SelectionButtonField workspaceDefaultMetaModelVersionButton, alternateMetaModelVersionButton;
 	protected ComboField metaModelVersionCombo;
 	protected Link configureWorkspaceSettingsLink;
 	protected List<T> supportedMetaModelVersions = new ArrayList<T>();
+	protected T baseMetaModelDescriptor;
 
 	private String metaModelVersionName = null;
 	private String metaModelVersionLabel = null;
@@ -117,47 +118,54 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> {
 	 * and alternate metamodel version, configureWorkspaceSettingsLink, and a combo for different metamodel versions are
 	 * added in this group.
 	 * 
+	 * @param groupName
+	 *            the name of the group
 	 * @param parent
 	 *            the parent {@linkplain Composite composite}
 	 * @param baseMetaModelDescriptor
-	 *            the base {@linkplain IMetaModelDescriptor metamodel} of the model project to be created
+	 *            the base {@linkplain T metamodel} of the model project to be created
 	 * @param metaModelVersionPreference
 	 *            the metamodel version {@linkplain IProjectWorkspacePreference preference} object
 	 * @param metaModelVersionPreferencePageId
 	 *            the metamodel version preference page id
 	 */
-	public BasicMetaModelVersionGroup(Composite parent, T baseMetaModelDescriptor, IProjectWorkspacePreference<T> metaModelVersionPreference,
-			String metaModelVersionPreferencePageId) {
+	public BasicMetaModelVersionGroup(String groupName, Composite parent, T baseMetaModelDescriptor,
+			IProjectWorkspacePreference<T> metaModelVersionPreference, String metaModelVersionPreferencePageId) {
+		super(groupName);
 		Assert.isNotNull(metaModelVersionPreference);
-
 		this.metaModelVersionPreference = metaModelVersionPreference;
 		this.metaModelVersionPreferencePageId = metaModelVersionPreferencePageId;
+		this.baseMetaModelDescriptor = baseMetaModelDescriptor;
+	}
 
-		group = new Group(parent, SWT.NONE);
-		group.setFont(parent.getFont());
+	/*
+	 * @see org.eclipse.sphinx.platform.ui.groups.AbstractGroup#doCreateContent(org.eclipse.swt.widgets.Composite, int)
+	 */
+	@Override
+	protected void doCreateContent(Composite group, int numColumns) {
+
 		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
 		GridLayout gridLayout = new GridLayout(3, false);
 		group.setLayout(gridLayout);
-		group.setText(getMetaModelVersionGroupLabel());
+		((Group) group).setText(getMetaModelVersionGroupLabel());
 
 		// add a selection button widget for the workspace default metamodel version
 		workspaceDefaultMetaModelVersionButton = new SelectionButtonField(SWT.RADIO);
-		workspaceDefaultMetaModelVersionButton.setLabelText(NLS.bind(Messages.label_defaultMetaModelVersion,
-				getWorkspaceDefaultMetaModelVersionLabel(), metaModelVersionPreference.getFromWorkspace().getName()));
+		workspaceDefaultMetaModelVersionButton.setLabelText(NLS.bind(Messages.button_workspaceDefaultMetaModelVersion_label,
+				getWorkspaceDefaultMetaModelVersionLabelPrefix(), metaModelVersionPreference.getFromWorkspace().getName()));
 		workspaceDefaultMetaModelVersionButton.fillIntoGrid(group, 2);
 		workspaceDefaultMetaModelVersionButton.addFieldListener(fieldListener);
 
 		// add a link widget for the workspace settings link
 		configureWorkspaceSettingsLink = new Link(group, SWT.NONE);
 		configureWorkspaceSettingsLink.setFont(group.getFont());
-		configureWorkspaceSettingsLink.setText(MessageFormat.format("<a>{0}</a>", Messages.message_configureSetting)); //$NON-NLS-1$
+		configureWorkspaceSettingsLink.setText(MessageFormat.format("<a>{0}</a>", Messages.link_configureWorkspaceSettings_label)); //$NON-NLS-1$
 		configureWorkspaceSettingsLink.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
 		configureWorkspaceSettingsLink.addSelectionListener(selectionListener);
 
 		// add a selection button widget for the alternate metamodel version
 		alternateMetaModelVersionButton = new SelectionButtonField(SWT.RADIO);
-		alternateMetaModelVersionButton.setLabelText(getMetaModelVersionAlternateLabel());
+		alternateMetaModelVersionButton.setLabelText(getAlternateMetaModelVersionLabel());
 		alternateMetaModelVersionButton.fillIntoGrid(group, 1);
 		alternateMetaModelVersionButton.addFieldListener(fieldListener);
 
@@ -189,6 +197,9 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> {
 		updateEnableState();
 	}
 
+	/**
+	 * Returns the name of metamodel version
+	 */
 	protected String getMetaModelVersionName() {
 		if (metaModelVersionName == null) {
 			T mmDescriptor = metaModelVersionPreference.getFromWorkspace();
@@ -200,21 +211,26 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> {
 		return metaModelVersionName;
 	}
 
+	/**
+	 * Sets the name of this metamodel version. This method can be used if the metamodel version name is not correctly
+	 * calculated by the META_MODEL_NAME_PATTERN.
+	 */
 	public void setMetaModelVersionName(String metaModelVersionName) {
 		this.metaModelVersionName = metaModelVersionName;
 	}
 
+	/**
+	 * Gets the label of this metamodel version, "version" by default.
+	 */
 	protected String getMetaModelVersionLabel() {
 		if (metaModelVersionLabel == null) {
-			metaModelVersionLabel = Messages.defaultMetaModelVersionLabel;
+			metaModelVersionLabel = Messages.default_metaModelVersionLabel;
 		}
 		return metaModelVersionLabel;
 	}
 
 	/**
 	 * Sets the label of this metamodel version. This method can be overridden by AUTOSAR, to set the label to "release"
-	 * 
-	 * @param metaModelVersionLabel
 	 */
 	public void setMetaModelVersionLabel(String metaModelVersionLabel) {
 		this.metaModelVersionLabel = metaModelVersionLabel;
@@ -226,31 +242,31 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> {
 	 * For example, Hummingbird version options, AUTOSAR release options, etc.
 	 */
 	protected String getMetaModelVersionGroupLabel() {
-		return NLS.bind(Messages.label_metaModelVersionGroup, getMetaModelVersionName(), getMetaModelVersionLabel());
+		return NLS.bind(Messages.group_metaModelVersion_label, getMetaModelVersionName(), getMetaModelVersionLabel());
 	}
 
 	/**
-	 * Returns the label of alternate metamodel version.
+	 * Returns the label for the alternate metamodel version.
 	 * <p>
 	 * For example, "Alternate version", "Alternate release", etc.
 	 */
-	protected String getMetaModelVersionAlternateLabel() {
-		return NLS.bind(Messages.label_metaModelVersionAlternate, getMetaModelVersionLabel());
+	protected String getAlternateMetaModelVersionLabel() {
+		return NLS.bind(Messages.button_alternateMetaModelVersion_label, getMetaModelVersionLabel());
 	}
 
 	/**
-	 * Returns the label of workspace default metamodel version.
+	 * Returns the prefix of the label for the workspace default metamodel version.
 	 * <p>
 	 * For example, "Workspace default version", "Workspace default release", etc.
 	 */
-	protected String getWorkspaceDefaultMetaModelVersionLabel() {
-		return NLS.bind(Messages.label_workspaceDefaultMetaModelVersion, getMetaModelVersionLabel());
+	protected String getWorkspaceDefaultMetaModelVersionLabelPrefix() {
+		return NLS.bind(Messages.button_workspaceDefaultMetaModelVersion_labelPrefix, getMetaModelVersionLabel());
 	}
 
 	/**
-	 * Sets the combo items using all the metamodel version descriptors of given {@link IMetaModelDescriptor
-	 * metaModelDescriptor}. Sets the last selected metamodel version descriptor as the selected item of the combo if it
-	 * exists, otherwise uses the default metamodel version descriptor from the workspace.
+	 * Sets the combo items using all the metamodel version descriptors of given {@link T metaModelDescriptor}. Sets the
+	 * last selected metamodel version descriptor as the selected item of the combo if it exists, otherwise uses the
+	 * default metamodel version descriptor from the workspace.
 	 */
 	protected void fillSupportedMetaModelVersions(T metaModelDescriptor) {
 		supportedMetaModelVersions = MetaModelDescriptorRegistry.INSTANCE.getDescriptors(metaModelDescriptor, true);
@@ -258,7 +274,7 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> {
 			String[] items = new String[supportedMetaModelVersions.size()];
 			for (int index = 0; index < supportedMetaModelVersions.size(); index++) {
 				T descriptor = supportedMetaModelVersions.get(index);
-				items[index] = String.format(Messages.metaModelVersion_labelPattern, descriptor.getName(), descriptor.getNamespace());
+				items[index] = NLS.bind(Messages.combo_metaModelVersion_item, descriptor.getName(), descriptor.getNamespace());
 			}
 			metaModelVersionCombo.setItems(items);
 		}
