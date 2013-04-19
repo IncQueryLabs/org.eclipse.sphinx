@@ -4,14 +4,16 @@
 <!--
 <copyright>
 
-Copyright (c) 2008-2010 See4sys and others.
+Copyright (c) 2008-2013 See4sys, itemis and others.
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
 which accompanies this distribution, and is available at
 http://www.eclipse.org/legal/epl-v10.html
- 
-Contributors: 
+
+Contributors:
     See4sys - Initial API and implementation
+    itemis - [402945] Add a new Hummingbird project creation wizard for Hummingbird examples
+    itemis - [402951] Add a new Hummingbird file creation wizard for Hummingbird examples
 
 </copyright>
 -->
@@ -22,6 +24,15 @@ Contributors:
             id="org.eclipse.sphinx.examples.common.ui.views.category.sphinxExampleViews"
             name="%sphinx.examples.common.ui.views.category.sphinxExampleViews.name">
       </category>
+      <!--
+      <view
+            category="org.eclipse.sphinx.examples.common.ui.views.category.sphinxExampleViews"
+            class="org.eclipse.sphinx.emf.ui.views.ReferencesView"
+            icon="icons/sample.gif"
+            id="org.eclipse.sphinx.emf.ui.views.references"
+            name="References View">
+      </view>
+      -->
    </extension>
    <extension point="org.eclipse.ui.newWizards">
       <category
@@ -33,15 +44,17 @@ Contributors:
             name="%sphinx.examples.common.ui.newWizards.category.examples.sphinx"
             parentCategory="org.eclipse.ui.Examples">
       </category>
-      <!--
-      <view
-            category="org.eclipse.sphinx.examples.common.ui.views.category.sphinxExampleViews"
-            class="org.eclipse.sphinx.emf.ui.views.ReferencesView"
-            icon="icons/sample.gif"
-            id="org.eclipse.sphinx.emf.ui.views.references"
-            name="References View">
-      </view>
-      -->
+      <wizard
+            category="org.eclipse.sphinx.examples.common.ui.newWizards.category.sphinxExampleWizards"
+            class="org.eclipse.sphinx.emf.workspace.ui.wizards.GenericNewModelFileWizard"
+            finalPerspective="org.eclipse.sphinx.examples.common.ui.perspectives.sphinx"
+            hasPages="true"
+            icon="$nl$/icons/full/obj16/modelfile_obj.gif"
+            id="org.eclipse.sphinx.examples.hummingbird.ide.ui.newWizards.modelFile"
+            name="%sphinx.examples.common.ui.newWizards.modelFile.name"
+            preferredPerspectives="org.eclipse.sphinx.examples.common.ui.perspectives.sphinx"
+            project="true">
+      </wizard>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">

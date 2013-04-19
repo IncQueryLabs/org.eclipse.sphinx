@@ -1,25 +1,29 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [402945] Add a new Hummingbird project creation wizard for Hummingbird examples
+ *     itemis - [402951] Add a new Hummingbird file creation wizard for Hummingbird examples
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird.ide.natures;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.sphinx.examples.hummingbird.ide.internal.Activator;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
  * {@link IProjectNature Project nature} for {@link IProject}s containing Hummingbird models.
@@ -49,6 +53,26 @@ public class HummingbirdNature implements IProjectNature {
 	 */
 	public static void addTo(IProject project, IProgressMonitor monitor) throws CoreException {
 		ExtendedPlatform.addNature(project, ID, monitor);
+	}
+
+	/**
+	 * Checks if the specified {@linkplain IProject project} has the
+	 * {@linkplain HummingbirdNature#HUMMINGBIRD_NATURE_ID Hummingbird nature}.
+	 * 
+	 * @param project
+	 *            The project to be investigated; must not be <code>null</code> and must be <em>accessible</em>.
+	 * @return <code>true</code> if the specified project has the Hummingbird nature, <code>false</code> otherwise.
+	 */
+	public static boolean has(IProject project) {
+		Assert.isNotNull(project);
+		Assert.isTrue(project.isAccessible());
+		boolean hasHummingbirdNature = false;
+		try {
+			hasHummingbirdNature = project.hasNature(ID);
+		} catch (CoreException ex) {
+			PlatformLogUtil.logAsError(Activator.getDefault(), ex);
+		}
+		return hasHummingbirdNature;
 	}
 
 	/**

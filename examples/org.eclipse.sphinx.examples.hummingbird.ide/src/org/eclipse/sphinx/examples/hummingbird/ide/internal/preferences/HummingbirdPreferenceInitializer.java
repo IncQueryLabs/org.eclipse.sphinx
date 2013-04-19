@@ -1,23 +1,26 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [402945] Add a new Hummingbird project creation wizard for Hummingbird examples
+ *     itemis - [402951] Add a new Hummingbird file creation wizard for Hummingbird examples
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird.ide.internal.preferences;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.examples.hummingbird.ide.internal.Activator;
 import org.eclipse.sphinx.examples.hummingbird.ide.metamodel.HummingbirdMMDescriptor;
@@ -76,8 +79,7 @@ public class HummingbirdPreferenceInitializer extends AbstractPreferenceInitiali
 	 *         {@link HummingbirdPreferenceInitializer#QUALIFIER} or <code>null</code> if no such could be determined.
 	 */
 	private IEclipsePreferences getDefaultPreferences() {
-		DefaultScope defaultScope = new DefaultScope();
-		return defaultScope.getNode(QUALIFIER);
+		return DefaultScope.INSTANCE.getNode(QUALIFIER);
 	}
 
 	/**
@@ -86,12 +88,12 @@ public class HummingbirdPreferenceInitializer extends AbstractPreferenceInitiali
 	 * @return The default value for {@link #PREF_METAMODEL_VERSION} or an empty string if no such could be determined.
 	 */
 	private static String getMetamodelVersionDefault() {
-		IMetaModelDescriptor mostRecentMMDescriptor = null;
-		for (IMetaModelDescriptor mmDescriptor : MetaModelDescriptorRegistry.INSTANCE.getDescriptors(HummingbirdMMDescriptor.INSTANCE)) {
-			if (mostRecentMMDescriptor == null || mostRecentMMDescriptor.getOrdinal() < mmDescriptor.getOrdinal()) {
-				mostRecentMMDescriptor = mmDescriptor;
-			}
+		List<HummingbirdMMDescriptor> descriptors = MetaModelDescriptorRegistry.INSTANCE.getDescriptors(HummingbirdMMDescriptor.INSTANCE, true);
+		if (descriptors.isEmpty()) {
+			return ""; //$NON-NLS-1$
 		}
-		return mostRecentMMDescriptor != null ? mostRecentMMDescriptor.getIdentifier() : ""; //$NON-NLS-1$
+
+		HummingbirdMMDescriptor mostRecentDescriptor = descriptors.get(descriptors.size() - 1);
+		return mostRecentDescriptor.getIdentifier();
 	}
 }
