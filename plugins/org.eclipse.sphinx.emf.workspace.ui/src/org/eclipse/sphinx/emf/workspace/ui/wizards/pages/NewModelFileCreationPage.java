@@ -11,6 +11,7 @@
  *     itemis - Initial API and implementation
  *     itemis - [403728] NewModelProjectCreationPage and NewModelFileCreationPage should provided hooks for creating additional controls
  *     itemis - [405023] Enable NewModelFileCreationPage to be used without having to pass an instance of NewModelFileProperties to its constructor
+ *     itemis - [406062] Removal of the required project nature parameter in NewModelFileCreationPage constructor and CreateNewModelProjectJob constructor
  *
  * </copyright>
  */
@@ -37,7 +38,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
-import org.eclipse.sphinx.emf.workspace.ui.wizards.BasicNewModelFileWizard.NewModelFileProperties;
+import org.eclipse.sphinx.emf.workspace.ui.wizards.NewModelFileProperties;
 import org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -52,59 +53,17 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
  * getFileExtensionErrorMessage(), getRequiredProjectNatureErrorMessage(), hasRequiredProjectNature(), setVisible(),
  * getDefaultFileExtension(), etc.
  */
-public class NewModelFileCreationPage extends WizardNewFileCreationPage {
+public class NewModelFileCreationPage<T extends IMetaModelDescriptor> extends WizardNewFileCreationPage {
 
 	protected static final Pattern META_MODEL_NAME_PATTERN = Pattern.compile("(\\w+)( \\d(.\\d(.\\d)?)?)?"); //$NON-NLS-1$
 
 	protected IStructuredSelection selection;
-	protected String requiredProjectNatureId;
-	protected IMetaModelDescriptor mmDescriptor = null;
-	protected IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference = null;
+	protected IProjectWorkspacePreference<T> metaModelVersionPreference = null;
+	protected NewModelFileProperties<T> newModelFileProperties = null;
 
 	private String requiredProjectTypeName = null;
 
 	protected boolean noValidFileExtensionsForContentTypeIdFoundProblemLoggedOnce = false;
-
-	/**
-	 * Creates a new instance of new model file creation wizard page.
-	 * 
-	 * @param pageId
-	 *            the name of the page
-	 * @param selection
-	 *            the current resource selection
-	 * @param requiredProjectNatureId
-	 *            the required project nature id
-	 * @param mmDescriptor
-	 *            the {@linkplain IMetaModelDescriptor metamodel} behind the model file to be created
-	 */
-	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, String requiredProjectNatureId, IMetaModelDescriptor mmDescriptor) {
-		super(pageId, selection);
-
-		this.selection = selection;
-		this.requiredProjectNatureId = requiredProjectNatureId;
-		this.mmDescriptor = mmDescriptor;
-
-		setTitle(Messages.title_newModelFile);
-		setDescription(Messages.description_newModelFileCreationPage);
-	}
-
-	/**
-	 * Creates a new instance of new model file creation wizard page.
-	 * 
-	 * @param pageId
-	 *            the name of the page
-	 * @param selection
-	 *            the current resource selection
-	 * @param requiredProjectNatureId
-	 *            the required project nature id
-	 * @param newModelFileProperties
-	 *            the {@linkplain NewModelFileProperties new model file properties} carrying choices from previous
-	 *            wizard page(s)
-	 */
-	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, String requiredProjectNatureId,
-			NewModelFileProperties newModelFileProperties) {
-		this(pageId, selection, requiredProjectNatureId, newModelFileProperties != null ? newModelFileProperties.getMetaModelDescriptor() : null);
-	}
 
 	/**
 	 * Creates a new instance of the new model file creation wizard page.
@@ -113,21 +72,36 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	 *            the name of the page
 	 * @param selection
 	 *            the current resource selection
-	 * @param requiredProjectNatureId
-	 *            the required project nature id
 	 * @param metaModelVersionPreference
 	 *            the metamodel version {@linkplain IProjectWorkspacePreference preference}
 	 */
-	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, String requiredProjectNatureId,
-			IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference) {
+	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, IProjectWorkspacePreference<T> metaModelVersionPreference) {
 		super(pageId, selection);
 
 		this.selection = selection;
-		this.requiredProjectNatureId = requiredProjectNatureId;
 		this.metaModelVersionPreference = metaModelVersionPreference;
 
-		setTitle(Messages.title_newModelFile);
-		setDescription(Messages.description_newModelFileCreationPage);
+		setTitle(Messages.page_newModelFileCreation_title);
+		setDescription(Messages.page_newModelFileCreation_description);
+	}
+
+	/**
+	 * Creates a new instance of new model file creation wizard page.
+	 * 
+	 * @param pageId
+	 *            the name of the page
+	 * @param selection
+	 *            the current resource selection
+	 * @param metaModelVersionPreference
+	 *            the metamodel version {@linkplain IProjectWorkspacePreference preference}
+	 * @param newModelFileProperties
+	 *            the {@linkplain NewModelFileProperties new model file properties} carrying choices from previous
+	 *            wizard page(s)
+	 */
+	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, IProjectWorkspacePreference<T> metaModelVersionPreference,
+			NewModelFileProperties<T> newModelFileProperties) {
+		this(pageId, selection, metaModelVersionPreference);
+		this.newModelFileProperties = newModelFileProperties;
 	}
 
 	/*
@@ -171,7 +145,7 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 
 	protected String getRequiredProjectTypeName() {
 		if (requiredProjectTypeName == null) {
-			if (requiredProjectNatureId != null && metaModelVersionPreference != null) {
+			if (metaModelVersionPreference != null) {
 				IMetaModelDescriptor mmDescriptor = metaModelVersionPreference.getFromWorkspace();
 				Matcher matcher = META_MODEL_NAME_PATTERN.matcher(mmDescriptor.getName());
 				if (matcher.find()) {
@@ -263,8 +237,9 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	 *         methods.
 	 */
 	protected String getDefaultNewFileExtension() {
-		if (!getValidFileExtensions().isEmpty()) {
-			return getValidFileExtensions().iterator().next();
+		Collection<String> validFileExtensions = getValidFileExtensions();
+		if (!validFileExtensions.isEmpty()) {
+			return validFileExtensions.iterator().next();
 		}
 		return null;
 	}
@@ -274,9 +249,9 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	 * 
 	 * @return the new file's metamodel descriptor
 	 */
-	protected IMetaModelDescriptor getNewFileMetaModelDescriptor() {
-		if (mmDescriptor != null) {
-			return mmDescriptor;
+	protected T getNewFileMetaModelDescriptor() {
+		if (newModelFileProperties != null) {
+			return newModelFileProperties.getMetaModelDescriptor();
 		}
 		if (metaModelVersionPreference != null) {
 			return metaModelVersionPreference.get(getContainerProject());
@@ -289,7 +264,7 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	 * new model file properties}
 	 */
 	protected String getNewFileContentTypeId() {
-		IMetaModelDescriptor mmDescriptor = getNewFileMetaModelDescriptor();
+		T mmDescriptor = getNewFileMetaModelDescriptor();
 		if (mmDescriptor != null) {
 			return mmDescriptor.getDefaultContentTypeId();
 		}
@@ -343,6 +318,13 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 			return false;
 		}
 
+		// Make sure that the (model) project's metamodel version - if any - matches that of the model file to be
+		// created
+		if (containerProject != null && !hasMatchingMetaModelVersion(containerProject)) {
+			setErrorMessage(getMatchingMetaModelVersionErrorMessage());
+			return false;
+		}
+
 		// Make sure the model file has a valid extension
 		String fileExtension = new Path(getFileName()).getFileExtension();
 		Collection<String> validFileExtensions = getValidFileExtensions();
@@ -368,16 +350,44 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 		Assert.isNotNull(project);
 		Assert.isTrue(project.isAccessible());
 
-		if (requiredProjectNatureId == null) {
+		if (metaModelVersionPreference == null) {
 			return true;
 		}
 
 		try {
-			return project.hasNature(requiredProjectNatureId);
+			return project.hasNature(metaModelVersionPreference.getRequiredProjectNatureId());
 		} catch (CoreException ex) {
 			PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 		}
 		return false;
+	}
+
+	/**
+	 * Checks if the metamodel version of the specified {@linkplain IProject project} matches that of the model file to
+	 * be created
+	 * 
+	 * @param project
+	 *            the {@linkplain IProject project} to be checked; must not be <code>null</code> and must be 
+	 *            <em>accessible</em>
+	 * @return <code>true</code> if specified {@linkplain IProject project}'s metamodel version matches that of the
+	 *         model file to be created or no metamodel version preference, <code>false</code> otherwise.
+	 */
+	protected boolean hasMatchingMetaModelVersion(IProject project) {
+		Assert.isNotNull(project);
+		Assert.isTrue(project.isAccessible());
+
+		if (metaModelVersionPreference == null) {
+			return true;
+		}
+
+		T newFileMetaModelDescriptor = getNewFileMetaModelDescriptor();
+		if (newFileMetaModelDescriptor != null) {
+			if (!newFileMetaModelDescriptor.equals(metaModelVersionPreference.get(project))) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -405,7 +415,12 @@ public class NewModelFileCreationPage extends WizardNewFileCreationPage {
 	protected String getRequiredProjectNatureErrorMessage() {
 		String requiredProjectTypeName = getRequiredProjectTypeName();
 		return NLS.bind(Messages.error_requiredProjectNature, requiredProjectTypeName != null ? requiredProjectTypeName
-				: Messages.msg_defaultRequiredProjectType);
+				: Messages.default_requiredProjectType);
+	}
+
+	protected String getMatchingMetaModelVersionErrorMessage() {
+		T newFileMetaModelDescriptor = getNewFileMetaModelDescriptor();
+		return NLS.bind(Messages.error_matchingMetaModelVersion, newFileMetaModelDescriptor != null ? newFileMetaModelDescriptor.getName() : ""); //$NON-NLS-1$
 	}
 
 	protected String getFileExtensionErrorMessage(Collection<String> validFileExtensions) {

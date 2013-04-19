@@ -13,6 +13,7 @@
  *     itemis - [403728] NewModelProjectCreationPage and NewModelFileCreationPage should provided hooks for creating additional controls
  *     itemis - [405059] Enable BasicMetaModelVersionGroup to open appropriate model version preference page
  *     itemis - [405075] Improve type safety of NewModelProjectCreationPage and BasicMetaModelVersionGroup wrt base metamodel descriptor and metamodel version preference
+ *     itemis - [406062] Removal of the required project nature parameter in NewModelFileCreationPage constructor and CreateNewModelProjectJob constructor
  *
  * </copyright>
  */
@@ -59,8 +60,8 @@ public class NewModelProjectCreationPage<T extends IMetaModelDescriptor> extends
 	public NewModelProjectCreationPage(String pageName, T baseMetaModelDescriptor, IProjectWorkspacePreference<T> metaModelVersionPreference,
 			String metaModelVersionPreferencePageId) {
 		super(pageName);
-		this.metaModelVersionPreference = metaModelVersionPreference;
 		this.baseMetaModelDescriptor = baseMetaModelDescriptor;
+		this.metaModelVersionPreference = metaModelVersionPreference;
 		this.metaModelVersionPreferencePageId = metaModelVersionPreferencePageId;
 	}
 
@@ -100,8 +101,9 @@ public class NewModelProjectCreationPage<T extends IMetaModelDescriptor> extends
 	 *            the parent {@linkplain Composite composite}
 	 */
 	protected void createMetaModelVersionGroup(Composite parent) {
-		metaModelVersionGroup = new BasicMetaModelVersionGroup<T>(parent, baseMetaModelDescriptor, metaModelVersionPreference,
-				metaModelVersionPreferencePageId);
+		metaModelVersionGroup = new BasicMetaModelVersionGroup<T>("MetaModelVersionGroup", parent, baseMetaModelDescriptor, //$NON-NLS-1$
+				metaModelVersionPreference, metaModelVersionPreferencePageId);
+		metaModelVersionGroup.createContent(parent, 3, false);
 	}
 
 	public T getMetaModelVersionDescriptor() {

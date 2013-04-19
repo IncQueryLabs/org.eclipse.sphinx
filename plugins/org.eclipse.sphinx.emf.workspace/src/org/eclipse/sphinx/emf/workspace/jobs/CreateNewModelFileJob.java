@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [406062] Removal of the required project nature parameter in NewModelFileCreationPage constructor and CreateNewModelProjectJob constructor
  *
  * </copyright>
  */
@@ -48,7 +49,7 @@ import org.eclipse.sphinx.platform.util.StatusUtil;
  */
 public class CreateNewModelFileJob extends WorkspaceJob {
 
-	protected IFile modelFile;
+	protected IFile newFile;
 	protected IMetaModelDescriptor metaModelDescriptor;
 	protected EPackage rootObjectEPackage;
 	protected EClassifier rootObjectEClassifier;
@@ -60,7 +61,7 @@ public class CreateNewModelFileJob extends WorkspaceJob {
 	 * 
 	 * @param jobName
 	 *            the name of the job
-	 * @param modelFile
+	 * @param newFile
 	 *            the model file that will be created, must not be null
 	 * @param metaModelDescriptor
 	 *            the {@linkplain IMetaModelDescriptor descriptor} of metamodel the model file should be based on
@@ -70,23 +71,23 @@ public class CreateNewModelFileJob extends WorkspaceJob {
 	 * @param rootObjectEClassifier
 	 *            the {@linkplain EClassifier root object classifier} of the initial model's root object
 	 */
-	public CreateNewModelFileJob(String jobName, IFile modelFile, IMetaModelDescriptor metaModelDescriptor, EPackage rootObjectEPackage,
+	public CreateNewModelFileJob(String jobName, IFile newFile, IMetaModelDescriptor metaModelDescriptor, EPackage rootObjectEPackage,
 			EClassifier rootObjectEClassifier) {
 		super(jobName);
 
 		// make sure that the model file that will be created and the metamodel descriptor that this model file is based
 		// on must not be null.
-		Assert.isNotNull(modelFile);
+		Assert.isNotNull(newFile);
 		Assert.isNotNull(metaModelDescriptor);
 
-		this.modelFile = modelFile;
+		this.newFile = newFile;
 		this.metaModelDescriptor = metaModelDescriptor;
 		this.rootObjectEPackage = rootObjectEPackage;
 		this.rootObjectEClassifier = rootObjectEClassifier;
 
 		// set priority and rule
 		setPriority(Job.BUILD);
-		setRule(ExtendedPlatform.createSaveNewSchedulingRule(modelFile));
+		setRule(ExtendedPlatform.createSaveNewSchedulingRule(newFile));
 	}
 
 	/*
@@ -136,8 +137,8 @@ public class CreateNewModelFileJob extends WorkspaceJob {
 	 *            and cancelation are not desired
 	 */
 	protected void saveInitialModel(EObject rootObject, IProgressMonitor monitor) {
-		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(modelFile.getProject(), metaModelDescriptor);
-		EcorePlatformUtil.saveNewModelResource(editingDomain, modelFile.getFullPath(), metaModelDescriptor.getDefaultContentTypeId(), rootObject,
+		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(newFile.getProject(), metaModelDescriptor);
+		EcorePlatformUtil.saveNewModelResource(editingDomain, newFile.getFullPath(), metaModelDescriptor.getDefaultContentTypeId(), rootObject,
 				false, monitor);
 	}
 }

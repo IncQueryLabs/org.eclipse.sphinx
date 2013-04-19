@@ -23,15 +23,14 @@ public class ModelDescriptorAdapterFactory implements IAdapterFactory {
 
 	IModelSaveIndicator saveIndicator = new ModelSaveIndicator();
 
-	@SuppressWarnings("unchecked")
-	public Object getAdapter(Object adaptableObject, Class adapterType) {
+	public Object getAdapter(Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
 		if (IModelSaveIndicator.class.equals(adapterType) && adaptableObject instanceof IModelDescriptor) {
 			return saveIndicator;
 		}
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Class[] getAdapterList() {
 		return new Class<?>[] { IModelSaveIndicator.class };
 	}

@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2013 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [406062] Removal of the required project nature parameter in NewModelFileCreationPage constructor and CreateNewModelProjectJob constructor
  *
  * </copyright>
  */
@@ -19,7 +20,6 @@ import java.net.URI;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -45,112 +45,127 @@ import org.eclipse.sphinx.platform.util.StatusUtil;
  * This job is set by default the priority to Job.BUILD and the rule to the workspace root.
  */
 
-public class CreateNewModelProjectJob extends WorkspaceJob {
+public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends WorkspaceJob {
 
-	protected IProject project;
-
-	private URI location;
-
-	private IProject[] referencedProjects;
-
-	private IAdaptable uiInfo;
-
-	private IMetaModelDescriptor metaModelDescriptor;
+	protected IProject newProject;
+	protected URI location;
+	protected String natureId;
+	protected T metaModelVersionDescriptor;
+	protected IProjectWorkspacePreference<T> metaModelVersionPreference;
 
 	/**
-	 * The id of the {@link IProjectNature project nature}.
+	 * @deprecated Use {@link #newProject} instead.
 	 */
-	private String projectNatureId;
+	@Deprecated
+	protected IProject project;
 
-	private IProjectWorkspacePreference<IMetaModelDescriptor> metaModelVersionPreference;
+	private IAdaptable uiInfo;
+	private IProject[] referencedProjects;
 
 	/**
 	 * Creates a new instance of model project job
 	 * 
 	 * @param name
-	 *            the name of the job
+	 *            the name of the job, must not be null
+	 * @param newProject
+	 *            the new project to be created, must not be null
 	 */
-	public CreateNewModelProjectJob(String name) {
-		this(name, null);
+	public CreateNewModelProjectJob(String name, IProject newProject) {
+		this(name, newProject, null, null);
 	}
 
 	/**
 	 * Creates a new instance of model project job with a required project nature id.
 	 * 
 	 * @param name
-	 *            the name of the job
-	 * @param projectNatureId
-	 *            the required project nature
+	 *            the name of the job, must not be null
+	 * @param natureId
+	 *            the (principal) nature of the project to be created; when set to <code>null</code> no nature will be
+	 *            added
+	 * @deprecated Use {@link #CreateNewModelProjectJob(String, IProject, URI, String)} instead.
 	 */
-	public CreateNewModelProjectJob(String name, String projectNatureId) {
-		super(name);
+	@Deprecated
+	public CreateNewModelProjectJob(String name, String natureId) {
+		this(name, ResourcesPlugin.getWorkspace().getRoot().getProject("NewModelProject"), null, natureId); //$NON-NLS-1$
+	}
 
-		this.projectNatureId = projectNatureId;
+	/**
+	 * Creates a new instance of model project job with a required project nature id.
+	 * 
+	 * @param name
+	 *            the name of the job, must not be null
+	 * @param newProject
+	 *            the new project to be created, must not be null
+	 * @param location
+	 *            the location where the project will be created; when set to <code>null</code> the default location
+	 *            will be used
+	 * @param natureId
+	 *            the (principal) nature of the project to be created; when set to <code>null</code> no nature will be
+	 *            added
+	 */
+	public CreateNewModelProjectJob(String name, IProject newProject, URI location, String natureId) {
+		super(name);
+		this.newProject = project = newProject;
+		this.location = location;
+		this.natureId = natureId;
+
 		setPriority(Job.BUILD);
 		setRule(ResourcesPlugin.getWorkspace().getRoot());
 	}
 
 	/**
-	 * Creates a new instance of model project job. The {@linkplain IProject project}, its name and the
-	 * {@link IProjectWorkspacePreference project workspace preference} should not be null.
+	 * Creates a new instance of model project job.
 	 * 
 	 * @param name
-	 *            the name of the job, should not be null
-	 * @param project
-	 *            the project, should not be null
+	 *            the name of the job, must not be null
+	 * @param newProject
+	 *            the new project to be created, must not be null
 	 * @param location
-	 *            the location where the project will be created. If null the default location will be used.
-	 * @param metaModelDescriptor
-	 *            the meta-model version that will be used by this project
-	 * @param projectNatureId
-	 *            the id of the project nature
+	 *            the location where the project will be created; when set to <code>null</code> the default location
+	 *            will be used
+	 * @param metaModelVersionDescriptor
+	 *            the meta-model version that the project will be used for; when set to <code>null</code> no metamodel
+	 *            version will be configured
 	 * @param metaModelVersionPreference
-	 *            the metamodel version preference of this project
+	 *            the metamodel version preference of the project; when set to <code>null</code> no metamodel version
+	 *            will be configured
 	 */
-	@SuppressWarnings("unchecked")
-	public CreateNewModelProjectJob(String name, IProject project, URI location, IMetaModelDescriptor metaModelDescriptor, String projectNatureId,
-			IProjectWorkspacePreference<? extends IMetaModelDescriptor> metaModelVersionPreference) {
-		this(name, projectNatureId);
-		this.project = project;
-		this.location = location;
-		this.metaModelDescriptor = metaModelDescriptor;
-		if (metaModelVersionPreference != null) {
-			this.metaModelVersionPreference = (IProjectWorkspacePreference<IMetaModelDescriptor>) metaModelVersionPreference;
-		}
+	public CreateNewModelProjectJob(String name, IProject newProject, URI location, T metaModelVersionDescriptor,
+			IProjectWorkspacePreference<T> metaModelVersionPreference) {
+		this(name, newProject, location, metaModelVersionPreference != null ? metaModelVersionPreference.getRequiredProjectNatureId() : null);
+		this.metaModelVersionDescriptor = metaModelVersionDescriptor;
+		this.metaModelVersionPreference = metaModelVersionPreference;
 	}
 
 	/**
-	 * @return the project
-	 */
-	public IProject getProject() {
-		return project;
-	}
-
-	/**
-	 * Sets the project. The project does not have to exists.
+	 * Creates a new instance of model project job.
 	 * 
-	 * @param project
-	 *            the project to set, should not be null
-	 */
-	public void setProject(IProject project) {
-		this.project = project;
-	}
-
-	/**
-	 * @return the location
-	 */
-	public URI getLocation() {
-		return location;
-	}
-
-	/**
-	 * Sets the location where the project should be created. If null, the default location will be used.
-	 * 
+	 * @param name
+	 *            the name of the job, must not be null
+	 * @param newProject
+	 *            the new project to be created, must not be null
 	 * @param location
-	 *            the location to set
+	 *            the location where the project will be created; when set to <code>null</code> the default location
+	 *            will be used
+	 * @param metaModelVersionDescriptor
+	 *            the meta-model version that this project will be used for; when set to <code>null</code> no metamodel
+	 *            version will be configured
+	 * @param natureId
+	 *            the (principal) nature of the project to be created; when set to <code>null</code> no nature will be
+	 *            added
+	 * @param metaModelVersionPreference
+	 *            the metamodel version preference of this project; when set to <code>null</code> no metamodel version
+	 *            will be configured
+	 * @deprecated Use
+	 *             {@link #CreateNewModelProjectJob(String, IProject, URI, IMetaModelDescriptor, IProjectWorkspacePreference)}
+	 *             instead.
 	 */
-	public void setLocation(URI location) {
-		this.location = location;
+	@Deprecated
+	public CreateNewModelProjectJob(String name, IProject newProject, URI location, T metaModelVersionDescriptor, String natureId,
+			IProjectWorkspacePreference<T> metaModelVersionPreference) {
+		this(name, newProject, location, natureId);
+		this.metaModelVersionDescriptor = metaModelVersionDescriptor;
+		this.metaModelVersionPreference = metaModelVersionPreference;
 	}
 
 	/**
@@ -192,29 +207,6 @@ public class CreateNewModelProjectJob extends WorkspaceJob {
 		this.referencedProjects = referencedProjects;
 	}
 
-	/**
-	 * @return the metaModelDescriptor
-	 */
-	public IMetaModelDescriptor getMetaModelDescriptor() {
-		return metaModelDescriptor;
-	}
-
-	/**
-	 * @param metaModelDescriptor
-	 *            the release descriptor to set
-	 */
-	public void setMetaModelDescriptor(IMetaModelDescriptor metaModelDescriptor) {
-		this.metaModelDescriptor = metaModelDescriptor;
-	}
-
-	public String getProjectNatureId() {
-		return projectNatureId;
-	}
-
-	public void setProjectNatureId(String projectNatureId) {
-		this.projectNatureId = projectNatureId;
-	}
-
 	/*
 	 * @see org.eclipse.core.resources.WorkspaceJob#runInWorkspace(org.eclipse.core.runtime.IProgressMonitor)
 	 */
@@ -229,8 +221,8 @@ public class CreateNewModelProjectJob extends WorkspaceJob {
 			createNewProject(progress.newChild(70));
 			addNatures(progress.newChild(15));
 
-			if (metaModelVersionPreference != null) {
-				metaModelVersionPreference.setInProject(project, metaModelDescriptor);
+			if (metaModelVersionDescriptor != null && metaModelVersionPreference != null) {
+				metaModelVersionPreference.setInProject(newProject, metaModelVersionDescriptor);
 			}
 			progress.worked(15);
 
@@ -254,7 +246,7 @@ public class CreateNewModelProjectJob extends WorkspaceJob {
 		}
 		progress.subTask(Messages.job_creatingNewModelProject);
 
-		final IProjectDescription description = ResourcesPlugin.getWorkspace().newProjectDescription(project.getName());
+		IProjectDescription description = ResourcesPlugin.getWorkspace().newProjectDescription(newProject.getName());
 		description.setLocationURI(location);
 
 		// Update the referenced project if provided
@@ -262,8 +254,8 @@ public class CreateNewModelProjectJob extends WorkspaceJob {
 			description.setReferencedProjects(referencedProjects);
 		}
 
-		project.create(description, progress.newChild(50));
-		project.open(IResource.NONE, progress.newChild(50));
+		newProject.create(description, progress.newChild(50));
+		newProject.open(IResource.NONE, progress.newChild(50));
 	}
 
 	/**
@@ -277,9 +269,9 @@ public class CreateNewModelProjectJob extends WorkspaceJob {
 			throw new OperationCanceledException();
 		}
 
-		if (projectNatureId != null) {
+		if (natureId != null) {
 			progress.subTask(Messages.job_addingProjectNatures);
-			ExtendedPlatform.addNature(project, projectNatureId, progress.newChild(100));
+			ExtendedPlatform.addNature(newProject, natureId, progress.newChild(100));
 		}
 	}
 }

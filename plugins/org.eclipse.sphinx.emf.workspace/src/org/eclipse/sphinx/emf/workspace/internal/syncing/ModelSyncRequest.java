@@ -209,10 +209,6 @@ public class ModelSyncRequest implements IModelSyncRequest {
 		}
 	}
 
-	private boolean isFileWithResourceURIAboutToBeUpdated(IFile oldFile) {
-		return filesToUpdateResourceURIFor.containsKey(oldFile) || filesWithUpdatedResourceURI.containsKey(oldFile);
-	}
-
 	public boolean canPerform() {
 		boolean canPerform = projectsToLoad.size() > 0 || projectsToUnload.size() > 0 || projectsToReload.size() > 0
 				|| projectsToUnresolveUnreachableCrossReferencesFor.size() > 0 || filesToLoad.size() > 0 || filesToUnload.size() > 0

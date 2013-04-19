@@ -42,8 +42,7 @@ public class EditingDomainAdapterFactory implements IAdapterFactory {
 	/*
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public Object getAdapter(final Object adaptableObject, Class adapterType) {
+	public Object getAdapter(final Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
 		// The workspace editing domain mapping
 		final IWorkspaceEditingDomainMapping mapping = WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping();
 
@@ -81,7 +80,7 @@ public class EditingDomainAdapterFactory implements IAdapterFactory {
 	/*
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Class[] getAdapterList() {
 		return new Class<?>[] { IEditingDomainProvider.class, IContainerEditingDomainProvider.class, IResourceSaveIndicator.class };
 	}

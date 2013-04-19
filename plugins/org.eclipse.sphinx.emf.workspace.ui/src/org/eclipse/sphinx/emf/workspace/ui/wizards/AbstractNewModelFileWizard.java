@@ -10,6 +10,7 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [405023] Enable NewModelFileCreationPage to be used without having to pass an instance of NewModelFileProperties to its constructor
+ *     itemis - [406062] Removal of the required project nature parameter in NewModelFileCreationPage constructor and CreateNewModelProjectJob constructor
  *
  * </copyright>
  */
@@ -20,14 +21,12 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.workspace.jobs.CreateNewModelFileJob;
 import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
-import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.NewModelCreationPage;
+import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.NewInitialModelCreationPage;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.NewModelFileCreationPage;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -41,80 +40,15 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
 /**
- * Basic wizard that creates a new model file in the workspace. Two pages are added for selecting the metamodel
- * descriptor, epackage and eclassifier to be used for the nuw model file. A {@linkplain CreateNewModelFileJob new model
- * file job} is created to create and save the model file in the workspace.
- * <p>
- * This class may be used by clients as it is; it may also be subclassed to suit.
+ * Abstract wizard for creating a new model file in the workspace. No pages are added by default. When being finished a
+ * {@linkplain CreateNewModelFileJob new model file job} is run to create and save the new model file in the workspace.
  */
-public class BasicNewModelFileWizard extends BasicNewResourceWizard {
-	/**
-	 * This is the file creation page.
-	 */
-	protected NewModelFileCreationPage newModelFileCreationPage;
-	protected NewModelCreationPage newModelCreationPage;
-	protected NewModelFileProperties newModelFileProperties;
-	/**
-	 * Project nature that is required by the preference.
-	 */
-	protected String requiredProjectNatureId;
+public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor> extends BasicNewResourceWizard {
 
-	/**
-	 * The properties of the new model file (IMetaModelDescriptor and the EPackage and the EClassifier of the root
-	 * object) selected by the user. This class is used to share the property values between the model creation pages,
-	 * e.g., the NewModelCreationPage sets the property values, and the second page, the NewModelFileCreationPage uses
-	 * the selected property values to create a model file.
-	 */
-	public class NewModelFileProperties {
+	protected NewModelFileProperties<T> newModelFileProperties;
 
-		private IMetaModelDescriptor mmDescriptor;
-		private EPackage rootObjectEPackage;
-		private EClassifier rootObjectEClassifier;
-
-		public NewModelFileProperties() {
-		}
-
-		public NewModelFileProperties(IMetaModelDescriptor mmDescriptor) {
-			this.mmDescriptor = mmDescriptor;
-		}
-
-		public IMetaModelDescriptor getMetaModelDescriptor() {
-			return mmDescriptor;
-		}
-
-		public void setMetaModelDescriptor(IMetaModelDescriptor mmDescriptor) {
-			this.mmDescriptor = mmDescriptor;
-		}
-
-		public EPackage getRootObjectEPackage() {
-			return rootObjectEPackage;
-		}
-
-		public void setRootObjectEPackage(EPackage rootObjectEPackage) {
-			this.rootObjectEPackage = rootObjectEPackage;
-		}
-
-		public EClassifier getRootObjectEClassifier() {
-			return rootObjectEClassifier;
-		}
-
-		public void setRootObjectEClassifier(EClassifier rootObjectEClassifier) {
-			this.rootObjectEClassifier = rootObjectEClassifier;
-		}
-	}
-
-	/**
-	 * Creates a wizard for creating a new file in the workspace.
-	 */
-	public BasicNewModelFileWizard() {
-	}
-
-	/**
-	 * Creates a wizard for creating a new file in the workspace with a required nature id
-	 */
-	public BasicNewModelFileWizard(String requiredProjectNatureId) {
-		this.requiredProjectNatureId = requiredProjectNatureId;
-	}
+	protected NewInitialModelCreationPage<T> newInitialModelCreationPage;
+	protected NewModelFileCreationPage<T> newModelFileCreationPage;
 
 	/*
 	 * @see org.eclipse.ui.wizards.newresource.BasicNewResourceWizard#init(org.eclipse.ui.IWorkbench,
@@ -123,23 +57,7 @@ public class BasicNewModelFileWizard extends BasicNewResourceWizard {
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		super.init(workbench, selection);
-		setWindowTitle(Messages.title_newModelFileWizard);
-	}
-
-	/*
-	 * @see org.eclipse.jface.wizard.Wizard#addPages()
-	 */
-	@Override
-	public void addPages() {
-		newModelFileProperties = new NewModelFileProperties();
-
-		// Create a page for users to choose the meta-model, EPackage and EClassifier of the model to be created
-		newModelCreationPage = new NewModelCreationPage("NewModel", selection, newModelFileProperties); //$NON-NLS-1$
-		addPage(newModelCreationPage);
-
-		// Create a model file creation page
-		newModelFileCreationPage = new NewModelFileCreationPage("NewModelFile", selection, requiredProjectNatureId, newModelFileProperties); //$NON-NLS-1$
-		addPage(newModelFileCreationPage);
+		setWindowTitle(Messages.wizard_newModelFile_title);
 	}
 
 	/*
@@ -148,6 +66,8 @@ public class BasicNewModelFileWizard extends BasicNewResourceWizard {
 	 */
 	@Override
 	public boolean performFinish() {
+		Assert.isNotNull(newModelFileCreationPage);
+
 		// Make required wizard result information accessible for asynchronous operation
 		final IFile newFile = newModelFileCreationPage.getNewFile();
 
@@ -182,15 +102,15 @@ public class BasicNewModelFileWizard extends BasicNewResourceWizard {
 	 * Creates a new instance of {@linkplain CreateNewModelFileJob}. This method may be overridden by clients to create
 	 * a specific create new model file job.
 	 * 
-	 * @param modelFile
+	 * @param newFile
 	 *            the {@linkplain IFile model file} to be created
 	 * @return a new instance of job that creates a new model file. This job is a unit of runnable work that can be
 	 *         scheduled to be run with the job manager.
 	 */
-	protected Job createCreateNewModelFileJob(IFile modelFile) {
+	protected Job createCreateNewModelFileJob(IFile newFile) {
 		Assert.isNotNull(newModelFileProperties);
 
-		return new CreateNewModelFileJob(Messages.job_creatingNewModelFile, modelFile, newModelFileProperties.getMetaModelDescriptor(),
+		return new CreateNewModelFileJob(Messages.job_creatingNewModelFile, newFile, newModelFileProperties.getMetaModelDescriptor(),
 				newModelFileProperties.getRootObjectEPackage(), newModelFileProperties.getRootObjectEClassifier());
 	}
 
@@ -210,5 +130,4 @@ public class BasicNewModelFileWizard extends BasicNewResourceWizard {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), exception);
 		}
 	}
-
 }

@@ -10,6 +10,7 @@
  * Contributors: 
  *     itemis - Initial API and implementation
  *     itemis - [400306] Add a NewModelCreationPage class allowing to choose the metamodel, EPackage and EClassifier when creating a new model file
+ *     itemis - [406062] Removal of the required project nature parameter in NewModelFileCreationPage constructor and CreateNewModelProjectJob constructor
  *
  * </copyright>
  */
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.jface.dialogs.Dialog;
@@ -29,7 +31,7 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
-import org.eclipse.sphinx.emf.workspace.ui.wizards.BasicNewModelFileWizard.NewModelFileProperties;
+import org.eclipse.sphinx.emf.workspace.ui.wizards.NewModelFileProperties;
 import org.eclipse.sphinx.platform.ui.dialogs.AbstractBrowseDialog;
 import org.eclipse.sphinx.platform.ui.fields.ComboButtonField;
 import org.eclipse.sphinx.platform.ui.fields.IField;
@@ -46,7 +48,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * Basic (optional) page for a wizard that creates a file resource.
+ * Basic (optional) page for choosing the properties of the initial model for a new model file to be created.
  * <p>
  * This page lists available metamodels, ePackages and eClassifiers for creating a model file. It allows clients to
  * select the metamodel, ePackage and eClassifier that they would like to use for creating their model file. The
@@ -54,24 +56,24 @@ import org.eclipse.swt.widgets.Shell;
  * using {@linkplain NewModelFileProperties model file properties}. This page may be used by clients as it is; it may
  * also be subclassed to suit.
  */
-public class NewModelCreationPage extends WizardPage {
+public class NewInitialModelCreationPage<T extends IMetaModelDescriptor> extends WizardPage {
 
 	/**
 	 * A metamodel descriptor browse dialog enabling the filtering of metamodel descriptor objects. The supported
 	 * metamodel descriptors are used as the resource to be filtered.
 	 */
-	private class MetaModelDescriptorBrowseDialog extends AbstractBrowseDialog<IMetaModelDescriptor> {
+	private class MetaModelDescriptorBrowseDialog extends AbstractBrowseDialog<T> {
 
-		public MetaModelDescriptorBrowseDialog(Shell shell, Collection<IMetaModelDescriptor> mmDescriptors) {
-			super(shell, mmDescriptors);
+		public MetaModelDescriptorBrowseDialog(Shell shell, Collection<T> metaModelDescriptors) {
+			super(shell, metaModelDescriptors);
 		}
 
 		/*
 		 * @see org.eclipse.sphinx.platform.ui.dialogs.AbstractBrowseDialog#toObject(java.lang.String)
 		 */
 		@Override
-		protected IMetaModelDescriptor toObject(String itemAsString) {
-			for (IMetaModelDescriptor descriptor : supportedMMDescriptorList) {
+		protected T toObject(String itemAsString) {
+			for (T descriptor : supportedMetaModelDescriptors) {
 				if (descriptor.getName() == itemAsString) {
 					return descriptor;
 				}
@@ -83,7 +85,7 @@ public class NewModelCreationPage extends WizardPage {
 		 * @see org.eclipse.sphinx.platform.ui.dialogs.AbstractBrowseDialog#toString(java.lang.Object)
 		 */
 		@Override
-		protected String toString(IMetaModelDescriptor itemAsObject) {
+		protected String toString(T itemAsObject) {
 			return itemAsObject.getName();
 		}
 
@@ -91,9 +93,10 @@ public class NewModelCreationPage extends WizardPage {
 		 * Returns the selection of metamodel descriptor made by the user, or <code>null</code> if the selection was
 		 * canceled.
 		 */
-		public IMetaModelDescriptor getMetaModelResult() {
+		@SuppressWarnings("unchecked")
+		public T getMetaModelResult() {
 			Object[] result = super.getResult();
-			return (IMetaModelDescriptor) result[0];
+			return (T) result[0];
 		}
 
 	}
@@ -113,7 +116,7 @@ public class NewModelCreationPage extends WizardPage {
 		 */
 		@Override
 		protected EPackage toObject(String itemAsString) {
-			for (EPackage epackage : supportedEPackageList) {
+			for (EPackage epackage : supportedEPackages) {
 				if (epackage.getName() == itemAsString) {
 					return epackage;
 				}
@@ -153,7 +156,7 @@ public class NewModelCreationPage extends WizardPage {
 		 */
 		@Override
 		protected EClassifier toObject(String itemAsString) {
-			for (EClassifier eclassifier : supportedEClassifierList) {
+			for (EClassifier eclassifier : supportedEClassifiers) {
 				if (eclassifier.getName() == itemAsString) {
 					return eclassifier;
 				}
@@ -183,11 +186,12 @@ public class NewModelCreationPage extends WizardPage {
 	private final String LAST_SELECTED_EPACKAGE_KEY = Activator.getPlugin().getSymbolicName() + "last.selected.eproject"; //$NON-NLS-1$
 	private final String LAST_SELECTED_ECLASSIFIER_KEY = Activator.getPlugin().getSymbolicName() + "last.selected.eproject.eclassifier"; //$NON-NLS-1$
 
-	protected ComboButtonField mmCombo, ePackageCombo, eClassifierCombo;
-	protected List<IMetaModelDescriptor> supportedMMDescriptorList = new ArrayList<IMetaModelDescriptor>();
-	protected List<EPackage> supportedEPackageList = new ArrayList<EPackage>();
-	protected List<EClassifier> supportedEClassifierList = new ArrayList<EClassifier>();
-	protected NewModelFileProperties newModelFileProperties;
+	protected ComboButtonField metaModelCombo, ePackageCombo, eClassifierCombo;
+	protected List<T> supportedMetaModelDescriptors = new ArrayList<T>();
+	protected List<EPackage> supportedEPackages = new ArrayList<EPackage>();
+	protected List<EClassifier> supportedEClassifiers = new ArrayList<EClassifier>();
+	protected NewModelFileProperties<T> newModelFileProperties;
+	protected T baseMetaModelDescriptor;
 	protected ISelection selection;
 
 	/**
@@ -196,18 +200,18 @@ public class NewModelCreationPage extends WizardPage {
 	 * selete the metamodel descriptor that they would like to use to create the new model file. The selection result is
 	 * stored. This result is also used to set the relative supported EPackages.
 	 */
-	public class MMButtonAdapter extends AbstractButtonAdapter {
+	protected class MetaModelButtonAdapter extends AbstractButtonAdapter {
 
 		/*
 		 * @see org.eclipse.sphinx.platform.ui.fields.adapters.AbstractButtonAdapter#doCreateDialog()
 		 */
 		@Override
 		protected Dialog doCreateDialog() {
-			// Add the items in supportedMMDescriptorList as input for metamodel browse dialog
+			// Add the items in supportedMetaModelDescriptors as input for metamodel browse dialog
 			Shell parent = ExtendedPlatformUI.getActiveShell();
-			MetaModelDescriptorBrowseDialog dialog = new MetaModelDescriptorBrowseDialog(parent, supportedMMDescriptorList);
-			dialog.setTitle(Messages.title_metaModelDescriptorBrowseDialog);
-			dialog.setMessage(Messages.FilteredItemsSelectionDialog_pattern);
+			MetaModelDescriptorBrowseDialog dialog = new MetaModelDescriptorBrowseDialog(parent, supportedMetaModelDescriptors);
+			dialog.setTitle(Messages.dialog_metaModelDescriptorBrowse_title);
+			dialog.setMessage(Messages.dialog_browse_message);
 			return dialog;
 		}
 
@@ -221,11 +225,12 @@ public class NewModelCreationPage extends WizardPage {
 			super.performOk(field, dialog);
 
 			// Get the resulting metamodel descriptor from browse dialog and store it
-			IMetaModelDescriptor result = ((MetaModelDescriptorBrowseDialog) dialog).getMetaModelResult();
-			storeBrowserSelectionMM((ComboButtonField) field, result);
+			@SuppressWarnings("unchecked")
+			T result = ((MetaModelDescriptorBrowseDialog) dialog).getMetaModelResult();
+			storeBrowserSelectionMetaModel((ComboButtonField) field, result);
 
 			// Set the relative supported epackages depending on the metamodel selection result, and fill the resource
-			// of ePkgCombo
+			// of ePackageCombo
 			setSupportedEPackages();
 			fillSupportedEPackages();
 		}
@@ -236,19 +241,19 @@ public class NewModelCreationPage extends WizardPage {
 	 * browse dialog} which allows users to filter and selete the epackage that they would like to use to create the new
 	 * model file. The selection result is stored. This result is also used to set the relative supported EClassifiers.
 	 */
-	public class EPkgButtonAdapter extends AbstractButtonAdapter {
+	protected class EPackageButtonAdapter extends AbstractButtonAdapter {
 
 		/*
 		 * @see org.eclipse.sphinx.platform.ui.fields.adapters.AbstractButtonAdapter#doCreateDialog()
 		 */
 		@Override
 		protected Dialog doCreateDialog() {
-			// Add the supportEPkgList as resource for this ePackage dialog
+			// Add the supportEPackages as resource for this ePackage dialog
 			Shell parent = ExtendedPlatformUI.getActiveShell();
-			EPackageBrowseDialog dialog = new EPackageBrowseDialog(parent, supportedEPackageList);
+			EPackageBrowseDialog dialog = new EPackageBrowseDialog(parent, supportedEPackages);
 
-			dialog.setTitle(Messages.title_epackageBrowseDialog);
-			dialog.setMessage(Messages.FilteredItemsSelectionDialog_pattern);
+			dialog.setTitle(Messages.dialog_ePackageBrowse_title);
+			dialog.setMessage(Messages.dialog_browse_message);
 
 			return dialog;
 		}
@@ -263,8 +268,9 @@ public class NewModelCreationPage extends WizardPage {
 			super.performOk(field, dialog);
 
 			// Get the dialog result, and restore it
+			@SuppressWarnings("unchecked")
 			EPackage result = ((EPackageBrowseDialog) dialog).getEPackageResult();
-			storeBrowserSelectionEPkg((ComboButtonField) field, result);
+			storeBrowserSelectionEPackage((ComboButtonField) field, result);
 
 			// Set relative supported eClassifiers, and fill the resource of eClassifierCombo
 			setSupportedEClassifiers();
@@ -277,19 +283,19 @@ public class NewModelCreationPage extends WizardPage {
 	 * eclassifier browse dialog} which allows users to filter and selete the eclassifier that they would like to use to
 	 * create the new model file. The selection result is stored.
 	 */
-	public class EClassifierButtonAdapter extends AbstractButtonAdapter {
+	protected class EClassifierButtonAdapter extends AbstractButtonAdapter {
 
 		/*
 		 * @see org.eclipse.sphinx.platform.ui.fields.adapters.AbstractButtonAdapter#doCreateDialog()
 		 */
 		@Override
 		protected Dialog doCreateDialog() {
-			// Add the supportEClassifierList as resource for this eClassifier dialog
+			// Add the supportEClassifiers as resource for this eClassifier dialog
 			Shell parent = ExtendedPlatformUI.getActiveShell();
-			EClassifierBrowseDialog dialog = new EClassifierBrowseDialog(parent, supportedEClassifierList);
+			EClassifierBrowseDialog dialog = new EClassifierBrowseDialog(parent, supportedEClassifiers);
 
-			dialog.setTitle(Messages.title_eclassifierBrowseDialog);
-			dialog.setMessage(Messages.FilteredItemsSelectionDialog_pattern);
+			dialog.setTitle(Messages.dialog_eClassifierBrowse_title);
+			dialog.setMessage(Messages.dialog_browse_message);
 
 			return dialog;
 		}
@@ -304,6 +310,7 @@ public class NewModelCreationPage extends WizardPage {
 			super.performOk(field, dialog);
 
 			// Get the dialog result, and restore it
+			@SuppressWarnings("unchecked")
 			EClassifier result = ((EClassifierBrowseDialog) dialog).getEClassifierResult();
 			storeBrowserSelectionEClassifier((ComboButtonField) field, result);
 		}
@@ -321,22 +328,26 @@ public class NewModelCreationPage extends WizardPage {
 	 * @param newModelFileProperties
 	 *            the {@linkplain NewModelFileProperties selected newModelFileProperties} (metamodel, ePackage and
 	 *            eClassifier) to be used by the post pages for the creation of model file
+	 * @param baseMetaModelDescriptor
+	 *            the base meta model descriptor to be used for the creation of model file
 	 */
-	public NewModelCreationPage(String pageName, ISelection selection, NewModelFileProperties newModelFileProperties) {
+	public NewInitialModelCreationPage(String pageName, ISelection selection, NewModelFileProperties<T> newModelFileProperties,
+			T baseMetaModelDescriptor) {
 		super(pageName);
-		setTitle(Messages.title_newModelCreationPage);
-		setDescription(Messages.description_newModelCreationPage);
+		setTitle(Messages.page_newInitialModelCreation_title);
+		setDescription(Messages.page_newInitialModelCreation_description);
 
 		this.selection = selection;
 		this.newModelFileProperties = newModelFileProperties;
+		this.baseMetaModelDescriptor = baseMetaModelDescriptor;
 
 		// Initialize supported meta-models
-		supportedMMDescriptorList = getSupportedMetaModelDescriptors();
+		supportedMetaModelDescriptors = getSupportedMetaModelDescriptors();
 
 		// Initialize supported EPackages
-		for (int index = 0; index < supportedMMDescriptorList.size(); index++) {
-			Collection<EPackage> ePkgs = supportedMMDescriptorList.get(index).getEPackages();
-			supportedEPackageList.addAll(ePkgs);
+		for (int index = 0; index < supportedMetaModelDescriptors.size(); index++) {
+			Collection<EPackage> ePackages = supportedMetaModelDescriptors.get(index).getEPackages();
+			supportedEPackages.addAll(ePackages);
 		}
 	}
 
@@ -344,8 +355,8 @@ public class NewModelCreationPage extends WizardPage {
 	 * Gets the supported metamodel descriptors, all the metamodel descriptors that are registed by default. This method
 	 * can be overridden by clients to provide specific suported metamodel descriptors.
 	 */
-	protected List<IMetaModelDescriptor> getSupportedMetaModelDescriptors() {
-		return MetaModelDescriptorRegistry.INSTANCE.getDescriptors(MetaModelDescriptorRegistry.ANY_MM);
+	protected List<T> getSupportedMetaModelDescriptors() {
+		return MetaModelDescriptorRegistry.INSTANCE.getDescriptors(baseMetaModelDescriptor, true);
 	}
 
 	/**
@@ -363,15 +374,15 @@ public class NewModelCreationPage extends WizardPage {
 		container.setLayout(gridLayout);
 
 		// Create a ComboButtonField for meta-model
-		createMMComboButtonField(container);
+		createMetaModelComboButtonField(container);
 		// Create a ComboButtonField for EPackage
 		createEPackageComboButtonField(container);
 		// Create a ComboButtonField for EClassifier
 		createEClassifierComboButtonField(container);
 
 		// Add listeners
-		mmCombo.addFieldListener(new fieldListener());
-		fillSupportedMMs();
+		metaModelCombo.addFieldListener(new fieldListener());
+		fillSupportedMetaModels();
 		ePackageCombo.addFieldListener(new fieldListener());
 		eClassifierCombo.addFieldListener(new fieldListener());
 
@@ -382,27 +393,27 @@ public class NewModelCreationPage extends WizardPage {
 	/**
 	 * Creates a ComboButtonField for the choice of meta-model.
 	 */
-	protected void createMMComboButtonField(Composite container) {
-		MMButtonAdapter mmAdapter = new MMButtonAdapter();
-		mmCombo = new ComboButtonField(mmAdapter);
-		mmCombo.setLabelText(Messages.label_metaModelComboButtonField);
-		mmCombo.setButtonLabel(Messages.label_browseButton);
-		mmCombo.fillIntoGrid(container, 3);
+	protected void createMetaModelComboButtonField(Composite container) {
+		MetaModelButtonAdapter metaModelAdapter = new MetaModelButtonAdapter();
+		metaModelCombo = new ComboButtonField(metaModelAdapter);
+		metaModelCombo.setLabelText(Messages.combo_metaModelDescriptor_label);
+		metaModelCombo.setButtonLabel(Messages.button_browse_label);
+		metaModelCombo.fillIntoGrid(container, 3);
 
 		GridData gridData = new GridData();
 		gridData.grabExcessHorizontalSpace = true;
 		gridData.horizontalAlignment = SWT.FILL;
-		mmCombo.getComboControl().setLayoutData(gridData);
+		metaModelCombo.getComboControl().setLayoutData(gridData);
 	}
 
 	/**
 	 * Creates a ComboButtonField for the choice of EPackage.
 	 */
 	protected void createEPackageComboButtonField(Composite container) {
-		EPkgButtonAdapter pkgAdapter = new EPkgButtonAdapter();
-		ePackageCombo = new ComboButtonField(pkgAdapter);
-		ePackageCombo.setLabelText(Messages.label_epackageComboButtonField);
-		ePackageCombo.setButtonLabel(Messages.label_browseButton);
+		EPackageButtonAdapter packageAdapter = new EPackageButtonAdapter();
+		ePackageCombo = new ComboButtonField(packageAdapter);
+		ePackageCombo.setLabelText(Messages.combo_ePackage_label);
+		ePackageCombo.setButtonLabel(Messages.button_browse_label);
 		ePackageCombo.fillIntoGrid(container, 3);
 
 		GridData gridData = new GridData();
@@ -417,8 +428,8 @@ public class NewModelCreationPage extends WizardPage {
 	protected void createEClassifierComboButtonField(Composite container) {
 		EClassifierButtonAdapter classifierAdapter = new EClassifierButtonAdapter();
 		eClassifierCombo = new ComboButtonField(classifierAdapter);
-		eClassifierCombo.setLabelText(Messages.label_eclassifierComboButtonField);
-		eClassifierCombo.setButtonLabel(Messages.label_browseButton);
+		eClassifierCombo.setLabelText(Messages.combo_eClassifier_label);
+		eClassifierCombo.setButtonLabel(Messages.button_browse_label);
 		eClassifierCombo.fillIntoGrid(container, 3);
 
 		GridData gridData = new GridData();
@@ -430,13 +441,12 @@ public class NewModelCreationPage extends WizardPage {
 	/**
 	 * Sets the supported meta-model descriptors as the resource items in the meta-model combo field.
 	 */
-	protected void fillSupportedMMs() {
-
-		String[] items = new String[supportedMMDescriptorList.size()];
-		for (int index = 0; index < supportedMMDescriptorList.size(); index++) {
-			items[index] = supportedMMDescriptorList.get(index).getName();
+	protected void fillSupportedMetaModels() {
+		String[] items = new String[supportedMetaModelDescriptors.size()];
+		for (int index = 0; index < supportedMetaModelDescriptors.size(); index++) {
+			items[index] = supportedMetaModelDescriptors.get(index).getName();
 		}
-		mmCombo.setItems(items);
+		metaModelCombo.setItems(items);
 	}
 
 	/**
@@ -444,9 +454,9 @@ public class NewModelCreationPage extends WizardPage {
 	 */
 	private void fillSupportedEPackages() {
 
-		String[] items = new String[supportedEPackageList.size()];
-		for (int index = 0; index < supportedEPackageList.size(); index++) {
-			items[index] = supportedEPackageList.get(index).getName();
+		String[] items = new String[supportedEPackages.size()];
+		for (int index = 0; index < supportedEPackages.size(); index++) {
+			items[index] = supportedEPackages.get(index).getName();
 		}
 		ePackageCombo.setItems(items);
 
@@ -456,9 +466,9 @@ public class NewModelCreationPage extends WizardPage {
 	 * Set the supported EClassifiers as the resource items in the EClassifier combo field.
 	 */
 	private void fillSupportedEClassifiers() {
-		String[] items = new String[supportedEClassifierList.size()];
-		for (int index = 0; index < supportedEClassifierList.size(); index++) {
-			items[index] = supportedEClassifierList.get(index).getName();
+		String[] items = new String[supportedEClassifiers.size()];
+		for (int index = 0; index < supportedEClassifiers.size(); index++) {
+			items[index] = supportedEClassifiers.get(index).getName();
 		}
 		eClassifierCombo.setItems(items);
 	}
@@ -473,8 +483,8 @@ public class NewModelCreationPage extends WizardPage {
 		 * .IField)
 		 */
 		public void dialogFieldChanged(IField field) {
-			if (field == mmCombo) {
-				storeSelectionMM((ComboButtonField) field);
+			if (field == metaModelCombo) {
+				storeSelectionMetaModel((ComboButtonField) field);
 				setSupportedEPackages();
 				fillSupportedEPackages();
 			} else if (field == ePackageCombo) {
@@ -507,21 +517,20 @@ public class NewModelCreationPage extends WizardPage {
 	 * 
 	 * @param field
 	 *            the {@linkplain ComboButtonField field} of meta-model
-	 * @param mmDescriptor
-	 *            the {@linkplain IMetaModelDescriptor metamodel descriptor } result selected by the metamodel browse
-	 *            dialog
+	 * @param metaModelDescriptor
+	 *            the {@linkplain T metamodel descriptor } result selected by the metamodel browse dialog
 	 */
-	private void storeBrowserSelectionMM(ComboButtonField field, IMetaModelDescriptor mmDescriptor) {
+	private void storeBrowserSelectionMetaModel(ComboButtonField field, T metaModelDescriptor) {
 		// Store the selected meta-model
-		Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_METAMODEL_KEY, mmDescriptor.getIdentifier());
+		Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_METAMODEL_KEY, metaModelDescriptor.getIdentifier());
 
 		// Set the selected meta-model of elements
-		newModelFileProperties.setMetaModelDescriptor(mmDescriptor);
+		newModelFileProperties.setMetaModelDescriptor(metaModelDescriptor);
 
 		// Set the selected meta-model as the selection item in the combo field
-		int indexMM = supportedMMDescriptorList.indexOf(mmDescriptor);
+		int metaModelIndex = supportedMetaModelDescriptors.indexOf(metaModelDescriptor);
 		Combo control = (Combo) field.getComboControl();
-		control.select(indexMM);
+		control.select(metaModelIndex);
 		setPageComplete(validatePage());
 	}
 
@@ -531,10 +540,10 @@ public class NewModelCreationPage extends WizardPage {
 	 * 
 	 * @param field
 	 *            the {@linkplain ComboButtonField field } of EPackage
-	 * @param result
+	 * @param epackage
 	 *            the {@linkplain EPackage epackage} result selected by the browser
 	 */
-	private void storeBrowserSelectionEPkg(ComboButtonField field, EPackage epackage) {
+	private void storeBrowserSelectionEPackage(ComboButtonField field, EPackage epackage) {
 		// Store the selected EPackage
 		Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_EPACKAGE_KEY, epackage.getName());
 
@@ -542,9 +551,9 @@ public class NewModelCreationPage extends WizardPage {
 		newModelFileProperties.setRootObjectEPackage(epackage);
 
 		// Set the selected EPackage as the selection item in the combo field
-		int indexEPkg = supportedEPackageList.indexOf(epackage);
+		int ePackageIndex = supportedEPackages.indexOf(epackage);
 		Combo control = (Combo) field.getComboControl();
-		control.select(indexEPkg);
+		control.select(ePackageIndex);
 		setPageComplete(validatePage());
 	}
 
@@ -554,7 +563,7 @@ public class NewModelCreationPage extends WizardPage {
 	 * 
 	 * @param field
 	 *            the {@link ComboButtonField field} of EClassifier
-	 * @param result
+	 * @param eclassifier
 	 *            the {@link EClassifier eclassifier} result selected by the eclassifier browse dialog
 	 */
 	private void storeBrowserSelectionEClassifier(ComboButtonField field, EClassifier eclassifier) {
@@ -565,7 +574,7 @@ public class NewModelCreationPage extends WizardPage {
 		newModelFileProperties.setRootObjectEClassifier(eclassifier);
 
 		// Set the selected EClassifier as the selection item in the combo field
-		int indexEClassifier = supportedEClassifierList.indexOf(eclassifier);
+		int indexEClassifier = supportedEClassifiers.indexOf(eclassifier);
 		Combo control = (Combo) field.getComboControl();
 		control.select(indexEClassifier);
 		setPageComplete(validatePage());
@@ -577,18 +586,18 @@ public class NewModelCreationPage extends WizardPage {
 	 * @param field
 	 *            the {@link ComboButtonField field} of meta-model
 	 */
-	private void storeSelectionMM(ComboButtonField field) {
+	private void storeSelectionMetaModel(ComboButtonField field) {
 		int index = field.getSelectionIndex();
 		if (index > -1) {
 
 			// Get the selected meta-model descriptor identifier
-			String descriptor = supportedMMDescriptorList.get(index).getIdentifier();
+			String descriptor = supportedMetaModelDescriptors.get(index).getIdentifier();
 			if (descriptor != null) {
 				// Store the selected meta-model
 				Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_METAMODEL_KEY, descriptor);
 
 				// Set the selected meta-model value in the elements
-				newModelFileProperties.setMetaModelDescriptor(supportedMMDescriptorList.get(index));
+				newModelFileProperties.setMetaModelDescriptor(supportedMetaModelDescriptors.get(index));
 				setPageComplete(validatePage());
 			}
 		}
@@ -605,14 +614,14 @@ public class NewModelCreationPage extends WizardPage {
 		if (index > -1) {
 
 			// Get the selected EPackage
-			EPackage epkg = supportedEPackageList.get(index);
-			String pkg = epkg.getName();
-			if (pkg != null) {
+			EPackage epackage = supportedEPackages.get(index);
+			String packageName = epackage.getName();
+			if (packageName != null) {
 				// Store the selected EPackage
-				Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_EPACKAGE_KEY, pkg);
+				Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_EPACKAGE_KEY, packageName);
 
 				// Set the selected EPackage value in the elements
-				newModelFileProperties.setRootObjectEPackage(supportedEPackageList.get(index));
+				newModelFileProperties.setRootObjectEPackage(supportedEPackages.get(index));
 				setPageComplete(validatePage());
 			}
 		}
@@ -629,40 +638,76 @@ public class NewModelCreationPage extends WizardPage {
 		if (index > -1) {
 
 			// Get the selected EClassifier
-			String eclassifier = supportedEClassifierList.get(index).getName();
+			String eclassifier = supportedEClassifiers.get(index).getName();
 			if (eclassifier != null) {
 				// Store the selected EClassifier
 				Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_ECLASSIFIER_KEY, eclassifier);
 
 				// Set the selected EClassifier value in the elements
-				newModelFileProperties.setRootObjectEClassifier(supportedEClassifierList.get(index));
+				newModelFileProperties.setRootObjectEClassifier(supportedEClassifiers.get(index));
 				setPageComplete(validatePage());
 			}
 		}
 	}
 
 	/**
+	 * Checks if the eClass can be instantiated.
+	 */
+	private boolean isEClassInstantiated(EClass eClass) {
+		return !eClass.isAbstract() && !eClass.isInterface();
+	}
+
+	/**
+	 * Checks if the ePackage can be instantiated. If none of its contained eClasses can be instantiated, then it
+	 * returns false, true otherwise.
+	 */
+	private boolean isEPackageInstantiated(EPackage ePackage) {
+		for (EClassifier eClassifier : ePackage.getEClassifiers()) {
+			if (eClassifier instanceof EClass) {
+				EClass eClass = (EClass) eClassifier;
+				if (isEClassInstantiated(eClass)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Sets supported EPackages depending on the selected meta-model descriptor
 	 */
 	private void setSupportedEPackages() {
-		IMetaModelDescriptor mmDescriptor = newModelFileProperties.getMetaModelDescriptor();
-		if (mmDescriptor != null) {
-			supportedEPackageList.clear();
-			supportedEPackageList.addAll(mmDescriptor.getEPackages());
-		}
+		T metaModelDescriptor = newModelFileProperties.getMetaModelDescriptor();
+		if (metaModelDescriptor != null) {
+			supportedEPackages.clear();
 
+			// Add only the ePackage that can be instantiated
+			for (EPackage ePackage : metaModelDescriptor.getEPackages()) {
+				if (isEPackageInstantiated(ePackage)) {
+					supportedEPackages.add(ePackage);
+				}
+			}
+		}
 	}
 
 	/**
 	 * Sets supported EClassifiers depending on the selected EPackage value
 	 */
 	private void setSupportedEClassifiers() {
-		EPackage epkg = newModelFileProperties.getRootObjectEPackage();
-		if (epkg != null) {
-			supportedEClassifierList.clear();
-			supportedEClassifierList.addAll(epkg.getEClassifiers());
-		}
+		EPackage epackage = newModelFileProperties.getRootObjectEPackage();
+		if (epackage != null) {
+			supportedEClassifiers.clear();
 
+			// Add only the eClass that can be instantiated
+			for (EClassifier eClassifier : epackage.getEClassifiers()) {
+				if (eClassifier instanceof EClass) {
+					EClass eClass = (EClass) eClassifier;
+					if (isEClassInstantiated(eClass)) {
+						supportedEClassifiers.add(eClass);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -670,17 +715,17 @@ public class NewModelCreationPage extends WizardPage {
 	 */
 	protected boolean validatePage() {
 		if (newModelFileProperties.getMetaModelDescriptor() == null) {
-			setErrorMessage(Messages.error_emptySelectedMM);
+			setErrorMessage(Messages.error_noMetaModelDescriptorSelected);
 			return false;
 		}
 
 		if (newModelFileProperties.getRootObjectEPackage() == null) {
-			setErrorMessage(Messages.error_emptySelectedEPackage);
+			setErrorMessage(Messages.error_noEPackageSelected);
 			return false;
 		}
 
 		if (newModelFileProperties.getRootObjectEClassifier() == null) {
-			setErrorMessage(Messages.error_emptySelectedEClassifier);
+			setErrorMessage(Messages.error_noEClassifierSelected);
 			return false;
 		}
 

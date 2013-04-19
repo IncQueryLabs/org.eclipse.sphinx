@@ -22,7 +22,6 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RunnableWithResult;
@@ -41,8 +40,8 @@ public class XMIURIChangeDetectorDelegate implements IURIChangeDetectorDelegate 
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.workspace.referencialintegrity.IURIChangeDetectorDelegate#detectChangedURIs(org.eclipse.emf
-	 * .common.notify.Notification)
+	 * org.eclipse.sphinx.emf.workspace.referencialintegrity.IURIChangeDetectorDelegate#detectChangedURIs(org.eclipse
+	 * .emf .common.notify.Notification)
 	 */
 	public List<URIChangeNotification> detectChangedURIs(Notification notification) {
 		notification.getNotifier();
@@ -50,17 +49,6 @@ public class XMIURIChangeDetectorDelegate implements IURIChangeDetectorDelegate 
 
 		if (notification.getNotifier() instanceof EObject) {
 			EObject eObject = (EObject) notification.getNotifier();
-
-			Class<? extends Object> eOBjectClass = notification.getNotifier().getClass();
-			try {
-				Object newInstance = eOBjectClass.newInstance();
-
-			} catch (InstantiationException ex) {
-				// TODO Auto-generated catch block
-			} catch (IllegalAccessException ex) {
-				// TODO Auto-generated catch block
-			}
-
 			eObject.eResource().getURIFragment(eObject);
 			URIChangeNotification uriNotification = new URIChangeNotification(eObject, getURI(eObject));
 			notifications.add(uriNotification);
@@ -71,8 +59,8 @@ public class XMIURIChangeDetectorDelegate implements IURIChangeDetectorDelegate 
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.workspace.referencialintegrity.IURIChangeDetectorDelegate#detectChangedURIs(org.eclipse.core
-	 * .resources.IFile, org.eclipse.core.resources.IFile)
+	 * org.eclipse.sphinx.emf.workspace.referencialintegrity.IURIChangeDetectorDelegate#detectChangedURIs(org.eclipse
+	 * .core .resources.IFile, org.eclipse.core.resources.IFile)
 	 */
 	public List<URIChangeNotification> detectChangedURIs(IFile oldFile, IFile newFile) {
 		List<URIChangeNotification> notifications = new ArrayList<URIChangeNotification>();
