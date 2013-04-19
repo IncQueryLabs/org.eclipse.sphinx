@@ -74,20 +74,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.sphinx.examples.hummingbird10.editor"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.hummingbird10.editor.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.sphinx.examples.hummingbird20"
          download-size="0"
          install-size="0"
@@ -110,20 +96,6 @@
 
    <plugin
          id="org.eclipse.sphinx.examples.hummingbird20.edit.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.hummingbird20.editor"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.hummingbird20.editor.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -219,7 +191,7 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.eclipse.sphinx.examples.hummingbird20.editors.nebula.source"
          download-size="0"
