@@ -43,12 +43,10 @@
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.ide.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10.edit</module>
-		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10.editor</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10.ide.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.codegen.xpand</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.edit</module>
-		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.editor</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.editors.nebula</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.ide.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.transform.xtend</module>
