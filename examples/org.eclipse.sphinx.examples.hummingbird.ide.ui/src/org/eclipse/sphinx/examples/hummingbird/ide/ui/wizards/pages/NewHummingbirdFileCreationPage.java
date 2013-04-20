@@ -18,7 +18,7 @@ import java.util.Collection;
 
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.sphinx.emf.workspace.ui.wizards.NewModelFileProperties;
+import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.InitialModelProperties;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.NewModelFileCreationPage;
 import org.eclipse.sphinx.examples.hummingbird.ide.metamodel.HummingbirdMMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird.ide.preferences.IHummingbirdPreferences;
@@ -26,7 +26,7 @@ import org.eclipse.sphinx.examples.hummingbird.ide.ui.internal.messages.Messages
 
 /**
  * A main page for a wizard that creates a Hummingbird file resource. The new model file is to be created based on the
- * given {@linkplain NewModelFileProperties new model file properties} (metamodel, ePackage and eClassifier).
+ * given {@linkplain InitialModelProperties new model file properties} (metamodel, ePackage and eClassifier).
  */
 public class NewHummingbirdFileCreationPage extends NewModelFileCreationPage<HummingbirdMMDescriptor> {
 
@@ -37,12 +37,13 @@ public class NewHummingbirdFileCreationPage extends NewModelFileCreationPage<Hum
 	 *            the name of the page
 	 * @param selection
 	 *            the current resource selection
-	 * @param properties
-	 *            the {@linkplain NewModelFileProperties new model file properties} selected by previous page or by
-	 *            initial setting
+	 * @param initialModelProperties
+	 *            the chosen {@linkplain InitialModelProperties initial model properties} (metamodel, EPackage and
+	 *            EClassifier) to be used as basis for creating the initial model of the new model file
 	 */
-	public NewHummingbirdFileCreationPage(String pageId, IStructuredSelection selection, NewModelFileProperties<HummingbirdMMDescriptor> properties) {
-		super(pageId, selection, IHummingbirdPreferences.METAMODEL_VERSION, properties);
+	public NewHummingbirdFileCreationPage(String pageId, IStructuredSelection selection,
+			InitialModelProperties<HummingbirdMMDescriptor> initialModelProperties) {
+		super(pageId, selection, IHummingbirdPreferences.METAMODEL_VERSION, initialModelProperties);
 		setTitle(Messages.page_newHummingbirdFileCreation_title);
 		setDescription(Messages.page_newHummingbirdFileCreation_description);
 	}
@@ -52,7 +53,7 @@ public class NewHummingbirdFileCreationPage extends NewModelFileCreationPage<Hum
 	 */
 	@Override
 	public String getDefaultNewFileExtension() {
-		EPackage rootObjectEPackage = newModelFileProperties.getRootObjectEPackage();
+		EPackage rootObjectEPackage = initialModelProperties.getRootObjectEPackage();
 		if (rootObjectEPackage != null) {
 			String packageName = rootObjectEPackage.getName();
 			Collection<String> validFileExtensions = getValidFileExtensions();
