@@ -33,12 +33,12 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
-import org.eclipse.sphinx.emf.workspace.ui.wizards.NewModelFileProperties;
 import org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -47,7 +47,7 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 
 /**
  * Basic main page for a wizard that creates a file resource. The new model file is to be created based on the given
- * {@linkplain NewModelFileProperties new model file properties} (metamodel, ePackage and eClassifier).
+ * {@linkplain InitialModelProperties new model file properties} (metamodel, ePackage and eClassifier).
  * <p>
  * This page may be used by clients as it is; it may also be subclassed to suit. Subclasses may override validatePage(),
  * getFileExtensionErrorMessage(), getRequiredProjectNatureErrorMessage(), hasRequiredProjectNature(), setVisible(),
@@ -59,7 +59,7 @@ public class NewModelFileCreationPage<T extends IMetaModelDescriptor> extends Wi
 
 	protected IStructuredSelection selection;
 	protected IProjectWorkspacePreference<T> metaModelVersionPreference = null;
-	protected NewModelFileProperties<T> newModelFileProperties = null;
+	protected InitialModelProperties<T> initialModelProperties = null;
 
 	private String requiredProjectTypeName = null;
 
@@ -94,14 +94,14 @@ public class NewModelFileCreationPage<T extends IMetaModelDescriptor> extends Wi
 	 *            the current resource selection
 	 * @param metaModelVersionPreference
 	 *            the metamodel version {@linkplain IProjectWorkspacePreference preference}
-	 * @param newModelFileProperties
-	 *            the {@linkplain NewModelFileProperties new model file properties} carrying choices from previous
-	 *            wizard page(s)
+	 * @param initialModelProperties
+	 *            the chosen {@linkplain InitialModelProperties initial model properties} (metamodel, EPackage and
+	 *            EClassifier) to be used as basis for creating the initial model of the new model file
 	 */
 	public NewModelFileCreationPage(String pageId, IStructuredSelection selection, IProjectWorkspacePreference<T> metaModelVersionPreference,
-			NewModelFileProperties<T> newModelFileProperties) {
+			InitialModelProperties<T> initialModelProperties) {
 		this(pageId, selection, metaModelVersionPreference);
-		this.newModelFileProperties = newModelFileProperties;
+		this.initialModelProperties = initialModelProperties;
 	}
 
 	/*
@@ -111,6 +111,7 @@ public class NewModelFileCreationPage<T extends IMetaModelDescriptor> extends Wi
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 		createAdditionalControls((Composite) getControl());
+		Dialog.applyDialogFont(getControl());
 	}
 
 	/**
@@ -250,8 +251,8 @@ public class NewModelFileCreationPage<T extends IMetaModelDescriptor> extends Wi
 	 * @return the new file's metamodel descriptor
 	 */
 	protected T getNewFileMetaModelDescriptor() {
-		if (newModelFileProperties != null) {
-			return newModelFileProperties.getMetaModelDescriptor();
+		if (initialModelProperties != null) {
+			return initialModelProperties.getMetaModelDescriptor();
 		}
 		if (metaModelVersionPreference != null) {
 			return metaModelVersionPreference.get(getContainerProject());

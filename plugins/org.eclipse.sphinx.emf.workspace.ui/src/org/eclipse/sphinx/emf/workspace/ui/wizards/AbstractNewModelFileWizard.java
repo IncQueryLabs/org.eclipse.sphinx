@@ -26,7 +26,6 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.workspace.jobs.CreateNewModelFileJob;
 import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
-import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.NewInitialModelCreationPage;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.NewModelFileCreationPage;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -45,10 +44,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
  */
 public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor> extends BasicNewResourceWizard {
 
-	protected NewModelFileProperties<T> newModelFileProperties;
-
-	protected NewInitialModelCreationPage<T> newInitialModelCreationPage;
-	protected NewModelFileCreationPage<T> newModelFileCreationPage;
+	protected NewModelFileCreationPage<T> mainPage;
 
 	/*
 	 * @see org.eclipse.ui.wizards.newresource.BasicNewResourceWizard#init(org.eclipse.ui.IWorkbench,
@@ -61,19 +57,35 @@ public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor>
 	}
 
 	/*
+	 * @see org.eclipse.jface.wizard.Wizard#addPages()
+	 */
+	@Override
+	public void addPages() {
+		mainPage = createMainPage();
+		Assert.isNotNull(mainPage);
+		addPage(mainPage);
+	}
+
+	/**
+	 * Creates the {@link NewModelFileCreationPage main page} for the creation of the new model file.
+	 * 
+	 * @return a main page for the creation of the new model file as appropriate
+	 */
+	protected abstract NewModelFileCreationPage<T> createMainPage();
+
+	/*
 	 * Creates a new model file, selects it in the current view, and opens it in an editor
 	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
 	 */
 	@Override
 	public boolean performFinish() {
-		Assert.isNotNull(newModelFileCreationPage);
-
 		// Make required wizard result information accessible for asynchronous operation
-		final IFile newFile = newModelFileCreationPage.getNewFile();
+		final IFile newFile = mainPage.getNewFile();
 
-		// Create new model file
+		// Create a new model file creation job
 		Job job = createCreateNewModelFileJob(newFile);
 
+		// Setup post creation actions
 		job.addJobChangeListener(new JobChangeAdapter() {
 			@Override
 			public void done(IJobChangeEvent event) {
@@ -82,10 +94,10 @@ public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor>
 					if (display != null) {
 						display.asyncExec(new Runnable() {
 							public void run() {
-								// Select the newly created file in current view
+								// Reveal and select new model file in current view
 								selectAndReveal(newFile);
 
-								// Open new file in an editor
+								// Open new model file in an editor
 								openNewModelInEditor(newFile);
 							}
 						});
@@ -103,29 +115,24 @@ public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor>
 	 * a specific create new model file job.
 	 * 
 	 * @param newFile
-	 *            the {@linkplain IFile model file} to be created
+	 *            the new model {@linkplain IFile file} to be created
 	 * @return a new instance of job that creates a new model file. This job is a unit of runnable work that can be
 	 *         scheduled to be run with the job manager.
 	 */
-	protected Job createCreateNewModelFileJob(IFile newFile) {
-		Assert.isNotNull(newModelFileProperties);
-
-		return new CreateNewModelFileJob(Messages.job_creatingNewModelFile, newFile, newModelFileProperties.getMetaModelDescriptor(),
-				newModelFileProperties.getRootObjectEPackage(), newModelFileProperties.getRootObjectEClassifier());
-	}
+	protected abstract Job createCreateNewModelFileJob(IFile newFile);
 
 	/**
 	 * Opens newly created model in an editor.
 	 * 
-	 * @param modelFile
-	 *            the {@linkplain IFile model file} to be opened
+	 * @param newFile
+	 *            the new model {@linkplain IFile file} to be opened
 	 */
-	protected void openNewModelInEditor(IFile modelFile) {
+	protected void openNewModelInEditor(IFile newFile) {
 		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchPage page = workbenchWindow.getActivePage();
 		try {
-			page.openEditor(new FileEditorInput(modelFile),
-					PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(modelFile.getFullPath().toString()).getId());
+			page.openEditor(new FileEditorInput(newFile),
+					PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(newFile.getFullPath().toString()).getId());
 		} catch (PartInitException exception) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), exception);
 		}
