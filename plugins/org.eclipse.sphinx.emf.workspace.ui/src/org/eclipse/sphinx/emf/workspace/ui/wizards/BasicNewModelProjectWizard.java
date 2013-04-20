@@ -47,11 +47,8 @@ public class BasicNewModelProjectWizard<T extends IMetaModelDescriptor> extends 
 		this(metaModelVersionDescriptor, metaModelVersionPreference);
 	}
 
-	/*
-	 * @see org.eclipse.sphinx.emf.workspace.ui.wizards.AbstractNewModelProjectWizard#createMainPage(boolean)
-	 */
 	@Override
-	protected WizardNewProjectCreationPage createMainPage(boolean createWorkingSetGroup) {
+	protected WizardNewProjectCreationPage createMainPage() {
 		return null;
 	}
 }

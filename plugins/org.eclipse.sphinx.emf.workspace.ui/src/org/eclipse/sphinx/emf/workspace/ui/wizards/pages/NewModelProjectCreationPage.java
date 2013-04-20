@@ -21,6 +21,7 @@ package org.eclipse.sphinx.emf.workspace.ui.wizards.pages;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.groups.BasicMetaModelVersionGroup;
 import org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference;
@@ -38,6 +39,9 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
  * creation page
  */
 public class NewModelProjectCreationPage<T extends IMetaModelDescriptor> extends WizardNewProjectCreationPage {
+
+	protected IStructuredSelection selection;
+	protected boolean createWorkingSetGroup;
 
 	protected T baseMetaModelDescriptor;
 	protected IProjectWorkspacePreference<T> metaModelVersionPreference;
@@ -59,7 +63,32 @@ public class NewModelProjectCreationPage<T extends IMetaModelDescriptor> extends
 	 */
 	public NewModelProjectCreationPage(String pageName, T baseMetaModelDescriptor, IProjectWorkspacePreference<T> metaModelVersionPreference,
 			String metaModelVersionPreferencePageId) {
+		this(pageName, null, false, baseMetaModelDescriptor, metaModelVersionPreference, metaModelVersionPreferencePageId);
+	}
+
+	/**
+	 * Creates a new instance of the new model project creation wizard page for the specified base metamodel.
+	 * 
+	 * @param pageName
+	 *            the name of this page
+	 * @param selection
+	 *            the current resource selection
+	 * @param createWorkingSetGroup
+	 *            <code>true</code> if a group for choosing a working set for the new model project should be added to
+	 *            the page, false otherwise
+	 * @param baseMetaModelDescriptor
+	 *            the base {@linkplain IMetaModelDescriptor meta-model} of the model project to be created
+	 * @param metaModelVersionPreference
+	 *            the metamodel version {@linkplain IProjectWorkspacePreference preference} object
+	 * @param metaModelVersionPreferencePageId
+	 *            the metamodel version preference page id
+	 */
+	public NewModelProjectCreationPage(String pageName, IStructuredSelection selection, boolean createWorkingSetGroup, T baseMetaModelDescriptor,
+			IProjectWorkspacePreference<T> metaModelVersionPreference, String metaModelVersionPreferencePageId) {
 		super(pageName);
+
+		this.selection = selection;
+		this.createWorkingSetGroup = createWorkingSetGroup;
 		this.baseMetaModelDescriptor = baseMetaModelDescriptor;
 		this.metaModelVersionPreference = metaModelVersionPreference;
 		this.metaModelVersionPreferencePageId = metaModelVersionPreferencePageId;
@@ -72,6 +101,7 @@ public class NewModelProjectCreationPage<T extends IMetaModelDescriptor> extends
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 		createAdditionalControls((Composite) getControl());
+		Dialog.applyDialogFont(getControl());
 	}
 
 	/**
@@ -88,9 +118,10 @@ public class NewModelProjectCreationPage<T extends IMetaModelDescriptor> extends
 	 * @see org.eclipse.ui.dialogs.WizardNewProjectCreationPage#createControl(Composite)
 	 */
 	protected void createAdditionalControls(Composite parent) {
+		if (createWorkingSetGroup) {
+			createWorkingSetGroup((Composite) getControl(), selection, new String[] { "org.eclipse.ui.resourceWorkingSetPage" }); //$NON-NLS-1$
+		}
 		createMetaModelVersionGroup(parent);
-
-		Dialog.applyDialogFont(getControl());
 	}
 
 	/**
@@ -101,7 +132,7 @@ public class NewModelProjectCreationPage<T extends IMetaModelDescriptor> extends
 	 *            the parent {@linkplain Composite composite}
 	 */
 	protected void createMetaModelVersionGroup(Composite parent) {
-		metaModelVersionGroup = new BasicMetaModelVersionGroup<T>("MetaModelVersionGroup", parent, baseMetaModelDescriptor, //$NON-NLS-1$
+		metaModelVersionGroup = new BasicMetaModelVersionGroup<T>("BasicMetaModelVersionGroup", parent, baseMetaModelDescriptor, //$NON-NLS-1$
 				metaModelVersionPreference, metaModelVersionPreferencePageId);
 		metaModelVersionGroup.createContent(parent, 3, false);
 	}

@@ -32,8 +32,8 @@ public class NewSimpleModelProjectWizard extends AbstractNewModelProjectWizard<I
 	 * @see org.eclipse.sphinx.emf.workspace.ui.wizards.AbstractNewModelProjectWizard#createMainPage(boolean)
 	 */
 	@Override
-	protected WizardNewProjectCreationPage createMainPage(final boolean createWorkingSetGroup) {
-		WizardNewProjectCreationPage mainPage = new WizardNewProjectCreationPage("basicNewProjectCreationPage") { //$NON-NLS-1$
+	protected WizardNewProjectCreationPage createMainPage() {
+		WizardNewProjectCreationPage mainPage = new WizardNewProjectCreationPage("WizardNewProjectCreationPage") { //$NON-NLS-1$
 			/*
 			 * (non-Javadoc)
 			 * @see org.eclipse.ui.dialogs.WizardNewProjectCreationPage#createControl(org.eclipse.swt.widgets.Composite)
@@ -41,9 +41,7 @@ public class NewSimpleModelProjectWizard extends AbstractNewModelProjectWizard<I
 			@Override
 			public void createControl(Composite parent) {
 				super.createControl(parent);
-				if (createWorkingSetGroup) {
-					createWorkingSetGroup((Composite) getControl(), getSelection(), new String[] { "org.eclipse.ui.resourceWorkingSetPage" }); //$NON-NLS-1$
-				}
+				createWorkingSetGroup((Composite) getControl(), getSelection(), new String[] { "org.eclipse.ui.resourceWorkingSetPage" }); //$NON-NLS-1$
 				Dialog.applyDialogFont(getControl());
 			}
 		};

@@ -47,6 +47,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 
 	protected WizardNewProjectCreationPage mainPage;
 	protected WizardNewProjectReferencePage referencePage;
+
 	protected T metaModelVersionDescriptor;
 	protected IProjectWorkspacePreference<T> metaModelVersionPreference;
 
@@ -88,6 +89,10 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 	@Override
 	public void addPages() {
 		mainPage = createMainPage(true);
+		if (mainPage == null) {
+			mainPage = createMainPage();
+		}
+		Assert.isNotNull(mainPage);
 		addPage(mainPage);
 
 		// Only add page if there are already projects in the workspace
@@ -98,18 +103,34 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 	}
 
 	/**
-	 * Creates the project creation main page.
+	 * Creates the {@link WizardNewProjectCreationPage main page} for the creation of the new model project.
 	 * 
 	 * @param createWorkingSetGroup
-	 * @return
+	 *            <code>true</code> if a group for choosing a working set for the new model project should be added to
+	 *            the page, false otherwise
+	 * @return a main page for the creation of the new model project as appropriate
 	 */
-	protected abstract WizardNewProjectCreationPage createMainPage(final boolean createWorkingSetGroup);
+	protected abstract WizardNewProjectCreationPage createMainPage();
+
+	/**
+	 * Creates the {@link WizardNewProjectCreationPage main page} for the creation of the new model project.
+	 * 
+	 * @param createWorkingSetGroup
+	 *            <code>true</code> if a group for choosing a working set for the new model project should be added to
+	 *            the page, false otherwise
+	 * @return a main page for the creation of the new model project as appropriate
+	 * @deprecated Use {@link #createMainPage()} instead.
+	 */
+	@Deprecated
+	protected WizardNewProjectCreationPage createMainPage(boolean createWorkingSetGroup) {
+		return null;
+	}
 
 	/**
 	 * Creates the reference page.
 	 */
 	protected WizardNewProjectReferencePage createReferencePage() {
-		WizardNewProjectReferencePage referencePage = new WizardNewProjectReferencePage("basicNewProjectReferencePage"); //$NON-NLS-1$
+		WizardNewProjectReferencePage referencePage = new WizardNewProjectReferencePage("WizardNewProjectReferencePage"); //$NON-NLS-1$
 		referencePage.setTitle(Messages.page_newProjectReference_title);
 		referencePage.setDescription(Messages.page_newProjectReference_description);
 		return referencePage;
@@ -121,13 +142,11 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 	 */
 	@Override
 	public boolean performFinish() {
-		Assert.isNotNull(mainPage);
-
+		final IProject projectHandle = mainPage.getProjectHandle();
 		URI location = !mainPage.useDefaults() ? mainPage.getLocationURI() : null;
 		IProject[] referencedProjects = referencePage != null ? referencePage.getReferencedProjects() : null;
-		final IProject projectHandle = mainPage.getProjectHandle();
 
-		// Create a new project job
+		// Create a new model project creation job
 		CreateNewModelProjectJob<T> job = createCreateNewProjectJob(Messages.job_createNewModelProject_name, projectHandle, location);
 		if (job == null) {
 			job = createCreateNewModelProjectJob(projectHandle, location);
@@ -135,7 +154,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 		job.setReferencedProjects(referencedProjects);
 		job.setUIInfoAdaptable(WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
 
-		// Reveal the project after creation
+		// Setup post creation actions
 		job.addJobChangeListener(new JobChangeAdapter() {
 			@Override
 			public void done(IJobChangeEvent event) {
@@ -145,6 +164,8 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 						display.asyncExec(new Runnable() {
 							public void run() {
 								updatePerspective();
+
+								// Reveal and select the new model project in current view
 								selectAndReveal(projectHandle, PlatformUI.getWorkbench().getActiveWorkbenchWindow());
 							}
 						});
