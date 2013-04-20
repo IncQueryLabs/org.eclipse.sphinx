@@ -34,7 +34,7 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 public class NewHummingbirdProjectWizard extends AbstractNewModelProjectWizard<HummingbirdMMDescriptor> {
 
 	/*
-	 * @see org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard#init(org.eclipse.ui.IWorkbench,
+	 * @see org.eclipse.sphinx.emf.workspace.ui.wizards.AbstractNewModelProjectWizard#init(org.eclipse.ui.IWorkbench,
 	 * org.eclipse.jface.viewers.IStructuredSelection)
 	 */
 	@Override
@@ -44,12 +44,12 @@ public class NewHummingbirdProjectWizard extends AbstractNewModelProjectWizard<H
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.workspace.ui.wizards.BasicNewModelProjectWizard#createMainPage(boolean)
+	 * @see org.eclipse.sphinx.emf.workspace.ui.wizards.AbstractNewModelProjectWizard#createMainPage(boolean)
 	 */
 	@Override
-	protected WizardNewProjectCreationPage createMainPage(boolean createWorkingSetGroup) {
+	protected WizardNewProjectCreationPage createMainPage() {
 		NewModelProjectCreationPage<HummingbirdMMDescriptor> newModelProjectCreationPage = new NewModelProjectCreationPage<HummingbirdMMDescriptor>(
-				"NewHummingbirdProjectCreationPage", HummingbirdMMDescriptor.INSTANCE, IHummingbirdPreferences.METAMODEL_VERSION, //$NON-NLS-1$
+				"NewHummingbirdProjectCreationPage", getSelection(), true, HummingbirdMMDescriptor.INSTANCE, IHummingbirdPreferences.METAMODEL_VERSION, //$NON-NLS-1$
 				IHummingbirdPreferencesUI.HUMMINGBIRD_METAMODEL_VERSION_PREFERENCE_PAGE_ID);
 
 		newModelProjectCreationPage.setTitle(Messages.page_newHummingbirdProjectCreation_title);
@@ -60,8 +60,8 @@ public class NewHummingbirdProjectWizard extends AbstractNewModelProjectWizard<H
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.workspace.ui.wizards.BasicNewModelProjectWizard#createCreateNewProjectJob(java.lang.String
-	 * , org.eclipse.core.resources.IProject, java.net.URI)
+	 * org.eclipse.sphinx.emf.workspace.ui.wizards.AbstractNewModelProjectWizard#createCreateNewProjectJob(java.lang
+	 * .String , org.eclipse.core.resources.IProject, java.net.URI)
 	 */
 	@Override
 	protected CreateNewModelProjectJob<HummingbirdMMDescriptor> createCreateNewModelProjectJob(IProject project, URI location) {
