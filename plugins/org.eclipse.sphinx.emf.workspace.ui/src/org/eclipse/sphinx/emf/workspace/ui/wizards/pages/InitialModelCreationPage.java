@@ -31,7 +31,6 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
-import org.eclipse.sphinx.emf.workspace.ui.wizards.NewModelFileProperties;
 import org.eclipse.sphinx.platform.ui.dialogs.AbstractBrowseDialog;
 import org.eclipse.sphinx.platform.ui.fields.ComboButtonField;
 import org.eclipse.sphinx.platform.ui.fields.IField;
@@ -53,10 +52,10 @@ import org.eclipse.swt.widgets.Shell;
  * This page lists available metamodels, ePackages and eClassifiers for creating a model file. It allows clients to
  * select the metamodel, ePackage and eClassifier that they would like to use for creating their model file. The
  * selected results of metamodel, ePackage and eClassifier are passed to the post pages, e.g., NewModelFileCreationPage,
- * using {@linkplain NewModelFileProperties model file properties}. This page may be used by clients as it is; it may
+ * using {@linkplain InitialModelProperties model file properties}. This page may be used by clients as it is; it may
  * also be subclassed to suit.
  */
-public class NewInitialModelCreationPage<T extends IMetaModelDescriptor> extends WizardPage {
+public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends WizardPage {
 
 	/**
 	 * A metamodel descriptor browse dialog enabling the filtering of metamodel descriptor objects. The supported
@@ -190,7 +189,7 @@ public class NewInitialModelCreationPage<T extends IMetaModelDescriptor> extends
 	protected List<T> supportedMetaModelDescriptors = new ArrayList<T>();
 	protected List<EPackage> supportedEPackages = new ArrayList<EPackage>();
 	protected List<EClassifier> supportedEClassifiers = new ArrayList<EClassifier>();
-	protected NewModelFileProperties<T> newModelFileProperties;
+	protected InitialModelProperties<T> initialModelProperties;
 	protected T baseMetaModelDescriptor;
 	protected ISelection selection;
 
@@ -319,26 +318,25 @@ public class NewInitialModelCreationPage<T extends IMetaModelDescriptor> extends
 	/**
 	 * Creates a new instance of model creation wizard page. The supported available metamodel descriptors and EPackages
 	 * are initialized. The selected results of metamodel, ePackage and eClassifier are passed to the post pages, e.g.,
-	 * NewModelFileCreationPage, using {@linkplain NewModelFileProperties model file properties}.
+	 * NewModelFileCreationPage, using {@linkplain InitialModelProperties model file properties}.
 	 * 
 	 * @param pageName
 	 *            the name of the page
 	 * @param selection
 	 *            the current resource {@linkplain ISelection selection}
-	 * @param newModelFileProperties
-	 *            the {@linkplain NewModelFileProperties selected newModelFileProperties} (metamodel, ePackage and
-	 *            eClassifier) to be used by the post pages for the creation of model file
+	 * @param initialModelProperties
+	 *            the chosen {@linkplain InitialModelProperties initial model properties} (metamodel, EPackage and
+	 *            EClassifier) to be used as basis for creating the initial model of the new model file
 	 * @param baseMetaModelDescriptor
 	 *            the base meta model descriptor to be used for the creation of model file
 	 */
-	public NewInitialModelCreationPage(String pageName, ISelection selection, NewModelFileProperties<T> newModelFileProperties,
-			T baseMetaModelDescriptor) {
+	public InitialModelCreationPage(String pageName, ISelection selection, InitialModelProperties<T> initialModelProperties, T baseMetaModelDescriptor) {
 		super(pageName);
 		setTitle(Messages.page_newInitialModelCreation_title);
 		setDescription(Messages.page_newInitialModelCreation_description);
 
 		this.selection = selection;
-		this.newModelFileProperties = newModelFileProperties;
+		this.initialModelProperties = initialModelProperties;
 		this.baseMetaModelDescriptor = baseMetaModelDescriptor;
 
 		// Initialize supported meta-models
@@ -525,7 +523,7 @@ public class NewInitialModelCreationPage<T extends IMetaModelDescriptor> extends
 		Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_METAMODEL_KEY, metaModelDescriptor.getIdentifier());
 
 		// Set the selected meta-model of elements
-		newModelFileProperties.setMetaModelDescriptor(metaModelDescriptor);
+		initialModelProperties.setMetaModelDescriptor(metaModelDescriptor);
 
 		// Set the selected meta-model as the selection item in the combo field
 		int metaModelIndex = supportedMetaModelDescriptors.indexOf(metaModelDescriptor);
@@ -548,7 +546,7 @@ public class NewInitialModelCreationPage<T extends IMetaModelDescriptor> extends
 		Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_EPACKAGE_KEY, epackage.getName());
 
 		// Set the value of selected EPackage of elements
-		newModelFileProperties.setRootObjectEPackage(epackage);
+		initialModelProperties.setRootObjectEPackage(epackage);
 
 		// Set the selected EPackage as the selection item in the combo field
 		int ePackageIndex = supportedEPackages.indexOf(epackage);
@@ -571,7 +569,7 @@ public class NewInitialModelCreationPage<T extends IMetaModelDescriptor> extends
 		Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_ECLASSIFIER_KEY, eclassifier.getName());
 
 		// Set the value of selected EClassifier of elements
-		newModelFileProperties.setRootObjectEClassifier(eclassifier);
+		initialModelProperties.setRootObjectEClassifier(eclassifier);
 
 		// Set the selected EClassifier as the selection item in the combo field
 		int indexEClassifier = supportedEClassifiers.indexOf(eclassifier);
@@ -597,7 +595,7 @@ public class NewInitialModelCreationPage<T extends IMetaModelDescriptor> extends
 				Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_METAMODEL_KEY, descriptor);
 
 				// Set the selected meta-model value in the elements
-				newModelFileProperties.setMetaModelDescriptor(supportedMetaModelDescriptors.get(index));
+				initialModelProperties.setMetaModelDescriptor(supportedMetaModelDescriptors.get(index));
 				setPageComplete(validatePage());
 			}
 		}
@@ -621,7 +619,7 @@ public class NewInitialModelCreationPage<T extends IMetaModelDescriptor> extends
 				Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_EPACKAGE_KEY, packageName);
 
 				// Set the selected EPackage value in the elements
-				newModelFileProperties.setRootObjectEPackage(supportedEPackages.get(index));
+				initialModelProperties.setRootObjectEPackage(supportedEPackages.get(index));
 				setPageComplete(validatePage());
 			}
 		}
@@ -644,7 +642,7 @@ public class NewInitialModelCreationPage<T extends IMetaModelDescriptor> extends
 				Activator.getPlugin().getDialogSettings().put(LAST_SELECTED_ECLASSIFIER_KEY, eclassifier);
 
 				// Set the selected EClassifier value in the elements
-				newModelFileProperties.setRootObjectEClassifier(supportedEClassifiers.get(index));
+				initialModelProperties.setRootObjectEClassifier(supportedEClassifiers.get(index));
 				setPageComplete(validatePage());
 			}
 		}
@@ -677,7 +675,7 @@ public class NewInitialModelCreationPage<T extends IMetaModelDescriptor> extends
 	 * Sets supported EPackages depending on the selected meta-model descriptor
 	 */
 	private void setSupportedEPackages() {
-		T metaModelDescriptor = newModelFileProperties.getMetaModelDescriptor();
+		T metaModelDescriptor = initialModelProperties.getMetaModelDescriptor();
 		if (metaModelDescriptor != null) {
 			supportedEPackages.clear();
 
@@ -694,7 +692,7 @@ public class NewInitialModelCreationPage<T extends IMetaModelDescriptor> extends
 	 * Sets supported EClassifiers depending on the selected EPackage value
 	 */
 	private void setSupportedEClassifiers() {
-		EPackage epackage = newModelFileProperties.getRootObjectEPackage();
+		EPackage epackage = initialModelProperties.getRootObjectEPackage();
 		if (epackage != null) {
 			supportedEClassifiers.clear();
 
@@ -714,17 +712,17 @@ public class NewInitialModelCreationPage<T extends IMetaModelDescriptor> extends
 	 * The framework calls this to validate if all the field are selected.
 	 */
 	protected boolean validatePage() {
-		if (newModelFileProperties.getMetaModelDescriptor() == null) {
+		if (initialModelProperties.getMetaModelDescriptor() == null) {
 			setErrorMessage(Messages.error_noMetaModelDescriptorSelected);
 			return false;
 		}
 
-		if (newModelFileProperties.getRootObjectEPackage() == null) {
+		if (initialModelProperties.getRootObjectEPackage() == null) {
 			setErrorMessage(Messages.error_noEPackageSelected);
 			return false;
 		}
 
-		if (newModelFileProperties.getRootObjectEClassifier() == null) {
+		if (initialModelProperties.getRootObjectEClassifier() == null) {
 			setErrorMessage(Messages.error_noEClassifierSelected);
 			return false;
 		}
