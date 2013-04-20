@@ -127,12 +127,13 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> extends 
 	 * @param metaModelVersionPreference
 	 *            the metamodel version {@linkplain IProjectWorkspacePreference preference} object
 	 * @param metaModelVersionPreferencePageId
-	 *            the metamodel version preference page id
+	 *            the metamodel version preference page id; must not be <code>null</code>
 	 */
 	public BasicMetaModelVersionGroup(String groupName, Composite parent, T baseMetaModelDescriptor,
 			IProjectWorkspacePreference<T> metaModelVersionPreference, String metaModelVersionPreferencePageId) {
 		super(groupName);
 		Assert.isNotNull(metaModelVersionPreference);
+
 		this.metaModelVersionPreference = metaModelVersionPreference;
 		this.metaModelVersionPreferencePageId = metaModelVersionPreferencePageId;
 		this.baseMetaModelDescriptor = baseMetaModelDescriptor;
@@ -157,11 +158,13 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> extends 
 		workspaceDefaultMetaModelVersionButton.addFieldListener(fieldListener);
 
 		// add a link widget for the workspace settings link
-		configureWorkspaceSettingsLink = new Link(group, SWT.NONE);
-		configureWorkspaceSettingsLink.setFont(group.getFont());
-		configureWorkspaceSettingsLink.setText(MessageFormat.format("<a>{0}</a>", Messages.link_configureWorkspaceSettings_label)); //$NON-NLS-1$
-		configureWorkspaceSettingsLink.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
-		configureWorkspaceSettingsLink.addSelectionListener(selectionListener);
+		if (metaModelVersionPreferencePageId != null) {
+			configureWorkspaceSettingsLink = new Link(group, SWT.NONE);
+			configureWorkspaceSettingsLink.setFont(group.getFont());
+			configureWorkspaceSettingsLink.setText(MessageFormat.format("<a>{0}</a>", Messages.link_configureWorkspaceSettings_label)); //$NON-NLS-1$
+			configureWorkspaceSettingsLink.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
+			configureWorkspaceSettingsLink.addSelectionListener(selectionListener);
+		}
 
 		// add a selection button widget for the alternate metamodel version
 		alternateMetaModelVersionButton = new SelectionButtonField(SWT.RADIO);
