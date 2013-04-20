@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -105,6 +106,8 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 	 */
 	public CreateNewModelProjectJob(String name, IProject newProject, URI location, String natureId) {
 		super(name);
+		Assert.isNotNull(newProject);
+
 		this.newProject = project = newProject;
 		this.location = location;
 		this.natureId = natureId;

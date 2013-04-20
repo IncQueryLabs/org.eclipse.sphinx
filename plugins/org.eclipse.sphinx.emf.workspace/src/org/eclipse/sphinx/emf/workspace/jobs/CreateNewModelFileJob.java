@@ -62,23 +62,24 @@ public class CreateNewModelFileJob extends WorkspaceJob {
 	 * @param jobName
 	 *            the name of the job
 	 * @param newFile
-	 *            the model file that will be created, must not be null
+	 *            the model file that will be created, must not be <code>null</code>
 	 * @param metaModelDescriptor
-	 *            the {@linkplain IMetaModelDescriptor descriptor} of metamodel the model file should be based on
+	 *            the {@linkplain IMetaModelDescriptor descriptor} of metamodel the model file should be based on, must
+	 *            not be <code>null</code>
 	 * @param rootObjectEPackage
 	 *            the {@linkplain EPackage root object package} to be used for creating the initial model to be
-	 *            contained by the model file
+	 *            contained by the model file, must not be <code>null</code>
 	 * @param rootObjectEClassifier
-	 *            the {@linkplain EClassifier root object classifier} of the initial model's root object
+	 *            the {@linkplain EClassifier root object classifier} of the initial model's root object, must not be
+	 *            <code>null</code>
 	 */
 	public CreateNewModelFileJob(String jobName, IFile newFile, IMetaModelDescriptor metaModelDescriptor, EPackage rootObjectEPackage,
 			EClassifier rootObjectEClassifier) {
 		super(jobName);
-
-		// make sure that the model file that will be created and the metamodel descriptor that this model file is based
-		// on must not be null.
 		Assert.isNotNull(newFile);
 		Assert.isNotNull(metaModelDescriptor);
+		Assert.isNotNull(rootObjectEPackage);
+		Assert.isNotNull(rootObjectEClassifier);
 
 		this.newFile = newFile;
 		this.metaModelDescriptor = metaModelDescriptor;
