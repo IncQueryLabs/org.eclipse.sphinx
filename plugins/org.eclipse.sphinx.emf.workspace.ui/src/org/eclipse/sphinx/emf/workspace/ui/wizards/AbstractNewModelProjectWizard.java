@@ -51,6 +51,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 	protected WizardNewProjectCreationPage mainPage;
 	protected WizardNewProjectReferencePage referencePage;
 
+	protected String metaModelName;
 	protected boolean createWorkingSetGroup;
 	protected T baseMetaModelDescriptor;
 	protected IProjectWorkspacePreference<T> metaModelVersionPreference;
@@ -61,6 +62,17 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 	 */
 	public AbstractNewModelProjectWizard() {
 		this(false, null, null, null);
+	}
+
+	/**
+	 * Creates a wizard for creating a new model project in the workspace.
+	 * 
+	 * @param metaModelName
+	 *            the name of the metamodel the new model project should be dedicated to
+	 */
+	public AbstractNewModelProjectWizard(String metaModelName) {
+		this(false, null, null, null);
+		this.metaModelName = metaModelName;
 	}
 
 	/**
@@ -85,6 +97,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 		this.baseMetaModelDescriptor = baseMetaModelDescriptor;
 		this.metaModelVersionPreference = metaModelVersionPreference;
 		this.metaModelVersionPreferencePageId = metaModelVersionPreferencePageId;
+		metaModelName = baseMetaModelDescriptor != null ? baseMetaModelDescriptor.getName() : null;
 	}
 
 	/*
@@ -95,8 +108,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		super.init(workbench, selection);
 
-		setWindowTitle(NLS.bind(Messages.wizard_newModelProject_title, baseMetaModelDescriptor != null ? baseMetaModelDescriptor.getName()
-				: Messages.default_metamodelName_cap));
+		setWindowTitle(NLS.bind(Messages.wizard_newModelProject_title, metaModelName != null ? metaModelName : Messages.default_metamodelName_cap));
 	}
 
 	/*
@@ -147,8 +159,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 		IProject[] referencedProjects = referencePage != null ? referencePage.getReferencedProjects() : null;
 
 		// Create a new model project creation job
-		String jobName = NLS.bind(Messages.job_createNewModelProject_name,
-				baseMetaModelDescriptor.getName() != null ? baseMetaModelDescriptor.getName() : Messages.default_metamodelName);
+		String jobName = NLS.bind(Messages.job_createNewModelProject_name, metaModelName != null ? metaModelName : Messages.default_metamodelName);
 		CreateNewModelProjectJob<T> job = createCreateNewModelProjectJob(jobName, projectHandle, location);
 		job.setReferencedProjects(referencedProjects);
 		job.setUIInfoAdaptable(WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
