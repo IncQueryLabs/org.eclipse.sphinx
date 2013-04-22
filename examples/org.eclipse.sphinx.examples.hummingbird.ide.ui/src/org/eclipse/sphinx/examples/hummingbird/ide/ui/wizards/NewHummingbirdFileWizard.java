@@ -71,7 +71,7 @@ public class NewHummingbirdFileWizard extends AbstractNewModelFileWizard<Humming
 	 * .String, org.eclipse.core.resources.IFile)
 	 */
 	@Override
-	protected Job doCreateCreateNewModelFileJob(String jobName, IFile newFile) {
+	protected Job createCreateNewModelFileJob(String jobName, IFile newFile) {
 		return new CreateNewModelFileJob(jobName, newFile, initialModelProperties.getMetaModelDescriptor(),
 				initialModelProperties.getRootObjectEPackage(), initialModelProperties.getRootObjectEClassifier());
 	}

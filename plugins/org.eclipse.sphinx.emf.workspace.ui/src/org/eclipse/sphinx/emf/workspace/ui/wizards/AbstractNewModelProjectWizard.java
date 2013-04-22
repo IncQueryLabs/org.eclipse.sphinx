@@ -104,7 +104,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 	 */
 	@Override
 	public void addPages() {
-		mainPage = createMainPage(true);
+		mainPage = createMainPage(false);
 		if (mainPage == null) {
 			mainPage = createMainPage();
 		}
@@ -130,12 +130,6 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 	}
 
 	/**
-	 * Creates the {@link WizardNewProjectCreationPage main page} for the creation of the new model project.
-	 * 
-	 * @param createWorkingSetGroup
-	 *            <code>true</code> if a group for choosing a working set for the new model project should be added to
-	 *            the page, false otherwise
-	 * @return a main page for the creation of the new model project as appropriate
 	 * @deprecated Use {@link #createMainPage()} instead.
 	 */
 	@Deprecated
@@ -164,9 +158,11 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 		IProject[] referencedProjects = referencePage != null ? referencePage.getReferencedProjects() : null;
 
 		// Create a new model project creation job
-		CreateNewModelProjectJob<T> job = createCreateNewProjectJob(Messages.job_createNewModelProject_name, projectHandle, location);
+		String jobName = NLS.bind(Messages.job_createNewModelProject_name,
+				baseMetaModelDescriptor.getName() != null ? baseMetaModelDescriptor.getName() : Messages.default_metamodelName);
+		CreateNewModelProjectJob<T> job = createCreateNewProjectJob(jobName, projectHandle, location);
 		if (job == null) {
-			job = createCreateNewModelProjectJob(projectHandle, location);
+			job = createCreateNewModelProjectJob(jobName, projectHandle, location);
 		}
 		job.setReferencedProjects(referencedProjects);
 		job.setUIInfoAdaptable(WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
@@ -196,35 +192,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 	}
 
 	/**
-	 * Creates a new instance of {@linkplain CreateNewModelProjectJob}.
-	 * 
-	 * @param newProject
-	 *            the {@linkplain IProject project} resource to be created
-	 * @param location
-	 *            the {@linkplain URI location} where the project will be created. If null the default location will be
-	 *            used.
-	 * @return a new instance of job that creates a new model project. This job is a unit of runnable work that can be
-	 *         scheduled to be run with the job manager.
-	 */
-	protected final CreateNewModelProjectJob<T> createCreateNewModelProjectJob(IProject newProject, URI location) {
-		@SuppressWarnings("unchecked")
-		NewModelProjectCreationPage<T> newModelProjectCreationPage = (NewModelProjectCreationPage<T>) mainPage;
-
-		String metaModelName = null;
-		T metaModelVersionDescriptor = newModelProjectCreationPage.getMetaModelVersionDescriptor();
-		if (metaModelVersionDescriptor != null) {
-			IMetaModelDescriptor baseDescriptor = metaModelVersionDescriptor.getBaseDescriptor();
-			if (baseDescriptor != null) {
-				metaModelName = baseDescriptor.getName();
-			}
-		}
-		String jobName = NLS.bind(Messages.job_createNewModelProject_name, metaModelName != null ? metaModelName : Messages.default_metamodelName);
-
-		return new CreateNewModelProjectJob<T>(jobName, newProject, location, metaModelVersionDescriptor, metaModelVersionPreference);
-	}
-
-	/**
-	 * Creates a new instance of {@linkplain CreateNewModelProjectJob}. This method must be overridden by clients to
+	 * Creates a new instance of {@linkplain CreateNewModelProjectJob}. This method may be overridden by clients to
 	 * create a specific model project creation job as appropriate.
 	 * 
 	 * @param jobName
@@ -237,7 +205,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 	 * @return a new instance of job that creates a new model project. This job is a unit of runnable work that can be
 	 *         scheduled to be run with the job manager.
 	 */
-	protected CreateNewModelProjectJob<T> doCreateCreateNewModelProjectJob(String jobName, IProject newProject, URI location) {
+	protected CreateNewModelProjectJob<T> createCreateNewModelProjectJob(String jobName, IProject newProject, URI location) {
 		@SuppressWarnings("unchecked")
 		NewModelProjectCreationPage<T> newModelProjectCreationPage = (NewModelProjectCreationPage<T>) mainPage;
 
@@ -246,15 +214,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 	}
 
 	/**
-	 * Creates a new instance of {@linkplain CreateNewModelProjectJob}. This method may be overridden by clients.
-	 * 
-	 * @param newProject
-	 *            the {@linkplain IProject project} resource to be created
-	 * @param location
-	 *            the {@linkplain URI location} where the project will be created. If null the default location will be
-	 *            used.
-	 * @deprecated Use {@link #createCreateNewModelProjectJob (IProject, URI) instead}
-	 * @return
+	 * @deprecated Use {@link #createCreateNewModelProjectJob(String, IProject, URI)} instead.
 	 */
 	@Deprecated
 	protected CreateNewModelProjectJob<T> createCreateNewProjectJob(String name, IProject newProject, URI location) {

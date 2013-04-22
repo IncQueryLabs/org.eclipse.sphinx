@@ -106,7 +106,8 @@ public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor>
 		final IFile newFile = mainPage.getNewFile();
 
 		// Create a new model file creation job
-		Job job = createCreateNewModelFileJob(newFile);
+		String jobName = NLS.bind(Messages.job_creatingNewModelFile_name, metaModelName != null ? metaModelName : Messages.default_metamodelName);
+		Job job = createCreateNewModelFileJob(jobName, newFile);
 
 		// Setup post creation actions
 		job.addJobChangeListener(new JobChangeAdapter() {
@@ -134,19 +135,6 @@ public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor>
 	}
 
 	/**
-	 * Creates a new instance of {@linkplain CreateNewModelFileJob}.
-	 * 
-	 * @param newFile
-	 *            the new model {@linkplain IFile file} to be created
-	 * @return a new instance of job that creates a new model file. This job is a unit of runnable work that can be
-	 *         scheduled to be run with the job manager.
-	 */
-	protected final Job createCreateNewModelFileJob(IFile newFile) {
-		String jobName = NLS.bind(Messages.job_creatingNewModelFile_name, metaModelName != null ? metaModelName : Messages.default_metamodelName);
-		return doCreateCreateNewModelFileJob(jobName, newFile);
-	}
-
-	/**
 	 * Creates a new instance of {@linkplain CreateNewModelFileJob}. This method must be overridden by clients to create
 	 * a specific model file creation job as appropriate.
 	 * 
@@ -157,7 +145,7 @@ public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor>
 	 * @return a new instance of job that creates a new model file. This job is a unit of runnable work that can be
 	 *         scheduled to be run with the job manager.
 	 */
-	protected abstract Job doCreateCreateNewModelFileJob(String jobName, IFile newFile);
+	protected abstract Job createCreateNewModelFileJob(String jobName, IFile newFile);
 
 	/**
 	 * Opens newly created model in an editor.
