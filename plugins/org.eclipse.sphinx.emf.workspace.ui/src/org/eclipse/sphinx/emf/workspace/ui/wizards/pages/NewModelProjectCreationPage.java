@@ -14,15 +14,20 @@
  *     itemis - [405059] Enable BasicMetaModelVersionGroup to open appropriate model version preference page
  *     itemis - [405075] Improve type safety of NewModelProjectCreationPage and BasicMetaModelVersionGroup wrt base metamodel descriptor and metamodel version preference
  *     itemis - [406062] Removal of the required project nature parameter in NewModelFileCreationPage constructor and CreateNewModelProjectJob constructor
+ *     itemis - [406194] Enable title and descriptions of model project and file creation wizards to be calculated automatically
  *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.ui.wizards.pages;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.groups.BasicMetaModelVersionGroup;
 import org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference;
 import org.eclipse.swt.widgets.Composite;
@@ -55,11 +60,12 @@ public class NewModelProjectCreationPage<T extends IMetaModelDescriptor> extends
 	 * @param pageName
 	 *            the name of this page
 	 * @param baseMetaModelDescriptor
-	 *            the base {@linkplain IMetaModelDescriptor meta-model} of the model project to be created
+	 *            the base {@linkplain IMetaModelDescriptor metamodel} of the model project to be created
 	 * @param metaModelVersionPreference
-	 *            the metamodel version {@linkplain IProjectWorkspacePreference preference} object
+	 *            the meta-model version that the model project will be used for; when set to <code>null</code>
+	 *            metamodel version selection controls will omitted
 	 * @param metaModelVersionPreferencePageId
-	 *            the metamodel version preference page id
+	 *            the id of the metamodel version preference page
 	 */
 	public NewModelProjectCreationPage(String pageName, T baseMetaModelDescriptor, IProjectWorkspacePreference<T> metaModelVersionPreference,
 			String metaModelVersionPreferencePageId) {
@@ -79,19 +85,27 @@ public class NewModelProjectCreationPage<T extends IMetaModelDescriptor> extends
 	 * @param baseMetaModelDescriptor
 	 *            the base {@linkplain IMetaModelDescriptor meta-model} of the model project to be created
 	 * @param metaModelVersionPreference
-	 *            the metamodel version {@linkplain IProjectWorkspacePreference preference} object
+	 *            the meta-model version that the model project will be used for; when set to <code>null</code>
+	 *            metamodel version selection controls will omitted
 	 * @param metaModelVersionPreferencePageId
-	 *            the metamodel version preference page id
+	 *            the id of the metamodel version preference page
 	 */
 	public NewModelProjectCreationPage(String pageName, IStructuredSelection selection, boolean createWorkingSetGroup, T baseMetaModelDescriptor,
 			IProjectWorkspacePreference<T> metaModelVersionPreference, String metaModelVersionPreferencePageId) {
 		super(pageName);
+		Assert.isLegal(baseMetaModelDescriptor != MetaModelDescriptorRegistry.ANY_MM);
+		Assert.isLegal(baseMetaModelDescriptor != MetaModelDescriptorRegistry.NO_MM);
 
 		this.selection = selection;
 		this.createWorkingSetGroup = createWorkingSetGroup;
 		this.baseMetaModelDescriptor = baseMetaModelDescriptor;
 		this.metaModelVersionPreference = metaModelVersionPreference;
 		this.metaModelVersionPreferencePageId = metaModelVersionPreferencePageId;
+
+		setTitle(NLS.bind(Messages.page_newModelProjectCreation_title, baseMetaModelDescriptor != null ? baseMetaModelDescriptor.getName()
+				: Messages.default_metamodelName_cap));
+		setDescription(NLS.bind(Messages.page_newModelProjectCreation_description,
+				baseMetaModelDescriptor != null ? baseMetaModelDescriptor.getName() : Messages.default_metamodelName));
 	}
 
 	/*
@@ -132,12 +146,17 @@ public class NewModelProjectCreationPage<T extends IMetaModelDescriptor> extends
 	 *            the parent {@linkplain Composite composite}
 	 */
 	protected void createMetaModelVersionGroup(Composite parent) {
-		metaModelVersionGroup = new BasicMetaModelVersionGroup<T>("BasicMetaModelVersionGroup", parent, baseMetaModelDescriptor, //$NON-NLS-1$
-				metaModelVersionPreference, metaModelVersionPreferencePageId);
-		metaModelVersionGroup.createContent(parent, 3, false);
+		if (baseMetaModelDescriptor != null && metaModelVersionPreference != null) {
+			metaModelVersionGroup = new BasicMetaModelVersionGroup<T>("BasicMetaModelVersionGroup", baseMetaModelDescriptor, //$NON-NLS-1$
+					metaModelVersionPreference, metaModelVersionPreferencePageId);
+			metaModelVersionGroup.createContent(parent, 3, false);
+		}
 	}
 
 	public T getMetaModelVersionDescriptor() {
-		return metaModelVersionGroup.getMetaModelVersionDescriptor();
+		if (metaModelVersionPreference != null) {
+			return metaModelVersionGroup.getMetaModelVersionDescriptor();
+		}
+		return null;
 	}
 }

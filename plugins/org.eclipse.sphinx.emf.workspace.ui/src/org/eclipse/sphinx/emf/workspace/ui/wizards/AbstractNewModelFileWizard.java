@@ -11,6 +11,7 @@
  *     itemis - Initial API and implementation
  *     itemis - [405023] Enable NewModelFileCreationPage to be used without having to pass an instance of NewModelFileProperties to its constructor
  *     itemis - [406062] Removal of the required project nature parameter in NewModelFileCreationPage constructor and CreateNewModelProjectJob constructor
+ *     itemis - [406194] Enable title and descriptions of model project and file creation wizards to be calculated automatically
  *
  * </copyright>
  */
@@ -22,6 +23,7 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.workspace.jobs.CreateNewModelFileJob;
 import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
@@ -46,6 +48,25 @@ public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor>
 
 	protected NewModelFileCreationPage<T> mainPage;
 
+	protected String metaModelName;
+
+	/**
+	 * Creates a wizard for creating a new model file in the workspace.
+	 */
+	public AbstractNewModelFileWizard() {
+		this(null);
+	}
+
+	/**
+	 * Creates a wizard for creating a new model file in the workspace.
+	 * 
+	 * @param metaModelName
+	 *            the name of the metamodel the new model file should be based on
+	 */
+	public AbstractNewModelFileWizard(String metaModelName) {
+		this.metaModelName = metaModelName;
+	}
+
 	/*
 	 * @see org.eclipse.ui.wizards.newresource.BasicNewResourceWizard#init(org.eclipse.ui.IWorkbench,
 	 * org.eclipse.jface.viewers.IStructuredSelection)
@@ -53,7 +74,8 @@ public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor>
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		super.init(workbench, selection);
-		setWindowTitle(Messages.wizard_newModelFile_title);
+
+		setWindowTitle(NLS.bind(Messages.wizard_newModelFile_title, metaModelName != null ? metaModelName : Messages.default_metamodelName_cap));
 	}
 
 	/*
@@ -67,9 +89,10 @@ public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor>
 	}
 
 	/**
-	 * Creates the {@link NewModelFileCreationPage main page} for the creation of the new model file.
+	 * Creates the {@link NewModelFileCreationPage main page} for the creation of the new model file. This method must
+	 * be overridden by clients to create a specific main page as appropriate.
 	 * 
-	 * @return a main page for the creation of the new model file as appropriate
+	 * @return a main page for the creation of the new model file
 	 */
 	protected abstract NewModelFileCreationPage<T> createMainPage();
 
@@ -111,15 +134,30 @@ public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor>
 	}
 
 	/**
-	 * Creates a new instance of {@linkplain CreateNewModelFileJob}. This method may be overridden by clients to create
-	 * a specific create new model file job.
+	 * Creates a new instance of {@linkplain CreateNewModelFileJob}.
 	 * 
 	 * @param newFile
 	 *            the new model {@linkplain IFile file} to be created
 	 * @return a new instance of job that creates a new model file. This job is a unit of runnable work that can be
 	 *         scheduled to be run with the job manager.
 	 */
-	protected abstract Job createCreateNewModelFileJob(IFile newFile);
+	protected final Job createCreateNewModelFileJob(IFile newFile) {
+		String jobName = NLS.bind(Messages.job_creatingNewModelFile_name, metaModelName != null ? metaModelName : Messages.default_metamodelName);
+		return doCreateCreateNewModelFileJob(jobName, newFile);
+	}
+
+	/**
+	 * Creates a new instance of {@linkplain CreateNewModelFileJob}. This method must be overridden by clients to create
+	 * a specific model file creation job as appropriate.
+	 * 
+	 * @param jobName
+	 *            the pre-calculated name of the job
+	 * @param newFile
+	 *            the new model {@linkplain IFile file} to be created
+	 * @return a new instance of job that creates a new model file. This job is a unit of runnable work that can be
+	 *         scheduled to be run with the job manager.
+	 */
+	protected abstract Job doCreateCreateNewModelFileJob(String jobName, IFile newFile);
 
 	/**
 	 * Opens newly created model in an editor.

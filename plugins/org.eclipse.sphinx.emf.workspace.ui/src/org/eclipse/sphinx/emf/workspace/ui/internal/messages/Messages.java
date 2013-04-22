@@ -73,6 +73,7 @@ public class Messages extends NLS {
 	public static String wizard_newModelFile_title;
 
 	public static String page_newInitialModelCreation_title;
+	public static String page_newInitialModelCreation_defaultTitle;
 	public static String page_newInitialModelCreation_description;
 
 	public static String combo_metaModelDescriptor_label;
@@ -96,7 +97,10 @@ public class Messages extends NLS {
 	public static String default_modelFileBaseName;
 	public static String default_requiredProjectType;
 
-	public static String job_creatingNewModelFile;
+	public static String job_creatingNewModelFile_name;
+	
+	public static String default_metamodelName;
+	public static String default_metamodelName_cap;
 
 	static {
 		// initialize resource bundle

@@ -1,16 +1,17 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2013 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [400306] Add a NewModelCreationPage class allowing to choose the metamodel, EPackage and EClassifier when creating a new model file
  *     itemis - [406062] Removal of the required project nature parameter in NewModelFileCreationPage constructor and CreateNewModelProjectJob constructor
+ *     itemis - [406194] Enable title and descriptions of model project and file creation wizards to be calculated automatically
  *
  * </copyright>
  */
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
@@ -27,6 +29,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
@@ -230,8 +233,8 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 
 			// Set the relative supported epackages depending on the metamodel selection result, and fill the resource
 			// of ePackageCombo
-			setSupportedEPackages();
-			fillSupportedEPackages();
+			initSupportedEPackages();
+			fillEPackageCombo();
 		}
 	}
 
@@ -272,8 +275,8 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 			storeBrowserSelectionEPackage((ComboButtonField) field, result);
 
 			// Set relative supported eClassifiers, and fill the resource of eClassifierCombo
-			setSupportedEClassifiers();
-			fillSupportedEClassifiers();
+			initSupportedEClassifiers();
+			fillEClassifierCombo();
 		}
 	}
 
@@ -326,18 +329,27 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 	 *            the current resource {@linkplain ISelection selection}
 	 * @param initialModelProperties
 	 *            the chosen {@linkplain InitialModelProperties initial model properties} (metamodel, EPackage and
-	 *            EClassifier) to be used as basis for creating the initial model of the new model file
+	 *            EClassifier) to be used as basis for creating the initial model of the new model file, must not be
+	 *            <code>null</code>
 	 * @param baseMetaModelDescriptor
 	 *            the base meta model descriptor to be used for the creation of model file
 	 */
 	public InitialModelCreationPage(String pageName, ISelection selection, InitialModelProperties<T> initialModelProperties, T baseMetaModelDescriptor) {
 		super(pageName);
-		setTitle(Messages.page_newInitialModelCreation_title);
-		setDescription(Messages.page_newInitialModelCreation_description);
+		Assert.isNotNull(initialModelProperties);
+		Assert.isLegal(baseMetaModelDescriptor != MetaModelDescriptorRegistry.NO_MM);
 
 		this.selection = selection;
 		this.initialModelProperties = initialModelProperties;
 		this.baseMetaModelDescriptor = baseMetaModelDescriptor;
+
+		if (baseMetaModelDescriptor != null && baseMetaModelDescriptor.getName() != MetaModelDescriptorRegistry.ANY_MM.getName()) {
+			setTitle(NLS.bind(Messages.page_newInitialModelCreation_title, baseMetaModelDescriptor.getName()));
+			setDescription(NLS.bind(Messages.page_newInitialModelCreation_description, baseMetaModelDescriptor.getName()));
+		} else {
+			setTitle(Messages.page_newInitialModelCreation_defaultTitle);
+			setDescription(NLS.bind(Messages.page_newInitialModelCreation_description, Messages.default_metamodelName));
+		}
 
 		// Initialize supported meta-models
 		supportedMetaModelDescriptors = getSupportedMetaModelDescriptors();
@@ -380,12 +392,16 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 
 		// Add listeners
 		metaModelCombo.addFieldListener(new fieldListener());
-		fillSupportedMetaModels();
+		fillMetaModelCombo();
 		ePackageCombo.addFieldListener(new fieldListener());
 		eClassifierCombo.addFieldListener(new fieldListener());
 
 		setControl(container);
 		setPageComplete(validatePage());
+
+		// Show description on opening
+		setErrorMessage(null);
+		setMessage(null);
 	}
 
 	/**
@@ -439,7 +455,7 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 	/**
 	 * Sets the supported meta-model descriptors as the resource items in the meta-model combo field.
 	 */
-	protected void fillSupportedMetaModels() {
+	protected void fillMetaModelCombo() {
 		String[] items = new String[supportedMetaModelDescriptors.size()];
 		for (int index = 0; index < supportedMetaModelDescriptors.size(); index++) {
 			items[index] = supportedMetaModelDescriptors.get(index).getName();
@@ -450,7 +466,7 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 	/**
 	 * Sets the supported EPackages as the resource items in the EPackage combo field.
 	 */
-	private void fillSupportedEPackages() {
+	protected void fillEPackageCombo() {
 
 		String[] items = new String[supportedEPackages.size()];
 		for (int index = 0; index < supportedEPackages.size(); index++) {
@@ -463,7 +479,7 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 	/**
 	 * Set the supported EClassifiers as the resource items in the EClassifier combo field.
 	 */
-	private void fillSupportedEClassifiers() {
+	protected void fillEClassifierCombo() {
 		String[] items = new String[supportedEClassifiers.size()];
 		for (int index = 0; index < supportedEClassifiers.size(); index++) {
 			items[index] = supportedEClassifiers.get(index).getName();
@@ -483,12 +499,12 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 		public void dialogFieldChanged(IField field) {
 			if (field == metaModelCombo) {
 				storeSelectionMetaModel((ComboButtonField) field);
-				setSupportedEPackages();
-				fillSupportedEPackages();
+				initSupportedEPackages();
+				fillEPackageCombo();
 			} else if (field == ePackageCombo) {
 				storeSelectionEPackage((ComboButtonField) field);
-				setSupportedEClassifiers();
-				fillSupportedEClassifiers();
+				initSupportedEClassifiers();
+				fillEClassifierCombo();
 			} else if (field == eClassifierCombo) {
 				storeSelectionEClassifier((ComboButtonField) field);
 			}
@@ -674,7 +690,7 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 	/**
 	 * Sets supported EPackages depending on the selected meta-model descriptor
 	 */
-	private void setSupportedEPackages() {
+	protected void initSupportedEPackages() {
 		T metaModelDescriptor = initialModelProperties.getMetaModelDescriptor();
 		if (metaModelDescriptor != null) {
 			supportedEPackages.clear();
@@ -691,7 +707,7 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 	/**
 	 * Sets supported EClassifiers depending on the selected EPackage value
 	 */
-	private void setSupportedEClassifiers() {
+	protected void initSupportedEClassifiers() {
 		EPackage epackage = initialModelProperties.getRootObjectEPackage();
 		if (epackage != null) {
 			supportedEClassifiers.clear();

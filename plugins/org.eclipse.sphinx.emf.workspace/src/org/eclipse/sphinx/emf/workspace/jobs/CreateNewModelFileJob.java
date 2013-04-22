@@ -31,6 +31,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.Activator;
@@ -78,6 +79,8 @@ public class CreateNewModelFileJob extends WorkspaceJob {
 		super(jobName);
 		Assert.isNotNull(newFile);
 		Assert.isNotNull(metaModelDescriptor);
+		Assert.isLegal(metaModelDescriptor != MetaModelDescriptorRegistry.ANY_MM);
+		Assert.isLegal(metaModelDescriptor != MetaModelDescriptorRegistry.NO_MM);
 		Assert.isNotNull(rootObjectEPackage);
 		Assert.isNotNull(rootObjectEClassifier);
 
@@ -86,7 +89,7 @@ public class CreateNewModelFileJob extends WorkspaceJob {
 		this.rootObjectEPackage = rootObjectEPackage;
 		this.rootObjectEClassifier = rootObjectEClassifier;
 
-		// set priority and rule
+		// Set priority and rule
 		setPriority(Job.BUILD);
 		setRule(ExtendedPlatform.createSaveNewSchedulingRule(newFile));
 	}

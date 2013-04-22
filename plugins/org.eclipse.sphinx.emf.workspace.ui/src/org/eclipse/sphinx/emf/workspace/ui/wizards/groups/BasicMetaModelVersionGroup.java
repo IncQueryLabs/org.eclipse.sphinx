@@ -12,6 +12,7 @@
  *     itemis - [405059] Enable BasicMetaModelVersionGroup to open appropriate model version preference page
  *     itemis - [405075] Improve type safety of NewModelProjectCreationPage and BasicMetaModelVersionGroup wrt base metamodel descriptor and metamodel version preference
  *     itemis - [406053] Separate class construction of BasicMetaModelVersionGroup and creation of its group content in different methods
+ *     itemis - [406194] Enable title and descriptions of model project and file creation wizards to be calculated automatically
  *
  * </copyright>
  */
@@ -20,8 +21,6 @@ package org.eclipse.sphinx.emf.workspace.ui.wizards.groups;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -49,13 +48,11 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 
 /**
  * A basic metamodel version group which is composed of buttons for the workspace default metamodel version and
- * alternate metamodel version, configureWorkspaceSettingsLink, and a Combo for different metamodel versions.
+ * alternate metamodel version, configureWorkspaceSettingsLink, and a combo for different metamodel versions.
  * <p>
  * This class is useful for the creation of a new model project wizard page. It can be overridden by clients.
  */
 public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> extends AbstractGroup {
-
-	protected static final Pattern META_MODEL_NAME_PATTERN = Pattern.compile("(\\w+)( \\d(.\\d(.\\d)?)?)?"); //$NON-NLS-1$
 
 	protected static final String LAST_SELECTED_METAMODEL_VERSION_OPTION = Activator.getPlugin().getSymbolicName()
 			+ "last.selected.metamodel.version"; //$NON-NLS-1$
@@ -65,15 +62,16 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> extends 
 	protected static final int WORKSPACE_DEFAULT_METAMODEL_VERSION = 0;
 	protected static final int ALTERNATE_METAMODEL_VERSION = 1;
 
-	private IProjectWorkspacePreference<T> metaModelVersionPreference;
-	private String metaModelVersionPreferencePageId;
+	protected T baseMetaModelDescriptor;
+	protected IProjectWorkspacePreference<T> metaModelVersionPreference;
+	protected String metaModelVersionPreferencePageId;
+
 	protected SelectionButtonField workspaceDefaultMetaModelVersionButton, alternateMetaModelVersionButton;
 	protected ComboField metaModelVersionCombo;
 	protected Link configureWorkspaceSettingsLink;
-	protected List<T> supportedMetaModelVersions = new ArrayList<T>();
-	protected T baseMetaModelDescriptor;
 
-	private String metaModelVersionName = null;
+	protected List<T> supportedMetaModelVersions = new ArrayList<T>();
+
 	private String metaModelVersionLabel = null;
 
 	private IFieldListener fieldListener = new IFieldListener() {
@@ -120,23 +118,25 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> extends 
 	 * 
 	 * @param groupName
 	 *            the name of the group
-	 * @param parent
-	 *            the parent {@linkplain Composite composite}
 	 * @param baseMetaModelDescriptor
-	 *            the base {@linkplain T metamodel} of the model project to be created
+	 *            the base {@linkplain IMetaModelDescriptor metamodel} of the model project to be created, must not be
+	 *            <code>null</code>
 	 * @param metaModelVersionPreference
-	 *            the metamodel version {@linkplain IProjectWorkspacePreference preference} object
+	 *            the meta-model version that the model project will be used for, must not be <code>null</code>
 	 * @param metaModelVersionPreferencePageId
-	 *            the metamodel version preference page id; must not be <code>null</code>
+	 *            the id of the metamodel version preference page
 	 */
-	public BasicMetaModelVersionGroup(String groupName, Composite parent, T baseMetaModelDescriptor,
-			IProjectWorkspacePreference<T> metaModelVersionPreference, String metaModelVersionPreferencePageId) {
+	public BasicMetaModelVersionGroup(String groupName, T baseMetaModelDescriptor, IProjectWorkspacePreference<T> metaModelVersionPreference,
+			String metaModelVersionPreferencePageId) {
 		super(groupName);
+		Assert.isNotNull(baseMetaModelDescriptor);
+		Assert.isLegal(baseMetaModelDescriptor != MetaModelDescriptorRegistry.ANY_MM);
+		Assert.isLegal(baseMetaModelDescriptor != MetaModelDescriptorRegistry.NO_MM);
 		Assert.isNotNull(metaModelVersionPreference);
 
+		this.baseMetaModelDescriptor = baseMetaModelDescriptor;
 		this.metaModelVersionPreference = metaModelVersionPreference;
 		this.metaModelVersionPreferencePageId = metaModelVersionPreferencePageId;
-		this.baseMetaModelDescriptor = baseMetaModelDescriptor;
 	}
 
 	/*
@@ -201,28 +201,6 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> extends 
 	}
 
 	/**
-	 * Returns the name of metamodel version
-	 */
-	protected String getMetaModelVersionName() {
-		if (metaModelVersionName == null) {
-			T mmDescriptor = metaModelVersionPreference.getFromWorkspace();
-			Matcher matcher = META_MODEL_NAME_PATTERN.matcher(mmDescriptor.getName());
-			if (matcher.find()) {
-				metaModelVersionName = matcher.group(1);
-			}
-		}
-		return metaModelVersionName;
-	}
-
-	/**
-	 * Sets the name of this metamodel version. This method can be used if the metamodel version name is not correctly
-	 * calculated by the META_MODEL_NAME_PATTERN.
-	 */
-	public void setMetaModelVersionName(String metaModelVersionName) {
-		this.metaModelVersionName = metaModelVersionName;
-	}
-
-	/**
 	 * Gets the label of this metamodel version, "version" by default.
 	 */
 	protected String getMetaModelVersionLabel() {
@@ -245,7 +223,7 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> extends 
 	 * For example, Hummingbird version options, AUTOSAR release options, etc.
 	 */
 	protected String getMetaModelVersionGroupLabel() {
-		return NLS.bind(Messages.group_metaModelVersion_label, getMetaModelVersionName(), getMetaModelVersionLabel());
+		return NLS.bind(Messages.group_metaModelVersion_label, baseMetaModelDescriptor.getName(), getMetaModelVersionLabel());
 	}
 
 	/**

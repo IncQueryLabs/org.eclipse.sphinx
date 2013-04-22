@@ -27,24 +27,29 @@ public class BasicNewModelProjectWizard<T extends IMetaModelDescriptor> extends 
 	public BasicNewModelProjectWizard() {
 	}
 
-	public BasicNewModelProjectWizard(T metaModelVersionDescriptor, IProjectWorkspacePreference<T> metaModelVersionPreference) {
-		super(metaModelVersionDescriptor, metaModelVersionPreference);
+	public BasicNewModelProjectWizard(boolean createWorkingSetGroup, T baseMetaModelDescriptor,
+			IProjectWorkspacePreference<T> metaModelVersionPreference, String metaModelVersionPreferencePageId) {
+		super(createWorkingSetGroup, baseMetaModelDescriptor, metaModelVersionPreference, metaModelVersionPreferencePageId);
 	}
 
 	/**
-	 * @deprecated Use {@link #BasicNewModelProjectWizard(IMetaModelDescriptor, IProjectWorkspacePreference)} instead.
+	 * @deprecated Use
+	 *             {@link #BasicNewModelProjectWizard(boolean, IMetaModelDescriptor, IProjectWorkspacePreference, String)
+	 *             )} instead.
 	 */
 	@Deprecated
 	public BasicNewModelProjectWizard(String projectNatureId, IProjectWorkspacePreference<T> metaModelVersionPreference) {
-		this((T) null, metaModelVersionPreference);
+		this(false, (T) null, metaModelVersionPreference, null);
 	}
 
 	/**
-	 * @deprecated Use {@link #BasicNewModelProjectWizard(IMetaModelDescriptor, IProjectWorkspacePreference)} instead.
+	 * @deprecated Use
+	 *             {@link #BasicNewModelProjectWizard(boolean, IMetaModelDescriptor, IProjectWorkspacePreference, String)
+	 *             )} instead.
 	 */
 	@Deprecated
 	public BasicNewModelProjectWizard(T metaModelVersionDescriptor, String projectNatureId, IProjectWorkspacePreference<T> metaModelVersionPreference) {
-		this(metaModelVersionDescriptor, metaModelVersionPreference);
+		this(false, (T) null, metaModelVersionPreference, null);
 	}
 
 	@Override

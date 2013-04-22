@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [406194] Enable title and descriptions of model project and file creation wizards to be calculated automatically
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird.ide.metamodel;
@@ -23,6 +24,11 @@ import org.eclipse.sphinx.emf.metamodel.MetaModelVersionData;
  * metamodel descriptors.
  */
 public class HummingbirdMMDescriptor extends AbstractMetaModelDescriptor implements Comparable<HummingbirdMMDescriptor> {
+
+	/**
+	 * The base name of all Hummingbird metamodel versions.
+	 */
+	public static final String BASE_NAME = "Hummingbird"; //$NON-NLS-1$
 
 	/**
 	 * The base namespace of all Hummingbird metamodel versions.
@@ -45,7 +51,7 @@ public class HummingbirdMMDescriptor extends AbstractMetaModelDescriptor impleme
 	 * Private default constructor for singleton pattern.
 	 */
 	private HummingbirdMMDescriptor() {
-		this(ID, null);
+		super(ID, BASE_NAMESPACE, BASE_NAME);
 	}
 
 	protected HummingbirdMMDescriptor(String identifier, MetaModelVersionData versionData) {

@@ -66,19 +66,19 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 	/**
 	 * Creates a new instance of model project job
 	 * 
-	 * @param name
+	 * @param jobName
 	 *            the name of the job, must not be null
 	 * @param newProject
 	 *            the new project to be created, must not be null
 	 */
-	public CreateNewModelProjectJob(String name, IProject newProject) {
-		this(name, newProject, null, null);
+	public CreateNewModelProjectJob(String jobName, IProject newProject) {
+		this(jobName, newProject, null, null);
 	}
 
 	/**
 	 * Creates a new instance of model project job with a required project nature id.
 	 * 
-	 * @param name
+	 * @param jobName
 	 *            the name of the job, must not be null
 	 * @param natureId
 	 *            the (principal) nature of the project to be created; when set to <code>null</code> no nature will be
@@ -86,14 +86,14 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 	 * @deprecated Use {@link #CreateNewModelProjectJob(String, IProject, URI, String)} instead.
 	 */
 	@Deprecated
-	public CreateNewModelProjectJob(String name, String natureId) {
-		this(name, ResourcesPlugin.getWorkspace().getRoot().getProject("NewModelProject"), null, natureId); //$NON-NLS-1$
+	public CreateNewModelProjectJob(String jobName, String natureId) {
+		this(jobName, ResourcesPlugin.getWorkspace().getRoot().getProject("NewModelProject"), null, natureId); //$NON-NLS-1$
 	}
 
 	/**
 	 * Creates a new instance of model project job with a required project nature id.
 	 * 
-	 * @param name
+	 * @param jobNname
 	 *            the name of the job, must not be null
 	 * @param newProject
 	 *            the new project to be created, must not be null
@@ -104,14 +104,15 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 	 *            the (principal) nature of the project to be created; when set to <code>null</code> no nature will be
 	 *            added
 	 */
-	public CreateNewModelProjectJob(String name, IProject newProject, URI location, String natureId) {
-		super(name);
+	public CreateNewModelProjectJob(String jobName, IProject newProject, URI location, String natureId) {
+		super(jobName);
 		Assert.isNotNull(newProject);
 
 		this.newProject = project = newProject;
 		this.location = location;
 		this.natureId = natureId;
 
+		// Set priority and rule
 		setPriority(Job.BUILD);
 		setRule(ResourcesPlugin.getWorkspace().getRoot());
 	}
@@ -119,7 +120,7 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 	/**
 	 * Creates a new instance of model project job.
 	 * 
-	 * @param name
+	 * @param jobName
 	 *            the name of the job, must not be null
 	 * @param newProject
 	 *            the new project to be created, must not be null
@@ -133,9 +134,9 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 	 *            the metamodel version preference of the project; when set to <code>null</code> no metamodel version
 	 *            will be configured
 	 */
-	public CreateNewModelProjectJob(String name, IProject newProject, URI location, T metaModelVersionDescriptor,
+	public CreateNewModelProjectJob(String jobName, IProject newProject, URI location, T metaModelVersionDescriptor,
 			IProjectWorkspacePreference<T> metaModelVersionPreference) {
-		this(name, newProject, location, metaModelVersionPreference != null ? metaModelVersionPreference.getRequiredProjectNatureId() : null);
+		this(jobName, newProject, location, metaModelVersionPreference != null ? metaModelVersionPreference.getRequiredProjectNatureId() : null);
 		this.metaModelVersionDescriptor = metaModelVersionDescriptor;
 		this.metaModelVersionPreference = metaModelVersionPreference;
 	}
@@ -143,7 +144,7 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 	/**
 	 * Creates a new instance of model project job.
 	 * 
-	 * @param name
+	 * @param jobName
 	 *            the name of the job, must not be null
 	 * @param newProject
 	 *            the new project to be created, must not be null
@@ -164,9 +165,9 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 	 *             instead.
 	 */
 	@Deprecated
-	public CreateNewModelProjectJob(String name, IProject newProject, URI location, T metaModelVersionDescriptor, String natureId,
+	public CreateNewModelProjectJob(String jobName, IProject newProject, URI location, T metaModelVersionDescriptor, String natureId,
 			IProjectWorkspacePreference<T> metaModelVersionPreference) {
-		this(name, newProject, location, natureId);
+		this(jobName, newProject, location, natureId);
 		this.metaModelVersionDescriptor = metaModelVersionDescriptor;
 		this.metaModelVersionPreference = metaModelVersionPreference;
 	}
@@ -247,7 +248,7 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 		if (progress.isCanceled()) {
 			throw new OperationCanceledException();
 		}
-		progress.subTask(Messages.job_creatingNewModelProject);
+		progress.subTask(Messages.subTask_creatingNewModelProject);
 
 		IProjectDescription description = ResourcesPlugin.getWorkspace().newProjectDescription(newProject.getName());
 		description.setLocationURI(location);
@@ -273,7 +274,7 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 		}
 
 		if (natureId != null) {
-			progress.subTask(Messages.job_addingProjectNatures);
+			progress.subTask(Messages.subTask_addingProjectNatures);
 			ExtendedPlatform.addNature(newProject, natureId, progress.newChild(100));
 		}
 	}

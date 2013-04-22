@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2013 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     itemis - Initial API and implementation
- * 
+ *     itemis - [406194] Enable title and descriptions of model project and file creation wizards to be calculated automatically
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird.ide.ui.wizards.pages;
@@ -22,7 +23,6 @@ import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.InitialModelProperties;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.NewModelFileCreationPage;
 import org.eclipse.sphinx.examples.hummingbird.ide.metamodel.HummingbirdMMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird.ide.preferences.IHummingbirdPreferences;
-import org.eclipse.sphinx.examples.hummingbird.ide.ui.internal.messages.Messages;
 
 /**
  * A main page for a wizard that creates a Hummingbird file resource. The new model file is to be created based on the
@@ -44,15 +44,13 @@ public class NewHummingbirdFileCreationPage extends NewModelFileCreationPage<Hum
 	public NewHummingbirdFileCreationPage(String pageId, IStructuredSelection selection,
 			InitialModelProperties<HummingbirdMMDescriptor> initialModelProperties) {
 		super(pageId, selection, IHummingbirdPreferences.METAMODEL_VERSION, initialModelProperties);
-		setTitle(Messages.page_newHummingbirdFileCreation_title);
-		setDescription(Messages.page_newHummingbirdFileCreation_description);
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.workspace.ui.wizards.pages.NewModelFileCreationPage#getDefaultNewFileExtension()
 	 */
 	@Override
-	public String getDefaultNewFileExtension() {
+	public String getDefaultFileExtension() {
 		EPackage rootObjectEPackage = initialModelProperties.getRootObjectEPackage();
 		if (rootObjectEPackage != null) {
 			String packageName = rootObjectEPackage.getName();
@@ -62,6 +60,6 @@ public class NewHummingbirdFileCreationPage extends NewModelFileCreationPage<Hum
 			}
 		}
 
-		return super.getDefaultNewFileExtension();
+		return super.getDefaultFileExtension();
 	}
 }

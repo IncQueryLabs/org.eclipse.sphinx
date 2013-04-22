@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [406194] Enable title and descriptions of model project and file creation wizards to be calculated automatically
  *
  * </copyright>
  */
@@ -19,7 +20,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.workspace.jobs.CreateNewModelFileJob;
-import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.InitialModelCreationPage;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.InitialModelProperties;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.NewModelFileCreationPage;
@@ -53,17 +53,17 @@ public class GenericNewModelFileWizard extends AbstractNewModelFileWizard<IMetaM
 	 */
 	@Override
 	protected NewModelFileCreationPage<IMetaModelDescriptor> createMainPage() {
-		return new NewModelFileCreationPage<IMetaModelDescriptor>("NewModelFileCreationPage", selection, null, initialModelProperties); //$NON-NLS-1$
+		return new NewModelFileCreationPage<IMetaModelDescriptor>("NewModelFileCreationPage", selection, initialModelProperties); //$NON-NLS-1$
 	}
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.workspace.ui.wizards.AbstractNewModelFileWizard#createCreateNewModelFileJob(org.eclipse
-	 * .core.resources.IFile)
+	 * org.eclipse.sphinx.emf.workspace.ui.wizards.AbstractNewModelFileWizard#doCreateCreateNewModelFileJob(java.lang
+	 * .String, org.eclipse.core.resources.IFile)
 	 */
 	@Override
-	protected Job createCreateNewModelFileJob(IFile newFile) {
-		return new CreateNewModelFileJob(Messages.job_creatingNewModelFile, newFile, initialModelProperties.getMetaModelDescriptor(),
+	protected Job doCreateCreateNewModelFileJob(String jobName, IFile newFile) {
+		return new CreateNewModelFileJob(jobName, newFile, initialModelProperties.getMetaModelDescriptor(),
 				initialModelProperties.getRootObjectEPackage(), initialModelProperties.getRootObjectEClassifier());
 	}
 }

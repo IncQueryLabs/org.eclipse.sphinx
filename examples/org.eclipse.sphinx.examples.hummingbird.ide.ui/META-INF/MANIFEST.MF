@@ -16,7 +16,6 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.sphinx.examples.hummingbird.ide.ui.decorators,
  org.eclipse.sphinx.examples.hummingbird.ide.ui.internal;x-internal:=true,
- org.eclipse.sphinx.examples.hummingbird.ide.ui.internal.messages;x-internal:=true,
  org.eclipse.sphinx.examples.hummingbird.ide.ui.internal.preferences;x-internal:=true,
  org.eclipse.sphinx.examples.hummingbird.ide.ui.wizards,
  org.eclipse.sphinx.examples.hummingbird.ide.ui.wizards.pages

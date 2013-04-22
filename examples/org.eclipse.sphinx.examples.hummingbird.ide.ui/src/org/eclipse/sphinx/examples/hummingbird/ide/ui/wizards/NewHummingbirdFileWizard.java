@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2013 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     itemis - Initial API and implementation
- * 
+ *     itemis - [406194] Enable title and descriptions of model project and file creation wizards to be calculated automatically
+ *
  * </copyright>
  */
 
@@ -17,19 +18,16 @@ package org.eclipse.sphinx.examples.hummingbird.ide.ui.wizards;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.sphinx.emf.workspace.jobs.CreateNewModelFileJob;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.AbstractNewModelFileWizard;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.InitialModelCreationPage;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.InitialModelProperties;
 import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.NewModelFileCreationPage;
 import org.eclipse.sphinx.examples.hummingbird.ide.metamodel.HummingbirdMMDescriptor;
-import org.eclipse.sphinx.examples.hummingbird.ide.ui.internal.messages.Messages;
 import org.eclipse.sphinx.examples.hummingbird.ide.ui.wizards.pages.NewHummingbirdFileCreationPage;
-import org.eclipse.ui.IWorkbench;
 
 /**
- * Generic wizard that creates a new Hummingbird file in the workspace. Two pages are added for selecting the properties
+ * Basic wizard that creates a new Hummingbird file in the workspace. Two pages are added for selecting the properties
  * of the initial Hummingbird model and the Hummingbird file to be created. When being finished a
  * {@linkplain CreateNewModelFileJob new model file job} is run to create and save the new Hummingbird file in the
  * workspace.
@@ -40,14 +38,8 @@ public class NewHummingbirdFileWizard extends AbstractNewModelFileWizard<Humming
 
 	protected InitialModelCreationPage<HummingbirdMMDescriptor> initialModelCreationPage;
 
-	/*
-	 * @see org.eclipse.sphinx.emf.workspace.ui.wizards.AbstractNewModelFileWizard#init(org.eclipse.ui.IWorkbench,
-	 * org.eclipse.jface.viewers.IStructuredSelection)
-	 */
-	@Override
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		super.init(workbench, selection);
-		setWindowTitle(Messages.wizard_newHummingbirdFile_title);
+	public NewHummingbirdFileWizard() {
+		super(HummingbirdMMDescriptor.BASE_NAME);
 	}
 
 	/*
@@ -60,8 +52,6 @@ public class NewHummingbirdFileWizard extends AbstractNewModelFileWizard<Humming
 		// Create and add initial model creation page
 		initialModelCreationPage = new InitialModelCreationPage<HummingbirdMMDescriptor>("InitialHummingbirdModelCreationPage", selection, //$NON-NLS-1$
 				initialModelProperties, HummingbirdMMDescriptor.INSTANCE);
-		initialModelCreationPage.setTitle(Messages.page_newInitialHummingbirdModelCreation_title);
-		initialModelCreationPage.setDescription(Messages.page_newInitialHummingbirdModelCreation_description);
 		addPage(initialModelCreationPage);
 
 		super.addPages();
@@ -77,12 +67,12 @@ public class NewHummingbirdFileWizard extends AbstractNewModelFileWizard<Humming
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.workspace.ui.wizards.AbstractNewModelFileWizard#createCreateNewModelFileJob(org.eclipse
-	 * .core.resources.IFile)
+	 * org.eclipse.sphinx.emf.workspace.ui.wizards.AbstractNewModelFileWizard#doCreateCreateNewModelFileJob(java.lang
+	 * .String, org.eclipse.core.resources.IFile)
 	 */
 	@Override
-	protected Job createCreateNewModelFileJob(IFile newFile) {
-		return new CreateNewModelFileJob(Messages.job_createNewHummingbirdFile_name, newFile, initialModelProperties.getMetaModelDescriptor(),
+	protected Job doCreateCreateNewModelFileJob(String jobName, IFile newFile) {
+		return new CreateNewModelFileJob(jobName, newFile, initialModelProperties.getMetaModelDescriptor(),
 				initialModelProperties.getRootObjectEPackage(), initialModelProperties.getRootObjectEClassifier());
 	}
 }

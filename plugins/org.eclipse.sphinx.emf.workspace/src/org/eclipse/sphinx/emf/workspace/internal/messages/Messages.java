@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - Removed obsolete messages and improved message names
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.internal.messages;
@@ -56,15 +57,14 @@ public class Messages extends NLS {
 	public static String subtask_updatingResourceURI;
 
 	/*
-	 * Project creation
+	 * Model project and file creation
 	 */
-	public static String job_addingProjectNatures;
-	public static String job_creatingNewModelProject;
+	public static String subTask_addingProjectNatures;
+	public static String subTask_creatingNewModelProject;
+
 	/*
 	 * Error messages
 	 */
-	public static String error_problemOccurredWhenLoadingResource;
-
 	public static String error_createEditingDomainFactory;
 	public static String error_createMapping;
 
