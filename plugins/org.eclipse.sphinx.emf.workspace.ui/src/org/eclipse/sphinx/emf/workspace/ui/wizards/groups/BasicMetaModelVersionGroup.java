@@ -179,7 +179,7 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> extends 
 
 		// set the supported metamodel versions in the combo field as the available items, and set the given
 		// metaModelDescriptor as the selected item
-		fillSupportedMetaModelVersions(baseMetaModelDescriptor);
+		fillMetaModelVersionCombo(baseMetaModelDescriptor);
 
 		Combo comboControl = (Combo) metaModelVersionCombo.getComboControl();
 		comboControl.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
@@ -249,7 +249,7 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> extends 
 	 * last selected metamodel version descriptor as the selected item of the combo if it exists, otherwise uses the
 	 * default metamodel version descriptor from the workspace.
 	 */
-	protected void fillSupportedMetaModelVersions(T metaModelDescriptor) {
+	protected void fillMetaModelVersionCombo(T metaModelDescriptor) {
 		supportedMetaModelVersions = MetaModelDescriptorRegistry.INSTANCE.getDescriptors(metaModelDescriptor, true);
 		if (!supportedMetaModelVersions.isEmpty()) {
 			String[] items = new String[supportedMetaModelVersions.size()];

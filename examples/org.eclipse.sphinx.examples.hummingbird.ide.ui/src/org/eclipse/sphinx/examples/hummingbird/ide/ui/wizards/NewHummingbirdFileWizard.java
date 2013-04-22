@@ -67,8 +67,8 @@ public class NewHummingbirdFileWizard extends AbstractNewModelFileWizard<Humming
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.workspace.ui.wizards.AbstractNewModelFileWizard#doCreateCreateNewModelFileJob(java.lang
-	 * .String, org.eclipse.core.resources.IFile)
+	 * org.eclipse.sphinx.emf.workspace.ui.wizards.AbstractNewModelFileWizard#createCreateNewModelFileJob(java.lang.
+	 * String, org.eclipse.core.resources.IFile)
 	 */
 	@Override
 	protected Job createCreateNewModelFileJob(String jobName, IFile newFile) {
