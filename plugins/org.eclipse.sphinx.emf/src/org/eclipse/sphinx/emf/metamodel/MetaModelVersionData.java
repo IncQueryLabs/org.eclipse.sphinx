@@ -38,7 +38,7 @@ public class MetaModelVersionData {
 	}
 
 	/**
-	 * @deprecated Use #MetaModelVersionData(String, String, String) instead. See
+	 * @deprecated Use {@link #MetaModelVersionData(String, String, String)}) instead. See
 	 *             {@link MetaModelVersionData#getOrdinal()} for details.
 	 */
 	@Deprecated
