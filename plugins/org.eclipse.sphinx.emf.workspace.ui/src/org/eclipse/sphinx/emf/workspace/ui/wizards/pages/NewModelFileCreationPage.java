@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ListIterator;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -55,8 +54,6 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
  * getDefaultFileExtension(), etc.
  */
 public class NewModelFileCreationPage<T extends IMetaModelDescriptor> extends WizardNewFileCreationPage {
-
-	protected static final Pattern META_MODEL_NAME_PATTERN = Pattern.compile("(\\w+)( \\d(.\\d(.\\d)?)?)?"); //$NON-NLS-1$
 
 	protected IStructuredSelection selection;
 	protected IProjectWorkspacePreference<T> metaModelVersionPreference = null;
