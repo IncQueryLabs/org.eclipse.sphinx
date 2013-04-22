@@ -14,7 +14,11 @@
  */
 package org.eclipse.sphinx.emf.workspace.ui.wizards;
 
+import java.net.URI;
+
+import org.eclipse.core.resources.IProject;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.workspace.jobs.CreateNewModelProjectJob;
 import org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
@@ -54,6 +58,39 @@ public class BasicNewModelProjectWizard<T extends IMetaModelDescriptor> extends 
 
 	@Override
 	protected WizardNewProjectCreationPage createMainPage() {
+		return createMainPage(false);
+	}
+
+	/**
+	 * @deprecated Use {@link #createMainPage()} instead.
+	 */
+	@Deprecated
+	protected WizardNewProjectCreationPage createMainPage(boolean createWorkingSetGroup) {
+		return null;
+	}
+
+	@Override
+	protected CreateNewModelProjectJob<T> createCreateNewModelProjectJob(String jobName, IProject newProject, URI location) {
+		CreateNewModelProjectJob<T> job = createCreateNewProjectJob(jobName, newProject, location);
+		if (job == null) {
+			job = createCreateNewModelProjectJob(newProject, location);
+		}
+		return job;
+	}
+
+	/**
+	 * @deprecated Use {@link #createCreateNewModelProjectJob(String, IProject, URI)} instead.
+	 */
+	@Deprecated
+	protected CreateNewModelProjectJob<T> createCreateNewModelProjectJob(IProject newProject, URI location) {
+		return null;
+	}
+
+	/**
+	 * @deprecated Use {@link #createCreateNewModelProjectJob(String, IProject, URI)} instead.
+	 */
+	@Deprecated
+	protected CreateNewModelProjectJob<T> createCreateNewProjectJob(String name, IProject newProject, URI location) {
 		return null;
 	}
 }

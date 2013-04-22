@@ -104,10 +104,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 	 */
 	@Override
 	public void addPages() {
-		mainPage = createMainPage(false);
-		if (mainPage == null) {
-			mainPage = createMainPage();
-		}
+		mainPage = createMainPage();
 		Assert.isNotNull(mainPage);
 		addPage(mainPage);
 
@@ -127,14 +124,6 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 	protected WizardNewProjectCreationPage createMainPage() {
 		return new NewModelProjectCreationPage<T>("NewModelProjectCreationPage", getSelection(), createWorkingSetGroup, baseMetaModelDescriptor, //$NON-NLS-1$
 				metaModelVersionPreference, metaModelVersionPreferencePageId);
-	}
-
-	/**
-	 * @deprecated Use {@link #createMainPage()} instead.
-	 */
-	@Deprecated
-	protected WizardNewProjectCreationPage createMainPage(boolean createWorkingSetGroup) {
-		return null;
 	}
 
 	/**
@@ -160,10 +149,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 		// Create a new model project creation job
 		String jobName = NLS.bind(Messages.job_createNewModelProject_name,
 				baseMetaModelDescriptor.getName() != null ? baseMetaModelDescriptor.getName() : Messages.default_metamodelName);
-		CreateNewModelProjectJob<T> job = createCreateNewProjectJob(jobName, projectHandle, location);
-		if (job == null) {
-			job = createCreateNewModelProjectJob(jobName, projectHandle, location);
-		}
+		CreateNewModelProjectJob<T> job = createCreateNewModelProjectJob(jobName, projectHandle, location);
 		job.setReferencedProjects(referencedProjects);
 		job.setUIInfoAdaptable(WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
 
@@ -211,13 +197,5 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 
 		return new CreateNewModelProjectJob<T>(jobName, newProject, location, newModelProjectCreationPage.getMetaModelVersionDescriptor(),
 				metaModelVersionPreference);
-	}
-
-	/**
-	 * @deprecated Use {@link #createCreateNewModelProjectJob(String, IProject, URI)} instead.
-	 */
-	@Deprecated
-	protected CreateNewModelProjectJob<T> createCreateNewProjectJob(String name, IProject newProject, URI location) {
-		return null;
 	}
 }
