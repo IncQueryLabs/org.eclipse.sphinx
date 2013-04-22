@@ -1,16 +1,17 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 BMW Car IT, See4sys and others.
+ *
+ * Copyright (c) 2008-2013 BMW Car IT, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     BMW Car IT - Initial API and implementation
  *     See4sys - Added support for EPackage URIs
- * 
+ *     itemis - [406203] Enable navigation from a version-specific metamodel descriptor to the underlying base metamodel descriptor
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.metamodel;
@@ -22,6 +23,7 @@ public class MetaModelVersionData {
 	private String fNsPostfix;
 	private String fEPackageNsURIPostfixPattern;
 	private String fName;
+	private IMetaModelDescriptor fBaseDescriptor;
 
 	/**
 	 * @deprecated See {@link MetaModelVersionData#getOrdinal()} for details.
@@ -51,6 +53,15 @@ public class MetaModelVersionData {
 		fOrdinal = ordinal;
 	}
 
+	public MetaModelVersionData(String nsPostfix, String ePackageNsURIPostfixPattern, String name, IMetaModelDescriptor baseDescriptor) {
+		Assert.isNotNull(name);
+
+		fNsPostfix = nsPostfix;
+		fEPackageNsURIPostfixPattern = ePackageNsURIPostfixPattern;
+		fName = name;
+		fBaseDescriptor = baseDescriptor;
+	}
+
 	public String getNsPostfix() {
 		return fNsPostfix;
 	}
@@ -70,5 +81,9 @@ public class MetaModelVersionData {
 
 	public String getName() {
 		return fName;
+	}
+
+	public IMetaModelDescriptor getBaseDescriptor() {
+		return fBaseDescriptor;
 	}
 }

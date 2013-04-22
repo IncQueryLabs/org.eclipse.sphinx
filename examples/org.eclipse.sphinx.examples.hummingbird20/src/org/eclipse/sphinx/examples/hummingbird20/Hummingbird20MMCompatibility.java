@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [406203] Enable navigation from a version-specific metamodel descriptor to the underlying base metamodel descriptor
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird20;
@@ -41,14 +42,13 @@ public final class Hummingbird20MMCompatibility {
 		private static final String ID = "org.eclipse.sphinx.examples.hummingbird200"; //$NON-NLS-1$
 		private static final String NS_POSTFIX = "2.0.0"; //$NON-NLS-1$
 		private static final String EPKG_NS_URI_POSTFIX_PATTERN = "2\\.0\\.0(/\\w+)*"; //$NON-NLS-1$
-		private static final String NAME = "Hummingbird 2.0.0"; //$NON-NLS-1$
-		private static final int ORDINAL = 200;
+		private static final String NAME = BASE_NAME + " 2.0.0"; //$NON-NLS-1$
 
 		/*
 		 * Private default constructor.
 		 */
 		private Hummingbird200MMDescriptor() {
-			super(ID, new MetaModelVersionData(NS_POSTFIX, EPKG_NS_URI_POSTFIX_PATTERN, NAME, ORDINAL));
+			super(ID, new MetaModelVersionData(NS_POSTFIX, EPKG_NS_URI_POSTFIX_PATTERN, NAME, HummingbirdMMDescriptor.INSTANCE));
 		}
 
 		/*

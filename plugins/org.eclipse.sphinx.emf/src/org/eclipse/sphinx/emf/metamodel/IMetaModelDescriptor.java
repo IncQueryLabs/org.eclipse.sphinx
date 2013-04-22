@@ -1,17 +1,18 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2012 BMW Car IT, See4sys and others.
+ *
+ * Copyright (c) 2008-2013 BMW Car IT, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     BMW Car IT - Initial API and implementation
  *     See4sys - Added pattern for descriptors' label and support for EPackage URIs
  *     BMW Car IT - [373481] Performance optimizations for model loading
- * 
+ *     itemis - [406203] Enable navigation from a version-specific metamodel descriptor to the underlying base metamodel descriptor
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.metamodel;
@@ -90,6 +91,17 @@ public interface IMetaModelDescriptor {
 	 * @since 0.7.0
 	 */
 	String getName();
+
+	/**
+	 * Returns the {@link IMetaModelDescriptor descriptor} of the base meta-model behind the described meta-model. When
+	 * multiple implementations of different versions of the same meta-model exist each of them is described by a
+	 * version-specific meta-model descriptor. In this case, the base meta-model encompasses the common aspects of all
+	 * meta-model versions and the descriptor of it, if there is any, is what is returned by this method.
+	 * 
+	 * @return The descriptor of base meta-model behind the described meta-model or <code>null</code> if the described
+	 *         meta-model has no base meta-model.
+	 */
+	IMetaModelDescriptor getBaseDescriptor();
 
 	/**
 	 * Returns the ordinal of the described meta-model. The ordinal is used for sorting IMetaModelDescriptors describing

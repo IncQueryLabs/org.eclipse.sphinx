@@ -1,17 +1,18 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2012 BMW Car IT, See4sys and others.
+ *
+ * Copyright (c) 2008-2013 BMW Car IT, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     BMW Car IT - Initial API and implementation
  *     See4sys - Added support for EPackage URIs and inheritance of descriptors
  *     BMW Car IT - [373481] Performance optimizations for model loading
- * 
+ *     itemis - [406203] Enable navigation from a version-specific metamodel descriptor to the underlying base metamodel descriptor
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.metamodel;
@@ -218,6 +219,16 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	}
 
 	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getBaseDescriptor()
+	 */
+	public IMetaModelDescriptor getBaseDescriptor() {
+		if (fVersionData != null) {
+			return fVersionData.getBaseDescriptor();
+		}
+		return null;
+	}
+
+	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getOrdinal()
 	 */
 	@Deprecated
@@ -238,7 +249,6 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 		}
 		return fEPackageNsURIPattern.pattern();
 	}
-
 
 	public boolean matchesEPackageNsURIPattern(String uri) {
 		if (fEPackageNsURIPattern == null) {
