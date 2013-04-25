@@ -6,7 +6,6 @@ Bundle-Version: 0.7.0.qualifier
 Bundle-Activator: org.eclipse.sphinx.emf.ui.internal.Activator$Implementation
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
- org.eclipse.emf,
  org.eclipse.emf.common,
  org.eclipse.emf.common.ui,
  org.eclipse.core.resources,
