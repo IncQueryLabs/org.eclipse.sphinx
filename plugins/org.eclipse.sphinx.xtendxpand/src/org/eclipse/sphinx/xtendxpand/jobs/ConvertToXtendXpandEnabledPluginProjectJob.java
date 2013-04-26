@@ -13,6 +13,7 @@
  *     itemis - Revised implementation (redesigned overriding points and getters/setters, improved of naming, fixed progress monitor issues)
  *     See4sys - Replaced ConvertProjectToPluginOperation with ConvertProjectToPluginProjectJob and 
  *               moved from org.eclipse.sphinx.xtendxpand.ui.jobs to org.eclipse.sphinx.xtendxpand.jobs
+ *     itemis - [405696] Create separate plug-in for PDE depencencies
  * 
  * </copyright>
  */
@@ -50,7 +51,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.pde.internal.core.bundle.WorkspaceBundlePluginModel;
 import org.eclipse.pde.internal.core.ibundle.IBundle;
 import org.eclipse.pde.internal.core.project.PDEProject;
-import org.eclipse.sphinx.platform.jobs.ConvertProjectToPluginProjectJob;
+import org.eclipse.sphinx.pde.jobs.ConvertProjectToPluginProjectJob;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.StatusUtil;

@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.platform.jobs;
+package org.eclipse.sphinx.pde.jobs;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -45,8 +45,8 @@ import org.eclipse.pde.internal.core.natures.PDE;
 import org.eclipse.pde.internal.core.project.PDEProject;
 import org.eclipse.pde.internal.core.util.CoreUtility;
 import org.eclipse.pde.internal.core.util.IdUtil;
-import org.eclipse.sphinx.platform.internal.Activator;
-import org.eclipse.sphinx.platform.internal.messages.Messages;
+import org.eclipse.sphinx.pde.internal.Activator;
+import org.eclipse.sphinx.pde.internal.messages.Messages;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.osgi.framework.Constants;
 
@@ -86,8 +86,8 @@ public class ConvertProjectToPluginProjectJob extends WorkspaceJob {
 				monitor.worked(1);
 			}
 
-		} catch (CoreException e) {
-			PlatformLogUtil.logAsError(Activator.getDefault(), e);
+		} catch (CoreException ex) {
+			PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 		} finally {
 			monitor.done();
 		}
@@ -151,7 +151,7 @@ public class ConvertProjectToPluginProjectJob extends WorkspaceJob {
 		List<String> libraries = new ArrayList<String>();
 		try {
 			currentClassPath = javaProject.getRawClasspath();
-		} catch (JavaModelException e) {
+		} catch (JavaModelException ex) {
 		}
 		for (IClasspathEntry element : currentClassPath) {
 			int contentType = element.getEntryKind();
@@ -179,7 +179,7 @@ public class ConvertProjectToPluginProjectJob extends WorkspaceJob {
 		classPath[classPath.length - 1] = ClasspathComputer.createContainerEntry();
 		try {
 			javaProject.setRawClasspath(classPath, monitor);
-		} catch (JavaModelException e) {
+		} catch (JavaModelException ex) {
 		}
 	}
 
@@ -281,8 +281,8 @@ public class ConvertProjectToPluginProjectJob extends WorkspaceJob {
 				monitor.worked(1);
 			}
 
-		} catch (CoreException e) {
-			PlatformLogUtil.logAsError(Activator.getDefault(), e);
+		} catch (CoreException ex) {
+			PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 		} finally {
 			monitor.done();
 		}

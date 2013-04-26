@@ -28,6 +28,7 @@
 		<module>../../plugins/org.eclipse.sphinx.gmf.workspace</module>
 		<module>../../plugins/org.eclipse.sphinx.platform</module>
 		<module>../../plugins/org.eclipse.sphinx.platform.ui</module>
+		<module>../../plugins/org.eclipse.sphinx.pde</module>
 		<module>../../plugins/org.eclipse.sphinx.xtend.typesystem.emf</module>
 		<module>../../plugins/org.eclipse.sphinx.xtend.typesystem.emf.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.xtendxpand</module>
@@ -76,6 +77,7 @@
 
 		<!-- Features -->
 		<module>../../features/org.eclipse.sphinx.core-feature</module>
+		<module>../../features/org.eclipse.sphinx.pde-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.compare-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.compare.team.subversive-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms-feature</module>

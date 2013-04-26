@@ -23,8 +23,6 @@ public class Messages extends NLS {
 	public static String job_persistingContentTypeIdProperties;
 	public static String task_persistingContentTypeIdPropertiesFor;
 
-	public static String converting;
-	public static String job_convertProjectToPlugin;
 	public static String job_performingGarbageCollection;
 	public static String perfLog_$0$1runningTimeAndUserRunningTime;
 	public static String perfLog_$0runningTime;
