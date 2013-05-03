@@ -19,7 +19,7 @@
 <%@ include file="../Header.propertiesjetinc"%>
 
 pluginName=<%=genModel.getModelName()%> Edit Support (Incubation)
-providerName=Eclipse.org
+providerName=Eclipse Sphinx
 
 <%if (genModel.isCreationCommands()) {%>
 _UI_CreateChild_text = {0}
