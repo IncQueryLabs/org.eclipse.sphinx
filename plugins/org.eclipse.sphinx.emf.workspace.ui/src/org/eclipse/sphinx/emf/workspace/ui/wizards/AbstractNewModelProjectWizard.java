@@ -34,7 +34,6 @@ import org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.dialogs.WizardNewProjectReferencePage;
 import org.eclipse.ui.ide.undo.WorkspaceUndoUtil;
@@ -176,7 +175,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 								updatePerspective();
 
 								// Reveal and select the new model project in current view
-								selectAndReveal(projectHandle, PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+								selectAndReveal(projectHandle);
 							}
 						});
 					}

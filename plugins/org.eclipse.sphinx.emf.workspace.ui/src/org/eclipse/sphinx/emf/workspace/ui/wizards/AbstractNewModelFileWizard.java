@@ -36,7 +36,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
@@ -154,11 +153,15 @@ public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor>
 	 *            the new model {@linkplain IFile file} to be opened
 	 */
 	protected void openNewModelInEditor(IFile newFile) {
-		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		IWorkbenchPage page = workbenchWindow.getActivePage();
 		try {
-			page.openEditor(new FileEditorInput(newFile),
-					PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(newFile.getFullPath().toString()).getId());
+			IWorkbenchWindow window = getWorkbench().getActiveWorkbenchWindow();
+			if (window != null) {
+				IWorkbenchPage page = window.getActivePage();
+				if (page != null) {
+					page.openEditor(new FileEditorInput(newFile),
+							getWorkbench().getEditorRegistry().getDefaultEditor(newFile.getFullPath().toString()).getId());
+				}
+			}
 		} catch (PartInitException exception) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), exception);
 		}
