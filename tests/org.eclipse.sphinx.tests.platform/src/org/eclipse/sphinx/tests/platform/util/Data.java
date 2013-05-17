@@ -21,9 +21,9 @@ public class Data {
 	private String privateField;
 	protected String protectedField;
 
-	public static final String pubSField = "public static field";
-	protected static final String proSField = "protected static field";
-	private static final String priSField = "private static field";
+	public static final String pubSField = "public static field"; //$NON-NLS-1$
+	protected static final String proSField = "protected static field"; //$NON-NLS-1$
+	private static final String priSField = "private static field"; //$NON-NLS-1$
 
 	private List<String> strList;
 
@@ -56,5 +56,4 @@ public class Data {
 	private static String privateStaticMethod() {
 		return priSField;
 	}
-
 }
