@@ -1,4 +1,18 @@
-package org.eclipse.sphinx.tests.platform.util;
+/**
+ * <copyright>
+ * 
+ * Copyright (c) 2013 itemis and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *     itemis - Initial API and implementation
+ * 
+ * </copyright>
+ */
+package org.eclipse.sphinx.tests.platform.resources;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,8 +32,7 @@ import org.eclipse.sphinx.platform.resources.ResourceChangeDispatcher.ResourceCh
 
 @SuppressWarnings("restriction")
 public class ResourceChangeDispatcherTest extends TestCase {
-
-	Map<ResourceChangeDispatchPhase, Collection<ResourceChangeListenerDescriptor>> resourceChangeListeners = ResourceChangeDispatcher.INSTANCE
+	private Map<ResourceChangeDispatchPhase, Collection<ResourceChangeListenerDescriptor>> resourceChangeListeners = ResourceChangeDispatcher.INSTANCE
 			.getResourceChangeListeners();
 	private List<ResourceChangeDispatchPhase> phaseInvocations = new ArrayList<ResourceChangeDispatchPhase>();
 
@@ -129,7 +142,6 @@ public class ResourceChangeDispatcherTest extends TestCase {
 	 * {@link ResourceChangeDispatcherTest#addResourceChangeListener(IResourceChangeListener, int, ResourceChangeDispatchPhase)}
 	 */
 	public void testAddResourceChangeListenerWithMask() {
-
 		// TEST add a PRE listener
 		Listener1 listenerPRE = new Listener1("listenerPRE2", ResourceChangeDispatchPhase.PRE); //$NON-NLS-1$
 		Assert.assertFalse(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPRE, ResourceChangeDispatchPhase.PRE));
@@ -198,7 +210,6 @@ public class ResourceChangeDispatcherTest extends TestCase {
 	 * Test method for {@link ResourceChangeDispatcherTest#resourceChanged(IResourceChangeEvent)}
 	 */
 	public void testResourceChanged3() {
-
 		// add 3 PRE listeners, 3 MAIN listeners, 1 POST listener
 		Listener3 listenerPOST = new Listener3("listenerPOST3", ResourceChangeDispatchPhase.POST); //$NON-NLS-1$
 		ResourceChangeDispatcher.INSTANCE.addResourceChangeListener(listenerPOST, IResourceChangeEvent.PRE_CLOSE, ResourceChangeDispatchPhase.POST);
