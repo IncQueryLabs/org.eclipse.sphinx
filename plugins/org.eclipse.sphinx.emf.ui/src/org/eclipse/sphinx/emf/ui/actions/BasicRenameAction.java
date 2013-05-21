@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 Continental, See4sys and others.
+ * Copyright (c) 2008-2013 Continental, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     Continental - Initial API and implementation
  *     See4sys - Enhance name feature handling, JavaDoc adds
+ *     itemis - [408536] BasicRenameAction not working for non-String attributes
  * 
  * </copyright>
  */
@@ -25,6 +26,8 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.command.CommandParameter;
 import org.eclipse.emf.edit.command.SetCommand;
@@ -128,7 +131,8 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 
 	protected String getOldName(EObject object) {
 		if (hasNameAttribute(object)) {
-			return (String) object.eGet(getNameAttribute(object));
+			Object nameAttributeValue = object.eGet(getNameAttribute(object));
+			return nameAttributeValue.toString();
 		}
 		return ""; //$NON-NLS-1$
 	}
@@ -205,7 +209,9 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 	protected void execRename(EObject objectToRename, String newName) {
 		TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(objectToRename);
 		EAttribute attribute = getNameAttribute(objectToRename);
-		Command command = editingDomain.createCommand(SetCommand.class, new CommandParameter(objectToRename, attribute, newName));
+		EFactory attributeValueFactory = attribute.getEType().getEPackage().getEFactoryInstance();
+		Object attributeValue = attributeValueFactory.createFromString((EDataType) attribute.getEType(), newName);
+		Command command = editingDomain.createCommand(SetCommand.class, new CommandParameter(objectToRename, attribute, attributeValue));
 		if (command.canExecute()) {
 			editingDomain.getCommandStack().execute(command);
 		}
@@ -333,17 +339,18 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 		if (saving == true) {
 			return;
 		}
-
 		saving = true;
+
 		// Cache the resource to avoid selection loss since a selection of
 		// another item can trigger this method
 		final EObject inlinedObject = object;
 		final String newName = textEditor.getText();
+
 		// Run this in an async to make sure that the operation that triggered
 		// this action is completed. Otherwise this leads to problems when the
 		// icon of the item being renamed is clicked (i.e., which causes the
 		// rename text widget to lose focus and trigger this method).
-		Runnable query = new Runnable() {
+		Runnable runnable = new Runnable() {
 			public void run() {
 				try {
 					String oldName = getOldName(inlinedObject);
@@ -369,7 +376,7 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 				}
 			}
 		};
-		ExtendedPlatformUI.getDisplay().asyncExec(query);
+		ExtendedPlatformUI.getDisplay().asyncExec(runnable);
 	}
 
 	protected EAttribute cacheAttribute(NameAttributeInfo nameAttribute) {
