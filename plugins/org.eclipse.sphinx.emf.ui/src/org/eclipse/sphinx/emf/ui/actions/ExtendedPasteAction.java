@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,20 +9,17 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [408533] Inner commands of Copy/Cut/Delete/Paste commands not created correctly when using ExtendedXxxAction with custom adapter factory
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.emf.ui.actions;
 
-import java.util.Collection;
-
-import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.edit.command.PasteFromClipboardCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.ui.action.PasteAction;
+import org.eclipse.jface.viewers.IStructuredSelection;
 
 public class ExtendedPasteAction extends PasteAction {
 
@@ -37,21 +34,25 @@ public class ExtendedPasteAction extends PasteAction {
 		this(null, customAdapterFactory);
 	}
 
+	/*
+	 * @see
+	 * org.eclipse.emf.edit.ui.action.CommandActionHandler#updateSelection(org.eclipse.jface.viewers.IStructuredSelection
+	 * )
+	 */
 	@Override
-	public Command createCommand(Collection<?> selection) {
-		if (selection.size() == 1 && domain != null) {
+	public boolean updateSelection(IStructuredSelection selection) {
+		if (domain != null) {
 			AdapterFactory oldAdapterFactory = null;
 			if (customAdapterFactory != null) {
 				oldAdapterFactory = ((AdapterFactoryEditingDomain) domain).getAdapterFactory();
 				((AdapterFactoryEditingDomain) domain).setAdapterFactory(customAdapterFactory);
 			}
-			Command command = PasteFromClipboardCommand.create(domain, selection.iterator().next(), null);
+			boolean result = super.updateSelection(selection);
 			if (oldAdapterFactory != null) {
 				((AdapterFactoryEditingDomain) domain).setAdapterFactory(oldAdapterFactory);
 			}
-			return command;
-		} else {
-			return UnexecutableCommand.INSTANCE;
+			return result;
 		}
+		return super.updateSelection(selection);
 	}
 }
