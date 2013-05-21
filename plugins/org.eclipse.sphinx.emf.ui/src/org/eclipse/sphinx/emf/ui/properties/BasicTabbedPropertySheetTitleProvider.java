@@ -132,11 +132,10 @@ public class BasicTabbedPropertySheetTitleProvider extends LabelProvider {
 	}
 
 	/**
-	 * Called by {@link #getText(Object)} and {@link #getImage(Object)} to extract the actual element to rendered from
-	 * given {@link Object element}.
+	 * Extracts the actual element to rendered from given {@link Object element}.
 	 * <p>
-	 * This implementation does nothing but just returns the original element. Subclasses may override and extend as
-	 * appropriate.
+	 * This implementation calls {@link AdapterFactoryEditingDomain#unwrap()} for that purpose. Subclasses may override
+	 * and extend as appropriate.
 	 * </p>
 	 * 
 	 * @param element
@@ -145,7 +144,7 @@ public class BasicTabbedPropertySheetTitleProvider extends LabelProvider {
 	 *         original element otherwise.
 	 */
 	protected Object unwrap(Object element) {
-		return element;
+		return AdapterFactoryEditingDomain.unwrap(element);
 	}
 
 	/*
@@ -160,11 +159,15 @@ public class BasicTabbedPropertySheetTitleProvider extends LabelProvider {
 				IStructuredSelection structuredSelection = (IStructuredSelection) element;
 				if (structuredSelection.size() == 1) {
 					element = unwrap(structuredSelection.getFirstElement());
-					return labelProvider.getImage(element);
+					if (element != null) {
+						return labelProvider.getImage(element);
+					}
 				}
 			} else {
 				Object unwrapped = unwrap(element);
-				return labelProvider.getImage(unwrapped);
+				if (unwrapped != null) {
+					return labelProvider.getImage(unwrapped);
+				}
 			}
 		}
 		return null;
@@ -183,10 +186,14 @@ public class BasicTabbedPropertySheetTitleProvider extends LabelProvider {
 				if (structuredSelection.size() == 1) {
 					element = unwrap(structuredSelection.getFirstElement());
 				}
-				return descriptionProvider.getDescription(element);
+				if (element != null) {
+					return descriptionProvider.getDescription(element);
+				}
 			} else {
 				Object unwrapped = unwrap(element);
-				return descriptionProvider.getDescription(unwrapped);
+				if (unwrapped != null) {
+					return descriptionProvider.getDescription(unwrapped);
+				}
 			}
 		}
 		return null;
