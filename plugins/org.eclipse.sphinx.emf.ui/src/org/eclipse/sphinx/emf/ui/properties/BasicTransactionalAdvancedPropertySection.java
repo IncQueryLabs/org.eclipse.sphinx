@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 itemis, See4sys and others.
+ * Copyright (c) 2008-2013 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [393441] SWTException occasionally occurring when BasicTransactionalAdvancedPropertySection is updated
  *     itemis - [393477] Provider hook for unwrapping elements before letting BasicTabbedPropertySheetTitleProvider retrieve text or image for them
+ *     itemis - [408537] Enable property descriptions of model object features to be displayed in status line of Properties view
  * 
  * </copyright>
  */
@@ -50,6 +51,7 @@ import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
@@ -119,24 +121,6 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 					}
 				}
 			}
-
-			// Connect property sheet to current selection's workbench part
-			// IActionBars partActionBars = null;
-			// if (part instanceof IEditorPart) {
-			// IEditorPart editorPart = (IEditorPart) part;
-			// partActionBars = editorPart.getEditorSite().getActionBars();
-			// } else if (part instanceof IViewPart) {
-			// IViewPart viewPart = (IViewPart) part;
-			// partActionBars = viewPart.getViewSite().getActionBars();
-			// }
-			// if (partActionBars.getStatusLineManager() instanceof SubStatusLineManager) {
-			// SubStatusLineManager statusLineManager = (SubStatusLineManager)
-			// partActionBars.getStatusLineManager();
-			// statusLineManager.setVisible(true);
-			// }
-			// TODO Report enhancement bug to Eclipse Platform an enable this code fragment when fix is
-			// available
-			// page.setStatusLineManager(partActionBars.getStatusLineManager());
 		}
 	};
 
@@ -157,13 +141,13 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 								// Refresh property section content
 								if (page != null) {
 									refresh();
+
 									// Refresh property sheet title through this indirect call to private
 									// TabbedPropertySheetPage#refreshTitleBar() method
 									if (tabbedPropertySheetPage != null) {
 										tabbedPropertySheetPage.labelProviderChanged(new LabelProviderChangedEvent(new BaseLabelProvider()));
 									}
 								}
-
 							}
 						});
 					}
@@ -182,14 +166,31 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 		super.createControls(parent, tabbedPropertySheetPage);
 		this.tabbedPropertySheetPage = tabbedPropertySheetPage;
 
-		// Register this class as property source provider
-		page.setPropertySourceProvider(this);
+		// Create embedded standard property sheet page
+		createEmbeddedStandardPropertySheetPage(parent);
 
 		// Install selection listener and invoke it once in order to make sure that we are in phase with current
 		// selection
 		ISelectionService selectionService = tabbedPropertySheetPage.getSite().getWorkbenchWindow().getSelectionService();
 		selectionService.addSelectionListener(selectionListener);
 		selectionListener.selectionChanged(getPart(), selectionService.getSelection());
+	}
+
+	/**
+	 * Creates and initializes the embedded standard property sheet page which presents a table of property names and
+	 * values obtained from the current selection in the active workbench part.
+	 */
+	protected void createEmbeddedStandardPropertySheetPage(Composite parent) {
+		// Register this class as property source provider
+		page.setPropertySourceProvider(this);
+
+		// Connect the tabbed property sheet's action bars to the embedded standard property sheet page
+		/*
+		 * !! Important Note !! This is necessary to get the descriptions of the property sources displayed in the
+		 * status line.
+		 */
+		IActionBars actionBars = tabbedPropertySheetPage.getSite().getActionBars();
+		page.makeContributions(actionBars.getMenuManager(), actionBars.getToolBarManager(), actionBars.getStatusLineManager());
 	}
 
 	/*
