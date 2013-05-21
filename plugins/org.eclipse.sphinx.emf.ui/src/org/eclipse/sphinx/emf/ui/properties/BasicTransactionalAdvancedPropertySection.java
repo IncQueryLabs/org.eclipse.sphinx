@@ -12,6 +12,7 @@
  *     itemis - [393441] SWTException occasionally occurring when BasicTransactionalAdvancedPropertySection is updated
  *     itemis - [393477] Provider hook for unwrapping elements before letting BasicTabbedPropertySheetTitleProvider retrieve text or image for them
  *     itemis - [408537] Enable property descriptions of model object features to be displayed in status line of Properties view
+ *     itemis - [408540] Provide hook for unwrapping selected model object before letting BasicTransactionalAdvancedPropertySection process it
  * 
  * </copyright>
  */
@@ -19,6 +20,7 @@ package org.eclipse.sphinx.emf.ui.properties;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
@@ -47,6 +49,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.swt.widgets.Composite;
@@ -85,20 +88,17 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 			if (tabbedPropertySheetPage != null) {
 				IStructuredSelection structuredSelection = SelectionUtil.getStructuredSelection(selection);
 				if (!structuredSelection.isEmpty()) {
-					Object selectedObject = structuredSelection.getFirstElement();
+					Object selectedObject = unwrap(structuredSelection.getFirstElement());
 					if (selectedObject != lastSelectedObject) {
 						// Remove existing selected object changed listener for previously selected object if any
 						/*
 						 * !! Important Note !! Don't use WorkspaceEditingDomainUtil for retrieving editing domain here
-						 * because we only want to handle objects which are eligible to EMF Edit rather than just any
+						 * because we only want to handle objects which are eligible to EMF.Edit rather than just any
 						 * object from which an editing domain can be retrieved.
 						 */
-						Object unwrapped = AdapterFactoryEditingDomain.unwrap(lastSelectedObject);
-						if (unwrapped != null) {
-							TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(unwrapped);
-							if (editingDomain != null) {
-								editingDomain.removeResourceSetListener(selectedObjectChangedListener);
-							}
+						TransactionalEditingDomain oldEditingDomain = TransactionUtil.getEditingDomain(lastSelectedObject);
+						if (oldEditingDomain != null) {
+							oldEditingDomain.removeResourceSetListener(selectedObjectChangedListener);
 						}
 
 						// Remember currently selected object as for future removals of selected object changed listener
@@ -107,16 +107,13 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 						// Install new selected object changed listener for currently selected object
 						/*
 						 * !! Important Note !! Don't use WorkspaceEditingDomainUtil for retrieving editing domain here
-						 * because we only want to handle objects which are eligible to EMF Edit rather than just any
+						 * because we only want to handle objects which are eligible to EMF.Edit rather than just any
 						 * object from which an editing domain can be retrieved.
 						 */
-						unwrapped = AdapterFactoryEditingDomain.unwrap(selectedObject);
-						if (unwrapped != null) {
-							TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(unwrapped);
-							if (editingDomain != null) {
-								selectedObjectChangedListener = createSelectedObjectChangedListener(selectedObject);
-								editingDomain.addResourceSetListener(selectedObjectChangedListener);
-							}
+						TransactionalEditingDomain newEditingDomain = TransactionUtil.getEditingDomain(selectedObject);
+						if (newEditingDomain != null) {
+							selectedObjectChangedListener = createSelectedObjectChangedListener(selectedObject);
+							newEditingDomain.addResourceSetListener(selectedObjectChangedListener);
 						}
 					}
 				}
@@ -154,6 +151,22 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 				}
 			}
 		};
+	}
+
+	/**
+	 * Extracts the actual element to rendered from given {@link Object element}.
+	 * <p>
+	 * This implementation calls {@link AdapterFactoryEditingDomain#unwrap()} for that purpose. Subclasses may override
+	 * and extend as appropriate.
+	 * </p>
+	 * 
+	 * @param element
+	 *            The element to be unwrapped.
+	 * @return The extracted {@link Object element} if the original element could be successfully unwrapped or the
+	 *         original element otherwise.
+	 */
+	protected Object unwrap(Object element) {
+		return AdapterFactoryEditingDomain.unwrap(element);
 	}
 
 	/*
@@ -194,21 +207,40 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 	}
 
 	/*
+	 * @see org.eclipse.ui.views.properties.tabbed.AdvancedPropertySection#setInput(org.eclipse.ui.IWorkbenchPart,
+	 * org.eclipse.jface.viewers.ISelection)
+	 */
+	@Override
+	public void setInput(IWorkbenchPart part, ISelection selection) {
+		if (!selection.isEmpty() && selection instanceof StructuredSelection) {
+			StructuredSelection structuredSelection = (StructuredSelection) selection;
+			ArrayList<Object> translatedSelection = new ArrayList<Object>(structuredSelection.size());
+			for (Iterator<?> it = structuredSelection.iterator(); it.hasNext();) {
+				Object unwrapped = unwrap(it.next());
+				if (unwrapped != null) {
+					translatedSelection.add(unwrapped);
+				}
+			}
+			selection = new StructuredSelection(translatedSelection);
+		}
+		super.setInput(part, selection);
+	}
+
+	/*
 	 * @see org.eclipse.ui.views.properties.IPropertySourceProvider#getPropertySource(java.lang.Object)
 	 */
 	public IPropertySource getPropertySource(Object object) {
 		// Let EMF.Edit try to find a property source adapter
 		/*
 		 * !! Important Note !! Don't use WorkspaceEditingDomainUtil for retrieving editing domain here because we only
-		 * want to handle objects which are eligible to EMF Edit rather than just any object from which an editing
+		 * want to handle objects which are eligible to EMF.Edit rather than just any object from which an editing
 		 * domain can be retrieved.
 		 */
-		Object unwrapped = AdapterFactoryEditingDomain.unwrap(object);
-		if (unwrapped != null) {
+		if (object != null) {
 			// Try to retrieve model property source provider for given object and remember it so as to have it at hand
 			// for subsequent objects for which no property source provider can be retrieved (e.g., FeatureMap.Entry
 			// objects with primitive values)
-			TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(unwrapped);
+			TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(object);
 			if (editingDomain != null) {
 				lastPropertySourceProviderDelegate = createModelPropertySourceProvider(editingDomain);
 			}
