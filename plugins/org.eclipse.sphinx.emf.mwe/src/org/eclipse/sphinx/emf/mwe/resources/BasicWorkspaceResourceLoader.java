@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [406564] BasicWorkspaceResourceLoader#getResource should not delegate to super
  * 
  * </copyright>
  */
@@ -51,6 +52,11 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 	protected Set<IProject> projectsInScope = new HashSet<IProject>();
 	protected ClassLoader workspaceClassLoader = null;
 
+	/**
+	 * @deprecated Not supported any longer. BasicWorkspaceResourceLoader is supposed to load only resources from
+	 *             workspace but not from JAR files or plug-ins.
+	 */
+	@Deprecated
 	protected boolean searchArchives = true;
 
 	public IProject getContextProject() {
@@ -71,6 +77,11 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 		this.contextModel = contextModel;
 	}
 
+	/**
+	 * @deprecated Not supported any longer. BasicWorkspaceResourceLoader is supposed to load only resources from
+	 *             workspace but not from JAR files or plug-ins.
+	 */
+	@Deprecated
 	public void setSearchArchives(boolean searchArchives) {
 		this.searchArchives = searchArchives;
 	}
@@ -195,6 +206,8 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 		if (url != null) {
 			return url;
 		}
+
+		// TODO Delete this if clause when support for deprecated #searchArchives property is removed.
 		if (searchArchives) {
 			return super.getResource(path);
 		}

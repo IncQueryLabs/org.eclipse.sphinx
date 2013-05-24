@@ -14,3 +14,7 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.sphinx.tests.xtendxpand.integration,
  org.eclipse.sphinx.tests.xtendxpand.integration.internal;x-internal:=true
 Bundle-Activator: org.eclipse.sphinx.tests.xtendxpand.integration.internal.Activator$Implementation
+Import-Package: org.eclipse.ui.plugin,
+ org.eclipse.xtend.shared.ui,
+ org.eclipse.xtend.shared.ui.core,
+ org.eclipse.xtend.shared.ui.core.internal

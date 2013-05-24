@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [406564] BasicWorkspaceResourceLoader#getResource should not delegate to super
  * 
  * </copyright>
  */
@@ -75,6 +76,12 @@ public class XtendXpandTestReferenceWorkspace extends AbstractReferenceWorkspace
 
 	public static final String XPAND_CONFIGH_TOHOUTLET_DEFINITION_NAME = "templates::ConfigHToHoutlet::main";
 
+	public static final String XPAND_CONFIGH_DEFINITION_FROM_PLUGIN_NAME = "templates::ConfigHP::main";
+
+	public static final String XPAND_CONFIGH = "templates::ConfigH";
+
+	public static final String XPAND_CONFIGHP = "templates::ConfigHP";
+
 	// Check model.
 	//
 	public static final String HB_CODEGEN_XPAND_PROJECT_CHECK_FILE_PATH = "checks/hb20Check.chk";
@@ -123,5 +130,4 @@ public class XtendXpandTestReferenceWorkspace extends AbstractReferenceWorkspace
 	protected String[] getReferenceProjectsNames() {
 		return new String[] { HB_TRANSFORM_XTEND_PROJECT_NAME, HB_CODEGEN_XPAND_PROJECT_NAME };
 	}
-
 }

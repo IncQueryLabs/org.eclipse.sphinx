@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys, itemis and others.
+ * Copyright (c) 2011-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [358131] Make Xtend/Xpand/CheckJobs more robust against template file encoding mismatches
+ *     itemis - [406562] WorkspaceStorageFinder#getPriority
  * 
  * </copyright>
  */
@@ -76,7 +77,6 @@ public class WorkspaceStorageFinder implements StorageFinder2 {
 	 */
 	public IStorage findStorage(IJavaProject javaProject, ResourceID resourceID, boolean searchJars) {
 		workspaceResourceLoader.setContextProject(javaProject.getProject());
-		workspaceResourceLoader.setSearchArchives(searchJars);
 
 		return XtendXpandUtil.getUnderlyingFile(resourceID.name, resourceID.extension, workspaceResourceLoader);
 	}
@@ -85,6 +85,6 @@ public class WorkspaceStorageFinder implements StorageFinder2 {
 	 * @see org.eclipse.xtend.shared.ui.StorageFinder#getPriority()
 	 */
 	public int getPriority() {
-		return 1;
+		return 2;
 	}
 }
