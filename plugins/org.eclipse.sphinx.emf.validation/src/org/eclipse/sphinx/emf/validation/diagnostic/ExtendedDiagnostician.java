@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,8 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [408238] eValidator not resolved correctly
+ *     
  * </copyright>
  */
 package org.eclipse.sphinx.emf.validation.diagnostic;
@@ -212,19 +213,32 @@ public class ExtendedDiagnostician extends Diagnostician {
 		return validate(eObject, VALIDATION_DEFAULT_DEPTH);
 	}
 
+	protected EObjectValidator findEValidator(EClass eClass) {
+		Object eValidator = eValidatorRegistry.get(eClass.getEPackage());
+
+		if (eValidator instanceof EValidatorAdapter) {
+			return (EValidatorAdapter) eValidator;
+		}
+
+		for (EClass eSuperType : eClass.getESuperTypes()) {
+			eValidator = findEValidator(eSuperType);
+			if (eValidator instanceof EValidatorAdapter) {
+				return (EValidatorAdapter) eValidator;
+			}
+		}
+
+		eValidator = eValidatorRegistry.get(null);
+		return eValidator instanceof EObjectValidator ? (EObjectValidator) eValidator : null;
+	}
+
 	@Override
 	public boolean validate(EClass eClass, EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
+		// Find validator for given EClass
+		EObjectValidator eValidator = findEValidator(eClass);
 
-		Object eValidator;
-
-		while ((eValidator = eValidatorRegistry.get(eClass.eContainer())) == null || !(eValidator instanceof EValidatorAdapter)) {
-			List<EClass> eSuperTypes = eClass.getESuperTypes();
-			if (eSuperTypes.isEmpty()) {
-				eValidator = eValidatorRegistry.get(null);
-				break;
-			} else {
-				eClass = eSuperTypes.get(0);
-			}
+		// If no validator could be found we must assume the given EObject to be valid
+		if (eValidator == null) {
+			return true;
 		}
 
 		boolean result = false;
@@ -241,7 +255,7 @@ public class ExtendedDiagnostician extends Diagnostician {
 
 		if (goNext) {
 			result = eValidator instanceof EValidatorAdapter ? ((EValidatorAdapter) eValidator).validate(eClass, eObject, diagnostics, context,
-					filters) : ((EObjectValidator) eValidator).validate(eClass, eObject, diagnostics, context);
+					filters) : eValidator.validate(eClass, eObject, diagnostics, context);
 			if (isAnyProgressMonitor()) {
 				monitor.worked(1);
 				if (monitor.isCanceled()) {
