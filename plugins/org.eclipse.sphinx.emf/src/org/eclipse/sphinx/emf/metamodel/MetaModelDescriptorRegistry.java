@@ -1,13 +1,13 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2012 BMW Car IT, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     BMW Car IT - Initial API and implementation
  *     See4sys - Added support for EPackage URIs
  *     BMW Car IT - Added robustness and support for singleton instantiation of descriptors
@@ -18,6 +18,7 @@
  *     Conti  - [349675] Performance improvements of MetaModelDescriptorRegistry
  *     BMW Car IT - [373481] Performance optimizations for model loading
  *     BMW Car IT - Lazy extension initialization
+ *     itemis - [409367] Add a custom URI scheme to metamodel descriptor allowing mapping URI scheme to metamodel descriptor
  *
  * </copyright>
  */
@@ -55,6 +56,7 @@ import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeSettings;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ContentHandler;
@@ -77,7 +79,7 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.ReflectUtil;
 
 /**
- * 
+ *
  */
 @SuppressWarnings("restriction")
 public class MetaModelDescriptorRegistry implements IAdaptable {
@@ -224,7 +226,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 		String ePackageClassName = ePackage.getClass().getName();
 		String id = ePackageClassName.substring(0, ePackageClassName.lastIndexOf(".")); //$NON-NLS-1$
-		if (id.endsWith(".impl") || id.endsWith(".util")) {//$NON-NLS-1$ //$NON-NLS-2$ 
+		if (id.endsWith(".impl") || id.endsWith(".util")) {//$NON-NLS-1$ //$NON-NLS-2$
 			id = id.substring(0, id.lastIndexOf(".")); //$NON-NLS-1$
 		}
 
@@ -493,6 +495,30 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 				for (Map.Entry<String, IMetaModelDescriptor> entry : getMetaModelDescriptors().entrySet()) {
 					if (pattern.matcher(entry.getKey()).matches()) {
 						mmDescriptors.add(entry.getValue());
+					}
+				}
+			}
+		}
+		return mmDescriptors;
+	}
+
+	/**
+	 * Returns the {@link IMetaModelDescriptor descriptors} of all meta-models that use URIs with given
+	 * <code>customURIScheme</code> in cross-document references and as proxy URIs.
+	 * 
+	 * @param scheme
+	 *            The custom URI scheme for which the descriptors of the meta-model using it is to be returned.
+	 * @return The descriptors of the meta-models using specified <code>customURIScheme</code>.
+	 */
+	public List<IMetaModelDescriptor> getDescriptorsFromURIScheme(String scheme) {
+		List<IMetaModelDescriptor> mmDescriptors = new ArrayList<IMetaModelDescriptor>();
+		if (scheme != null) {
+			synchronized (getMetaModelDescriptors()) {
+				for (IMetaModelDescriptor mmDescriptor : getMetaModelDescriptors().values()) {
+					if (mmDescriptor.getCustomURIScheme() != null) {
+						if (mmDescriptor.getCustomURIScheme().equals(scheme)) {
+							mmDescriptors.add(mmDescriptor);
+						}
 					}
 				}
 			}
@@ -849,6 +875,17 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	public IMetaModelDescriptor getDescriptor(EClass eClass) {
 		if (eClass != null) {
 			return getDescriptor(eClass.getEPackage());
+		}
+		return null;
+	}
+
+	/**
+	 * @param eClass
+	 * @return
+	 */
+	public IMetaModelDescriptor getDescriptor(EClassifier eClassifier) {
+		if (eClassifier != null) {
+			return getDescriptor(eClassifier.getEPackage());
 		}
 		return null;
 	}
@@ -1248,7 +1285,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private interface IDescriptorFilter {
 
@@ -1381,7 +1418,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	private static class DefaultMetaModelDescriptor extends AbstractMetaModelDescriptor {
 
 		protected DefaultMetaModelDescriptor(String identifier, String namespace, String name) {
-			super(identifier, namespace, name);
+			super(identifier, namespace, name, null);
 		}
 
 		/*

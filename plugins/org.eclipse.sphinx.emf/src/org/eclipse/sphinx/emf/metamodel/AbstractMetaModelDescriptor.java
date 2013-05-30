@@ -12,6 +12,7 @@
  *     See4sys - Added support for EPackage URIs and inheritance of descriptors
  *     BMW Car IT - [373481] Performance optimizations for model loading
  *     itemis - [406203] Enable navigation from a version-specific metamodel descriptor to the underlying base metamodel descriptor
+ *     itemis - [409367] Add a custom URI scheme to metamodel descriptor allowing mapping URI scheme to metamodel descriptor
  *
  * </copyright>
  */
@@ -225,6 +226,13 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 		if (fVersionData != null) {
 			return fVersionData.getBaseDescriptor();
 		}
+		return null;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getSupportedCustomURIScheme()
+	 */
+	public String getCustomURIScheme() {
 		return null;
 	}
 

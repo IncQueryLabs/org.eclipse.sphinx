@@ -1,39 +1,49 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys, BMW Car IT and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
- * 
+ *     itemis - [409367] Add a custom URI scheme to metamodel descriptor allowing mapping URI scheme to metamodel descriptor
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.domain.IEditingDomainProvider;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
+import org.eclipse.emf.transaction.Transaction;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.sphinx.emf.domain.IContainerEditingDomainProvider;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 
 /**
@@ -107,13 +117,13 @@ public final class WorkspaceEditingDomainUtil {
 	 * <li>{@linkplain FeatureMap.Entry}</li>
 	 * <li>{@linkplain IEditingDomainProvider}</li>
 	 * <li>{@linkplain IFile}</li>
+	 * <li>{@linkplain URI}</li>
 	 * <li>{@linkplain IModelDescriptor}</li>
 	 * <li>{@linkplain IWrapperProviderItem}</li>
 	 * <li>{@linkplain Resource}</li>
 	 * <li>{@linkplain ResourceSet}</li>
 	 * <li>{@linkplain Transaction}</li>
 	 * <li>{@linkplain TransactionalEditingDomain}</li>
-	 * <li>{@linkplain URI}</li>
 	 * </ul>
 	 * <p>
 	 * Note that it is not possible to obtain a single {@link TransactionalEditingDomain editing domain} from a
@@ -203,6 +213,7 @@ public final class WorkspaceEditingDomainUtil {
 	public static TransactionalEditingDomain getEditingDomain(URI uri) {
 		IFile file = EcorePlatformUtil.getFile(uri);
 		return getEditingDomain(file);
+
 	}
 
 	/**
@@ -295,6 +306,28 @@ public final class WorkspaceEditingDomainUtil {
 			return provider.getEditingDomains();
 		}
 		return Collections.emptyList();
+	}
+
+	/**
+	 * Returns the {@link TransactionalEditingDomain editing domain}s of all metamodels that use {@link URI}s with given
+	 * <code>customURIScheme</code> in cross-document references and as proxy URIs.
+	 * 
+	 * @param customURIScheme
+	 *            The custom URI scheme to retrieve the editing domains for.
+	 * @return The editing domains of all metamodels using URIs with given custom scheme in cross-document references
+	 *         and as proxy URIs or an empty list if no such exist.
+	 */
+	public static Collection<TransactionalEditingDomain> getEditingDomains(String customURIScheme) {
+		List<TransactionalEditingDomain> editingDomains = new ArrayList<TransactionalEditingDomain>(1);
+		if (customURIScheme != null) {
+			for (IMetaModelDescriptor mmDescriptor : MetaModelDescriptorRegistry.INSTANCE.getDescriptorsFromURIScheme(customURIScheme)) {
+				TransactionalEditingDomain editingDomain = getEditingDomain(ResourcesPlugin.getWorkspace().getRoot(), mmDescriptor);
+				if (editingDomain != null) {
+					editingDomains.add(editingDomain);
+				}
+			}
+		}
+		return editingDomains;
 	}
 
 	/**

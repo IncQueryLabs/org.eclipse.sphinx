@@ -12,6 +12,7 @@
  *     See4sys - Added pattern for descriptors' label and support for EPackage URIs
  *     BMW Car IT - [373481] Performance optimizations for model loading
  *     itemis - [406203] Enable navigation from a version-specific metamodel descriptor to the underlying base metamodel descriptor
+ *     itemis - [409367] Add a custom URI scheme to metamodel descriptor allowing mapping URI scheme to metamodel descriptor
  *
  * </copyright>
  */
@@ -102,6 +103,15 @@ public interface IMetaModelDescriptor {
 	 *         meta-model has no base meta-model.
 	 */
 	IMetaModelDescriptor getBaseDescriptor();
+
+	/**
+	 * Returns the scheme of the custom URIs that the described meta-model uses in cross-document references and as
+	 * proxy URIs.
+	 * 
+	 * @return The scheme of the custom URIs used by the described meta-model or <code>null</code> if it uses standard
+	 *         URIs (e.g., platform:/resource, file:, etc.) instead.
+	 */
+	String getCustomURIScheme();
 
 	/**
 	 * Returns the ordinal of the described meta-model. The ordinal is used for sorting IMetaModelDescriptors describing
