@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 itemis, See4sys and others.
+ * Copyright (c) 2008-2013 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
  *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored
+ *     itemis - [409459] Enable asynchronous loading of affected models when creating or resolving references to elements in other models
  * 
  * </copyright>
  */
@@ -67,6 +68,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
+import org.eclipse.sphinx.emf.loading.IModelLoadService;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
@@ -380,6 +382,58 @@ public final class EcorePlatformUtil {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Loads all persisted resources that belong to the model specified by given <code>modelDescriptor</code>.
+	 * 
+	 * @param modelDescriptors
+	 *            The {@link IModelDescriptor model} whose resources are to be loaded.
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public static void loadModel(IModelDescriptor modelDescriptor, boolean async, IProgressMonitor monitor) {
+		loadModels(Collections.singleton(modelDescriptor), async, monitor);
+	}
+
+	/**
+	 * Loads all persisted resources that belong to the models specified by given <code>modelDescriptors</code>.
+	 * 
+	 * @param modelDescriptors
+	 *            The collection of {@link IModelDescriptor model}s whose resources are to be loaded.
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public static void loadModels(Collection<IModelDescriptor> modelDescriptors, boolean async, IProgressMonitor monitor) {
+		if (modelDescriptors != null && modelDescriptors.size() != 0) {
+
+			Map<IMetaModelDescriptor, Collection<IModelDescriptor>> map = new HashMap<IMetaModelDescriptor, Collection<IModelDescriptor>>();
+			for (IModelDescriptor modelDescriptor : modelDescriptors) {
+				IMetaModelDescriptor mmDescriptor = modelDescriptor.getMetaModelDescriptor();
+				Collection<IModelDescriptor> models = map.get(mmDescriptor);
+				if (models == null) {
+					models = new HashSet<IModelDescriptor>();
+					map.put(mmDescriptor, models);
+				}
+				models.add(modelDescriptor);
+			}
+
+			for (IMetaModelDescriptor metaModelDescriptor : map.keySet()) {
+				IModelLoadService service = (IModelLoadService) Platform.getAdapterManager().loadAdapter(metaModelDescriptor,
+						IModelLoadService.class.getName());
+				if (service != null) {
+					service.loadModels(map.get(metaModelDescriptor), async, monitor);
+				}
+			}
+		}
 	}
 
 	/**
@@ -1985,4 +2039,5 @@ public final class EcorePlatformUtil {
 		URI uri = createURI(file.getFullPath());
 		EcoreResourceUtil.validate(uri, schemaURL);
 	}
+
 }
