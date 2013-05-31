@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 BMW Car IT and others.
+ *
+ * Copyright (c) 2008-2013 BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     BMW Car IT - Initial API and implementation
- * 
+ *     itemis - [409367] Add a custom URI scheme to metamodel descriptor allowing mapping URI scheme to metamodel descriptor
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.metamodel.descs;
@@ -24,6 +25,7 @@ public class Test1MM extends AbstractMetaModelDescriptor implements Comparable<T
 
 	public static final String ID = "org.eclipse.sphinx.emf.workspace.internal.tests.test1mm";
 	public static final String NS = "http://testA.sphinx.org";
+	public static final String URI_SCHEME = "tr1"; //$NON-NLS-1$
 
 	public static final MockEPkgRegistry MOCK_EPKG_REGISTRY = new MockEPkgRegistry();
 
@@ -66,5 +68,13 @@ public class Test1MM extends AbstractMetaModelDescriptor implements Comparable<T
 	@Override
 	public String getDefaultContentTypeId() {
 		return "";
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor# getCustomURIScheme()
+	 */
+	@Override
+	public String getCustomURIScheme() {
+		return URI_SCHEME;
 	}
 }

@@ -1,20 +1,22 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 BMW Car IT and others.
+ *
+ * Copyright (c) 2008-2013 BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     BMW Car IT - Initial API and implementation
- * 
+ *     itemis - [409367] Add a custom URI scheme to metamodel descriptor allowing mapping URI scheme to metamodel descriptor
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.metamodel;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -245,6 +247,41 @@ public class MetaModelDescriptorRegistryTest extends TestCase {
 		result = version200.compareTo(version100);
 		assertEquals(1, result);
 
+	}
+
+	public void testGetDescriptorsFromURIScheme() {
+		List<IMetaModelDescriptor> targetMMDescriptors = new ArrayList<IMetaModelDescriptor>();
+
+		// Register two meta model descriptors
+		registerWithRegistryUT(Test1MM.INSTANCE, Test2MM.INSTANCE);
+		// Get meta model descriptors that use URIs with given scheme "tr1" as proxy URIs.
+		org.eclipse.emf.common.util.URI uri = org.eclipse.emf.common.util.URI.createURI("tr1:/#test1Release.sphinx.org/scheme", true);
+		String uriScheme = uri.scheme();
+		assertEquals(uriScheme, "tr1");
+		List<IMetaModelDescriptor> mmDescriptors = fRegistryUT.getDescriptorsFromURIScheme(uriScheme);
+		targetMMDescriptors.add(Test1MM.INSTANCE);
+		assertEquals(targetMMDescriptors, mmDescriptors);
+
+		// Get meta model descriptors that use URIs with given scheme "tr2" as proxy URIs.
+		uri = org.eclipse.emf.common.util.URI.createURI("tr2:/#test2Release.sphinx.org/scheme", true);
+		uriScheme = uri.scheme();
+		assertEquals(uriScheme, "tr2");
+		mmDescriptors = fRegistryUT.getDescriptorsFromURIScheme(uriScheme);
+		targetMMDescriptors.clear();
+		targetMMDescriptors.add(Test2MM.INSTANCE);
+		assertEquals(targetMMDescriptors, mmDescriptors);
+
+		// Register three meta model descriptors
+		registerWithRegistryUT(Test1MM.INSTANCE, Test1Release100.INSTANCE, Test2MM.INSTANCE);
+		// Get meta model descriptors that use URIs with given scheme "tr1" as proxy URIs.
+		uri = org.eclipse.emf.common.util.URI.createURI("tr1:/#test1Release100.sphinx.org/scheme", true);
+		uriScheme = uri.scheme();
+		assertEquals(uriScheme, "tr1");
+		mmDescriptors = fRegistryUT.getDescriptorsFromURIScheme(uriScheme);
+		targetMMDescriptors.clear();
+		targetMMDescriptors.add(Test1MM.INSTANCE);
+		targetMMDescriptors.add(Test1Release100.INSTANCE);
+		assertEquals(targetMMDescriptors, mmDescriptors);
 	}
 
 	private void registerWithRegistryUT(IMetaModelDescriptor... descriptors) {
