@@ -182,7 +182,7 @@ public class M2TConfigurationWizard extends AbstractWizard {
 	}
 
 	protected String getPrSrcPaths(Collection<? extends ExtendedOutlet> outlets) {
-		// Use a set drop outlet pointing to same physical path
+		// Use a set to drop outlets pointing at same physical location
 		Set<String> paths = new HashSet<String>();
 		StringBuilder builder = new StringBuilder();
 		List<ExtendedOutlet> allOutlets = new ArrayList<ExtendedOutlet>(outlets);
