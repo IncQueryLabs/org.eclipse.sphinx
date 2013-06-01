@@ -10,10 +10,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.core.variables,
  org.eclipse.ui,
+ org.eclipse.jface,
  org.eclipse.ui.ide,
  org.eclipse.ui.console,
+ org.eclipse.debug.ui,
  org.eclipse.pde.ui,
- org.eclipse.jface,
  org.eclipse.emf.common.ui,
  org.eclipse.emf.edit.ui,
  org.eclipse.xtend.shared.ui;visibility:=reexport,
@@ -38,4 +39,3 @@ Export-Package: org.eclipse.sphinx.xtendxpand.ui.actions,
  org.eclipse.sphinx.xtendxpand.ui.wizards.pages
 Bundle-Activator: org.eclipse.sphinx.xtendxpand.ui.internal.Activator$Implementation
 Bundle-ActivationPolicy: lazy
-Import-Package: org.eclipse.debug.ui
