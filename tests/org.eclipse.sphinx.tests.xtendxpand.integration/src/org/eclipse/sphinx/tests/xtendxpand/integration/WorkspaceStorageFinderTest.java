@@ -22,12 +22,14 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
+import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.tests.xtendxpand.integration.internal.Activator;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandTestReferenceWorkspace;
+import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
 import org.eclipse.xtend.shared.ui.core.internal.ResourceID;
 
-public class WorkspaceStorageTest extends XtendXpandIntegrationTestCase {
+public class WorkspaceStorageFinderTest extends XtendXpandIntegrationTestCase {
 
 	/**
 	 * Test method for {@link org.eclipse.xtend.shared.ui.Activator#findStorage(javaProject, resourceID, searchJars)}.
@@ -41,6 +43,15 @@ public class WorkspaceStorageTest extends XtendXpandIntegrationTestCase {
 
 		String definitionName = XtendXpandTestReferenceWorkspace.XPAND_CONFIGH_DEFINITION_NAME;
 		String templateExtension = IXtendXpandConstants.TEMPLATE_EXTENSION;
+
+		// Debug help >>>
+		BasicWorkspaceResourceLoader workspaceResourceLoader = new BasicWorkspaceResourceLoader();
+		workspaceResourceLoader.setContextProject(refWks.codegenXpandProject);
+		IFile underlyingFile = XtendXpandUtil.getUnderlyingFile(definitionName, templateExtension, workspaceResourceLoader);
+		assertNotNull(underlyingFile);
+		assertTrue(underlyingFile.exists());
+		assertEquals(xptFile, underlyingFile);
+		// <<< Debug help
 
 		// First case: test findStorage() for template file that is located in current workspace but do not search in
 		// referenced JAR files on the classpath
