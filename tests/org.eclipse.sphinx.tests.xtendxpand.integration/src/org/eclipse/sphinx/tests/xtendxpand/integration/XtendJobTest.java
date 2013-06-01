@@ -44,13 +44,13 @@ public class XtendJobTest extends XtendXpandIntegrationTestCase {
 		return new String[] { XtendXpandTestReferenceWorkspace.HB_TRANSFORM_XTEND_PROJECT_NAME };
 	}
 
-	public void testUML20ToHummingbird20() throws Exception {
-		// Load UML resource
+	public void testUML2ToHummingbird20Transform() throws Exception {
+		// Check existence of UML2 file
 		IFile umlModelFile = refWks.transformXtendProject.getFile(XtendXpandTestReferenceWorkspace.HB_TRANSFORM_XTEND_PROJECT_UML_MODEL_PATH);
 		assertNotNull(umlModelFile);
 		assertTrue(umlModelFile.exists());
 
-		// Load extension resource
+		// Check existence of extension file
 		IFile extFile = refWks.transformXtendProject.getFile(XtendXpandTestReferenceWorkspace.UML2_HB20_EXT_FILE_PATH);
 		assertNotNull(extFile);
 		assertTrue(extFile.exists());
@@ -62,7 +62,8 @@ public class XtendJobTest extends XtendXpandIntegrationTestCase {
 		assertNotNull(fistPackage);
 
 		// Xtend execution
-		XtendEvaluationRequest xtendEvaluationRequest = new XtendEvaluationRequest(XtendXpandTestReferenceWorkspace.XTEND_EXTENSION_NAME, umlModel);
+		XtendEvaluationRequest xtendEvaluationRequest = new XtendEvaluationRequest(XtendXpandTestReferenceWorkspace.XTEND_UML2_HB20_EXTENSION_NAME,
+				umlModel);
 		List<MetaModel> metaModels = new ArrayList<MetaModel>(2);
 		metaModels.add(new UML2MetaModel());
 		metaModels.add(new SphinxManagedEmfMetaModel(umlModelFile.getProject()));

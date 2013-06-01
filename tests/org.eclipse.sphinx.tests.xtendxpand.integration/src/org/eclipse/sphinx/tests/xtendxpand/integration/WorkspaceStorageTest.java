@@ -9,17 +9,20 @@
  * 
  * Contributors: 
  *     itemis - Initial API and implementation
- *     itemis - [406564] BasicWorkspaceResourceLoader#getResource should not delegate to super
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.tests.xtendxpand.integration;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IStorage;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
+import org.eclipse.sphinx.tests.xtendxpand.integration.internal.Activator;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandTestReferenceWorkspace;
 import org.eclipse.xtend.shared.ui.core.internal.ResourceID;
@@ -28,61 +31,63 @@ public class WorkspaceStorageTest extends XtendXpandIntegrationTestCase {
 
 	/**
 	 * Test method for {@link org.eclipse.xtend.shared.ui.Activator#findStorage(javaProject, resourceID, searchJars)}.
-	 * Test find storage for resources that are located in current workspace.
+	 * Test findStorage() for template that is located in current workspace.
 	 */
-	public void testFindStorage_workspaceFile() throws Exception {
-		// Loads the Hummingbird instance model file
-		IFile hb20InstanceModelFile = refWks.codegenXpandProject
-				.getFile(XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_HB_INSTANCE_MODEL_PATH);
-		assertNotNull(hb20InstanceModelFile);
-		assertTrue(hb20InstanceModelFile.exists());
+	public void testFindStorage_workspaceTemplate() throws Exception {
+		// Check existence of template file
+		IFile xptFile = refWks.codegenXpandProject.getFile(XtendXpandTestReferenceWorkspace.CONFIGH_XPT_FILE_PATH);
+		assertNotNull(xptFile);
+		assertTrue(xptFile.exists());
 
-		// First case: test find Storage for resources that are located in current workspace also in referenced JAR
-		// files on the classpath
-		IStorage storage = findStorage(hb20InstanceModelFile, XtendXpandTestReferenceWorkspace.XPAND_CONFIGH, true);
-		assertNotNull(storage);
+		String definitionName = XtendXpandTestReferenceWorkspace.XPAND_CONFIGH_DEFINITION_NAME;
+		String templateExtension = IXtendXpandConstants.TEMPLATE_EXTENSION;
 
-		// Second case: test find Storage for resources that are located in current workspace but not from JAR files.
-		storage = findStorage(hb20InstanceModelFile, XtendXpandTestReferenceWorkspace.XPAND_CONFIGH, false);
+		// First case: test findStorage() for template file that is located in current workspace but do not search in
+		// referenced JAR files on the classpath
+		IStorage storage = findStorage(refWks.codegenXpandProject, definitionName, templateExtension, false);
+
+		// Make sure that this is supported
 		assertNotNull(storage);
+		assertEquals(xptFile, storage);
+
+		// Second case: test findStorage() for template file that is located in current workspace and search also in
+		// referenced JAR files on the classpath
+		storage = findStorage(refWks.codegenXpandProject, definitionName, templateExtension, true);
+
+		// Make sure that this is supported
+		assertNotNull(storage);
+		assertEquals(xptFile, storage);
 	}
 
 	/**
 	 * Test method for {@link org.eclipse.xtend.shared.ui.Activator#findStorage(javaProject, resourceID, searchJars)}.
-	 * Test find storage for resources that are located in plug-ins.
+	 * Test findStorage() for template that is located in underlying plug-in.
 	 */
-	public void testFindStorage_pluginFile() throws Exception {
-		// Loads the Hummingbird instance model file
-		IFile hb20InstanceModelFile = refWks.codegenXpandProject
-				.getFile(XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_HB_INSTANCE_MODEL_PATH);
-		assertNotNull(hb20InstanceModelFile);
-		assertTrue(hb20InstanceModelFile.exists());
+	public void testFindStorage_pluginTemplate() throws Exception {
+		// Check existence of template file
+		assertTrue(FileLocator.find(Activator.getPlugin().getBundle(), new Path(XtendXpandTestTemplatesInPlugin.CONFIGH_XPT_FILE_PATH), null) != null);
 
-		// First case: test find Storage for resources that are located in plug-in also in referenced Jar files on
-		// the classpath
-		IStorage storage = findStorage(hb20InstanceModelFile, XtendXpandTestReferenceWorkspace.XPAND_CONFIGHP, true);
+		String definitionName = XtendXpandTestTemplatesInPlugin.XPAND_CONFIGH_DEFINITION_NAME;
+		String templateExtension = IXtendXpandConstants.TEMPLATE_EXTENSION;
+
+		// First case: test findStorage() for template file that is located in plug-ins but do not search in
+		// referenced JAR files on the classpath
+		IStorage storage = findStorage(refWks.codegenXpandProject, definitionName, templateExtension, false);
+
+		// Make sure that this is not supported
 		assertNull(storage);
 
-		// Second case: test find Storage for resources that are located in plug-ins but not from JAR files.
-		storage = findStorage(hb20InstanceModelFile, XtendXpandTestReferenceWorkspace.XPAND_CONFIGHP, false);
+		// Second case: test findStorage() for template file that is located in plug-in and search also in
+		// referenced JAR files on the classpath
+		storage = findStorage(refWks.codegenXpandProject, definitionName, templateExtension, true);
+
+		// Make sure that this is not supported
 		assertNull(storage);
 	}
 
-	/**
-	 * Finds an XtendXpand Storage.
-	 * 
-	 * @param resourceName
-	 *            Qualified name of the resource
-	 * @param searchJars
-	 *            <tt>true</tt> search also in referenced Jar files on the classpath
-	 * @return The storage or <code>null</code> if not found
-	 */
-	private IStorage findStorage(IFile hb20InstanceModelFile, String resourceName, boolean searchJars) throws Exception {
-		// Gets the java project of the project that contains the Hummingbird instance model hb20InstanceModelFile
-		IJavaProject javaProject = JavaCore.create(hb20InstanceModelFile.getProject());
-		ResourceID resourceID = new ResourceID(resourceName, IXtendXpandConstants.TEMPLATE_EXTENSION);
-
-		// Search the resource to find storage
+	private IStorage findStorage(IProject project, String resourceName, String resourceExtension, boolean searchJars) throws Exception {
+		IJavaProject javaProject = JavaCore.create(project);
+		ResourceID resourceID = new ResourceID(resourceName, resourceExtension);
 		return org.eclipse.xtend.shared.ui.Activator.findStorage(javaProject, resourceID, searchJars);
 	}
 }

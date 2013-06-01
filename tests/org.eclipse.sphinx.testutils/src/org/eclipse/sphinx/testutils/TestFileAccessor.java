@@ -83,12 +83,21 @@ public class TestFileAccessor {
 		return targetPlugin;
 	}
 
+	protected Path getInputFilePath(String inputFileName) {
+		return new Path(INPUT_DIR + IPath.SEPARATOR + inputFileName);
+	}
+
+	public boolean existsInputFile(String inputFileName) {
+		Path inputFilePath = getInputFilePath(inputFileName);
+		return FileLocator.find(targetPlugin.getBundle(), inputFilePath, null) != null;
+	}
+
 	public java.net.URI getInputFileURI(String inputFileName) throws URISyntaxException, IOException {
 		return getInputFileURI(inputFileName, false);
 	}
 
 	public java.net.URI getInputFileURI(String inputFileName, boolean fileScheme) throws URISyntaxException, IOException {
-		Path inputFilePath = new Path(INPUT_DIR + IPath.SEPARATOR + inputFileName);
+		Path inputFilePath = getInputFilePath(inputFileName);
 		URL url = FileLocator.find(targetPlugin.getBundle(), inputFilePath, null);
 		if (url == null) {
 			throw new FileNotFoundException(inputFileName);
@@ -108,7 +117,7 @@ public class TestFileAccessor {
 	}
 
 	public InputStream openInputFileInputStream(String inputFileName) throws IOException {
-		Path inputFilePath = new Path(INPUT_DIR + IPath.SEPARATOR + inputFileName);
+		Path inputFilePath = getInputFilePath(inputFileName);
 		return FileLocator.openStream(targetPlugin.getBundle(), inputFilePath, false);
 	}
 

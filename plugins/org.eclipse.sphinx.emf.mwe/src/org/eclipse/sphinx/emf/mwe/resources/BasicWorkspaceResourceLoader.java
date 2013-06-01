@@ -57,7 +57,7 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 	 *             workspace but not from JAR files or plug-ins.
 	 */
 	@Deprecated
-	protected boolean searchArchives = true;
+	protected boolean searchArchives = false;
 
 	public IProject getContextProject() {
 		return contextProject;
@@ -137,6 +137,7 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 		return workspaceClassLoader;
 	}
 
+	@SuppressWarnings("resource")
 	protected ClassLoader createWorkspaceClassLoader() {
 		Set<URL> outputURLs = new HashSet<URL>();
 		for (IProject project : getProjectsInScope()) {
@@ -216,10 +217,10 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 
 	protected URL resolveAgainstProjectsInScope(String path) {
 		for (IProject project : getProjectsInScope()) {
-			IFile templateFile = project.getFile(new Path(path));
-			if (templateFile != null && templateFile.exists()) {
+			IFile file = project.getFile(new Path(path));
+			if (file != null && file.exists()) {
 				try {
-					return templateFile.getLocation().toFile().toURI().toURL();
+					return file.getLocation().toFile().toURI().toURL();
 				} catch (Exception ex) {
 					// Ignore exception
 				}
@@ -259,9 +260,9 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 
 	protected URL resolveAgainstWorkspaceClasspath(String path) {
 		try {
-			URL url = getWorkspaceClassLoader().getResource(path);
-			if (url != null) {
-				return url;
+			ClassLoader classLoader = getWorkspaceClassLoader();
+			if (classLoader != null) {
+				return classLoader.getResource(path);
 			}
 		} catch (Exception ex) {
 			// Ignore exception
@@ -277,10 +278,10 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 			}
 		}
 		for (IContainer container : modelFileContainers) {
-			IFile templateFile = container.getFile(new Path(path));
-			if (templateFile != null && templateFile.exists()) {
+			IFile file = container.getFile(new Path(path));
+			if (file != null && file.exists()) {
 				try {
-					return templateFile.getLocation().toFile().toURI().toURL();
+					return file.getLocation().toFile().toURI().toURL();
 				} catch (Exception ex) {
 					// Ignore exception
 				}

@@ -40,11 +40,11 @@ public class XtendXpandTestReferenceWorkspace extends AbstractReferenceWorkspace
 
 	public static final String UML2_HB20_EXT_FILE_PATH = "extensions/UML2ToHummingbird20.ext";
 
-	public static final String XTEND_EXTENSION_NAME = "extensions::UML2ToHummingbird20::transform";
+	public static final String XTEND_UML2_HB20_EXTENSION_NAME = "extensions::UML2ToHummingbird20::transform";
 
-	public static final String EXTENSION_FILE_NAME_TO_BE_LINK = "extensionFile.ext";
+	public static final String LINKED_UML2_HB20_EXT_FILE_NAME = "UML2ToHummingbird20_linked.ext";
 
-	public static final String LINKED_XTEND_EXTENSION_NAME = "extensionFile::transform";
+	public static final String LINKED_XTEND_UML2_HB20_EXTENSION_NAME = "UML2ToHummingbird20_linked::transform";
 
 	// Xpand project.
 	//
@@ -54,7 +54,7 @@ public class XtendXpandTestReferenceWorkspace extends AbstractReferenceWorkspace
 
 	public static final String HB_CODEGEN_XPAND_PROJECT_HB_INSTANCE_MODEL_PATH = "model/sample.instancemodel";
 
-	public static final String HB_CODEGEN_XPAND_PROJECT_HB_TYPE_MODEL_PATH = "model/sampleType.typemodel";
+	public static final String HB_CODEGEN_XPAND_PROJECT_HB_TYPE_MODEL_PATH = "model/sample.typemodel";
 
 	public static final String HB_CODEGEN_XPAND_PROJECT_GEN_FILE_PATH = "HOUTLET/Config.h";
 
@@ -70,21 +70,11 @@ public class XtendXpandTestReferenceWorkspace extends AbstractReferenceWorkspace
 
 	public static final String PARAMETER_COMMENT_XPT_FILE_PATH = "templates/ParameterComment.xpt";
 
-	public static final String ROOT_XPT_FILE_PATH = "templates/Root.xpt";
-
 	public static final String XPAND_CONFIGH_DEFINITION_NAME = "templates::ConfigH::main";
 
 	public static final String XPAND_CONFIGH_TOHOUTLET_DEFINITION_NAME = "templates::ConfigHToHoutlet::main";
 
-	public static final String XPAND_CONFIGH_DEFINITION_FROM_PLUGIN_NAME = "templates::ConfigHP::main";
-
-	public static final String XPAND_CONFIGH = "templates::ConfigH";
-
-	public static final String XPAND_CONFIGHP = "templates::ConfigHP";
-
-	// Check model.
-	//
-	public static final String HB_CODEGEN_XPAND_PROJECT_CHECK_FILE_PATH = "checks/hb20Check.chk";
+	public static final String HB_CHK_FILE_PATH = "checks/InstanceModel.chk";
 
 	// Editing domains.
 	//

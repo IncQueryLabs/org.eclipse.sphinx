@@ -35,24 +35,28 @@ public class CheckJobTest extends XtendXpandIntegrationTestCase {
 		return new String[] { XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_NAME };
 	}
 
-	public void testHummingbird20ModelCheck() throws Exception {
-		// Load Hummingbird 2.0 type model file
+	public void testHummingbird20Check() throws Exception {
+		// Check existence of Hummingbird 2.0 type model file
 		IFile hb20TypeModelFile = refWks.codegenXpandProject.getFile(XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_HB_TYPE_MODEL_PATH);
 		assertNotNull(hb20TypeModelFile);
 		assertTrue(hb20TypeModelFile.exists());
+
+		// Load Hummingbird 2.0 type model file
 		Platform platform = (Platform) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20TypeModelFile);
 		assertNotNull(platform);
 
-		// Load Hummingbird 2.0 instance model file
+		// Check existence of Hummingbird 2.0 instance model file
 		IFile hb20InstanceModelFile = refWks.codegenXpandProject
 				.getFile(XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_HB_INSTANCE_MODEL_PATH);
 		assertNotNull(hb20InstanceModelFile);
 		assertTrue(hb20InstanceModelFile.exists());
+
+		// Load Hummingbird 2.0 instance model file
 		Application application = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20InstanceModelFile);
 		assertNotNull(application);
 
-		// Load check resource
-		IFile checkFile = refWks.codegenXpandProject.getFile(XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_CHECK_FILE_PATH);
+		// Check existence of check file
+		IFile checkFile = refWks.codegenXpandProject.getFile(XtendXpandTestReferenceWorkspace.HB_CHK_FILE_PATH);
 		assertNotNull(checkFile);
 		assertTrue(checkFile.exists());
 
