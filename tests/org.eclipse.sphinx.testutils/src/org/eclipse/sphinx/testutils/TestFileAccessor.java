@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys, BMW Car IT and others.
+ * Copyright (c) 2008-2013 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,11 +10,13 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Bug 358559, introduced base directory that can be explicitly set
+ *     itemis - Added readAsString(), existsInputFile() and getWorkingDirectory() methods
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.testutils;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,7 +27,9 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -35,6 +39,34 @@ import org.eclipse.emf.common.util.URI;
 
 @SuppressWarnings("nls")
 public class TestFileAccessor {
+
+	public static String readAsString(IFile file) throws CoreException, IOException {
+		BufferedInputStream inputStream = new BufferedInputStream(file.getContents());
+		try {
+			return readAsString(inputStream);
+		} finally {
+			inputStream.close();
+		}
+	}
+
+	public static String readAsString(File file) throws CoreException, IOException {
+		BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+		try {
+			return readAsString(inputStream);
+		} finally {
+			inputStream.close();
+		}
+	}
+
+	private static String readAsString(InputStream inputStream) throws CoreException, IOException {
+		byte[] buffer = new byte[1024];
+		int bufferLength;
+		StringBuilder content = new StringBuilder();
+		while ((bufferLength = inputStream.read(buffer)) > -1) {
+			content.append(new String(buffer, 0, bufferLength));
+		}
+		return content.toString();
+	}
 
 	public static void copyInputStreamToFile(InputStream in, File targetFile) throws IOException {
 		OutputStream out = new FileOutputStream(targetFile);
@@ -64,15 +96,15 @@ public class TestFileAccessor {
 	private static final String BUNDLE_ENTRY_SCHEME = "bundleentry";
 
 	private Plugin targetPlugin;
-	private File baseDirectory;
+	private File workingDirectory;
 
-	public TestFileAccessor(Plugin targetPlugin, File baseDirectory) {
+	public TestFileAccessor(Plugin targetPlugin, File workingDirectory) {
 		Assert.isNotNull(targetPlugin);
-		Assert.isNotNull(baseDirectory);
+		Assert.isNotNull(workingDirectory);
 		this.targetPlugin = targetPlugin;
-		this.baseDirectory = baseDirectory;
+		this.workingDirectory = workingDirectory;
 
-		baseDirectory.mkdirs();
+		workingDirectory.mkdirs();
 	}
 
 	public TestFileAccessor(Plugin targetPlugin) {
@@ -83,13 +115,8 @@ public class TestFileAccessor {
 		return targetPlugin;
 	}
 
-	protected Path getInputFilePath(String inputFileName) {
+	protected IPath getInputFilePath(String inputFileName) {
 		return new Path(INPUT_DIR + IPath.SEPARATOR + inputFileName);
-	}
-
-	public boolean existsInputFile(String inputFileName) {
-		Path inputFilePath = getInputFilePath(inputFileName);
-		return FileLocator.find(targetPlugin.getBundle(), inputFilePath, null) != null;
 	}
 
 	public java.net.URI getInputFileURI(String inputFileName) throws URISyntaxException, IOException {
@@ -97,7 +124,7 @@ public class TestFileAccessor {
 	}
 
 	public java.net.URI getInputFileURI(String inputFileName, boolean fileScheme) throws URISyntaxException, IOException {
-		Path inputFilePath = getInputFilePath(inputFileName);
+		IPath inputFilePath = getInputFilePath(inputFileName);
 		URL url = FileLocator.find(targetPlugin.getBundle(), inputFilePath, null);
 		if (url == null) {
 			throw new FileNotFoundException(inputFileName);
@@ -117,12 +144,16 @@ public class TestFileAccessor {
 	}
 
 	public InputStream openInputFileInputStream(String inputFileName) throws IOException {
-		Path inputFilePath = getInputFilePath(inputFileName);
+		IPath inputFilePath = getInputFilePath(inputFileName);
 		return FileLocator.openStream(targetPlugin.getBundle(), inputFilePath, false);
 	}
 
+	public File getWorkingDirectory() {
+		return workingDirectory;
+	}
+
 	public File createWorkingFile(String workingFileName) {
-		return new File(baseDirectory, workingFileName);
+		return new File(workingDirectory, workingFileName);
 	}
 
 	public java.net.URI getWorkingFileURI(String workingFileName) {

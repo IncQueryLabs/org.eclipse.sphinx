@@ -16,18 +16,16 @@
  */
 package org.eclipse.sphinx.tests.xtendxpand.integration;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
+import org.eclipse.sphinx.testutils.TestFileAccessor;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandTestReferenceWorkspace;
 import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
@@ -74,11 +72,11 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		IStatus xpandStatus = xpandJob.runInWorkspace(new NullProgressMonitor());
 		assertEquals(Status.OK_STATUS, xpandStatus);
 
-		// Load generated resource from current working directory and verify its content
+		// Load generated file from current working directory and verify its content
 		File file = new File(XtendXpandTestReferenceWorkspace.CONFIGH_FILE_NAME);
 		assertNotNull(file);
 		assertTrue(file.exists());
-		String contents = readAsString(file);
+		String contents = TestFileAccessor.readAsString(file);
 		assertTrue(contents.indexOf("#define ParamVal1 111") != -1); //$NON-NLS-1$
 		assertTrue(contents.indexOf("#define ParamVal2 222") != -1); //$NON-NLS-1$
 		assertTrue(contents.indexOf("#define ParamVal3 333") != -1); //$NON-NLS-1$
@@ -109,31 +107,9 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		IFile genFile = refWks.codegenXpandProject.getFile(XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_GEN_FILE_PATH);
 		assertNotNull(genFile);
 		assertTrue(genFile.exists());
-		contents = readAsString(genFile);
+		contents = TestFileAccessor.readAsString(genFile);
 		assertTrue(contents.indexOf("#define ParamVal1 111") != -1); //$NON-NLS-1$
 		assertTrue(contents.indexOf("#define ParamVal2 222") != -1); //$NON-NLS-1$
 		assertTrue(contents.indexOf("#define ParamVal3 333") != -1); //$NON-NLS-1$
-	}
-
-	private String readAsString(Object file) throws Exception {
-		Assert.isTrue(file instanceof IFile || file instanceof File);
-
-		BufferedInputStream inputStream = null;
-		if (file instanceof IFile) {
-			inputStream = new BufferedInputStream(((IFile) file).getContents());
-		} else if (file instanceof File) {
-			inputStream = new BufferedInputStream(new FileInputStream((File) file));
-		}
-		try {
-			byte[] buffer = new byte[1024];
-			int bufferLength;
-			StringBuilder content = new StringBuilder();
-			while ((bufferLength = inputStream.read(buffer)) > -1) {
-				content.append(new String(buffer, 0, bufferLength));
-			}
-			return content.toString();
-		} finally {
-			inputStream.close();
-		}
 	}
 }
