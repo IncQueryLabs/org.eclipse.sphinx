@@ -78,7 +78,11 @@ public class WorkspaceStorageFinder implements StorageFinder2 {
 	public IStorage findStorage(IJavaProject javaProject, ResourceID resourceID, boolean searchJars) {
 		workspaceResourceLoader.setContextProject(javaProject.getProject());
 
-		return XtendXpandUtil.getUnderlyingFile(resourceID.name, resourceID.extension, workspaceResourceLoader);
+		// Debug help >>>
+		throw new RuntimeException(resourceID.name + " " + resourceID.extension);
+		// <<< Debug help - original >>>
+		// return XtendXpandUtil.getUnderlyingFile(resourceID.name, resourceID.extension, workspaceResourceLoader);
+		// <<< original
 	}
 
 	/*
