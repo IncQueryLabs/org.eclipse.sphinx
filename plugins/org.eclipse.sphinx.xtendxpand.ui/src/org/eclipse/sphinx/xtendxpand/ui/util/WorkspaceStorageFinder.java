@@ -25,8 +25,6 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
-import org.eclipse.sphinx.xtendxpand.ui.internal.Activator;
 import org.eclipse.sphinx.xtendxpand.util.XtendXpandUtil;
 import org.eclipse.xtend.shared.ui.StorageFinder2;
 import org.eclipse.xtend.shared.ui.core.internal.ResourceID;
@@ -79,11 +77,6 @@ public class WorkspaceStorageFinder implements StorageFinder2 {
 	 */
 	public IStorage findStorage(IJavaProject javaProject, ResourceID resourceID, boolean searchJars) {
 		workspaceResourceLoader.setContextProject(javaProject.getProject());
-
-		// Debug help >>>
-		PlatformLogUtil.logAsError(Activator.getPlugin(), new RuntimeException(resourceID.name + ", " + resourceID.extension + ", "
-				+ workspaceResourceLoader.getContextProject().getName()));
-		// <<< Debug help
 
 		return XtendXpandUtil.getUnderlyingFile(resourceID.name, resourceID.extension, workspaceResourceLoader);
 	}

@@ -19,7 +19,6 @@
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<configuration>
 					<useUIHarness>true</useUIHarness>
-					<showEclipseLog>true</showEclipseLog>
 				</configuration>
 			</plugin>
 		</plugins>
