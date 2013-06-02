@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.tests.xtendxpand.integration.internal.Activator;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.XtendXpandTestReferenceWorkspace;
@@ -43,17 +42,9 @@ public class WorkspaceStorageFinderTest extends XtendXpandIntegrationTestCase {
 		String definitionName = XtendXpandTestReferenceWorkspace.XPAND_CONFIGH_DEFINITION_NAME;
 		String templateExtension = IXtendXpandConstants.TEMPLATE_EXTENSION;
 
-		// Debug help >>>
-		PlatformLogUtil.logAsInfo(Activator.getPlugin(), "testFindStorage_workspaceTemplate BEFORE invocation of findStorage()");
-		// <<< Debug help
-
 		// First case: test findStorage() for template file that is located in current workspace but do not search in
 		// referenced JAR files on the classpath
 		IStorage storage = findStorage(refWks.codegenXpandProject, definitionName, templateExtension, false);
-
-		// Debug help >>>
-		PlatformLogUtil.logAsInfo(Activator.getPlugin(), "testFindStorage_workspaceTemplate AFTER invocation of findStorage()");
-		// <<< Debug help
 
 		// Make sure that this is supported
 		assertNotNull(storage);
