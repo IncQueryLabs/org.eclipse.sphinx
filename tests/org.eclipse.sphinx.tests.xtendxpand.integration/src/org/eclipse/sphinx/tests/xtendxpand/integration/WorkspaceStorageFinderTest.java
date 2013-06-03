@@ -42,7 +42,7 @@ public class WorkspaceStorageFinderTest extends XtendXpandIntegrationTestCase {
 		String definitionName = XtendXpandTestReferenceWorkspace.XPAND_CONFIGH_DEFINITION_NAME;
 		String templateExtension = IXtendXpandConstants.TEMPLATE_EXTENSION;
 
-		// First case: test findStorage() for template file that is located in current workspace but do not search in
+		// First case: test #findStorage() for template file that is located in current workspace but do not search in
 		// referenced JAR files on the classpath
 		IStorage storage = findStorage(refWks.codegenXpandProject, definitionName, templateExtension, false);
 
@@ -50,7 +50,7 @@ public class WorkspaceStorageFinderTest extends XtendXpandIntegrationTestCase {
 		assertNotNull(storage);
 		assertEquals(xptFile, storage);
 
-		// Second case: test findStorage() for template file that is located in current workspace and search also in
+		// Second case: test #findStorage() for template file that is located in current workspace and search also in
 		// referenced JAR files on the classpath
 		storage = findStorage(refWks.codegenXpandProject, definitionName, templateExtension, true);
 
@@ -70,14 +70,14 @@ public class WorkspaceStorageFinderTest extends XtendXpandIntegrationTestCase {
 		String definitionName = XtendXpandTestTemplatesInPlugin.XPAND_CONFIGH_DEFINITION_NAME;
 		String templateExtension = IXtendXpandConstants.TEMPLATE_EXTENSION;
 
-		// First case: test findStorage() for template file that is located in plug-ins but do not search in
+		// First case: test #findStorage() for template file that is located in plug-ins but do not search in
 		// referenced JAR files on the classpath
 		IStorage storage = findStorage(refWks.codegenXpandProject, definitionName, templateExtension, false);
 
 		// Make sure that this is not supported
 		assertNull(storage);
 
-		// Second case: test findStorage() for template file that is located in plug-in and search also in
+		// Second case: test #findStorage() for template file that is located in plug-in and search also in
 		// referenced JAR files on the classpath
 		storage = findStorage(refWks.codegenXpandProject, definitionName, templateExtension, true);
 

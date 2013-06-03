@@ -46,16 +46,28 @@ public class BasicWorkspaceResourceLoaderTest extends XtendXpandIntegrationTestC
 
 	public void testGetResource_inPlugin() throws Exception {
 		// Check existence of template file
-		assertTrue(FileLocator.find(Activator.getPlugin().getBundle(), new Path(XtendXpandTestTemplatesInPlugin.CONFIGH_XPT_FILE_PATH), null) != null);
+		URL xptURL = FileLocator.find(Activator.getPlugin().getBundle(), new Path(XtendXpandTestTemplatesInPlugin.CONFIGH_XPT_FILE_PATH), null);
+		assertTrue(xptURL != null);
 
 		// Setup workspace resource loader
 		BasicWorkspaceResourceLoader workspaceResourceLoader = new BasicWorkspaceResourceLoader();
 		workspaceResourceLoader.setContextProject(refWks.codegenXpandProject);
 
-		// Try to retrieve template file from plug-in using workspace resource loader
+		// First case: test #getResource() for template file that is located in plug-in but do not search in
+		// JAR archives of required plug-ins
+		workspaceResourceLoader.setSearchArchives(false);
 		URL url = workspaceResourceLoader.getResource(XtendXpandTestTemplatesInPlugin.CONFIGH_XPT_FILE_PATH);
 
 		// Make sure that this is not supported
 		assertNull(url);
+
+		// Second case: test #getResource() for template file that is located in plug-in and search also in
+		// JAR archives of required plug-ins
+		workspaceResourceLoader.setSearchArchives(true);
+		url = workspaceResourceLoader.getResource(XtendXpandTestTemplatesInPlugin.CONFIGH_XPT_FILE_PATH);
+
+		// Make sure that this is supported
+		assertNotNull(url);
+		assertEquals(xptURL.getPath(), url.getPath());
 	}
 }
