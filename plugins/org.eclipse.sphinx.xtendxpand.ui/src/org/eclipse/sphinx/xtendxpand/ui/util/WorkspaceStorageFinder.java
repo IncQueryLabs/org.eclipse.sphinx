@@ -1,17 +1,18 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2011-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [358131] Make Xtend/Xpand/CheckJobs more robust against template file encoding mismatches
+ *     itemis - [406564] BasicWorkspaceResourceLoader#getResource should not delegate to super
  *     itemis - [406562] WorkspaceStorageFinder#getPriority
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.ui.util;
@@ -77,8 +78,18 @@ public class WorkspaceStorageFinder implements StorageFinder2 {
 	 */
 	public IStorage findStorage(IJavaProject javaProject, ResourceID resourceID, boolean searchJars) {
 		workspaceResourceLoader.setContextProject(javaProject.getProject());
+		workspaceResourceLoader.setSearchArchives(false);
 
 		return XtendXpandUtil.getUnderlyingFile(resourceID.name, resourceID.extension, workspaceResourceLoader);
+
+		// TODO Add support (and tests) for cases where resource is not a workspace file but shipped as a plug-in
+		// resource. This becomes relevant when a template/extension file that is edited in the workspace refers to a
+		// template/extension resource in a plug-in (e.g., an Xpand advice in a workspace template that enhances an
+		// Xpand definition in a plug-in template). However, keep in mind that switching on
+		// BasicWorkspaceResourceLoader#setSearchArchives(Boolean) may entail a significant runtime performance
+		// overhead, in particular in workpaces with many references to template/extension files that don't exist.
+		// Consider to provide some sort of (optional) plug-in white list mechanism that can be used to avoid that all
+		// plug-ins get crawled for each and every reference to a non-existing template/extension file.
 	}
 
 	/*

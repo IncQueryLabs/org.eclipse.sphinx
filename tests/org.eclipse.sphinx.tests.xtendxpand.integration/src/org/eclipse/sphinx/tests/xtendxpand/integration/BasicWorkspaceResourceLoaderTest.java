@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2013  itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     itemis - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.xtendxpand.integration;
@@ -36,8 +36,19 @@ public class BasicWorkspaceResourceLoaderTest extends XtendXpandIntegrationTestC
 		BasicWorkspaceResourceLoader workspaceResourceLoader = new BasicWorkspaceResourceLoader();
 		workspaceResourceLoader.setContextProject(refWks.codegenXpandProject);
 
-		// Try to retrieve template file from workspace using workspace resource loader
+		// First case: test #getResource() for template file that is located in current workspace but do not search in
+		// JAR archives of required plug-ins
+		workspaceResourceLoader.setSearchArchives(false);
 		URL url = workspaceResourceLoader.getResource(XtendXpandTestReferenceWorkspace.CONFIGH_XPT_FILE_PATH);
+
+		// Make sure that this is not supported
+		assertNotNull(url);
+		assertEquals(xptFile.getLocationURI().toURL(), url);
+
+		// Second case: test #getResource() for template file that is located in current workspace and search also in
+		// JAR archives of required plug-ins
+		workspaceResourceLoader.setSearchArchives(true);
+		url = workspaceResourceLoader.getResource(XtendXpandTestReferenceWorkspace.CONFIGH_XPT_FILE_PATH);
 
 		// Make sure that this is supported
 		assertNotNull(url);
