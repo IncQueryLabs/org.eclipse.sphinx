@@ -250,7 +250,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 			}
 		}
 		// Resource set for metamodel of object being referenced by given proxy URI different from this resource set?
-		if (otherResourceSet != this) {
+		if (otherResourceSet != null && otherResourceSet != this) {
 			// Try to resolve proxy URI in this other resource set
 			return delegatedGetEObjectInScope(uri, metaModelDescriptor, otherResourceSet, contextObject, contextFile, loadOnDemand);
 		}

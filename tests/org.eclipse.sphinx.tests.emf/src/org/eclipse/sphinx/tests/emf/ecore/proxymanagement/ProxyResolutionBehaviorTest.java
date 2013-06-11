@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2012 BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     BMW Car IT - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.ecore.proxymanagement;
@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.sphinx.emf.ecore.proxymanagement.ProxyResolutionBehavior;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Factory;
 import org.junit.Before;
@@ -136,7 +137,7 @@ public class ProxyResolutionBehaviorTest {
 		}
 
 		@Override
-		public EObject getEObjectInScope(URI uri, boolean loadOnDemand, EObject contextObject) {
+		public EObject getEObjectInScope(URI uri, IMetaModelDescriptor metaModelDescriptor, EObject contextObject, boolean loadOnDemand) {
 			return fExpectedResolvedEObject;
 		}
 
