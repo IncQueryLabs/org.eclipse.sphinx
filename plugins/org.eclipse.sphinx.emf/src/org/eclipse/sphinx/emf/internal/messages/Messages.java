@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.internal.messages;
@@ -59,9 +60,7 @@ public class Messages extends NLS {
 	public static String job_initializingModelDescriptorRegistry;
 	public static String task_analyzingProjects;
 	public static String subtask_analyzingFile;
-	public static String job_validatingResourceScopes;
 	public static String task_validatingResourceScopes;
-	public static String job_cleaningResourceScopeMarkers;
 	public static String task_cleaningResourceScopeMarkers;
 
 	public static String propertyDescriptionPostfix_mustBeADataTypeEgDefaultValue;
@@ -87,14 +86,6 @@ public class Messages extends NLS {
 	public static String warning_multipleOverridesForSameResourceScopeProvider;
 	public static String warning_multipleResourceScopeProvidersContributedForSameMetaModelDescriptor;
 
-	public static String error_schemaFileInPluginNotFound;
-	public static String error_schemaFileReferencedByXsiSchemaLocationNotFound;
-	public static String error_schemaFileInPluginNotAccessible;
-	public static String error_schemaFileReferencedByXsiSchemaLocationNotAccessible;
-	public static String error_generalProblemWhileParsingSchemaFileInPlugin;
-	public static String error_generalProblemWhileParsingSchemaFileReferencedByXsiSchemaLocation;
-	public static String error_locatableProblemWhileParsingSchemaFileInPlugin;
-	public static String error_locatableProblemWhileParsingSchemaFileReferencedByXsiSchemaLocation;
 	public static String error_invalidEditingDomainFactoryListenerObject;
 
 	public static String label_unknownProxyURI;
@@ -103,6 +94,7 @@ public class Messages extends NLS {
 
 	public static String msg_xmlWellformednessProblemFormatString;
 	public static String msg_xmlValidityProblemFormatString;
+	public static String msg_waitingForModelsBeingLoaded;
 
 	public static String error_problemOccurredWhenLoadingResource;
 	public static String error_problemOccurredWhenResolvingReferencesOfObject;

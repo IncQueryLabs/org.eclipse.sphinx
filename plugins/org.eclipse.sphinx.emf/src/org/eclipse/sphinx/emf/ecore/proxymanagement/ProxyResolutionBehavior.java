@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
  *
  * </copyright>
  */
@@ -24,9 +25,11 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelper;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelperAdapterFactory;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.DefaultResourceSetEObjectResolver;
-import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.IEObjectResolver;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.EObjectResolveRequest;
+import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.IEObjectResolver;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.resolver.ScopingResourceSetEObjectResolver;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 
 public class ProxyResolutionBehavior {
 
@@ -104,9 +107,20 @@ public class ProxyResolutionBehavior {
 
 		if (resolvedEObject == proxy && proxyHelper != null) {
 			// Remember proxy as known unresolved proxy
-			proxyHelper.getBlackList().addProxyURI(proxyURI);
+			/*
+			 * !! Important Note !! Blacklist proxy only if it has the same metamodel or target metamodel as the object
+			 * that references it. When the target object for the proxy of some other metamodel becomes available it
+			 * will get loaded into the editing domain/resource set for this other metamodel but not into the same
+			 * editing domain/resource set that contains the object referencing the proxy. Therefore the proxy must also
+			 * be blacklisted only by the proxy helper adapter of the other resource set but not by the proxy helper
+			 * adapter of this resource set.
+			 */
+			IMetaModelDescriptor proxyMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy.eClass());
+			IMetaModelDescriptor contextMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getEffectiveDescriptor(contextObject.eResource());
+			if (proxyMMDescriptor.equals(contextMMDescriptor)) {
+				proxyHelper.getBlackList().addProxyURI(proxyURI);
+			}
 		}
 		return resolvedEObject;
 	}
-
 }

@@ -1,18 +1,19 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
  *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored
  *     itemis - [409459] Enable asynchronous loading of affected models when creating or resolving references to elements in other models
- * 
+ *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.util;
@@ -505,6 +506,41 @@ public final class EcorePlatformUtil {
 	}
 
 	/**
+	 * Tests if the persisted files of the given {@link IModelDescriptor model Descriptor} are loaded completely.
+	 * 
+	 * @param modelDescriptor
+	 *            The {@link IModelDescriptor model Descriptor} that may or not be loaded.
+	 * @return <code>true</code> if the persisted files of the specified {@link IModelDescriptor model Descriptor} are
+	 *         all loaded; <code>false</code> otherwise.
+	 */
+	public static boolean isModelLoaded(IModelDescriptor modelDescriptor) {
+		for (IFile persistedFile : modelDescriptor.getPersistedFiles(true)) {
+			if (!isFileLoaded(persistedFile)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Tests if the persisted files of the given collection of {@link IModelDescriptor model Descriptor}s are loaded
+	 * completely.
+	 * 
+	 * @param modelDescriptors
+	 *            The collection of {@link IModelDescriptor model Descriptor}s that may or not be loaded.
+	 * @return <code>true</code> if the persisted files of the specified collection of {@link IModelDescriptor model
+	 *         Descriptor}s are all loaded; <code>false</code> otherwise.
+	 */
+	public static boolean areModelsLoaded(Collection<IModelDescriptor> modelDescriptors) {
+		for (IModelDescriptor targetModelDescriptor : modelDescriptors) {
+			if (!isModelLoaded(targetModelDescriptor)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Returns the {@linkplain IFile file} corresponding to the specified {@linkplain Object object}.
 	 * <p>
 	 * The supported object types are:
@@ -989,6 +1025,35 @@ public final class EcorePlatformUtil {
 			resourcesInModels.addAll(modelDescriptor.getLoadedResources(includeReferencedModels));
 		}
 		return resourcesInModels;
+	}
+
+	/**
+	 * Returns all resources owned by the {@link IModelDescriptor model descriptor}s which are filtered by the
+	 * {@link IMetaModelDescriptor other meta model descriptor}. These resources reside in the models other than the
+	 * model of the context resource resides.
+	 * 
+	 * @param contextResource
+	 *            The {@link Resource resource} used as context object for investigation.
+	 * @param otherMMDescriptor
+	 *            The target {@link IMetaModelDescriptor meta model descriptor}
+	 * @param includeReferencedModels
+	 *            Determines if the {@link IResourceScope model resource scopes} referenced by the context
+	 *            {@link Resource resource}'s {@link IResourceScope model resource scope} must be considered for the
+	 *            research.
+	 */
+	public static Collection<Resource> getResourcesInOtherModels(Resource contextResource, IMetaModelDescriptor otherMMDescriptor,
+			boolean includeReferencedModels) {
+		IFile contextFile = getFile(contextResource);
+		if (contextFile != null) {
+			Set<Resource> otherResources = new HashSet<Resource>();
+			Collection<IModelDescriptor> otherModelDescriptors = ModelDescriptorRegistry.INSTANCE.getModels(contextFile.getParent(),
+					otherMMDescriptor);
+			for (IModelDescriptor otherModelDescriptor : otherModelDescriptors) {
+				otherResources.addAll(getResourcesInModel(otherModelDescriptor, includeReferencedModels));
+			}
+			return otherResources;
+		}
+		return Collections.emptySet();
 	}
 
 	/**

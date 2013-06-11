@@ -1,16 +1,17 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2011 See4sys, itemis and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [346945] Label decoration for proxyfied EObjects does not work correctly for multiplicity-many features
- * 
+ *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.edit;
@@ -31,6 +32,7 @@ import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.ecore.MessageEObjectImpl;
 import org.eclipse.sphinx.emf.internal.EcorePerformanceStats;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
 
@@ -126,6 +128,11 @@ public class ExtendedItemPropertyDescriptor extends ItemPropertyDescriptor {
 				if (object instanceof EObject && ((EObject) object).eIsProxy()) {
 					URI proxyURI = EcoreUtil.getURI((EObject) object);
 					return proxyURI != null ? proxyURI.toString() : Messages.label_unknownProxyURI;
+				}
+
+				// If object is a message EObject then display its message
+				if (object instanceof MessageEObjectImpl) {
+					return ((MessageEObjectImpl) object).getMessage();
 				}
 
 				return delegate.getText(object);

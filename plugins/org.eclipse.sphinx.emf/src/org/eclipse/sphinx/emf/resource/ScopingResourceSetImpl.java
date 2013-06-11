@@ -1,24 +1,27 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
- * 
+ *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.resource;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +32,10 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.xmi.XMIException;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
@@ -44,6 +47,7 @@ import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
+import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
@@ -208,33 +212,86 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	 */
 	@Override
 	public EObject getEObject(URI uri, boolean loadOnDemand) {
-		return getEObjectInScope(uri, loadOnDemand, null);
+		return getEObjectInScope(uri, null, null, loadOnDemand);
 	}
 
 	/**
-	 * Resolves given {@link URI} and returns corresponding {@link EObject}. If the {@link URI} is fragment-based (i.e.,
-	 * has no segments and doesn't reference any explicit target resource) the provided {@link EObject context object}
-	 * is used to determine the set of {@link Resource resource}s to be considered for resolving it. In case that given
-	 * {@link URI} is a fragment-based {@link proxy URI} the {@link EObject context object} typically is the
-	 * {@link EObject owner} of the {@link EReference reference} which points at the {@link EObject proxy}.
-	 * 
-	 * @param uri
-	 *            The {@link URI} to resolve.
-	 * @param loadOnDemand
-	 *            Whether to create and load the {@link Resource target resource}, if it isn't already present in this
-	 *            {@link ScopingResourceSetImpl resource set}.
-	 * @param contextObject
-	 *            The {@link EObject context object} used to determine the set of {@link Resource resource}s to be
-	 *            considered for resolving given {@link URI} in case that is is a fragment-based {@link URI}.
-	 * @return The {@link EObject} behind given {@link URI}, or <code>null</code> if given {@link URI} cannot be
-	 *         resolved.
-	 * @see #getResourcesToSearchIn(URI, boolean, EObject)
-	 * @see #findEObject(URI, boolean, List)
+	 * @deprecated Use {@link #getEObjectInScope(URI, IMetaModelDescriptor, EObject, boolean)} instead.
 	 */
+	@Deprecated
 	public EObject getEObjectInScope(URI uri, boolean loadOnDemand, EObject contextObject) {
+		return getEObjectInScope(uri, null, contextObject, loadOnDemand);
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ScopingResourceSet#getEObjectInScope(org.eclipse.emf.common.util.URI,
+	 * org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, org.eclipse.emf.ecore.EObject, boolean)
+	 */
+	public EObject getEObjectInScope(URI uri, IMetaModelDescriptor metaModelDescriptor, EObject contextObject, boolean loadOnDemand) {
 		if (uri == null) {
 			return null;
 		}
+
+		// Try to resolve proxy URI in this resource set
+		EObject resolvedEObject = doGetEObjectInScope(uri, contextObject, loadOnDemand);
+		if (resolvedEObject != null) {
+			return resolvedEObject;
+		}
+
+		// Retrieve resource set for metamodel of object being referenced by given proxy URI
+		ResourceSet otherResourceSet = null;
+		Resource contextResource = getResource(contextObject);
+		IFile contextFile = EcorePlatformUtil.getFile(contextResource);
+		if (contextFile != null) {
+			TransactionalEditingDomain targetEditingDomain = WorkspaceEditingDomainUtil
+					.getEditingDomain(contextFile.getParent(), metaModelDescriptor);
+			if (targetEditingDomain != null) {
+				otherResourceSet = targetEditingDomain.getResourceSet();
+			}
+		}
+		// Resource set for metamodel of object being referenced by given proxy URI different from this resource set?
+		if (otherResourceSet != this) {
+			// Try to resolve proxy URI in this other resource set
+			return delegatedGetEObjectInScope(uri, metaModelDescriptor, otherResourceSet, contextObject, contextFile, loadOnDemand);
+		}
+
+		// Proxy URI cannot be resolved
+		return null;
+	}
+
+	protected EObject delegatedGetEObjectInScope(URI uri, IMetaModelDescriptor metaModelDescriptor, ResourceSet targetResourceSet,
+			EObject contextObject, IFile contextFile, boolean loadOnDemand) {
+		Assert.isNotNull(targetResourceSet);
+
+		// Load target model(s) on demand if required
+		if (loadOnDemand) {
+			// Retrieve target model(s) that is (are) in the same scope as context object
+			Collection<IModelDescriptor> targetModelDescriptors = ModelDescriptorRegistry.INSTANCE.getModels(contextFile.getParent(),
+					metaModelDescriptor);
+
+			// Ignore target models that are already loaded
+			for (Iterator<IModelDescriptor> iter = targetModelDescriptors.iterator(); iter.hasNext();) {
+				if (EcorePlatformUtil.isModelLoaded(iter.next())) {
+					iter.remove();
+				}
+			}
+
+			// Trigger asynchronous loading of all target models that are not loaded yet
+			EcorePlatformUtil.loadModels(targetModelDescriptors, true, null);
+		}
+
+		// Delegate resolution of proxy to target resource set
+		EObject resolvedEObject = null;
+		if (targetResourceSet instanceof ScopingResourceSetImpl) {
+			resolvedEObject = ((ScopingResourceSetImpl) targetResourceSet).getEObjectInScope(uri, metaModelDescriptor, contextObject, loadOnDemand);
+		} else {
+			resolvedEObject = targetResourceSet.getEObject(uri, loadOnDemand);
+		}
+		return resolvedEObject;
+	}
+
+	protected EObject doGetEObjectInScope(URI uri, EObject contextObject, boolean loadOnDemand) {
+		Assert.isNotNull(uri);
 
 		// Fragment-based URI not knowing its target resource?
 		if (uri.segmentCount() == 0) {
