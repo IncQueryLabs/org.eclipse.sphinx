@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
+ * Copyright (c) 2008-2013 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  *     BMW Car IT - Avoid usage of Object.finalize
+ *     itemis - [409014] Listener URIChangeDetector registered for all transactional editing domains
  * 
  * </copyright>
  */
@@ -39,6 +40,7 @@ import org.eclipse.emf.transaction.ResourceSetChangeEvent;
 import org.eclipse.emf.transaction.ResourceSetListenerImpl;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.Activator;
+import org.eclipse.sphinx.emf.domain.factory.AbstractResourceSetListenerInstaller;
 import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
@@ -55,6 +57,12 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
  *      org.eclipse.core.runtime.IProgressMonitor)
  */
 public class ResourceProblemHandler extends ResourceSetListenerImpl implements IResourceChangeListener {
+
+	public class ResourceProblemHandlerInstaller extends AbstractResourceSetListenerInstaller<ResourceProblemHandler> {
+		public ResourceProblemHandlerInstaller() {
+			super(ResourceProblemHandler.class);
+		}
+	}
 
 	/**
 	 * Default constructor.

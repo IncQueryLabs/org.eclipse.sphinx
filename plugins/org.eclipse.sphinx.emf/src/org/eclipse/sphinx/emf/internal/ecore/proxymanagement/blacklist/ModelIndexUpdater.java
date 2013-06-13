@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [409014] Listener URIChangeDetector registered for all transactional editing domains
  * 
  * </copyright>
  */
@@ -38,6 +39,7 @@ import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.ResourceSetChangeEvent;
 import org.eclipse.emf.transaction.ResourceSetListenerImpl;
 import org.eclipse.sphinx.emf.Activator;
+import org.eclipse.sphinx.emf.domain.factory.AbstractResourceSetListenerInstaller;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelper;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelperAdapterFactory;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
@@ -46,7 +48,14 @@ import org.eclipse.sphinx.platform.resources.ResourceDeltaFlagsAnalyzer;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
+@SuppressWarnings("deprecation")
 public class ModelIndexUpdater extends ResourceSetListenerImpl implements IResourceChangeListener {
+
+	public class ModelIndexUpdaterInstaller extends AbstractResourceSetListenerInstaller<ModelIndexUpdater> {
+		public ModelIndexUpdaterInstaller() {
+			super(ModelIndexUpdater.class);
+		}
+	}
 
 	public ModelIndexUpdater() {
 		super(NotificationFilter.ANY);

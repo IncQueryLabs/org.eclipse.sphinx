@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [409014] Listener URIChangeDetector registered for all transactional editing domains
  * 
  * </copyright>
  */
@@ -24,9 +25,17 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.ResourceSetChangeEvent;
+import org.eclipse.emf.transaction.ResourceSetListener;
 import org.eclipse.emf.transaction.ResourceSetListenerImpl;
+import org.eclipse.sphinx.emf.domain.factory.AbstractResourceSetListenerInstaller;
 
 public class URIResourceCacheUpdater extends ResourceSetListenerImpl {
+
+	public class URIResourceCacheUpdaterInstaller extends AbstractResourceSetListenerInstaller<URIResourceCacheUpdater> {
+		public URIResourceCacheUpdaterInstaller() {
+			super(URIResourceCacheUpdater.class);
+		}
+	}
 
 	/**
 	 * Constructs a {@link ResourceSetListener} that listens to changes of {@link Resource#getURI()}.

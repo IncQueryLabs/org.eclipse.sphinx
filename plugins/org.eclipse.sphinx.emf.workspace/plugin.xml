@@ -13,6 +13,7 @@ http://www.eclipse.org/legal/epl-v10.html
 Contributors: 
     See4sys - Initial API and implementation
     itemis - [409459] Enable asynchronous loading of affected models when creating or resolving references to elements in other models
+    itemis - [409014] Listener URIChangeDetector registered for all transactional editing domains
 
 </copyright>
 -->
@@ -70,9 +71,13 @@ Contributors:
       </enablement>
    </extension>
    <extension
-         point="org.eclipse.emf.transaction.listeners">
+         point="org.eclipse.sphinx.emf.editingDomainFactoryListeners">
       <listener
-            class="org.eclipse.sphinx.emf.workspace.referentialintegrity.URIChangeDetector">
+            class="org.eclipse.sphinx.emf.workspace.referentialintegrity.URIChangeDetector.URIChangeDetectorInstaller"
+            id="org.eclipse.sphinx.emf.workspace.referentialintegrity.uriChangeDetectorInstaller">
+         <applicableFor
+               metaModelDescriptorIdPattern="org.eclipse.sphinx.emf.metamodel.any">
+         </applicableFor>
       </listener>
    </extension>
    <extension

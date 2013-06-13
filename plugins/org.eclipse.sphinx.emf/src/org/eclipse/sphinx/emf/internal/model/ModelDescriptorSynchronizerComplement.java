@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [409014] Listener URIChangeDetector registered for all transactional editing domains
  * 
  * </copyright>
  */
@@ -39,6 +40,7 @@ import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.ResourceSetChangeEvent;
 import org.eclipse.emf.transaction.ResourceSetListenerImpl;
 import org.eclipse.sphinx.emf.Activator;
+import org.eclipse.sphinx.emf.domain.factory.AbstractResourceSetListenerInstaller;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.internal.metamodel.InternalMetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
@@ -48,6 +50,13 @@ import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
 public class ModelDescriptorSynchronizerComplement extends ResourceSetListenerImpl {
+
+	public class ModelDescriptorSynchronizerComplementInstaller extends AbstractResourceSetListenerInstaller<ModelDescriptorSynchronizerComplement> {
+		public ModelDescriptorSynchronizerComplementInstaller() {
+			super(ModelDescriptorSynchronizerComplement.class);
+		}
+	}
+
 	public ModelDescriptorSynchronizerComplement() {
 		super(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__IS_LOADED).or(
 				NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResourceSet(), ResourceSet.RESOURCE_SET__RESOURCES)));
