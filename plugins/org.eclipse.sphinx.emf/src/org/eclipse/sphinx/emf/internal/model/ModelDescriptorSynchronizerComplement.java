@@ -1,16 +1,16 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [409014] Listener URIChangeDetector registered for all transactional editing domains
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.internal.model;
@@ -51,7 +51,8 @@ import org.eclipse.sphinx.platform.util.StatusUtil;
 
 public class ModelDescriptorSynchronizerComplement extends ResourceSetListenerImpl {
 
-	public class ModelDescriptorSynchronizerComplementInstaller extends AbstractResourceSetListenerInstaller<ModelDescriptorSynchronizerComplement> {
+	public static class ModelDescriptorSynchronizerComplementInstaller extends
+			AbstractResourceSetListenerInstaller<ModelDescriptorSynchronizerComplement> {
 		public ModelDescriptorSynchronizerComplementInstaller() {
 			super(ModelDescriptorSynchronizerComplement.class);
 		}

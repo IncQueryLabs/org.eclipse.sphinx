@@ -9,8 +9,8 @@ All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
 which accompanies this distribution, and is available at
 http://www.eclipse.org/legal/epl-v10.html
- 
-Contributors: 
+
+Contributors:
     See4sys - Initial API and implementation
     itemis - [409014] Listener URIChangeDetector registered for all transactional editing domains
 
@@ -71,35 +71,35 @@ Contributors:
    <extension
          point="org.eclipse.sphinx.emf.editingDomainFactoryListeners">
       <listener
-            class="org.eclipse.sphinx.emf.internal.resource.URIResourceCacheUpdater.URIResourceCacheUpdaterInstaller"
+            class="org.eclipse.sphinx.emf.internal.resource.URIResourceCacheUpdater$URIResourceCacheUpdaterInstaller"
             id="org.eclipse.sphinx.emf.internal.resource.uriResourceCacheUpdaterInstaller">
          <applicableFor
                metaModelDescriptorIdPattern="org.eclipse.sphinx.emf.metamodel.any">
          </applicableFor>
       </listener>
       <listener
-            class="org.eclipse.sphinx.emf.internal.ecore.proxymanagement.blacklist.ModelIndexUpdater.ModelIndexUpdaterInstaller"
+            class="org.eclipse.sphinx.emf.internal.ecore.proxymanagement.blacklist.ModelIndexUpdater$ModelIndexUpdaterInstaller"
             id="org.eclipse.sphinx.emf.internal.ecore.proxymanagement.blacklist.modelIndexUpdaterInstaller">
          <applicableFor
                metaModelDescriptorIdPattern="org.eclipse.sphinx.emf.metamodel.any">
          </applicableFor>
       </listener>
       <listener
-            class="org.eclipse.sphinx.emf.internal.model.ModelDescriptorSynchronizerComplement.ModelDescriptorSynchronizerComplementInstaller"
+            class="org.eclipse.sphinx.emf.internal.model.ModelDescriptorSynchronizerComplement$ModelDescriptorSynchronizerComplementInstaller"
             id="org.eclipse.sphinx.emf.internal.model.modelDescriptorSynchronizerComplementInstaller">
          <applicableFor
                metaModelDescriptorIdPattern="org.eclipse.sphinx.emf.metamodel.any">
          </applicableFor>
       </listener>
       <listener
-            class="org.eclipse.sphinx.emf.internal.metamodel.MetaModelDescriptorCacheUpdater.MetaModelDescriptorCacheUpdaterInstaller"
+            class="org.eclipse.sphinx.emf.internal.metamodel.MetaModelDescriptorCacheUpdater$MetaModelDescriptorCacheUpdaterInstaller"
             id="org.eclipse.sphinx.emf.internal.metamodel.metaModelDescriptorCacheUpdaterInstaller">
          <applicableFor
                metaModelDescriptorIdPattern="org.eclipse.sphinx.emf.metamodel.any">
          </applicableFor>
       </listener>
       <listener
-            class="org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler.ResourceProblemHandlerInstaller"
+            class="org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler$ResourceProblemHandlerInstaller"
             id="org.eclipse.sphinx.emf.internal.resource.resourceProblemHandlerInstaller">
          <applicableFor
                metaModelDescriptorIdPattern="org.eclipse.sphinx.emf.metamodel.any">

@@ -9,8 +9,8 @@ All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
 which accompanies this distribution, and is available at
 http://www.eclipse.org/legal/epl-v10.html
- 
-Contributors: 
+
+Contributors:
     See4sys - Initial API and implementation
     itemis - [409459] Enable asynchronous loading of affected models when creating or resolving references to elements in other models
     itemis - [409014] Listener URIChangeDetector registered for all transactional editing domains
@@ -73,7 +73,7 @@ Contributors:
    <extension
          point="org.eclipse.sphinx.emf.editingDomainFactoryListeners">
       <listener
-            class="org.eclipse.sphinx.emf.workspace.referentialintegrity.URIChangeDetector.URIChangeDetectorInstaller"
+            class="org.eclipse.sphinx.emf.workspace.referentialintegrity.URIChangeDetector$URIChangeDetectorInstaller"
             id="org.eclipse.sphinx.emf.workspace.referentialintegrity.uriChangeDetectorInstaller">
          <applicableFor
                metaModelDescriptorIdPattern="org.eclipse.sphinx.emf.metamodel.any">
