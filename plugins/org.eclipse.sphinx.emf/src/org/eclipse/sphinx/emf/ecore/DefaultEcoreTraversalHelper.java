@@ -10,6 +10,7 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
+ *     itemis - [411580] Remove "isDerived" test in DefaultEcoreTraversalHelper#collectReachableObjectsOfType()
  *
  * </copyright>
  */
@@ -138,26 +139,24 @@ public class DefaultEcoreTraversalHelper implements EcoreTraversalHelper {
 				result.add(object);
 			}
 			for (EStructuralFeature feature : getFeaturesToTraverseFor(object, type)) {
-				if (!feature.isDerived()) {
-					if (feature instanceof EReference) {
-						EReference eReference = (EReference) feature;
-						if (eReference.isMany()) {
-							@SuppressWarnings("unchecked")
-							List<EObject> list = (List<EObject>) object.eGet(eReference);
-							for (EObject eObject : list) {
-								itemQueue.addLast(eObject);
-							}
-						} else {
-							EObject eObject = (EObject) object.eGet(eReference);
-							if (eObject != null) {
-								itemQueue.addLast(eObject);
-							}
+				if (feature instanceof EReference) {
+					EReference eReference = (EReference) feature;
+					if (eReference.isMany()) {
+						@SuppressWarnings("unchecked")
+						List<EObject> list = (List<EObject>) object.eGet(eReference);
+						for (EObject eObject : list) {
+							itemQueue.addLast(eObject);
 						}
-					} else if (FeatureMapUtil.isFeatureMap(feature)) {
-						for (FeatureMap.Entry entry : (FeatureMap) object.eGet(feature)) {
-							if (entry.getEStructuralFeature() instanceof EReference && entry.getValue() != null) {
-								itemQueue.addLast((EObject) entry.getValue());
-							}
+					} else {
+						EObject eObject = (EObject) object.eGet(eReference);
+						if (eObject != null) {
+							itemQueue.addLast(eObject);
+						}
+					}
+				} else if (FeatureMapUtil.isFeatureMap(feature)) {
+					for (FeatureMap.Entry entry : (FeatureMap) object.eGet(feature)) {
+						if (entry.getEStructuralFeature() instanceof EReference && entry.getValue() != null) {
+							itemQueue.addLast((EObject) entry.getValue());
 						}
 					}
 				}
