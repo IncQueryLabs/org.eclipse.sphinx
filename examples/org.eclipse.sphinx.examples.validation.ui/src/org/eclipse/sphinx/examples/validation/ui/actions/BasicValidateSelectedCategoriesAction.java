@@ -1,21 +1,22 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.validation.ui.actions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -56,10 +57,9 @@ public class BasicValidateSelectedCategoriesAction extends BaseSelectionListener
 
 	@Override
 	public void run() {
-		// Retrieves categories of constraints to validate (user's selection)
-		final List<IConstraintFilter> selectedCategories = getSelectedCategories();
-
-		if (selectedCategories == null || selectedCategories.isEmpty()) {
+		// Retrieves filter for categories of constraints to validate (user's selection)
+		final IConstraintFilter selectedConstraintCategoryFilter = selectedConstraintCategories();
+		if (selectedConstraintCategoryFilter == null) {
 			return;
 		}
 
@@ -70,7 +70,7 @@ public class BasicValidateSelectedCategoriesAction extends BaseSelectionListener
 					for (Iterator<?> it = getStructuredSelection().iterator(); it.hasNext();) {
 						objects.add(it.next());
 					}
-					ValidationUtil.validate(objects, selectedCategories, monitor);
+					ValidationUtil.validate(objects, Collections.singleton(selectedConstraintCategoryFilter), monitor);
 				}
 			});
 			// Run the validation operation, and show progress
@@ -82,7 +82,7 @@ public class BasicValidateSelectedCategoriesAction extends BaseSelectionListener
 
 	// TODO Enhance dialog so that not only top level categories would be displayed.
 	// TODO Externalize dialog in a dedicated class that could be accessible at the Sphinx level.
-	private List<IConstraintFilter> getSelectedCategories() {
+	private IConstraintFilter selectedConstraintCategories() {
 		// The active shell.
 		Shell shell = ExtendedPlatformUI.getActiveShell();
 
@@ -101,15 +101,16 @@ public class BasicValidateSelectedCategoriesAction extends BaseSelectionListener
 		int result = dialog.open();
 		if (result == Window.OK) {
 			// The selected categories
-			List<IConstraintFilter> categories = new ArrayList<IConstraintFilter>();
 			// Iterates over list of selected constraint categories
+			ConstraintCategoryFilter constraintCategoryFilter = new ConstraintCategoryFilter();
 			for (Object obj : dialog.getResult()) {
 				if (obj instanceof Category) {
-					categories.add(new ConstraintCategoryFilter(((Category) obj).getId()));
+					constraintCategoryFilter.addCategory(((Category) obj).getId());
 				}
 			}
-			return categories;
+			return constraintCategoryFilter;
 		}
+
 		return null;
 	}
 
