@@ -1,17 +1,17 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [393477] Provider hook for unwrapping elements before letting BasicTabbedPropertySheetTitleProvider retrieve text or image for them
  *     itemis - [393479] Enable BasicTabbedPropertySheetTitleProvider to retrieve same AdapterFactory as underlying IWorkbenchPart is using
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.ui.properties;
@@ -119,14 +119,16 @@ public class BasicTabbedPropertySheetTitleProvider extends LabelProvider {
 			descriptionProvider = contentService.createCommonDescriptionProvider();
 		} else {
 			IEditingDomainProvider editingDomainProvider = (IEditingDomainProvider) part.getAdapter(IEditingDomainProvider.class);
-			EditingDomain editingDomain = editingDomainProvider.getEditingDomain();
-			if (editingDomain instanceof TransactionalEditingDomain) {
-				AdapterFactory adapterFactory = (AdapterFactory) part.getAdapter(AdapterFactory.class);
-				if (adapterFactory == null && editingDomain instanceof AdapterFactoryEditingDomain) {
-					adapterFactory = ((AdapterFactoryEditingDomain) editingDomain).getAdapterFactory();
+			if (editingDomainProvider != null) {
+				EditingDomain editingDomain = editingDomainProvider.getEditingDomain();
+				if (editingDomain instanceof TransactionalEditingDomain) {
+					AdapterFactory adapterFactory = (AdapterFactory) part.getAdapter(AdapterFactory.class);
+					if (adapterFactory == null && editingDomain instanceof AdapterFactoryEditingDomain) {
+						adapterFactory = ((AdapterFactoryEditingDomain) editingDomain).getAdapterFactory();
+					}
+					labelProvider = new TransactionalAdapterFactoryLabelProvider((TransactionalEditingDomain) editingDomain, adapterFactory);
+					descriptionProvider = new DelegatingDescriptionProvider(labelProvider);
 				}
-				labelProvider = new TransactionalAdapterFactoryLabelProvider((TransactionalEditingDomain) editingDomain, adapterFactory);
-				descriptionProvider = new DelegatingDescriptionProvider(labelProvider);
 			}
 		}
 	}
