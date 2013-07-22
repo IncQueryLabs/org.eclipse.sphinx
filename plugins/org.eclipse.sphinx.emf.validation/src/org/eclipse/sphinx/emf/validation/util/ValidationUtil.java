@@ -191,13 +191,13 @@ public class ValidationUtil {
 	public static void validate(Collection<?> objects, Collection<IConstraintFilter> filters, IProgressMonitor monitor) {
 		// Retrieve underlying model objects
 		List<EObject> modelObjects = getModelObjects(objects);
+		if (!modelObjects.isEmpty()) {
+			ValidationPerformanceStats.INSTANCE.openContext("Validation of " + modelObjects.get(0)); //$NON-NLS-1$
 
-		ValidationPerformanceStats.INSTANCE.openContext("Validation of " + modelObjects.get(0)); //$NON-NLS-1$
+			List<Diagnostic> diagnostics = validate(modelObjects, filters, monitor);
 
-		List<Diagnostic> diagnostics = validate(modelObjects, filters, monitor);
-
-		handleDiagnostics(modelObjects, diagnostics);
-
+			handleDiagnostics(modelObjects, diagnostics);
+		}
 		ValidationPerformanceStats.INSTANCE.closeAndLogCurrentContext();
 		monitor.done();
 	}
