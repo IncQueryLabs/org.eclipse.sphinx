@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [414125] Enhance ResourceDeltaVisitor to enable the analysis of IFolder added/moved/removed
  * 
  * </copyright>
  */
@@ -113,9 +114,9 @@ public class ResourceDeltaVisitorTest extends DefaultIntegrationTestCase {
 		IFolder newFolder = refWks.hbProject10_A.getFolder("New Folder");
 		assertFalse(newFolder.exists());
 		newFolder.create(true, true, null);
-		// Check that creating new Folder no need to handle
+		// Check that creating new Folder was handled
 		List<ResourceHandled> resourcesHandled = handler.getResourcesHandled();
-		assertTrue(resourcesHandled.isEmpty());
+		assertTrue(resourcesHandled.contains(new ResourceHandled(newFolder.getFullPath(), MockResourceChangedHandler.ADD_FOLDER)));
 	}
 
 	// Create new files
@@ -483,6 +484,7 @@ public class ResourceDeltaVisitorTest extends DefaultIntegrationTestCase {
 		assertTrue(resourcesHandled.contains(new ResourceHandled(refWks.hbProject10_F.getFullPath().append(
 				DefaultTestReferenceWorkspace.HB_FOLDER_NAME_10_10F_1 + "/" + DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10F_3),
 				MockResourceChangedHandler.REMOVED_FILE)));
+		assertTrue(resourcesHandled.contains(new ResourceHandled(folder.getFullPath(), MockResourceChangedHandler.REMOVED_FOLDER)));
 	}
 
 	// file removed
@@ -554,6 +556,27 @@ public class ResourceDeltaVisitorTest extends DefaultIntegrationTestCase {
 		resourcesHandled.remove(new ResourceHandled(uml2File_2.getFullPath(), MockResourceChangedHandler.MOVED_FILE));
 		resourcesHandled.remove(new ResourceHandled(uml2File_3.getFullPath(), MockResourceChangedHandler.MOVED_FILE));
 		assertEquals("Events which are unexpected: " + resourcesHandled.toString(), 0, resourcesHandled.size());
+	}
+
+	// Folder moved
+	public void testFolderMoved() throws CoreException {
+
+		// create source folder
+		handler.clearResourcesHandledMap();
+		IFolder sourceFolder = refWks.hbProject10_A.getFolder("New Folder");
+		assertFalse(sourceFolder.exists());
+		sourceFolder.create(true, true, null);
+
+		// target location
+		IPath targetFolderLocation = refWks.hbProject10_F.getFullPath();
+
+		// move folder
+		synchronizedMoveFolder(sourceFolder, targetFolderLocation.append(sourceFolder.getName()));
+
+		// Verify the visitor
+		List<ResourceHandled> resourcesHandled = handler.getResourcesHandled();
+		assertTrue(resourcesHandled.contains(new ResourceHandled(sourceFolder.getFullPath(), MockResourceChangedHandler.ADD_FOLDER)));
+		assertTrue(resourcesHandled.contains(new ResourceHandled(sourceFolder.getFullPath(), MockResourceChangedHandler.MOVED_FOLDER)));
 	}
 
 	// ##############################################

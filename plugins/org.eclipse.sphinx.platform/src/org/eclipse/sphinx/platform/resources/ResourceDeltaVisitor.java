@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [414125] Enhance ResourceDeltaVisitor to enable the analysis of IFolder added/moved/removed
  * 
  * </copyright>
  */
@@ -98,15 +99,26 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 				}
 
 				else if (resource instanceof IFolder) {
-					if (ExtendedPlatform.isPlatformPrivateResource(resource)) {
-						// Don't visit children of added platform private folders
-						return false;
+					IFolder folder = (IFolder) resource;
+
+					// Has a new folder been created?
+					if (!flags.MOVED_FROM) {
+						if (!ExtendedPlatform.isPlatformPrivateResource(folder)) {
+							for (IResourceChangeHandler handler : resourceChangeHandlers) {
+								try {
+									handler.handleFolderAdded(eventType, folder);
+								} catch (Exception ex) {
+									PlatformLogUtil.logAsWarning(Activator.getDefault(), ex);
+								}
+							}
+						}
 					}
 				}
 
 				else if (resource instanceof IFile) {
 					IFile file = (IFile) resource;
 
+					// Has a new file been created?
 					if (!flags.MOVED_FROM) {
 						if (!ExtendedPlatform.isPlatformPrivateResource(file)) {
 							for (IResourceChangeHandler handler : resourceChangeHandlers) {
@@ -265,9 +277,33 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 				}
 
 				else if (resource instanceof IFolder) {
-					if (ExtendedPlatform.isPlatformPrivateResource(resource)) {
-						// Don't visit children of removed platform private folders
-						return false;
+					IFolder folder = (IFolder) resource;
+
+					// Has a folder been deleted?
+					if (!flags.MOVED_TO) {
+						if (!ExtendedPlatform.isPlatformPrivateResource(folder)) {
+							for (IResourceChangeHandler handler : resourceChangeHandlers) {
+								try {
+									handler.handleFolderRemoved(eventType, folder);
+								} catch (Exception ex) {
+									PlatformLogUtil.logAsWarning(Activator.getDefault(), ex);
+								}
+							}
+						}
+
+						// Has a folder been moved or renamed?
+						else if (flags.MOVED_TO) {
+							if (!ExtendedPlatform.isPlatformPrivateResource(folder)) {
+								IFolder newFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(delta.getMovedToPath());
+								for (IResourceChangeHandler handler : resourceChangeHandlers) {
+									try {
+										handler.handleFolderMoved(eventType, folder, newFolder);
+									} catch (Exception ex) {
+										PlatformLogUtil.logAsWarning(Activator.getDefault(), ex);
+									}
+								}
+							}
+						}
 					}
 				}
 

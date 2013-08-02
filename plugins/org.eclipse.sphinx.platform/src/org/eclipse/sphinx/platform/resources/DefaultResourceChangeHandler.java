@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [414125] Enhance ResourceDeltaVisitor to enable the analysis of IFolder added/moved/removed
  * 
  * </copyright>
  */
@@ -17,6 +18,7 @@ package org.eclipse.sphinx.platform.resources;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 
 public class DefaultResourceChangeHandler implements IResourceChangeHandler {
@@ -54,6 +56,18 @@ public class DefaultResourceChangeHandler implements IResourceChangeHandler {
 	}
 
 	public void handleProjectRemoved(int eventType, IProject project) {
+		// Do nothing by default
+	}
+
+	public void handleFolderAdded(int eventType, IFolder folder) {
+		// Do nothing by default
+	}
+
+	public void handleFolderMoved(int eventType, IFolder oldFolder, IFolder newFolder) {
+		// Do nothing by default
+	}
+
+	public void handleFolderRemoved(int eventType, IFolder folder) {
 		// Do nothing by default
 	}
 

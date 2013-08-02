@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [414125] Enhance ResourceDeltaVisitor to enable the analysis of IFolder added/moved/removed
  * 
  * </copyright>
  */
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -47,6 +49,7 @@ public class ReferenceWorkspaceChangeListener implements IResourceChangeListener
 
 	protected Set<IFile> changedFiles = new HashSet<IFile>();
 	protected Set<IFile> addedFiles = new HashSet<IFile>();
+	protected Set<IFolder> addedFolders = new HashSet<IFolder>();
 	protected Set<IProject> renamedProjects = new HashSet<IProject>();
 	protected Set<IProject> projectsWithChangedDescription = new HashSet<IProject>();
 	protected Map<IProject, Collection<String>> projectsWithChangedSettings = new HashMap<IProject, Collection<String>>();
@@ -89,6 +92,11 @@ public class ReferenceWorkspaceChangeListener implements IResourceChangeListener
 					}
 
 					@Override
+					public void handleFolderAdded(int eventType, IFolder folder) {
+						addedFolders.add(folder);
+					}
+
+					@Override
 					public void handleProjectOpened(int eventType, IProject project) {
 					}
 
@@ -100,6 +108,11 @@ public class ReferenceWorkspaceChangeListener implements IResourceChangeListener
 					@Override
 					public void handleProjectRenamed(int eventType, IProject oldProject, IProject newProject) {
 						renamedProjects.add(newProject);
+					}
+
+					@Override
+					public void handleFolderMoved(int eventType, IFolder oldFolder, IFolder newFolder) {
+						addedFolders.add(newFolder);
 					}
 
 					@Override
@@ -120,6 +133,10 @@ public class ReferenceWorkspaceChangeListener implements IResourceChangeListener
 
 	public Collection<IFile> getAddedFiles() {
 		return addedFiles;
+	}
+
+	public Collection<IFolder> getAddedFolders() {
+		return addedFolders;
 	}
 
 	public Collection<IProject> getRenamedProjects() {

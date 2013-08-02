@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [414125] Enhance ResourceDeltaVisitor to enable the analysis of IFolder added/moved/removed
  * 
  * </copyright>
  */
@@ -19,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -33,6 +35,7 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 @SuppressWarnings("nls")
 public class MockResourceChangedHandler implements IResourceChangeListener {
 	public static final String ADD_PROJECT = "Add Project";
+	public static final String ADD_FOLDER = "Add Folder";
 	public static final String ADD_FILE = "Add File";
 
 	public static final String CHANGED_PROJECT_DESCIPTION = "Change ProjectDescription File";
@@ -48,6 +51,7 @@ public class MockResourceChangedHandler implements IResourceChangeListener {
 	public static final String REMOVED_FILE = "Delete file";
 
 	public static final String CHANGED_PROJECT_RENAMED = "Rename Project";
+	public static final String MOVED_FOLDER = "Move Folder or Rename";
 	public static final String MOVED_FILE = "Move File or Rename";
 
 	static List<ResourceHandled> resourcesHandled = new ArrayList<ResourceHandled>();
@@ -76,6 +80,11 @@ public class MockResourceChangedHandler implements IResourceChangeListener {
 					@Override
 					public void handleProjectCreated(int eventType, IProject project) {
 						resourcesHandled.add(new ResourceHandled(project.getFullPath(), ADD_PROJECT));
+					}
+
+					@Override
+					public void handleFolderAdded(int eventType, IFolder folder) {
+						resourcesHandled.add(new ResourceHandled(folder.getFullPath(), ADD_FOLDER));
 					}
 
 					@Override
@@ -129,6 +138,17 @@ public class MockResourceChangedHandler implements IResourceChangeListener {
 					@Override
 					public void handleFileMoved(int eventType, IFile oldFile, IFile newFile) {
 						resourcesHandled.add(new ResourceHandled(oldFile.getFullPath(), MOVED_FILE));
+					}
+
+					@Override
+					// Handle folder removed or renamed
+					public void handleFolderRemoved(int eventType, IFolder folder) {
+						resourcesHandled.add(new ResourceHandled(folder.getFullPath(), REMOVED_FOLDER));
+					}
+
+					@Override
+					public void handleFolderMoved(int eventType, IFolder oldFolder, IFolder newFolder) {
+						resourcesHandled.add(new ResourceHandled(oldFolder.getFullPath(), MOVED_FOLDER));
 					}
 
 				});

@@ -13,6 +13,7 @@
  *     itemis - Improved handling of reference workspace path names so as to make integration tests more stable when running on different platforms
  *     BMW Car IT - Introduced waitForFamily method, refactored scheduleAndWait method
  *     itemis - Added option to run integration tests without reusing test reference workspace from previous test to avoid side effects across individual tests
+ *     itemis - [414125] Enhance ResourceDeltaVisitor to enable the analysis of IFolder added/moved/removed
  * 
  * </copyright>
  */
@@ -265,6 +266,9 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		// Open projects which has been changed during the test
 		synchronizedOpenProjects(detectProjectsToOpen());
 
+		// Delete all folders which have been added during the test, including renamed folders
+		deleteAddedFolders();
+
 		// Delete all files which have been added during the test, including renamed files
 		deleteAddedFiles();
 
@@ -379,6 +383,19 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				continue;
 			} else if (addedFile != null && addedFile.isAccessible()) {
 				synchronizedDeleteFile(addedFile);
+			}
+		}
+	}
+
+	/**
+	 * Deletes all new folders which have been added during the test.
+	 * 
+	 * @throws Exception
+	 */
+	private void deleteAddedFolders() throws Exception {
+		for (IFolder addedFolder : referenceWorkspaceChangeListener.getAddedFolders()) {
+			if (addedFolder != null && addedFolder.isAccessible()) {
+				synchronizedDeleteFolder(addedFolder);
 			}
 		}
 	}
@@ -1138,6 +1155,33 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				}
 			}
 		}
+	}
+
+	protected void synchronizedDeleteFolder(final IFolder folder) throws Exception {
+		assertNotNull(folder);
+
+		waitForModelLoading();
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				folder.delete(true, true, monitor);
+			}
+		};
+		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		waitForModelLoading();
+	}
+
+	protected void synchronizedMoveFolder(final IFolder folder, final IPath target) throws CoreException {
+		assertNotNull(folder);
+		assertNotNull(target);
+		waitForModelLoading();
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				folder.move(target, true, new NullProgressMonitor());
+			}
+		};
+		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		waitForModelLoading();
+
 	}
 
 	protected void synchronizedLoadProject(IProject project, boolean includeReferencedProjects) {
