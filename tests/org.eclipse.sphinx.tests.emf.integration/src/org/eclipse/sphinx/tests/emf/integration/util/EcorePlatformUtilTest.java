@@ -10,6 +10,7 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel impelmentations to subclass EObjectImpl
  *
  * </copyright>
  */
@@ -2280,7 +2281,19 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		// *************************************************************************
 		// Context: Save uml2 resource in editingDomainUml
 		{
-			EcorePlatformUtil.saveNewModelResource(refWks.editingDomainUml2, newUml2ResourcePath_2, UMLPackage.eCONTENT_TYPE, newModel, false,
+			// FIXME create a new model resource
+			Model newModel_2 = UMLFactory.eINSTANCE.createModel();
+			newModel_2.setName("UML2Model");
+
+			Package newPack1_2 = UMLFactory.eINSTANCE.createPackage();
+			newPack1_2.setName("Package1");
+			newModel_2.getPackagedElements().add(newPack1_2);
+
+			Package newPack2_2 = UMLFactory.eINSTANCE.createPackage();
+			newPack2_2.setName("Package2");
+			newModel_2.getPackagedElements().add(newPack2_2);
+
+			EcorePlatformUtil.saveNewModelResource(refWks.editingDomainUml2, newUml2ResourcePath_2, UMLPackage.eCONTENT_TYPE, newModel_2, false,
 					new NullProgressMonitor());
 			resourcesIneditingDomainUml2++;
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, resourcesIneditingDomainUml2);

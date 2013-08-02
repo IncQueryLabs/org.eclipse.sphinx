@@ -15,6 +15,7 @@
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored
  *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked 
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel impelmentations to subclass EObjectImpl
  *
  * </copyright>
  */
@@ -1058,7 +1059,7 @@ public final class EcoreResourceUtil {
 		}
 
 		// Just get model resource if it is already loaded
-		Resource resource = resourceSet.getResource(uri, false);
+		Resource resource = resourceSet.getResource(uri.trimFragment().trimQuery(), false);
 
 		// Load it using specified options if not done so yet and a demand load has been requested
 		if ((resource == null || !resource.isLoaded()) && loadOnDemand) {

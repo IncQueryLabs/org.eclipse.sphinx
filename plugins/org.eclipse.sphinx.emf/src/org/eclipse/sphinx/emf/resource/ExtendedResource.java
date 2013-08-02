@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel impelmentations to subclass EObjectImpl
  * 
  * </copyright>
  */
@@ -16,11 +17,18 @@ package org.eclipse.sphinx.emf.resource;
 
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 
 /**
  * A set of additional services for EMF {@link Resource resources} including memory-optimized unloading, proxy creation
@@ -29,27 +37,32 @@ import org.eclipse.sphinx.emf.internal.messages.Messages;
 public interface ExtendedResource {
 
 	/**
-	 * Separator separating the scheme portion from the rest of a URI.
+	 * Special character signaling the end of the scheme of an URI.
 	 */
 	String URI_SCHEME_SEPARATOR = ":"; //$NON-NLS-1$
 
 	/**
-	 * Separator separating individual segments within a URI.
+	 * Special character separating individual segments within an URI.
 	 */
 	String URI_SEGMENT_SEPARATOR = "/"; //$NON-NLS-1$
 
 	/**
-	 * Separator separating a query within a URI.
+	 * Special character signaling the start of the query of an URI.
 	 */
 	String URI_QUERY_SEPARATOR = "?"; //$NON-NLS-1$
 
 	/**
-	 * Separator separating a keys from values within the query portion of a URI.
+	 * Special character separating a keys/value pairs within the query of an URI.
+	 */
+	String URI_KEY_VALUE_PAIR_SEPARATOR = "&"; //$NON-NLS-1$
+
+	/**
+	 * Special character separating keys from values within keys/value pairs in the query of an URI.
 	 */
 	String URI_KEY_VALUE_SEPARATOR = "="; //$NON-NLS-1$
 
 	/**
-	 * Separator separating the fragment from the segments portion within a URI.
+	 * Special character signaling the start of the fragment of an URI.
 	 */
 	String URI_FRAGMENT_SEPARATOR = "#"; //$NON-NLS-1$
 

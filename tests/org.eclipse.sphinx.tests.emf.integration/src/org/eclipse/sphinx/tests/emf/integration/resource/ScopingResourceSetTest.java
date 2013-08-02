@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
  *     itemis - [410825] Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel impelmentations to subclass EObjectImpl
  * 
  * </copyright>
  */
@@ -35,6 +36,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.resource.ExtendedResourceSet;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSet;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
@@ -6708,14 +6710,15 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 
 	// ========== 5 =====================
 	/**
-	 * Test method for {@link ScopingResourceSet#getEObject(URI, boolean)ObjectInScope(org.eclipse.emf.common.util.URI,
-	 * boolean, EObject)}
+	 * Test method for {@link ExtendedResourceSet#getEObject(URI, boolean)}
 	 */
-	public void testGetEObjectInScope() {
+	public void testGetEObjectWithContextAwareURI() {
 
 		// =====================================================
 		// GivenURI and contextObject are not NULL
-		URI testFragmentUri10 = URI.createURI("hb:/#//@components.0");
+		URI testFragmentUri10 = URI
+				.createURI("hb:/?tgtMMD=org.eclipse.sphinx.examples.hummingbird10&ctxURI=platform:/resource/hbProject10_A/hbFile10_10A_4.hummingbird#//@components.0");
+		// URI.createURI("hb:/#//@components.0");
 		URI testUri10A = URI.createURI("/hbProject10_A/hbFile10_10A_4.hummingbird#//@interfaces.0");
 
 		// Context: HB10 contextObject
@@ -6731,21 +6734,21 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
 			assertNotNull(contextObject);
 
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testFragmentUri10, null, contextObject, true);
+			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObject(testFragmentUri10, true);
 			assertNotNull(scopeObject1);
 			assertTrue(EcoreUtil.getURI(scopeObject1).fragment().contains(testFragmentUri10.fragment()));
 
-			EObject scopedObject2 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testFragmentUri10, null, contextObject, true);
+			EObject scopedObject2 = getScopingResourceSet(refWks.editingDomain20).getEObject(testFragmentUri10, true);
 			assertNull(scopedObject2);
 
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testFragmentUri10, null, contextObject, true);
+			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testFragmentUri10, true);
 			assertNull(scopeObject3);
 
-			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri10A, null, contextObject, true);
+			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10A, true);
 			assertNotNull(scopeObject4);
 			assertEquals(testUri10A, EcoreUtil.getURI(scopeObject4));
 
-			EObject scopeObject5 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testFragmentUri10, null, contextObject, true);
+			EObject scopeObject5 = getScopingResourceSet(refWks.editingDomain20).getEObject(testFragmentUri10, true);
 			assertNull(scopeObject5);
 		}
 		for (String fileName : hbProject10DResources10) {
@@ -6759,19 +6762,19 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
 			assertNotNull(contextObject);
 
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testFragmentUri10, null, contextObject, true);
+			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObject(testFragmentUri10, true);
 			assertNotNull(scopeObject1);
 
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testFragmentUri10, null, contextObject, true);
+			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain20).getEObject(testFragmentUri10, true);
 			assertNull(scopeObject2);
 
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testFragmentUri10, null, contextObject, true);
+			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testFragmentUri10, true);
 			assertNull(scopeObject3);
 
-			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri10A, null, contextObject, true);
+			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10A, true);
 			assertNull(scopeObject4);
 
-			EObject scopeObject5 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testFragmentUri10, null, contextObject, true);
+			EObject scopeObject5 = getScopingResourceSet(refWks.editingDomain20).getEObject(testFragmentUri10, true);
 			assertNull(scopeObject5);
 
 		}
@@ -6791,15 +6794,14 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
 			assertNotNull(contextObject);
 
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri10D, null, contextObject, true);
-			assertNull(scopeObject1);
+			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
+			assertNotNull(scopeObject1);
 
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri10D, null, contextObject, true);
-			assertNull(scopeObject2);
+			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri10D, true);
+			assertNotNull(scopeObject2);
 
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUri10D, null, contextObject, true);
-			assertNull(scopeObject3);
-
+			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
+			assertNotNull(scopeObject3);
 		}
 		for (String fileName : hbProject10DResources10) {
 			IFile contextFile = refWks.hbProject10_D.getFile(fileName);
@@ -6812,15 +6814,15 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
 			assertNotNull(contextObject);
 
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri10D, null, contextObject, true);
+			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
 			assertNotNull(scopeObject1);
 			assertEquals(testUri10D, EcoreUtil.getURI(scopeObject1));
 
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri10D, null, contextObject, true);
+			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri10D, true);
 			// Because just resource uri fragment is considered
 			assertNotNull(scopeObject2);
 
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUri10D, null, contextObject, true);
+			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
 			assertNotNull(scopeObject3);
 
 		}
@@ -6835,20 +6837,22 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
 			assertNotNull(contextObject);
 
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri10D, null, contextObject, true);
+			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
 			assertNotNull(scopeObject1);
 			assertEquals(testUri10D, EcoreUtil.getURI(scopeObject1));
 
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri10D, null, contextObject, true);
+			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri10D, true);
 			assertNotNull(scopeObject2);
 
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUri10D, null, contextObject, true);
+			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
 			assertNotNull(scopeObject3);
 
 		}
 		// -------------------------------------------------------------------------------------------
 		// // Context: HB20 Resources
-		URI testUri20 = URI.createURI("hb:/#//@componentTypes.0");
+		URI testUri20 = URI
+				.createURI("platform:/resource/hbProject20_B/hbFile20_20B_1.typemodel/?tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=platform:/resource/hbProject20_B/hbFile20_20B_1.typemodel#//@componentTypes.0");
+		// URI.createURI("hb:/#//@componentTypes.0");
 
 		for (String fileName : hbProject20BResources20) {
 			IFile contextFile = refWks.hbProject20_B.getFile(fileName);
@@ -6861,15 +6865,15 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
 			assertNotNull(contextObject);
 
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri20, null, contextObject, true);
+			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
 			assertNotNull(scopeObject1);
 			assertTrue(EcoreUtil.getURI(scopeObject1).fragment().contains(testUri20.fragment()));
 
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri20, null, contextObject, true);
-			assertNull(scopeObject2);
+			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20, true);
+			assertNotNull(scopeObject2);
 
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUri20, null, contextObject, true);
-			assertNull(scopeObject3);
+			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20, true);
+			assertNotNull(scopeObject3);
 		}
 
 		for (String fileName : hbProject20DResources20) {
@@ -6883,21 +6887,21 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
 			assertNotNull(contextObject);
 
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri20, null, contextObject, true);
+			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
 			assertNotNull(scopeObject1);
 			assertTrue(EcoreUtil.getURI(scopeObject1).fragment().contains(testUri20.fragment()));
 
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri20, null, contextObject, true);
-			assertNull(scopeObject2);
+			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20, true);
+			assertNotNull(scopeObject2);
 
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri10D, null, contextObject, true);
+			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri10D, true);
 			assertNotNull(scopeObject3);
 
-			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri10D, null, contextObject, true);
+			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
 			assertNotNull(scopeObject4);
 
-			EObject scopeObject5 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUri20, null, contextObject, true);
-			assertNull(scopeObject5);
+			EObject scopeObject5 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20, true);
+			assertNotNull(scopeObject5);
 		}
 
 		// -------------------------------------------------------------------------------------------
@@ -6916,18 +6920,17 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
 			assertNotNull(contextObject);
 
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUml2Uri, null, contextObject, true);
-			assertNull(scopeObject1);
+			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2Uri, true);
+			assertNotNull(scopeObject1);
 
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUri10D, null, contextObject, true);
-			assertNull(scopeObject2);
+			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
+			assertNotNull(scopeObject2);
 
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri20, null, contextObject, true);
+			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
 			assertNotNull(scopeObject3);
 
-			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri10D, null, contextObject, true);
-			assertNull(scopeObject4);
-
+			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
+			assertNotNull(scopeObject4);
 		}
 
 		for (String fileName : hbProject20DResourcesUml2) {
@@ -6941,16 +6944,16 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
 			assertNotNull(contextObject);
 
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUml2Uri, null, contextObject, true);
+			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2Uri, true);
 			assertNotNull(scopeObject1);
 
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUri10D, null, contextObject, true);
+			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
 			assertNotNull(scopeObject2);
 
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri20, null, contextObject, true);
+			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
 			assertNotNull(scopeObject3);
 
-			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri10D, null, contextObject, true);
+			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
 			assertNotNull(scopeObject4);
 
 		}
@@ -6965,16 +6968,16 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
 			assertNotNull(contextObject);
 
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUml2Uri, null, contextObject, true);
+			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2Uri, true);
 			assertNotNull(scopeObject1);
 
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUri10D, null, contextObject, true);
+			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
 			assertNotNull(scopeObject2);
 
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri20, null, contextObject, true);
+			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
 			assertNotNull(scopeObject3);
 
-			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri10D, null, contextObject, true);
+			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
 			assertNotNull(scopeObject4);
 
 		}
@@ -6995,23 +6998,23 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 
 				assertNotNull(contextObject);
 
-				EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri20, null, contextObject, true);
-				assertNull(scopeObject1);
+				EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, false);
+				assertNotNull(scopeObject1);
 
-				scopeObject1 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri20, null, contextObject, true);
-				assertNull(scopeObject1);
+				scopeObject1 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
+				assertNotNull(scopeObject1);
 
-				EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri20, null, contextObject, true);
-				assertNull(scopeObject2);
+				EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20, true);
+				assertNotNull(scopeObject2);
 
-				EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri10D, null, contextObject, true);
-				assertNull(scopeObject3);
+				EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri10D, true);
+				assertNotNull(scopeObject3);
 
-				EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri10D, null, contextObject, true);
-				assertNull(scopeObject4);
+				EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
+				assertNotNull(scopeObject4);
 
-				EObject scopeObject5 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUri20, null, contextObject, true);
-				assertNull(scopeObject5);
+				EObject scopeObject5 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20, true);
+				assertNotNull(scopeObject5);
 			}
 			for (String fileName : hbProject20DResourcesUml2) {
 				IFile contextFile = refWks.hbProject20_D.getFile(fileName);
@@ -7026,31 +7029,28 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 
 				synchronizedUnloadFile(contextFile);
 
-				EObject scopeObject1 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUml2Uri, null, contextObject, true);
-				assertNull(scopeObject1);
+				EObject scopeObject1 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2Uri, true);
+				assertNotNull(scopeObject1);
 
-				EObject scopeObject2 = getScopingResourceSet(refWks.editingDomainUml2).getEObjectInScope(testUri10D, null, contextObject, true);
-				assertNull(scopeObject2);
+				EObject scopeObject2 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
+				assertNotNull(scopeObject2);
 
-				EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri20, null, contextObject, true);
-				assertNull(scopeObject3);
+				EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
+				assertNotNull(scopeObject3);
 
-				EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri10D, null, contextObject, true);
-				assertNull(scopeObject4);
-
+				EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
+				assertNotNull(scopeObject4);
 			}
 		}
 		// -------------------------------------------------------------------------------------------
 		// Context: contextObject is NULl
-		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri10D, null, null, true));
-		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testFragmentUri10, null, null, true));
-		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri20, null, null, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testFragmentUri10, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true));
 
-		// assertNull(getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri10D,
-		// null, null, true));
-		// assertNull(getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testFragmentUri10,
-		// null, null, true));
-		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(testUri20, null, null, true));
+		// assertNull(getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri10D, true, null));
+		// assertNull(getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testFragmentUri10, true, null));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20, true));
 	}
 
 	/**
@@ -7075,7 +7075,7 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 				EcoreResourceUtil.getDefaultSaveOptions());
 		assertEquals(1, scopingResourceSet.getResources().size());
 		URI uri1 = EcoreUtil.getURI(pack1);
-		EObject eObject = scopingResourceSet.getEObjectInScope(uri1, null, null, true);
+		EObject eObject = scopingResourceSet.getEObject(uri1, true);
 		assertNotNull("Cannot get Eobject with uri and without contextObject" + uri1.toString(), eObject);
 
 		// Create a HB10 resource inside filteringResourceSet
@@ -7098,18 +7098,14 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 
 		URI uri2 = EcoreUtil.getURI(param);
 
-		// When no context object is specified ScopingResourceSetImpl should behave like the ordinary ResourceSetImpl
-		eObject = scopingResourceSet.getEObjectInScope(uri2, null, null, true);
+		eObject = scopingResourceSet.getEObject(uri2, true);
 		assertNotNull("Cannot get EObject with uri and without contextObject" + uri2.toString(), eObject);
 
 		// Get EObject with contextObject
-		// scopingResourceSet has been created on the fly and is not owned by any editing domain of any Sphinx model
-		// descriptor - so even though uri2 point at an EObject that is in the same resource scope as the contextObject
-		// nothing should be returned here
-		eObject = scopingResourceSet.getEObjectInScope(uri2, null, component, true);
-		assertNull("Can get EObject with uri and contextObject which is in the same scope" + uri2.toString(), eObject);
-		eObject = scopingResourceSet.getEObjectInScope(uri2, null, pack1, true);
-		assertNull("Can get EObject with uri and contextObject whiche is not in the same scope" + uri2.toString(), eObject);
+		eObject = scopingResourceSet.getEObject(uri2, true);
+		assertNotNull("Cannot get EObject with uri and and contextObject are in the same Scope" + uri2.toString(), eObject);
+		eObject = scopingResourceSet.getEObject(uri2, true);
+		assertNotNull("Can get EObject with uri and and contextObject are not in the same Scope" + uri2.toString(), eObject);
 	}
 
 	public void testGetEobjectInScopeWithNullUri() {
@@ -7125,10 +7121,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 		assertNotNull(contextObject);
 
 		String message = "Given URI is NULL, context object is not NULL. Object return is \"{0}\" "; //$NON-NLS-1$
-		assertNull(NLS.bind(message, EcoreUtil.getURI(contextObject)),
-				getScopingResourceSet(refWks.editingDomain10).getEObjectInScope(null, null, null, true));
-		assertNull(NLS.bind(message, EcoreUtil.getURI(contextObject)),
-				getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(null, null, null, true));
+		assertNull(NLS.bind(message, EcoreUtil.getURI(contextObject)), getScopingResourceSet(refWks.editingDomain10).getEObject(null, true));
+		assertNull(NLS.bind(message, EcoreUtil.getURI(contextObject)), getScopingResourceSet(refWks.editingDomain20).getEObject(null, true));
 	}
 
 	// ==================================

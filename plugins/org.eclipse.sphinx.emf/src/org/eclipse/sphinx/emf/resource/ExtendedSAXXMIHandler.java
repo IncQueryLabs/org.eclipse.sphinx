@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel impelmentations to subclass EObjectImpl
  * 
  * </copyright>
  */
@@ -23,6 +24,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.XMIResource;
@@ -32,6 +34,8 @@ import org.eclipse.emf.ecore.xmi.impl.SAXXMIHandler;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.ecore.xml.type.util.XMLTypeUtil;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.model.IModelDescriptor;
+import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -177,5 +181,30 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 		}
 
 		processObject(object);
+	}
+
+	/*
+	 * Overridden to enrich proxy URIs being created with context information required to honor their {@link
+	 * IResourceScope resource scope}s when they are being resolved and to support the resolution of proxified
+	 * references between objects from different metamodels.
+	 * @see org.eclipse.emf.ecore.xmi.impl.XMLHandler#handleProxy(org.eclipse.emf.ecore.InternalEObject,
+	 * java.lang.String)
+	 */
+	@Override
+	protected void handleProxy(InternalEObject proxy, String uriLiteral) {
+		super.handleProxy(proxy, uriLiteral);
+
+		// Augment the proxy's URI to a context-aware proxy URI
+		if (resourceSet instanceof ExtendedResourceSetImpl) {
+			ExtendedResourceSetImpl extendedResourceSet = (ExtendedResourceSetImpl) resourceSet;
+
+			URI contextURI = null;
+			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(xmlResource);
+			if (modelDescriptor != null) {
+				contextURI = URI.createPlatformResourceURI(modelDescriptor.getRoot().toString(), true);
+			}
+
+			extendedResourceSet.augmentToContextAwareURI(proxy, contextURI);
+		}
 	}
 }

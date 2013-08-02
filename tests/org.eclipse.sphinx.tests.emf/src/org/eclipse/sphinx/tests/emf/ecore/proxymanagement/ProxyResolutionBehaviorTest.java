@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2012 BMW Car IT and others.
+ * Copyright (c) 2013 BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     BMW Car IT - Initial API and implementation
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel impelmentations to subclass EObjectImpl
  *
  * </copyright>
  */
@@ -137,7 +138,7 @@ public class ProxyResolutionBehaviorTest {
 		}
 
 		@Override
-		public EObject getEObjectInScope(URI uri, IMetaModelDescriptor metaModelDescriptor, EObject contextObject, boolean loadOnDemand) {
+		protected EObject getEObject(URI uri, IMetaModelDescriptor metaModelDescriptor, Resource contextResource, boolean loadOnDemand) {
 			return fExpectedResolvedEObject;
 		}
 

@@ -41,8 +41,10 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceRuleFactory;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -587,6 +589,29 @@ public final class ExtendedPlatform {
 			PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 		}
 		return new IResource[0];
+	}
+
+	public static IContainer getContainer(IPath path) {
+		Assert.isNotNull(path);
+
+		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+		IResource resource = workspaceRoot.findMember(path);
+		if (resource != null) {
+			if (resource instanceof IContainer) {
+				return (IContainer) resource;
+			} else {
+				return resource.getParent();
+			}
+		}
+
+		if (path.isAbsolute() && path.segmentCount() > 0) {
+			if (path.segmentCount() == 1) {
+				return workspaceRoot.getProject(path.toString());
+			} else {
+				return workspaceRoot.getFolder(path);
+			}
+		}
+		return null;
 	}
 
 	/**
