@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [410825]: Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
  * 
  * </copyright>
  */
@@ -137,11 +138,31 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 		return false;
 	}
 
-	public boolean belongsTo(Resource resource, boolean includeReferencedScopes) {
+	public boolean belongsTo(final Resource resource, boolean includeReferencedScopes) {
 		if (resource != null) {
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource);
 			if (fMMDescriptor.equals(mmDescriptor)) {
-				return fResourceScope.belongsTo(resource, includeReferencedScopes);
+				if (fResourceScope.belongsTo(resource, includeReferencedScopes)) {
+					// Make sure that given resource is actually contained in the resource set of this model
+					// descriptor's editing domain
+					/*
+					 * !! Important Note !! The provided resource could be a resource in a resource set that is not
+					 * managed by Sphinx (but privately owned by a traditional EMF model editor instead). In this case
+					 * we must make sure that the resource is NOT deemed a part of the Sphinx model represented by this
+					 * model descriptor. Not doing so would let Sphinx assume that the resource is present in the
+					 * resource set of this model descriptor's editing domain and most likely cause pretty unpredictable
+					 * side effects.
+					 */
+					try {
+						return TransactionUtil.runExclusive(fEditingDomain, new RunnableWithResult.Impl<Boolean>() {
+							public void run() {
+								setResult(fEditingDomain.getResourceSet().getResources().contains(resource));
+							}
+						});
+					} catch (InterruptedException ex) {
+						PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+					}
+				}
 			}
 		}
 		return false;
