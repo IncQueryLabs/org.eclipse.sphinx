@@ -291,16 +291,17 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 							}
 						}
 
-						// Has a folder been moved or renamed?
-						else if (flags.MOVED_TO) {
-							if (!ExtendedPlatform.isPlatformPrivateResource(folder)) {
-								IFolder newFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(delta.getMovedToPath());
-								for (IResourceChangeHandler handler : resourceChangeHandlers) {
-									try {
-										handler.handleFolderMoved(eventType, folder, newFolder);
-									} catch (Exception ex) {
-										PlatformLogUtil.logAsWarning(Activator.getDefault(), ex);
-									}
+					}
+
+					// Has a folder been moved or renamed?
+					else if (flags.MOVED_TO) {
+						if (!ExtendedPlatform.isPlatformPrivateResource(folder)) {
+							IFolder newFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(delta.getMovedToPath());
+							for (IResourceChangeHandler handler : resourceChangeHandlers) {
+								try {
+									handler.handleFolderMoved(eventType, folder, newFolder);
+								} catch (Exception ex) {
+									PlatformLogUtil.logAsWarning(Activator.getDefault(), ex);
 								}
 							}
 						}
