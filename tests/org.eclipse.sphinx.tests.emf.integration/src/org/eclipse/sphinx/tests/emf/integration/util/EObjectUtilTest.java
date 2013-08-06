@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked
  *     itemis - Fixed EObjectUtilTest that was failing since server infrastructure upgrade at Eclipse Foundation
+ *     itemis - [410825] Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
  *
  * </copyright>
  */
@@ -376,8 +377,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		hbProject20AResources20.remove(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
 		hb20ModelRoot = EcoreResourceUtil.getModelRoot(contextResource);
 
-		assertEquals(getNumberOfHB20ComponentInstances(hbProject20AResources20), EObjectUtil.getAllInstancesOf(hb20ModelRoot, Component.class, true)
-				.size());
+		assertEquals(1, EObjectUtil.getAllInstancesOf(hb20ModelRoot, Component.class, true).size());
 		// ==============================================================
 		// Context Object belong to resource in ResourceSet without EditingDomain
 		ResourceSetImpl testResourceSet = new ScopingResourceSetImpl();
@@ -402,8 +402,6 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 			assertEquals(0, EObjectUtil.getAllInstancesOf(nullObject, Component.class, true).size());
 		} catch (Exception ex) {
 			if (!(ex instanceof AssertionFailedException)) {
-				ex.printStackTrace();
-				// TODO Null Pointer Exception
 				fail("Exception when contextObject is NULL" + ex.getClass().getSimpleName() + " " + ex.getMessage());
 			}
 		}
@@ -480,14 +478,11 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		resourceSet.getResources().remove(resource20_A);
 		hbProject20AResources20.remove(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
 
-		assertEquals(getNumberOfHB20fApplicationInstances(hbProject20AResources20),
-				EObjectUtil.getAllInstancesOf(resource20_A, Application.class, true).size());
+		assertEquals(1, EObjectUtil.getAllInstancesOf(resource20_A, Application.class, true).size());
 
-		assertEquals(getNumberOfHB20ComponentInstances(hbProject20AResources20), EObjectUtil.getAllInstancesOf(resource20_A, Component.class, true)
-				.size());
+		assertEquals(1, EObjectUtil.getAllInstancesOf(resource20_A, Component.class, true).size());
 
-		assertEquals(getNumberOfHB20PlatfromInstances(hbProject20AResources20), EObjectUtil.getAllInstancesOf(resource20_A, Platform.class, true)
-				.size());
+		assertEquals(0, EObjectUtil.getAllInstancesOf(resource20_A, Platform.class, true).size());
 		// ==============================================================
 		// Resource in ResourceSet without EditingDomain
 
@@ -515,7 +510,6 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 			assertEquals(0, EObjectUtil.getAllInstancesOf(nullResource, Component.class, true).size());
 		} catch (Exception ex) {
 			if (!(ex instanceof AssertionFailedException)) {
-				ex.printStackTrace();
 				fail("Exception when contextResource is NULL" + ex.getClass().getSimpleName() + " " + ex.getMessage());
 			}
 		}

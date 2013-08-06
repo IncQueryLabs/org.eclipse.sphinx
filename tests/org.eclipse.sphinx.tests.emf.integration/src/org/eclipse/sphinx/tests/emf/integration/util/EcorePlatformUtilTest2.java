@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     See4sys - Initial API and implementation
+ *     itemis - [410825] Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
  *
  * </copyright>
  */
@@ -61,7 +62,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 /**
  * JUnit Test for class {@link EcorePlatformUtil}
  */
-@SuppressWarnings({ "nls" })
+@SuppressWarnings("nls")
 public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 	List<String> hbProject10AResource10;
 	int resources10FromHbProject10_A;
@@ -934,6 +935,7 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 	}
 
 	public void testGetResourceInModel_Resource() {
+		Collection<Resource> resourcesInScope = new ArrayList<Resource>();
 		Collection<Resource> resourcesInModel = new ArrayList<Resource>();
 
 		// --Hummingbird20 Model
@@ -1141,14 +1143,16 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(newResourcePath2.toString(), true), false);
 		assertNotNull(newUml2Resource);
 
-		resourcesInModel = EcorePlatformUtil.getResourcesInScope(hbResource20_E_1, false);
-		// Only resources in Model of the context resource will be returned + non HB resource
-		assertEquals(resource20FromHbProject20_E + 1, resourcesInModel.size());
-		assertTrue(resourcesInModel.contains(newUml2Resource));
+		resourcesInScope = EcorePlatformUtil.getResourcesInScope(hbResource20_E_1, false);
+		// Only the Hummingbird 2.0 resources that match the Hummingbird metamodel version of the context project plus
+		// the additional UML2 resource must be returned
+		assertEquals(resource20FromHbProject20_E + 1, resourcesInScope.size());
+		assertTrue(resourcesInScope.contains(newUml2Resource));
 
-		resourcesInModel = EcorePlatformUtil.getResourcesInScope(newUml2Resource, false);
-		// resources in Model UML2 in project hbProject20_E were returned
-		assertEquals(resourcesUml2FromHbProject20_E, resourcesInModel.size());
+		resourcesInScope = EcorePlatformUtil.getResourcesInScope(newUml2Resource, false);
+		// Hummingbird 2.0 resources in hbProject20_E plus additional Hummingbird 1.0 resource and additional UML2
+		// resource must be returned
+		assertEquals(resourcesUml2FromHbProject20_E + 2, resourcesInScope.size());
 
 		// ======================================
 		// Null Resource
@@ -1158,6 +1162,7 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 	}
 
 	public void testGetResourceInModel_ModelDescriptor() {
+		Collection<Resource> resourcesInScope = new ArrayList<Resource>();
 		Collection<Resource> resourcesInModel = new ArrayList<Resource>();
 
 		// --Hummingbird20 Model
@@ -1365,11 +1370,10 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(newResourcePath2.toString(), true), false);
 		assertNotNull(newUml2Resource);
 
-		resourcesInModel = EcorePlatformUtil.getResourcesInScope(hbModelDescriptor20E, false);
+		resourcesInScope = EcorePlatformUtil.getResourcesInScope(hbModelDescriptor20E, false);
 		// Only resources in Model of the context resource will be returned
-		assertEquals(resource20FromHbProject20_E + 1, resourcesInModel.size());
-		assertTrue(resourcesInModel.contains(newUml2Resource));
-
+		assertEquals(resource20FromHbProject20_E + 1, resourcesInScope.size());
+		assertTrue(resourcesInScope.contains(newUml2Resource));
 	}
 
 	public void testGetResourceInModel_URI() {
@@ -1811,13 +1815,13 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 
 		resourcesInModel = EcorePlatformUtil.getResourcesInModel(testEObject, true);
 		assertNotNull(resourcesInModel);
-		assertEquals(resources20FromHbProject20_A - 1, resourcesInModel.size());
+		assertEquals(1, resourcesInModel.size());
 
 		Collection<String> resourceNameInScope = getResourceNames(resourcesInModel);
-		assertTrue(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2));
-		assertTrue(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3));
-		assertTrue(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_4));
-		assertTrue(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_21_20A_4));
+		assertFalse(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2));
+		assertFalse(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3));
+		assertFalse(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_4));
+		assertFalse(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_21_20A_4));
 
 	}
 
@@ -2233,11 +2237,14 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		assertNotNull(newUml2Resource);
 
 		resourcesInScope = EcorePlatformUtil.getResourcesInScope(hbResource20_E_1, false);
+		// Only the Hummingbird 2.0 resources that match the Hummingbird metamodel version of the context project plus
+		// the additional UML2 resource must be returned
 		assertEquals(resource20FromHbProject20_E + 1, resourcesInScope.size());
 
 		resourcesInScope = EcorePlatformUtil.getResourcesInScope(newUml2Resource, false);
-		// Only resources in Model of the context resource will be returned + non HB resource
-		assertEquals(resourcesUml2FromHbProject20_E, resourcesInScope.size());
+		// Hummingbird 2.0 resources in hbProject20_E plus additional Hummingbird 1.0 resource and additional UML2
+		// resource must be returned
+		assertEquals(resourcesUml2FromHbProject20_E + 2, resourcesInScope.size());
 
 		// ===================================================
 		// Null Resource
@@ -2900,14 +2907,13 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 
 		resourcesInScope = EcorePlatformUtil.getResourcesInScope(testEObject, true);
 		assertNotNull(resourcesInScope);
-		assertEquals(resources20FromHbProject20_A - 1, resourcesInScope.size());
+		assertEquals(1, resourcesInScope.size());
 
 		Collection<String> resourceNameInScope = getResourceNames(resourcesInScope);
-		assertTrue(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2));
-		assertTrue(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3));
-		assertTrue(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_4));
-		assertTrue(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_21_20A_4));
-
+		assertFalse(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2));
+		assertFalse(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3));
+		assertFalse(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_4));
+		assertFalse(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_21_20A_4));
 	}
 
 	public void testGetResourceInScope_EObject_InResourceSet_WithoutEditingDomain() {

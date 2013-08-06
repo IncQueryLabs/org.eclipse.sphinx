@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [410825] Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
  * 
  * </copyright>
  */
@@ -1338,8 +1339,8 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 				assertNotNull(resource10);
 
 				// - Given file has Persisted: TRUE, Loaded: FALSE
-				assertTrue(modelDescriptor10_D.belongsTo(resource10, true));
-				assertTrue(modelDescriptor10_E.belongsTo(resource10, true));
+				assertFalse(modelDescriptor10_D.belongsTo(resource10, true));
+				assertFalse(modelDescriptor10_E.belongsTo(resource10, true));
 				assertFalse(modelDescriptor10_E.belongsTo(resource10, false));
 				// - Given file has Persisted: FALSE, Loaded: FALSE
 				assertFalse(modelDescriptor10_A.belongsTo(resource10, true));
@@ -1479,8 +1480,8 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 				assertFalse(EcorePlatformUtil.isFileLoaded(file20));
 				assertNotNull(resource20);
 				// - Given file has Persisted: TRUE, Loaded: FALSE
-				assertTrue(modelDescriptor20_D.belongsTo(resource20, true));
-				assertTrue(modelDescriptor20_E.belongsTo(resource20, true));
+				assertFalse(modelDescriptor20_D.belongsTo(resource20, true));
+				assertFalse(modelDescriptor20_E.belongsTo(resource20, true));
 				assertFalse(modelDescriptor20_E.belongsTo(resource20, false));
 				// - Given file has Persisted: FALSE, Loaded: FALSE
 				assertFalse(modelDescriptor20_A.belongsTo(resource20, true));
@@ -1584,8 +1585,8 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 				assertFalse(EcorePlatformUtil.isFileLoaded(fileUml2));
 				assertNotNull(resourceUml2);
 				// - Given file has Persisted: TRUE, Loaded: FALSE
-				assertTrue(modelDescriptorUml2_D.belongsTo(resourceUml2, true));
-				assertTrue(modelDescriptorUml2_E.belongsTo(resourceUml2, true));
+				assertFalse(modelDescriptorUml2_D.belongsTo(resourceUml2, true));
+				assertFalse(modelDescriptorUml2_E.belongsTo(resourceUml2, true));
 				assertFalse(modelDescriptorUml2_E.belongsTo(resourceUml2, false));
 				// - Given file has Persisted: FALSE, Loaded: FALSE
 				assertFalse(modelDescriptor10_A.belongsTo(resourceUml2, true));
