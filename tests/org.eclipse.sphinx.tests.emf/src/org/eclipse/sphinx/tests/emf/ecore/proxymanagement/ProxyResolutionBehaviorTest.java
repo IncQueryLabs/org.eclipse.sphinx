@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     BMW Car IT - Initial API and implementation
- *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel impelmentations to subclass EObjectImpl
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  *
  * </copyright>
  */
@@ -138,7 +138,7 @@ public class ProxyResolutionBehaviorTest {
 		}
 
 		@Override
-		protected EObject getEObject(URI uri, IMetaModelDescriptor metaModelDescriptor, Resource contextResource, boolean loadOnDemand) {
+		protected EObject getEObject(URI uri, IMetaModelDescriptor metaModelDescriptor, Object contextObject, boolean loadOnDemand) {
 			return fExpectedResolvedEObject;
 		}
 

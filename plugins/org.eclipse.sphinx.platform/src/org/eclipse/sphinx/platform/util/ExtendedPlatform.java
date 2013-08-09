@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 See4sys, BMW Car IT, Continental Engineering Services, itemis and others.
+ * Copyright (c) 2008-2013 See4sys, BMW Car IT, Continental Engineering Services, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@
  *     itemis - [357965] Scheduling rules for saving new resources must be scoped to enclosing project 
  *     BMW Car IT - [373481] Performance optimizations for model loading
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  * 
  * </copyright>
  */
