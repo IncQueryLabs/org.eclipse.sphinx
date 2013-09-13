@@ -65,10 +65,14 @@ public class ResourceProblemMarkerService {
 
 	/**
 	 * Proxy URI integrity problem marker type.
+	 * <p>
+	 * !! Important Note !! Don't use Activator.getPlugin().getSymbolicName() instead of hard-coded plug-in name because
+	 * this would prevent this class from being loaded in Java standalone applications.
+	 * </p>
 	 * 
 	 * @see IMarker#getType()
 	 */
-	public static final String PROXY_URI_INTEGRITY_PROBLEM = Activator.getPlugin().getSymbolicName() + ".proxyuriintegrityproblemmarker"; //$NON-NLS-1$
+	public static final String PROXY_URI_INTEGRITY_PROBLEM = "org.eclipse.sphinx.emf.proxyuriintegrityproblemmarker"; //$NON-NLS-1$ 
 
 	/**
 	 * Singleton instance.
