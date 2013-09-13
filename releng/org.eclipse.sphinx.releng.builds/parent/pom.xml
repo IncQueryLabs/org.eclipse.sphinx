@@ -161,25 +161,18 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>platform-indigo</id>
+			<id>platform-kepler</id>
 			<properties>
-				<platform.version>3.7</platform.version>
-				<platform.version.name>indigo</platform.version.name>
+				<platform.version>4.3</platform.version>
+				<platform.version.name>kepler</platform.version.name>
 				<orbit.version>R20130118183705</orbit.version>
 			</properties>
-			<repositories>
-				<repository>
-					<id>xtext-updates</id>
-					<layout>p2</layout>
-					<url>http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases</url>
-				</repository>
-			</repositories>
 		</profile>
 		<profile>
-			<id>platform-juno</id>
+			<id>platform-luna</id>
 			<properties>
-				<platform.version>4.2</platform.version>
-				<platform.version.name>juno</platform.version.name>
+				<platform.version>4.4</platform.version>
+				<platform.version.name>luna</platform.version.name>
 				<orbit.version>R20130118183705</orbit.version>
 			</properties>
 		</profile>
