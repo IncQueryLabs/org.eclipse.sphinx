@@ -29,6 +29,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.xmi.XMLDefaultHandler;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
+import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLParserPool;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
@@ -89,8 +90,16 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 		this.options = options;
 		enableSchemaValidation = Boolean.TRUE.equals(options.get(ExtendedResource.OPTION_ENABLE_SCHEMA_VALIDATION));
 
+		// HACK: reading encoding
+		String encoding = null;
+		if (!Boolean.FALSE.equals(options.get(XMLResource.OPTION_USE_DEPRECATED_METHODS))) {
+			encoding = getEncoding();
+			resource.setEncoding(encoding);
+		}
+
 		// If an applicable model converter is around let it migrate the document prior to parsing it
 		InputSource inputSource = null;
+		boolean closeIs = false;
 		converter = ModelConverterRegistry.INSTANCE.getLoadConverter(resource, options);
 		didConvert = false;
 		if (converter != null) {
@@ -99,20 +108,13 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 				didConvert = true;
 			} catch (Exception ex) {
 				PlatformLogUtil.logAsError(Activator.getDefault(), ex);
-			} finally {
-				converter.dispose();
-
 				// Renew input stream as current one has been consumed by the model converter
 				URIConverter uriConverter = EcoreResourceUtil.getURIConverter(resource.getResourceSet());
 				is = uriConverter.createInputStream(resource.getURI(), options);
+				closeIs = true;
+			} finally {
+				converter.dispose();
 			}
-		}
-
-		// HACK: reading encoding
-		String encoding = null;
-		if (!Boolean.FALSE.equals(options.get(XMLResource.OPTION_USE_DEPRECATED_METHODS))) {
-			encoding = getEncoding();
-			resource.setEncoding(encoding);
 		}
 
 		if (inputSource == null) {
@@ -207,6 +209,9 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 				if (handler != null) {
 					pool.releaseDefaultHandler((XMLDefaultHandler) handler, options);
 				}
+			}
+			if (closeIs) {
+				is.close();
 			}
 
 			helper = null;
