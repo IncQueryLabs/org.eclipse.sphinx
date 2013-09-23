@@ -161,6 +161,14 @@
 	</build>
 	<profiles>
 		<profile>
+			<id>platform-juno</id>
+			<properties>
+				<platform.version>4.2</platform.version>
+				<platform.version.name>juno</platform.version.name>
+				<orbit.version>R20130118183705</orbit.version>
+			</properties>
+		</profile>
+		<profile>
 			<id>platform-kepler</id>
 			<properties>
 				<platform.version>4.3</platform.version>
