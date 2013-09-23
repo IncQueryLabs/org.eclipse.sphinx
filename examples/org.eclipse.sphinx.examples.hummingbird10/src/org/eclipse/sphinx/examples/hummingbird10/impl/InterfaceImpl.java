@@ -16,29 +16,21 @@ package org.eclipse.sphinx.examples.hummingbird10.impl;
 
 import java.util.Collection;
 
-
-
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
+import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.eclipse.sphinx.emf.ecore.ExtendedEObjectImpl;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird10.Interface;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Interface</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Interface</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
@@ -49,11 +41,11 @@ import org.eclipse.sphinx.examples.hummingbird10.Interface;
  *
  * @generated
  */
-public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
+public class InterfaceImpl extends EObjectImpl implements Interface {
 	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -61,9 +53,9 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	protected static final String NAME_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -71,9 +63,9 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	protected String name = NAME_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getProvidingComponents() <em>Providing Components</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getProvidingComponents() <em>Providing Components</em>}' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getProvidingComponents()
 	 * @generated
 	 * @ordered
@@ -81,8 +73,7 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	protected EList<Component> providingComponents;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	protected InterfaceImpl() {
@@ -90,8 +81,7 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -100,8 +90,7 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public String getName() {
@@ -109,8 +98,7 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void setName(String newName) {
@@ -121,8 +109,7 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EList<Component> getProvidingComponents() {
@@ -133,8 +120,7 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
@@ -148,8 +134,7 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -162,8 +147,7 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -178,8 +162,7 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
@@ -198,8 +181,7 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -216,8 +198,7 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -232,8 +213,7 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -247,4 +227,4 @@ public class InterfaceImpl extends ExtendedEObjectImpl implements Interface {
 		return result.toString();
 	}
 
-} //InterfaceImpl
+} // InterfaceImpl

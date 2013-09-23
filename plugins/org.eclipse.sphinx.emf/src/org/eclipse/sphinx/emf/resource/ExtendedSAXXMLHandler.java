@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
@@ -194,7 +195,8 @@ public class ExtendedSAXXMLHandler extends SAXXMLHandler {
 		URI contextURI = null;
 		IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(xmlResource);
 		if (modelDescriptor != null) {
-			contextURI = URI.createPlatformResourceURI(modelDescriptor.getRoot().toString(), true);
+			IPath rootPath = modelDescriptor.getRoot().getFullPath();
+			contextURI = URI.createPlatformResourceURI(rootPath.toString(), true);
 		}
 
 		extendedResourceSet.augmentToContextAwareURI(proxy, contextURI);

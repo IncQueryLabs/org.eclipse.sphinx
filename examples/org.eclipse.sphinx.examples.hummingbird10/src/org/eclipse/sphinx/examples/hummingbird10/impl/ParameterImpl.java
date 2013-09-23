@@ -14,21 +14,15 @@
  */
 package org.eclipse.sphinx.examples.hummingbird10.impl;
 
-
-
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.sphinx.emf.ecore.ExtendedEObjectImpl;
+import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird10.Parameter;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Parameter</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Parameter</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
@@ -39,11 +33,11 @@ import org.eclipse.sphinx.examples.hummingbird10.Parameter;
  *
  * @generated
  */
-public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
+public class ParameterImpl extends EObjectImpl implements Parameter {
 	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -51,9 +45,9 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 	protected static final String NAME_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -62,8 +56,8 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 
 	/**
 	 * The default value of the '{@link #getValue() <em>Value</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
 	 * @see #getValue()
 	 * @generated
 	 * @ordered
@@ -71,9 +65,9 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 	protected static final String VALUE_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getValue() <em>Value</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @see #getValue()
 	 * @generated
 	 * @ordered
@@ -81,8 +75,7 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 	protected String value = VALUE_EDEFAULT;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	protected ParameterImpl() {
@@ -90,8 +83,7 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -100,8 +92,7 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public String getName() {
@@ -109,8 +100,7 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void setName(String newName) {
@@ -121,8 +111,7 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public String getValue() {
@@ -130,8 +119,7 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void setValue(String newValue) {
@@ -142,8 +130,7 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -158,8 +145,7 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -176,8 +162,7 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -194,8 +179,7 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -210,8 +194,7 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -227,4 +210,4 @@ public class ParameterImpl extends ExtendedEObjectImpl implements Parameter {
 		return result.toString();
 	}
 
-} //ParameterImpl
+} // ParameterImpl

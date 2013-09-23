@@ -75,6 +75,12 @@ public interface ExtendedResource {
 	String OPTION_RESOURCE_VERSION_DESCRIPTOR = "RESOURCE_VERSION_DESCRIPTOR"; //$NON-NLS-1$
 
 	/**
+	 * Specifies whether creating the context aware proxy uri is to be performed. The default of this option is
+	 * <code>Boolean.TRUE</code>.
+	 */
+	String OPTION_CREATE_CONTEXT_AWARE_PROXY_URIS = "CREATE_CONTEXT_AWARE_PROXY_URIS"; //$NON-NLS-1$
+
+	/**
 	 * Specifies the target {@link IMetaModelDescriptor metamodel descriptor} identifier for this resource.
 	 */
 	String OPTION_TARGET_METAMODEL_DESCRIPTOR_ID = "TARGET_METAMODEL_DESCRIPTOR_ID"; //$NON-NLS-1$

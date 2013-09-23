@@ -16,23 +16,17 @@ package org.eclipse.sphinx.examples.hummingbird10.impl;
 
 import java.util.Collection;
 
-
-
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
+import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.eclipse.sphinx.emf.ecore.ExtendedEObjectImpl;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
 import org.eclipse.sphinx.examples.hummingbird10.Connection;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
@@ -40,9 +34,7 @@ import org.eclipse.sphinx.examples.hummingbird10.Interface;
 import org.eclipse.sphinx.examples.hummingbird10.Parameter;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Component</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Component</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
@@ -56,11 +48,11 @@ import org.eclipse.sphinx.examples.hummingbird10.Parameter;
  *
  * @generated
  */
-public class ComponentImpl extends ExtendedEObjectImpl implements Component {
+public class ComponentImpl extends EObjectImpl implements Component {
 	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -68,9 +60,9 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	protected static final String NAME_EDEFAULT = ""; //$NON-NLS-1$
 
 	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -79,8 +71,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 
 	/**
 	 * The cached value of the '{@link #getOutgoingConnections() <em>Outgoing Connections</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getOutgoingConnections()
 	 * @generated
 	 * @ordered
@@ -88,9 +79,9 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	protected EList<Connection> outgoingConnections;
 
 	/**
-	 * The cached value of the '{@link #getProvidedInterfaces() <em>Provided Interfaces</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getProvidedInterfaces() <em>Provided Interfaces</em>}' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getProvidedInterfaces()
 	 * @generated
 	 * @ordered
@@ -98,9 +89,9 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	protected EList<Interface> providedInterfaces;
 
 	/**
-	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getParameters()
 	 * @generated
 	 * @ordered
@@ -108,9 +99,9 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	protected EList<Parameter> parameters;
 
 	/**
-	 * The cached value of the '{@link #getIncomingConnections() <em>Incoming Connections</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getIncomingConnections() <em>Incoming Connections</em>}' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getIncomingConnections()
 	 * @generated
 	 * @ordered
@@ -118,8 +109,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	protected EList<Connection> incomingConnections;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	protected ComponentImpl() {
@@ -127,8 +117,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -137,8 +126,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public String getName() {
@@ -146,8 +134,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void setName(String newName) {
@@ -158,8 +145,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EList<Connection> getOutgoingConnections() {
@@ -170,8 +156,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EList<Interface> getProvidedInterfaces() {
@@ -182,8 +167,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void unsetProvidedInterfaces() {
@@ -191,8 +175,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public boolean isSetProvidedInterfaces() {
@@ -200,8 +183,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EList<Parameter> getParameters() {
@@ -212,8 +194,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EList<Connection> getIncomingConnections() {
@@ -224,8 +205,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
@@ -243,8 +223,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -263,8 +242,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -285,8 +263,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
@@ -317,8 +294,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -344,8 +320,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -366,8 +341,7 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -381,4 +355,4 @@ public class ComponentImpl extends ExtendedEObjectImpl implements Component {
 		return result.toString();
 	}
 
-} //ComponentImpl
+} // ComponentImpl

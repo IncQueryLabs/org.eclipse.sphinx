@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
@@ -44,6 +45,8 @@ import org.xml.sax.SAXParseException;
 public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 
 	protected IMetaModelDescriptor resourceVersion = null;
+	// Option whether creating context aware proxy uri
+	protected boolean createContextAwareProxyURIs = true;
 
 	public ExtendedSAXXMIHandler(XMLResource xmiResource, XMLHelper helper, Map<?, ?> options) {
 		super(xmiResource, helper, options);
@@ -51,6 +54,10 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 		Object value = options.get(ExtendedResource.OPTION_RESOURCE_VERSION_DESCRIPTOR);
 		if (value instanceof IMetaModelDescriptor) {
 			resourceVersion = (IMetaModelDescriptor) value;
+		}
+		value = options.get(ExtendedResource.OPTION_CREATE_CONTEXT_AWARE_PROXY_URIS);
+		if (value instanceof Boolean) {
+			createContextAwareProxyURIs = (Boolean) value;
 		}
 
 		// Workaround for potential bug in org.apache.xerces.impl.xs.XMLSchemaValidator.addDefaultAttributes(QName,
@@ -194,17 +201,21 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 	protected void handleProxy(InternalEObject proxy, String uriLiteral) {
 		super.handleProxy(proxy, uriLiteral);
 
-		// Augment the proxy's URI to a context-aware proxy URI
-		if (resourceSet instanceof ExtendedResourceSetImpl) {
-			ExtendedResourceSetImpl extendedResourceSet = (ExtendedResourceSetImpl) resourceSet;
+		// Augment to context aware uri only when the option is true
+		if (createContextAwareProxyURIs) {
+			// Augment the proxy's URI to a context-aware proxy URI
+			if (resourceSet instanceof ExtendedResourceSetImpl) {
+				ExtendedResourceSetImpl extendedResourceSet = (ExtendedResourceSetImpl) resourceSet;
 
-			URI contextURI = null;
-			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(xmlResource);
-			if (modelDescriptor != null) {
-				contextURI = URI.createPlatformResourceURI(modelDescriptor.getRoot().toString(), true);
+				URI contextURI = null;
+				IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(xmlResource);
+				if (modelDescriptor != null) {
+					IPath rootPath = modelDescriptor.getRoot().getFullPath();
+					contextURI = URI.createPlatformResourceURI(rootPath.toString(), true);
+				}
+
+				extendedResourceSet.augmentToContextAwareURI(proxy, contextURI);
 			}
-
-			extendedResourceSet.augmentToContextAwareURI(proxy, contextURI);
 		}
 	}
 }

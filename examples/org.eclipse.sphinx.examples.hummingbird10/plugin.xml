@@ -28,7 +28,7 @@ Contributors:
    <extension point="org.eclipse.emf.ecore.content_parser">
       <parser
             contentTypeIdentifier="org.eclipse.sphinx.examples.hummingbird10.hummingbird10XMIFile"
-            class="org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl"/>
+            class="org.eclipse.sphinx.examples.hummingbird10.util.Hummingbird10ResourceFactoryImpl"/>
    </extension>
 
    <extension point="org.eclipse.core.contenttype.contentTypes">

@@ -14,7 +14,6 @@
  *     itemis - [357965] Scheduling rules for saving new resources must be scoped to enclosing project 
  *     BMW Car IT - [373481] Performance optimizations for model loading
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
- *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  * 
  * </copyright>
  */
@@ -45,7 +44,6 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceRuleFactory;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -590,29 +588,6 @@ public final class ExtendedPlatform {
 			PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 		}
 		return new IResource[0];
-	}
-
-	public static IContainer getContainer(IPath path) {
-		Assert.isNotNull(path);
-
-		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-		IResource resource = workspaceRoot.findMember(path);
-		if (resource != null) {
-			if (resource instanceof IContainer) {
-				return (IContainer) resource;
-			} else {
-				return resource.getParent();
-			}
-		}
-
-		if (path.isAbsolute() && path.segmentCount() > 0) {
-			if (path.segmentCount() == 1) {
-				return workspaceRoot.getProject(path.toString());
-			} else {
-				return workspaceRoot.getFolder(path);
-			}
-		}
-		return null;
 	}
 
 	/**

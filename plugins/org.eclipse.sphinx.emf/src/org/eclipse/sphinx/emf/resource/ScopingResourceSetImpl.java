@@ -28,6 +28,8 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -42,7 +44,6 @@ import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
-import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 
 /**
  * A default implementation of the {@link ScopingResourceSet} interface.
@@ -180,7 +181,10 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 			URI contextURI = (URI) contextObject;
 			if (contextURI.isPlatformResource()) {
 				IPath contextPath = new Path(contextURI.toPlatformString(true));
-				contextObject = ExtendedPlatform.getContainer(contextPath);
+				IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(contextPath);
+				if (resource instanceof IContainer) {
+					contextObject = resource;
+				}
 			}
 		}
 		if (contextObject instanceof IContainer) {
@@ -220,11 +224,11 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.resource.ExtendedResourceSetImpl#doGetEObject(org.eclipse.emf.common.util.URI,
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResourceSetImpl#getEObject(org.eclipse.emf.common.util.URI,
 	 * org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, java.lang.Object, boolean)
 	 */
 	@Override
-	protected EObject doGetEObject(URI uri, IMetaModelDescriptor metaModelDescriptor, Object contextObject, boolean loadOnDemand) {
+	protected EObject getEObject(URI uri, IMetaModelDescriptor metaModelDescriptor, Object contextObject, boolean loadOnDemand) {
 		Assert.isNotNull(uri);
 
 		// Fragment-based URI not knowing its target resource?

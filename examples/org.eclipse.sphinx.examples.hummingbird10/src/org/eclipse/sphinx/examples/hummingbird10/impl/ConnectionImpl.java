@@ -14,27 +14,20 @@
  */
 package org.eclipse.sphinx.examples.hummingbird10.impl;
 
-
-
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
+import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.sphinx.emf.ecore.ExtendedEObjectImpl;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
 import org.eclipse.sphinx.examples.hummingbird10.Connection;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird10.Interface;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Connection</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Connection</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
@@ -47,11 +40,11 @@ import org.eclipse.sphinx.examples.hummingbird10.Interface;
  *
  * @generated
  */
-public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
+public class ConnectionImpl extends EObjectImpl implements Connection {
 	/**
-	 * The cached value of the '{@link #getRequiredInterface() <em>Required Interface</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getRequiredInterface() <em>Required Interface</em>}' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getRequiredInterface()
 	 * @generated
 	 * @ordered
@@ -60,8 +53,8 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 
 	/**
 	 * The cached value of the '{@link #getTargetComponent() <em>Target Component</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
 	 * @see #getTargetComponent()
 	 * @generated
 	 * @ordered
@@ -69,9 +62,9 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	protected Component targetComponent;
 
 	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -79,9 +72,9 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	protected static final String NAME_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -89,8 +82,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	protected String name = NAME_EDEFAULT;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	protected ConnectionImpl() {
@@ -98,8 +90,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -108,8 +99,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Interface getRequiredInterface() {
@@ -125,8 +115,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Interface basicGetRequiredInterface() {
@@ -134,8 +123,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void setRequiredInterface(Interface newRequiredInterface) {
@@ -146,8 +134,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Component getTargetComponent() {
@@ -163,8 +150,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Component basicGetTargetComponent() {
@@ -172,8 +158,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public NotificationChain basicSetTargetComponent(Component newTargetComponent, NotificationChain msgs) {
@@ -187,8 +172,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void setTargetComponent(Component newTargetComponent) {
@@ -206,8 +190,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Component getSourceComponent() {
@@ -216,8 +199,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public NotificationChain basicSetSourceComponent(Component newSourceComponent, NotificationChain msgs) {
@@ -226,8 +208,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void setSourceComponent(Component newSourceComponent) {
@@ -247,8 +228,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public String getName() {
@@ -256,8 +236,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void setName(String newName) {
@@ -268,8 +247,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -288,8 +266,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -304,8 +281,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -318,8 +294,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -340,8 +315,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -364,8 +338,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -388,8 +361,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -408,8 +380,7 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -423,4 +394,4 @@ public class ConnectionImpl extends ExtendedEObjectImpl implements Connection {
 		return result.toString();
 	}
 
-} //ConnectionImpl
+} // ConnectionImpl

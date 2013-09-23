@@ -16,30 +16,22 @@ package org.eclipse.sphinx.examples.hummingbird10.impl;
 
 import java.util.Collection;
 
-
-
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
+import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.eclipse.sphinx.emf.ecore.ExtendedEObjectImpl;
 import org.eclipse.sphinx.examples.hummingbird10.Application;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird10.Interface;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Application</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Application</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
@@ -51,11 +43,11 @@ import org.eclipse.sphinx.examples.hummingbird10.Interface;
  *
  * @generated
  */
-public class ApplicationImpl extends ExtendedEObjectImpl implements Application {
+public class ApplicationImpl extends EObjectImpl implements Application {
 	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -63,9 +55,9 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	protected static final String NAME_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -73,9 +65,9 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	protected String name = NAME_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getComponents() <em>Components</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getComponents() <em>Components</em>}' containment reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getComponents()
 	 * @generated
 	 * @ordered
@@ -83,9 +75,9 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	protected EList<Component> components;
 
 	/**
-	 * The cached value of the '{@link #getInterfaces() <em>Interfaces</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getInterfaces() <em>Interfaces</em>}' containment reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getInterfaces()
 	 * @generated
 	 * @ordered
@@ -93,8 +85,7 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	protected EList<Interface> interfaces;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	protected ApplicationImpl() {
@@ -102,8 +93,7 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -112,8 +102,7 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public String getName() {
@@ -121,8 +110,7 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void setName(String newName) {
@@ -133,8 +121,7 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EList<Component> getComponents() {
@@ -145,8 +132,7 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EList<Interface> getInterfaces() {
@@ -157,8 +143,7 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -173,8 +158,7 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -191,8 +175,7 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
@@ -215,8 +198,7 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -236,8 +218,7 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -254,8 +235,7 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -269,4 +249,4 @@ public class ApplicationImpl extends ExtendedEObjectImpl implements Application 
 		return result.toString();
 	}
 
-} //ApplicationImpl
+} // ApplicationImpl

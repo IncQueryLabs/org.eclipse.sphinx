@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  * 
  * </copyright>
  */
@@ -117,6 +118,9 @@ public class Hummingbird20ResourceFactoryImpl extends ResourceFactoryImpl {
 		result.getDefaultSaveOptions().put(XMLResource.OPTION_URI_HANDLER, schemaLocationURIHandler);
 
 		result.getDefaultLoadOptions().put(ExtendedResource.OPTION_ENABLE_SCHEMA_VALIDATION, Boolean.TRUE);
+
+		// Configure not to augment contextAwareURI since Hummingbird20 extends the advanced ExtendEObjectImpl
+		result.getDefaultLoadOptions().put(ExtendedResource.OPTION_CREATE_CONTEXT_AWARE_PROXY_URIS, Boolean.FALSE);
 
 		return result;
 	}

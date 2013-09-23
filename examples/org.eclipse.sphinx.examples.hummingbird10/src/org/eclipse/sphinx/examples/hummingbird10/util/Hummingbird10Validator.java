@@ -21,6 +21,7 @@ import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.emf.common.util.ResourceLocator;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.util.EObjectValidator;
+import org.eclipse.sphinx.examples.hummingbird10.*;
 import org.eclipse.sphinx.examples.hummingbird10.Activator;
 import org.eclipse.sphinx.examples.hummingbird10.Application;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
@@ -146,14 +147,7 @@ public class Hummingbird10Validator extends EObjectValidator {
 		boolean result = validate_EveryMultiplicityConforms(connection, diagnostics, context);
 		if (result || diagnostics != null) result &= validate_EveryDataValueConforms(connection, diagnostics, context);
 		if (result || diagnostics != null) result &= validate_EveryReferenceIsContained(connection, diagnostics, context);
-		// Ensure backward compatibility with EMF 2.5 and earlier
-		if (ExtendedPlatform.getFeatureVersionOrdinal() >= 36) {
-			try {
-				if (result || diagnostics != null) result &= (Boolean) ReflectUtil.invokeMethod(this, "validate_EveryBidirectionalReferenceIsPaired", connection, diagnostics, context); //$NON-NLS-1$
-			} catch (Exception ex) {
-				// Ignore exception
-			}
-		}
+		if (result || diagnostics != null) result &= validate_EveryBidirectionalReferenceIsPaired(connection, diagnostics, context);
 		if (result || diagnostics != null) result &= validate_EveryProxyResolves(connection, diagnostics, context);
 		if (result || diagnostics != null) result &= validate_UniqueID(connection, diagnostics, context);
 		if (result || diagnostics != null) result &= validate_EveryKeyUnique(connection, diagnostics, context);

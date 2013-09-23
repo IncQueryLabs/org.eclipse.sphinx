@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
+import org.eclipse.sphinx.examples.hummingbird10.*;
 import org.eclipse.sphinx.examples.hummingbird10.Application;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
 import org.eclipse.sphinx.examples.hummingbird10.Connection;
@@ -29,31 +30,30 @@ import org.eclipse.sphinx.examples.hummingbird10.Parameter;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
- * 
  * @generated
  */
 public class Hummingbird10FactoryImpl extends EFactoryImpl implements Hummingbird10Factory {
 	/**
-	 * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Creates the default factory implementation.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public static Hummingbird10Factory init() {
 		try {
-			Hummingbird10Factory theHummingbird10Factory = (Hummingbird10Factory) EPackage.Registry.INSTANCE
-					.getEFactory("http://www.eclipse.org/sphinx/examples/hummingbird/1.0.0"); //$NON-NLS-1$ 
+			Hummingbird10Factory theHummingbird10Factory = (Hummingbird10Factory)EPackage.Registry.INSTANCE.getEFactory("http://www.eclipse.org/sphinx/examples/hummingbird/1.0.0"); //$NON-NLS-1$ 
 			if (theHummingbird10Factory != null) {
 				return theHummingbird10Factory;
 			}
-		} catch (Exception exception) {
+		}
+		catch (Exception exception) {
 			EcorePlugin.INSTANCE.log(exception);
 		}
 		return new Hummingbird10FactoryImpl();
 	}
 
 	/**
-	 * Creates an instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Creates an instance of the factory.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Hummingbird10FactoryImpl() {
@@ -62,30 +62,23 @@ public class Hummingbird10FactoryImpl extends EFactoryImpl implements Hummingbir
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-		case Hummingbird10Package.COMPONENT:
-			return createComponent();
-		case Hummingbird10Package.APPLICATION:
-			return createApplication();
-		case Hummingbird10Package.CONNECTION:
-			return createConnection();
-		case Hummingbird10Package.INTERFACE:
-			return createInterface();
-		case Hummingbird10Package.PARAMETER:
-			return createParameter();
-		default:
-			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
+			case Hummingbird10Package.COMPONENT: return createComponent();
+			case Hummingbird10Package.APPLICATION: return createApplication();
+			case Hummingbird10Package.CONNECTION: return createConnection();
+			case Hummingbird10Package.INTERFACE: return createInterface();
+			case Hummingbird10Package.PARAMETER: return createParameter();
+			default:
+				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Component createComponent() {
@@ -95,7 +88,6 @@ public class Hummingbird10FactoryImpl extends EFactoryImpl implements Hummingbir
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Application createApplication() {
@@ -105,7 +97,6 @@ public class Hummingbird10FactoryImpl extends EFactoryImpl implements Hummingbir
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Connection createConnection() {
@@ -115,7 +106,6 @@ public class Hummingbird10FactoryImpl extends EFactoryImpl implements Hummingbir
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Interface createInterface() {
@@ -125,7 +115,6 @@ public class Hummingbird10FactoryImpl extends EFactoryImpl implements Hummingbir
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Parameter createParameter() {
@@ -135,16 +124,14 @@ public class Hummingbird10FactoryImpl extends EFactoryImpl implements Hummingbir
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Hummingbird10Package getHummingbird10Package() {
-		return (Hummingbird10Package) getEPackage();
+		return (Hummingbird10Package)getEPackage();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @deprecated
 	 * @generated
 	 */

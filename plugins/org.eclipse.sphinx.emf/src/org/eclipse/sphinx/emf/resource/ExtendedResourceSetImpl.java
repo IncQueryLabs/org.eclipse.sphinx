@@ -20,13 +20,14 @@ import java.io.IOException;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.WeakHashMap;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -55,7 +56,6 @@ import org.eclipse.sphinx.emf.scoping.IResourceScope;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
-import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
@@ -306,8 +306,30 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(mmDescriptorId);
 		URI contextURI = contextAwareURIHelper.getContextURI(uri);
 
-		// Perform context-aware resolution of given URI
-		return getEObject(uri, mmDescriptor, contextURI, loadOnDemand);
+		// Try to resolve proxy URI in this resource set
+		EObject resolvedEObject = getEObject(uri, mmDescriptor, contextURI, loadOnDemand);
+		if (resolvedEObject != null) {
+			return resolvedEObject;
+		}
+
+		// Retrieve resource set for metamodel of object being referenced by given proxy URI
+		ResourceSet otherResourceSet = getDelegateResourceSet(mmDescriptor, contextURI);
+		if (otherResourceSet != null && otherResourceSet != this) {
+			// Load target model(s) on demand if required
+			if (loadOnDemand) {
+				loadTargetModels(mmDescriptor, contextURI);
+			}
+
+			// Try to resolve proxy URI in other resource set
+			return otherResourceSet.getEObject(uri, true);
+		}
+
+		if (proxyHelper != null) {
+			// Remember proxy as known unresolved proxy
+			proxyHelper.getBlackList().addProxyURI(uri);
+		}
+
+		return null;
 	}
 
 	/*
@@ -346,8 +368,35 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		// Retrieve context information from provided arguments
 		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy);
 
-		// Perform context-aware resolution of given URI
-		return getEObject(uri, mmDescriptor, contextObject, loadOnDemand);
+		// Try to resolve proxy URI in this resource set
+		EObject resolvedEObject = getEObject(uri, mmDescriptor, contextObject, loadOnDemand);
+		if (resolvedEObject != null) {
+			return resolvedEObject;
+		}
+
+		// Retrieve resource set for metamodel of object being referenced by given proxy URI
+		ResourceSet otherResourceSet = getDelegateResourceSet(mmDescriptor, contextObject);
+		if (otherResourceSet != null && otherResourceSet != this) {
+			// Load target model(s) on demand if required
+			if (loadOnDemand) {
+				loadTargetModels(mmDescriptor, contextObject);
+			}
+
+			// Try to resolve proxy URI in other resource set
+			if (otherResourceSet instanceof ExtendedResourceSet) {
+				ExtendedResourceSet extendedOtherResourceSet = (ExtendedResourceSet) otherResourceSet;
+				return extendedOtherResourceSet.getEObject(proxy, contextObject, true);
+			} else {
+				return otherResourceSet.getEObject(((InternalEObject) proxy).eProxyURI(), true);
+			}
+		}
+
+		if (proxyHelper != null) {
+			// Remember proxy as known unresolved proxy
+			proxyHelper.getBlackList().addProxyURI(uri);
+		}
+
+		return null;
 	}
 
 	/**
@@ -367,43 +416,6 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	 * @return The object that corresponds to given URI or <code>null</code> if given URI cannot be resolved.
 	 */
 	protected EObject getEObject(URI uri, IMetaModelDescriptor metaModelDescriptor, Object contextObject, boolean loadOnDemand) {
-		// Try to resolve proxy URI in this resource set
-		EObject resolvedEObject = doGetEObject(uri, metaModelDescriptor, contextObject, loadOnDemand);
-		if (resolvedEObject != null) {
-			return resolvedEObject;
-		}
-
-		// Retrieve resource set for metamodel of object being referenced by given proxy URI
-		ResourceSet otherResourceSet = getDelegateResourceSet(metaModelDescriptor, contextObject);
-		if (otherResourceSet != null && otherResourceSet != this) {
-			// Try to resolve proxy URI in this other resource set
-			return delegatedGetEObject(uri, metaModelDescriptor, otherResourceSet, contextObject, loadOnDemand);
-		}
-
-		if (proxyHelper != null) {
-			// Remember proxy as known unresolved proxy
-			proxyHelper.getBlackList().addProxyURI(uri);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Retrieves the {@linkplain EObject object} from specified {@link IMetaModelDescriptor metamodel} that corresponds
-	 * to given {@linkplain URI}. Resolve the proxy URI in the provided {@linkResource context resource}.
-	 * 
-	 * @param uri
-	 *            The {@linkplain URI} to be resolved.
-	 * @param metaModelDescriptor
-	 *            The {@link IMetaModelDescriptor meta model descriptor} of the object that is referenced by given URI.
-	 * @param contextObject
-	 *            The context resource that is used to limit the search scope.
-	 * @param loadOnDemand
-	 *            Whether to load the resource or model containing the object that is referenced by given URI if it is
-	 *            not already loaded.
-	 * @return The object that corresponds to given URI or <code>null</code> if given URI cannot be resolved.
-	 */
-	protected EObject doGetEObject(URI uri, IMetaModelDescriptor metaModelDescriptor, Object contextObject, boolean loadOnDemand) {
 		Assert.isNotNull(uri);
 
 		// Fragment-based URI not knowing its target resource?
@@ -480,7 +492,8 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 				filteredResources.add(resource);
 			}
 		}
-		return Collections.emptyList();
+		// FIXME return filteredResources instead of Collections.emptyList()
+		return filteredResources;
 	}
 
 	/**
@@ -586,7 +599,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	 * 
 	 * @param resource
 	 *            The {@link Resource resource} to resolve given fragment-based {@link URI} against.
-	 * @param uri
+	 * @param uriFragment
 	 *            The fragment-based {@link URI} to resolve.
 	 * @return The {@link EObject} behind given fragment-based {@link URI}, or <code>null</code> if given {@link URI}
 	 *         cannot be resolved.
@@ -629,60 +642,56 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	}
 
 	/**
-	 * Resolve proxy {@link URI uri} in the delegate {@link ResourceSet target resource set}. Load target models that
-	 * are filtered by the {@link IMetaModelDescriptor meta Model Descriptor} on {@link boolean demand} if required.
+	 * Load target models that are filtered by the {@link IMetaModelDescriptor meta Model Descriptor}.
 	 * 
-	 * @param uri
-	 *            The {@link URI uri} to resolve.
 	 * @param metaModelDescriptor
 	 *            The {@link IMetaModelDescriptor meta Model Descriptor} of the proxy to be resolved.
-	 * @param targetResourceSet
-	 *            The{@link ResourceSet target resource set} within which the proxy uri resides.
 	 * @param contextObject
 	 *            The context resource that is used to limit the search scope.
-	 * @param loadOnDemand
-	 *            Whether to load the resource or model containing the object that is referenced by given URI if it is
-	 *            not already loaded.
 	 * @return
 	 */
-	protected EObject delegatedGetEObject(URI uri, IMetaModelDescriptor metaModelDescriptor, ResourceSet targetResourceSet, Object contextObject,
-			boolean loadOnDemand) {
-		Assert.isNotNull(targetResourceSet);
+	protected void loadTargetModels(IMetaModelDescriptor metaModelDescriptor, Object contextObject) {
+		// Retrieve target model(s) that is (are) in the same scope as context object
+		IContainer contextContainer = getContextContainer(contextObject);
+		if (contextContainer != null) {
+			Collection<IModelDescriptor> targetModelDescriptors = ModelDescriptorRegistry.INSTANCE.getModels(contextContainer, metaModelDescriptor);
 
-		// Load target model(s) on demand if required
-		if (loadOnDemand) {
-			// Retrieve target model(s) that is (are) in the same scope as context object
-			IContainer contextContainer = getContextContainer(contextObject);
-			if (contextContainer != null) {
-				Collection<IModelDescriptor> targetModelDescriptors = ModelDescriptorRegistry.INSTANCE.getModels(contextContainer,
-						metaModelDescriptor);
-
-				// Ignore target models that are already loaded
-				for (Iterator<IModelDescriptor> iter = targetModelDescriptors.iterator(); iter.hasNext();) {
-					if (EcorePlatformUtil.isModelLoaded(iter.next())) {
-						iter.remove();
-					}
+			// Ignore target models that are already loaded
+			for (Iterator<IModelDescriptor> iter = targetModelDescriptors.iterator(); iter.hasNext();) {
+				if (EcorePlatformUtil.isModelLoaded(iter.next())) {
+					iter.remove();
 				}
-
-				// Trigger asynchronous loading of all target models that are not loaded yet
-				EcorePlatformUtil.loadModels(targetModelDescriptors, false, null);
 			}
-		}
 
-		return targetResourceSet.getEObject(uri, loadOnDemand);
+			// Trigger asynchronous loading of all target models that are not loaded yet
+			EcorePlatformUtil.loadModels(targetModelDescriptors, false, null);
+		}
 	}
 
+	/**
+	 * Get the container of the provided {@link Object context object}. If the context object is a project or container
+	 * URI, the project or container is returned. The parent of the file that owns the given context object is returned,
+	 * if the context object is a EObject. Otherwise null container is returned.
+	 */
 	protected IContainer getContextContainer(Object contextObject) {
 		if (contextObject instanceof URI) {
 			URI contextURI = (URI) contextObject;
 			if (contextURI.isPlatformResource()) {
 				IPath contextPath = new Path(contextURI.toPlatformString(true));
-				return ExtendedPlatform.getContainer(contextPath);
+				IResource contextResource = ResourcesPlugin.getWorkspace().getRoot().findMember(contextPath);
+				if (contextResource != null) {
+					if (contextResource instanceof IContainer) {
+						return (IContainer) contextResource;
+					} else {
+						return contextResource.getParent();
+					}
+				}
 			}
-
 		} else if (contextObject instanceof EObject) {
-			IFile file = EcorePlatformUtil.getFile((EObject) contextObject);
-			return file.getParent();
+			IFile contextFile = EcorePlatformUtil.getFile((EObject) contextObject);
+			if (contextFile != null) {
+				return contextFile.getParent();
+			}
 		}
 		return null;
 	}
