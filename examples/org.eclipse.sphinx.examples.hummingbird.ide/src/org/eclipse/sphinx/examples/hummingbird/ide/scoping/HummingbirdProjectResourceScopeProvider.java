@@ -33,11 +33,12 @@ import org.eclipse.sphinx.examples.hummingbird.ide.preferences.IHummingbirdPrefe
 public class HummingbirdProjectResourceScopeProvider extends ProjectResourceScopeProvider {
 
 	public HummingbirdProjectResourceScopeProvider() {
-		ResourceScopeMarkerSynchronizer.INSTANCE.addDelegate(new HummingbirdResourceScopeMarkerSynchronizerDelegate());
+		ResourceScopeMarkerSynchronizer.INSTANCE.addDelegate(HummingbirdResourceScopeMarkerSynchronizerDelegate.INSTANCE);
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.scoping.ProjectResourceScopeProvider#createScope(org.eclipse.core.resources.IResource)
+	 * @see
+	 * org.eclipse.sphinx.emf.scoping.ProjectResourceScopeProvider#createScope(org.eclipse.core.resources.IResource)
 	 */
 	@Override
 	protected ProjectResourceScope createScope(IResource resource) {

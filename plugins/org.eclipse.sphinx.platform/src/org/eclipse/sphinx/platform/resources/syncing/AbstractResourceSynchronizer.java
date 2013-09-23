@@ -37,8 +37,9 @@ public abstract class AbstractResourceSynchronizer<T extends IResourceSyncReques
 
 	public void addDelegate(IResourceSynchronizerDelegate<T> delegate) {
 		if (delegate != null) {
-			delegate.setSyncRequest(getSyncRequest());
-			fSynchronizerDelegates.add(delegate);
+			if (fSynchronizerDelegates.add(delegate)) {
+				delegate.setSyncRequest(getSyncRequest());
+			}
 		}
 	}
 

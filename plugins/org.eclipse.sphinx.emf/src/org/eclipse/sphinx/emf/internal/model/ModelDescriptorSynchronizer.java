@@ -41,8 +41,7 @@ public class ModelDescriptorSynchronizer extends AbstractResourceSynchronizer<IM
 	 * Protected constructor for singleton pattern.
 	 */
 	protected ModelDescriptorSynchronizer() {
-		BasicModelDescriptorSynchronizerDelegate delegate = new BasicModelDescriptorSynchronizerDelegate();
-		addDelegate(delegate);
+		addDelegate(BasicModelDescriptorSynchronizerDelegate.INSTANCE);
 	}
 
 	@Override

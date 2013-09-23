@@ -22,6 +22,11 @@ import org.eclipse.sphinx.platform.resources.syncing.AbstractResourceSynchronize
 
 public class BasicModelDescriptorSynchronizerDelegate extends AbstractResourceSynchronizerDelegate<IModelDescriptorSyncRequest> {
 
+	/**
+	 * The singleton instance.
+	 */
+	public static final BasicModelDescriptorSynchronizerDelegate INSTANCE = new BasicModelDescriptorSynchronizerDelegate();
+
 	@Override
 	public void handleProjectRenamed(int eventType, IProject oldProject, IProject newProject) {
 		if (eventType == IResourceChangeEvent.POST_CHANGE) {

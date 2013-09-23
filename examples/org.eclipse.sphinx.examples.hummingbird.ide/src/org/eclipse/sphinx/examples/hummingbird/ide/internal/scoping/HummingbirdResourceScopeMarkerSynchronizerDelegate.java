@@ -30,6 +30,11 @@ import org.eclipse.sphinx.platform.util.ExtendedPlatform;
  */
 public class HummingbirdResourceScopeMarkerSynchronizerDelegate extends AbstractResourceSynchronizerDelegate<IResourceScopeMarkerSyncRequest> {
 
+	/**
+	 * The singleton instance.
+	 */
+	public static final HummingbirdResourceScopeMarkerSynchronizerDelegate INSTANCE = new HummingbirdResourceScopeMarkerSynchronizerDelegate();
+
 	/*
 	 * @see org.eclipse.sphinx.platform.resources.DefaultResourceChangeHandler#handleProjectDescriptionChanged(int,
 	 * org.eclipse.core.resources.IProject)

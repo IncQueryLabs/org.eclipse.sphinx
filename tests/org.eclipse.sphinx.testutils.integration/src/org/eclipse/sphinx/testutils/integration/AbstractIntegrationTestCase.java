@@ -214,13 +214,13 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 		org.eclipse.sphinx.emf.workspace.Activator.getPlugin().stopWorkspaceSynchronizing();
 
-		importMissingReferenceProjectsIntoWorkspace();
+		synchronizedImportMissingReferenceProjectsIntoWorkspace();
 
 		// In case previous test failed and tearDown() was not called, some projects may still be closed - so open all
 		// of them to be on the safe side
 		synchronizedOpenAllProjects();
 
-		importMissingReferenceFilesToWorkspace();
+		synchronizedImportMissingReferenceFilesToWorkspace();
 
 		createInterProjectReferences();
 
@@ -228,13 +228,11 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		internalRefWks.addResourceSetProblemListener(resourceProblemListener);
 
 		if (isProjectsClosedOnStartup()) {
-			ModelLoadManager.INSTANCE.unloadWorkspace(false, null);
+			synchronizedUnloadAllProjects();
 			synchronizedCloseAllProjects();
-			waitForModelLoading();
 			assertReferenceWorkspaceClosed();
 		} else {
-			ModelLoadManager.INSTANCE.loadWorkspace(false, null);
-			waitForModelLoading();
+			synchronizedLoadAllProjects();
 			assertReferenceWorkspaceInitialized();
 		}
 
@@ -252,13 +250,12 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		// TODO Surround with appropriate tracing option
 		// System.out.println(">>> Entering tearDown()");
 
-		waitForModelLoading();
-
 		// Remove ResourceProblemListener from all editingDomains
 		internalRefWks.removeResourceSetProblemListener(resourceProblemListener);
 		internalRefWks.removeReferenceWorkspaceChangeListener(referenceWorkspaceChangeListener);
+
 		// Unload resources which have been changed but not saved yet
-		unloadDirtyResources();
+		synchronizedUnloadDirtyResources();
 
 		// Projects which have been renamed will be deleted
 		synchronizedDeleteProjects(referenceWorkspaceChangeListener.getRenamedProjects());
@@ -267,24 +264,22 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		synchronizedOpenProjects(detectProjectsToOpen());
 
 		// Delete all folders which have been added during the test, including renamed folders
-		deleteAddedFolders();
+		synchronizedDeleteAddedFolders();
 
 		// Delete all files which have been added during the test, including renamed files
-		deleteAddedFiles();
+		synchronizedDeleteAddedFiles();
 
 		// Delete all files which have been changed during the test
-		deleteChangedFiles();
+		synchronizedDeleteChangedFiles();
 
 		// Unload resources are on memory only, these resources are not marked as dirty
-		unloadReourcesOutsideFileDescriptor();
+		synchronizedUnloadAddedReources();
 
 		// If existing Projects' description were changed, reset its by copying contents from reference file
-		resetProjectDescriptions();
+		syncrhonizedResetProjectDescriptions();
 
 		// If existing Projects' setting were changed, reset them by copying contents from reference file
-		resetProjectSettings();
-
-		waitForModelLoading();
+		synchronizedResetProjectSettings();
 
 		// Clear list of resources changed
 		resourceProblemListener.clearHistory();
@@ -339,7 +334,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 * Unloads all resources created in the previous test. These resources were added to ResourceSets but were not saved
 	 * and not marked as dirty. So we need to detect and unload them
 	 */
-	private void unloadReourcesOutsideFileDescriptor() {
+	private void synchronizedUnloadAddedReources() {
 		List<Resource> resourcesToUnload = new ArrayList<Resource>();
 		for (IMetaModelDescriptor metaModelDescriptor : internalRefWks.getReferenceEditingDomainDescritpors().keySet()) {
 			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(ResourcesPlugin.getWorkspace().getRoot(),
@@ -355,7 +350,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			EcorePlatformUtil.unloadResources(editingDomain, resourcesToUnload, true, null);
 			waitForModelLoading();
 		}
-
 	}
 
 	/**
@@ -364,7 +358,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 * 
 	 * @throws Exception
 	 */
-	private void deleteChangedFiles() throws Exception {
+	private void synchronizedDeleteChangedFiles() throws Exception {
 		for (IFile changedFile : referenceWorkspaceChangeListener.getChangedFiles()) {
 			if (changedFile != null && changedFile.isAccessible()) {
 				synchronizedDeleteFile(changedFile);
@@ -377,7 +371,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 * 
 	 * @throws Exception
 	 */
-	private void deleteAddedFiles() throws Exception {
+	private void synchronizedDeleteAddedFiles() throws Exception {
 		for (IFile addedFile : referenceWorkspaceChangeListener.getAddedFiles()) {
 			if (refWks.getAllReferenceFiles().contains(addedFile)) {
 				continue;
@@ -392,7 +386,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 * 
 	 * @throws Exception
 	 */
-	private void deleteAddedFolders() throws Exception {
+	private void synchronizedDeleteAddedFolders() throws Exception {
 		for (IFolder addedFolder : referenceWorkspaceChangeListener.getAddedFolders()) {
 			if (addedFolder != null && addedFolder.isAccessible()) {
 				synchronizedDeleteFolder(addedFolder);
@@ -403,16 +397,16 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	/**
 	 * Unloads all dirty resources in editingDomains
 	 */
-	private void unloadDirtyResources() {
+	private void synchronizedUnloadDirtyResources() {
 		for (IMetaModelDescriptor metaModelDescriptor : internalRefWks.getReferenceEditingDomainDescritpors().keySet()) {
 			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(ResourcesPlugin.getWorkspace().getRoot(),
 					metaModelDescriptor);
 			if (editingDomain != null) {
 				Collection<Resource> dirtyResources = SaveIndicatorUtil.getDirtyResources(editingDomain);
 				EcorePlatformUtil.unloadResources(editingDomain, dirtyResources, true, null);
-				waitForModelLoading();
 			}
 		}
+		waitForModelLoading();
 	}
 
 	/**
@@ -421,14 +415,29 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 * 
 	 * @throws Exception
 	 */
-	private void resetProjectDescriptions() throws Exception {
-		for (IProject project : referenceWorkspaceChangeListener.getProjectsWithChangedDescription()) {
-			if (project.exists()) {
-				assertTrue(project.isOpen());
-				File projectSourceDir = new File(referenceWorkspaceSourceDir, project.getName());
-				importExternalResourceToWorkspace(new File(projectSourceDir, ".project"), project);
+	private void syncrhonizedResetProjectDescriptions() throws Exception {
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
+						"Problems encountered while resetting project descriptions.", new RuntimeException());
+				for (IProject project : referenceWorkspaceChangeListener.getProjectsWithChangedDescription()) {
+					try {
+						if (project.exists()) {
+							File projectSourceDir = new File(referenceWorkspaceSourceDir, project.getName());
+							importExternalResourceToWorkspace(new File(projectSourceDir, ".project"), project);
+						}
+					} catch (Exception ex) {
+						errorStatus.add(StatusUtil.createErrorStatus(Activator.getDefault(), ex));
+					}
+				}
+				if (errorStatus.getChildren().length > 0) {
+					throw new CoreException(errorStatus);
+				}
 			}
-		}
+		};
+		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
+		waitForModelLoading();
 	}
 
 	/**
@@ -437,14 +446,29 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 * 
 	 * @throws Exception
 	 */
-	private void resetProjectSettings() throws Exception {
-		for (IProject project : referenceWorkspaceChangeListener.getProjectsWithChangedSettings().keySet()) {
-			if (project.exists()) {
-				assertTrue(project.isOpen());
-				File projectSourceDir = new File(referenceWorkspaceSourceDir, project.getName());
-				importExternalResourceToWorkspace(new File(projectSourceDir, ".settings"), project);
+	private void synchronizedResetProjectSettings() throws Exception {
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
+						"Problems encountered while resetting project settings.", new RuntimeException());
+				for (IProject project : referenceWorkspaceChangeListener.getProjectsWithChangedSettings().keySet()) {
+					try {
+						if (project.exists()) {
+							File projectSourceDir = new File(referenceWorkspaceSourceDir, project.getName());
+							importExternalResourceToWorkspace(new File(projectSourceDir, ".settings"), project);
+						}
+					} catch (Exception ex) {
+						errorStatus.add(StatusUtil.createErrorStatus(Activator.getDefault(), ex));
+					}
+				}
+				if (errorStatus.getChildren().length > 0) {
+					throw new CoreException(errorStatus);
+				}
 			}
-		}
+		};
+		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
+		waitForModelLoading();
 	}
 
 	/**
@@ -519,8 +543,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		waitForModelLoading();
 	}
 
-	private void importMissingReferenceProjectsIntoWorkspace() throws Exception {
-		waitForModelLoading();
+	private void synchronizedImportMissingReferenceProjectsIntoWorkspace() throws Exception {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
@@ -539,6 +562,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
 	}
 
@@ -580,18 +604,17 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		return unusedReferenceProjects;
 	}
 
-	private void importMissingReferenceFilesToWorkspace() throws Exception {
-		waitForModelLoading();
+	private void synchronizedImportMissingReferenceFilesToWorkspace() throws Exception {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
 						"Problems encountered while importing missing reference projects into workspace.", new RuntimeException());
 				for (IFile missingFile : getMissingReferenceFiles()) {
-					File sourceFile = referenceWorkspaceSourceDir;
-					for (String segment : missingFile.getFullPath().segments()) {
-						sourceFile = new File(sourceFile, segment);
-					}
 					try {
+						File sourceFile = referenceWorkspaceSourceDir;
+						for (String segment : missingFile.getFullPath().segments()) {
+							sourceFile = new File(sourceFile, segment);
+						}
 						importExternalResourceToWorkspace(sourceFile, missingFile.getParent());
 					} catch (Exception ex) {
 						errorStatus.add(StatusUtil.createErrorStatus(Activator.getDefault(), ex));
@@ -603,6 +626,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
 	}
 
@@ -1052,13 +1076,11 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	protected void synchronizedLoadFile(IFile file) {
-		waitForModelLoading();
 		ModelLoadManager.INSTANCE.loadFile(file, false, null);
 		waitForModelLoading();
 	}
 
 	protected void synchronizedUnloadFile(IFile file) {
-		waitForModelLoading();
 		ModelLoadManager.INSTANCE.unloadFile(file, false, null);
 		waitForModelLoading();
 	}
@@ -1066,35 +1088,34 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	protected void synchronizedDeleteFile(final IFile file) throws Exception {
 		assertNotNull(file);
 
-		waitForModelLoading();
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				file.delete(true, true, monitor);
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
 	}
 
 	protected void synchronizedMoveFile(final IFile file, final IPath target) throws CoreException {
 		assertNotNull(file);
 		assertNotNull(target);
-		waitForModelLoading();
+
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				file.move(target, true, new NullProgressMonitor());
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
-
 	}
 
 	protected void synchronizedRenameFile(final IFile file, final String newname) throws CoreException {
 		assertNotNull(file);
 		assertNotNull(newname);
 		assertFalse(newname.length() == 0);
-		waitForModelLoading();
 
 		final IPath newPath = file.getFullPath().removeLastSegments(1).append(newname);
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
@@ -1103,8 +1124,8 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
-
 	}
 
 	/**
@@ -1160,70 +1181,57 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	protected void synchronizedDeleteFolder(final IFolder folder) throws Exception {
 		assertNotNull(folder);
 
-		waitForModelLoading();
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				folder.delete(true, true, monitor);
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
 	}
 
 	protected void synchronizedMoveFolder(final IFolder folder, final IPath target) throws CoreException {
 		assertNotNull(folder);
 		assertNotNull(target);
-		waitForModelLoading();
+
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				folder.move(target, true, new NullProgressMonitor());
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
-
 	}
 
 	protected void synchronizedLoadProject(IProject project, boolean includeReferencedProjects) {
-		waitForModelLoading();
 		ModelLoadManager.INSTANCE.loadProject(project, includeReferencedProjects, false, null);
 		waitForModelLoading();
-
 	}
 
 	protected void synchronizedLoadAllProjects() {
-		waitForModelLoading();
 		ModelLoadManager.INSTANCE.loadProjects(Arrays.asList(ResourcesPlugin.getWorkspace().getRoot().getProjects()), false, false, null);
 		waitForModelLoading();
-
 	}
 
 	protected void synchronizedUnloadProject(IProject project, boolean includeReferencedProjects) {
-		waitForModelLoading();
 		ModelLoadManager.INSTANCE.unloadProject(project, includeReferencedProjects, false, null);
 		waitForModelLoading();
-
 	}
 
 	protected void synchronizedUnloadProjects(Collection<IProject> projectsToUnload, boolean includeReferenceProjects) {
-		waitForModelLoading();
 		ModelLoadManager.INSTANCE.unloadProjects(projectsToUnload, includeReferenceProjects, false, null);
 		waitForModelLoading();
-
 	}
 
 	protected void synchronizedUnloadAllProjects() {
-		waitForModelLoading();
 		ModelLoadManager.INSTANCE.unloadProjects(Arrays.asList(ResourcesPlugin.getWorkspace().getRoot().getProjects()), false, false, null);
 		waitForModelLoading();
-
 	}
 
 	protected void synchronizedOpenProject(final IProject project) throws Exception {
 		assertNotNull(project);
-
-		waitForModelLoading();
-		assertTrue(Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING).length == 0);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
@@ -1231,14 +1239,12 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
 	}
 
 	protected void synchronizedOpenProjects(final Collection<IProject> projects) throws Exception {
 		assertNotNull(projects);
-
-		waitForModelLoading();
-		assertTrue(Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING).length == 0);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
@@ -1248,12 +1254,11 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
 	}
 
 	protected void synchronizedOpenAllProjects() throws Exception {
-		waitForModelLoading();
-		assertTrue(Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING).length == 0);
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
@@ -1273,36 +1278,37 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
 	}
 
 	protected void synchronizedRenameProject(final IProject project, final String newName) throws Exception {
 		assertNotNull(project);
 
-		waitForModelLoading();
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				project.move(project.getFullPath().removeLastSegments(1).append(newName), true, monitor);
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
 	}
 
 	protected void synchronizedCloseProject(final IProject project) throws Exception {
 		assertNotNull(project);
-		waitForModelLoading();
+
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				project.close(monitor);
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
 	}
 
 	protected void synchronizedCloseAllProjects() throws Exception {
-		waitForModelLoading();
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
@@ -1322,26 +1328,26 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
 	}
 
 	protected void synchronizedDeleteProject(final IProject project) throws Exception {
 		assertNotNull(project);
 
-		waitForModelLoading();
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				safeDeleteProject(project, monitor);
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
 	}
 
 	protected void synchronizedDeleteProjects(final Collection<IProject> projects) throws Exception {
 		assertNotNull(projects);
 
-		waitForModelLoading();
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
@@ -1360,6 +1366,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
 	}
 
@@ -1390,7 +1397,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	protected void synchronizedDeleteWorkspace() throws CoreException {
-		waitForModelLoading();
 		final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
@@ -1398,6 +1404,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			}
 		};
 		workspace.run(runnable, workspace.getRoot(), IWorkspace.AVOID_UPDATE, null);
+		workspace.checkpoint(false);
 		waitForModelLoading();
 	}
 
@@ -1662,7 +1669,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	protected void synchronizedImportExternalResourceToWorkspace(final File externalResource, final IContainer targetContainer) throws Exception {
-		waitForModelLoading();
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
@@ -1674,6 +1680,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
 		waitForModelLoading();
 	}
 

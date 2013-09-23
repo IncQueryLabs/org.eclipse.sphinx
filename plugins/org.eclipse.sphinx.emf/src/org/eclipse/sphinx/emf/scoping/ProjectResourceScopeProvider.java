@@ -121,7 +121,7 @@ public class ProjectResourceScopeProvider extends AbstractResourceScopeProvider 
 	protected ReferencedProjectsCache referencedProjectsCache = new ReferencedProjectsCache();
 
 	public ProjectResourceScopeProvider() {
-		ModelDescriptorSynchronizer.INSTANCE.addDelegate(new ProjectScopeModelDescriptorSynchronizerDelegate());
+		ModelDescriptorSynchronizer.INSTANCE.addDelegate(ProjectScopeModelDescriptorSynchronizerDelegate.INSTANCE);
 	}
 
 	/*

@@ -27,6 +27,11 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public class HummingbirdModelSynchronizerDelegate extends AbstractResourceSynchronizerDelegate<IModelSyncRequest> {
 
+	/**
+	 * The singleton instance.
+	 */
+	public static final HummingbirdModelSynchronizerDelegate INSTANCE = new HummingbirdModelSynchronizerDelegate();
+
 	@Override
 	public void handleProjectDescriptionChanged(int eventType, IProject project) {
 		if (eventType == IResourceChangeEvent.POST_CHANGE) {

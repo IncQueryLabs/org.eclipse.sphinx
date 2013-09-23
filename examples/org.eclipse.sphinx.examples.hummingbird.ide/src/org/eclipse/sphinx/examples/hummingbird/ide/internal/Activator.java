@@ -77,8 +77,6 @@ public final class Activator extends EMFPlugin {
 	 */
 	public static class Implementation extends EclipsePlugin {
 
-		private HummingbirdModelSynchronizerDelegate hummingbirdModelSynchronizerDelegate;
-
 		/**
 		 * Creates an instance.
 		 */
@@ -92,13 +90,12 @@ public final class Activator extends EMFPlugin {
 		@Override
 		public void start(BundleContext context) throws Exception {
 			super.start(context);
-			hummingbirdModelSynchronizerDelegate = new HummingbirdModelSynchronizerDelegate();
-			ModelSynchronizer.INSTANCE.addDelegate(hummingbirdModelSynchronizerDelegate);
+			ModelSynchronizer.INSTANCE.addDelegate(HummingbirdModelSynchronizerDelegate.INSTANCE);
 		}
 
 		@Override
 		public void stop(BundleContext context) throws Exception {
-			ModelSynchronizer.INSTANCE.removeDelegate(hummingbirdModelSynchronizerDelegate);
+			ModelSynchronizer.INSTANCE.removeDelegate(HummingbirdModelSynchronizerDelegate.INSTANCE);
 			super.stop(context);
 		}
 	}

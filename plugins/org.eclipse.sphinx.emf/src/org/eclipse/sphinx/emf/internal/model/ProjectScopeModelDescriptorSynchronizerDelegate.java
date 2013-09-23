@@ -33,6 +33,11 @@ import org.eclipse.sphinx.platform.util.StatusUtil;
 
 public class ProjectScopeModelDescriptorSynchronizerDelegate extends AbstractResourceSynchronizerDelegate<IModelDescriptorSyncRequest> {
 
+	/**
+	 * The singleton instance.
+	 */
+	public static final ProjectScopeModelDescriptorSynchronizerDelegate INSTANCE = new ProjectScopeModelDescriptorSynchronizerDelegate();
+
 	@Override
 	public void handleProjectDescriptionChanged(int eventType, IProject project) {
 		if (eventType == IResourceChangeEvent.POST_CHANGE) {
@@ -55,8 +60,8 @@ public class ProjectScopeModelDescriptorSynchronizerDelegate extends AbstractRes
 					// added
 					for (IProject referencedProject : ExtendedPlatform.getReferencedProjectsSafely(project)) {
 						for (IModelDescriptor referencedModelDescriptor : ModelDescriptorRegistry.INSTANCE.getModels(referencedProject)) {
-							ModelDescriptorRegistry.INSTANCE.addModel(referencedModelDescriptor.getMetaModelDescriptor(), referencedModelDescriptor
-									.getEditingDomain(), project);
+							ModelDescriptorRegistry.INSTANCE.addModel(referencedModelDescriptor.getMetaModelDescriptor(),
+									referencedModelDescriptor.getEditingDomain(), project);
 						}
 					}
 					progress.worked(1);

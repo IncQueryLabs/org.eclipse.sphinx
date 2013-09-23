@@ -30,6 +30,11 @@ import org.eclipse.sphinx.platform.resources.syncing.AbstractResourceSynchronize
 
 public class BasicModelSynchronizerDelegate extends AbstractResourceSynchronizerDelegate<IModelSyncRequest> {
 
+	/**
+	 * The singleton instance.
+	 */
+	public static final BasicModelSynchronizerDelegate INSTANCE = new BasicModelSynchronizerDelegate();
+
 	@Override
 	public void handleProjectCreated(int eventType, IProject project) {
 		if (eventType == IResourceChangeEvent.POST_CHANGE) {
