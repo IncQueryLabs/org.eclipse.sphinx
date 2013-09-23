@@ -48,13 +48,13 @@ public class EcoreUIUtilTest extends DefaultIntegrationTestCase {
 	public void testCreateURIEditorInput() {
 		Resource resource20_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 		Resource resource20_2 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, true), false);
 		Resource resource20_3 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, true), false);
 		assertNotNull(resource20_1);
 		assertFalse(resource20_1.getContents().isEmpty());
 		assertNotNull(resource20_2);
@@ -64,13 +64,13 @@ public class EcoreUIUtilTest extends DefaultIntegrationTestCase {
 
 		Resource resource10_1 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 		Resource resource10_2 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_2, true), false);
 		Resource resource10_3 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_3, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_3, true), false);
 		assertNotNull(resource10_1);
 		assertFalse(resource10_1.getContents().isEmpty());
 		assertNotNull(resource10_2);
@@ -165,7 +165,7 @@ public class EcoreUIUtilTest extends DefaultIntegrationTestCase {
 
 		Resource resource20 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 		assertNotNull(resource20);
 		assertFalse(resource20.getContents().isEmpty());
 		Application hb20App = (Application) resource20.getContents().get(0);
@@ -180,7 +180,7 @@ public class EcoreUIUtilTest extends DefaultIntegrationTestCase {
 		// ----------------------------
 		resource20 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, true), false);
 		assertNotNull(resource20);
 		assertFalse(resource20.getContents().isEmpty());
 		Platform hb20Platform = (Platform) resource20.getContents().get(0);
@@ -206,7 +206,7 @@ public class EcoreUIUtilTest extends DefaultIntegrationTestCase {
 		// HB10 Resource
 		Resource resource10 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 		assertNotNull(resource10);
 		assertFalse(resource10.getContents().isEmpty());
 		org.eclipse.sphinx.examples.hummingbird10.Application hb10App = (org.eclipse.sphinx.examples.hummingbird10.Application) resource10

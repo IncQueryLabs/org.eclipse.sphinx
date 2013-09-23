@@ -72,7 +72,7 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 
 			final Resource resource20 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 			assertNotNull(resource20);
 			assertFalse(ModelSaveManager.INSTANCE.isDirty(resource20));
 
@@ -109,7 +109,7 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 
 			Resource savedResource = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 
 			assertNotNull(savedResource);
 			assertFalse(savedResource.getContents().isEmpty());
@@ -126,7 +126,7 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 
 			final Resource resource10 = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 
 			assertNotNull(resource10);
 			assertFalse(resource10.getContents().isEmpty());
@@ -166,7 +166,7 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 
 			Resource savedResource = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 
 			assertNotNull(savedResource);
 			assertFalse(savedResource.getContents().isEmpty());
@@ -195,10 +195,10 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 		{
 			final Resource resource20_1 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 			final Resource resource20_2 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, true), false);
 
 			final IResourceSaveIndicator resourceSaveIndicator = editingDomainMapping.getResourceSaveIndicator(refWks.editingDomain20);
 			IModelDescriptor modelDescriptor20 = ModelDescriptorRegistry.INSTANCE.getModel(resource20_1);
@@ -262,11 +262,11 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, resourceInEditingDomain20);
 			Resource savedResource20_1 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 
 			Resource savedResource20_2 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, true), false);
 
 			assertNotNull(savedResource20_1);
 			assertNotNull(savedResource20_2);
@@ -287,10 +287,10 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 		{
 			final Resource resource20_1 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, true), false);
 			final Resource resourceUml2_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, false), false);
+							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true), false);
 			assertNotNull(resource20_1);
 			assertNotNull(resourceUml2_1);
 
@@ -359,11 +359,11 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, resourceInEditingDomainUml2);
 			Resource savedResource20_1 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, true), false);
 
 			Resource savedResource20_2 = refWks.editingDomainUml2.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, false), false);
+							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true), false);
 
 			assertNotNull(savedResource20_1);
 			assertNotNull(savedResource20_2);
@@ -396,10 +396,10 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 		IWorkspaceEditingDomainMapping editingDomainMapping = WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping();
 		final Resource resource20D_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, true), false);
 		final Resource resource20E_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, true), false);
 
 		IModelDescriptor modelDescriptor20 = ModelDescriptorRegistry.INSTANCE.getModel(resource20E_1);
 		assertNotNull(modelDescriptor20);
@@ -466,11 +466,11 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, resourceInEditingDomain20);
 		Resource savedResource20D_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, true), false);
 
 		Resource savedResource20E_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, true), false);
 
 		assertNotNull(savedResource20D_1);
 		assertNotNull(savedResource20E_1);
@@ -497,10 +497,10 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 		IWorkspaceEditingDomainMapping editingDomainMapping = WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping();
 		final Resource resource20_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 		final Resource resource20_2 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, true), false);
 		final IResourceSaveIndicator resourceSaveIndicator = editingDomainMapping.getResourceSaveIndicator(refWks.editingDomain20);
 
 		assertFalse(resourceSaveIndicator.isDirty(resource20_1));
@@ -591,10 +591,10 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, resourceInEditingDomain20 - 1);
 		Resource savedResource_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 		Resource savedResource_2 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, true), false);
 
 		assertNotNull(savedResource_1);
 		assertFalse(savedResource_1.getContents().isEmpty());
@@ -618,7 +618,7 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 
 		Resource savedResource_3 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, true), false);
 		assertNull(savedResource_3);
 	}
 
@@ -632,10 +632,10 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 		IWorkspaceEditingDomainMapping editingDomainMapping = WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping();
 		final Resource resource20D_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, true), false);
 		final Resource resource20D_2 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_2, true), false);
 		final IResourceSaveIndicator resourceSaveIndicator = editingDomainMapping.getResourceSaveIndicator(refWks.editingDomain20);
 
 		assertFalse(resourceSaveIndicator.isDirty(resource20D_1));
@@ -726,10 +726,10 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 				.getResourceSet().getResources().size());
 		Resource savedResource_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, true), false);
 		Resource savedResource_2 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_2, true), false);
 
 		assertNotNull(savedResource_1);
 		assertNotNull(savedResource_2);
@@ -749,7 +749,7 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 
 		Resource savedResource_3 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_3, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_3, true), false);
 		assertNull(savedResource_3);
 	}
 

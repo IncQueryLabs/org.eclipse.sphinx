@@ -208,7 +208,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// HB20 Object
 		Resource resource20_A_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 
 		assertNotNull(resource20_A_1);
 		assertFalse(resource20_A_1.getContents().isEmpty());
@@ -234,7 +234,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// --------------------------------
 		Resource resource20_C_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20C_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20C_1, true), false);
 
 		assertNotNull(resource20_C_1);
 		assertFalse(resource20_C_1.getContents().isEmpty());
@@ -261,7 +261,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// HB10 Object
 		Resource resource10_A = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 
 		assertNotNull(resource10_A);
 		assertFalse(resource10_A.getContents().isEmpty());
@@ -286,7 +286,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 
 		Resource resource20 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 
 		assertNotNull(resource20);
 		assertFalse(resource20.getContents().isEmpty());
@@ -311,7 +311,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// ------------------------------------------------------------
 		resource20 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20C_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20C_1, true), false);
 
 		assertNotNull(resource20);
 		assertFalse(resource20.getContents().isEmpty());
@@ -324,7 +324,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// =========================================================
 		Resource resource10_A = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 		assertNotNull(resource10_A);
 		assertFalse(resource10_A.getContents().isEmpty());
 
@@ -339,7 +339,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// UML2 resource
 		Resource resourceUml2_20C = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_1, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_1, true), false);
 
 		assertNotNull(resourceUml2_20C);
 		assertFalse(resourceUml2_20C.getContents().isEmpty());
@@ -367,7 +367,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// Context Object belongs to resource without resourceSet
 		Resource contextResource = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 		assertNotNull(contextResource);
 		EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
 		assertNotNull(contextObject);
@@ -425,7 +425,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 
 		Resource resource20_A = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 		assertNotNull(resource20_A);
 
 		assertEquals(getNumberOfHB20fApplicationInstances(hbProject20AResources20),
@@ -441,7 +441,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// ------------------------------------------------------------
 		Resource resource20_C = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20C_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20C_1, true), false);
 
 		assertNotNull(resource20_C);
 
@@ -452,7 +452,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// =========================================================
 		Resource resource10_A = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 		assertNotNull(resource10_A);
 
 		assertEquals(getNumberOfHB10ComponentInstances(hbProject10AResources10),
@@ -463,7 +463,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// UML2 resource
 		Resource resourceUml2_20C = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_1, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_1, true), false);
 
 		assertNotNull(resourceUml2_20C);
 
@@ -629,13 +629,13 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		/* Test variable settings */
 		Resource resource20_A_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 		Resource resource20_A_2 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, true), false);
 		Resource resource20_A_3 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, true), false);
 
 		assertNotNull(resource20_A_1);
 		assertFalse(resource20_A_1.getContents().isEmpty());
@@ -646,13 +646,13 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// --------------
 		Resource resource10_1 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 		Resource resource10_2 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_2, true), false);
 		Resource resource10_3 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_3, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_3, true), false);
 
 		assertNotNull(resource10_1);
 		assertFalse(resource10_1.getContents().isEmpty());
@@ -663,13 +663,13 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// --------------------
 		Resource resourceUml2_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_1, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_1, true), false);
 		Resource resourceUml2_2 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_2, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_2, true), false);
 		Resource resourceUml2_3 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_3, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_3, true), false);
 
 		assertNotNull(resourceUml2_1);
 		assertFalse(resourceUml2_1.getContents().isEmpty());
@@ -783,11 +783,11 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// Context: EObject is Hummingbird Object
 		Resource resource20_2 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, true), false);
 
 		Resource resource20_3 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, true), false);
 
 		assertNotNull(resource20_2);
 		assertFalse(resource20_2.getContents().isEmpty());
@@ -921,7 +921,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// Test data
 		Resource resource20_A_2 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, true), false);
 		assertNotNull(resource20_A_2);
 		assertFalse(resource20_A_2.getContents().isEmpty());
 		Platform hb20ModelRoot = (Platform) resource20_A_2.getContents().get(0);
@@ -935,7 +935,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// ------------
 		Resource resource20_A_3 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, true), false);
 		assertNotNull(resource20_A_3);
 		assertFalse(resource20_A_3.getContents().isEmpty());
 		Application hb20Application = (Application) resource20_A_3.getContents().get(0);
@@ -1026,11 +1026,11 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 	public void testProxify() {
 		Resource resource20_2 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, true), false);
 
 		Resource resource20_3 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, true), false);
 
 		assertNotNull(resource20_2);
 		assertFalse(resource20_2.getContents().isEmpty());
@@ -1152,11 +1152,11 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 	public void testDeproxify() throws OperationCanceledException, InterruptedException {
 		Resource resource20_2 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2, true), false);
 
 		Resource resource20_3 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3, true), false);
 
 		assertNotNull(resource20_2);
 		assertFalse(resource20_2.getContents().isEmpty());

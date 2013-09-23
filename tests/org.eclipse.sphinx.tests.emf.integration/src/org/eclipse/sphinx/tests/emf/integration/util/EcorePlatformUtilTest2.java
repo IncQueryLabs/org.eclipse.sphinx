@@ -152,14 +152,14 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		{
 			Resource testResource10_A_1 = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 
 			Resource testResource10_D_1 = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10D_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10D_1, true), false);
 			Resource testResource10_E_1 = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, true), false);
 			assertNotNull(testResource10_A_1);
 			assertNotNull(testResource10_D_1);
 			assertNotNull(testResource10_E_1);
@@ -203,13 +203,13 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		{
 			Resource testResource20_A_1 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 			Resource testResource20_D_1 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, true), false);
 			Resource testResource20_E_1 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, true), false);
 			assertNotNull(testResource20_A_1);
 			assertNotNull(testResource20_D_1);
 			assertNotNull(testResource20_E_1);
@@ -251,10 +251,10 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		{
 			Resource testUml2Resource3x_D_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, false), false);
+							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true), false);
 			Resource testUml2Resource3x_E_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, true), false);
 			assertNotNull(testUml2Resource3x_D_1);
 			assertNotNull(testUml2Resource3x_E_1);
 
@@ -418,36 +418,36 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 	public void testGetFilteredResourcesFromURI() {
 		Resource testResource10_A_1 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 		Resource testResource10_D_1 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10D_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10D_1, true), false);
 		Resource testResource10_E_1 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, true), false);
 		assertNotNull(testResource10_A_1);
 		assertNotNull(testResource10_D_1);
 		assertNotNull(testResource10_E_1);
 
 		Resource testResource20_A_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 		Resource testResource20_D_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, true), false);
 		Resource testResource20_E_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, true), false);
 		assertNotNull(testResource20_A_1);
 		assertNotNull(testResource20_D_1);
 		assertNotNull(testResource20_E_1);
 
 		Resource testUml2Resource20_D_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true), false);
 		Resource testUml2Resource20_E_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, true), false);
 
 		assertNotNull(testUml2Resource20_D_1);
 		assertNotNull(testUml2Resource20_E_1);
@@ -492,36 +492,36 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 	public void testGetFilteredResourcesFromResource() {
 		Resource testResource10_A_1 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 		Resource testResource10_D_1 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10D_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10D_1, true), false);
 		Resource testResource10_E_1 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, true), false);
 		assertNotNull(testResource10_A_1);
 		assertNotNull(testResource10_D_1);
 		assertNotNull(testResource10_E_1);
 
 		Resource testResource20_A_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 		Resource testResource20_D_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, true), false);
 		Resource testResource20_E_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, true), false);
 		assertNotNull(testResource20_A_1);
 		assertNotNull(testResource20_D_1);
 		assertNotNull(testResource20_E_1);
 
 		Resource testUml2Resource20_D_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true), false);
 		Resource testUml2Resource20_E_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, true), false);
 		assertNotNull(testUml2Resource20_D_1);
 		assertNotNull(testUml2Resource20_E_1);
 
@@ -1800,7 +1800,7 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		int resourceInEditingDomain20Count = refWks.getInitialResourcesInReferenceEditingDomainCount(Hummingbird20MMDescriptor.INSTANCE);
 		Resource testResource = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 		assertNotNull(testResource);
 
 		ResourceSet testResourceSet = testResource.getResourceSet();
@@ -2892,7 +2892,7 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 
 		Resource testResource = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 		assertNotNull(testResource);
 
 		ResourceSet testResourceSet = testResource.getResourceSet();

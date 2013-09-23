@@ -484,7 +484,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 	public void testLoadModelFragment() throws Exception {
 		Resource resource10 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 		assertNotNull(resource10);
 		EObject root = resource10.getContents().get(0);
 		assertNotNull(root);
@@ -544,7 +544,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 			Resource resource20 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 
 			assertNotNull(resource20);
 			assertFalse(resource20.getContents().isEmpty());
@@ -574,7 +574,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 			Resource resource10 = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 			assertNotNull(resource10);
 			assertFalse(resource10.getContents().isEmpty());
 			EObject object = resource10.getContents().get(0);
@@ -602,7 +602,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 			Resource resourceUml2 = refWks.editingDomainUml2.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, false), false);
+							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true), false);
 			assertNotNull(resourceUml2);
 			assertFalse(resourceUml2.getContents().isEmpty());
 			EObject object21 = resourceUml2.getContents().get(0);
@@ -709,7 +709,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 				+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true);
 		Resource resourceUml2 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true), false);
 		assertNotNull(resourceUml2);
 		assertFalse(resourceUml2.getContents().isEmpty());
 		EObject objectUml2 = resourceUml2.getContents().get(0);
@@ -820,7 +820,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		{
 			Resource resource20 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 			assertNotNull(resource20);
 			assertFalse(resource20.getContents().isEmpty());
 			EObject object = resource20.getContents().get(0);
@@ -835,7 +835,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		{
 			Resource resource10 = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 			assertNotNull(resource10);
 			assertFalse(resource10.getContents().isEmpty());
 			EObject object21 = resource10.getContents().get(0);
@@ -850,7 +850,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		{
 			Resource resourceUml2 = refWks.editingDomainUml2.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, false), false);
+							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true), false);
 			assertNotNull(resourceUml2);
 			assertFalse(resourceUml2.getContents().isEmpty());
 			EObject objectUml2 = resourceUml2.getContents().get(0);
@@ -878,7 +878,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			int resourceInEditingDomain10 = refWks.getInitialResourcesInReferenceEditingDomainCount(Hummingbird10MMDescriptor.INSTANCE);
 			Resource resource10 = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 			assertNotNull(resource10);
 			assertFalse(resource10.getContents().isEmpty());
 			// Unload resource
@@ -1084,13 +1084,13 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 		Resource resource10_A_1 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
 		Resource resource10_A_2 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_2, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_2, true), false);
 		Resource resource10_A_3 = refWks.editingDomain10.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_3, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_3, true), false);
 		assertNotNull(resource10_A_1);
 		assertNotNull(resource10_A_2);
 		assertNotNull(resource10_A_3);
@@ -1124,13 +1124,13 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 		Resource resourceUml2_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true), false);
 		Resource resourceUml2_2 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_2, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_2, true), false);
 		Resource resourceUml2_3 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3, true), false);
 		assertNotNull(resourceUml2_1);
 		assertNotNull(resourceUml2_2);
 		assertNotNull(resourceUml2_3);
@@ -1357,7 +1357,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		// names. Conversion of paths with short names (e.g. PROGRA~1) does not work since Eclipse internally use
 		// non-shortened paths.
 		URI testFileUri = URI.createFileURI(testFile.getCanonicalPath());
-		assertEquals(URI.createPlatformResourceURI(projectName + "/" + testFileName, false),
+		assertEquals(URI.createPlatformResourceURI(projectName + "/" + testFileName, true),
 				EcoreResourceUtil.convertToPlatformResourceURI(testFileUri));
 	}
 

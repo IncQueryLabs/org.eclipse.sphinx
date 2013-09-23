@@ -1379,7 +1379,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 		List<org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component> objects20 = new ArrayList<org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component>();
 		Resource resource20_C_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20C_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20C_1, true), false);
 		assertNotNull(resource20_C_1);
 		assertFalse(resource20_C_1.getContents().isEmpty());
 		Application application20 = (Application) resource20_C_1.getContents().get(0);
@@ -1401,7 +1401,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 		List<org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component> testObjects20 = new ArrayList<org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component>();
 		Resource testResource20_C_1 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20C_1, false), false);
+						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20C_1, true), false);
 		assertNotNull(testResource20_C_1);
 		assertFalse(testResource20_C_1.getContents().isEmpty());
 		Application testApplication20 = (Application) resource20_C_1.getContents().get(0);
@@ -1431,7 +1431,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 
 		Resource resourceUml2_C_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_C + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_10C_1, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_10C_1, true), false);
 		assertNotNull(resourceUml2_C_1);
 		assertFalse(resourceUml2_C_1.getContents().isEmpty());
 
@@ -1468,7 +1468,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 		List<Port> testObjectUml2 = new ArrayList<Port>();
 		Resource testresourceUml2_C_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_C + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_10C_1, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_10C_1, true), false);
 		assertNotNull(testresourceUml2_C_1);
 		assertTrue(testresourceUml2_C_1.getContents().size() > 0);
 		Model testModel = (Model) testresourceUml2_C_1.getContents().get(0);
@@ -1509,7 +1509,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 		List<Port> testObjectUml2 = new ArrayList<Port>();
 		Resource testresourceUml2_C_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_C + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_10C_1, false), false);
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_10C_1, true), false);
 		assertNotNull(testresourceUml2_C_1);
 		assertTrue(testresourceUml2_C_1.getContents().size() > 0);
 		Model testModel = (Model) testresourceUml2_C_1.getContents().get(0);
@@ -1546,7 +1546,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 
 			Resource resource10_E_1 = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, true), false);
 			assertNotNull(resource10_E_1);
 			assertFalse(resource10_E_1.getContents().isEmpty());
 			org.eclipse.sphinx.examples.hummingbird10.Application application10 = (org.eclipse.sphinx.examples.hummingbird10.Application) resource10_E_1
@@ -1574,7 +1574,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			// Verify the references are unresolved
 			Resource testResource10E_1 = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, true), false);
 			assertNotNull(testResource10E_1);
 			assertFalse(testResource10E_1.getContents().isEmpty());
 			org.eclipse.sphinx.examples.hummingbird10.Application testApplication10 = (org.eclipse.sphinx.examples.hummingbird10.Application) testResource10E_1
@@ -1599,7 +1599,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			// HB20 Objects
 			Resource resource20_E_1 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, true), false);
 
 			assertNotNull(resource20_E_1);
 			assertFalse(resource20_E_1.getContents().isEmpty());
@@ -1619,7 +1619,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			List<Operation> testObjectUml2 = new ArrayList<Operation>();
 			Resource resourceUml2_E_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, true), false);
 			assertNotNull(resourceUml2_E_1);
 			assertFalse(resourceUml2_E_1.getContents().isEmpty());
 			Model model = (Model) resourceUml2_E_1.getContents().get(0);
@@ -1653,7 +1653,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			// Verify the reference of HB20 objects are unresolved
 			Resource testResource20_E_1 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, true), false);
 			assertNotNull(testResource20_E_1);
 			assertFalse(testResource20_E_1.getContents().isEmpty());
 			Application testApplication20 = (Application) resource20_E_1.getContents().get(0);
@@ -1670,7 +1670,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			testObjectUml2.clear();
 			Resource testresourceUml2_E_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, true), false);
 			assertNotNull(testresourceUml2_E_1);
 			assertTrue(testresourceUml2_E_1.getContents().size() > 0);
 			Model testModel = (Model) testresourceUml2_E_1.getContents().get(0);
@@ -1704,7 +1704,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 
 			Resource resource10_E_1 = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, true), false);
 			assertNotNull(resource10_E_1);
 			assertFalse(resource10_E_1.getContents().isEmpty());
 			org.eclipse.sphinx.examples.hummingbird10.Application application10 = (org.eclipse.sphinx.examples.hummingbird10.Application) resource10_E_1
@@ -1728,7 +1728,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			// Verify the references are unresolved
 			Resource testResource10E_1 = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, true), false);
 			assertNotNull(testResource10E_1);
 			assertFalse(testResource10E_1.getContents().isEmpty());
 			org.eclipse.sphinx.examples.hummingbird10.Application testApplication10 = (org.eclipse.sphinx.examples.hummingbird10.Application) testResource10E_1
@@ -1754,7 +1754,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 
 			Resource resource20_E_1 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, true), false);
 			// ************************************
 			// HB20 Objects
 			assertNotNull(resource20_E_1);
@@ -1774,7 +1774,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			// Uml2 Objects
 			Resource resourceUml2_E_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, true), false);
 			assertNotNull(resourceUml2_E_1);
 			assertFalse(resourceUml2_E_1.getContents().isEmpty());
 			Model model = (Model) resourceUml2_E_1.getContents().get(0);
@@ -1802,7 +1802,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			// Verify the references of Hummingbird objects are unresolved
 			Resource testResource20_E_1 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, true), false);
 
 			assertNotNull(testResource20_E_1);
 			assertFalse(testResource20_E_1.getContents().isEmpty());
@@ -1818,7 +1818,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			testObjectUml2.clear();
 			Resource testresourceUml2_E_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, true), false);
 			assertNotNull(testresourceUml2_E_1);
 			assertFalse(testresourceUml2_E_1.getContents().isEmpty());
 			Model testModel = (Model) testresourceUml2_E_1.getContents().get(0);
@@ -1850,7 +1850,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			synchronizedOpenProject(refWks.hbProject10_E);
 			Resource resource10_E_1 = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, true), false);
 			assertNotNull(resource10_E_1);
 			assertFalse(resource10_E_1.getContents().isEmpty());
 			org.eclipse.sphinx.examples.hummingbird10.Application application10 = (org.eclipse.sphinx.examples.hummingbird10.Application) resource10_E_1
@@ -1873,7 +1873,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			// Verify the references are unresolved
 			Resource testResource10E_1 = refWks.editingDomain10.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, true), false);
 			assertNotNull(testResource10E_1);
 			assertFalse(testResource10E_1.getContents().isEmpty());
 			org.eclipse.sphinx.examples.hummingbird10.Application testApplication10 = (org.eclipse.sphinx.examples.hummingbird10.Application) testResource10E_1
@@ -1897,7 +1897,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			// HB20 Objects
 			Resource resource20_E_1 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, true), false);
 
 			assertNotNull(resource20_E_1);
 			assertFalse(resource20_E_1.getContents().isEmpty());
@@ -1917,7 +1917,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			List<Operation> testObjectUml2 = new ArrayList<Operation>();
 			Resource resourceUml2_E_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, true), false);
 			assertNotNull(resourceUml2_E_1);
 			assertFalse(resourceUml2_E_1.getContents().isEmpty());
 			Model model = (Model) resourceUml2_E_1.getContents().get(0);
@@ -1945,7 +1945,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			// Verify the references of Hummingbird objects are unresolved
 			Resource testResource20_E_1 = refWks.editingDomain20.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, true), false);
 
 			assertNotNull(testResource20_E_1);
 			assertFalse(testResource20_E_1.getContents().isEmpty());
@@ -1960,7 +1960,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			testObjectUml2.clear();
 			Resource testresourceUml2_E_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 					URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
-							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, false), false);
+							+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, true), false);
 			assertNotNull(testresourceUml2_E_1);
 			assertTrue(testresourceUml2_E_1.getContents().size() > 0);
 			Model testModel = (Model) testresourceUml2_E_1.getContents().get(0);
