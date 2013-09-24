@@ -31,6 +31,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.sphinx.emf.Activator;
@@ -48,6 +49,11 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	 * resource} has been loaded or saved.
 	 */
 	protected Map<Object, Object> problemHandlingOptions;
+
+	/**
+	 * Whether to use context-aware proxy URIs or not.
+	 */
+	private Boolean useContextAwareProxyURIs = null;
 
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getDefaultLoadOptions()
@@ -98,6 +104,14 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 			problemHandlingOptions.put(OPTION_XML_VALIDITY_PROBLEM_FORMAT_STRING, OPTION_XML_VALIDITY_PROBLEM_FORMAT_STRING_DEFAULT);
 		}
 		return problemHandlingOptions;
+	}
+
+	protected boolean isUseContextAwareProxyURIs() {
+		if (useContextAwareProxyURIs == null) {
+			Map<Object, Object> loadOptions = getDefaultLoadOptions();
+			useContextAwareProxyURIs = !Boolean.FALSE.equals(loadOptions.get(OPTION_USE_CONTEXT_AWARE_PROXY_URIS));
+		}
+		return useContextAwareProxyURIs;
 	}
 
 	/*
@@ -202,6 +216,22 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 			return new BasicDiagnostic(Activator.getPlugin().getSymbolicName(), Diagnostic.ERROR, ex.getMessage(), new Object[] {});
 		}
 		return Diagnostic.OK_INSTANCE;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#augmentToContextAwareProxy(org.eclipse.emf.ecore.EObject)
+	 */
+	public void augmentToContextAwareProxy(EObject proxy) {
+		// Context-aware proxy URIs required?
+		if (isUseContextAwareProxyURIs()) {
+			Resource targetResource = (Resource) getTarget();
+			ResourceSet targetResourceSet = targetResource.getResourceSet();
+
+			// Augment the proxy's URI to a context-aware proxy URI
+			if (targetResourceSet instanceof ExtendedResourceSetImpl) {
+				((ExtendedResourceSetImpl) targetResourceSet).augmentToContextAwareProxy(proxy, targetResource);
+			}
+		}
 	}
 
 	/*

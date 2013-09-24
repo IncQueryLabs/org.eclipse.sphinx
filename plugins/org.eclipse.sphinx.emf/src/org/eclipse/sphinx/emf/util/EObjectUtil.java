@@ -664,6 +664,11 @@ public final class EObjectUtil {
 					uri = EcoreUtil.getURI(eObject);
 				}
 				((InternalEObject) eObject).eSetProxyURI(uri);
+
+				// Augment the proxy's URI to a context-aware proxy URI if required
+				if (extendedResource != null) {
+					extendedResource.augmentToContextAwareProxy(eObject);
+				}
 			}
 
 			// Proxify contained children of given EObject
@@ -699,30 +704,47 @@ public final class EObjectUtil {
 	}
 
 	/**
-	 * Creates a proxy representing given {@link EObject}. The given {@link EObject} is used as a template to create the
-	 * proxy, i.e. the resulting proxy will have the same type and a {@link URI proxy URI} which equals the given
-	 * {@link EObject}'s {@link URI} .
+	 * Creates a proxy representing given {@link EObject object}. The given object is used as a template to create the
+	 * proxy, i.e. the resulting proxy will have the same type and a proxy {@link URI} which references the given
+	 * object.
 	 * 
-	 * @param EObject
-	 *            The {@link EObject} for which the proxy is to be created.
-	 * @return The created proxy, or <code>null</code> if no such could be created.
+	 * @param eObject
+	 *            The {@link EObject object} for which the proxy is to be created.
+	 * @param contextResource
+	 *            The {@link Resource resource} that is going to contain the newly created proxy.
+	 * @return The newly created proxy, or <code>null</code> if no such could be created.
 	 */
-	public static EObject createProxyFrom(EObject eObject) {
+	public static EObject createProxyFrom(EObject eObject, Resource contextResource) {
 		Assert.isNotNull(eObject);
+		Assert.isNotNull(contextResource);
 
 		EFactory eFactoryInstance = eObject.eClass().getEPackage().getEFactoryInstance();
 		InternalEObject proxy = (InternalEObject) eFactoryInstance.create(eObject.eClass());
 
 		URI uri;
-		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(eObject.eResource());
-		if (extendedResource != null) {
-			uri = extendedResource.getURI(eObject);
+		ExtendedResource extendedTargetResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(eObject.eResource());
+		if (extendedTargetResource != null) {
+			uri = extendedTargetResource.getURI(eObject);
 		} else {
 			uri = EcoreUtil.getURI(eObject);
 		}
 		proxy.eSetProxyURI(uri);
 
+		// Augment the proxy's URI to a context-aware proxy URI if required
+		ExtendedResource extendedContextResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(contextResource);
+		if (extendedContextResource != null) {
+			extendedContextResource.augmentToContextAwareProxy(proxy);
+		}
+
 		return proxy;
+	}
+
+	/**
+	 * @deprecated Use {@link #createProxyFrom(EObject, Resource)} instead.
+	 */
+	@Deprecated
+	public static EObject createProxyFrom(EObject eObject) {
+		return createProxyFrom(eObject, eObject.eResource());
 	}
 
 	/**

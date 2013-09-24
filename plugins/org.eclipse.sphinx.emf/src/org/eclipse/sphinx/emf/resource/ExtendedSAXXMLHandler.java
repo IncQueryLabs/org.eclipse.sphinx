@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
@@ -34,8 +33,6 @@ import org.eclipse.emf.ecore.xmi.impl.SAXXMLHandler;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.ecore.xml.type.util.XMLTypeUtil;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
-import org.eclipse.sphinx.emf.model.IModelDescriptor;
-import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -43,21 +40,18 @@ import org.xml.sax.SAXParseException;
 
 public class ExtendedSAXXMLHandler extends SAXXMLHandler {
 
-	protected IMetaModelDescriptor resourceVersion = null;
+	protected ExtendedResource extendedResource;
 
-	// Option whether to create context-aware proxy URIs
-	protected boolean createContextAwareProxyURIs = true;
+	protected IMetaModelDescriptor resourceVersion = null;
 
 	public ExtendedSAXXMLHandler(XMLResource xmlResource, XMLHelper helper, Map<?, ?> options) {
 		super(xmlResource, helper, options);
 
+		extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(xmlResource);
+
 		Object value = options.get(ExtendedResource.OPTION_RESOURCE_VERSION_DESCRIPTOR);
 		if (value instanceof IMetaModelDescriptor) {
 			resourceVersion = (IMetaModelDescriptor) value;
-		}
-		value = options.get(ExtendedResource.OPTION_CREATE_CONTEXT_AWARE_PROXY_URIS);
-		if (value instanceof Boolean) {
-			createContextAwareProxyURIs = (Boolean) value;
 		}
 	}
 
@@ -196,21 +190,8 @@ public class ExtendedSAXXMLHandler extends SAXXMLHandler {
 	protected void handleProxy(InternalEObject proxy, String uriLiteral) {
 		super.handleProxy(proxy, uriLiteral);
 
-		// Context-aware proxy URIs required?
-		if (createContextAwareProxyURIs) {
-			// Augment the proxy's URI to a context-aware proxy URI
-			if (resourceSet instanceof ExtendedResourceSetImpl) {
-				ExtendedResourceSetImpl extendedResourceSet = (ExtendedResourceSetImpl) resourceSet;
-
-				URI contextURI = null;
-				IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(xmlResource);
-				if (modelDescriptor != null) {
-					IPath rootPath = modelDescriptor.getRoot().getFullPath();
-					contextURI = URI.createPlatformResourceURI(rootPath.toString(), true);
-				}
-
-				extendedResourceSet.augmentToContextAwareURI(proxy, contextURI);
-			}
+		if (extendedResource != null) {
+			extendedResource.augmentToContextAwareProxy(proxy);
 		}
 	}
 }

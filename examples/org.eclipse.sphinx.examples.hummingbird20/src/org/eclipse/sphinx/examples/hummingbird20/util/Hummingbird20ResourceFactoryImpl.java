@@ -120,7 +120,7 @@ public class Hummingbird20ResourceFactoryImpl extends ResourceFactoryImpl {
 		result.getDefaultLoadOptions().put(ExtendedResource.OPTION_ENABLE_SCHEMA_VALIDATION, Boolean.TRUE);
 
 		// Configure not to augment contextAwareURI since Hummingbird20 extends the advanced ExtendEObjectImpl
-		result.getDefaultLoadOptions().put(ExtendedResource.OPTION_CREATE_CONTEXT_AWARE_PROXY_URIS, Boolean.FALSE);
+		result.getDefaultLoadOptions().put(ExtendedResource.OPTION_USE_CONTEXT_AWARE_PROXY_URIS, Boolean.FALSE);
 
 		return result;
 	}

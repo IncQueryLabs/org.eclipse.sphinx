@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
@@ -35,8 +34,6 @@ import org.eclipse.emf.ecore.xmi.impl.SAXXMIHandler;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.ecore.xml.type.util.XMLTypeUtil;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
-import org.eclipse.sphinx.emf.model.IModelDescriptor;
-import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -44,10 +41,9 @@ import org.xml.sax.SAXParseException;
 
 public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 
-	protected IMetaModelDescriptor resourceVersion = null;
+	protected ExtendedResource extendedResource;
 
-	// Option whether to create context-saware proxy URIs
-	protected boolean createContextAwareProxyURIs = true;
+	protected IMetaModelDescriptor resourceVersion = null;
 
 	public ExtendedSAXXMIHandler(XMLResource xmiResource, XMLHelper helper, Map<?, ?> options) {
 		super(xmiResource, helper, options);
@@ -56,10 +52,8 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 		if (value instanceof IMetaModelDescriptor) {
 			resourceVersion = (IMetaModelDescriptor) value;
 		}
-		value = options.get(ExtendedResource.OPTION_CREATE_CONTEXT_AWARE_PROXY_URIS);
-		if (value instanceof Boolean) {
-			createContextAwareProxyURIs = (Boolean) value;
-		}
+
+		extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(xmlResource);
 
 		// Workaround for potential bug in org.apache.xerces.impl.xs.XMLSchemaValidator.addDefaultAttributes(QName,
 		// XMLAttributes, XSAttributeGroupDecl) (line 3027) which attempts to add xmi:version as default attribute if
@@ -202,21 +196,8 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 	protected void handleProxy(InternalEObject proxy, String uriLiteral) {
 		super.handleProxy(proxy, uriLiteral);
 
-		// Context-aware proxy URIs required?
-		if (createContextAwareProxyURIs) {
-			// Augment the proxy's URI to a context-aware proxy URI
-			if (resourceSet instanceof ExtendedResourceSetImpl) {
-				ExtendedResourceSetImpl extendedResourceSet = (ExtendedResourceSetImpl) resourceSet;
-
-				URI contextURI = null;
-				IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(xmlResource);
-				if (modelDescriptor != null) {
-					IPath rootPath = modelDescriptor.getRoot().getFullPath();
-					contextURI = URI.createPlatformResourceURI(rootPath.toString(), true);
-				}
-
-				extendedResourceSet.augmentToContextAwareURI(proxy, contextURI);
-			}
+		if (extendedResource != null) {
+			extendedResource.augmentToContextAwareProxy(proxy);
 		}
 	}
 }

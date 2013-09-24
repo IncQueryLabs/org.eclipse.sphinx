@@ -18,39 +18,44 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.model.IModelDescriptor;
+import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 
 /**
- * A helper class for creating and analyzing {@link URI}s that carry the target {@link IMetaModelDescriptor metamodel
- * descriptor} and the source {@link URI} as context information.
+ * A helper class for creating and analyzing proxy {@link URI}s that carry the target {@link IMetaModelDescriptor
+ * metamodel descriptor} and the context {@link URI} as context information.
  */
-public class ContextAwareURIHelper {
+public class ContextAwareProxyURIHelper {
 
-	private static final String CONTEXT_AWARE_URI_QUERY_KEY_TARGET_METAMODEL_DESCRIPTOR = "tgtMMD"; //$NON-NLS-1$
-	private static final Pattern CONTEXT_AWARE_URI_QUERY_VALUE_PATTERN_TARGET_METAMODEL_DESCRIPTOR = createURIQueryValuePattern(CONTEXT_AWARE_URI_QUERY_KEY_TARGET_METAMODEL_DESCRIPTOR);
+	private static final String CONTEXT_AWARE_PROXY_URI_QUERY_KEY_TARGET_METAMODEL_DESCRIPTOR = "tgtMMD"; //$NON-NLS-1$
+	private static final Pattern CONTEXT_AWARE_PROXY_URI_QUERY_VALUE_PATTERN_TARGET_METAMODEL_DESCRIPTOR = createURIQueryValuePattern(CONTEXT_AWARE_PROXY_URI_QUERY_KEY_TARGET_METAMODEL_DESCRIPTOR);
 
-	private static final String CONTEXT_AWARE_URI_QUERY_KEY_CONTEXT_URI = "ctxURI"; //$NON-NLS-1$
-	private static final Pattern CONTEXT_AWARE_URI_QUERY_VALUE_PATTERN_CONTEXT_URI = createURIQueryValuePattern(CONTEXT_AWARE_URI_QUERY_KEY_CONTEXT_URI);
+	private static final String CONTEXT_AWARE_PROXY_URI_QUERY_KEY_CONTEXT_URI = "ctxURI"; //$NON-NLS-1$
+	private static final Pattern CONTEXT_AWARE_PROXY_URI_QUERY_VALUE_PATTERN_CONTEXT_URI = createURIQueryValuePattern(CONTEXT_AWARE_PROXY_URI_QUERY_KEY_CONTEXT_URI);
 
 	private static Pattern createURIQueryValuePattern(String key) {
 		String amp = ExtendedResource.URI_KEY_VALUE_PAIR_SEPARATOR;
 		String eq = ExtendedResource.URI_KEY_VALUE_SEPARATOR;
+
 		// Regular expression in clear text: ([^&]+&)*key=([^&]*)(&[^&]+)*
 		return Pattern.compile("([^" + amp + "]+" + amp + ")*" + key + eq + "([^" + amp + "]*)(" + amp + "[^" + amp + "]+)*"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 	}
 
-	private static final int CONTEXT_AWARE_URI_QUERY_VALUE_GROUP_IDX = 2;
+	private static final int CONTEXT_AWARE_PROXY_URI_QUERY_VALUE_GROUP_IDX = 2;
 
 	/**
-	 * Augments the {@link URI} of given {@link InternalEObject proxy} to a context-aware URI by adding key/value pairs
-	 * that contain the target {@link IMetaModelDescriptor metamodel descriptor} and context {@link URI} to the
-	 * {@link URI#query() query string} of the proxy URI.
+	 * Augments given {@link InternalEObject proxy} to a context-aware proxy by adding key/value pairs that contain the
+	 * target {@link IMetaModelDescriptor metamodel descriptor} and a context {@link URI} to the {@link URI#query()
+	 * query string} of the proxy URI.
 	 */
-	public void augmentToContextAwareURI(EObject proxy, URI contextURI) {
+	public void augmentToContextAwareProxy(EObject proxy, Resource contextResource) {
 		Assert.isNotNull(proxy);
 
 		URI proxyURI = ((InternalEObject) proxy).eProxyURI();
@@ -64,19 +69,23 @@ public class ContextAwareURIHelper {
 			newQuery.append(ExtendedResource.URI_KEY_VALUE_PAIR_SEPARATOR);
 		}
 
-		IMetaModelDescriptor metaModelDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy);
-		if (metaModelDescriptor != null) {
-			newQuery.append(CONTEXT_AWARE_URI_QUERY_KEY_TARGET_METAMODEL_DESCRIPTOR);
+		IMetaModelDescriptor proxyMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy);
+		if (proxyMMDescriptor != null) {
+			newQuery.append(CONTEXT_AWARE_PROXY_URI_QUERY_KEY_TARGET_METAMODEL_DESCRIPTOR);
 			newQuery.append(ExtendedResource.URI_KEY_VALUE_SEPARATOR);
-			newQuery.append(metaModelDescriptor.getIdentifier());
+			newQuery.append(proxyMMDescriptor.getIdentifier());
 		}
 
 		if (newQuery.length() > 0) {
 			newQuery.append(ExtendedResource.URI_KEY_VALUE_PAIR_SEPARATOR);
 		}
 
-		if (contextURI != null) {
-			newQuery.append(CONTEXT_AWARE_URI_QUERY_KEY_CONTEXT_URI);
+		IModelDescriptor contextModelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(contextResource);
+		if (contextModelDescriptor != null) {
+			IPath rootPath = contextModelDescriptor.getRoot().getFullPath();
+			URI contextURI = URI.createPlatformResourceURI(rootPath.toString(), true);
+
+			newQuery.append(CONTEXT_AWARE_PROXY_URI_QUERY_KEY_CONTEXT_URI);
 			newQuery.append(ExtendedResource.URI_KEY_VALUE_SEPARATOR);
 			newQuery.append(contextURI);
 		}
@@ -88,32 +97,32 @@ public class ContextAwareURIHelper {
 
 	/**
 	 * Extracts the identifier of the {@link IMetaModelDescriptor metamodel descriptor} carried by given context-aware
-	 * {@link URI}.
+	 * proxy {@link URI}.
 	 */
 	public String getMetaModelDescriptorId(URI uri) {
 		Assert.isNotNull(uri);
 
 		String query = uri.query();
 		if (query != null) {
-			Matcher matcher = CONTEXT_AWARE_URI_QUERY_VALUE_PATTERN_TARGET_METAMODEL_DESCRIPTOR.matcher(query);
+			Matcher matcher = CONTEXT_AWARE_PROXY_URI_QUERY_VALUE_PATTERN_TARGET_METAMODEL_DESCRIPTOR.matcher(query);
 			if (matcher.matches()) {
-				return matcher.group(CONTEXT_AWARE_URI_QUERY_VALUE_GROUP_IDX);
+				return matcher.group(CONTEXT_AWARE_PROXY_URI_QUERY_VALUE_GROUP_IDX);
 			}
 		}
 		return null;
 	}
 
 	/**
-	 * Extracts the context {@link URI} carried by given context-aware {@link URI}.
+	 * Extracts the context {@link URI} carried by given context-aware proxy {@link URI}.
 	 */
 	public URI getContextURI(URI uri) {
 		Assert.isNotNull(uri);
 
 		String query = uri.query();
 		if (query != null) {
-			Matcher matcher = CONTEXT_AWARE_URI_QUERY_VALUE_PATTERN_CONTEXT_URI.matcher(query);
+			Matcher matcher = CONTEXT_AWARE_PROXY_URI_QUERY_VALUE_PATTERN_CONTEXT_URI.matcher(query);
 			if (matcher.matches()) {
-				String contextURI = matcher.group(CONTEXT_AWARE_URI_QUERY_VALUE_GROUP_IDX);
+				String contextURI = matcher.group(CONTEXT_AWARE_PROXY_URI_QUERY_VALUE_GROUP_IDX);
 				return URI.createURI(contextURI);
 			}
 		}

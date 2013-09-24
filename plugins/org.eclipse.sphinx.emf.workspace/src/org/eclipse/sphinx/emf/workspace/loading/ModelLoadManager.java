@@ -1580,17 +1580,21 @@ public final class ModelLoadManager {
 											List<EObject> safeReferencedObjects = new ArrayList<EObject>(referencedObjects);
 											for (EObject referencedObject : safeReferencedObjects) {
 												if (referencedObject != null && !referencedObject.eIsProxy()) {
+
+													// Referenced object no longer part of same model as given object?
 													if (!modelDescriptor.belongsTo(referencedObject.eResource(), true)) {
 														referencedObjects.remove(referencedObject);
-														referencedObjects.add(EObjectUtil.createProxyFrom(referencedObject));
+														referencedObjects.add(EObjectUtil.createProxyFrom(referencedObject, object.eResource()));
 													}
 												}
 											}
 										} else {
 											EObject referencedObject = (EObject) object.eGet(reference);
 											if (referencedObject != null && !referencedObject.eIsProxy()) {
+
+												// Referenced object no longer part of same model as given object?
 												if (!modelDescriptor.belongsTo(referencedObject.eResource(), true)) {
-													object.eSet(reference, EObjectUtil.createProxyFrom(referencedObject));
+													object.eSet(reference, EObjectUtil.createProxyFrom(referencedObject, object.eResource()));
 												}
 											}
 										}

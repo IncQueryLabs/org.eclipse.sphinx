@@ -61,9 +61,11 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PortImpl;
 import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.PackageableElement;
+import org.eclipse.uml2.uml.UMLFactory;
 
 @SuppressWarnings("nls")
 public class EObjectUtilTest extends DefaultIntegrationTestCase {
@@ -777,7 +779,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 	}
 
 	/**
-	 * Test method for {@link EObjectUtil#createProxyFrom(EObject)}
+	 * Test method for {@link EObjectUtil#createProxyFrom(EObject, Resource)}
 	 */
 	public void testCreateProxyFromEObject() {
 		// Context: EObject is Hummingbird Object
@@ -838,13 +840,13 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		assertTrue(hb20Platform_A_2.getComponentTypes().contains(referringComponent_2.getType()));
 
 		// Proxify referred objects
-		EObject proxy_1 = EObjectUtil.createProxyFrom(componentType1);
+		EObject proxy_1 = EObjectUtil.createProxyFrom(componentType1, componentType1.eResource());
 		assertNotNull(proxy_1);
 		assertTrue(proxy_1.eIsProxy());
 		assertTrue(proxy_1 instanceof InternalEObject);
 		assertEquals(compTypeUri1, ((InternalEObject) proxy_1).eProxyURI());
 
-		EObject proxy_2 = EObjectUtil.createProxyFrom(componentType2);
+		EObject proxy_2 = EObjectUtil.createProxyFrom(componentType2, componentType2.eResource());
 		assertNotNull(proxy_2);
 		assertTrue(proxy_2.eIsProxy());
 		assertTrue(proxy_2 instanceof InternalEObject);
@@ -893,11 +895,15 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 
 			for (PackageableElement element : uml2Model.getPackagedElements()) {
 
-				EObject proxy = EObjectUtil.createProxyFrom(element);
+				EObject proxy = EObjectUtil.createProxyFrom(element, element.eResource());
 				assertNotNull(proxy);
 				assertTrue(proxy.eIsProxy());
-				assertEquals(EcoreUtil.getURI(element), ((InternalEObject) proxy).eProxyURI());
 
+				Element expectedProxy = (Element) UMLFactory.eINSTANCE.create(element.eClass());
+				((InternalEObject) expectedProxy).eSetProxyURI(EcoreUtil.getURI(element));
+				extendedResource.augmentToContextAwareProxy(expectedProxy);
+
+				assertEquals(((InternalEObject) expectedProxy).eProxyURI(), ((InternalEObject) proxy).eProxyURI());
 			}
 		}
 
@@ -905,7 +911,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		// Context: EObject is NULL-> It should have a null assertion
 		boolean flag = false;
 		try {
-			EObjectUtil.createProxyFrom(null);
+			EObjectUtil.createProxyFrom(null, null);
 		} catch (AssertionFailedException ex) {
 			flag = true;
 		}

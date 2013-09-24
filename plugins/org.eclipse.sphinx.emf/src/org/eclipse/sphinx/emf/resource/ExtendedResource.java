@@ -75,10 +75,10 @@ public interface ExtendedResource {
 	String OPTION_RESOURCE_VERSION_DESCRIPTOR = "RESOURCE_VERSION_DESCRIPTOR"; //$NON-NLS-1$
 
 	/**
-	 * Specifies whether creating the context aware proxy uri is to be performed. The default of this option is
-	 * <code>Boolean.TRUE</code>.
+	 * Specifies whether to use context-aware proxy URIs when creating proxy objects or not. The default of this option
+	 * is <code>Boolean.TRUE</code> .
 	 */
-	String OPTION_CREATE_CONTEXT_AWARE_PROXY_URIS = "CREATE_CONTEXT_AWARE_PROXY_URIS"; //$NON-NLS-1$
+	String OPTION_USE_CONTEXT_AWARE_PROXY_URIS = "USE_CONTEXT_AWARE_PROXY_URIS"; //$NON-NLS-1$
 
 	/**
 	 * Specifies the target {@link IMetaModelDescriptor metamodel descriptor} identifier for this resource.
@@ -261,4 +261,11 @@ public interface ExtendedResource {
 	 *         information on error otherwise.
 	 */
 	Diagnostic validateURI(String uri);
+
+	/**
+	 * Augments given {@link InternalEObject proxy} to a context-aware proxy by adding key/value pairs that contain the
+	 * target {@link IMetaModelDescriptor metamodel descriptor} and a context {@link URI} to the {@link URI#query()
+	 * query string} of the proxy URI.
+	 */
+	void augmentToContextAwareProxy(EObject proxy);
 }

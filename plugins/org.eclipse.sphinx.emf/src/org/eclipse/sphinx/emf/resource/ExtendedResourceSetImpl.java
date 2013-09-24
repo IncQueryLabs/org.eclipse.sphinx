@@ -149,7 +149,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 
 	final protected URIResourceCacheUpdater resourceChangeListener = new URIResourceCacheUpdater();
 
-	final protected ContextAwareURIHelper contextAwareURIHelper;
+	final protected ContextAwareProxyURIHelper contextAwareProxyURIHelper;
 
 	final protected ProxyHelper proxyHelper;
 
@@ -157,14 +157,14 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		uriResourceMap = new WeakHashMap<URI, Resource>();
 
 		// Initialize helper for creating context-aware URIs
-		contextAwareURIHelper = createContextAwareURIHelper();
+		contextAwareProxyURIHelper = createContextAwareURIHelper();
 
 		// Initialize proxy helper for resolving proxies in a performance-optimized way
 		proxyHelper = createProxyHelper();
 	}
 
-	protected ContextAwareURIHelper createContextAwareURIHelper() {
-		return new ContextAwareURIHelper();
+	protected ContextAwareProxyURIHelper createContextAwareURIHelper() {
+		return new ContextAwareProxyURIHelper();
 	}
 
 	protected ProxyHelper createProxyHelper() {
@@ -261,12 +261,12 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	}
 
 	/**
-	 * Augments the {@link URI} of given {@link InternalEObject proxy} to a context-aware URI by adding key/value pairs
-	 * that contain the target {@link IMetaModelDescriptor metamodel descriptor} and context {@link Resource resource}
-	 * URI to the {@link URI#query() query string} of the proxy URI.
+	 * Augments given {@link InternalEObject proxy} to a context-aware proxy by adding key/value pairs that contain the
+	 * target {@link IMetaModelDescriptor metamodel descriptor} and a context {@link URI} to the {@link URI#query()
+	 * query string} of the proxy URI.
 	 */
-	public void augmentToContextAwareURI(EObject proxy, URI contextResourceURI) {
-		contextAwareURIHelper.augmentToContextAwareURI(proxy, contextResourceURI);
+	public void augmentToContextAwareProxy(EObject proxy, Resource contextResource) {
+		contextAwareProxyURIHelper.augmentToContextAwareProxy(proxy, contextResource);
 	}
 
 	/*
@@ -302,9 +302,9 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		}
 
 		// Retrieve context information from given URI
-		String mmDescriptorId = contextAwareURIHelper.getMetaModelDescriptorId(uri);
+		String mmDescriptorId = contextAwareProxyURIHelper.getMetaModelDescriptorId(uri);
 		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(mmDescriptorId);
-		URI contextURI = contextAwareURIHelper.getContextURI(uri);
+		URI contextURI = contextAwareProxyURIHelper.getContextURI(uri);
 
 		// Try to resolve proxy URI in this resource set
 		EObject resolvedEObject = getEObject(uri, mmDescriptor, contextURI, loadOnDemand);
