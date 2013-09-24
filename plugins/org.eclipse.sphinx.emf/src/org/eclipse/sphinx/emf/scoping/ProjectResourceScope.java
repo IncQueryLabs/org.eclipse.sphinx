@@ -50,7 +50,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#belongsTo(org.eclipse.core.resources.IFile, boolean)
 	 */
 	public boolean belongsTo(IFile file, boolean includeReferencedScopes) {
-		return belongsToRootOrDependingProjects(file, includeReferencedScopes);
+		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
 	}
 
 	/*
@@ -58,7 +58,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 */
 	public boolean belongsTo(Resource resource, boolean includeReferencedScopes) {
 		IFile file = EcorePlatformUtil.getFile(resource);
-		return belongsToRootOrDependingProjects(file, includeReferencedScopes);
+		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
 	}
 
 	/*
@@ -66,7 +66,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 */
 	public boolean belongsTo(URI uri, boolean includeReferencedScopes) {
 		IFile file = EcorePlatformUtil.getFile(uri);
-		return belongsToRootOrDependingProjects(file, includeReferencedScopes);
+		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
 	}
 
 	/*
@@ -106,7 +106,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#didBelongTo(org.eclipse.core.resources.IFile, boolean)
 	 */
 	public boolean didBelongTo(IFile file, boolean includeReferencedScopes) {
-		return belongsToRootOrDependingProjects(file, includeReferencedScopes);
+		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
 	}
 
 	/*
@@ -114,7 +114,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 */
 	public boolean didBelongTo(Resource resource, boolean includeReferencedScopes) {
 		IFile file = EcorePlatformUtil.getFile(resource);
-		return belongsToRootOrDependingProjects(file, includeReferencedScopes);
+		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
 	}
 
 	/*
@@ -122,13 +122,22 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 */
 	public boolean didBelongTo(URI uri, boolean includeReferencedScopes) {
 		IFile file = EcorePlatformUtil.getFile(uri);
-		return belongsToRootOrDependingProjects(file, includeReferencedScopes);
+		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
 	}
 
-	protected boolean belongsToRootOrDependingProjects(IFile file, boolean includeReferencedScopes) {
+	protected boolean belongsToRootOrReferencedProjects(IFile file, boolean includeReferencedScopes) {
 		if (file != null) {
 			return rootProject.equals(file.getProject()) || includeReferencedScopes && getReferencedRoots().contains(file.getProject());
 		}
 		return false;
 	}
+
+	/**
+	 * @deprecated Use {@link #belongsToRootOrReferencedProjects(IFile, boolean)} instead.
+	 */
+	@Deprecated
+	protected boolean belongsToRootOrDependingProjects(IFile file, boolean includeReferencedScopes) {
+		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
+	}
+
 }

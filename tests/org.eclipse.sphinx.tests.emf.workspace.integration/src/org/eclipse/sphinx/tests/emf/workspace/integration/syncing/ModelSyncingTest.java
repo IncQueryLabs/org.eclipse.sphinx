@@ -2021,7 +2021,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 				assertEquals(refWks.hbProject20_D, referencedFile.getProject());
 			}
 			//
-			// ****Remove reference from hbProject20_D to hbProject20_E
+			// ****Remove reference from hbProject20_E to hbProject20_D
 			IProjectDescription hbProject20_E_prjDesc = refWks.hbProject20_E.getDescription();
 			hbProject20_E_prjDesc.setReferencedProjects(new IProject[] {});
 			refWks.hbProject20_E.setDescription(hbProject20_E_prjDesc, new NullProgressMonitor());
@@ -2054,11 +2054,9 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			for (Operation operation : testObjectUml2) {
 				assertFalse(operation.getMethods().isEmpty());
 				assertNotNull(operation.getMethods().get(0));
-				assertFalse(operation.getMethods().get(0).eIsProxy());
+				assertTrue(operation.getMethods().get(0).eIsProxy());
 				IFile referencedFile = EcorePlatformUtil.getFile(operation.getMethods().get(0));
-				assertNotNull(referencedFile);
-				assertEquals(refWks.hbProject20_D, referencedFile.getProject());
-
+				assertNull(referencedFile);
 			}
 			// Re- add reference from hbProject20_D to hbProject20_E
 
