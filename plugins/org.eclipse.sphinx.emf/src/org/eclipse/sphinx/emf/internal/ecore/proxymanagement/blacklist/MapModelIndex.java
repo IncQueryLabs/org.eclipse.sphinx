@@ -123,7 +123,7 @@ public class MapModelIndex implements IResourceChangeListener {
 				try {
 					// If proxy URI is not fragment-based, i.e. includes segments pointing at the target resource, we
 					// have to make sure that it matches URI of loaded resource
-					if (proxyURI.segmentCount() == 0 || resource.getURI().equals(proxyURI.trimFragment())) {
+					if (proxyURI.segmentCount() == 0 || resource.getURI().equals(proxyURI.trimFragment().trimQuery())) {
 						// See if loaded resource contains an object matching proxy URI fragment
 						if (resource.getEObject(proxyURI.fragment()) != null) {
 							removeProxyURI(proxyURI);

@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
@@ -30,6 +29,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.notify.Notification;
@@ -44,9 +44,11 @@ import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelper;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelperAdapterFactory;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
-import org.eclipse.sphinx.platform.resources.ResourceDeltaFlagsAnalyzer;
-import org.eclipse.sphinx.platform.util.ExtendedPlatform;
+import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
+import org.eclipse.sphinx.platform.resources.DefaultResourceChangeHandler;
+import org.eclipse.sphinx.platform.resources.ResourceDeltaVisitor;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.sphinx.platform.util.StatusUtil;
 
 @SuppressWarnings("deprecation")
 public class ModelIndexUpdater extends ResourceSetListenerImpl implements IResourceChangeListener {
@@ -126,9 +128,8 @@ public class ModelIndexUpdater extends ResourceSetListenerImpl implements IResou
 			Job job = new Job("Update model index") {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
-					HashSet<Resource> updatedResources = new HashSet<Resource>();
-
 					try {
+						HashSet<Resource> updatedResources = new HashSet<Resource>();
 						IProjectDescription description = project.getDescription();
 						if (description != null) {
 							IProject[] referencedProjects = description.getReferencedProjects();
@@ -146,60 +147,40 @@ public class ModelIndexUpdater extends ResourceSetListenerImpl implements IResou
 								proxyHelper.getBlackList().updateIndexOnResourceLoaded(resource);
 							}
 						}
+						return Status.OK_STATUS;
+					} catch (OperationCanceledException ex) {
+						return Status.CANCEL_STATUS;
 					} catch (CoreException ex) {
-						PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+						return ex.getStatus();
+					} catch (Exception ex) {
+						return StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
 					}
-					return Status.OK_STATUS;
+				}
+
+				@Override
+				public boolean belongsTo(Object family) {
+					return IExtendedPlatformConstants.FAMILY_MODEL_LOADING.equals(family)
+							|| IExtendedPlatformConstants.FAMILY_LONG_RUNNING.equals(family);
 				}
 			};
+			job.setPriority(Job.BUILD);
 			job.setRule(project);
 			job.setSystem(true);
 			job.schedule();
 		}
-
 	}
 
 	public void resourceChanged(IResourceChangeEvent event) {
 		try {
 			IResourceDelta delta = event.getDelta();
 			if (delta != null) {
-				IResourceDeltaVisitor visitor = new IResourceDeltaVisitor() {
-					public boolean visit(IResourceDelta delta) throws CoreException {
-						try {
-							IResource resource = delta.getResource();
-							ResourceDeltaFlagsAnalyzer flags = new ResourceDeltaFlagsAnalyzer(delta);
-							switch (delta.getKind()) {
-							case IResourceDelta.ADDED:
-								// do nothing
-								break;
-							case IResourceDelta.CHANGED:
-								if (resource instanceof IProject) {
-									IProject project = (IProject) resource;
+				IResourceDeltaVisitor visitor = new ResourceDeltaVisitor(event.getType(), new DefaultResourceChangeHandler() {
 
-									// Has a projet's description been changed (referenced projects, linked resources,
-									// nature, etc.)?
-									if (flags.DESCRIPTION && project.isOpen()) {
-										for (IResourceDelta childDelta : delta.getAffectedChildren(IResourceDelta.CHANGED)) {
-											ResourceDeltaFlagsAnalyzer childFlag = new ResourceDeltaFlagsAnalyzer(childDelta);
-											if (childFlag.CONTENT && ExtendedPlatform.isProjectDescriptionFile(childDelta.getResource())) {
-												handleProjectDescriptionChanged(project);
-											}
-										}
-									}
-								}
-								break;
-							case IResourceDelta.REMOVED:
-								// do nothing
-								break;
-							default:
-								break;
-							}
-						} catch (Exception ex) {
-							PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
-						}
-						return true;
+					@Override
+					public void handleProjectDescriptionChanged(int eventType, IProject project) {
+						ModelIndexUpdater.this.handleProjectDescriptionChanged(project);
 					}
-				};
+				});
 				delta.accept(visitor);
 			}
 		} catch (Exception ex) {
