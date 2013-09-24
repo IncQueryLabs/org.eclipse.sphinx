@@ -166,7 +166,6 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 			}
 		}
 		return false;
-
 	}
 
 	/*

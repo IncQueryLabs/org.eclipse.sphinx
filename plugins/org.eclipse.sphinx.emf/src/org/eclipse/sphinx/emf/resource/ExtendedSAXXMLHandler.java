@@ -45,12 +45,19 @@ public class ExtendedSAXXMLHandler extends SAXXMLHandler {
 
 	protected IMetaModelDescriptor resourceVersion = null;
 
+	// Option whether to create context-aware proxy URIs
+	protected boolean createContextAwareProxyURIs = true;
+
 	public ExtendedSAXXMLHandler(XMLResource xmlResource, XMLHelper helper, Map<?, ?> options) {
 		super(xmlResource, helper, options);
 
 		Object value = options.get(ExtendedResource.OPTION_RESOURCE_VERSION_DESCRIPTOR);
 		if (value instanceof IMetaModelDescriptor) {
 			resourceVersion = (IMetaModelDescriptor) value;
+		}
+		value = options.get(ExtendedResource.OPTION_CREATE_CONTEXT_AWARE_PROXY_URIS);
+		if (value instanceof Boolean) {
+			createContextAwareProxyURIs = (Boolean) value;
 		}
 	}
 
@@ -189,16 +196,21 @@ public class ExtendedSAXXMLHandler extends SAXXMLHandler {
 	protected void handleProxy(InternalEObject proxy, String uriLiteral) {
 		super.handleProxy(proxy, uriLiteral);
 
-		// Augment the proxy's URI to a context-aware proxy URI
-		ExtendedResourceSetImpl extendedResourceSet = (ExtendedResourceSetImpl) resourceSet;
+		// Context-aware proxy URIs required?
+		if (createContextAwareProxyURIs) {
+			// Augment the proxy's URI to a context-aware proxy URI
+			if (resourceSet instanceof ExtendedResourceSetImpl) {
+				ExtendedResourceSetImpl extendedResourceSet = (ExtendedResourceSetImpl) resourceSet;
 
-		URI contextURI = null;
-		IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(xmlResource);
-		if (modelDescriptor != null) {
-			IPath rootPath = modelDescriptor.getRoot().getFullPath();
-			contextURI = URI.createPlatformResourceURI(rootPath.toString(), true);
+				URI contextURI = null;
+				IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(xmlResource);
+				if (modelDescriptor != null) {
+					IPath rootPath = modelDescriptor.getRoot().getFullPath();
+					contextURI = URI.createPlatformResourceURI(rootPath.toString(), true);
+				}
+
+				extendedResourceSet.augmentToContextAwareURI(proxy, contextURI);
+			}
 		}
-
-		extendedResourceSet.augmentToContextAwareURI(proxy, contextURI);
 	}
 }

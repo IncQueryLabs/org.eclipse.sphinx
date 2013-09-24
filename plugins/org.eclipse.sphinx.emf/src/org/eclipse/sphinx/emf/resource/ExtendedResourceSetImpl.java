@@ -492,7 +492,6 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 				filteredResources.add(resource);
 			}
 		}
-		// FIXME return filteredResources instead of Collections.emptyList()
 		return filteredResources;
 	}
 

@@ -45,7 +45,8 @@ import org.xml.sax.SAXParseException;
 public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 
 	protected IMetaModelDescriptor resourceVersion = null;
-	// Option whether creating context aware proxy uri
+
+	// Option whether to create context-saware proxy URIs
 	protected boolean createContextAwareProxyURIs = true;
 
 	public ExtendedSAXXMIHandler(XMLResource xmiResource, XMLHelper helper, Map<?, ?> options) {
@@ -201,7 +202,7 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 	protected void handleProxy(InternalEObject proxy, String uriLiteral) {
 		super.handleProxy(proxy, uriLiteral);
 
-		// Augment to context aware uri only when the option is true
+		// Context-aware proxy URIs required?
 		if (createContextAwareProxyURIs) {
 			// Augment the proxy's URI to a context-aware proxy URI
 			if (resourceSet instanceof ExtendedResourceSetImpl) {
