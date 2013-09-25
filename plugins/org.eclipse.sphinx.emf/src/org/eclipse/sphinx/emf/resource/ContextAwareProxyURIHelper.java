@@ -58,41 +58,66 @@ public class ContextAwareProxyURIHelper {
 	public void augmentToContextAwareProxy(EObject proxy, Resource contextResource) {
 		Assert.isNotNull(proxy);
 
-		URI proxyURI = ((InternalEObject) proxy).eProxyURI();
-		StringBuilder newQuery = new StringBuilder();
-		String oldQuery = proxyURI.query();
-		if (oldQuery != null) {
-			newQuery.append(oldQuery);
-		}
-
-		if (newQuery.length() > 0) {
-			newQuery.append(ExtendedResource.URI_KEY_VALUE_PAIR_SEPARATOR);
-		}
-
 		IMetaModelDescriptor proxyMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy);
-		if (proxyMMDescriptor != null) {
-			newQuery.append(CONTEXT_AWARE_PROXY_URI_QUERY_KEY_TARGET_METAMODEL_DESCRIPTOR);
-			newQuery.append(ExtendedResource.URI_KEY_VALUE_SEPARATOR);
-			newQuery.append(proxyMMDescriptor.getIdentifier());
-		}
-
-		if (newQuery.length() > 0) {
-			newQuery.append(ExtendedResource.URI_KEY_VALUE_PAIR_SEPARATOR);
-		}
-
 		IModelDescriptor contextModelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(contextResource);
+
+		StringBuilder targetMMDescriptorQueryField = null;
+		if (proxyMMDescriptor != null) {
+			/*
+			 * Performance optimization: Add target metamodel descriptor field to context-aware URI only when metamodel
+			 * behind proxy is different from that of the context model, i.e. the model that references it. The presence
+			 * of the target metamodel descriptor is only required for resolving proxies across different metamodels and
+			 * would needlessly blow up the proxy URI size otherwise.
+			 */
+			if (!proxyMMDescriptor.equals(contextModelDescriptor)) {
+				targetMMDescriptorQueryField = new StringBuilder();
+				targetMMDescriptorQueryField.append(CONTEXT_AWARE_PROXY_URI_QUERY_KEY_TARGET_METAMODEL_DESCRIPTOR);
+				targetMMDescriptorQueryField.append(ExtendedResource.URI_KEY_VALUE_SEPARATOR);
+				targetMMDescriptorQueryField.append(proxyMMDescriptor.getIdentifier());
+			}
+		}
+
+		StringBuilder contextURIQueryField = null;
 		if (contextModelDescriptor != null) {
+			/*
+			 * Performance optimization: Don't use URI of context resource itself but only the URI of the root of the
+			 * model that contains the context resource as context URI. The latter is sufficient for identifying the
+			 * context and indicating it to applications relying on it (e.g., resource scoping). As it is nearly all of
+			 * the time significantly shorter than the context resource URI it greatly helps to avoid that proxy URIs
+			 * grow too long.
+			 */
 			IPath rootPath = contextModelDescriptor.getRoot().getFullPath();
 			URI contextURI = URI.createPlatformResourceURI(rootPath.toString(), true);
 
-			newQuery.append(CONTEXT_AWARE_PROXY_URI_QUERY_KEY_CONTEXT_URI);
-			newQuery.append(ExtendedResource.URI_KEY_VALUE_SEPARATOR);
-			newQuery.append(contextURI);
+			contextURIQueryField = new StringBuilder();
+			contextURIQueryField.append(CONTEXT_AWARE_PROXY_URI_QUERY_KEY_CONTEXT_URI);
+			contextURIQueryField.append(ExtendedResource.URI_KEY_VALUE_SEPARATOR);
+			contextURIQueryField.append(contextURI);
 		}
 
-		proxyURI = URI.createHierarchicalURI(proxyURI.scheme(), proxyURI.authority(), proxyURI.device(), proxyURI.segments(), newQuery.toString(),
-				proxyURI.fragment());
-		((InternalEObject) proxy).eSetProxyURI(proxyURI);
+		if (targetMMDescriptorQueryField != null || contextURIQueryField != null) {
+			URI proxyURI = ((InternalEObject) proxy).eProxyURI();
+			StringBuilder newQuery = new StringBuilder();
+
+			String oldQuery = proxyURI.query();
+			if (oldQuery != null) {
+				newQuery.append(oldQuery);
+				newQuery.append(ExtendedResource.URI_KEY_VALUE_PAIR_SEPARATOR);
+			}
+
+			if (targetMMDescriptorQueryField != null) {
+				newQuery.append(targetMMDescriptorQueryField);
+			}
+
+			if (contextURIQueryField != null) {
+				newQuery.append(ExtendedResource.URI_KEY_VALUE_PAIR_SEPARATOR);
+				newQuery.append(contextURIQueryField);
+			}
+
+			proxyURI = URI.createHierarchicalURI(proxyURI.scheme(), proxyURI.authority(), proxyURI.device(), proxyURI.segments(),
+					newQuery.toString(), proxyURI.fragment());
+			((InternalEObject) proxy).eSetProxyURI(proxyURI);
+		}
 	}
 
 	/**
