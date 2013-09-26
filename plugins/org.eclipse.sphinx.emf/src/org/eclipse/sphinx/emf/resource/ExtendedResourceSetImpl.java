@@ -302,22 +302,22 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		}
 
 		// Retrieve context information from given URI
-		String mmDescriptorId = contextAwareProxyURIHelper.getMetaModelDescriptorId(uri);
-		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(mmDescriptorId);
+		String targetMMDescriptorId = contextAwareProxyURIHelper.getTargetMetaModelDescriptorId(uri);
+		IMetaModelDescriptor targetMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(targetMMDescriptorId);
 		URI contextURI = contextAwareProxyURIHelper.getContextURI(uri);
 
 		// Try to resolve proxy URI in this resource set
-		EObject resolvedEObject = getEObject(uri, mmDescriptor, contextURI, loadOnDemand);
+		EObject resolvedEObject = getEObject(uri, targetMMDescriptor, contextURI, loadOnDemand);
 		if (resolvedEObject != null) {
 			return resolvedEObject;
 		}
 
 		// Retrieve resource set for metamodel of object being referenced by given proxy URI
-		ResourceSet otherResourceSet = getDelegateResourceSet(mmDescriptor, contextURI);
+		ResourceSet otherResourceSet = getDelegateResourceSet(targetMMDescriptor, contextURI);
 		if (otherResourceSet != null && otherResourceSet != this) {
 			// Load target model(s) on demand if required
 			if (loadOnDemand) {
-				loadTargetModels(mmDescriptor, contextURI);
+				loadModels(targetMMDescriptor, contextURI);
 			}
 
 			// Try to resolve proxy URI in other resource set
@@ -366,20 +366,20 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		}
 
 		// Retrieve context information from provided arguments
-		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy);
+		IMetaModelDescriptor targetMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy);
 
 		// Try to resolve proxy URI in this resource set
-		EObject resolvedEObject = getEObject(uri, mmDescriptor, contextObject, loadOnDemand);
+		EObject resolvedEObject = getEObject(uri, targetMMDescriptor, contextObject, loadOnDemand);
 		if (resolvedEObject != null) {
 			return resolvedEObject;
 		}
 
 		// Retrieve resource set for metamodel of object being referenced by given proxy URI
-		ResourceSet otherResourceSet = getDelegateResourceSet(mmDescriptor, contextObject);
+		ResourceSet otherResourceSet = getDelegateResourceSet(targetMMDescriptor, contextObject);
 		if (otherResourceSet != null && otherResourceSet != this) {
 			// Load target model(s) on demand if required
 			if (loadOnDemand) {
-				loadTargetModels(mmDescriptor, contextObject);
+				loadModels(targetMMDescriptor, contextObject);
 			}
 
 			// Try to resolve proxy URI in other resource set
@@ -400,13 +400,13 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	}
 
 	/**
-	 * Retrieves the {@linkplain EObject object} from specified {@link IMetaModelDescriptor metamodel} that corresponds
-	 * to given {@linkplain URI}. Uses provided {@linkResource context resource} to limit the search scope to the subset
-	 * of {@link Resource resource}s that are in the same {@link IResourceScope scope} as the resource.
+	 * Retrieves the {@linkplain EObject object} from specified target {@link IMetaModelDescriptor metamodel} that
+	 * corresponds to given {@linkplain URI}. Uses provided {@linkResource context resource} to limit the search scope
+	 * to the subset of {@link Resource resource}s that are in the same {@link IResourceScope scope} as the resource.
 	 * 
 	 * @param uri
 	 *            The {@linkplain URI} to be resolved.
-	 * @param metaModelDescriptor
+	 * @param targetMetaModelDescriptor
 	 *            The {@link IMetaModelDescriptor meta model descriptor} of the object that is referenced by given URI.
 	 * @param contextObject
 	 *            The context resource that is used to limit the search scope.
@@ -415,13 +415,13 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	 *            not already loaded.
 	 * @return The object that corresponds to given URI or <code>null</code> if given URI cannot be resolved.
 	 */
-	protected EObject getEObject(URI uri, IMetaModelDescriptor metaModelDescriptor, Object contextObject, boolean loadOnDemand) {
+	protected EObject getEObject(URI uri, IMetaModelDescriptor targetMetaModelDescriptor, Object contextObject, boolean loadOnDemand) {
 		Assert.isNotNull(uri);
 
 		// Fragment-based URI not knowing its target resource?
 		if (uri.segmentCount() == 0) {
 			// Search for object behind given URI within relevant set of potential target resources
-			List<Resource> resources = getResourcesToSearchIn(getResources(), uri.trimFragment().trimQuery(), metaModelDescriptor);
+			List<Resource> resources = getResourcesToSearchIn(getResources(), uri.trimFragment().trimQuery(), targetMetaModelDescriptor);
 			return safeFindEObjectInResources(resources, uri, loadOnDemand);
 		} else {
 			// Target resource is known, so search for object behind given URI only in that resource
@@ -439,28 +439,28 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	 * explicit target resource).
 	 * <p>
 	 * This implementation applies a {@link ResourceFilter resource filter} to the provided set of {@link Resource
-	 * resource}s retaining only those {@link Resource resource}s that match specified {@link IMetaModelDescriptor
-	 * metamodel descriptor} behind given {@link URI}.
+	 * resource}s retaining only those {@link Resource resource}s that match specified target
+	 * {@link IMetaModelDescriptor metamodel descriptor} behind given {@link URI}.
 	 * 
 	 * @param allResources
 	 *            The set of {@link Resource resource}s from which the resources to be considered for resolving given
 	 *            fragment-based {@link URI} are to be extracted.
 	 * @param uri
 	 *            The fragment-based {@link URI} to resolve.
-	 * @param metaModelDescriptor
+	 * @param targetMetaModelDescriptor
 	 *            The {@link IMetaModelDescriptor metamodel descriptor} of the object that given fragment-based
 	 *            {@link URI} is supposed to resolve to.
 	 * @return The set of {@link Resource resource}s to be considered for resolving given fragment-based {@link URI}.
 	 * @see #getResources()
 	 */
-	protected List<Resource> getResourcesToSearchIn(List<Resource> allResources, URI uri, final IMetaModelDescriptor metaModelDescriptor) {
+	protected List<Resource> getResourcesToSearchIn(List<Resource> allResources, URI uri, final IMetaModelDescriptor targetMetaModelDescriptor) {
 		Assert.isNotNull(allResources);
 
-		if (metaModelDescriptor != null) {
+		if (targetMetaModelDescriptor != null) {
 			return getFilteredResources(allResources, new ResourceFilter() {
 				public boolean accept(Resource resource) {
 					// Accept only resources that match provided metamodel descriptor
-					if (MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource) == metaModelDescriptor) {
+					if (targetMetaModelDescriptor.equals(MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource))) {
 						return true;
 					}
 					return false;
@@ -624,32 +624,29 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	}
 
 	/**
-	 * Retrieve delegate {@link ResourceSet resource set} corresponding to the provided {@link IMetaModelDescriptor meta
-	 * model descriptor} of {@link Resource resource}
+	 * Retrieves a delegate {@link ResourceSet resource set} corresponding to the provided {@link IMetaModelDescriptor
+	 * metamodel descriptor} and context {@link Object object}.
 	 */
 	protected ResourceSet getDelegateResourceSet(IMetaModelDescriptor metaModelDescriptor, Object contextObject) {
-		Assert.isNotNull(contextObject);
-
 		IContainer contextContainer = getContextContainer(contextObject);
-		if (contextContainer != null) {
-			TransactionalEditingDomain otherEditingDomain = WorkspaceEditingDomainUtil.getEditingDomain(contextContainer, metaModelDescriptor);
-			if (otherEditingDomain != null) {
-				return otherEditingDomain.getResourceSet();
-			}
+		TransactionalEditingDomain otherEditingDomain = WorkspaceEditingDomainUtil.getEditingDomain(contextContainer, metaModelDescriptor);
+		if (otherEditingDomain != null) {
+			return otherEditingDomain.getResourceSet();
 		}
+
 		return null;
 	}
 
 	/**
-	 * Load target models that are filtered by the {@link IMetaModelDescriptor meta Model Descriptor}.
+	 * Loads all models of given {@link IMetaModelDescriptor metamodel} within provided {@link Object context}.
 	 * 
 	 * @param metaModelDescriptor
-	 *            The {@link IMetaModelDescriptor meta Model Descriptor} of the proxy to be resolved.
+	 *            The {@link IMetaModelDescriptor metamodel descriptor} of the models to be loaded.
 	 * @param contextObject
-	 *            The context resource that is used to limit the search scope.
-	 * @return
+	 *            The {@link Object object} that identifies the context within which the models to be loaded are
+	 *            located.
 	 */
-	protected void loadTargetModels(IMetaModelDescriptor metaModelDescriptor, Object contextObject) {
+	protected void loadModels(IMetaModelDescriptor metaModelDescriptor, Object contextObject) {
 		// Retrieve target model(s) that is (are) in the same scope as context object
 		IContainer contextContainer = getContextContainer(contextObject);
 		if (contextContainer != null) {

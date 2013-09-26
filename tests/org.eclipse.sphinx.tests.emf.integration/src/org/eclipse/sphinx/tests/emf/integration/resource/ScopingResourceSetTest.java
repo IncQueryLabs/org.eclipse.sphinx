@@ -96,10 +96,6 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 	List<String> hbProject20EResourcesUml2;
 	int resourcesUml2FromHbProject20_E;
 
-	public ScopingResourceSetTest() {
-		super(false);
-	}
-
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -6708,349 +6704,189 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 
 	}
 
-	// ========== 5 =====================
 	/**
-	 * Test method for {@link ExtendedResourceSet#getEObject(URI, boolean)}
+	 * Test method for {@link ExtendedResourceSet#getEObject(URI, boolean)} with context aware URI
 	 */
 	public void testGetEObjectWithContextAwareURI() {
 
 		// =====================================================
-		// GivenURI and contextObject are not NULL
-		URI testFragmentUri10 = URI
-				.createURI("hb:/?tgtMMD=org.eclipse.sphinx.examples.hummingbird10&ctxURI=platform:/resource/hbProject10_A/hbFile10_10A_4.hummingbird#//@components.0");
-		// URI.createURI("hb:/#//@components.0");
-		URI testUri10A = URI.createURI("/hbProject10_A/hbFile10_10A_4.hummingbird#//@interfaces.0");
-
-		// Context: HB10 contextObject
-
-		for (String fileName : hbProject10AResources10) {
-			IFile contextFile = refWks.hbProject10_A.getFile(fileName);
-			assertNotNull(contextFile);
-
-			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
-			assertNotNull(contextResource);
-
-			// The context object use for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
-			assertNotNull(contextObject);
-
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObject(testFragmentUri10, true);
-			assertNotNull(scopeObject1);
-			assertTrue(EcoreUtil.getURI(scopeObject1).fragment().contains(testFragmentUri10.fragment()));
-
-			EObject scopedObject2 = getScopingResourceSet(refWks.editingDomain20).getEObject(testFragmentUri10, true);
-			assertNull(scopedObject2);
-
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testFragmentUri10, true);
-			assertNull(scopeObject3);
-
-			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10A, true);
-			assertNotNull(scopeObject4);
-			assertEquals(testUri10A, EcoreUtil.getURI(scopeObject4));
-
-			EObject scopeObject5 = getScopingResourceSet(refWks.editingDomain20).getEObject(testFragmentUri10, true);
-			assertNull(scopeObject5);
-		}
-		for (String fileName : hbProject10DResources10) {
-			IFile contextFile = refWks.hbProject10_D.getFile(fileName);
-			assertNotNull(contextFile);
-
-			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
-			assertNotNull(contextResource);
-
-			// The context object use for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
-			assertNotNull(contextObject);
-
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObject(testFragmentUri10, true);
-			assertNotNull(scopeObject1);
-
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain20).getEObject(testFragmentUri10, true);
-			assertNull(scopeObject2);
-
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testFragmentUri10, true);
-			assertNull(scopeObject3);
-
-			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10A, true);
-			assertNull(scopeObject4);
-
-			EObject scopeObject5 = getScopingResourceSet(refWks.editingDomain20).getEObject(testFragmentUri10, true);
-			assertNull(scopeObject5);
-
-		}
-
-		// ------------------------------------------------------------------------------------------
-		// Context: HB10 contextObject (case referenced Projects)
-		URI testUri10D = URI.createURI("/hbProject10_D/hbFile10_10D_3.hummingbird#//@components.1");
-
-		for (String fileName : hbProject10AResources10) {
-			IFile contextFile = refWks.hbProject10_A.getFile(fileName);
-			assertNotNull(contextFile);
-
-			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
-			assertNotNull(contextResource);
-
-			// The context object use for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
-			assertNotNull(contextObject);
-
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
-			assertNotNull(scopeObject1);
-
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri10D, true);
-			assertNotNull(scopeObject2);
-
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
-			assertNotNull(scopeObject3);
-		}
-		for (String fileName : hbProject10DResources10) {
-			IFile contextFile = refWks.hbProject10_D.getFile(fileName);
-			assertNotNull(contextFile);
-
-			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
-			assertNotNull(contextResource);
-
-			// The context object use for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
-			assertNotNull(contextObject);
-
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
-			assertNotNull(scopeObject1);
-			assertEquals(testUri10D, EcoreUtil.getURI(scopeObject1));
-
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri10D, true);
-			// Because just resource uri fragment is considered
-			assertNotNull(scopeObject2);
-
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
-			assertNotNull(scopeObject3);
-
-		}
-		for (String fileName : hbProject10EResources10) {
-			IFile contextFile = refWks.hbProject10_E.getFile(fileName);
-			assertNotNull(contextFile);
-
-			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
-			assertNotNull(contextResource);
-
-			// The context object use for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
-			assertNotNull(contextObject);
-
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
-			assertNotNull(scopeObject1);
-			assertEquals(testUri10D, EcoreUtil.getURI(scopeObject1));
-
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri10D, true);
-			assertNotNull(scopeObject2);
-
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
-			assertNotNull(scopeObject3);
-
-		}
-		// -------------------------------------------------------------------------------------------
-		// // Context: HB20 Resources
+		// HB20, targetMM and contextURI are not NULL
 		URI testUri20 = URI
-				.createURI("platform:/resource/hbProject20_B/hbFile20_20B_1.typemodel/?tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=platform:/resource/hbProject20_B/hbFile20_20B_1.typemodel#//@componentTypes.0");
-		// URI.createURI("hb:/#//@componentTypes.0");
+				.createURI("hb:/?tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=platform:/resource/hbProject20_A#//@componentTypes.0");
 
-		for (String fileName : hbProject20BResources20) {
-			IFile contextFile = refWks.hbProject20_B.getFile(fileName);
-			assertNotNull(contextFile);
-
-			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
-			assertNotNull(contextResource);
-
-			// The context object use for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
-			assertNotNull(contextObject);
-
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
-			assertNotNull(scopeObject1);
-			assertTrue(EcoreUtil.getURI(scopeObject1).fragment().contains(testUri20.fragment()));
-
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20, true);
-			assertNotNull(scopeObject2);
-
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20, true);
-			assertNotNull(scopeObject3);
-		}
-
-		for (String fileName : hbProject20DResources20) {
-			IFile contextFile = refWks.hbProject20_D.getFile(fileName);
-			assertNotNull(contextFile);
-
-			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
-			assertNotNull(contextResource);
-
-			// The context object use for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
-			assertNotNull(contextObject);
-
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
-			assertNotNull(scopeObject1);
-			assertTrue(EcoreUtil.getURI(scopeObject1).fragment().contains(testUri20.fragment()));
-
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20, true);
-			assertNotNull(scopeObject2);
-
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri10D, true);
-			assertNotNull(scopeObject3);
-
-			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
-			assertNotNull(scopeObject4);
-
-			EObject scopeObject5 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20, true);
-			assertNotNull(scopeObject5);
-		}
-
-		// -------------------------------------------------------------------------------------------
-		// Context: contextObject is Uml Object
-
-		URI testUml2Uri = URI.createURI("/hbProject20_D/uml2File_20D_1.uml#//package2/FunctionBehavior20D1_1");
-		// assertEquals(EcoreUtil.getURI(testObject), testUml2Uri);
-		for (String fileName : hbProject20BResourcesUml2) {
-			IFile contextFile = refWks.hbProject20_B.getFile(fileName);
-			assertNotNull(contextFile);
-
-			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
-			assertNotNull(contextResource);
-
-			// The context object use for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
-			assertNotNull(contextObject);
-
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2Uri, true);
-			assertNotNull(scopeObject1);
-
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
-			assertNotNull(scopeObject2);
-
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
-			assertNotNull(scopeObject3);
-
-			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
-			assertNotNull(scopeObject4);
-		}
-
-		for (String fileName : hbProject20DResourcesUml2) {
-			IFile contextFile = refWks.hbProject20_D.getFile(fileName);
-			assertNotNull(contextFile);
-
-			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
-			assertNotNull(contextResource);
-
-			// The context object use for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
-			assertNotNull(contextObject);
-
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2Uri, true);
-			assertNotNull(scopeObject1);
-
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
-			assertNotNull(scopeObject2);
-
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
-			assertNotNull(scopeObject3);
-
-			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
-			assertNotNull(scopeObject4);
-
-		}
-		for (String fileName : hbProject20EResourcesUml2) {
-			IFile contextFile = refWks.hbProject20_E.getFile(fileName);
-			assertNotNull(contextFile);
-
-			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
-			assertNotNull(contextResource);
-
-			// The context object use for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
-			assertNotNull(contextObject);
-
-			EObject scopeObject1 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2Uri, true);
-			assertNotNull(scopeObject1);
-
-			EObject scopeObject2 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
-			assertNotNull(scopeObject2);
-
-			EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
-			assertNotNull(scopeObject3);
-
-			EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
-			assertNotNull(scopeObject4);
-
-		}
-		// -------------------------------------------------------------------------------------------
-		// Context resource is unloaded
-		{
-			for (String fileName : hbProject20DResources20) {
-				IFile contextFile = refWks.hbProject20_D.getFile(fileName);
-				assertNotNull(contextFile);
-
-				Resource contextResource = EcorePlatformUtil.getResource(contextFile);
-				assertNotNull(contextResource);
-
-				// The context object use for filtering
-				EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
-				assertNotNull(contextObject);
-				synchronizedUnloadFile(contextFile);
-
-				assertNotNull(contextObject);
-
-				EObject scopeObject1 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, false);
-				assertNotNull(scopeObject1);
-
-				scopeObject1 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
-				assertNotNull(scopeObject1);
-
-				EObject scopeObject2 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20, true);
-				assertNotNull(scopeObject2);
-
-				EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri10D, true);
-				assertNotNull(scopeObject3);
-
-				EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
-				assertNotNull(scopeObject4);
-
-				EObject scopeObject5 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20, true);
-				assertNotNull(scopeObject5);
-			}
-			for (String fileName : hbProject20DResourcesUml2) {
-				IFile contextFile = refWks.hbProject20_D.getFile(fileName);
-				assertNotNull(contextFile);
-
-				Resource contextResource = EcorePlatformUtil.getResource(contextFile);
-				assertNotNull(contextResource);
-
-				// The context object use for filtering
-				EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
-				assertNotNull(contextObject);
-
-				synchronizedUnloadFile(contextFile);
-
-				EObject scopeObject1 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2Uri, true);
-				assertNotNull(scopeObject1);
-
-				EObject scopeObject2 = getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10D, true);
-				assertNotNull(scopeObject2);
-
-				EObject scopeObject3 = getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true);
-				assertNotNull(scopeObject3);
-
-				EObject scopeObject4 = getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true);
-				assertNotNull(scopeObject4);
-			}
-		}
-		// -------------------------------------------------------------------------------------------
-		// Context: contextObject is NULl
-		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10D, true));
-		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testFragmentUri10, true));
-		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true));
-
-		// assertNull(getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testUri10D, true, null));
-		// assertNull(getScopingResourceSet(refWks.editingDomain20).getEObjectInScope(testFragmentUri10, true, null));
 		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20, true));
+
+		// the component type does not exist in the context project hbProject20_C
+		testUri20 = URI
+				.createURI("hb:/?tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=platform:/resource/hbProject20_C#//@componentTypes.0");
+
+		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20, true));
+		assertNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20, true));
+		assertNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20, true));
+
+		// =====================================================
+		// HB20, contextURI is NULL
+		URI testUri20B = URI.createURI("hb:/?tgtMMD=org.eclipse.sphinx.examples.hummingbird20#//@componentTypes.0");
+
+		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20B, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20B, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20B, true));
+
+		// target metamodel is not HB20
+		testUri20B = URI.createURI("hb:/?tgtMMD=org.eclipse.sphinx.examples.hummingbird10#//@componentTypes.0");
+
+		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20B, true));
+		assertNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20B, true));
+		assertNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20B, true));
+
+		// =====================================================
+		// HB20, targetMM is NULL
+		URI testUri20C = URI.createURI("hb:/?ctxURI=platform:/resource/hbProject20_A#//@componentTypes.0");
+
+		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20C, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20C, true));
+		assertNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20C, true));
+
+		// the component type does not exist in the context project hbProject20_C
+		testUri20C = URI.createURI("hb:/?ctxURI=platform:/resource/hbProject20_C#//@componentTypes.0");
+
+		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20C, true));
+		assertNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20C, true));
+		assertNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20C, true));
+
+		// =====================================================
+		// HB20, targetMM and contextURI are NULL
+		URI testUri20D = URI.createURI("hb:/#//@componentTypes.0");
+
+		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20D, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20D, true));
+		assertNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20D, true));
+
+		// =====================================================
+		// HB10
+		URI testUri10A = URI.createURI("hb:/#//@interfaces.0");
+
+		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10A, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri10A, true));
+		assertNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10A, true));
+
+		// =====================================================
+		// UML, targetMM and contextURI are not NULL
+		URI testUml2Uri = URI
+				.createURI("/?tgtMMD=org.eclipse.sphinx.examples.uml2&ctxURI=platform:/resource/hbProject20_D#//package2/FunctionBehavior20D1_1");
+
+		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUml2Uri, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUml2Uri, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2Uri, true));
+
+		// the uml element does not exist in the context project hbProject20_A
+		testUml2Uri = URI
+				.createURI("/?tgtMMD=org.eclipse.sphinx.examples.uml2&ctxURI=platform:/resource/hbProject20_A#//package2/FunctionBehavior20D1_1");
+
+		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUml2Uri, true));
+		assertNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUml2Uri, true));
+		assertNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2Uri, true));
+
+		// =====================================================
+		// UML, contextURI is null
+		URI testUml2UriA = URI.createURI("/?tgtMMD=org.eclipse.sphinx.examples.uml2#//package2/FunctionBehavior20D1_1");
+
+		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUml2UriA, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUml2UriA, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2UriA, true));
+
+		// target metamodel is not UML
+		testUml2UriA = URI.createURI("/?tgtMMD=org.eclipse.sphinx.examples.hummingbird20#//package2/FunctionBehavior20D1_1");
+
+		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20B, true));
+		assertNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20B, true));
+		assertNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20B, true));
+
+		// =====================================================
+		// UML, targetMM is NULL
+		URI testUml2UriB = URI.createURI("/?ctxURI=platform:/resource/hbProject20_D#//package2/FunctionBehavior20D1_1");
+
+		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUml2UriB, true));
+		assertNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUml2UriB, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2UriB, true));
+
+		// the element does not exist in the context project hbProject20_A
+		testUml2UriB = URI.createURI("hb:/?ctxURI=platform:/resource/hbProject20_A#//package2/FunctionBehavior20D1_1");
+
+		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUml2UriB, true));
+		assertNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUml2UriB, true));
+		assertNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2UriB, true));
+
+		// =====================================================
+		// UML, targetMM and contextURI are NULL
+		URI testUml2UriC = URI.createURI("/#//package2/FunctionBehavior20D1_1");
+
+		// the expected UML element exists in project hbProject20_D
+		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUml2UriC, true));
+		assertNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUml2UriC, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUml2UriC, true));
+
+		// =======================================================
+		// platform URI
+		// HB20, targetMM and contextURI are not NULL
+		URI testUri20A = URI
+				.createURI("platform:/resource/hbProject20_A/hbFile20_20A_2.typemodel?tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=platform:/resource/hbProject20_A#//@componentTypes.0");
+
+		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20A, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20A, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20A, true));
+
+		// platform URI, the component type does not exist in the context project hbProject20_C
+		testUri20A = URI
+				.createURI("platform:/resource/hbProject20_A/hbFile20_20A_2.typemodel?tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=platform:/resource/hbProject20_C#//@componentTypes.0");
+
+		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20A, true));
+		assertNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20A, true));
+		assertNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20A, true));
+
+		// =====================================================
+		// HB20, contextURI is NULL
+		testUri20B = URI
+				.createURI("platform:/resource/hbProject20_D/hbFile20_20D_2.typemodel?tgtMMD=org.eclipse.sphinx.examples.hummingbird20#//@componentTypes.0");
+
+		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20B, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20B, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20B, true));
+
+		// platform URI, target metamodel is not HB20
+		testUri20B = URI
+				.createURI("platform:/resource/hbProject20_C/hbFile20_20C_1.instancemodel?tgtMMD=org.eclipse.sphinx.examples.hummingbird10#//@componentTypes.0");
+
+		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20B, true));
+		assertNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20B, true));
+		assertNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20B, true));
+
+		// =====================================================
+		// HB20, targetMM is NULL
+		testUri20C = URI
+				.createURI("platform:/resource/hbProject20_A/hbFile20_20A_2.typemodel?ctxURI=platform:/resource/hbProject20_A#//@componentTypes.0");
+
+		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20C, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20C, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20C, true));
+
+		// the component type does not exist in the context project hbProject20_C
+		testUri20C = URI
+				.createURI("platform:/resource/hbProject20_A/hbFile20_20A_2.typemodel?ctxURI=platform:/resource/hbProject20_C#//@componentTypes.0");
+
+		assertNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri20C, true));
+		assertNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri20C, true));
+		assertNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri20C, true));
+
+		// =====================================================
+		// HB10, platform URI
+		testUri10A = URI.createURI("platform:/resource/hbProject10_A/hbFile10_10A_4.hummingbird#//@interfaces.0");
+
+		assertNotNull(getScopingResourceSet(refWks.editingDomain10).getEObject(testUri10A, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomain20).getEObject(testUri10A, true));
+		assertNotNull(getScopingResourceSet(refWks.editingDomainUml2).getEObject(testUri10A, true));
 	}
 
 	/**
@@ -7100,12 +6936,6 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 
 		eObject = scopingResourceSet.getEObject(uri2, true);
 		assertNotNull("Cannot get EObject with uri and without contextObject" + uri2.toString(), eObject);
-
-		// Get EObject with contextObject
-		eObject = scopingResourceSet.getEObject(uri2, true);
-		assertNotNull("Cannot get EObject with uri and and contextObject are in the same Scope" + uri2.toString(), eObject);
-		eObject = scopingResourceSet.getEObject(uri2, true);
-		assertNotNull("Can get EObject with uri and and contextObject are not in the same Scope" + uri2.toString(), eObject);
 	}
 
 	public void testGetEobjectInScopeWithNullUri() {

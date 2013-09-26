@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     itemis - Initial API and implementation
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  * 
  * </copyright>
  */
@@ -17,6 +18,7 @@ package org.eclipse.sphinx.emf.resource;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
@@ -121,10 +123,10 @@ public class ContextAwareProxyURIHelper {
 	}
 
 	/**
-	 * Extracts the identifier of the {@link IMetaModelDescriptor metamodel descriptor} carried by given context-aware
-	 * proxy {@link URI}.
+	 * Extracts the identifier of the target {@link IMetaModelDescriptor metamodel descriptor} carried by given
+	 * context-aware proxy {@link URI}.
 	 */
-	public String getMetaModelDescriptorId(URI uri) {
+	public String getTargetMetaModelDescriptorId(URI uri) {
 		Assert.isNotNull(uri);
 
 		String query = uri.query();
@@ -134,6 +136,8 @@ public class ContextAwareProxyURIHelper {
 				return matcher.group(CONTEXT_AWARE_PROXY_URI_QUERY_VALUE_GROUP_IDX);
 			}
 		}
+
+		// No information about target metamodel descriptor available on proxy URI
 		return null;
 	}
 
@@ -151,6 +155,10 @@ public class ContextAwareProxyURIHelper {
 				return URI.createURI(contextURI);
 			}
 		}
-		return null;
+
+		// No context information available on proxy URI; use workspace root as context URI to make sure that the whole
+		// workspace with all resources is used as context
+		IPath workspaceRootPath = ResourcesPlugin.getWorkspace().getRoot().getFullPath();
+		return URI.createPlatformResourceURI(workspaceRootPath.toString(), true);
 	}
 }

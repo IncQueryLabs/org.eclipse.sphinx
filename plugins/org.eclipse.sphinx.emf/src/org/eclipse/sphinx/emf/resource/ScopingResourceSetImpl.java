@@ -228,13 +228,13 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	 * org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, java.lang.Object, boolean)
 	 */
 	@Override
-	protected EObject getEObject(URI uri, IMetaModelDescriptor metaModelDescriptor, Object contextObject, boolean loadOnDemand) {
+	protected EObject getEObject(URI uri, IMetaModelDescriptor targetMetaModelDescriptor, Object contextObject, boolean loadOnDemand) {
 		Assert.isNotNull(uri);
 
 		// Fragment-based URI not knowing its target resource?
 		if (uri.segmentCount() == 0) {
 			// Search for object behind given URI within relevant set of potential target resources in scope
-			List<Resource> resources = getResourcesToSearchIn(getResourcesInScope(contextObject), uri, metaModelDescriptor);
+			List<Resource> resources = getResourcesToSearchIn(getResourcesInScope(contextObject), uri, targetMetaModelDescriptor);
 			return safeFindEObjectInResources(resources, uri, loadOnDemand);
 		} else {
 			// Target resource is known, so search for object behind given URI only in that resource

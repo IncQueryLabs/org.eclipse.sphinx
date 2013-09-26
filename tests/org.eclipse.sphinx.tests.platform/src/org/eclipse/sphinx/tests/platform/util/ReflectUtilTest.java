@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,10 +9,14 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.tests.platform.util;
+
+import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
 
 import junit.framework.TestCase;
 
@@ -21,8 +25,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.Resource.Diagnostic;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.validation.internal.util.DisabledConstraintStatus;
 import org.eclipse.emf.validation.model.ConstraintStatus;
@@ -431,19 +438,25 @@ public class ReflectUtilTest extends TestCase {
 	public void testInvokeInvisibleMethod() throws Exception {
 		Platform platform = createPlatform();
 
-		ResourceSet testResourceSet = new ScopingResourceSetImpl();
+		ResourceSet testResourceSet = new ResourceSetImpl();
 		Resource testResource = testResourceSet.createResource(URI.createURI("newResource.xml"));
 		testResource.getContents().add(platform);
 
 		// Non static method
 		// --protected method
+		FileNotFoundException testIOException = new FileNotFoundException("testIOException");
 		try {
-			assertSame(testResource, ReflectUtil.invokeInvisibleMethod(testResourceSet, "getResource", platform));
-			assertSame(testResource, ReflectUtil.invokeInvisibleMethod(testResourceSet, "getResource", testResource));
+			ReflectUtil.invokeInvisibleMethod(testResourceSet, "handleDemandLoadException", testResource, testIOException);
+		} catch (InvocationTargetException ite) {
+			assertSame(ite.getTargetException().getCause(), testIOException);
 		} catch (Exception e) {
-
-			fail("Cannot invoke non-static private method" + e.getLocalizedMessage());
+			fail("Cannot invoke non-static private method " + e.getLocalizedMessage());
 		}
+		assertEquals(1, testResource.getErrors().size());
+		Diagnostic diagnostic = testResource.getErrors().get(0);
+		assertTrue(diagnostic instanceof WrappedException);
+		assertSame(testIOException, ((WrappedException) diagnostic).getCause());
+
 		// -- private method
 		try {
 			assertTrue(ReflectUtil.invokeInvisibleMethod(this, "createPlatform") instanceof Platform);
