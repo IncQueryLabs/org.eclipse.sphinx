@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -35,6 +36,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.ui.internal.Activator;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
@@ -113,7 +115,27 @@ public class EcoreUIUtil {
 		}
 
 		if (uri != null) {
-			return new URIEditorInput(uri);
+			return new URIEditorInput(uri) {
+				@Override
+				public String getToolTipText() {
+					// Suppress URI scheme if URI references a workspace resource
+					URI uri = getURI();
+					if (uri.isPlatformResource()) {
+						StringBuilder uriString = new StringBuilder();
+						String platformURIString = uri.toPlatformString(true);
+						uriString.append(platformURIString.startsWith(ExtendedResource.URI_SEGMENT_SEPARATOR) ? platformURIString.substring(1)
+								: platformURIString);
+						String uriFragment = uri.fragment();
+						if (uriFragment != null) {
+							uriString.append(ExtendedResource.URI_FRAGMENT_SEPARATOR);
+							uriString.append(uriFragment);
+						}
+						return uriString.toString();
+					}
+
+					return super.getToolTipText();
+				}
+			};
 		}
 		return null;
 	}

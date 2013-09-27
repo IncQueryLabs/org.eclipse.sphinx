@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -273,43 +274,31 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 		}
 	}
 
-	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
-	// @Override
 	@Override
 	protected DeleteAction createDeleteAction() {
 		return new ExtendedDeleteAction(removeAllReferencesOnDelete(), getCustomAdapterFactory());
 	}
 
-	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
-	// @Override
 	@Override
 	protected PasteAction createPasteAction() {
 		return new ExtendedPasteAction(getCustomAdapterFactory());
 	}
 
-	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
-	// @Override
 	@Override
 	protected CopyAction createCopyAction() {
 		return new ExtendedCopyAction(getCustomAdapterFactory());
 	}
 
-	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
-	// @Override
 	@Override
 	protected CutAction createCutAction() {
 		return new ExtendedCutAction(getCustomAdapterFactory());
 	}
 
-	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
-	// @Override
 	@Override
 	protected RedoAction createRedoAction() {
 		return new RedoActionWrapper();
 	}
 
-	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
-	// @Override
 	@Override
 	protected UndoAction createUndoAction() {
 		return new UndoActionWrapper();
@@ -404,17 +393,17 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 		ISelection selection = event.getSelection();
 		IStructuredSelection structuredSelection = SelectionUtil.getStructuredSelection(selection);
 
-		// Make sure that model root object cannot be removed inside editor
-		List<Object> nonModelRootObjects = new ArrayList<Object>();
+		// Make sure that editor input object cannot be removed from within underlying editor
+		List<Object> nonEditorInputObjects = new ArrayList<Object>();
 		for (Object selected : structuredSelection.toList()) {
 			if (activeEditor instanceof BasicTransactionalFormEditor) {
 				BasicTransactionalFormEditor activeFormEditor = (BasicTransactionalFormEditor) activeEditor;
-				if (selected != activeFormEditor.getModelRoot()) {
-					nonModelRootObjects.add(selected);
+				if (selected != activeFormEditor.getEditorInputObject()) {
+					nonEditorInputObjects.add(selected);
 				}
 			}
 		}
-		IStructuredSelection nonModelRootSelection = new StructuredSelection(nonModelRootObjects);
+		IStructuredSelection nonModelRootSelection = new StructuredSelection(nonEditorInputObjects);
 		deleteAction.selectionChanged(nonModelRootSelection);
 		cutAction.selectionChanged(nonModelRootSelection);
 

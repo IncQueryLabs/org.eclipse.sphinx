@@ -479,7 +479,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 	}
 
 	/**
-	 * Test method for {@link EcoreResourceUtil#loadModelFragment(ResourceSet, URI)}
+	 * Test method for {@link EcoreResourceUtil#loadEObject(ResourceSet, URI)}
 	 */
 	public void testLoadModelFragment() throws Exception {
 		Resource resource10 = refWks.editingDomain10.getResourceSet().getResource(
@@ -498,7 +498,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		URI uri = EcoreUtil.getURI(expectedComponent);
 
 		// 1 loadModelFragment must return previously retrieved
-		EObject objectRetrieved = EcoreResourceUtil.loadModelFragment(refWks.editingDomain10.getResourceSet(), uri);
+		EObject objectRetrieved = EcoreResourceUtil.loadEObject(refWks.editingDomain10.getResourceSet(), uri);
 		assertNotNull(objectRetrieved);
 		assertTrue(objectRetrieved instanceof Component);
 		Component retrievedComponent = (Component) objectRetrieved;
@@ -513,7 +513,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		// Verify that test resource was unloaded
 		assertEditingDomainDoesNotContainResource(refWks.editingDomain10, DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
 		// Retrieved object in unloaded resource via uri
-		objectRetrieved = EcoreResourceUtil.loadModelFragment(refWks.editingDomain10.getResourceSet(), uri);
+		objectRetrieved = EcoreResourceUtil.loadEObject(refWks.editingDomain10.getResourceSet(), uri);
 
 		// Verify that test resource is re-loaded in editing domain
 		assertEditingDomainContainsResource(refWks.editingDomain10, DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
@@ -524,7 +524,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 		// 2 loading an uri pointing to an non existing resource must return null
 		uri = URI.createPlatformResourceURI("/" + DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/" + "unexistingFile.unknow", true);
-		assertNull(EcoreResourceUtil.loadModelFragment(refWks.editingDomain10.getResourceSet(), uri));
+		assertNull(EcoreResourceUtil.loadEObject(refWks.editingDomain10.getResourceSet(), uri));
 
 	}
 

@@ -23,7 +23,6 @@ import org.eclipse.sphinx.emf.ui.ICommonModelUIConstants;
 import org.eclipse.sphinx.emf.ui.internal.Activator;
 import org.eclipse.sphinx.emf.ui.views.ReferencesView;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
@@ -46,14 +45,16 @@ public class BasicOpenReferencesAction extends BaseSelectionListenerAction {
 		if (isTransient(selected)) {
 			return null;
 		}
-		Object unwrapped = AdapterFactoryEditingDomain.unwrap(selected);
 
+		Object unwrapped = AdapterFactoryEditingDomain.unwrap(selected);
 		if (unwrapped instanceof EObject) {
 			return (EObject) unwrapped;
-		} else {
-			Resource resource = EcorePlatformUtil.getResource(selected);
-			return EcoreResourceUtil.getModelRoot(resource);
 		}
+		Resource resource = EcorePlatformUtil.getResource(selected);
+		if (resource != null && !resource.getContents().isEmpty()) {
+			return resource.getContents().get(0);
+		}
+		return null;
 	}
 
 	/**

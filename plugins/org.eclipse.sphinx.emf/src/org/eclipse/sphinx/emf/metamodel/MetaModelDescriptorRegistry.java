@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2012 BMW Car IT, See4sys, itemis and others.
+ * Copyright (c) 2008-2013 BMW Car IT, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,7 @@
  *     BMW Car IT - [373481] Performance optimizations for model loading
  *     BMW Car IT - Lazy extension initialization
  *     itemis - [409367] Add a custom URI scheme to metamodel descriptor allowing mapping URI scheme to metamodel descriptor
+ *     itemis - [418005] Add support for model files with multiple root elements
  *
  * </copyright>
  */
@@ -55,6 +56,7 @@ import org.eclipse.core.runtime.content.IContentDescriber;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeSettings;
 import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
@@ -567,19 +569,21 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		 * given file and retrieve the metamodel descriptor from there. However, keeping in mind that content type
 		 * detection is an incredibly slow affair we must not do that but proceed in the following order: For loaded
 		 * resources the fastest option is to retrieve the metamodel descriptor from the nsURI of the EPackage behind
-		 * the root EObject in the resource. For resources that have just been created but not loaded (and therefore no
-		 * EObject content) yet we try to retrieve the metamodel descriptor from the underlying workspace file so as to
-		 * benefit from metamodel descriptor that potentially has already been cached for the same. At last, we rely on
-		 * the resource's content type which enables us to determine the metamodel descriptors of files that are not
-		 * loaded yet and located outside the workspace.
+		 * one of the root objects in the resource. For resources that have just been created but not loaded (and
+		 * therefore no content) yet we try to retrieve the metamodel descriptor from the underlying workspace file so
+		 * as to benefit from metamodel descriptor that potentially has already been cached for the same. At last, we
+		 * rely on the resource's model namespace which enables us to determine the metamodel descriptors of files that
+		 * are not loaded yet and located outside the workspace.
 		 */
 
 		// Try to retrieve descriptor from model root object in given resource (applies to loaded resources)
-		EObject modelRoot = EcoreResourceUtil.getModelRoot(resource);
-		if (modelRoot != null) {
-			IMetaModelDescriptor mmDescriptor = getDescriptor(modelRoot);
-			if (mmDescriptor != null) {
-				return mmDescriptor;
+		if (resource != null) {
+			EList<EObject> contents = resource.getContents();
+			if (!contents.isEmpty()) {
+				IMetaModelDescriptor mmDescriptor = getDescriptor(contents.get(0));
+				if (mmDescriptor != null) {
+					return mmDescriptor;
+				}
 			}
 		}
 

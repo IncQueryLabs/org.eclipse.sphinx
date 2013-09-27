@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -32,7 +33,6 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 
@@ -92,9 +92,8 @@ public class ModelLoader extends WorkflowComponentWithModelSlot {
 		ModelLoadManager.INSTANCE.loadModel(modelDescriptor, false, null);
 
 		for (Resource resource : modelDescriptor.getLoadedResources(true)) {
-			EObject modelRoot = EcoreResourceUtil.getModelRoot(resource);
+			modelRoots.addAll(resource.getContents());
 			issues.addInfo("Loaded resource " + resource.getURI()); //$NON-NLS-1$
-			modelRoots.add(modelRoot);
 		}
 		if (modelRoots.isEmpty()) {
 			issues.addError("Project '" + projectName + "' does not contain" + mmd.getName() + "resources"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

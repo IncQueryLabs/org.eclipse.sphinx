@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 BMW Car IT, itemis, See4sys and others.
+ * Copyright (c) 2008-2013 BMW Car IT, itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -66,7 +67,6 @@ import org.eclipse.sphinx.emf.scoping.ProjectResourceScope;
 import org.eclipse.sphinx.emf.scoping.ResourceScopeProviderRegistry;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.emf.workspace.Activator;
@@ -761,7 +761,7 @@ public final class ModelLoadManager {
 									.getFullPath().toString());
 
 							try {
-								EcorePlatformUtil.loadModelRoot(editingDomain, file);
+								EcorePlatformUtil.loadResource(editingDomain, file, null);
 								loadedFiles.add(file);
 							} catch (Exception ex) {
 								// Ignore exception
@@ -1567,43 +1567,40 @@ public final class ModelLoadManager {
 				for (Resource resource : resources) {
 					progress.subTask(NLS.bind(Messages.subtask_unresolvingUnreachableCrossProjectReferencesInResource, resource.getURI()));
 					try {
-						EObject modelRoot = EcoreResourceUtil.getModelRoot(resource);
-						if (modelRoot != null) {
-							TreeIterator<EObject> allContents = modelRoot.eAllContents();
-							while (allContents.hasNext()) {
-								EObject object = allContents.next();
-								for (EReference reference : object.eClass().getEAllReferences()) {
-									if (!reference.isContainment() && !reference.isContainer()) {
-										if (reference.isMany()) {
-											@SuppressWarnings("unchecked")
-											EList<EObject> referencedObjects = (EList<EObject>) object.eGet(reference);
-											List<EObject> safeReferencedObjects = new ArrayList<EObject>(referencedObjects);
-											for (EObject referencedObject : safeReferencedObjects) {
-												if (referencedObject != null && !referencedObject.eIsProxy()) {
-
-													// Referenced object no longer part of same model as given object?
-													if (!modelDescriptor.belongsTo(referencedObject.eResource(), true)) {
-														referencedObjects.remove(referencedObject);
-														referencedObjects.add(EObjectUtil.createProxyFrom(referencedObject, object.eResource()));
-													}
-												}
-											}
-										} else {
-											EObject referencedObject = (EObject) object.eGet(reference);
+						TreeIterator<EObject> allContents = resource.getAllContents();
+						while (allContents.hasNext()) {
+							EObject object = allContents.next();
+							for (EReference reference : object.eClass().getEAllReferences()) {
+								if (!reference.isContainment() && !reference.isContainer()) {
+									if (reference.isMany()) {
+										@SuppressWarnings("unchecked")
+										EList<EObject> referencedObjects = (EList<EObject>) object.eGet(reference);
+										List<EObject> safeReferencedObjects = new ArrayList<EObject>(referencedObjects);
+										for (EObject referencedObject : safeReferencedObjects) {
 											if (referencedObject != null && !referencedObject.eIsProxy()) {
 
 												// Referenced object no longer part of same model as given object?
 												if (!modelDescriptor.belongsTo(referencedObject.eResource(), true)) {
-													object.eSet(reference, EObjectUtil.createProxyFrom(referencedObject, object.eResource()));
+													referencedObjects.remove(referencedObject);
+													referencedObjects.add(EObjectUtil.createProxyFrom(referencedObject, object.eResource()));
 												}
+											}
+										}
+									} else {
+										EObject referencedObject = (EObject) object.eGet(reference);
+										if (referencedObject != null && !referencedObject.eIsProxy()) {
+
+											// Referenced object no longer part of same model as given object?
+											if (!modelDescriptor.belongsTo(referencedObject.eResource(), true)) {
+												object.eSet(reference, EObjectUtil.createProxyFrom(referencedObject, object.eResource()));
 											}
 										}
 									}
 								}
+							}
 
-								if (progress.isCanceled()) {
-									throw new OperationCanceledException();
-								}
+							if (progress.isCanceled()) {
+								throw new OperationCanceledException();
 							}
 						}
 					} catch (Exception ex) {

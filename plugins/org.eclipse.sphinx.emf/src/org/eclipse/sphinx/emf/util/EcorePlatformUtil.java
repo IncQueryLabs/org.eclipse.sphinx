@@ -13,6 +13,7 @@
  *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored
  *     itemis - [409459] Enable asynchronous loading of affected models when creating or resolving references to elements in other models
  *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
+ *     itemis - [418005] Add support for model files with multiple root elements
  *
  * </copyright>
  */
@@ -238,14 +239,16 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Retrieves the {@link EObject root object} of the model contained in given {@link IFile file}. Returns
-	 * <code>null</code> if the {@link IFile file} has not been loaded yet.
+	 * <code>null</code> if the {@link IFile file} has not been loaded yet or contains no or multiple root objects.
 	 * 
 	 * @param file
 	 *            The {@link IFile file} containing the model.
-	 * @return The {@link EObject root object} of the model in given {@link IFile file} or <tt>null</tt> if the
-	 *         {@link IFile file} has not been loaded yet or is empty.
+	 * @return The {@link EObject root object} of the model in given {@link IFile file} or <code>null</code> if the
+	 *         {@link IFile file} has not been loaded yet or contains no or multiple root objects.
 	 * @see #getModelRoot(TransactionalEditingDomain, IFile)
+	 * @deprecated Use {@link #getResource(IFile)} or {@link #getEObject(URI)} instead.
 	 */
+	@Deprecated
 	public static EObject getModelRoot(IFile file) {
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(file);
 		if (editingDomain != null) {
@@ -256,19 +259,19 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Retrieves the {@link EObject root object} of the model contained in given {@link IFile file} using given
-	 * {@link TransactionalEditingDomain editing domain}. Returns <tt>null</tt> if the {@link IFile file} has not been
-	 * loaded into the {@link TransactionalEditingDomain editing domain}'s {@link ResourceSet resource set} yet or is
-	 * empty.
+	 * {@link TransactionalEditingDomain editing domain}. Returns <code>null</code> if the {@link IFile file} has not
+	 * been loaded yet or contains no or multiple root objects.
 	 * 
 	 * @param editingDomain
 	 *            The {@linkplain TransactionalEditingDomain editing domain} the specified {@link IFile file} belongs
 	 *            to; must not be <code>null</code>.
 	 * @param file
 	 *            The {@linkplain IFile file} containing the model; must not be <code>null</code>.
-	 * @return The {@linkplain EObject root object} of the model in given {@link IFile file} or <tt>null</tt> if that
-	 *         {@linkplain IFile file} has not been loaded into the specified {@linkplain TransactionalEditingDomain
-	 *         editing domain}'s {@linkplain ResourceSet resource set} yet.
+	 * @return The {@linkplain EObject root object} of the model in given {@link IFile file} or <code>null</code> if the
+	 *         {@linkplain IFile file} has not been loaded yet or contains no or multiple root objects.
+	 * @deprecated Use {@link #getResource(IFile)} or {@link #getEObject(TransactionalEditingDomain, URI)} instead.
 	 */
+	@Deprecated
 	public static EObject getModelRoot(final TransactionalEditingDomain editingDomain, final IFile file) {
 		if (editingDomain != null && file != null) {
 			try {
@@ -287,7 +290,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Loads the model contained in given {@link IFile file} using {@link EcoreResourceUtil#getDefaultLoadOptions()
-	 * default load options} and returns its {@link EObject root object}. Returns <tt>null</tt> if the {@link IFile
+	 * default load options} and returns its {@link EObject root object}. Returns <code>null</code> if the {@link IFile
 	 * file} is empty.
 	 * <p>
 	 * Note: Calling this method involves retrieving the {@link TransactionalEditingDomain editing domain} behind the
@@ -299,18 +302,20 @@ public final class EcorePlatformUtil {
 	 * 
 	 * @param file
 	 *            The {@link IFile file} containing the model.
-	 * @return The {@link EObject root object} of the model in given {@link IFile file} or <tt>null</tt> if the
+	 * @return The {@link EObject root object} of the model in given {@link IFile file} or <code>null</code> if the
 	 *         {@link IFile file} is empty.
 	 * @see EcoreResourceUtil#getDefaultLoadOptions()
 	 * @see #loadModelRoot(TransactionalEditingDomain, IFile)
+	 * @deprecated Use {@link #loadModelRoot(IFile, Map)} instead.
 	 */
+	@Deprecated
 	public static EObject loadModelRoot(IFile file) {
 		return loadModelRoot(file, EcoreResourceUtil.getDefaultLoadOptions());
 	}
 
 	/**
 	 * Loads the model contained in given {@link IFile file} using given load options and returns its {@link EObject
-	 * root object}. Returns <tt>null</tt> if the {@link IFile file} is empty.
+	 * root object}. Returns <code>null</code> if the {@link IFile file} contains no or multiple root objects..
 	 * <p>
 	 * Note: Calling this method involves retrieving the {@link TransactionalEditingDomain editing domain} behind the
 	 * given file. In case that the {@link IFile file} has not been loaded yet this is done by analyzing the its content
@@ -323,10 +328,12 @@ public final class EcorePlatformUtil {
 	 *            The {@link IFile file} containing the model.
 	 * @param options
 	 *            The options to be used for loading the model.
-	 * @return The {@link EObject root object} of the model in given {@link IFile file} or <tt>null</tt> if the
-	 *         {@link IFile file} is empty.
+	 * @return The {@link EObject root object} of the model in given {@link IFile file} or <code>null</code> if the
+	 *         {@link IFile file} contains no or multiple root objects.
 	 * @see #loadModelRoot(TransactionalEditingDomain, IFile, Map)
+	 * @deprecated Use {@link #loadResource(IFile, Map)} or {@link #loadEObject(URI)} instead.
 	 */
+	@Deprecated
 	public static EObject loadModelRoot(IFile file, Map<?, ?> options) {
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(file);
 		if (editingDomain != null) {
@@ -338,7 +345,8 @@ public final class EcorePlatformUtil {
 	/**
 	 * Loads the model contained in given {@link IFile file} into given {@link TransactionalEditingDomain editing
 	 * domain} using {@link EcoreResourceUtil#getDefaultLoadOptions() default load options} and returns its
-	 * {@link EObject root object}. Returns <tt>null</tt> if the {@link IFile file} is empty.
+	 * {@link EObject root object}. Returns <code>null</code> if the {@link IFile file} contains no or multiple root
+	 * objects.
 	 * 
 	 * @param file
 	 *            The {@link IFile file} containing the model.
@@ -346,18 +354,20 @@ public final class EcorePlatformUtil {
 	 *            The {@link TransactionalEditingDomain editing domain} the {@link IFile file} belongs to.
 	 * @param options
 	 *            The options to be used for loading the model.
-	 * @return The {@link EObject root object} of the model in given {@link IFile file} or <tt>null</tt> if the
-	 *         {@link IFile file} is empty.
+	 * @return The {@link EObject root object} of the model in given {@link IFile file} or <code>null</code> if the
+	 *         {@link IFile file} contains no or multiple root objects.
 	 * @see EcoreResourceUtil#getDefaultLoadOptions()
+	 * @deprecated Use {@link #loadModelRoot(TransactionalEditingDomain, IFile, Map)} instead.
 	 */
+	@Deprecated
 	public static EObject loadModelRoot(TransactionalEditingDomain editingDomain, IFile file) {
 		return loadModelRoot(editingDomain, file, EcoreResourceUtil.getDefaultLoadOptions());
 	}
 
 	/**
 	 * Loads the model contained in given {@link IFile file} into given {@link TransactionalEditingDomain editing
-	 * domain} using given load options and returns its {@link EObject root object}. Returns <tt>null</tt> if the
-	 * {@link IFile file} is empty.
+	 * domain} using given load options and returns its {@link EObject root object}. Returns <code>null</code> if the
+	 * {@link IFile file} contains no or multiple root objects.
 	 * 
 	 * @param file
 	 *            The {@link IFile file} containing the model; must not be <code>null</code>.
@@ -366,9 +376,12 @@ public final class EcorePlatformUtil {
 	 *            <code>null</code>.
 	 * @param options
 	 *            The options to be used for loading the model.
-	 * @return The {@link EObject root object} of the model in given {@link IFile file} or <tt>null</tt> if the
-	 *         {@link IFile file} is empty.
+	 * @return The {@link EObject root object} of the model in given {@link IFile file} or <code>null</code> if the
+	 *         {@link IFile file} contains no or multiple root objects.
+	 * @deprecated Use {@link #loadResource(TransactionalEditingDomain, IFile, Map)} or
+	 *             {@link #loadEObject(TransactionalEditingDomain, URI)} instead.
 	 */
+	@Deprecated
 	public static EObject loadModelRoot(final TransactionalEditingDomain editingDomain, final IFile file, final Map<?, ?> options) {
 		if (editingDomain != null && file != null) {
 			try {
@@ -383,6 +396,319 @@ public final class EcorePlatformUtil {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Retrieves the model {@link EObject object} referenced by provided {@link URI} from the {@link ResourceSet
+	 * resource set} of the {@link TransactionalEditingDomain editing domain} the URI is mapped to. Returns
+	 * <code>null</code> if the {@link Resource resource} containing the model object referenced by the URI has not yet
+	 * been loaded into the editing domain's resource set.
+	 * 
+	 * @param uri
+	 *            The URI that identifies the model object to be retrieved.
+	 * @return The model object referenced by provided URI or <code>null</code> if referenced model object does not
+	 *         exist in underlying resource or the latter has not yet been loaded into the editing domain's resource
+	 *         set.
+	 */
+	public static EObject getEObject(URI uri) {
+		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
+		if (editingDomain != null) {
+			return getEObject(editingDomain, uri);
+		}
+		return null;
+	}
+
+	/**
+	 * Retrieves the model {@link EObject object} referenced by provided {@link URI} from the {@link ResourceSet
+	 * resource set} of given {@link TransactionalEditingDomain editing domain}. Returns <code>null</code> if the
+	 * {@link Resource resource} containing the model object referenced by the URI has not yet been loaded into the
+	 * editing domain's resource set.
+	 * 
+	 * @param editingDomain
+	 *            The editing domain from the resource set of which the model object is to be retrieved.
+	 * @param uri
+	 *            The URI that identifies the model object to be retrieved.
+	 * @return The model object from given editing domain's resource set referenced by provided URI or <code>null</code>
+	 *         if the referenced model object does not exist in underlying resource or the latter has not yet been
+	 *         loaded into the editing domain's resource set.
+	 */
+	public static EObject getEObject(final TransactionalEditingDomain editingDomain, final URI uri) {
+		if (editingDomain != null && uri != null) {
+			try {
+				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
+					public void run() {
+						setResult(EcoreResourceUtil.getEObject(editingDomain.getResourceSet(), uri));
+					}
+				});
+			} catch (InterruptedException ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Retrieves the model {@link EObject object} referenced by provided {@link URI} from the {@link ResourceSet
+	 * resource set} of the {@link TransactionalEditingDomain editing domain} the URI is mapped to. Loads the
+	 * {@link Resource resource} containing the model object referenced by the URI into the editing domain's resource
+	 * set if this has not yet been done.
+	 * 
+	 * @param uri
+	 *            The URI that identifies the model object to be retrieved.
+	 * @return The model object referenced by provided URI or <code>null</code> if referenced model object does not
+	 *         exist in underlying resource.
+	 */
+	public static EObject loadEObject(URI uri) {
+		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
+		if (editingDomain != null) {
+			return loadEObject(editingDomain, uri);
+		}
+		return null;
+	}
+
+	/**
+	 * Retrieves the model {@link EObject object} referenced by provided {@link URI} from the {@link ResourceSet
+	 * resource set} of given {@link TransactionalEditingDomain editing domain}. Loads the {@link Resource resource}
+	 * containing the model object referenced by the URI into the editing domain's resource set if this has not yet been
+	 * done.
+	 * 
+	 * @param editingDomain
+	 *            The editing domain from the resource set of which the model object is to be retrieved.
+	 * @param uri
+	 *            The URI that identifies the model object to be retrieved.
+	 * @return The model object from given editing domain's resource set referenced by provided URI or <code>null</code>
+	 *         if referenced model object does not exist in underlying resource.
+	 */
+	public static EObject loadEObject(final TransactionalEditingDomain editingDomain, final URI uri) {
+		if (editingDomain != null && uri != null) {
+			try {
+				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
+					public void run() {
+						setResult(EcoreResourceUtil.loadEObject(editingDomain.getResourceSet(), uri));
+					}
+				});
+			} catch (InterruptedException ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the {@linkplain Resource resource} corresponding to the specified {@linkplain Object object}.
+	 * <p>
+	 * The supported object types are:
+	 * <ul>
+	 * <li>{@linkplain org.eclipse.core.resources.IFile}</li>
+	 * <li>{@linkplain org.eclipse.emf.common.util.URI}</li>
+	 * <li>{@linkplain org.eclipse.emf.ecore.resource.Resource}</li>
+	 * <li>{@linkplain org.eclipse.emf.ecore.EObject}</li>
+	 * <li>{@linkplain org.eclipse.emf.ecore.util.FeatureMap.Entry}</li>
+	 * <li>{@linkplain org.eclipse.emf.edit.provider.IWrapperItemProvider}</li>
+	 * </ul>
+	 * <p>
+	 * If the type of the specified object does not belongs to that list of supported types, <code>null</code> is
+	 * returned.
+	 * 
+	 * @param object
+	 *            The object from which a resource must be returned.
+	 * @return The underlying resource from the given object.
+	 */
+	public static Resource getResource(Object object) {
+		if (object instanceof IFile) {
+			return getResource((IFile) object);
+		} else if (object instanceof URI) {
+			return getResource((URI) object);
+		} else if (object instanceof Resource) {
+			return (Resource) object;
+		} else if (object instanceof EObject) {
+			return getResource((EObject) object);
+		} else if (object instanceof IWrapperItemProvider) {
+			return getResource((IWrapperItemProvider) object);
+		} else if (object instanceof FeatureMap.Entry) {
+			return getResource((FeatureMap.Entry) object);
+		} else if (object instanceof TransientItemProvider) {
+			return getResource((TransientItemProvider) object);
+		}
+		return null;
+	}
+
+	/**
+	 * Retrieves the {@linkplain Resource resource} corresponding to the given {@link IFile file}.
+	 * 
+	 * @param file
+	 *            The {@linkplain IFile file} whose {@link Resource resource} is to be returned.
+	 * @return The resource corresponding to the specified {@link IFile file}.
+	 */
+	public static Resource getResource(final IFile file) {
+		final TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getCurrentEditingDomain(file);
+		if (editingDomain != null) {
+			try {
+				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Resource>() {
+					public void run() {
+						URI uri = createURI(file.getFullPath());
+						setResult(editingDomain.getResourceSet().getResource(uri, false));
+					}
+				});
+			} catch (InterruptedException ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the {@linkplain Resource resource} corresponding to the specified {@link URI uri}.
+	 * 
+	 * @param uri
+	 *            The {@linkplain URI} of the resource to return.
+	 * @return The resource corresponding to the specified {@link URI uri}.
+	 */
+	public static Resource getResource(final URI uri) {
+		IFile file = getFile(uri);
+		final TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getCurrentEditingDomain(file);
+		if (editingDomain != null) {
+			try {
+				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Resource>() {
+					public void run() {
+						setResult(editingDomain.getResourceSet().getResource(uri.trimFragment().trimQuery(), false));
+					}
+				});
+			} catch (InterruptedException ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Retrieves the {@linkplain Resource resource} corresponding to the given {@link EObject object}.
+	 * 
+	 * @param eObject
+	 *            The {@linkplain EObject object} whose {@link Resource resource} is to be returned.
+	 * @return The resource corresponding to the specified {@link EObject object}.
+	 */
+	public static Resource getResource(final EObject eObject) {
+		return EcoreResourceUtil.getResource(eObject);
+	}
+
+	/**
+	 * Retrieves the {@linkplain Resource resource} owning the given {@link IWrapperItemProvider provider}.
+	 * <p>
+	 * First retrieves the owner of the {@link IWrapperItemProvider provider}; then, if owner is an {@linkplain EObject}
+	 * returns its resource, else delegates to {@linkplain #getResource(Object)}.
+	 * 
+	 * @param provider
+	 *            The {@linkplain IWrapperItemProvider} whose resource must be returned.
+	 * @return The resource containing the specified {@link IWrapperItemProvider provider}; <code>null</code> if that
+	 *         provider is <code>null</code>.
+	 */
+	public static Resource getResource(final IWrapperItemProvider provider) {
+		return EcoreResourceUtil.getResource(provider);
+	}
+
+	/**
+	 * Retrieves the {@linkplain Resource resource} matching the given {@link FeatureMap.Entry entry}.
+	 * <p>
+	 * First unwraps the {@link FeatureMap.Entry entry}; then, delegates to {@linkplain #getResource(Object)}.
+	 * 
+	 * @param entry
+	 *            The {@linkplain FeatureMap.Entry} whose underlying resource must be returned.
+	 * @return The resource under the specified {@link FeatureMap.Entry entry}.
+	 */
+	public static Resource getResource(FeatureMap.Entry entry) {
+		return EcoreResourceUtil.getResource(entry);
+	}
+
+	/**
+	 * Retrieves the {@linkplain Resource resource} owning the given {@link TransientItemProvider provider}.
+	 * <p>
+	 * First retrieves the owner of the {@link TransientItemProvider provider}; then, if owner is an
+	 * {@linkplain EObject} returns its resource.
+	 * 
+	 * @param provider
+	 *            The {@linkplain TransientItemProvider} whose resource must be returned.
+	 * @return The resource containing the specified {@link TransientItemProvider provider}; <code>null</code> if that
+	 *         provider is <code>null</code>.
+	 */
+	public static Resource getResource(final TransientItemProvider provider) {
+		return EcoreResourceUtil.getResource(provider);
+	}
+
+	/**
+	 * Loads the {@link Resource resource} referred to by given {@link IFile file}.
+	 * 
+	 * @param file
+	 *            The file from which the resource is to be loaded.
+	 * @param options
+	 *            Optional custom load options to be used for loading the resource. May be set to <code>null</code> if
+	 *            not such are needed.
+	 * @return The resource referred to by given file.
+	 * @see #loadResource(TransactionalEditingDomain, IFile, Map)
+	 */
+	public static Resource loadResource(IFile file, Map<?, ?> options) {
+		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(file);
+		if (editingDomain != null) {
+			return loadResource(editingDomain, file, options);
+		}
+		return null;
+	}
+
+	/**
+	 * Loads the {@link Resource resource} referred to by given {@link IFile file} into the {@link ResourceSet resource
+	 * set} of given {@link TransactionalEditingDomain editing domain}.
+	 * 
+	 * @param file
+	 *            The file from which the resource is to be loaded.
+	 * @param editingDomain
+	 *            The editing domain into the resource set of which the file is to be loaded.
+	 * @param options
+	 *            Optional custom load options to be used for loading the resource. May be set to <code>null</code> if
+	 *            not such are needed.
+	 * @return The resource referred to by given file.
+	 * @see #loadResource(IFile, Map)
+	 */
+	public static Resource loadResource(final TransactionalEditingDomain editingDomain, final IFile file, final Map<?, ?> options) {
+		if (editingDomain != null && file != null) {
+			try {
+				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Resource>() {
+					public void run() {
+						URI uri = createURI(file.getFullPath());
+						setResult(EcoreResourceUtil.loadResource(editingDomain.getResourceSet(), uri, options));
+					}
+				});
+			} catch (InterruptedException ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Tests if the given {@link Resource resource} is loaded in the {@link ResourceSet resource set} of given
+	 * {@link TransactionalEditingDomain editingDomain}.
+	 * 
+	 * @param editingDomain
+	 *            The {@link TransactionalEditingDomain editing domain} with the {@link ResourceSet resource set} to be
+	 *            investigated.
+	 * @param resource
+	 *            The {@link Resource resource} that may or not be loaded.
+	 * @return <code>true</code> if specified {@link Resource resource} is loaded in {@link ResourceSet resource set} of
+	 *         given {@link TransactionalEditingDomain editingDomain}; <code>false</code> otherwise.
+	 */
+	public static boolean isResourceLoaded(final TransactionalEditingDomain editingDomain, final Resource resource) {
+		if (editingDomain != null && resource != null) {
+			try {
+				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Boolean>() {
+					public void run() {
+						setResult(EcoreResourceUtil.isResourceLoaded(editingDomain.getResourceSet(), resource.getURI()));
+					}
+				});
+			} catch (InterruptedException ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -435,74 +761,6 @@ public final class EcorePlatformUtil {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Tests if the given {@link Resource resource} is loaded in the {@link ResourceSet resource set} of given
-	 * {@link TransactionalEditingDomain editingDomain}.
-	 * 
-	 * @param editingDomain
-	 *            The {@link TransactionalEditingDomain editing domain} with the {@link ResourceSet resource set} to be
-	 *            investigated.
-	 * @param resource
-	 *            The {@link Resource resource} that may or not be loaded.
-	 * @return <code>true</code> if specified {@link Resource resource} is loaded in {@link ResourceSet resource set} of
-	 *         given {@link TransactionalEditingDomain editingDomain}; <code>false</code> otherwise.
-	 */
-	public static boolean isResourceLoaded(final TransactionalEditingDomain editingDomain, final Resource resource) {
-		if (editingDomain != null && resource != null) {
-			try {
-				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Boolean>() {
-					public void run() {
-						setResult(EcoreResourceUtil.isResourceLoaded(editingDomain.getResourceSet(), resource.getURI()));
-					}
-				});
-			} catch (InterruptedException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Tests if the given {@link IFile file} is loaded in the {@link ResourceSet resource set} of some
-	 * {@link TransactionalEditingDomain editingDomain}.
-	 * 
-	 * @param file
-	 *            The {@link IFile file} that may or not be loaded.
-	 * @return <code>true</code> if specified {@link IFile file} is loaded in {@link ResourceSet resource set} of some
-	 *         {@link TransactionalEditingDomain editingDomain}; <code>false</code> otherwise.
-	 */
-	public static boolean isFileLoaded(IFile file) {
-		return WorkspaceEditingDomainUtil.getCurrentEditingDomain(file) != null;
-	}
-
-	/**
-	 * Tests if the given {@link IFile file} is loaded in the {@link ResourceSet resource set} of the given
-	 * {@link TransactionalEditingDomain editingDomain}.
-	 * 
-	 * @param editingDomain
-	 *            The {@link TransactionalEditingDomain editing domain} with the {@link ResourceSet resource set} to be
-	 *            investigated.
-	 * @param file
-	 *            The {@link IFile file} that may or not be loaded.
-	 * @return <code>true</code> if specified {@link IFile file} is loaded in {@link ResourceSet resource set} of given
-	 *         {@link TransactionalEditingDomain editingDomain}; <code>false</code> otherwise.
-	 */
-	public static boolean isFileLoaded(final TransactionalEditingDomain editingDomain, final IFile file) {
-		if (editingDomain != null && file != null) {
-			try {
-				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Boolean>() {
-					public void run() {
-						URI uri = createURI(file.getFullPath());
-						setResult(EcoreResourceUtil.isResourceLoaded(editingDomain.getResourceSet(), uri));
-					}
-				});
-			} catch (InterruptedException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
-		}
-		return false;
 	}
 
 	/**
@@ -684,144 +942,44 @@ public final class EcorePlatformUtil {
 	}
 
 	/**
-	 * Returns the {@linkplain Resource resource} corresponding to the specified {@linkplain Object object}.
-	 * <p>
-	 * The supported object types are:
-	 * <ul>
-	 * <li>{@linkplain org.eclipse.core.resources.IFile}</li>
-	 * <li>{@linkplain org.eclipse.emf.common.util.URI}</li>
-	 * <li>{@linkplain org.eclipse.emf.ecore.resource.Resource}</li>
-	 * <li>{@linkplain org.eclipse.emf.ecore.EObject}</li>
-	 * <li>{@linkplain org.eclipse.emf.ecore.util.FeatureMap.Entry}</li>
-	 * <li>{@linkplain org.eclipse.emf.edit.provider.IWrapperItemProvider}</li>
-	 * </ul>
-	 * <p>
-	 * If the type of the specified object does not belongs to that list of supported types, <code>null</code> is
-	 * returned.
-	 * 
-	 * @param object
-	 *            The object from which a resource must be returned.
-	 * @return The underlying resource from the given object.
-	 */
-	public static Resource getResource(Object object) {
-		if (object instanceof IFile) {
-			return getResource((IFile) object);
-		} else if (object instanceof URI) {
-			return getResource((URI) object);
-		} else if (object instanceof Resource) {
-			return (Resource) object;
-		} else if (object instanceof EObject) {
-			return getResource((EObject) object);
-		} else if (object instanceof IWrapperItemProvider) {
-			return getResource((IWrapperItemProvider) object);
-		} else if (object instanceof FeatureMap.Entry) {
-			return getResource((FeatureMap.Entry) object);
-		} else if (object instanceof TransientItemProvider) {
-			return getResource((TransientItemProvider) object);
-		}
-		return null;
-	}
-
-	/**
-	 * Retrieves the {@linkplain Resource resource} corresponding to the given {@link IFile file}.
+	 * Tests if the given {@link IFile file} is loaded in the {@link ResourceSet resource set} of some
+	 * {@link TransactionalEditingDomain editingDomain}.
 	 * 
 	 * @param file
-	 *            The {@linkplain IFile file} whose {@link Resource resource} is to be returned.
-	 * @return The resource corresponding to the specified {@link IFile file}.
+	 *            The {@link IFile file} that may or not be loaded.
+	 * @return <code>true</code> if specified {@link IFile file} is loaded in {@link ResourceSet resource set} of some
+	 *         {@link TransactionalEditingDomain editingDomain}; <code>false</code> otherwise.
 	 */
-	public static Resource getResource(final IFile file) {
-		final TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getCurrentEditingDomain(file);
-		if (editingDomain != null) {
+	public static boolean isFileLoaded(IFile file) {
+		return WorkspaceEditingDomainUtil.getCurrentEditingDomain(file) != null;
+	}
+
+	/**
+	 * Tests if the given {@link IFile file} is loaded in the {@link ResourceSet resource set} of the given
+	 * {@link TransactionalEditingDomain editingDomain}.
+	 * 
+	 * @param editingDomain
+	 *            The {@link TransactionalEditingDomain editing domain} with the {@link ResourceSet resource set} to be
+	 *            investigated.
+	 * @param file
+	 *            The {@link IFile file} that may or not be loaded.
+	 * @return <code>true</code> if specified {@link IFile file} is loaded in {@link ResourceSet resource set} of given
+	 *         {@link TransactionalEditingDomain editingDomain}; <code>false</code> otherwise.
+	 */
+	public static boolean isFileLoaded(final TransactionalEditingDomain editingDomain, final IFile file) {
+		if (editingDomain != null && file != null) {
 			try {
-				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Resource>() {
+				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Boolean>() {
 					public void run() {
 						URI uri = createURI(file.getFullPath());
-						setResult(editingDomain.getResourceSet().getResource(uri, false));
+						setResult(EcoreResourceUtil.isResourceLoaded(editingDomain.getResourceSet(), uri));
 					}
 				});
 			} catch (InterruptedException ex) {
 				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			}
 		}
-		return null;
-	}
-
-	/**
-	 * Returns the {@linkplain Resource resource} corresponding to the specified {@link URI uri}.
-	 * 
-	 * @param uri
-	 *            The {@linkplain URI} of the resource to return.
-	 * @return The resource corresponding to the specified {@link URI uri}.
-	 */
-	public static Resource getResource(final URI uri) {
-		IFile file = getFile(uri);
-		final TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getCurrentEditingDomain(file);
-		if (editingDomain != null) {
-			try {
-				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Resource>() {
-					public void run() {
-						setResult(editingDomain.getResourceSet().getResource(uri.trimFragment(), false));
-					}
-				});
-			} catch (InterruptedException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Retrieves the {@linkplain Resource resource} corresponding to the given {@link EObject object}.
-	 * 
-	 * @param eObject
-	 *            The {@linkplain EObject object} whose {@link Resource resource} is to be returned.
-	 * @return The resource corresponding to the specified {@link EObject object}.
-	 */
-	public static Resource getResource(final EObject eObject) {
-		return EcoreResourceUtil.getResource(eObject);
-	}
-
-	/**
-	 * Retrieves the {@linkplain Resource resource} owning the given {@link IWrapperItemProvider provider}.
-	 * <p>
-	 * First retrieves the owner of the {@link IWrapperItemProvider provider}; then, if owner is an {@linkplain EObject}
-	 * returns its resource, else delegates to {@linkplain #getResource(Object)}.
-	 * 
-	 * @param provider
-	 *            The {@linkplain IWrapperItemProvider} whose resource must be returned.
-	 * @return The resource containing the specified {@link IWrapperItemProvider provider}; <code>null</code> if that
-	 *         provider is <code>null</code>.
-	 */
-	public static Resource getResource(final IWrapperItemProvider provider) {
-		return EcoreResourceUtil.getResource(provider);
-	}
-
-	/**
-	 * Retrieves the {@linkplain Resource resource} matching the given {@link FeatureMap.Entry entry}.
-	 * <p>
-	 * First unwraps the {@link FeatureMap.Entry entry}; then, delegates to {@linkplain #getResource(Object)}.
-	 * 
-	 * @param entry
-	 *            The {@linkplain FeatureMap.Entry} whose underlying resource must be returned.
-	 * @return The resource under the specified {@link FeatureMap.Entry entry}.
-	 */
-	public static Resource getResource(FeatureMap.Entry entry) {
-		return EcoreResourceUtil.getResource(entry);
-	}
-
-	/**
-	 * Retrieves the {@linkplain Resource resource} owning the given {@link TransientItemProvider provider}.
-	 * <p>
-	 * First retrieves the owner of the {@link TransientItemProvider provider}; then, if owner is an
-	 * {@linkplain EObject} returns its resource.
-	 * 
-	 * @param provider
-	 *            The {@linkplain TransientItemProvider} whose resource must be returned.
-	 * @return The resource containing the specified {@link TransientItemProvider provider}; <code>null</code> if that
-	 *         provider is <code>null</code>.
-	 */
-	public static Resource getResource(final TransientItemProvider provider) {
-		return EcoreResourceUtil.getResource(provider);
+		return false;
 	}
 
 	/**

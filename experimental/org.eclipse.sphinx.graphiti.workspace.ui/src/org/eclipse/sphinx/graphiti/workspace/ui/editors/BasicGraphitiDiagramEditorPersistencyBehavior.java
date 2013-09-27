@@ -52,7 +52,7 @@ public class BasicGraphitiDiagramEditorPersistencyBehavior extends DefaultPersis
 						public void run() {
 							EObject modelObject = null;
 							if (uri.hasFragment()) {
-								modelObject = EcoreResourceUtil.loadModelFragment(editingDomain.getResourceSet(), uri);
+								modelObject = EcoreResourceUtil.loadEObject(editingDomain.getResourceSet(), uri);
 							} else {
 								modelObject = EcoreResourceUtil.loadModelRoot(editingDomain.getResourceSet(), uri, Collections.emptyMap());
 							}

@@ -140,8 +140,7 @@ public class ModelCompareActionBarContributor extends EditingDomainActionBarCont
 	 * 
 	 * @return The {@linkplain RedoAction} this action bar contributor must provide.
 	 */
-	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
-	// @Override
+	@Override
 	protected RedoAction createRedoAction() {
 		return new RedoActionWrapper();
 	}
@@ -153,8 +152,7 @@ public class ModelCompareActionBarContributor extends EditingDomainActionBarCont
 	 * 
 	 * @return The {@linkplain UndoAction} this action bar contributor must provide.
 	 */
-	// FIXME Uncomment @Override once we don't need to support Eclipse 3.5 any longer
-	// @Override
+	@Override
 	protected UndoAction createUndoAction() {
 		return new UndoActionWrapper();
 	}

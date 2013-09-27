@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys, itemis and others.
+ * Copyright (c) 2011-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [358131] Make Xtend/Xpand/CheckJobs more robust against template file encoding mismatches
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -56,7 +57,7 @@ public class XtendJobTest extends XtendXpandIntegrationTestCase {
 		assertTrue(extFile.exists());
 
 		// Get the first package of the UML2 file
-		Model umlModel = (Model) EcorePlatformUtil.loadModelRoot(refWks.editingDomainUml2, umlModelFile);
+		Model umlModel = (Model) EcorePlatformUtil.loadModelRoot(refWks.editingDomainUml2, umlModelFile, null);
 		assertNotNull(umlModel);
 		PackageableElement fistPackage = umlModel.getPackagedElements().get(0);
 		assertNotNull(fistPackage);

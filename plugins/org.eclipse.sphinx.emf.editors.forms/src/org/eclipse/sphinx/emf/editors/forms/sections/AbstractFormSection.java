@@ -18,8 +18,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.provider.AdapterFactoryItemDelegator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.sphinx.emf.editors.forms.layouts.LayoutFactory;
@@ -100,6 +102,10 @@ public abstract class AbstractFormSection implements IFormSection {
 	}
 
 	protected String getSectionInputName() {
+		if (sectionInput instanceof Resource) {
+			URI sectionInputURI = ((Resource) sectionInput).getURI();
+			return sectionInputURI.segmentCount() > 0 ? sectionInputURI.segment(sectionInputURI.segmentCount() - 1) : sectionInputURI.toString();
+		}
 		AdapterFactoryItemDelegator itemDelegator = formPage.getItemDelegator();
 		if (itemDelegator != null) {
 			return itemDelegator.getText(sectionInput);

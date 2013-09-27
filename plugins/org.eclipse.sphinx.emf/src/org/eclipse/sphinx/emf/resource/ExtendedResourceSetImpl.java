@@ -605,9 +605,8 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	 */
 	protected EObject safeGetEObjectFromResource(Resource resource, String uriFragment) {
 		Assert.isNotNull(resource);
-		Assert.isNotNull(uriFragment);
 
-		if (resource.isLoaded()) {
+		if (resource.isLoaded() && uriFragment != null) {
 			try {
 				return resource.getEObject(uriFragment);
 			} catch (Exception ex) {
@@ -615,10 +614,10 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 				resource.getErrors().add(
 						new ProxyURIIntegrityException(NLS.bind(Messages.error_problemOccurredWhenResolvingProxyURI, uriFragment), ex));
 			}
-		}
 
-		// Handle problems that may have been encountered during proxy resolution
-		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resource, null);
+			// Handle problems that may have been encountered during proxy resolution
+			ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resource, null);
+		}
 
 		return null;
 	}

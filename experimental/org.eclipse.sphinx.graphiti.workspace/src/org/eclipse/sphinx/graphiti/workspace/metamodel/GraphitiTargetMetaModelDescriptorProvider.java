@@ -45,18 +45,20 @@ public class GraphitiTargetMetaModelDescriptorProvider implements ITargetMetaMod
 	}
 
 	public IMetaModelDescriptor getDescriptor(Resource resource) {
-		EObject modelRoot = EcoreResourceUtil.getModelRoot(resource);
-		if (modelRoot instanceof PictogramElement) {
-			EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement((PictogramElement) modelRoot);
-			if (bo != null) {
-				return MetaModelDescriptorRegistry.INSTANCE.getDescriptor(bo);
+		if (resource != null && !resource.getContents().isEmpty()) {
+			EObject rootObject = resource.getContents().get(0);
+			if (rootObject instanceof PictogramElement) {
+				EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement((PictogramElement) rootObject);
+				if (bo != null) {
+					return MetaModelDescriptorRegistry.INSTANCE.getDescriptor(bo);
+				}
 			}
-		}
-		try {
-			String targetNamespace = EcoreResourceUtil.readTargetNamespace(resource, targetNamespaceExcludePatterns);
-			return MetaModelDescriptorRegistry.INSTANCE.getDescriptor(new URI(targetNamespace));
-		} catch (URISyntaxException ex) {
-			// Ignore exception, just return null
+			try {
+				String targetNamespace = EcoreResourceUtil.readTargetNamespace(resource, targetNamespaceExcludePatterns);
+				return MetaModelDescriptorRegistry.INSTANCE.getDescriptor(new URI(targetNamespace));
+			} catch (URISyntaxException ex) {
+				// Ignore exception, just return null
+			}
 		}
 		return null;
 	}

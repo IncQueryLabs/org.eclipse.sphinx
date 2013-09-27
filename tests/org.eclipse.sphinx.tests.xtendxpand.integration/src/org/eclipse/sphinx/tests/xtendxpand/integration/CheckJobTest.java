@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -42,7 +43,7 @@ public class CheckJobTest extends XtendXpandIntegrationTestCase {
 		assertTrue(hb20TypeModelFile.exists());
 
 		// Load Hummingbird 2.0 type model file
-		Platform platform = (Platform) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20TypeModelFile);
+		Platform platform = (Platform) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20TypeModelFile, null);
 		assertNotNull(platform);
 
 		// Check existence of Hummingbird 2.0 instance model file
@@ -52,7 +53,7 @@ public class CheckJobTest extends XtendXpandIntegrationTestCase {
 		assertTrue(hb20InstanceModelFile.exists());
 
 		// Load Hummingbird 2.0 instance model file
-		Application application = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20InstanceModelFile);
+		Application application = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20InstanceModelFile, null);
 		assertNotNull(application);
 
 		// Check existence of check file

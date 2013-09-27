@@ -32,6 +32,7 @@ import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IMarkerDelta;
@@ -72,7 +73,7 @@ import org.eclipse.sphinx.emf.messages.EMFMessages;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.emf.workspace.domain.WorkspaceEditingDomainManager;
@@ -339,8 +340,11 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 					if (elementMemento.getString(TAG_PATH) != null) {
 						IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 						object = root.findMember(elementMemento.getString(TAG_PATH));
+						if (object instanceof IFile) {
+							EcorePlatformUtil.loadResource((IFile) object, null);
+						}
 					} else if (elementMemento.getString(TAG_URI) != null) {
-						object = getEObject(URI.createURI(elementMemento.getString(TAG_URI), true));
+						object = EcorePlatformUtil.getEObject(URI.createURI(elementMemento.getString(TAG_URI), true));
 					}
 					if (object != null) {
 						expandedElements.add(object);
@@ -355,7 +359,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 				for (IMemento elementMemento : selectedMemento.getChildren(TAG_ELEMENT)) {
 					Object object = null;
 					if (elementMemento.getString(TAG_URI) != null) {
-						object = getEObject(URI.createURI(elementMemento.getString(TAG_URI), true));
+						object = EcorePlatformUtil.getEObject(URI.createURI(elementMemento.getString(TAG_URI), true));
 					}
 					if (object != null) {
 						selectedElements.add(object);
@@ -439,7 +443,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 				Object object = null;
 				String uriAttribute = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
 				if (uriAttribute != null) {
-					object = getEObject(URI.createURI(uriAttribute, true));
+					object = EcorePlatformUtil.getEObject(URI.createURI(uriAttribute, true));
 				}
 				if (object != null) {
 					objects.add(object);
@@ -467,6 +471,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 	protected List<IMarker> retrieveRealMarkerSelection(Object input) {
 		if (input.getClass().toString().indexOf("MarkerAdapter") >= 0) { //$NON-NLS-1$
 			try {
+				// TODO Switch to using RelectUtil and eliminate call to Class#getDeclaredField()
 				Field declaredField = input.getClass().getDeclaredField("view"); //$NON-NLS-1$
 				if (declaredField != null) {
 					boolean oldAccessible = declaredField.isAccessible();
@@ -482,6 +487,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 					getViewer.setAccessible(true);
 					Object viewer = getViewer.invoke(object);
 					getViewer.setAccessible(oldAccessible);
+
 					if (viewer instanceof StructuredViewer) {
 						ISelection selection = ((StructuredViewer) viewer).getSelection();
 						ArrayList<IMarker> markers = new ArrayList<IMarker>();
@@ -574,24 +580,6 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 					return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<URI>() {
 						public void run() {
 							setResult(EcoreUtil.getURI(eObject));
-						}
-					});
-				} catch (InterruptedException ex) {
-					PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
-				}
-			}
-		}
-		return null;
-	}
-
-	protected EObject getEObject(final URI uri) {
-		if (uri != null) {
-			final TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
-			if (editingDomain != null) {
-				try {
-					return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
-						public void run() {
-							setResult(EcoreResourceUtil.loadModelFragment(editingDomain.getResourceSet(), uri));
 						}
 					});
 				} catch (InterruptedException ex) {

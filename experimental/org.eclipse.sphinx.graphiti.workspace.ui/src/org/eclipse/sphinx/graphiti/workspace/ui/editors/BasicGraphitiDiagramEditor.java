@@ -221,7 +221,7 @@ public class BasicGraphitiDiagramEditor extends DiagramEditor implements ISaveab
 			return ModelDescriptorRegistry.INSTANCE.getModel(((IFileEditorInput) editorInput).getFile());
 		} else if (editorInput instanceof URIEditorInput) {
 			URI uri = EcoreUIUtil.getURIFromEditorInput(editorInput);
-			EObject modelFragment = EcoreResourceUtil.getModelFragment(getResourceSet(), uri);
+			EObject modelFragment = EcoreResourceUtil.getEObject(getResourceSet(), uri);
 			if (modelFragment != null) {
 				return ModelDescriptorRegistry.INSTANCE.getModel(modelFragment.eResource());
 			}

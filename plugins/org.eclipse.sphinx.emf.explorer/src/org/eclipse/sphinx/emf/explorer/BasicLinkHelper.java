@@ -71,7 +71,7 @@ public class BasicLinkHelper implements ILinkHelper {
 				try {
 					return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
 						public void run() {
-							setResult(EcoreResourceUtil.loadModelFragment(editingDomain.getResourceSet(), uri));
+							setResult(EcoreResourceUtil.loadEObject(editingDomain.getResourceSet(), uri));
 						}
 					});
 				} catch (InterruptedException ex) {

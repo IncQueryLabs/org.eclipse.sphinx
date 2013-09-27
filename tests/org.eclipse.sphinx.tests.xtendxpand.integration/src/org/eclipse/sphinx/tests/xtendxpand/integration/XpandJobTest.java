@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  *     itemis - [406564] BasicWorkspaceResourceLoader#getResource should not delegate to super
+ *     itemis - [418005] Add support for model files with multiple root elements
  *
  * </copyright>
  */
@@ -53,7 +54,7 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		assertTrue(hb20InstanceModelFile.exists());
 
 		// Load Hummingbird 2.0 instance model file
-		Application application = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20InstanceModelFile);
+		Application application = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20InstanceModelFile, null);
 		assertNotNull(application);
 
 		/*
@@ -123,7 +124,7 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		assertTrue(hb20InstanceModelFile.exists());
 
 		// Load Hummingbird 2.0 instance model file
-		Application application = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20InstanceModelFile);
+		Application application = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20InstanceModelFile, null);
 		assertNotNull(application);
 
 		/*

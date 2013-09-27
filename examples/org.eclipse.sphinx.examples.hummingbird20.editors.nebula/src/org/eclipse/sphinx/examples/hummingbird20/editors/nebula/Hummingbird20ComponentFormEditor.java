@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2012 itemis and others.
+ * Copyright (c) 2012-2013 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     itemis - Initial API and implementation
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -39,7 +40,7 @@ public class Hummingbird20ComponentFormEditor extends BasicTransactionalFormEdit
 	@Override
 	protected void addPages() {
 		try {
-			Object input = getModelRoot();
+			Object input = getEditorInputObject();
 			if (input instanceof Component) {
 				addPage(new GenericParameterValuesOverviewPage(this));
 				addPage(new EditableParameterValuesOverviewPage(this));

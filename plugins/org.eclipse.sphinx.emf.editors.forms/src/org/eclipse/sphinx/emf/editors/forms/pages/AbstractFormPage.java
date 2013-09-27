@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 itemis, See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,8 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [393310] Viewer input for GenericContentsTreeSection should be calculated using content provider
- * 
+ *     itemis - [418005] Add support for model files with multiple root elements
+ *      
  * </copyright>
  */
 package org.eclipse.sphinx.emf.editors.forms.pages;
@@ -252,7 +253,7 @@ public abstract class AbstractFormPage extends FormPage {
 	}
 
 	protected Object getPageInputFromEditor() {
-		return getTransactionalFormEditor().getModelRoot();
+		return getTransactionalFormEditor().getEditorInputObject();
 	}
 
 	protected final void setPageInput(Object pageInput) {

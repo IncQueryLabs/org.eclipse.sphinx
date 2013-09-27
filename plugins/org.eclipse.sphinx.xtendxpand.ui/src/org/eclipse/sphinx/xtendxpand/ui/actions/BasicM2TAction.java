@@ -46,7 +46,6 @@ import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.mwe.resources.IWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.xtend.typesystem.emf.SphinxManagedEmfMetaModel;
 import org.eclipse.sphinx.xtendxpand.XpandEvaluationRequest;
@@ -88,7 +87,10 @@ public class BasicM2TAction extends BaseSelectionListenerAction {
 			return (EObject) selected;
 		}
 		Resource resource = EcorePlatformUtil.getResource(selected);
-		return EcoreResourceUtil.getModelRoot(resource);
+		if (resource != null && !resource.getContents().isEmpty()) {
+			return resource.getContents().get(0);
+		}
+		return null;
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 itemis, See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [393479] Enable BasicTabbedPropertySheetTitleProvider to retrieve same AdapterFactory as underlying IWorkbenchPart is using
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -47,7 +48,6 @@ import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.command.CommandStackListener;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.ui.URIEditorInput;
 import org.eclipse.emf.common.ui.viewer.IViewerProvider;
 import org.eclipse.emf.common.util.URI;
@@ -72,11 +72,9 @@ import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.ResourceSetChangeEvent;
 import org.eclipse.emf.transaction.ResourceSetListener;
 import org.eclipse.emf.transaction.ResourceSetListenerImpl;
-import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryContentProvider;
 import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryLabelProvider;
-import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.emf.workspace.EMFCommandOperation;
 import org.eclipse.emf.workspace.IWorkspaceCommandStack;
 import org.eclipse.emf.workspace.ResourceUndoContext;
@@ -174,14 +172,14 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	protected IUndoContext undoContext;
 
 	/**
-	 * The EObject that is currently being edited.
+	 * The editor input object that is currently being edited.
 	 */
-	private EObject modelRoot = null;
+	private Object editorInputObject = null;
 
 	/**
-	 * The EObject that has been edited before.
+	 * The editor input object that has been edited before.
 	 */
-	private EObject oldModelRoot = null;
+	private Object oldEditorInputObject = null;
 
 	/**
 	 * This is the content outline page.
@@ -232,7 +230,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	protected ISelection editorSelection = StructuredSelection.EMPTY;
 
 	/**
-	 * Indicated if this editor needs to be refreshed upon activation due to changed model root resource while editor
+	 * Indicated if this editor needs to be refreshed upon activation due to changed editor input resource while editor
 	 * has been inactive.
 	 */
 	protected boolean refreshOnActivation = false;
@@ -363,6 +361,14 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		}
 	}
 
+	protected Map<?, ?> getLoadOptions() {
+		return EcoreResourceUtil.getDefaultLoadOptions();
+	}
+
+	protected Map<?, ?> getSaveOptions() {
+		return EcoreResourceUtil.getDefaultSaveOptions();
+	}
+
 	/**
 	 * This is to make sure that one of the selection providers in one of the pages can shadows the selection in the
 	 * content outline. The parent relation must be correctly defined for this to work.
@@ -459,79 +465,51 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	}
 
 	/**
-	 * @return The root object of the model part that is currently being edited in this editor or <code>null</code> if
-	 *         no such is available.
+	 * @return The object behind the {@link IEditorInput editor input} that is currently being edited in this editor or
+	 *         <code>null</code> if no such is available.
+	 * @see #getOldEditorInputObject()
 	 */
-	public Object getModelRoot() {
-		if (modelRoot == null || modelRoot.eIsProxy() || modelRoot.eResource() == null || !modelRoot.eResource().isLoaded()) {
+	public Object getEditorInputObject() {
+		if (editorInputObject == null || editorInputObject instanceof EObject && ((EObject) editorInputObject).eIsProxy()
+				|| editorInputObject instanceof EObject && ((EObject) editorInputObject).eResource() == null || editorInputObject instanceof EObject
+				&& !((EObject) editorInputObject).eResource().isLoaded()) {
+
 			URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
 			if (editorInputURI != null) {
-				if (oldModelRoot == null) {
-					oldModelRoot = modelRoot;
+				if (oldEditorInputObject == null) {
+					oldEditorInputObject = editorInputObject;
 				}
 
-				modelRoot = getEObject(editorInputURI);
+				if (editorInputURI.hasFragment()) {
+					editorInputObject = EcorePlatformUtil.getEObject(editorInputURI);
+				} else {
+					editorInputObject = EcorePlatformUtil.getResource(editorInputURI);
+				}
 
-				if (modelRoot != null && oldModelRoot != null) {
-					oldModelRoot = null;
+				if (editorInputObject != null && oldEditorInputObject != null) {
+					oldEditorInputObject = null;
 				}
 			}
 		}
-		return modelRoot;
+		return editorInputObject;
 	}
 
 	/**
-	 * @return The root object of the model part that has been edited before if no such is currently available, or
-	 *         <code>null</code> otherwise.
-	 * @see #getModelRoot()
+	 * @return The object behind the {@link IEditorInput editor input} that has been edited before in case that actual
+	 *         editor input object has become unavailable, or <code>null</code> if actual editor input object is still
+	 *         available.
+	 * @see #getEditorInputObject()
 	 */
-	public Object getOldModelRoot() {
-		return oldModelRoot;
+	public Object getOldEditorInputObject() {
+		return oldEditorInputObject;
 	}
 
-	protected EObject getEObject(final URI uri) {
-		final TransactionalEditingDomain editingDomain = getEditingDomain(uri);
-		if (editingDomain != null) {
-			final boolean loadOnDemand = getEditorInput() instanceof FileStoreEditorInput ? true : false;
-			try {
-				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
-					public void run() {
-						if (uri.hasFragment()) {
-							setResult(EcoreResourceUtil.getModelFragment(editingDomain.getResourceSet(), uri, loadOnDemand));
-						} else {
-							setResult(EcoreResourceUtil.getModelRoot(editingDomain.getResourceSet(), uri, loadOnDemand));
-						}
-					}
-				});
-			} catch (InterruptedException ex) {
-				PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
-			}
-		}
-		return null;
-	}
-
-	protected TransactionalEditingDomain getEditingDomain(final URI uri) {
-		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
-		if (editingDomain == null && getEditorInput() instanceof FileStoreEditorInput) {
-			// If the file has been deleted
-			if (((FileStoreEditorInput) getEditorInput()).exists()) {
-				String modelNamespace = EcoreResourceUtil.readModelNamespace(null, EcoreUIUtil.getURIFromEditorInput(getEditorInput()));
-				editingDomain = WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping().getEditingDomain(null,
-						MetaModelDescriptorRegistry.INSTANCE.getDescriptor(java.net.URI.create(modelNamespace)));
-			}
-		}
-		return editingDomain;
-
-	}
-
-	protected Map<?, ?> getLoadOptions() {
-		return EcoreResourceUtil.getDefaultLoadOptions();
-	}
-
-	public Resource getModelRootResource() {
-		Object modelRoot = getModelRoot();
-		if (modelRoot instanceof EObject) {
-			return ((EObject) modelRoot).eResource();
+	public Resource getEditorInputResource() {
+		Object editorInputObject = getEditorInputObject();
+		if (editorInputObject instanceof EObject) {
+			return ((EObject) editorInputObject).eResource();
+		} else if (editorInputObject instanceof Resource) {
+			return (Resource) editorInputObject;
 		}
 		return null;
 	}
@@ -542,11 +520,13 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			return editorInput.getName();
 		}
 
-		Object modelRoot = getModelRoot();
-		AdapterFactoryItemDelegator itemDelegator = getItemDelegator();
-		if (modelRoot != null && itemDelegator != null) {
-			// Return label of model object on which editor has been opened
-			return itemDelegator.getText(modelRoot);
+		Object editorInputObject = getEditorInputObject();
+		if (editorInputObject != null) {
+			AdapterFactoryItemDelegator itemDelegator = getItemDelegator();
+			if (itemDelegator != null) {
+				// Return label of editor input object on which editor has been opened
+				return itemDelegator.getText(editorInputObject);
+			}
 		}
 
 		return editorInput.getName();
@@ -559,12 +539,14 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			return ExtendedImageRegistry.getInstance().getImage(imageDescriptor);
 		}
 
-		Object modelRoot = getModelRoot();
-		AdapterFactoryItemDelegator itemDelegator = getItemDelegator();
-		if (modelRoot != null && itemDelegator != null) {
-			// Return icon of model object on which editor has been opened
-			Object imageURL = itemDelegator.getImage(modelRoot);
-			return ExtendedImageRegistry.getInstance().getImage(imageURL);
+		Object editorInputObject = getEditorInputObject();
+		if (editorInputObject != null) {
+			AdapterFactoryItemDelegator itemDelegator = getItemDelegator();
+			if (itemDelegator != null) {
+				// Return icon of editor input object on which editor has been opened
+				Object imageURL = itemDelegator.getImage(editorInputObject);
+				return ExtendedImageRegistry.getInstance().getImage(imageURL);
+			}
 		}
 
 		ImageDescriptor imageDescriptor = editorInput.getImageDescriptor();
@@ -636,7 +618,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 					contentOutlineViewer.addSelectionChangedListener(this);
 
 					// Set up the tree viewer
-					Object modelRoot = getModelRoot();
+					Object editorInputObject = getEditorInputObject();
 					EditingDomain editingDomain = getEditingDomain();
 					AdapterFactory adapterFactory = getAdapterFactory();
 					if (editingDomain != null && adapterFactory != null) {
@@ -644,7 +626,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 								(TransactionalEditingDomain) editingDomain, adapterFactory));
 						contentOutlineViewer.setLabelProvider(new TransactionalAdapterFactoryLabelProvider(
 								(TransactionalEditingDomain) editingDomain, adapterFactory));
-						contentOutlineViewer.setInput(modelRoot);
+						contentOutlineViewer.setInput(editorInputObject);
 					} else {
 						if (contentOutlineViewer.getContentProvider() != null) {
 							contentOutlineViewer.setInput(null);
@@ -654,9 +636,9 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 					// Make sure our popups work
 					createContextMenuFor(contentOutlineViewer);
 
-					if (modelRoot != null) {
+					if (editorInputObject != null) {
 						// Select the root object in the view
-						contentOutlineViewer.setSelection(new StructuredSelection(modelRoot), true);
+						contentOutlineViewer.setSelection(new StructuredSelection(editorInputObject), true);
 					}
 				}
 
@@ -731,11 +713,15 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		if (getEditorInput() instanceof FileStoreEditorInput && ((FileStoreEditorInput) getEditorInput()).exists()) {
 			return ((BasicCommandStack) getEditingDomain().getCommandStack()).isSaveNeeded();
 		}
-		Object modelRoot = getModelRoot();
-		if (modelRoot instanceof EObject) {
-			// Return true if the model, this editor or both are dirty
-			return ModelSaveManager.INSTANCE.isDirty(((EObject) modelRoot).eResource());
+
+		// Check dirty state of model which the editor input object belongs to
+		Object editorInputObject = getEditorInputObject();
+		if (editorInputObject instanceof EObject) {
+			return ModelSaveManager.INSTANCE.isDirty(((EObject) editorInputObject).eResource());
+		} else if (editorInputObject instanceof Resource) {
+			return ModelSaveManager.INSTANCE.isDirty((Resource) editorInputObject);
 		}
+
 		return false;
 	}
 
@@ -745,6 +731,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		if (getEditorInput() instanceof FileStoreEditorInput && ((FileStoreEditorInput) getEditorInput()).exists()) {
 			return isDirty();
 		}
+
 		// Model-based editors don't need to be saved when being closed even if the model is dirty, because they don't
 		// own the model. The model is loaded, managed, and saved globally, i.e. it is not destroyed but stays there
 		// when editors are being closed.
@@ -760,10 +747,12 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			saveResource();
 		} else {
 			try {
-				Object modelRoot = getModelRoot();
-				if (modelRoot instanceof EObject) {
-					// Save the all dirty resources of underlying model
-					ModelSaveManager.INSTANCE.saveModel(((EObject) modelRoot).eResource(), getSaveOptions(), false, monitor);
+				// Save the all dirty resources of the model the editor input object belongs to
+				Object editorInputObject = getEditorInputObject();
+				if (editorInputObject instanceof EObject) {
+					ModelSaveManager.INSTANCE.saveModel(((EObject) editorInputObject).eResource(), getSaveOptions(), false, monitor);
+				} else if (editorInputObject instanceof Resource) {
+					ModelSaveManager.INSTANCE.saveModel((Resource) editorInputObject, getSaveOptions(), false, monitor);
 				}
 			} finally {
 				/*
@@ -799,11 +788,11 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			public void execute(IProgressMonitor monitor) {
 				// Save the resources to the file system.
 				//
-				if ((!getModelRootResource().getContents().isEmpty() || isPersisted(getModelRootResource()))
-						&& !editingDomain.isReadOnly(getModelRootResource())) {
+				Resource editorInputResource = getEditorInputResource();
+				if (editorInputResource != null && (!editorInputResource.getContents().isEmpty() || isPersisted(editorInputResource))
+						&& !editingDomain.isReadOnly(editorInputResource)) {
 					try {
-						getModelRootResource().save(saveOptions);
-
+						editorInputResource.save(saveOptions);
 					} catch (Exception exception) {
 						PlatformLogUtil.logAsError(Activator.getPlugin(), exception);
 					}
@@ -845,10 +834,6 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		return result;
 	}
 
-	protected Map<?, ?> getSaveOptions() {
-		return EcoreResourceUtil.getDefaultSaveOptions();
-	}
-
 	@Override
 	public boolean isSaveAsAllowed() {
 		return true;
@@ -863,7 +848,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		saveAsDialog.open();
 		IPath path = saveAsDialog.getResult();
 		if (path != null) {
-			// Create URI of new model root resource
+			// Create URI of new editor input resource
 			final URI newResourceURI = EcorePlatformUtil.createURI(path);
 
 			// Changing the URI is, conceptually, a write operation. However, it does not affect the abstract state
@@ -874,9 +859,9 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 					((TransactionalEditingDomain) editingDomain).runExclusive(new Runnable() {
 						public void run() {
 							// Change saved resource's URI
-							Resource rootResource = getModelRootResource();
-							if (rootResource != null) {
-								rootResource.setURI(newResourceURI);
+							Resource editorInputResource = getEditorInputResource();
+							if (editorInputResource != null) {
+								editorInputResource.setURI(newResourceURI);
 							}
 
 							// Update editor input
@@ -903,12 +888,16 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			if (marker.isSubtypeOf(EValidator.MARKER)) {
 				final String uriAttribute = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
 				if (uriAttribute != null) {
-					Notifier notifier = getEObject(URI.createURI(uriAttribute, true));
-					if (notifier != null) {
-						EditingDomain editingDomain = getEditingDomain();
-						if (editingDomain != null) {
-							setSelectionToViewer(Collections.singleton(((AdapterFactoryEditingDomain) editingDomain).getWrapper(notifier)));
-						}
+					EditingDomain editingDomain = getEditingDomain();
+					if (editingDomain != null) {
+						EObject object = EcorePlatformUtil.getEObject(URI.createURI(uriAttribute, true));
+
+						// FIXME This way of retrieving the wrapped object is not appropriate in case that the editor,
+						// its pages or sections use custom adapter factories instead of the standard adapter factory of
+						// the underlying editing domain
+						Object wrappedObject = ((AdapterFactoryEditingDomain) editingDomain).getWrapper(object);
+
+						setSelectionToViewer(Collections.singleton(wrappedObject));
 					}
 				}
 			}
@@ -982,10 +971,10 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	}
 
 	public ISelection getDefaultSelection() {
-		// Try to return model root object as default selection
-		Object modelRoot = getModelRoot();
-		if (modelRoot != null) {
-			return new StructuredSelection(modelRoot);
+		// Try to return editor input object as default selection
+		Object editorInputObject = getEditorInputObject();
+		if (editorInputObject != null) {
+			return new StructuredSelection(editorInputObject);
 		}
 		return StructuredSelection.EMPTY;
 	}
@@ -1091,7 +1080,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 		// Unload the resource when disposing the editor if resource is outside the workspace
 		if (getEditorInput() instanceof FileStoreEditorInput) {
-			EcoreResourceUtil.unloadResource(getModelRootResource(), true);
+			EcoreResourceUtil.unloadResource(getEditorInputResource(), true);
 		}
 
 		super.dispose();
@@ -1227,10 +1216,10 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 							// Has loaded resource not been unloaded again subsequently?
 							if (loadedResource.isLoaded()) {
 
-								// Is loaded resource equal to model root resource?
+								// Is loaded resource equal to editor input resource?
 								URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
 								if (editorInputURI != null && loadedResource.getURI().equals(editorInputURI.trimFragment())) {
-									// Handle loaded model root resource
+									// Handle loaded editor input resource
 									handleModelRootResourceLoaded();
 									break;
 								}
@@ -1287,12 +1276,12 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 					if (object instanceof Notification) {
 						Notification notification = (Notification) object;
 
-						// Is removed resource equal to model root resource?
+						// Is removed resource equal to editor input resource?
 						if (notification.getOldValue() instanceof URI) {
 							URI oldResourceURI = (URI) notification.getOldValue();
 							URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
 							if (editorInputURI != null && oldResourceURI != null && oldResourceURI.equals(editorInputURI.trimFragment())) {
-								// Handle moved model root resource
+								// Handle moved editor input resource
 								handleModelRootResourceMoved((URI) notification.getNewValue());
 								break;
 							}
@@ -1362,13 +1351,13 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 					}
 				}
 
-				// Is model root resource part of removed resources?
+				// Is editor input resource part of removed resources?
 				URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
 				if (editorInputURI != null) {
 					URI modelRootResourceURI = editorInputURI.trimFragment();
 					for (Resource removedResource : removedResources) {
 						if (removedResource.getURI().equals(modelRootResourceURI)) {
-							// Handle removed model root resource
+							// Handle removed editor input resource
 							handleModelRootResourceRemoved();
 						}
 					}
@@ -1420,18 +1409,18 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 					}
 				}
 
-				// Is model root on which this editor had been opened so far or one of its containers part of the
+				// Is editor input on which this editor had been opened so far or one of its containers part of the
 				// objects that have been removed?
-				if (getModelRoot() == null) {
-					Object oldModelRoot = getOldModelRoot();
-					if (removedObjects.contains(oldModelRoot)) {
-						// Handle removed model root
+				if (getEditorInputObject() == null) {
+					Object oldEditorInputObject = getOldEditorInputObject();
+					if (removedObjects.contains(oldEditorInputObject)) {
+						// Handle removed editor input
 						handleModelRootRemoved();
 					} else {
-						if (oldModelRoot instanceof EObject) {
-							for (EObject parent = ((EObject) oldModelRoot).eContainer(); parent != null; parent = parent.eContainer()) {
+						if (oldEditorInputObject instanceof EObject) {
+							for (EObject parent = ((EObject) oldEditorInputObject).eContainer(); parent != null; parent = parent.eContainer()) {
 								if (removedObjects.contains(parent)) {
-									// Handle removed model root
+									// Handle removed editor input
 									handleModelRootRemoved();
 									return;
 								}
@@ -1460,8 +1449,8 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 					handleOperationAboutToExecute(event.getOperation());
 				} else if (event.getEventType() == OperationHistoryEvent.DONE || event.getEventType() == OperationHistoryEvent.UNDONE
 						|| event.getEventType() == OperationHistoryEvent.REDONE) {
-					Set<?> affectedResources = ResourceUndoContext.getAffectedResources(event.getOperation());
-					if (affectedResources.contains(getModelRootResource())) {
+					Set<Resource> affectedResources = ResourceUndoContext.getAffectedResources(event.getOperation());
+					if (affectedResources.contains(getEditorInputResource())) {
 						handleOperationFinished(event.getOperation());
 					}
 				}
@@ -1506,9 +1495,13 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 								}
 							}
 
-							// Update editor input
-							URI newModelRootURI = EcoreUtil.getURI((EObject) getModelRoot());
-							updateEditorInput(newModelRootURI);
+							// Update editor input if necessary (e.g., when editor input object is a model object and
+							// the latter has been renamed)
+							Object editorInputObject = getEditorInputObject();
+							if (editorInputObject instanceof EObject) {
+								URI newModelRootURI = EcoreUtil.getURI((EObject) editorInputObject);
+								updateEditorInput(newModelRootURI);
+							}
 
 							// Update editor part name
 							setPartName(getEditorInputName());
@@ -1562,6 +1555,20 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	public EditingDomain getEditingDomain() {
 		URI uri = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
 		return getEditingDomain(uri);
+	}
+
+	protected TransactionalEditingDomain getEditingDomain(final URI uri) {
+		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
+		if (editingDomain == null && getEditorInput() instanceof FileStoreEditorInput) {
+			// If the file has been deleted
+			if (((FileStoreEditorInput) getEditorInput()).exists()) {
+				String modelNamespace = EcoreResourceUtil.readModelNamespace(null, EcoreUIUtil.getURIFromEditorInput(getEditorInput()));
+				editingDomain = WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping().getEditingDomain(null,
+						MetaModelDescriptorRegistry.INSTANCE.getDescriptor(java.net.URI.create(modelNamespace)));
+			}
+		}
+		return editingDomain;
+
 	}
 
 	/**
@@ -1641,9 +1648,9 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 */
 	@Override
 	protected void createPages() {
-		// Model root not yet available?
-		if (getModelRoot() == null) {
-			// Close editor if file behind model root is out of scope
+		// Editor input not yet available?
+		if (getEditorInputObject() == null) {
+			// Close editor if file behind editor input is out of scope
 			IFile file = EcoreUIUtil.getFileFromEditorInput(getEditorInput());
 			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(file);
 			if (modelDescriptor == null) {
@@ -1757,7 +1764,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			return new Saveable[] { new DefaultSaveable(this) };
 		}
 		if (modelSaveablesProvider != null) {
-			Saveable saveable = modelSaveablesProvider.getSaveable(getModelRootResource());
+			Saveable saveable = modelSaveablesProvider.getSaveable(getEditorInputResource());
 			if (saveable != null) {
 				return new Saveable[] { saveable };
 			}
@@ -1767,9 +1774,14 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	@Override
 	public String toString() {
-		Object modelRoot = getModelRoot();
-		if (modelRoot instanceof EObject) {
-			URI uri = EcoreUtil.getURI((EObject) modelRoot);
+		Object editorInputObject = getEditorInputObject();
+		if (editorInputObject instanceof EObject) {
+			URI uri = EcoreUtil.getURI((EObject) editorInputObject);
+			if (uri != null) {
+				return uri.toString();
+			}
+		} else if (editorInputObject instanceof Resource) {
+			URI uri = ((Resource) editorInputObject).getURI();
 			if (uri != null) {
 				return uri.toString();
 			}

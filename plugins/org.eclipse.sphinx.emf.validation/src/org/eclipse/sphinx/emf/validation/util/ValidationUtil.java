@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys, Continental Engineering Services and others.
+ * Copyright (c) 2008-2013 See4sys, Continental Engineering Services, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     Continental Engineering Services - Wait for the markers to be assigned to the resources
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -38,6 +39,7 @@ import org.eclipse.core.runtime.jobs.MultiRule;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
@@ -165,9 +167,9 @@ public class ValidationUtil {
 			// If selected object is a file, get the mapped model root
 			for (IFile file : files) {
 				// Get model from workspace file
-				EObject modelRoot = EcorePlatformUtil.getModelRoot(file);
-				if (modelRoot != null) {
-					result.add(modelRoot);
+				Resource resource = EcorePlatformUtil.getResource(file);
+				if (resource != null) {
+					result.addAll(resource.getContents());
 				}
 			}
 		}

@@ -16,6 +16,7 @@
  *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored
  *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked 
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
+ *     itemis - [418005] Add support for model files with multiple root elements
  *
  * </copyright>
  */
@@ -54,7 +55,6 @@ import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.Resource.Diagnostic;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
@@ -282,7 +282,7 @@ public final class EcoreResourceUtil {
 	 */
 	public static String readModelNamespace(Resource resource) {
 		if (resource != null) {
-			return readModelNamespace(EcoreResourceUtil.getURIConverter(resource.getResourceSet()), resource.getURI());
+			return readModelNamespace(getURIConverter(resource.getResourceSet()), resource.getURI());
 		}
 		return null;
 	}
@@ -452,21 +452,19 @@ public final class EcoreResourceUtil {
 	}
 
 	/**
-	 * Retrieves the top level EObject contained within a resource.
+	 * Retrieves the root {@link EObject object} contained by given resource.
 	 * 
 	 * @param resource
 	 *            Some model resource
-	 * @return The first EObject from the resource's content. Returns <code>null</code> if:
-	 *         <ul>
-	 *         <li><code>resource</code> is <code>null</code>;</li>
-	 *         <li><code>resource</code> has no content;</li>
-	 *         <li>content does not contain an EObject as its first element.</li>
-	 *         </ul>
+	 * @return The root object contained by given resource or <code>null</code> if the resource has not been loaded yet
+	 *         or contains no or multiple root objects.
+	 * @deprecated Inline this method in client code and adapt it as needed.
 	 */
+	@Deprecated
 	public static EObject getModelRoot(Resource resource) {
 		if (resource != null) {
 			EList<EObject> contents = resource.getContents();
-			if (contents.size() > 0) {
+			if (contents.size() == 1) {
 				return resource.getContents().get(0);
 			}
 		}
@@ -481,8 +479,11 @@ public final class EcoreResourceUtil {
 	 *            The resource set into which model resource must be loaded.
 	 * @param uri
 	 *            The URI to resolve; i.e. the URI of the model resource to load.
-	 * @return The root of the loaded model or <code>null</code> if underlying resource has not been loaded.
+	 * @return The root object contained by underlying resource or <code>null</code> if the resource has not been loaded
+	 *         yet or contains no or multiple root objects.
+	 * @deprecated Use {@link ResourceSet#getResource(URI, boolean)} or {@link #getEObject(ResourceSet, URI)} instead.
 	 */
+	@Deprecated
 	public static EObject getModelRoot(ResourceSet resourceSet, URI uri) {
 		return loadModelRoot(resourceSet, uri, null, false);
 	}
@@ -498,24 +499,62 @@ public final class EcoreResourceUtil {
 	 *            If <code>true</code>, creates and loads the resource if it does not already exist.
 	 * @return The root of the loaded model either if loaded or <code>loadOnDemand</code> is <code>true</code>;
 	 *         <code>null</code> if underlying resource has not been loaded and <code>loadOnDemand</code> is false.
+	 * @deprecated Use {@link #loadModelRoot(ResourceSet, URI, Map)} for loading models or
+	 *             {@link #getModelRoot(ResourceSet, URI)} for accessing already loaded models instead.
 	 */
+	@Deprecated
 	public static EObject getModelRoot(ResourceSet resourceSet, URI uri, boolean loadOnDemand) {
 		return loadModelRoot(resourceSet, uri, null, loadOnDemand);
 	}
 
 	/**
-	 * Returns the element of the model owned by the resource specified by the given URI and pointed by the given
-	 * fragment. Does not explicitly ask the loading of the resource if it has not already been loaded in resource set.
+	 * Returns the root element of the model owned by the resource specified by the given URI. Asks the loading of the
+	 * resource if it has not already been loaded in resource set.
 	 * 
 	 * @param resourceSet
 	 *            The resource set into which model resource must be loaded.
 	 * @param uri
 	 *            The URI to resolve; i.e. the URI of the model resource to load.
-	 * @return The element of the loaded model pointed by the fragment of the uri or <code>null</code> if underlying
-	 *         resource has not been loaded.
+	 * @param options
+	 *            The load options. If <code>null</code>, default load options are used.
+	 * @return The root object contained by the loaded model resource or <code>null</code> if resource has not been
+	 *         loaded yet or contains no or multiple root objects.
+	 * @deprecated Use {@link #loadResource(ResourceSet, URI, Map)} or {@link #loadEObject(ResourceSet, URI)} instead.
 	 */
+	@Deprecated
+	public static EObject loadModelRoot(ResourceSet resourceSet, URI uri, Map<?, ?> options) {
+		return loadModelRoot(resourceSet, uri, options, true);
+	}
+
+	/**
+	 * Loads a model from a {@link java.io.File File} in a given {@link ResourceSet}.
+	 * <p>
+	 * This will return the first root of the loaded model, other roots can be accessed via the resource's content.
+	 * </p>
+	 * 
+	 * @param resourceSet
+	 *            The {@link ResourceSet} to load the model in.
+	 * @param file
+	 *            {@link java.io.File File} containing the model to be loaded.
+	 * @param options
+	 *            Optional custom load options to be used for loading the resource. May be set to <code>null</code> if
+	 *            not such are needed.
+	 * @return The root object contained by given file or <code>null</code> if the file has not been loaded yet or
+	 *         contains no or multiple root objects.
+	 * @deprecated Use {@link #loadResource(ResourceSet, File, Map)} or {@link #loadEObject(ResourceSet, URI)} instead.
+	 */
+	@Deprecated
+	public static EObject loadModelRoot(ResourceSet resourceSet, File file, Map<?, ?> options) throws IOException {
+		Assert.isNotNull(file);
+		return loadModelRoot(resourceSet, URI.createFileURI(file.getPath()), options);
+	}
+
+	/**
+	 * @deprecated Use {@link #getEObject(ResourceSet, URI)} instead.
+	 */
+	@Deprecated
 	public static EObject getModelFragment(ResourceSet resourceSet, URI uri) {
-		return loadModelFragment(resourceSet, uri, false);
+		return getEObject(resourceSet, uri);
 	}
 
 	/**
@@ -531,28 +570,56 @@ public final class EcoreResourceUtil {
 	 * @return The element of the loaded model pointed by the fragment of the uri either if resource is loaded or
 	 *         loadOnDemand is <code>true</code>; <code>null</code> if underlying resource has not been loaded and
 	 *         <code>loadOnDemand</code> is <code>false</code>.
+	 * @deprecated Use {@link #loadEObject(ResourceSet, URI)} for loading model fragments or
+	 *             {@link #getEObject(ResourceSet, URI)} for accessing already loaded model fragments instead.
 	 */
+	@Deprecated
 	public static EObject getModelFragment(ResourceSet resourceSet, URI uri, boolean loadOnDemand) {
-		return loadModelFragment(resourceSet, uri, loadOnDemand);
+		return loadEObject(resourceSet, uri, loadOnDemand);
 	}
 
 	/**
-	 * Returns the element of the model pointed by the fragment owned by the resource specified by the given {@link URI
-	 * uri}. Asks the loading of the resource if it has not already been loaded in resource set.
-	 * 
-	 * @param resourceSet
-	 *            The resource set into which model resource must be loaded.
-	 * @param uri
-	 *            The {@link URI uri} containing a fragment to resolve; i.e. the URI of the model resource to load
-	 *            append with the reference to the model object.
-	 * @return The object of the loaded model referenced by the fragment, or <code>null</code> if the URI cannot be
-	 *         resolved to an existing file.
+	 * @deprecated Use {@link #loadEObject(ResourceSet, URI)} instead.
 	 */
+	@Deprecated
 	public static EObject loadModelFragment(ResourceSet resourceSet, URI uri) {
-		return loadModelFragment(resourceSet, uri, true);
+		return loadEObject(resourceSet, uri);
 	}
 
-	private static EObject loadModelFragment(ResourceSet resourceSet, URI uri, boolean loadOnDemand) {
+	/**
+	 * Retrieves the model {@link EObject object} referenced by provided {@link URI} from given {@link ResourceSet
+	 * resource set}. Returns <code>null</code> if the {@link Resource resource} containing the model object referenced
+	 * by the URI has not yet been loaded into the resource set.
+	 * 
+	 * @param resourceSet
+	 *            The resource set from which the model object is to be retrieved.
+	 * @param uri
+	 *            The URI that identifies the model object to be retrieved.
+	 * @return The model object from given resource set referenced by provided URI or <code>null</code> if the
+	 *         referenced model object does not exist in underlying resource or the latter has not yet been loaded into
+	 *         the resource set.
+	 */
+	public static EObject getEObject(ResourceSet resourceSet, URI uri) {
+		return loadEObject(resourceSet, uri, false);
+	}
+
+	/**
+	 * Retrieves the model {@link EObject object} referenced by provided {@link URI} from given {@link ResourceSet
+	 * resource set}. Loads the {@link Resource resource} containing the model object referenced by the URI into the
+	 * resource set if this has not yet been done.
+	 * 
+	 * @param resourceSet
+	 *            The resource set from which the model object is to be retrieved.
+	 * @param uri
+	 *            The URI that identifies the model object to be retrieved.
+	 * @return The model object from given resource set referenced by provided URI or <code>null</code> if referenced
+	 *         model object does not exist in underlying resource.
+	 */
+	public static EObject loadEObject(ResourceSet resourceSet, URI uri) {
+		return loadEObject(resourceSet, uri, true);
+	}
+
+	private static EObject loadEObject(ResourceSet resourceSet, URI uri, boolean loadOnDemand) {
 		Assert.isNotNull(resourceSet);
 		Assert.isNotNull(uri);
 
@@ -576,43 +643,6 @@ public final class EcoreResourceUtil {
 			return resourceSet.getEObject(uri, loadOnDemand);
 		}
 		return null;
-	}
-
-	/**
-	 * Returns the root element of the model owned by the resource specified by the given URI. Asks the loading of the
-	 * resource if it has not already been loaded in resource set.
-	 * 
-	 * @param resourceSet
-	 *            The resource set into which model resource must be loaded.
-	 * @param uri
-	 *            The URI to resolve; i.e. the URI of the model resource to load.
-	 * @param options
-	 *            The load options. If <code>null</code>, default loading options are used.
-	 * @return The root of the loaded model.
-	 */
-	public static EObject loadModelRoot(ResourceSet resourceSet, URI uri, Map<?, ?> options) {
-		return loadModelRoot(resourceSet, uri, options, true);
-	}
-
-	/**
-	 * Loads a model from a {@link java.io.File File} in a given {@link ResourceSet}.
-	 * <p>
-	 * This will return the first root of the loaded model, other roots can be accessed via the resource's content.
-	 * </p>
-	 * 
-	 * @param resourceSet
-	 *            The {@link ResourceSet} to load the model in.
-	 * @param file
-	 *            {@link java.io.File File} containing the model to be loaded.
-	 * @param options
-	 *            The load options. If <code>null</code>, default loading options are used.
-	 * @return The model loaded from the file.
-	 * @throws IOException
-	 *             If the given file does not exist.
-	 */
-	public static EObject loadModelRoot(ResourceSet resourceSet, File file, Map<?, ?> options) throws IOException {
-		Assert.isNotNull(file);
-		return loadModelRoot(resourceSet, URI.createFileURI(file.getPath()), options);
 	}
 
 	/**
@@ -736,25 +766,38 @@ public final class EcoreResourceUtil {
 	}
 
 	/**
-	 * Returns the name of the model for the provided model root.
+	 * Loads the {@link Resource resource} referred to by given {@link URI}.
 	 * 
-	 * @param modelRoot
-	 *            Can either be an EObject or a Resource.
-	 * @return The name of the model specified by the given <code>modelRoot</code>.
+	 * @param resourceSet
+	 *            The {@link ResourceSet resource set} that will contain the resource when it has been loaded.
+	 * @param uri
+	 *            The URI of the resource to be loaded.
+	 * @param options
+	 *            Optional custom load options to be used for loading the resource. May be set to <code>null</code> if
+	 *            not such are needed.
+	 * @return The resource referred to by given URI.
+	 * @see #loadResource(ResourceSet, File, Map)
 	 */
-	public static String getModelName(Notifier modelRoot) {
-		EObject modelContent = null;
-		if (modelRoot instanceof EObject) {
-			modelContent = (EObject) modelRoot;
-		}
-		if (modelRoot instanceof Resource) {
-			modelContent = EcoreResourceUtil.getModelRoot((Resource) modelRoot);
-		}
-		if (modelContent != null) {
-			String modelPackageName = modelContent.eClass().getEPackage().getName();
-			return modelPackageName.substring(0, 1).toUpperCase() + modelPackageName.substring(1);
-		}
-		return ""; //$NON-NLS-1$
+	public static Resource loadResource(ResourceSet resourceSet, URI uri, Map<?, ?> options) {
+		Assert.isNotNull(uri);
+		return loadResource(resourceSet, uri, options, true);
+	}
+
+	/**
+	 * Loads the {@link Resource resource} referred to by given {@link java.io.File file}.
+	 * 
+	 * @param resourceSet
+	 *            The {@link ResourceSet resource set} that will contain the resource when it has been loaded.
+	 * @param file
+	 *            The file representing the resource to be loaded.
+	 * @param options
+	 *            Custom load options. If <code>null</code>, default load options are used.
+	 * @return The resource referred to by given file.
+	 * @see #loadResource(ResourceSet, URI, Map)
+	 */
+	public static Resource loadResource(ResourceSet resourceSet, File file, Map<?, ?> options) throws IOException {
+		Assert.isNotNull(file);
+		return loadResource(resourceSet, URI.createFileURI(file.getPath()), options, true);
 	}
 
 	/**
@@ -776,6 +819,28 @@ public final class EcoreResourceUtil {
 			return resource != null && resource.isLoaded();
 		}
 		return false;
+	}
+
+	/**
+	 * Returns the name of the model behind provided model object.
+	 * 
+	 * @param notifier
+	 *            Can either be an EObject or a Resource.
+	 * @return The name of the model specified by the given <code>modelRoot</code>.
+	 */
+	public static String getModelName(Notifier notifier) {
+		EObject modelContent = null;
+		if (notifier instanceof EObject) {
+			modelContent = (EObject) notifier;
+		}
+		if (notifier instanceof Resource) {
+			modelContent = ((Resource) notifier).getContents().iterator().next();
+		}
+		if (modelContent != null) {
+			String modelPackageName = modelContent.eClass().getEPackage().getName();
+			return modelPackageName.substring(0, 1).toUpperCase() + modelPackageName.substring(1);
+		}
+		return ""; //$NON-NLS-1$
 	}
 
 	/**
@@ -994,8 +1059,6 @@ public final class EcoreResourceUtil {
 	 *            The {@link URI uri} of the {@link Resource resource} to be validated.
 	 * @param schemaURL
 	 *            The {@link URL url} of the XSD schema to be used for validation.
-	 * @throws SAXException
-	 * @throws IOException
 	 */
 	public static void validate(URI uri, URL schemaURL) throws SAXException, IOException {
 		Assert.isNotNull(uri);
@@ -1031,10 +1094,10 @@ public final class EcoreResourceUtil {
 	 *            The loading options.
 	 * @param loadOnDemand
 	 *            If <code>true</code>, creates and loads the resource if it does not already exist.
-	 * @return The resource resolved by the specified URI, or <code>null</code> if there is not one and it is not being
-	 *         demand loaded.
+	 * @return The resource referred to by given URI or <code>null</code> if the resource has not been loaded yet and
+	 *         demand loading is not required.
 	 */
-	private static Resource loadModelResource(ResourceSet resourceSet, URI uri, Map<?, ?> options, boolean loadOnDemand) {
+	private static Resource loadResource(ResourceSet resourceSet, URI uri, Map<?, ?> options, boolean loadOnDemand) {
 		Assert.isNotNull(uri);
 
 		// Create new ResourceSet if none has been provided
@@ -1077,8 +1140,8 @@ public final class EcoreResourceUtil {
 						 * point all previously encountered errors and warnings would be lost (see
 						 * org.eclipse.emf.ecore.resource.impl.ResourceImpl.load(InputStream, Map<?, ?>) for details)
 						 */
-						List<Diagnostic> creationErrors = new ArrayList<Diagnostic>(resource.getErrors());
-						List<Diagnostic> creationWarnings = new ArrayList<Diagnostic>(resource.getWarnings());
+						List<Resource.Diagnostic> creationErrors = new ArrayList<Resource.Diagnostic>(resource.getErrors());
+						List<Resource.Diagnostic> creationWarnings = new ArrayList<Resource.Diagnostic>(resource.getWarnings());
 
 						// Load resource
 						resource.load(options);
@@ -1099,8 +1162,8 @@ public final class EcoreResourceUtil {
 						 * point all errors and warnings encountered during loading would be lost (see
 						 * org.eclipse.emf.ecore.resource.impl.ResourceImpl.doUnload() for details)
 						 */
-						List<Diagnostic> loadErrors = new ArrayList<Diagnostic>(resource.getErrors());
-						List<Diagnostic> loadWarnings = new ArrayList<Diagnostic>(resource.getWarnings());
+						List<Resource.Diagnostic> loadErrors = new ArrayList<Resource.Diagnostic>(resource.getErrors());
+						List<Resource.Diagnostic> loadWarnings = new ArrayList<Resource.Diagnostic>(resource.getWarnings());
 
 						// Make sure that resource gets unloaded and removed from resource set again
 						try {
@@ -1147,19 +1210,24 @@ public final class EcoreResourceUtil {
 	 * @param uri
 	 *            The URI to resolve; <em>i.e.</em> the URI of the model resource to load.
 	 * @param options
-	 *            The load options. If <code>null</code>, default loading options are used.
+	 *            The load options. If <code>null</code>, default load options are used.
 	 * @param loadOnDemand
 	 *            If <code>true</code>, creates and loads the resource if it does not already exist.
-	 * @return The root of the loaded model; can be <code>null</code> if resource is not loaded resource set.
+	 * @return The root object contained in resource referred to by given URI or <code>null</code> if the resource has
+	 *         not been loaded yet and demand loading is not required or if resource contains no or multiple root
+	 *         objects.
+	 * @deprecated Use {@link #loadResource(ResourceSet, URI, Map, boolean)} or
+	 *             {@link #loadEObject(ResourceSet, URI, boolean)} instead.
 	 */
+	@Deprecated
 	private static EObject loadModelRoot(ResourceSet resourceSet, URI uri, Map<?, ?> options, boolean loadOnDemand) {
-		// Use default loading options when no specified
+		// Use default load options when no specified
 		if (options == null) {
 			options = getDefaultLoadOptions();
 		}
 
 		// Load resource from resource set
-		Resource resource = loadModelResource(resourceSet, uri, options, loadOnDemand);
+		Resource resource = loadResource(resourceSet, uri, options, loadOnDemand);
 
 		// Obtain and return resource content
 		return getModelRoot(resource);

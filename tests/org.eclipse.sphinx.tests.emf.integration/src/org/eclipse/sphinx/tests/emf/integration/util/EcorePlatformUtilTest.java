@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
+ *     itemis - [418005] Add support for model files with multiple root elements
  *
  * </copyright>
  */
@@ -172,7 +173,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		IFile testResource = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
 		assertNotNull(testResource);
 		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application applicationHB20 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) EcorePlatformUtil
-				.loadModelRoot(refWks.editingDomain20, testResource);
+				.loadModelRoot(refWks.editingDomain20, testResource, null);
 		waitForModelLoading();
 
 		assertNotNull(applicationHB20);
@@ -181,7 +182,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
 		testResource = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2);
 		assertNotNull(testResource);
-		Platform platform = (Platform) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, testResource);
+		Platform platform = (Platform) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, testResource, null);
 		waitForModelLoading();
 
 		assertNotNull(platform);
@@ -192,7 +193,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		testResource = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3);
 		assertNotNull(testResource);
 		applicationHB20 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) EcorePlatformUtil.loadModelRoot(
-				refWks.editingDomain20, testResource);
+				refWks.editingDomain20, testResource, null);
 		waitForModelLoading();
 
 		assertNotNull(applicationHB20);
@@ -205,7 +206,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
 		IFile testHBResource10 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
 		assertNotNull(testHBResource10);
-		Application applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10);
+		Application applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10, null);
 		assertNotNull(applicationHB10);
 		assertEquals(1, applicationHB10.getComponents().size());
 		assertEquals(1, applicationHB10.getInterfaces().size());
@@ -213,7 +214,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
 		testHBResource10 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_2);
 		assertNotNull(testResource);
-		applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10);
+		applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10, null);
 		assertNotNull(applicationHB10);
 		assertEquals(1, applicationHB10.getComponents().size());
 		assertEquals(1, applicationHB10.getInterfaces().size());
@@ -221,7 +222,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
 		testHBResource10 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_3);
 		assertNotNull(testHBResource10);
-		applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10);
+		applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10, null);
 		assertNotNull(applicationHB10);
 		assertEquals(1, applicationHB10.getComponents().size());
 		assertEquals(1, applicationHB10.getInterfaces().size());
@@ -229,7 +230,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
 		testHBResource10 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_4);
 		assertNotNull(testHBResource10);
-		applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10);
+		applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10, null);
 		assertNotNull(applicationHB10);
 		assertEquals(1, applicationHB10.getComponents().size());
 		assertEquals(1, applicationHB10.getInterfaces().size());
@@ -237,7 +238,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
 		testHBResource10 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_5);
 		assertNotNull(testHBResource10);
-		applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10);
+		applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10, null);
 		assertNotNull(applicationHB10);
 		assertEquals(1, applicationHB10.getComponents().size());
 		assertEquals(2, applicationHB10.getInterfaces().size());
@@ -246,33 +247,33 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		// UML MODEL
 		IFile uml2Resource = refWks.hbProject20_D.getFile(DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1);
 		assertNotNull(uml2Resource);
-		Model uml2Model = (Model) EcorePlatformUtil.loadModelRoot(refWks.editingDomainUml2, uml2Resource);
+		Model uml2Model = (Model) EcorePlatformUtil.loadModelRoot(refWks.editingDomainUml2, uml2Resource, null);
 		assertNotNull(uml2Model);
 		assertEquals(2, uml2Model.getPackagedElements().size());
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, 1);
 
 		uml2Resource = refWks.hbProject20_D.getFile(DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_2);
 		assertNotNull(uml2Resource);
-		uml2Model = (Model) EcorePlatformUtil.loadModelRoot(refWks.editingDomainUml2, uml2Resource);
+		uml2Model = (Model) EcorePlatformUtil.loadModelRoot(refWks.editingDomainUml2, uml2Resource, null);
 		assertNotNull(uml2Model);
 		assertEquals(2, uml2Model.getPackagedElements().size());
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, 2);
 
 		uml2Resource = refWks.hbProject20_D.getFile(DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 		assertNotNull(uml2Resource);
-		uml2Model = (Model) EcorePlatformUtil.loadModelRoot(refWks.editingDomainUml2, uml2Resource);
+		uml2Model = (Model) EcorePlatformUtil.loadModelRoot(refWks.editingDomainUml2, uml2Resource, null);
 		assertNotNull(uml2Model);
 		assertEquals(2, uml2Model.getPackagedElements().size());
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, 3);
 		// =====================================
 		// External use cases
 		// Null Resource
-		assertNull(EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, null));
+		assertNull(EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, null, null));
 		// -----------------
 		// Null EditingDomain
 		IFile testFile = refWks.hbProject20_E.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1);
 		assertNotNull(testFile);
-		assertNull(EcorePlatformUtil.loadModelRoot(null, testFile));
+		assertNull(EcorePlatformUtil.loadModelRoot(null, testFile, null));
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, 3);
 		// -------------------
 		// Load Model Root of loaded file
@@ -280,7 +281,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		testFile = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
 		assertNotNull(testFile);
 		applicationHB20 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) EcorePlatformUtil.loadModelRoot(
-				refWks.editingDomain20, testResource);
+				refWks.editingDomain20, testResource, null);
 
 		assertNotNull(applicationHB20);
 		assertNotNull(applicationHB20.getComponents());
@@ -291,7 +292,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		testFile = refWks.hbProject20_E.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1);
 		assertNotNull(testFile);
 		// It should be loaded anyway
-		assertNotNull(EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testFile));
+		assertNotNull(EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testFile, null));
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, 3);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, 6);// Why?
 		assertEditingDomainContainsResource(refWks.editingDomain10, testFile.getName());

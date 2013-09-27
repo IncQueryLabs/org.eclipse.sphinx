@@ -16,6 +16,7 @@
 package org.eclipse.sphinx.emf.editors.forms.sections;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -56,7 +57,11 @@ public class GenericContentsTreeSection extends AbstractViewerFormSection {
 
 	@Override
 	public Object getViewerInput() {
-		return getSectionInputParent();
+		// Don't display resource behind section input in viewer
+		if (!(sectionInput instanceof Resource)) {
+			return getSectionInputParent();
+		}
+		return sectionInput;
 	}
 
 	@Override

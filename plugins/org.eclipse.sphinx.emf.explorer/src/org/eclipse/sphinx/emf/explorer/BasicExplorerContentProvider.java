@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2011 See4sys, itemis and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,12 +10,14 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [348822] Enable BasicExplorerContentProvider to be used for displaying model content under folders and projects
- * 
+ *     itemis - [418005] Add support for model files with multiple root elements
+ *      
  * </copyright>
  */
 package org.eclipse.sphinx.emf.explorer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +60,7 @@ import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -123,6 +126,140 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	}
 
 	/**
+	 * Retrieves the model {@link Resource resource} behind specified workspace {@link IResource resource}. Returns
+	 * <code>null</code> if no such is available or the {@link IModelDescriptor model} behind specified workspace
+	 * resource has not been loaded yet.
+	 * <p>
+	 * Default implementation supports the handling of {@link IFile file} resources including lazy loading of the
+	 * underlying {@link IModelDescriptor model}s: if the given file belongs to some model that has not been loaded yet
+	 * then the loading of that model, i.e., the given file and all other files belonging to the same, will be
+	 * triggered. The model loading will be performed asynchronously and therefore won't block the UI. When the model
+	 * loading has been completed, the {@link #resourceChangedListener} automatically refreshes the underlying
+	 * {@link #viewer viewer} so that the model elements contained by the given file become visible.
+	 * <p>
+	 * Clients may override this method so as to add support for other resource types (e.g., {@link IProject project}s
+	 * or {@link IFolder folder}s) or implement different lazy or eager loading strategies.
+	 * 
+	 * @param workspaceResource
+	 *            The workspace resource of which the model resource is to be retrieved.
+	 * @return The model resource behind specified workspace resource or <code>null</code> if no such is available or
+	 *         the model behind specified workspace resource has not been loaded yet.
+	 */
+	protected Resource getModelResource(IResource workspaceResource) {
+		// Is given workspace resource a file?
+		if (workspaceResource instanceof IFile) {
+			// Get model behind given workspace file
+			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel((IFile) workspaceResource);
+			if (modelDescriptor != null) {
+				// Try to retrieve model resource behind given workspace file but don't force it to be loaded in case
+				// that this has not been done yet
+				Resource modelResource = EcorePlatformUtil.getResource((IFile) workspaceResource);
+
+				// Given model resource already loaded?
+				if (modelResource != null) {
+					return modelResource;
+				} else {
+					// Make sure that resource set listeners for refreshing the viewer are installed on editing domain
+					// and get notified when model resources get loaded subsequently
+					addTransactionalEditingDomainListeners(modelDescriptor.getEditingDomain());
+
+					// Request asynchronous loading of model behind given workspace file
+					ModelLoadManager.INSTANCE.loadModel(modelDescriptor, true, null);
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns a list of objects which are to be used as roots of the model content provided by this
+	 * {@link BasicExplorerContentProvider content provider} for the given model resource. They may or may not be the
+	 * actual root objects of the model resource.
+	 * <p>
+	 * The model content roots can be thought of being mapped to the workspace {@link IResource resource} behind given
+	 * model resource and are the actual parent objects of the model objects to be displayed as virtual children of the
+	 * workspace resource. The model content roots themselves will not become visible in the underlying viewer, only the
+	 * workspace resource they are mapped to and their children will.
+	 * </p>
+	 * <p>
+	 * This implementation returns a list containing the provided model resource itself as default. Clients are free to
+	 * override and implement alternative behaviors as appropriate.
+	 * </p>
+	 * 
+	 * @param modelResource
+	 *            The model resource of which the model content roots are to be retrieved.
+	 * @return The list of notifier objects which are to be used as roots of the model content provided by this
+	 *         {@link BasicExplorerContentProvider content provider}.
+	 */
+	protected List<Object> getModelContentRoots(Resource modelResource) {
+		ArrayList<Object> modelContentRoots = new ArrayList<Object>();
+		modelContentRoots.add(modelResource);
+		return modelContentRoots;
+	}
+
+	/**
+	 * Returns the {@link IResource resource} corresponding to given model {@link Resource resource}.
+	 * 
+	 * @param modelResource
+	 *            The model resource of which the workspace resource it to be returned.
+	 * @return The workspace {@link IResource resource} corresponding to given model resource.
+	 * @see #getModelResource(IResource)
+	 */
+	protected IResource getWorkspaceResource(Resource modelResource) {
+		return EcorePlatformUtil.getFile(modelResource);
+	}
+
+	/**
+	 * Retrieves the model root behind specified {@link IResource resource}. Returns <code>null</code> if no such is
+	 * available or the {@link IModelDescriptor model} behind specified resource has not been loaded yet.
+	 * <p>
+	 * Default implementation supports the handling of {@link IFile file} resources including lazy loading of the
+	 * underlying {@link IModelDescriptor model}s: if the given file belongs to some model that has not been loaded yet
+	 * then the loading of that model, i.e., the given file and all other files belonging to the same model, will be
+	 * triggered. The model loading will be done asynchronously and therefore won't block the UI. When the model loading
+	 * has been completed, the {@link #resourceChangedListener} automatically refreshes the underlying {@link #viewer
+	 * viewer} so that the model elements contained by the given file become visible.
+	 * <p>
+	 * Clients may override this method so as to add support for other resource types (e.g., {@link IProject project}s
+	 * or {@link IFolder folder}s) or implement different lazy or eager loading strategies.
+	 * 
+	 * @param resource
+	 *            The {@link IResource resource} whose model root is to be retrieved.
+	 * @return The model root behind specified resource or <code>null</code> if no such is available or the model behind
+	 *         specified resource has not been loaded yet.
+	 */
+	@Deprecated
+	protected Object getModelRoot(IResource resource) {
+		// Is given workspace resource a file?
+		if (resource instanceof IFile) {
+			// Get model behind given file
+			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel((IFile) resource);
+			if (modelDescriptor != null) {
+				// Get model root of given file but don't force it to be loaded in case that this has not
+				// been done yet
+				Object modelRoot = null;
+				Resource modelResource = EcorePlatformUtil.getResource((IFile) resource);
+				if (modelResource != null && !modelResource.getContents().isEmpty()) {
+					modelRoot = modelResource.getContents().get(0);
+				}
+
+				// Given file not loaded yet?
+				if (modelRoot == null) {
+					// Make sure that resource set listeners for refreshing the viewer are installed on editing domain
+					// and get notified when model resources have been loaded
+					addTransactionalEditingDomainListeners(modelDescriptor.getEditingDomain());
+
+					// Request asynchronous loading of model behind given file
+					ModelLoadManager.INSTANCE.loadModel(modelDescriptor, true, null);
+				}
+				return modelRoot;
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Retrieves the <em>root element</em> of the model contained in the specified {@link IFile file}. Returns
 	 * <code>null</code> if that file has not yet been loaded into the {@linkplain ResourceSet} of the specified
 	 * {@link TransactionalEditingDomain editingDomain} or if it is empty.
@@ -156,51 +293,6 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	}
 
 	/**
-	 * Retrieves the model root behind specified {@link IResource resource}. Returns <code>null</code> if no such is
-	 * available or the {@link IModelDescriptor model} behind specified resource has not been loaded yet.
-	 * <p>
-	 * Default implementation supports the handling of {@link IFile file} resources including lazy loading of the
-	 * underlying {@link IModelDescriptor model}s: if the given file belongs to some model that has not been loaded yet
-	 * then the loading of that model, i.e., the given file and all other files belonging to the same model, will be
-	 * triggered. The model loading will be done asynchronously and therefore won't block the UI. When the model loading
-	 * has been completed, the {@link #resourceChangedListener} automatically refreshes the underlying {@link #viewer
-	 * viewer} so that the model elements contained by the given file become visible.
-	 * <p>
-	 * Clients may override this method so as to add support for other resource types (e.g., {@link IProject project}s
-	 * or {@link IFolder folder}s) or implement different lazy or eager loading strategies.
-	 * 
-	 * @param file
-	 *            The {@link IResource resource} whose model root is to be retrieved.
-	 * @return The model root behind specified resource or <code>null</code> if no such is available or the model behind
-	 *         specified resource has not been loaded yet.
-	 */
-	protected Object getModelRoot(IResource resource) {
-		// Is given workspace resource a file?
-		if (resource instanceof IFile) {
-			// Get model behind given file
-			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel((IFile) resource);
-			if (modelDescriptor != null) {
-				// Get model root of given file but don't force it to be loaded in case that this has not
-				// been done yet
-				Object modelRoot = EcorePlatformUtil.getModelRoot(modelDescriptor.getEditingDomain(), (IFile) resource);
-
-				// Given file not loaded yet?
-				if (modelRoot == null) {
-					// Make sure that resource set listeners for refreshing the viewer are installed on editing domain
-					// and get notified when model resources have been loaded
-					addTransactionalEditingDomainListeners(modelDescriptor.getEditingDomain());
-
-					// Request asynchronous loading of model behind given file
-					ModelLoadManager.INSTANCE.loadModel(modelDescriptor, true, null);
-				}
-				return modelRoot;
-			}
-		}
-
-		return null;
-	}
-
-	/**
 	 * Returns the {@link EObject object} or {@link Resource resource} which is used as root of the model content
 	 * provided by this {@link BasicExplorerContentProvider content provider} for given model object. The model content
 	 * root is the model object that is mapped to the {@link IResource workspace resource} under which the model behind
@@ -213,7 +305,9 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * @return The {@link EObject object} or {@link Resource resource} which is used as root of the model content
 	 *         provided by this content provider for given model object or <code>null</code> if given object is no model
 	 *         object or has no parent that corresponds to the expected model content root.
+	 * @deprecated Use {@link #getModelContentRoots(Resource)} instead.
 	 */
+	@Deprecated
 	protected Object getModelContentRoot(Object object) {
 		if (object instanceof EObject) {
 			return getModelContentRoot((EObject) object);
@@ -253,7 +347,9 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * @return The {@link EObject object} or {@link Resource resource} which is used as root of the model content
 	 *         provided by this content provider for given model object or <code>null</code> if given object is no model
 	 *         object or has no parent that corresponds to the expected model content root.
+	 * @deprecated Use {@link #getModelContentRoots(Resource)} instead.
 	 */
+	@Deprecated
 	protected Object getModelContentRoot(EObject object) {
 		Assert.isNotNull(object);
 
@@ -267,23 +363,35 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	}
 
 	/**
-	 * @deprecated Use #getModelContentRoot instead.
+	 * @deprecated Use {@link #getModelContentRoot(EObject)} instead.
 	 */
 	@Deprecated
 	protected Object getMappedModelRoot(EObject object) {
 		return null;
 	}
 
+	/**
+	 * @deprecated Use {@link #getModelContentRoots(Resource)} instead.
+	 */
+	@Deprecated
 	protected Object getModelContentRoot(IWrapperItemProvider wrapperItemProvider) {
 		Object unwrapped = AdapterFactoryEditingDomain.unwrap(wrapperItemProvider);
 		return getModelContentRoot(unwrapped);
 	}
 
+	/**
+	 * @deprecated Use {@link #getModelContentRoots(Resource)} instead.
+	 */
+	@Deprecated
 	protected Object getModelContentRoot(FeatureMap.Entry entry) {
 		Object unwrapped = AdapterFactoryEditingDomain.unwrap(entry);
 		return getModelContentRoot(unwrapped);
 	}
 
+	/**
+	 * @deprecated Use {@link #getModelContentRoots(Resource)} instead.
+	 */
+	@Deprecated
 	protected Object getModelContentRoot(TransientItemProvider transientItemProvider) {
 		Object target = transientItemProvider.getTarget();
 		return getModelContentRoot(target);
@@ -297,14 +405,16 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 *            The {@link #getModelContentRoot(Object) model content root} object in question.
 	 * @return The {@link IResource resource} corresponding to given model content root.
 	 * @see #getModelContentRoot(Object)
+	 * @deprecated Use {@link #getWorkspaceResource(Resource)} instead.
 	 */
+	@Deprecated
 	protected IResource getUnderlyingWorkspaceResource(Object modelContentRoot) {
 		return EcorePlatformUtil.getFile(modelContentRoot);
 	}
 
-	protected AdapterFactoryContentProvider getModelContentProvider(Object element) {
+	protected AdapterFactoryContentProvider getModelContentProvider(Object object) {
 		// Retrieve editing domain behind specified object
-		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(element);
+		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(object);
 		if (editingDomain != null) {
 			// Retrieve model content provider for given editing domain; create new one if not existing yet
 			AdapterFactoryContentProvider modelContentProvider = modelContentProviders.get(editingDomain);
@@ -409,40 +519,41 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	}
 
 	public Object[] getChildren(Object parentElement) {
-		Object[] children = null;
+		ArrayList<Object> children = new ArrayList<Object>();
 		try {
 			// Is parent element a workspace resource?
 			if (parentElement instanceof IResource) {
-				// Get model root behind workspace resource (might not be loaded yet according to loading policy)
-				Object modelRoot = getModelRoot((IResource) parentElement);
-				if (modelRoot != null) {
-					// Get model content root for model root
-					Object modelContentRoot = getModelContentRoot(modelRoot);
+				// Retrieve model resource behind the workspace resource handed in as parent element
+				Resource modelResource = getModelResource((IResource) parentElement);
 
-					// Get model content provider of model content root
-					AdapterFactoryContentProvider contentProvider = getModelContentProvider(modelContentRoot);
-					if (contentProvider != null) {
-						// Set model content root as model content provider input
-						contentProvider.inputChanged(viewer, null, modelContentRoot);
+				// Get corresponding model content provider
+				AdapterFactoryContentProvider contentProvider = getModelContentProvider(modelResource);
+				if (contentProvider != null) {
+					// Set model resource as model content provider input
+					contentProvider.inputChanged(viewer, null, modelResource);
 
-						// Retrieve children of model content root
-						children = contentProvider.getChildren(modelContentRoot);
+					// Determine the model content roots, i.e., the actual parent objects of the model objects to be
+					// displayed as virtual children of the workspace resource
+					for (Object modelContentRoot : getModelContentRoots(modelResource)) {
+						// Retrieve children of current parent object
+						children.addAll(Arrays.asList(contentProvider.getChildren(modelContentRoot)));
 					}
 				}
 			}
 
-			// Assume that parent element is an EObject
+			// Assume that parent element is a model object
 			else {
-				// Retrieve children of specified parent element
+				// Try to obtain corresponding model content provider
 				AdapterFactoryContentProvider contentProvider = getModelContentProvider(parentElement);
 				if (contentProvider != null) {
-					children = contentProvider.getChildren(parentElement);
+					// Retrieve children of specified parent element
+					children.addAll(Arrays.asList(contentProvider.getChildren(parentElement)));
 				}
 			}
 		} catch (Exception ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
-		return children != null ? children : new Object[0];
+		return children.toArray(new Object[children.size()]);
 	}
 
 	public Object getParent(Object element) {
@@ -452,11 +563,12 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 			parent = contentProvider.getParent(element);
 		}
 
-		// Is parent element the model content root?
-		Object modelContentRoot = getModelContentRoot(element);
-		if (parent == modelContentRoot) {
+		// Is parent element a model content root?
+		Resource modelResource = EcoreResourceUtil.getResource(parent);
+		List<Object> modelContentRoots = getModelContentRoots(modelResource);
+		if (modelContentRoots.contains(parent)) {
 			// Return corresponding workspace resource
-			parent = getUnderlyingWorkspaceResource(modelContentRoot);
+			return getWorkspaceResource(modelResource);
 		}
 		return parent;
 	}
@@ -809,11 +921,12 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 			if (objects.size() < LIMIT_INDIVIDUAL_OBJECTS_REFRESH) {
 				for (Object object : objects) {
 					if (isPossibleChild(object)) {
-						// Is current object the model content root?
-						Object modelContentRoot = getModelContentRoot(object);
-						if (object == modelContentRoot) {
+						// Is current object a model content root?
+						Resource modelResource = EcoreResourceUtil.getResource(object);
+						List<Object> modelContentRoots = getModelContentRoots(modelResource);
+						if (modelContentRoots.contains(object)) {
 							// Refresh corresponding workspace resource
-							IResource resource = getUnderlyingWorkspaceResource(modelContentRoot);
+							IResource resource = getWorkspaceResource(modelResource);
 							if (resource != null && resource.isAccessible()) {
 								if (isTriggerPoint(resource)) {
 									refreshViewerOnObject(resource);
