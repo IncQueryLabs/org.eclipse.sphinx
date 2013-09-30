@@ -119,6 +119,11 @@ public class Hummingbird20ResourceFactoryImpl extends ResourceFactoryImpl {
 
 		result.getDefaultLoadOptions().put(ExtendedResource.OPTION_ENABLE_SCHEMA_VALIDATION, Boolean.TRUE);
 
+		// Necessary to make sure that whitespace before closing tag in XML document gets interpreted as mixed content
+		// but not as proxy URI (see org.eclipse.emf.ecore.xmi.impl.XMLHandler.endElement(String, String, String) for
+		// details)
+		result.getDefaultLoadOptions().put(XMLResource.OPTION_SUPPRESS_DOCUMENT_ROOT, Boolean.TRUE);
+
 		// Configure not to augment contextAwareURI since Hummingbird20 extends the advanced ExtendEObjectImpl
 		result.getDefaultLoadOptions().put(ExtendedResource.OPTION_USE_CONTEXT_AWARE_PROXY_URIS, Boolean.FALSE);
 
