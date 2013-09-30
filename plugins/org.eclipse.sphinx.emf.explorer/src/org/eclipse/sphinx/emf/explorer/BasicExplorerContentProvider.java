@@ -18,6 +18,7 @@ package org.eclipse.sphinx.emf.explorer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -192,9 +193,18 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 *         {@link BasicExplorerContentProvider content provider}.
 	 */
 	protected List<Object> getModelContentRoots(Resource modelResource) {
-		ArrayList<Object> modelContentRoots = new ArrayList<Object>();
-		modelContentRoots.add(modelResource);
-		return modelContentRoots;
+		if (modelResource != null) {
+			ArrayList<Object> modelContentRoots = new ArrayList<Object>(3);
+			modelContentRoots.add(modelResource);
+
+			// Ensure backward compatibility
+			if (!modelResource.getContents().isEmpty()) {
+				modelContentRoots.add(getModelContentRoot(modelResource.getContents().get(0)));
+			}
+
+			return modelContentRoots;
+		}
+		return Collections.emptyList();
 	}
 
 	/**

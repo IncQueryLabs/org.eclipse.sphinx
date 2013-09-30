@@ -465,6 +465,30 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	}
 
 	/**
+	 * @deprecated Use {@link #getEditorInputObject()} instead.
+	 */
+	@Deprecated
+	public Object getModelRoot() {
+		return getEditorInputObject();
+	}
+
+	/**
+	 * @deprecated Use {@link #getOldEditorInputObject()} instead.
+	 */
+	@Deprecated
+	public Object getOldModelRoot() {
+		return getOldEditorInputObject();
+	}
+
+	/**
+	 * @deprecated Use {@link #getEditorInputResource()} instead.
+	 */
+	@Deprecated
+	public Resource getModelRootResource() {
+		return getEditorInputResource();
+	}
+
+	/**
 	 * @return The object behind the {@link IEditorInput editor input} that is currently being edited in this editor or
 	 *         <code>null</code> if no such is available.
 	 * @see #getOldEditorInputObject()
