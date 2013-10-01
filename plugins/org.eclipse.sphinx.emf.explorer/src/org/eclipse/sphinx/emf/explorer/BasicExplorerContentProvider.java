@@ -195,11 +195,18 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	protected List<Object> getModelContentRoots(Resource modelResource) {
 		if (modelResource != null) {
 			ArrayList<Object> modelContentRoots = new ArrayList<Object>(3);
-			modelContentRoots.add(modelResource);
 
 			// Ensure backward compatibility
 			if (!modelResource.getContents().isEmpty()) {
-				modelContentRoots.add(getModelContentRoot(modelResource.getContents().get(0)));
+				Object deprecatedModelContentRoot = getModelContentRoot(modelResource.getContents().get(0));
+				if (deprecatedModelContentRoot != null) {
+					modelContentRoots.add(deprecatedModelContentRoot);
+				}
+			}
+
+			// Return model resource as only model content root by default
+			if (modelContentRoots.isEmpty()) {
+				modelContentRoots.add(modelResource);
 			}
 
 			return modelContentRoots;
