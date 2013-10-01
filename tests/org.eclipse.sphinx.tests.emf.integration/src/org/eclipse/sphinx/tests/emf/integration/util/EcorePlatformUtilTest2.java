@@ -10,6 +10,7 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [410825] Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
+ *     itemis - [418005] Add support for model files with multiple root elements
  *
  * </copyright>
  */
@@ -39,7 +40,6 @@ import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.examples.hummingbird10.Application;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Factory;
@@ -569,10 +569,13 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 			IFile file20_20A_1 = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
 			assertNotNull(file20_20A_1);
 			assertTrue(file20_20A_1.isAccessible());
-			org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application modelRoot = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) EcorePlatformUtil
-					.getModelRoot(file20_20A_1);
+			Resource resource = EcorePlatformUtil.getResource(file20_20A_1);
+			assertNotNull(resource);
+			assertFalse(resource.getContents().isEmpty());
+			EObject modelRoot = resource.getContents().get(0);
 			assertNotNull(modelRoot);
-			Component component = modelRoot.getComponents().get(0);
+			assertTrue(modelRoot instanceof org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application);
+			Component component = ((org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) modelRoot).getComponents().get(0);
 			WrapperItemProvider wrapperItemProvider = new WrapperItemProvider(component, modelRoot,
 					InstanceModel20Package.eINSTANCE.getApplication_Components(), 1,
 					((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(file20_20A_1)).getAdapterFactory());
@@ -583,10 +586,13 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 			IFile file20_20D_1 = refWks.hbProject20_D.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1);
 			assertNotNull(file20_20D_1);
 			assertTrue(file20_20D_1.isAccessible());
-			org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application modelRoot = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) EcorePlatformUtil
-					.getModelRoot(file20_20D_1);
+			Resource resource = EcorePlatformUtil.getResource(file20_20D_1);
+			assertNotNull(resource);
+			assertFalse(resource.getContents().isEmpty());
+			EObject modelRoot = resource.getContents().get(0);
 			assertNotNull(modelRoot);
-			Component component = modelRoot.getComponents().get(0);
+			assertTrue(modelRoot instanceof org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application);
+			Component component = ((org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) modelRoot).getComponents().get(0);
 			WrapperItemProvider wrapperItemProvider = new WrapperItemProvider(component, modelRoot,
 					InstanceModel20Package.eINSTANCE.getApplication_Components(), 1,
 					((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(file20_20D_1)).getAdapterFactory());
@@ -597,10 +603,13 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 			IFile file20_20E_1 = refWks.hbProject20_E.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1);
 			assertNotNull(file20_20E_1);
 			assertTrue(file20_20E_1.isAccessible());
-			org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application modelRoot = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) EcorePlatformUtil
-					.getModelRoot(file20_20E_1);
+			Resource resource = EcorePlatformUtil.getResource(file20_20E_1);
+			assertNotNull(resource);
+			assertFalse(resource.getContents().isEmpty());
+			EObject modelRoot = resource.getContents().get(0);
 			assertNotNull(modelRoot);
-			Component component = modelRoot.getComponents().get(0);
+			assertTrue(modelRoot instanceof org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application);
+			Component component = ((org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) modelRoot).getComponents().get(0);
 			WrapperItemProvider wrapperItemProvider = new WrapperItemProvider(component, modelRoot,
 					InstanceModel20Package.eINSTANCE.getApplication_Components(), 1,
 					((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(file20_20E_1)).getAdapterFactory());
@@ -614,10 +623,14 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 			IFile file10_10A_1 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
 			assertNotNull(file10_10A_1);
 			assertTrue(file10_10A_1.isAccessible());
-			Application modelRoot = (Application) EcorePlatformUtil.getModelRoot(file10_10A_1);
+			Resource resource = EcorePlatformUtil.getResource(file10_10A_1);
+			assertNotNull(resource);
+			assertFalse(resource.getContents().isEmpty());
+			EObject modelRoot = resource.getContents().get(0);
 			assertNotNull(modelRoot);
+			assertTrue(modelRoot instanceof Application);
 
-			org.eclipse.sphinx.examples.hummingbird10.Component component = modelRoot.getComponents().get(0);
+			org.eclipse.sphinx.examples.hummingbird10.Component component = ((Application) modelRoot).getComponents().get(0);
 			WrapperItemProvider wrapperItemProvider = new WrapperItemProvider(component, modelRoot,
 					Hummingbird10Package.eINSTANCE.getComponent_Parameters(), 1,
 					((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(file10_10A_1)).getAdapterFactory());
@@ -628,10 +641,15 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 			IFile file10_10D_1 = refWks.hbProject10_D.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10D_1);
 			assertNotNull(file10_10D_1);
 			assertTrue(file10_10D_1.isAccessible());
-			Application modelRoot = (Application) EcorePlatformUtil.getModelRoot(file10_10D_1);
-			assertNotNull(modelRoot);
 
-			org.eclipse.sphinx.examples.hummingbird10.Component component = modelRoot.getComponents().get(0);
+			Resource resource = EcorePlatformUtil.getResource(file10_10D_1);
+			assertNotNull(resource);
+			assertFalse(resource.getContents().isEmpty());
+			EObject modelRoot = resource.getContents().get(0);
+			assertNotNull(modelRoot);
+			assertTrue(modelRoot instanceof Application);
+
+			org.eclipse.sphinx.examples.hummingbird10.Component component = ((Application) modelRoot).getComponents().get(0);
 			WrapperItemProvider wrapperItemProvider = new WrapperItemProvider(component, modelRoot,
 					Hummingbird10Package.eINSTANCE.getComponent_Parameters(), 1,
 					((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(file10_10D_1)).getAdapterFactory());
@@ -642,10 +660,15 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 			IFile file10_10E_1 = refWks.hbProject10_E.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1);
 			assertNotNull(file10_10E_1);
 			assertTrue(file10_10E_1.isAccessible());
-			Application modelRoot = (Application) EcorePlatformUtil.getModelRoot(file10_10E_1);
-			assertNotNull(modelRoot);
 
-			org.eclipse.sphinx.examples.hummingbird10.Component component = modelRoot.getComponents().get(0);
+			Resource resource = EcorePlatformUtil.getResource(file10_10E_1);
+			assertNotNull(resource);
+			assertFalse(resource.getContents().isEmpty());
+			EObject modelRoot = resource.getContents().get(0);
+			assertNotNull(modelRoot);
+			assertTrue(modelRoot instanceof Application);
+
+			org.eclipse.sphinx.examples.hummingbird10.Component component = ((Application) modelRoot).getComponents().get(0);
 			WrapperItemProvider wrapperItemProvider = new WrapperItemProvider(component, modelRoot,
 					Hummingbird10Package.eINSTANCE.getComponent_Parameters(), 1,
 					((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(file10_10E_1)).getAdapterFactory());
@@ -662,9 +685,13 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		IFile file20_20A_1 = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
 		assertNotNull(file20_20A_1);
 		assertTrue(file20_20A_1.isAccessible());
-		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application modelRoot20A_1 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) EcorePlatformUtil
-				.getModelRoot(file20_20A_1);
-		assertNotNull(modelRoot20A_1);
+		Resource resource = EcorePlatformUtil.getResource(file20_20A_1);
+		assertNotNull(resource);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot = resource.getContents().get(0);
+		assertNotNull(modelRoot);
+		assertTrue(modelRoot instanceof org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application);
+		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application modelRoot20A_1 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) modelRoot;
 
 		assertFalse(modelRoot20A_1.getComponents().isEmpty());
 		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component component = modelRoot20A_1.getComponents().get(0);
@@ -1486,7 +1513,10 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1);
 		assertNotNull(hbFile20E_1);
 
-		EObject contextObject = EcorePlatformUtil.getModelRoot(hbFile20E_1);
+		Resource resource = EcorePlatformUtil.getResource(hbFile20E_1);
+		assertNotNull(resource);
+		assertFalse(resource.getContents().isEmpty());
+		EObject contextObject = resource.getContents().get(0);
 		assertNotNull(contextObject);
 		URI testUri = EcoreUtil.getURI(contextObject);
 
@@ -1573,8 +1603,11 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
 						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, true), false);
 		assertNotNull(hbResource20_D_1);
-		contextObject = EcoreResourceUtil.getModelRoot(hbResource20_D_1);
+
+		assertFalse(hbResource20_D_1.getContents().isEmpty());
+		contextObject = hbResource20_D_1.getContents().get(0);
 		assertNotNull(contextObject);
+
 		resourcesInModel = EcorePlatformUtil.getResourcesInModel(contextObject, false);
 		assertEquals(resource20FromHbProject20_D, resourcesInModel.size());
 
@@ -1601,8 +1634,11 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
 						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, true), false);
 		assertNotNull(hbResource20_E_1);
-		contextObject = EcoreResourceUtil.getModelRoot(hbResource20_E_1);
+
+		assertFalse(hbResource20_E_1.getContents().isEmpty());
+		contextObject = hbResource20_E_1.getContents().get(0);
 		assertNotNull(contextObject);
+
 		resourcesInModel = EcorePlatformUtil.getResourcesInModel(contextObject, false);
 		assertEquals(resource20FromHbProject20_E, resourcesInModel.size());
 
@@ -1635,8 +1671,10 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D + "/"
 						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10D_1, true), false);
 		assertNotNull(hbResource10_D_1);
-		contextObject = EcoreResourceUtil.getModelRoot(hbResource10_D_1);
+		assertFalse(hbResource10_D_1.getContents().isEmpty());
+		contextObject = hbResource10_D_1.getContents().get(0);
 		assertNotNull(contextObject);
+
 		resourcesInModel = EcorePlatformUtil.getResourcesInModel(contextObject, false);
 		assertEquals(resources10FromHbProject10_D, resourcesInModel.size());
 
@@ -1661,8 +1699,11 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E + "/"
 						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, true), false);
 		assertNotNull(hbResource10_E_1);
-		contextObject = EcoreResourceUtil.getModelRoot(hbResource10_E_1);
+
+		assertFalse(hbResource10_E_1.getContents().isEmpty());
+		contextObject = hbResource10_E_1.getContents().get(0);
 		assertNotNull(contextObject);
+
 		resourcesInModel = EcorePlatformUtil.getResourcesInModel(contextObject, false);
 		assertEquals(resources10FromHbProject10_E, resourcesInModel.size());
 
@@ -1691,7 +1732,9 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
 						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true), false);
 		assertNotNull(uml2Resource20_D_1);
-		contextObject = EcoreResourceUtil.getModelRoot(uml2Resource20_D_1);
+
+		assertFalse(uml2Resource20_D_1.getContents().isEmpty());
+		contextObject = uml2Resource20_D_1.getContents().get(0);
 		assertNotNull(contextObject);
 		resourcesInModel = EcorePlatformUtil.getResourcesInModel(contextObject, false);
 		assertEquals(resourcesUml2FromHbProject20_D, resourcesInModel.size());
@@ -1718,8 +1761,11 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
 						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, true), false);
 		assertNotNull(uml2Resource20_E_1);
-		contextObject = EcoreResourceUtil.getModelRoot(uml2Resource20_E_1);
+
+		assertFalse(uml2Resource20_E_1.getContents().isEmpty());
+		contextObject = uml2Resource20_E_1.getContents().get(0);
 		assertNotNull(contextObject);
+
 		resourcesInModel = EcorePlatformUtil.getResourcesInModel(contextObject, false);
 		assertEquals(resourcesUml2FromHbProject20_E, resourcesInModel.size());
 
@@ -2577,7 +2623,10 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1);
 		assertNotNull(hbFile20E_1);
 
-		EObject contextObject = EcorePlatformUtil.getModelRoot(hbFile20E_1);
+		Resource resource = EcorePlatformUtil.getResource(hbFile20E_1);
+		assertNotNull(resource);
+		assertFalse(resource.getContents().isEmpty());
+		EObject contextObject = resource.getContents().get(0);
 		assertNotNull(contextObject);
 		URI testUri = EcoreUtil.getURI(contextObject);
 
@@ -2664,8 +2713,11 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
 						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1, true), false);
 		assertNotNull(hbResource20_D_1);
-		contextObject = EcoreResourceUtil.getModelRoot(hbResource20_D_1);
+
+		assertFalse(hbResource20_D_1.getContents().isEmpty());
+		contextObject = hbResource20_D_1.getContents().get(0);
 		assertNotNull(contextObject);
+
 		resourcesInScope = EcorePlatformUtil.getResourcesInScope(contextObject, false);
 		assertEquals(resource20FromHbProject20_D, resourcesInScope.size());
 
@@ -2692,8 +2744,11 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
 						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1, true), false);
 		assertNotNull(hbResource20_E_1);
-		contextObject = EcoreResourceUtil.getModelRoot(hbResource20_E_1);
+
+		assertFalse(hbResource20_E_1.getContents().isEmpty());
+		contextObject = hbResource20_E_1.getContents().get(0);
 		assertNotNull(contextObject);
+
 		resourcesInScope = EcorePlatformUtil.getResourcesInScope(contextObject, false);
 		assertEquals(resource20FromHbProject20_E, resourcesInScope.size());
 
@@ -2726,8 +2781,11 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D + "/"
 						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10D_1, true), false);
 		assertNotNull(hbResource10_D_1);
-		contextObject = EcoreResourceUtil.getModelRoot(hbResource10_D_1);
+
+		assertFalse(hbResource10_D_1.getContents().isEmpty());
+		contextObject = hbResource10_D_1.getContents().get(0);
 		assertNotNull(contextObject);
+
 		resourcesInScope = EcorePlatformUtil.getResourcesInScope(contextObject, false);
 		assertEquals(resources10FromHbProject10_D, resourcesInScope.size());
 
@@ -2752,7 +2810,9 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E + "/"
 						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10E_1, true), false);
 		assertNotNull(hbResource10_E_1);
-		contextObject = EcoreResourceUtil.getModelRoot(hbResource10_E_1);
+
+		assertFalse(hbResource10_E_1.getContents().isEmpty());
+		contextObject = hbResource10_E_1.getContents().get(0);
 		assertNotNull(contextObject);
 		resourcesInScope = EcorePlatformUtil.getResourcesInScope(contextObject, false);
 		assertEquals(resources10FromHbProject10_E, resourcesInScope.size());
@@ -2782,8 +2842,11 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
 						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true), false);
 		assertNotNull(uml2Resource20_D_1);
-		contextObject = EcoreResourceUtil.getModelRoot(uml2Resource20_D_1);
+
+		assertFalse(uml2Resource20_D_1.getContents().isEmpty());
+		contextObject = uml2Resource20_D_1.getContents().get(0);
 		assertNotNull(contextObject);
+
 		resourcesInScope = EcorePlatformUtil.getResourcesInScope(contextObject, false);
 		assertEquals(resourcesUml2FromHbProject20_D, resourcesInScope.size());
 
@@ -2809,8 +2872,11 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E + "/"
 						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20E_1, true), false);
 		assertNotNull(uml2Resource20_E_1);
-		contextObject = EcoreResourceUtil.getModelRoot(uml2Resource20_E_1);
+
+		assertFalse(uml2Resource20_E_1.getContents().isEmpty());
+		contextObject = uml2Resource20_E_1.getContents().get(0);
 		assertNotNull(contextObject);
+
 		resourcesInScope = EcorePlatformUtil.getResourcesInScope(contextObject, false);
 		assertEquals(resourcesUml2FromHbProject20_E, resourcesInScope.size());
 

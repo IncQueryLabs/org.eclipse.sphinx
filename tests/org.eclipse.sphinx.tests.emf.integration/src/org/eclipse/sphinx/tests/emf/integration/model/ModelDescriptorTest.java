@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [410825] Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -413,7 +414,10 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 
 		IFile referenceFile = refWks.getReferenceFile(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A,
 				DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
-		EObject modelRoot = EcorePlatformUtil.getModelRoot(referenceFile);
+		Resource resource = EcorePlatformUtil.getResource(referenceFile);
+		assertNotNull(resource);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot = resource.getContents().get(0);
 		assertNotNull(modelRoot);
 		// Models of Hummingbird10Resource
 		IModelDescriptor hbModel10A = ModelDescriptorRegistry.INSTANCE.getModel(refWks.hbProject10_A
@@ -849,7 +853,10 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 		{
 			IFile referenceFile = refWks.getReferenceFile(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A,
 					DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
-			EObject modelRoot = EcorePlatformUtil.getModelRoot(referenceFile);
+			Resource resource = EcorePlatformUtil.getResource(referenceFile);
+			assertNotNull(resource);
+			assertFalse(resource.getContents().isEmpty());
+			EObject modelRoot = resource.getContents().get(0);
 			assertNotNull(modelRoot);
 		}
 		// // --------------------------------------------------------------
@@ -889,7 +896,10 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			{
 				IFile referenceFile = refWks.getReferenceFile(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A,
 						DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
-				EObject modelRoot = EcorePlatformUtil.getModelRoot(referenceFile);
+				Resource resource = EcorePlatformUtil.getResource(referenceFile);
+				assertNotNull(resource);
+				assertFalse(resource.getContents().isEmpty());
+				EObject modelRoot = resource.getContents().get(0);
 				assertNotNull(modelRoot);
 			}
 			// // - Given file has Persisted: FALSE, Loaded: TRUE
@@ -909,7 +919,10 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			{
 				IFile referenceFile = refWks.getReferenceFile(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A,
 						DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
-				EObject modelRoot = EcorePlatformUtil.getModelRoot(referenceFile);
+				Resource resource = EcorePlatformUtil.getResource(referenceFile);
+				assertNotNull(resource);
+				assertFalse(resource.getContents().isEmpty());
+				EObject modelRoot = resource.getContents().get(0);
 				assertNotNull(modelRoot);
 			}
 			for (String file10DName : hbProject10DResources10) {
@@ -937,7 +950,10 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			{
 				IFile referenceFile = refWks.getReferenceFile(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A,
 						DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
-				EObject modelRoot = EcorePlatformUtil.getModelRoot(referenceFile);
+				Resource resource = EcorePlatformUtil.getResource(referenceFile);
+				assertNotNull(resource);
+				assertFalse(resource.getContents().isEmpty());
+				EObject modelRoot = resource.getContents().get(0);
 				assertNotNull(modelRoot);
 			}
 			//
@@ -1121,7 +1137,10 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 		{
 			IFile referenceFile = refWks.getReferenceFile(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A,
 					DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
-			EObject modelRoot = EcorePlatformUtil.getModelRoot(referenceFile);
+			Resource resource = EcorePlatformUtil.getResource(referenceFile);
+			assertNotNull(resource);
+			assertFalse(resource.getContents().isEmpty());
+			EObject modelRoot = resource.getContents().get(0);
 			assertNotNull(modelRoot);
 		}
 		// --------------------------------------------------------

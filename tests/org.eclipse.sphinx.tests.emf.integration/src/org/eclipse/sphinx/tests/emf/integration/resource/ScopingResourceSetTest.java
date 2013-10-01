@@ -12,6 +12,7 @@
  *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
  *     itemis - [410825] Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -1111,7 +1112,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			assertNotNull(contextResource);
 
 			// The context object use for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInModel(contextObject);
@@ -1146,7 +1148,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel10D = getScopingResourceSet(refWks.editingDomain10).getResourcesInModel(contextObject);
@@ -1179,7 +1182,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource); //$NON-NLS-1$
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel10E = getScopingResourceSet(refWks.editingDomain10).getResourcesInModel(contextObject);
@@ -1231,7 +1235,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource); //$NON-NLS-1$
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInModel(contextObject);
@@ -1264,7 +1269,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel20D = getScopingResourceSet(refWks.editingDomain20).getResourcesInModel(contextObject);
@@ -1298,7 +1304,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInModel(contextObject);
@@ -1638,7 +1645,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourceInModel20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInModel(contextObject);
@@ -1674,7 +1682,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourceInModel20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInModel(contextObject);
@@ -2560,7 +2569,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			assertNotNull(contextResource);
 
 			// The context object use for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInModel(contextObject, false);
@@ -2584,7 +2594,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel10D = getScopingResourceSet(refWks.editingDomain10).getResourcesInModel(contextObject, false);
@@ -2604,7 +2615,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource); //$NON-NLS-1$
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel10E = getScopingResourceSet(refWks.editingDomain10).getResourcesInModel(contextObject, false);
@@ -2654,7 +2666,9 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource); //$NON-NLS-1$
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
+			assertNotNull(contextObject);
 			assertNotNull("Cannot get model root of resource: " + contextResource.getURI().toString(), contextObject);
 			int resources20InContextHbProject = refWks.getReferenceFiles(contextFile.getParent().getName(), Hummingbird20MMDescriptor.INSTANCE)
 					.size();
@@ -2688,7 +2702,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel20D = getScopingResourceSet(refWks.editingDomain20).getResourcesInModel(contextObject, false);
@@ -2724,7 +2739,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInModel(contextObject, false);
@@ -3116,7 +3132,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourceInModel20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInModel(contextObject, false);
@@ -3158,7 +3175,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourceInModel20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInModel(contextObject, false);
@@ -3197,7 +3215,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourceInModel20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInModel(contextObject, false);
@@ -4191,7 +4210,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInScope10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInScope(contextObject);
@@ -4215,7 +4235,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInScope10D = getScopingResourceSet(refWks.editingDomain10).getResourcesInScope(contextObject);
@@ -4235,7 +4256,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource); //$NON-NLS-1$
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInScope10E = getScopingResourceSet(refWks.editingDomain10).getResourcesInScope(contextObject);
@@ -4289,7 +4311,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource); //$NON-NLS-1$
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInScope20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInScope(contextObject);
@@ -4310,7 +4333,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource); //$NON-NLS-1$
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInScope20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInScope(contextObject);
@@ -4346,7 +4370,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInScope10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInScope(contextObject);
@@ -4391,7 +4416,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInScope10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInScope(contextObject);
@@ -4755,7 +4781,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 			List<Resource> resourceInScope10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInScope(contextObject);
 			assertEquals(NLS.bind(message, EcoreUtil.getURI(contextObject)), resources10FromHbProject10_D + resources10FromHbProject10_E,
@@ -4790,7 +4817,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourceInScope20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInScope(contextObject);
@@ -5733,7 +5761,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			assertNotNull(contextResource);
 
 			// The context object use for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInScope10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInScope(contextObject, false);
@@ -5757,7 +5786,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInScope10D = getScopingResourceSet(refWks.editingDomain10).getResourcesInScope(contextObject, false);
@@ -5777,7 +5807,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource); //$NON-NLS-1$
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInScope10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInScope(contextObject, false);
@@ -5827,7 +5858,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource); //$NON-NLS-1$
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 			int resources20InContextHbProject = refWks.getReferenceFiles(contextFile.getParent().getName(), Hummingbird20MMDescriptor.INSTANCE)
 					.size();
@@ -5848,7 +5880,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInScope20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInScope(contextObject, false);
@@ -5881,7 +5914,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInScope10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInScope(contextObject, false);
@@ -5912,7 +5946,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInScope10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInScope(contextObject, false);
@@ -6230,7 +6265,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourceInScope20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInScope(contextObject, false);
@@ -6261,7 +6297,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull(contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourceInScope20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInScope(contextObject, false);
@@ -6451,7 +6488,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			assertNotNull(contextResource);
 
 			// The context object used for filtering
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel10 = getScopingResourceSet(refWks.editingDomain10).getResourcesInModel(contextObject);
@@ -6476,7 +6514,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource); //$NON-NLS-1$
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel10E = getScopingResourceSet(refWks.editingDomain10).getResourcesInModel(contextObject);
@@ -6503,7 +6542,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource); //$NON-NLS-1$
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel10E = getScopingResourceSet(refWks.editingDomain10).getResourcesInModel(contextObject);
@@ -6571,7 +6611,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource); //$NON-NLS-1$
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInModel(contextObject);
@@ -6615,7 +6656,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModel20 = getScopingResourceSet(refWks.editingDomain20).getResourcesInModel(contextObject);
@@ -6654,7 +6696,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 			Resource contextResource = EcorePlatformUtil.getResource(contextFile);
 			assertNotNull("File : " + contextFile.getName(), contextResource);
 
-			EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+			assertFalse(contextResource.getContents().isEmpty());
+			EObject contextObject = contextResource.getContents().get(0);
 			assertNotNull(contextObject);
 
 			List<Resource> resourcesInModelUml2 = getScopingResourceSet(refWks.editingDomainUml2).getResourcesInModel(contextObject);
@@ -6947,7 +6990,8 @@ public class ScopingResourceSetTest extends DefaultIntegrationTestCase {
 		assertNotNull(contextResource);
 
 		// The context object use for filtering
-		EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+		assertFalse(contextResource.getContents().isEmpty());
+		EObject contextObject = contextResource.getContents().get(0);
 		assertNotNull(contextObject);
 
 		String message = "Given URI is NULL, context object is not NULL. Object return is \"{0}\" "; //$NON-NLS-1$

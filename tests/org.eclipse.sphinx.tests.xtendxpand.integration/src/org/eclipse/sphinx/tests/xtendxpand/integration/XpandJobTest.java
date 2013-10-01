@@ -27,6 +27,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
@@ -53,9 +55,12 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		assertNotNull(hb20InstanceModelFile);
 		assertTrue(hb20InstanceModelFile.exists());
 
-		// Load Hummingbird 2.0 instance model file
-		Application application = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20InstanceModelFile, null);
+		Resource resource = EcorePlatformUtil.getResource(hb20InstanceModelFile);
+		assertNotNull(resource);
+		assertFalse(resource.getContents().isEmpty());
+		EObject application = resource.getContents().get(0);
 		assertNotNull(application);
+		assertTrue(application instanceof Application);
 
 		/*
 		 * Execute an Xpand job that generates current working directory
@@ -124,8 +129,12 @@ public class XpandJobTest extends XtendXpandIntegrationTestCase {
 		assertTrue(hb20InstanceModelFile.exists());
 
 		// Load Hummingbird 2.0 instance model file
-		Application application = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20InstanceModelFile, null);
+		Resource resource = EcorePlatformUtil.getResource(hb20InstanceModelFile);
+		assertNotNull(resource);
+		assertFalse(resource.getContents().isEmpty());
+		EObject application = resource.getContents().get(0);
 		assertNotNull(application);
+		assertTrue(application instanceof Application);
 
 		/*
 		 * Execute an Xpand job that generates current working directory

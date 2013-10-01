@@ -12,6 +12,7 @@
  *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked
  *     itemis - Fixed EObjectUtilTest that was failing since server infrastructure upgrade at Eclipse Foundation
  *     itemis - [410825] Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
+ *     itemis - [418005] Add support for model files with multiple root elements
  *
  * </copyright>
  */
@@ -42,7 +43,6 @@ import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
@@ -371,13 +371,16 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
 						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
 		assertNotNull(contextResource);
-		EObject contextObject = EcoreResourceUtil.getModelRoot(contextResource);
+		assertFalse(contextResource.getContents().isEmpty());
+		EObject contextObject = contextResource.getContents().get(0);
 		assertNotNull(contextObject);
 		// Remove contextResource from ResourceSet
 		refWks.editingDomain20.getResourceSet().getResources().remove(contextResource);
 		assertNull(contextResource.getResourceSet());
 		hbProject20AResources20.remove(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
-		hb20ModelRoot = EcoreResourceUtil.getModelRoot(contextResource);
+		assertFalse(contextResource.getContents().isEmpty());
+		hb20ModelRoot = contextResource.getContents().get(0);
+		assertNotNull(hb20ModelRoot);
 
 		assertEquals(1, EObjectUtil.getAllInstancesOf(hb20ModelRoot, Component.class, true).size());
 		// ==============================================================
@@ -394,7 +397,10 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		newRes1.getContents().add(createHb20Application());
 		newRes2.getContents().add(createHb20Application());
 		newRes3.getContents().add(createHb20Application());
-		EObject contextEObject = EcoreResourceUtil.getModelRoot(newRes1);
+
+		assertFalse(newRes1.getContents().isEmpty());
+		EObject contextEObject = newRes1.getContents().get(0);
+		assertNotNull(contextEObject);
 
 		assertEquals(6, EObjectUtil.getAllInstancesOf(contextEObject, Component.class, true).size());
 		// ==============================================================

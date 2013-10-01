@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 itemis, See4sys and others.
+ * Copyright (c) 2008-2013 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,20 +10,22 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [392424] Migrate Sphinx integration of Graphiti to Graphiti 0.9.x
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.graphiti.workspace.ui.editors;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.ui.URIEditorInput;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
@@ -179,7 +181,14 @@ public class BasicGraphitiDiagramEditor extends DiagramEditor implements ISaveab
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
 					public void run() {
-						setResult(EcoreResourceUtil.loadModelRoot(editingDomain.getResourceSet(), uri, Collections.emptyMap()));
+						Map<?, ?> options = EcoreResourceUtil.getDefaultLoadOptions();
+
+						EObject rootObject = null;
+						Resource resource = EcoreResourceUtil.loadResource(editingDomain.getResourceSet(), uri, options);
+						if (!resource.getContents().isEmpty()) {
+							rootObject = resource.getContents().get(0);
+						}
+						setResult(rootObject);
 					}
 				});
 			} catch (InterruptedException ex) {

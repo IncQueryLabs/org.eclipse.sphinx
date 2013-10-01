@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 itemis, See4sys and others.
+ * Copyright (c) 2008-2013 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [392464] Finish up Sphinx editor socket for GMF-based graphical editors
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -153,8 +154,20 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Diagram>() {
 					public void run() {
-						EObject modelRoot = EcoreResourceUtil.loadModelRoot(editingDomain.getResourceSet(), uri, getLoadOptions());
-						setResult(modelRoot instanceof Diagram ? (Diagram) modelRoot : null);
+						Map<?, ?> options = getLoadOptions();
+						if (options == null) {
+							options = EcoreResourceUtil.getDefaultLoadOptions();
+						}
+
+						Diagram diagram = null;
+						Resource resource = EcoreResourceUtil.loadResource(editingDomain.getResourceSet(), uri, options);
+						if (!resource.getContents().isEmpty()) {
+							EObject rootObject = resource.getContents().get(0);
+							if (rootObject instanceof Diagram) {
+								diagram = (Diagram) rootObject;
+							}
+						}
+						setResult(diagram);
 					}
 				});
 			} catch (InterruptedException ex) {

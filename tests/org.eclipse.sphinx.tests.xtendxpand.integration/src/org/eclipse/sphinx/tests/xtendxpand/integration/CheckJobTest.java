@@ -19,6 +19,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
@@ -43,8 +45,12 @@ public class CheckJobTest extends XtendXpandIntegrationTestCase {
 		assertTrue(hb20TypeModelFile.exists());
 
 		// Load Hummingbird 2.0 type model file
-		Platform platform = (Platform) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20TypeModelFile, null);
+		Resource resource = EcorePlatformUtil.getResource(hb20TypeModelFile);
+		assertNotNull(resource);
+		assertFalse(resource.getContents().isEmpty());
+		EObject platform = resource.getContents().get(0);
 		assertNotNull(platform);
+		assertTrue(platform instanceof Platform);
 
 		// Check existence of Hummingbird 2.0 instance model file
 		IFile hb20InstanceModelFile = refWks.codegenXpandProject
@@ -53,8 +59,12 @@ public class CheckJobTest extends XtendXpandIntegrationTestCase {
 		assertTrue(hb20InstanceModelFile.exists());
 
 		// Load Hummingbird 2.0 instance model file
-		Application application = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, hb20InstanceModelFile, null);
+		resource = EcorePlatformUtil.getResource(hb20InstanceModelFile);
+		assertNotNull(resource);
+		assertFalse(resource.getContents().isEmpty());
+		EObject application = resource.getContents().get(0);
 		assertNotNull(application);
+		assertTrue(application instanceof Application);
 
 		// Check existence of check file
 		IFile checkFile = refWks.codegenXpandProject.getFile(XtendXpandTestReferenceWorkspace.HB_CHK_FILE_PATH);

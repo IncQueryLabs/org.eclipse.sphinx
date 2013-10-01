@@ -10,15 +10,17 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [409152] Wrong DiagramRoot is returned in BasicGraphitiDiagramEditorPersistencyBehavior
+ *     itemis - [418005] Add support for model files with multiple root elements
  *
  * </copyright>
  */
 package org.eclipse.sphinx.graphiti.workspace.ui.editors;
 
-import java.util.Collections;
+import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
@@ -54,7 +56,17 @@ public class BasicGraphitiDiagramEditorPersistencyBehavior extends DefaultPersis
 							if (uri.hasFragment()) {
 								modelObject = EcoreResourceUtil.loadEObject(editingDomain.getResourceSet(), uri);
 							} else {
-								modelObject = EcoreResourceUtil.loadModelRoot(editingDomain.getResourceSet(), uri, Collections.emptyMap());
+								Map<?, ?> options = EcoreResourceUtil.getDefaultLoadOptions();
+
+								Diagram diagram = null;
+								Resource resource = EcoreResourceUtil.loadResource(editingDomain.getResourceSet(), uri, options);
+								if (!resource.getContents().isEmpty()) {
+									EObject rootObject = resource.getContents().get(0);
+									if (rootObject instanceof Diagram) {
+										diagram = (Diagram) rootObject;
+									}
+								}
+								setResult(diagram);
 							}
 							setResult(modelObject instanceof Diagram ? (Diagram) modelObject : null);
 						}

@@ -25,6 +25,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sphinx.emf.mwe.resources.BasicWorkspaceResourceLoader;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
@@ -57,14 +59,19 @@ public class XtendJobTest extends XtendXpandIntegrationTestCase {
 		assertTrue(extFile.exists());
 
 		// Get the first package of the UML2 file
-		Model umlModel = (Model) EcorePlatformUtil.loadModelRoot(refWks.editingDomainUml2, umlModelFile, null);
-		assertNotNull(umlModel);
-		PackageableElement fistPackage = umlModel.getPackagedElements().get(0);
+		Resource resource = EcorePlatformUtil.getResource(umlModelFile);
+		assertNotNull(resource);
+		assertFalse(resource.getContents().isEmpty());
+		EObject model = resource.getContents().get(0);
+		assertNotNull(model);
+		assertTrue(model instanceof Model);
+
+		PackageableElement fistPackage = ((Model) model).getPackagedElements().get(0);
 		assertNotNull(fistPackage);
 
 		// Xtend execution
 		XtendEvaluationRequest xtendEvaluationRequest = new XtendEvaluationRequest(XtendXpandTestReferenceWorkspace.XTEND_UML2_HB20_EXTENSION_NAME,
-				umlModel);
+				model);
 		List<MetaModel> metaModels = new ArrayList<MetaModel>(2);
 		metaModels.add(new UML2MetaModel());
 		metaModels.add(new SphinxManagedEmfMetaModel(umlModelFile.getProject()));
@@ -77,7 +84,7 @@ public class XtendJobTest extends XtendXpandIntegrationTestCase {
 		Map<Object, Collection<?>> result = xtendJob.getResultObjects();
 		assertEquals(1, result.size());
 		Object inputObject = result.keySet().iterator().next();
-		assertEquals(umlModel, inputObject);
+		assertEquals(model, inputObject);
 		Collection<?> resultCollection = result.values().iterator().next();
 		assertEquals(1, resultCollection.size());
 		Object resultObject = resultCollection.iterator().next();

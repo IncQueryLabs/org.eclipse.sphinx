@@ -145,161 +145,6 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 	}
 
 	/**
-	 * Test method for {@link EcorePlatformUtil#loadModelRoot(TransactionalEditingDomain, IFile)} .
-	 */
-	public void testLoadModelRoot() throws Exception {
-		// Since Project is automatically loaded during import we need first to unload it.
-		ModelLoadManager.INSTANCE.unloadProject(refWks.hbProject20_A, false, false, new NullProgressMonitor());
-		waitForModelLoading();
-
-		ModelLoadManager.INSTANCE.unloadProject(refWks.hbProject20_D, false, false, new NullProgressMonitor());
-		waitForModelLoading();
-
-		ModelLoadManager.INSTANCE.unloadProject(refWks.hbProject20_E, false, false, new NullProgressMonitor());
-		waitForModelLoading();
-
-		ModelLoadManager.INSTANCE.unloadProject(refWks.hbProject10_A, false, false, new NullProgressMonitor());
-		waitForModelLoading();
-
-		assertNotNull(refWks.editingDomain10);
-		assertNotNull(refWks.editingDomain20);
-		assertNotNull(refWks.editingDomainUml2);
-
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, 0);
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, 0);
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, 0);
-		// ========================================================================
-		// HUMMINGBIRD 20
-		IFile testResource = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
-		assertNotNull(testResource);
-		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application applicationHB20 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) EcorePlatformUtil
-				.loadModelRoot(refWks.editingDomain20, testResource, null);
-		waitForModelLoading();
-
-		assertNotNull(applicationHB20);
-		assertNotNull(applicationHB20.getComponents());
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, 1);
-
-		testResource = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2);
-		assertNotNull(testResource);
-		Platform platform = (Platform) EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, testResource, null);
-		waitForModelLoading();
-
-		assertNotNull(platform);
-		assertEquals(2, platform.getComponentTypes().size());
-		assertEquals(2, platform.getInterfaces().size());
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, 2);
-
-		testResource = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3);
-		assertNotNull(testResource);
-		applicationHB20 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) EcorePlatformUtil.loadModelRoot(
-				refWks.editingDomain20, testResource, null);
-		waitForModelLoading();
-
-		assertNotNull(applicationHB20);
-		assertEquals(2, applicationHB20.getComponents().size());
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, 3);
-
-		// =================================================================
-		// HUMMINGBIRD 10
-		assertTrue(refWks.editingDomain10.getResourceSet().getResources().isEmpty());
-
-		IFile testHBResource10 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
-		assertNotNull(testHBResource10);
-		Application applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10, null);
-		assertNotNull(applicationHB10);
-		assertEquals(1, applicationHB10.getComponents().size());
-		assertEquals(1, applicationHB10.getInterfaces().size());
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, 1);
-
-		testHBResource10 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_2);
-		assertNotNull(testResource);
-		applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10, null);
-		assertNotNull(applicationHB10);
-		assertEquals(1, applicationHB10.getComponents().size());
-		assertEquals(1, applicationHB10.getInterfaces().size());
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, 2);
-
-		testHBResource10 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_3);
-		assertNotNull(testHBResource10);
-		applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10, null);
-		assertNotNull(applicationHB10);
-		assertEquals(1, applicationHB10.getComponents().size());
-		assertEquals(1, applicationHB10.getInterfaces().size());
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, 3);
-
-		testHBResource10 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_4);
-		assertNotNull(testHBResource10);
-		applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10, null);
-		assertNotNull(applicationHB10);
-		assertEquals(1, applicationHB10.getComponents().size());
-		assertEquals(1, applicationHB10.getInterfaces().size());
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, 4);
-
-		testHBResource10 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_5);
-		assertNotNull(testHBResource10);
-		applicationHB10 = (Application) EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testHBResource10, null);
-		assertNotNull(applicationHB10);
-		assertEquals(1, applicationHB10.getComponents().size());
-		assertEquals(2, applicationHB10.getInterfaces().size());
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, 5);
-		// =======================================
-		// UML MODEL
-		IFile uml2Resource = refWks.hbProject20_D.getFile(DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1);
-		assertNotNull(uml2Resource);
-		Model uml2Model = (Model) EcorePlatformUtil.loadModelRoot(refWks.editingDomainUml2, uml2Resource, null);
-		assertNotNull(uml2Model);
-		assertEquals(2, uml2Model.getPackagedElements().size());
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, 1);
-
-		uml2Resource = refWks.hbProject20_D.getFile(DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_2);
-		assertNotNull(uml2Resource);
-		uml2Model = (Model) EcorePlatformUtil.loadModelRoot(refWks.editingDomainUml2, uml2Resource, null);
-		assertNotNull(uml2Model);
-		assertEquals(2, uml2Model.getPackagedElements().size());
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, 2);
-
-		uml2Resource = refWks.hbProject20_D.getFile(DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
-		assertNotNull(uml2Resource);
-		uml2Model = (Model) EcorePlatformUtil.loadModelRoot(refWks.editingDomainUml2, uml2Resource, null);
-		assertNotNull(uml2Model);
-		assertEquals(2, uml2Model.getPackagedElements().size());
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, 3);
-		// =====================================
-		// External use cases
-		// Null Resource
-		assertNull(EcorePlatformUtil.loadModelRoot(refWks.editingDomain20, null, null));
-		// -----------------
-		// Null EditingDomain
-		IFile testFile = refWks.hbProject20_E.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1);
-		assertNotNull(testFile);
-		assertNull(EcorePlatformUtil.loadModelRoot(null, testFile, null));
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, 3);
-		// -------------------
-		// Load Model Root of loaded file
-
-		testFile = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
-		assertNotNull(testFile);
-		applicationHB20 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) EcorePlatformUtil.loadModelRoot(
-				refWks.editingDomain20, testResource, null);
-
-		assertNotNull(applicationHB20);
-		assertNotNull(applicationHB20.getComponents());
-		// Verify that the test file was loaded one time
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, 3);
-		// ------------
-		// Load file with un correlative editingdomain
-		testFile = refWks.hbProject20_E.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20E_1);
-		assertNotNull(testFile);
-		// It should be loaded anyway
-		assertNotNull(EcorePlatformUtil.loadModelRoot(refWks.editingDomain10, testFile, null));
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, 3);
-		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, 6);// Why?
-		assertEditingDomainContainsResource(refWks.editingDomain10, testFile.getName());
-
-	}
-
-	/**
 	 * Test method for {@link EcorePlatformUtil#validate(IFile, URL)} .
 	 */
 	public void testValidate() throws Exception {
@@ -644,168 +489,6 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 	}
 
 	/**
-	 * Test method for {@link EcorePlatformUtil#getModelRoot(IFile)) .
-	 */
-	public void testGetModelRootFromFile() throws Exception {
-		// Hummingbird20 File
-		Resource hbResource20 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
-		assertNotNull(hbResource20);
-
-		assertFalse(hbResource20.getContents().isEmpty());
-		EObject object = hbResource20.getContents().get(0);
-		assertTrue(object instanceof org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application);
-		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application expectedModelRoot20 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) object;
-
-		IFile hbFile20 = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
-		assertNotNull(hbFile20);
-
-		EObject modelRoot = EcorePlatformUtil.getModelRoot(hbFile20);
-		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application retrievedModelRoot20 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) modelRoot;
-
-		assertSame(expectedModelRoot20, retrievedModelRoot20);
-		// --------------------------------------------------------------------
-		// Hummingbird10 File
-		Resource hbResource10 = refWks.editingDomain10.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
-
-		assertNotNull(hbResource10);
-		assertFalse(hbResource10.getContents().isEmpty());
-		EObject object10 = hbResource10.getContents().get(0);
-		assertTrue(object10 instanceof Application);
-		Application expectedModelRoot10 = (Application) object10;
-
-		IFile hbFile10 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
-		assertNotNull(hbFile10);
-
-		EObject modelRoot10 = EcorePlatformUtil.getModelRoot(hbFile10);
-		Application retrievedModelRoot10 = (Application) modelRoot10;
-
-		assertSame(expectedModelRoot10, retrievedModelRoot10);
-		// --------------------------------------------------------------------
-		// Uml2 File
-		Resource resourceUml2 = refWks.editingDomainUml2.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true), false);
-		assertNotNull(resourceUml2);
-		assertFalse(resourceUml2.getContents().isEmpty());
-		EObject objectUml2 = resourceUml2.getContents().get(0);
-		assertTrue(objectUml2 instanceof Model);
-		Model expetedModelRootUml2 = (Model) objectUml2;
-
-		IFile fileUml2 = refWks.hbProject20_D.getFile(DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1);
-		assertNotNull(fileUml2);
-
-		EObject modelRootUml2 = EcorePlatformUtil.getModelRoot(fileUml2);
-		assertSame(expetedModelRootUml2, modelRootUml2);
-		// --------------------------------------------------------------------
-		// Given file is NULL
-		IFile nullFile = null;
-		assertNull(EcorePlatformUtil.getModelRoot(nullFile));
-		// --------------------------------------------------------------------
-		// File is unloaded
-		synchronizedUnloadProject(refWks.hbProject20_A, false);
-		EObject unloadedModelRoot = EcorePlatformUtil.getModelRoot(hbFile20);
-		assertNull(unloadedModelRoot);
-		// ---------------------------------------------------------------------
-		// File is unexisting
-		IFile unexistingFile = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
-		assertNotNull(unexistingFile);
-		assertFalse(unexistingFile.isAccessible());
-
-		assertNull(EcorePlatformUtil.getModelRoot(unexistingFile));
-	}
-
-	/**
-	 * Test method for
-	 * {@link EcorePlatformUtil#getModelRoot(org.eclipse.emf.transaction.TransactionalEditingDomain, IFile)}
-	 */
-	public void testGetModelRootFromTransactionAndFile() throws Exception {
-		// Hummingbird20 File
-		Resource hbResource20 = refWks.editingDomain20.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1, true), false);
-		assertNotNull(hbResource20);
-		assertFalse(hbResource20.getContents().isEmpty());
-		EObject object = hbResource20.getContents().get(0);
-		assertTrue(object instanceof org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application);
-		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application expectedModelRoot20 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) object;
-
-		IFile hbFile20 = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
-		assertNotNull(hbFile20);
-
-		EObject modelRoot = EcorePlatformUtil.getModelRoot(refWks.editingDomain20, hbFile20);
-		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application retrievedModelRoot20 = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) modelRoot;
-		assertSame(expectedModelRoot20, retrievedModelRoot20);
-		// --------------------------------------------------------------------
-		// Hummingbird10 File
-		Resource hbResource10 = refWks.editingDomain10.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A + "/"
-						+ DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1, true), false);
-
-		assertNotNull(hbResource10);
-		assertFalse(hbResource10.getContents().isEmpty());
-		EObject object21 = hbResource10.getContents().get(0);
-		assertTrue(object21 instanceof Application);
-		Application expectedModelRoot10 = (Application) object21;
-
-		IFile hbFile10 = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
-		assertNotNull(hbFile10);
-
-		EObject modelRoot21 = EcorePlatformUtil.getModelRoot(refWks.editingDomain10, hbFile10);
-		Application retrievedModelRoot10 = (Application) modelRoot21;
-
-		assertSame(expectedModelRoot10, retrievedModelRoot10);
-		// --------------------------------------------------------------------
-		// Uml2 File
-		Resource resourceUml2 = refWks.editingDomainUml2.getResourceSet().getResource(
-				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "/"
-						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1, true), false);
-		assertNotNull(resourceUml2);
-		assertFalse(resourceUml2.getContents().isEmpty());
-		EObject objectUml2 = resourceUml2.getContents().get(0);
-		assertTrue(objectUml2 instanceof Model);
-		Model expetedModelRootUml2 = (Model) objectUml2;
-
-		IFile fileUml2 = refWks.hbProject20_D.getFile(DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1);
-		assertNotNull(fileUml2);
-
-		EObject modelRootUml2 = EcorePlatformUtil.getModelRoot(refWks.editingDomainUml2, fileUml2);
-		assertSame(expetedModelRootUml2, modelRootUml2);
-		// --------------------------------------------------------------------
-		// Get ModelRoot of Hummingbird10 Object in EditingDomain20
-		assertNull(EcorePlatformUtil.getModelRoot(refWks.editingDomain20, hbFile10));
-		assertNull(EcorePlatformUtil.getModelRoot(refWks.editingDomainUml2, hbFile10));
-		assertNull(EcorePlatformUtil.getModelRoot(refWks.editingDomain20, fileUml2));
-		// --------------------------------------------------------------------
-		// Given transaction is NULL
-		TransactionalEditingDomain nullEditingDomain = null;
-		assertNull(EcorePlatformUtil.getModelRoot(nullEditingDomain, hbFile10));
-		assertNull(EcorePlatformUtil.getModelRoot(nullEditingDomain, hbFile20));
-		assertNull(EcorePlatformUtil.getModelRoot(nullEditingDomain, fileUml2));
-		// --------------------------------------------------------------------
-		// Given file is NULL
-		IFile nullFile = null;
-		assertNull(EcorePlatformUtil.getModelRoot(refWks.editingDomain20, nullFile));
-		assertNull(EcorePlatformUtil.getModelRoot(refWks.editingDomainUml2, nullFile));
-		assertNull(EcorePlatformUtil.getModelRoot(refWks.editingDomain20, nullFile));
-		// --------------------------------------------------------------------
-		// File is unloaded
-		synchronizedUnloadProject(refWks.hbProject20_A, false);
-		EObject unloadedModelRoot = EcorePlatformUtil.getModelRoot(hbFile20);
-		assertNull(unloadedModelRoot);
-		// --------------------------------------------------------------------
-		// File is unexisting
-		IFile unexistingFile = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
-		assertNotNull(unexistingFile);
-		assertFalse(unexistingFile.isAccessible());
-		assertNull(EcorePlatformUtil.getModelRoot(unexistingFile));
-
-	}
-
-	/**
 	 * Test method for {@link EcorePlatformUtil#isFileLoaded(IFile)}
 	 * 
 	 * @throws Exception
@@ -873,7 +556,10 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		// We retrieve model root from file HB_FILE_NAME_20_20A_1
 		IFile referenceFile = refWks.getReferenceFile(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A,
 				DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
-		EObject modelRoot = EcorePlatformUtil.getModelRoot(referenceFile);
+		Resource resource = EcorePlatformUtil.getResource(referenceFile);
+		assertNotNull(resource);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot = resource.getContents().get(0);
 		assertNotNull(modelRoot);
 
 		// we add the new resource.
@@ -1009,7 +695,10 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		// We retrieve model root from file HB_FILE_NAME_20_20A_1
 		IFile referenceFile = refWks.getReferenceFile(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A,
 				DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
-		EObject modelRoot = EcorePlatformUtil.getModelRoot(referenceFile);
+		Resource resource = EcorePlatformUtil.getResource(referenceFile);
+		assertNotNull(resource);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot = resource.getContents().get(0);
 		assertNotNull(modelRoot);
 
 		// we add the new resource.
@@ -1168,7 +857,10 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		// We retrieve model root from file HB_FILE_NAME_20_20A_1
 		IFile referenceFile = refWks.getReferenceFile(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A,
 				DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
-		EObject modelRoot = EcorePlatformUtil.getModelRoot(referenceFile);
+		Resource resource = EcorePlatformUtil.getResource(referenceFile);
+		assertNotNull(resource);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot = resource.getContents().get(0);
 		assertNotNull(modelRoot);
 
 		// we add the new resource.
@@ -1316,7 +1008,10 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		// We retrieve model root from file HB_FILE_NAME_20_20A_1
 		IFile referenceFile = refWks.getReferenceFile(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A,
 				DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
-		EObject modelRoot = EcorePlatformUtil.getModelRoot(referenceFile);
+		Resource resource = EcorePlatformUtil.getResource(referenceFile);
+		assertNotNull(resource);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot = resource.getContents().get(0);
 		assertNotNull(modelRoot);
 
 		// we add the new resource.
@@ -3774,12 +3469,18 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		unloadedResources10.add(hbFile10_1);
 		unloadedResources10.add(hbFile10_2);
 		// Verify tested resource are loaded
-		EObject modelRoot10_1 = EcoreResourceUtil.getModelRoot(refWks.editingDomain10.getResourceSet(), hbResource10_1.getURI());
+		Resource resource = refWks.editingDomain10.getResourceSet().getResource(hbResource10_1.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot10_1 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot10_1);
 		assertFalse(modelRoot10_1.eIsProxy());
 		assertTrue(modelRoot10_1.eContents().size() > 0);
 
-		EObject modelRoot10_2 = EcoreResourceUtil.getModelRoot(refWks.editingDomain10.getResourceSet(), hbResource10_2.getURI());
+		resource = refWks.editingDomain10.getResourceSet().getResource(hbResource10_2.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot10_2 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot10_2);
 		assertFalse(modelRoot10_2.eIsProxy());
 		assertTrue(modelRoot10_2.eContents().size() > 0);
@@ -3856,22 +3557,34 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		unloadedResources20.add(hbFile20_4);
 		unloadedResources20.add(hbFile20_5);
 		// Verify tested resources are loaded
-		EObject modelRoot20_1 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_1.getURI());
+		resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_1.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_1 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot20_1);
 		assertFalse(modelRoot20_1.eIsProxy());
 		assertTrue(modelRoot20_1.eContents().size() > 0);
 
-		EObject modelRoot20_2 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_2.getURI());
+		resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_2.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_2 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot20_2);
 		assertFalse(modelRoot20_2.eIsProxy());
 		assertTrue(modelRoot20_2.eContents().size() > 0);
 
-		EObject modelRoot20_4 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_4.getURI());
+		resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_4.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_4 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot20_4);
 		assertFalse(modelRoot20_4.eIsProxy());
 		assertTrue(modelRoot20_4.eContents().size() > 0);
 
-		EObject modelRoot20_5 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_5.getURI());
+		resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_5.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_5 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot20_5);
 		assertFalse(modelRoot20_5.eIsProxy());
 		assertTrue(modelRoot20_5.eContents().size() > 0);
@@ -3963,7 +3676,10 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
 		unloadedUml2Resources.add(uml2File_1);
 		// Verify tested resource were loaded
-		EObject modelRootUml2_1 = EcoreResourceUtil.getModelRoot(refWks.editingDomainUml2.getResourceSet(), uml2Resource_1.getURI());
+		resource = refWks.editingDomainUml2.getResourceSet().getResource(uml2Resource_1.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRootUml2_1 = resource.getContents().get(0);
+
 		assertNotNull(modelRootUml2_1);
 		assertFalse(modelRootUml2_1.eIsProxy());
 		assertTrue(modelRootUml2_1.eContents().size() > 0);
@@ -4028,12 +3744,18 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		unloadedResources10.add(hbFile10_2);
 
 		// Verify tested resources are loaded
-		EObject modelRoot10_1 = EcoreResourceUtil.getModelRoot(refWks.editingDomain10.getResourceSet(), hbResource10_1.getURI());
+		Resource resource = refWks.editingDomain10.getResourceSet().getResource(hbResource10_1.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot10_1 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot10_1);
 		assertFalse(modelRoot10_1.eIsProxy());
 		assertTrue(modelRoot10_1.eContents().size() > 0);
 
-		EObject modelRoot10_2 = EcoreResourceUtil.getModelRoot(refWks.editingDomain10.getResourceSet(), hbResource10_2.getURI());
+		resource = refWks.editingDomain10.getResourceSet().getResource(hbResource10_2.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot10_2 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot10_2);
 		assertFalse(modelRoot10_2.eIsProxy());
 		assertTrue(modelRoot10_2.eContents().size() > 0);
@@ -4113,22 +3835,34 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		unloadedResources20.add(hbFile20_5);
 
 		// Verify tested resources are loaded
-		EObject modelRoot20_1 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_1.getURI());
+		resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_1.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_1 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot20_1);
 		assertFalse(modelRoot20_1.eIsProxy());
 		assertTrue(modelRoot20_1.eContents().size() > 0);
 
-		EObject modelRoot20_2 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_2.getURI());
+		resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_2.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_2 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot20_2);
 		assertFalse(modelRoot20_2.eIsProxy());
 		assertTrue(modelRoot20_2.eContents().size() > 0);
 
-		EObject modelRoot20_4 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_4.getURI());
+		resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_4.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_4 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot20_4);
 		assertFalse(modelRoot20_4.eIsProxy());
 		assertTrue(modelRoot20_4.eContents().size() > 0);
 
-		EObject modelRoot20_5 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_5.getURI());
+		resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_5.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_5 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot20_5);
 		assertFalse(modelRoot20_5.eIsProxy());
 		assertTrue(modelRoot20_5.eContents().size() > 0);
@@ -4217,7 +3951,10 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
 		unloadedUml2Resources.add(uml2File_1);
 		// Verify tested resource were loaded
-		EObject modelRootUml2_1 = EcoreResourceUtil.getModelRoot(refWks.editingDomainUml2.getResourceSet(), uml2Resource_1.getURI());
+		resource = refWks.editingDomainUml2.getResourceSet().getResource(uml2Resource_1.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRootUml2_1 = resource.getContents().get(0);
+
 		assertNotNull(modelRootUml2_1);
 		assertFalse(modelRootUml2_1.eIsProxy());
 		assertTrue(modelRootUml2_1.eContents().size() > 0);
@@ -4289,15 +4026,22 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		unloadedResources20.add(hbResource20_4);
 		unloadedResources20.add(hbResource20_5);
 		// Verify tested resources are loaded
-		EObject modelRoot20_1 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_1.getURI());
+		Resource resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_1.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_1 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot20_1);
 		assertFalse(modelRoot20_1.eIsProxy());
 
-		EObject modelRoot20_4 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_4.getURI());
+		resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_4.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_4 = resource.getContents().get(0);
 		assertNotNull(modelRoot20_4);
 		assertFalse(modelRoot20_4.eIsProxy());
 
-		EObject modelRoot20_5 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_5.getURI());
+		resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_5.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_5 = resource.getContents().get(0);
 		assertNotNull(modelRoot20_5);
 		assertFalse(modelRoot20_5.eIsProxy());
 
@@ -4347,11 +4091,15 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		unloadedResources10.add(hbResource10_1);
 		unloadedResources10.add(hbResource10_2);
 		// Verify tested resource were loaded
-		EObject modelRoot10_1 = EcoreResourceUtil.getModelRoot(refWks.editingDomain10.getResourceSet(), hbResource10_1.getURI());
+		resource = refWks.editingDomain10.getResourceSet().getResource(hbResource10_1.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot10_1 = resource.getContents().get(0);
 		assertNotNull(modelRoot10_1);
 		assertFalse(modelRoot10_1.eIsProxy());
 
-		EObject modelRoot10_2 = EcoreResourceUtil.getModelRoot(refWks.editingDomain10.getResourceSet(), hbResource10_2.getURI());
+		resource = refWks.editingDomain10.getResourceSet().getResource(hbResource10_2.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot10_2 = resource.getContents().get(0);
 		assertNotNull(modelRoot10_2);
 		assertFalse(modelRoot10_2.eIsProxy());
 
@@ -4409,11 +4157,15 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		unloadedUml2Resources.add(uml2Resource_2);
 
 		// Verify tested resource were loaded
-		EObject modelRootUml2_1 = EcoreResourceUtil.getModelRoot(refWks.editingDomainUml2.getResourceSet(), uml2Resource_1.getURI());
+		resource = refWks.editingDomainUml2.getResourceSet().getResource(uml2Resource_1.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRootUml2_1 = resource.getContents().get(0);
 		assertNotNull(modelRootUml2_1);
 		assertFalse(modelRootUml2_1.eIsProxy());
 
-		EObject modelRootUml2_2 = EcoreResourceUtil.getModelRoot(refWks.editingDomainUml2.getResourceSet(), uml2Resource_2.getURI());
+		resource = refWks.editingDomainUml2.getResourceSet().getResource(uml2Resource_2.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRootUml2_2 = resource.getContents().get(0);
 		assertNotNull(modelRootUml2_2);
 		assertFalse(modelRootUml2_2.eIsProxy());
 
@@ -4485,15 +4237,24 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		unloadedResources20.add(hbResource20_5);
 
 		// Verify tested resources are loaded
-		EObject modelRoot20_1 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_1.getURI());
+		Resource resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_1.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_1 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot20_1);
 		assertFalse(modelRoot20_1.eIsProxy());
 
-		EObject modelRoot20_4 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_4.getURI());
+		resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_4.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_4 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot20_4);
 		assertFalse(modelRoot20_4.eIsProxy());
 
-		EObject modelRoot20_5 = EcoreResourceUtil.getModelRoot(refWks.editingDomain20.getResourceSet(), hbResource20_5.getURI());
+		resource = refWks.editingDomain20.getResourceSet().getResource(hbResource20_5.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot20_5 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot20_5);
 		assertFalse(modelRoot20_5.eIsProxy());
 
@@ -4548,12 +4309,17 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		unloadedResources10.add(hbResource10_2);
 
 		// Verify tested resource are loaded
-		EObject modelRoot10_1 = EcoreResourceUtil.getModelRoot(refWks.editingDomain10.getResourceSet(), hbResource10_1.getURI());
+		resource = refWks.editingDomain10.getResourceSet().getResource(hbResource10_1.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot10_1 = resource.getContents().get(0);
+
 		assertNotNull(modelRoot10_1);
 		assertFalse(modelRoot10_1.eIsProxy());
 		assertTrue(modelRoot10_1.eContents().size() > 0);
 
-		EObject modelRoot10_2 = EcoreResourceUtil.getModelRoot(refWks.editingDomain10.getResourceSet(), hbResource10_2.getURI());
+		resource = refWks.editingDomain10.getResourceSet().getResource(hbResource10_2.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRoot10_2 = resource.getContents().get(0);
 		assertNotNull(modelRoot10_2);
 		assertFalse(modelRoot10_2.eIsProxy());
 		assertTrue(modelRoot10_2.eContents().size() > 0);
@@ -4610,11 +4376,15 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		unloadedUml2Resources.add(uml2Resource_1);
 		unloadedUml2Resources.add(uml2Resource_2);
 		// Verify tested resource were loaded
-		EObject modelRootUml2_1 = EcoreResourceUtil.getModelRoot(refWks.editingDomainUml2.getResourceSet(), uml2Resource_1.getURI());
+		resource = refWks.editingDomainUml2.getResourceSet().getResource(uml2Resource_1.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRootUml2_1 = resource.getContents().get(0);
 		assertNotNull(modelRootUml2_1);
 		assertFalse(modelRootUml2_1.eIsProxy());
 
-		EObject modelRootUml2_2 = EcoreResourceUtil.getModelRoot(refWks.editingDomainUml2.getResourceSet(), uml2Resource_2.getURI());
+		resource = refWks.editingDomainUml2.getResourceSet().getResource(uml2Resource_2.getURI(), false);
+		assertFalse(resource.getContents().isEmpty());
+		EObject modelRootUml2_2 = resource.getContents().get(0);
 		assertNotNull(modelRootUml2_2);
 		assertFalse(modelRootUml2_2.eIsProxy());
 

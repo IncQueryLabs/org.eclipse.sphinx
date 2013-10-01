@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -24,7 +25,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.examples.hummingbird10.Application;
@@ -53,7 +53,9 @@ public class ModelSavingTest extends DefaultIntegrationTestCase {
 		assertNotNull(hbProject10_B_Hb10Resource_1);
 		assertNotNull(hbProject20_A_Hb20Resource_1);
 
-		EObject hbProject10_A_Hb10Resource_1_modelRoot = EcoreResourceUtil.getModelRoot(hbProject10_A_Hb10Resource_1);
+		assertFalse(hbProject10_A_Hb10Resource_1.getContents().isEmpty());
+		EObject hbProject10_A_Hb10Resource_1_modelRoot = hbProject10_A_Hb10Resource_1.getContents().get(0);
+		assertNotNull(hbProject10_A_Hb10Resource_1_modelRoot);
 		Application hbProject10_A_Hb10Resource_1_ModelRoot = (Application) hbProject10_A_Hb10Resource_1_modelRoot;
 		assertNotNull(hbProject10_A_Hb10Resource_1_ModelRoot);
 		assertFalse(hbProject10_A_Hb10Resource_1_ModelRoot.getComponents().isEmpty());
@@ -67,7 +69,10 @@ public class ModelSavingTest extends DefaultIntegrationTestCase {
 
 		WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, runnable1, "Integration Test Save");
 
-		EObject hbProject20_A_Hb20Resource_1_modelRoot = EcoreResourceUtil.getModelRoot(hbProject20_A_Hb20Resource_1);
+		assertFalse(hbProject20_A_Hb20Resource_1.getContents().isEmpty());
+		EObject hbProject20_A_Hb20Resource_1_modelRoot = hbProject20_A_Hb20Resource_1.getContents().get(0);
+		assertNotNull(hbProject20_A_Hb20Resource_1_modelRoot);
+
 		org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application hbProject20_A_Hb20Resource_1_ModelRoot = (org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application) hbProject20_A_Hb20Resource_1_modelRoot;
 		assertNotNull(hbProject20_A_Hb20Resource_1_ModelRoot);
 
@@ -83,7 +88,10 @@ public class ModelSavingTest extends DefaultIntegrationTestCase {
 
 		WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, runnable2, "Integration Test Save");
 
-		EObject hbProject10_B_Hb10Resource_1_modelRoot = EcoreResourceUtil.getModelRoot(hbProject10_B_Hb10Resource_1);
+		assertFalse(hbProject10_B_Hb10Resource_1.getContents().isEmpty());
+		EObject hbProject10_B_Hb10Resource_1_modelRoot = hbProject10_B_Hb10Resource_1.getContents().get(0);
+		assertNotNull(hbProject10_B_Hb10Resource_1_modelRoot);
+
 		Application hbProject10_B_Hb10Resource_1_ModelRoot = (Application) hbProject10_B_Hb10Resource_1_modelRoot;
 		assertNotNull(hbProject10_B_Hb10Resource_1_ModelRoot);
 		assertFalse(hbProject10_B_Hb10Resource_1_ModelRoot.getComponents().isEmpty());
@@ -118,7 +126,10 @@ public class ModelSavingTest extends DefaultIntegrationTestCase {
 
 	public void testSaveProjectAndNewResourceCreation() throws Exception {
 		Resource hbProject10_A_Hb10Resource_1 = getProjectResource(refWks.hbProject10_A, DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
-		EObject hbProject10_A_Hb10Resource_1_modelRoot = EcoreResourceUtil.getModelRoot(hbProject10_A_Hb10Resource_1);
+		assertFalse(hbProject10_A_Hb10Resource_1.getContents().isEmpty());
+		EObject hbProject10_A_Hb10Resource_1_modelRoot = hbProject10_A_Hb10Resource_1.getContents().get(0);
+		assertNotNull(hbProject10_A_Hb10Resource_1_modelRoot);
+
 		assertTrue(hbProject10_A_Hb10Resource_1_modelRoot instanceof Application);
 		Application hbProject10_A_Hb10Resource_1_HbModelRoot = (Application) hbProject10_A_Hb10Resource_1_modelRoot;
 		assertFalse(hbProject10_A_Hb10Resource_1_HbModelRoot.getComponents().isEmpty());
@@ -143,7 +154,10 @@ public class ModelSavingTest extends DefaultIntegrationTestCase {
 
 	public void testNewResourceCreationAndSaveProject() throws Exception {
 		Resource hbProject10_A_Hb10Resource_1 = getProjectResource(refWks.hbProject10_A, DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
-		EObject hbProject10_A_Hb10Resource_1_modelRoot = EcoreResourceUtil.getModelRoot(hbProject10_A_Hb10Resource_1);
+		assertFalse(hbProject10_A_Hb10Resource_1.getContents().isEmpty());
+		EObject hbProject10_A_Hb10Resource_1_modelRoot = hbProject10_A_Hb10Resource_1.getContents().get(0);
+		assertNotNull(hbProject10_A_Hb10Resource_1_modelRoot);
+
 		assertTrue(hbProject10_A_Hb10Resource_1_modelRoot instanceof Application);
 		Application hbProject10_A_Hb10Resource_1_HbModelRoot = (Application) hbProject10_A_Hb10Resource_1_modelRoot;
 		assertFalse(hbProject10_A_Hb10Resource_1_HbModelRoot.getComponents().isEmpty());

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
  */
@@ -20,6 +21,7 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -130,61 +132,6 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 	}
 
 	/**
-	 * Test method for {@link EcoreResourceUtil#getModelRoot(Resource)} .
-	 * 
-	 * @throws Exception
-	 */
-	public void testGetModelRootFromResource() throws Exception {
-		Hummingbird20ResourceFactoryImpl hb20ResourceFactory = new Hummingbird20ResourceFactoryImpl();
-		XMIResourceFactoryImpl xmiResourceFactoryImpl = new XMIResourceFactoryImpl();
-		UMLResourceFactoryImpl umlResourceFactory = new UMLResourceFactoryImpl();
-		// HB20 Resource
-		EObject modelRoot20 = loadInputFile("hbFile20.instancemodel", hb20ResourceFactory, null);
-		assertNotNull(modelRoot20);
-		Resource resource20 = modelRoot20.eResource();
-		assertNotNull(resource20);
-		EObject retrievedModelRoot20 = EcoreResourceUtil.getModelRoot(resource20);
-		assertSame(modelRoot20, retrievedModelRoot20);
-		// =========================================
-		// HB10 Resource
-		EObject modelRoot10 = loadInputFile("hbFile10.hummingbird", xmiResourceFactoryImpl, null);
-		assertNotNull(modelRoot10);
-		Resource resource10 = modelRoot10.eResource();
-		assertNotNull(resource10);
-		EObject retrievedModelRoot10 = EcoreResourceUtil.getModelRoot(resource10);
-		assertSame(modelRoot10, retrievedModelRoot10);
-		// =========================================
-		// Uml2 Resource
-		EObject modelRootUml2 = loadInputFile("uml2File.uml", umlResourceFactory, null);
-		assertNotNull(modelRootUml2);
-		Resource resourceUml2 = modelRootUml2.eResource();
-		assertNotNull(resourceUml2);
-		EObject retrievedModelRootUml2 = EcoreResourceUtil.getModelRoot(resourceUml2);
-		assertSame(modelRootUml2, retrievedModelRootUml2);
-		// =========================================
-		// Null Resource
-		{
-			Resource nullResource = null;
-			try {
-				assertNull(EcoreResourceUtil.getModelRoot(nullResource));
-			} catch (Exception ex) {
-				fail("Exception while input resource is NULL: " + ex.getCause() + " " + ex.getLocalizedMessage());
-
-			}
-
-		}
-		// =========================================
-		// Unloaded resource
-
-		// Unload resource
-		EcoreResourceUtil.unloadResource(resource10);
-		assertNotNull(resource10);
-		assertFalse(resource10.isLoaded());
-		assertTrue(resource10.getContents().isEmpty());
-		assertNull(EcoreResourceUtil.getModelRoot(resource10));
-	}
-
-	/**
 	 * Test method for {@link EcoreResourceUtil#getModelName(Notifier modelRoot)} .
 	 * 
 	 * @throws Exception
@@ -220,8 +167,11 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 			assertNotNull(modelRoot10.eResource());
 			assertTrue(EcoreResourceUtil.getModelName(modelRoot10), EcoreResourceUtil.getModelName(modelRoot10).equalsIgnoreCase("Hummingbird10"));
 
-			assertTrue(EcoreResourceUtil.getModelName(EcoreResourceUtil.getModelRoot(modelRoot10.eResource())),
-					EcoreResourceUtil.getModelName(EcoreResourceUtil.getModelRoot(modelRoot10.eResource())).equalsIgnoreCase("Hummingbird10"));
+			assertFalse(modelRoot10.eResource().getContents().isEmpty());
+			EObject contextObject = modelRoot10.eResource().getContents().get(0);
+			assertNotNull(contextObject);
+
+			assertTrue(EcoreResourceUtil.getModelName(contextObject), EcoreResourceUtil.getModelName(contextObject).equalsIgnoreCase("Hummingbird10"));
 		}
 
 		// Uml2 Model
@@ -299,7 +249,10 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		assertNotNull(modelRootUml2);
 		Resource resourceUml2 = modelRootUml2.eResource();
 		assertNotNull(resourceUml2);
-		EObject retrievedModelRootUml2 = EcoreResourceUtil.getModelRoot(resourceUml2);
+
+		assertFalse(resourceUml2.getContents().isEmpty());
+		EObject retrievedModelRootUml2 = resourceUml2.getContents().get(0);
+		assertNotNull(retrievedModelRootUml2);
 		assertSame(modelRootUml2, retrievedModelRootUml2);
 		// XML Resource
 		// -----Read Target Namespace from HB10 Resource
