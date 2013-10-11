@@ -17,7 +17,6 @@ package org.eclipse.sphinx.tests.emf.integration.saving;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.IAdapterFactory;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -28,8 +27,17 @@ import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.saving.IModelSaveIndicator;
 import org.eclipse.sphinx.emf.saving.IResourceSaveIndicator;
 import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
+import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.emf.workspace.internal.saving.ModelSaveIndicator;
 import org.eclipse.sphinx.emf.workspace.internal.saving.ResourceSaveIndicator;
+import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Factory;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
+import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
+import org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter;
+import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Factory;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 
@@ -47,18 +55,22 @@ public class SaveIndicatorUtilTest extends DefaultIntegrationTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		testEditingDomain = refWks.editingDomain20;
-		Platform.getAdapterManager().registerAdapters(testEditingDomainAdapterFactory, refWks.editingDomain20.getClass());
-		assertTrue(Platform.getAdapterManager().getAdapter(refWks.editingDomain20, IResourceSaveIndicator.class) instanceof TestResourceSaveIndicatorImpl);
+		// testEditingDomain = refWks.editingDomain20;
+		// Platform.getAdapterManager().registerAdapters(testEditingDomainAdapterFactory,
+		// refWks.editingDomain20.getClass());
+		// assertTrue(Platform.getAdapterManager().getAdapter(refWks.editingDomain20, IResourceSaveIndicator.class)
+		// instanceof TestResourceSaveIndicatorImpl);
 
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		Platform.getAdapterManager().unregisterAdapters(testEditingDomainAdapterFactory, refWks.editingDomain20.getClass());
-		Object adapter = Platform.getAdapterManager().getAdapter(refWks.editingDomain20, IResourceSaveIndicator.class);
-		assertTrue(adapter instanceof ResourceSaveIndicator);
+		// Platform.getAdapterManager().unregisterAdapters(testEditingDomainAdapterFactory,
+		// refWks.editingDomain20.getClass());
+		// Object adapter = Platform.getAdapterManager().getAdapter(refWks.editingDomain20,
+		// IResourceSaveIndicator.class);
+		// assertTrue(adapter instanceof ResourceSaveIndicator);
 	}
 
 	/**
@@ -315,4 +327,92 @@ public class SaveIndicatorUtilTest extends DefaultIntegrationTestCase {
 		resourceSaveIndicator.setDirty(resourceHb20);
 		assertTrue(SaveIndicatorUtil.isDirty(modelDescriptor));
 	}
+
+	/**
+	 * Test that changed a referenced to a file does not mark the referenced file also dirty
+	 * 
+	 * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=404616
+	 */
+	public void testIsDirtyReferences() {
+		// assertTrue(resourceSaveIndicator.getDirtyResources().isEmpty());
+		//
+		// IPath fileApp = refWks.hbProject20_A.getFullPath().append("testIsDirtyReferences.instancemodel");
+		// IPath filePlatform = refWks.hbProject20_A.getFullPath().append("testIsDirtyReferences.typemodel");
+		//
+		// EcorePlatformUtil.saveNewModelResource(refWks.editingDomain20, fileApp,
+		// Hummingbird20MMDescriptor.XMI_CONTENT_TYPE_ID,
+		// InstanceModel20Factory.eINSTANCE.createApplication(), false, null);
+		//
+		// EcorePlatformUtil.saveNewModelResource(refWks.editingDomain20, filePlatform,
+		// Hummingbird20MMDescriptor.XMI_CONTENT_TYPE_ID,
+		// TypeModel20Factory.eINSTANCE.createPlatform(), false, null);
+		//
+		// assertTrue(resourceSaveIndicator.getDirtyResources().isEmpty());
+		// waitForModelLoading();
+
+		ResourceSaveIndicator resourceSaveIndicator = new ResourceSaveIndicator(refWks.editingDomain20);
+		assertTrue(resourceSaveIndicator.getDirtyResources().isEmpty());
+
+		Resource resourceApp = getProjectResource(refWks.hbProject20_A, DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
+		Resource resourcePlatform = getProjectResource(refWks.hbProject20_A, DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_2);
+
+		final Application application = (Application) resourceApp.getContents().get(0);
+		final org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform platform = (org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform) resourcePlatform
+				.getContents().get(0);
+
+		// create first the content into the platform
+		final Parameter[] param = new Parameter[1];
+		try {
+			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, new Runnable() {
+				public void run() {
+					platform.setName("platform");
+					ComponentType cType = TypeModel20Factory.eINSTANCE.createComponentType();
+					cType.setName("componentType");
+					platform.getComponentTypes().add(cType);
+
+					param[0] = TypeModel20Factory.eINSTANCE.createParameter();
+					param[0].setName("paramType");
+
+					cType.getParameters().add(param[0]);
+				}
+			}, "Modify model");
+		} catch (Exception e) {
+			fail(e.getLocalizedMessage());
+		}
+		// assertTrue(ModelSaveManager.INSTANCE.isDirty(resourcePlatform));
+		assertEquals(1, resourceSaveIndicator.getDirtyResources().size());
+		assertTrue(resourceSaveIndicator.isDirty(resourcePlatform));
+		ModelSaveManager.INSTANCE.saveProject(refWks.hbProject20_A, false, null);
+
+		resourceSaveIndicator.setSaved(resourcePlatform);
+		assertEquals(0, resourceSaveIndicator.getDirtyResources().size());
+
+		try {
+			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, new Runnable() {
+				public void run() {
+					application.setName("application");
+					Component component = InstanceModel20Factory.eINSTANCE.createComponent();
+					component.setName("component");
+					application.getComponents().add(component);
+
+					ParameterValue pValue = InstanceModel20Factory.eINSTANCE.createParameterValue();
+					pValue.setName("PValue");
+
+					component.getParameterValues().add(pValue);
+					pValue.setType(param[0]);
+				}
+			}, "Modify model");
+		} catch (Exception e) {
+			fail(e.getLocalizedMessage());
+		}
+		assertEquals(1, resourceSaveIndicator.getDirtyResources().size());
+		assertTrue(resourceSaveIndicator.isDirty(resourceApp));
+
+		ModelSaveManager.INSTANCE.saveProject(refWks.hbProject20_A, false, null);
+
+		resourceSaveIndicator.setSaved(resourceApp);
+		assertEquals(0, resourceSaveIndicator.getDirtyResources().size());
+
+	}
+
 }
