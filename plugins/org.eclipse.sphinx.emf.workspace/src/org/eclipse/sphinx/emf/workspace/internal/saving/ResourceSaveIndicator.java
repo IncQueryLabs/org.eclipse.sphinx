@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.URI;
@@ -28,9 +29,9 @@ import org.eclipse.emf.transaction.ResourceSetChangeEvent;
 import org.eclipse.emf.transaction.ResourceSetListener;
 import org.eclipse.emf.transaction.ResourceSetListenerImpl;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.emf.workspace.ResourceUndoContext;
 import org.eclipse.sphinx.emf.saving.IResourceSaveIndicator;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
+import org.eclipse.sphinx.emf.workspace.internal.ResourceUndoContextPolicy;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 
 /**
@@ -140,7 +141,7 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 				.and(NotificationFilter.createEventTypeFilter(Notification.RESOLVE).negated())) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
-				makeDirty(ResourceUndoContext.getAffectedResources(event.getNotifications()));
+				makeDirty(ResourceUndoContextPolicy.INSTANCE.getContextResources(null, event.getNotifications()));
 			}
 		};
 	}

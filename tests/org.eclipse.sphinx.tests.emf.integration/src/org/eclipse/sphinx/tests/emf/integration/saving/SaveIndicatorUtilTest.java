@@ -17,6 +17,7 @@ package org.eclipse.sphinx.tests.emf.integration.saving;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -55,22 +56,17 @@ public class SaveIndicatorUtilTest extends DefaultIntegrationTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		// testEditingDomain = refWks.editingDomain20;
-		// Platform.getAdapterManager().registerAdapters(testEditingDomainAdapterFactory,
-		// refWks.editingDomain20.getClass());
-		// assertTrue(Platform.getAdapterManager().getAdapter(refWks.editingDomain20, IResourceSaveIndicator.class)
-		// instanceof TestResourceSaveIndicatorImpl);
-
+		testEditingDomain = refWks.editingDomain20;
+		Platform.getAdapterManager().registerAdapters(testEditingDomainAdapterFactory, refWks.editingDomain20.getClass());
+		assertTrue(Platform.getAdapterManager().getAdapter(refWks.editingDomain20, IResourceSaveIndicator.class) instanceof TestResourceSaveIndicatorImpl);
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		// Platform.getAdapterManager().unregisterAdapters(testEditingDomainAdapterFactory,
-		// refWks.editingDomain20.getClass());
-		// Object adapter = Platform.getAdapterManager().getAdapter(refWks.editingDomain20,
-		// IResourceSaveIndicator.class);
-		// assertTrue(adapter instanceof ResourceSaveIndicator);
+		Platform.getAdapterManager().unregisterAdapters(testEditingDomainAdapterFactory, refWks.editingDomain20.getClass());
+		Object adapter = Platform.getAdapterManager().getAdapter(refWks.editingDomain20, IResourceSaveIndicator.class);
+		assertTrue(adapter instanceof ResourceSaveIndicator);
 	}
 
 	/**
@@ -334,22 +330,6 @@ public class SaveIndicatorUtilTest extends DefaultIntegrationTestCase {
 	 * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=404616
 	 */
 	public void testIsDirtyReferences() {
-		// assertTrue(resourceSaveIndicator.getDirtyResources().isEmpty());
-		//
-		// IPath fileApp = refWks.hbProject20_A.getFullPath().append("testIsDirtyReferences.instancemodel");
-		// IPath filePlatform = refWks.hbProject20_A.getFullPath().append("testIsDirtyReferences.typemodel");
-		//
-		// EcorePlatformUtil.saveNewModelResource(refWks.editingDomain20, fileApp,
-		// Hummingbird20MMDescriptor.XMI_CONTENT_TYPE_ID,
-		// InstanceModel20Factory.eINSTANCE.createApplication(), false, null);
-		//
-		// EcorePlatformUtil.saveNewModelResource(refWks.editingDomain20, filePlatform,
-		// Hummingbird20MMDescriptor.XMI_CONTENT_TYPE_ID,
-		// TypeModel20Factory.eINSTANCE.createPlatform(), false, null);
-		//
-		// assertTrue(resourceSaveIndicator.getDirtyResources().isEmpty());
-		// waitForModelLoading();
-
 		ResourceSaveIndicator resourceSaveIndicator = new ResourceSaveIndicator(refWks.editingDomain20);
 		assertTrue(resourceSaveIndicator.getDirtyResources().isEmpty());
 
