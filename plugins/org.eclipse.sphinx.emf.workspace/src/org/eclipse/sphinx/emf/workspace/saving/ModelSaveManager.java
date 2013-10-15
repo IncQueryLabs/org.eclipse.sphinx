@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 itemis, See4sys, BMW Car IT and others.
+ * Copyright (c) 2008-2013 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Avoid usage of Object.finalize
  *     itemis - [393268] - [EMF Workspace] The Workspace Model Save Manager should handle pre save actions before saving models
+ *     itemis - [419466] Enable models to be modified programmatically without causing them to become dirty
  * 
  * </copyright>
  */
@@ -114,6 +115,13 @@ public class ModelSaveManager {
 		URIChangeListenerRegistry.INSTANCE.removeListener(uriChangeListener);
 	}
 
+	public void handleDirtyStateChanged(Resource resource) {
+		IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(resource);
+		if (!SaveIndicatorUtil.isDirty(modelDescriptor)) {
+			notifyDirtyChanged(modelDescriptor);
+		}
+	}
+
 	/**
 	 * Adds a listener to this model save manager, which will be notified whenever the dirty state of one of its model
 	 * changes.
@@ -161,7 +169,7 @@ public class ModelSaveManager {
 	 * @param source
 	 *            The source object whose dirty state has changed.
 	 */
-	public void notifyDirtyChanged(Object source) {
+	protected void notifyDirtyChanged(Object source) {
 		if (source == null) {
 			return;
 		}
@@ -246,7 +254,6 @@ public class ModelSaveManager {
 			}
 		}
 		return false;
-
 	}
 
 	/**
@@ -263,7 +270,9 @@ public class ModelSaveManager {
 	 * 
 	 * @param resource
 	 *            The resource to mark as dirty.
+	 * @deprecated Use {@link SaveIndicatorUtil#setDirty(org.eclipse.emf.edit.domain.EditingDomain, Resource)} instead.
 	 */
+	@Deprecated
 	public void setDirty(Resource resource) {
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(resource);
 		SaveIndicatorUtil.setDirty(editingDomain, resource);
@@ -274,7 +283,9 @@ public class ModelSaveManager {
 	 * 
 	 * @param file
 	 *            The file to mark as dirty.
+	 * @deprecated Use {@link SaveIndicatorUtil#setDirty(org.eclipse.emf.edit.domain.EditingDomain, Resource)} instead.
 	 */
+	@Deprecated
 	public void setDirty(IFile file) {
 		if (file != null && file.isAccessible()) {
 			Resource resource = EcorePlatformUtil.getResource(file);
@@ -289,8 +300,9 @@ public class ModelSaveManager {
 	 * 
 	 * @param container
 	 *            The container to mark as dirty.
+	 * @deprecated Use {@link #setDirty(IFile)} instead.
 	 */
-	// FIXME Is that relevant to mark a container as dirty by marking all its members as dirty?
+	@Deprecated
 	public void setDirty(IContainer container) {
 		if (container != null && container.isAccessible()) {
 			try {
@@ -312,7 +324,9 @@ public class ModelSaveManager {
 	 * 
 	 * @param resource
 	 *            The resource to mark as saved.
+	 * @deprecated Use {@link SaveIndicatorUtil#setSaved(org.eclipse.emf.edit.domain.EditingDomain, Resource)} instead.
 	 */
+	@Deprecated
 	public void setSaved(Resource resource) {
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(resource);
 		SaveIndicatorUtil.setSaved(editingDomain, resource);
@@ -323,7 +337,9 @@ public class ModelSaveManager {
 	 * 
 	 * @param file
 	 *            The file to mark as saved.
+	 * @deprecated Use {@link SaveIndicatorUtil#setSaved(org.eclipse.emf.edit.domain.EditingDomain, Resource)} instead.
 	 */
+	@Deprecated
 	public void setSaved(IFile file) {
 		if (file != null && file.isAccessible()) {
 			Resource resource = EcorePlatformUtil.getResource(file);
@@ -338,7 +354,9 @@ public class ModelSaveManager {
 	 * 
 	 * @param container
 	 *            The container to mark as saved.
+	 * @deprecated Use {@link SaveIndicatorUtil#setSaved(IModelDescriptor)} instead.
 	 */
+	@Deprecated
 	public void setSaved(IContainer container) {
 		Collection<IModelDescriptor> models = ModelDescriptorRegistry.INSTANCE.getModels(container);
 		for (IModelDescriptor modelDescriptor : models) {
@@ -351,7 +369,9 @@ public class ModelSaveManager {
 	 * 
 	 * @param modelDescriptor
 	 *            The modelDescriptor to mark as saved.
+	 * @deprecated Use {@link SaveIndicatorUtil#setSaved(IModelDescriptor)} instead.
 	 */
+	@Deprecated
 	public void setSaved(IModelDescriptor modelDescriptor) {
 		if (modelDescriptor != null) {
 			SaveIndicatorUtil.setSaved(modelDescriptor);

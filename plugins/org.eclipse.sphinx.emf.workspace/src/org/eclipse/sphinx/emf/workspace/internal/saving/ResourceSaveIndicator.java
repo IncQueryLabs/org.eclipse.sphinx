@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [419466] Enable models to be modified programmatically without causing them to become dirty
  * 
  * </copyright>
  */
@@ -141,27 +142,11 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 				.and(NotificationFilter.createEventTypeFilter(Notification.RESOLVE).negated())) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
-				makeDirty(ResourceUndoContextPolicy.INSTANCE.getContextResources(null, event.getNotifications()));
+				for (Resource resource : ResourceUndoContextPolicy.INSTANCE.getContextResources(null, event.getNotifications())) {
+					setDirty(resource);
+				}
 			}
 		};
-	}
-
-	/**
-	 * Makes given {@linkplain Resource resource}s dirty and then asks {@linkplain ModelSaveManager} to notify
-	 * interested listeners that resources are now dirty.
-	 * 
-	 * @param resources
-	 *            The resources to mark as dirty.
-	 */
-	protected void makeDirty(Set<Resource> resources) {
-		for (Resource resource : resources) {
-			// Mark resource as to be saved
-			setDirty(resource);
-
-			// FIXME Find how the reduce the number of notifications
-			// Notify listeners that resource is now dirty
-			ModelSaveManager.INSTANCE.notifyDirtyChanged(resource);
-		}
 	}
 
 	/*
@@ -204,7 +189,18 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	 */
 	public void setDirty(Resource resource) {
 		if (resource != null && EcoreResourceUtil.exists(resource.getURI())) {
-			dirtyResources.add(resource);
+			if (dirtyResources.add(resource)) {
+				ModelSaveManager.INSTANCE.handleDirtyStateChanged(resource);
+			}
+		}
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.saving.IResourceSaveIndicator#unsetDirty(org.eclipse.emf.ecore.resource.Resource)
+	 */
+	public void unsetDirty(Resource resource) {
+		if (dirtyResources.remove(resource)) {
+			ModelSaveManager.INSTANCE.handleDirtyStateChanged(resource);
 		}
 	}
 

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [419466] Enable models to be modified programmatically without causing them to become dirty
  * 
  * </copyright>
  */
@@ -17,6 +18,8 @@ package org.eclipse.sphinx.emf.saving;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -113,12 +116,31 @@ public class SaveIndicatorUtil {
 	 * @param resource
 	 *            The {@link Resource resource} to be handled.
 	 * @see #isDirty(EditingDomain, Resource)
+	 * @see #unsetDirty(EditingDomain, Resource)
 	 * @see #getDirtyResources(EditingDomain)
 	 */
 	public static void setDirty(EditingDomain editingDomain, Resource resource) {
 		IResourceSaveIndicator indicator = getResourceSaveIndicator(editingDomain);
 		if (indicator != null) {
 			indicator.setDirty(resource);
+		}
+	}
+
+	/**
+	 * Makes the specified {@link Resource resource} in given {@link EditingDomain editing domain} un-dirty.
+	 * 
+	 * @param editingDomain
+	 *            The {@link EditingDomain editing domain} the {@link Resource resource} in question is in.
+	 * @param resource
+	 *            The {@link Resource resource} to be handled.
+	 * @see #isDirty(EditingDomain, Resource)
+	 * @see #setDirty(EditingDomain, Resource)
+	 * @see #getDirtyResources(EditingDomain)
+	 */
+	public static void unsetDirty(EditingDomain editingDomain, Resource resource) {
+		IResourceSaveIndicator indicator = getResourceSaveIndicator(editingDomain);
+		if (indicator != null) {
+			indicator.unsetDirty(resource);
 		}
 	}
 

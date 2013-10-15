@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [419466] Enable models to be modified programmatically without causing them to become dirty
  * 
  * </copyright>
  */
@@ -16,8 +17,11 @@ package org.eclipse.sphinx.emf.saving;
 
 import java.util.Collection;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.workspace.util.WorkspaceSynchronizer.Delegate;
 
 /**
@@ -44,9 +48,21 @@ public interface IResourceSaveIndicator extends Delegate {
 	 * @param resource
 	 *            The {@link Resource resource} to be handled.
 	 * @see #isDirty(Resource)
+	 * @see #unsetDirty(Resource)
 	 * @see #getDirtyResources()
 	 */
 	void setDirty(Resource resource);
+
+	/**
+	 * Makes the given {@link Resource resource} un-dirty.
+	 * 
+	 * @param resource
+	 *            The {@link Resource resource} to be handled.
+	 * @see #isDirty(Resource)
+	 * @see #setDirty(Resource)
+	 * @see #getDirtyResources()
+	 */
+	void unsetDirty(Resource resource);
 
 	/**
 	 * Returns all {@link Resource resource}s in underlying {@link EditingDomain editing domain} which are currently
