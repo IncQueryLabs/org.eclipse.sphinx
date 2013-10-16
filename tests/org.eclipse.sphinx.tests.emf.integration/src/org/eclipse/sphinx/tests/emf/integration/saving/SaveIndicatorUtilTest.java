@@ -67,6 +67,8 @@ public class SaveIndicatorUtilTest extends DefaultIntegrationTestCase {
 		Platform.getAdapterManager().unregisterAdapters(testEditingDomainAdapterFactory, refWks.editingDomain20.getClass());
 		Object adapter = Platform.getAdapterManager().getAdapter(refWks.editingDomain20, IResourceSaveIndicator.class);
 		assertTrue(adapter instanceof ResourceSaveIndicator);
+		// delete the HB_PROJECT_NAME_20_A project, it has been changed by a test
+		synchronizedDeleteProject(refWks.hbProject20_A);
 	}
 
 	/**
