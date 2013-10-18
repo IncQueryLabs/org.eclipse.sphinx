@@ -12,12 +12,12 @@
  *     BMW Car IT - Avoid usage of Object.finalize
  *     itemis - [393268] - [EMF Workspace] The Workspace Model Save Manager should handle pre save actions before saving models
  *     itemis - [419466] Enable models to be modified programmatically without causing them to become dirty
- * 
+ *     itemis - [419818] Avoid that model dirty change listeners and model pre-save listeners need to be registered separately
+ *     
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.saving;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +30,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -62,14 +63,9 @@ public class ModelSaveManager {
 	public static ModelSaveManager INSTANCE = new ModelSaveManager();
 
 	/**
-	 * Listeners of model's dirty state changes.
+	 * Listeners to the model's save lifecycle events.
 	 */
-	private Collection<IModelSaveLifecycleListener> modelDirtyChangeListeners = new ArrayList<IModelSaveLifecycleListener>();
-
-	/**
-	 * Listeners of model's pre-save.
-	 */
-	private Collection<IModelSaveLifecycleListener> modelPreSaveListeners = new ArrayList<IModelSaveLifecycleListener>();
+	private ListenerList modelSaveLifecycleListeners = new ListenerList();
 
 	private IURIChangeListener uriChangeListener = new IURIChangeListener() {
 		public void uriChanged(URIChangeEvent event) {
@@ -123,14 +119,38 @@ public class ModelSaveManager {
 	}
 
 	/**
+	 * Adds the given {@link IModelSaveLifecycleListener listener} for model save lifecycle events to this model save
+	 * manager. Has no effect if an identical listener is already registered.
+	 * 
+	 * @param listener
+	 *            the model save lifecycle listener to be added.
+	 */
+	public void addModelSaveLifecycleListener(IModelSaveLifecycleListener listener) {
+		modelSaveLifecycleListeners.add(listener);
+	}
+
+	/**
+	 * Removes the given {@link IModelSaveLifecycleListener model save lifecycle listener} from this mdoel save manager.
+	 * Has no effect if an identical listener is not registered.
+	 * 
+	 * @param listener
+	 *            the model save lifecycle listener to be removed.
+	 */
+	public void removeModelSaveLifecycleListener(IModelSaveLifecycleListener listener) {
+		modelSaveLifecycleListeners.remove(listener);
+	}
+
+	/**
 	 * Adds a listener to this model save manager, which will be notified whenever the dirty state of one of its model
 	 * changes.
 	 * 
 	 * @param listener
 	 *            the listener to add.
+	 * @deprecated Use {@link #addModelSaveLifecycleListener(IModelSaveLifecycleListener)} instead.
 	 */
+	@Deprecated
 	public void addModelDirtyChangedListener(IModelSaveLifecycleListener listener) {
-		modelDirtyChangeListeners.add(listener);
+		addModelSaveLifecycleListener(listener);
 	}
 
 	/**
@@ -138,9 +158,11 @@ public class ModelSaveManager {
 	 * 
 	 * @param listener
 	 *            the listener to remove.
+	 * @deprecated Use {@link #removeModelSaveLifecycleListener(IModelSaveLifecycleListener)} instead.
 	 */
+	@Deprecated
 	public void removeModelDirtyChangedListener(IModelSaveLifecycleListener listener) {
-		modelDirtyChangeListeners.remove(listener);
+		removeModelSaveLifecycleListener(listener);
 	}
 
 	/**
@@ -148,9 +170,11 @@ public class ModelSaveManager {
 	 * 
 	 * @param listener
 	 *            the listener to add.
+	 * @deprecated Use {@link #addModelSaveLifecycleListener(IModelSaveLifecycleListener)} instead.
 	 */
+	@Deprecated
 	public void addModelPreSaveListener(IModelSaveLifecycleListener listener) {
-		modelPreSaveListeners.add(listener);
+		addModelSaveLifecycleListener(listener);
 	}
 
 	/**
@@ -158,9 +182,11 @@ public class ModelSaveManager {
 	 * 
 	 * @param listener
 	 *            the listener to remove.
+	 * @deprecated Use {@link #removeModelSaveLifecycleListener(IModelSaveLifecycleListener)} instead.
 	 */
+	@Deprecated
 	public void removeModelPreSaveListener(IModelSaveLifecycleListener listener) {
-		modelPreSaveListeners.remove(listener);
+		removeModelSaveLifecycleListener(listener);
 	}
 
 	/**
@@ -174,9 +200,9 @@ public class ModelSaveManager {
 			return;
 		}
 
-		for (IModelSaveLifecycleListener listener : modelDirtyChangeListeners) {
+		for (Object listener : modelSaveLifecycleListeners.getListeners()) {
 			for (IModelDescriptor modelDescriptor : getModelDescriptors(source)) {
-				listener.handleDirtyChangedEvent(modelDescriptor);
+				((IModelSaveLifecycleListener) listener).handleDirtyChangedEvent(modelDescriptor);
 			}
 		}
 	}
@@ -192,9 +218,9 @@ public class ModelSaveManager {
 			return;
 		}
 
-		for (IModelSaveLifecycleListener listener : modelPreSaveListeners) {
+		for (Object listener : modelSaveLifecycleListeners.getListeners()) {
 			for (IModelDescriptor modelDescriptor : getModelDescriptors(source)) {
-				listener.handlePreSaveEvent(modelDescriptor);
+				((IModelSaveLifecycleListener) listener).handlePreSaveEvent(modelDescriptor);
 			}
 		}
 	}

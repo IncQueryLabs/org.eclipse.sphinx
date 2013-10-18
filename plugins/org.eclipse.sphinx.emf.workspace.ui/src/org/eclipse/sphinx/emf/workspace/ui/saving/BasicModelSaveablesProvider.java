@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 itemis, See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [393268] - [EMF Workspace] The Workspace Model Save Manager should handle pre save actions before saving models
+ *     itemis - [419818] Avoid that model dirty change listeners and model pre-save listeners need to be registered separately
  * 
  * </copyright>
  */
@@ -113,9 +114,9 @@ public class BasicModelSaveablesProvider extends SaveablesProvider implements IM
 	protected boolean disposed = false;
 
 	/**
-	 * The listener to notify when model dirty state changes.
+	 * The listener that gets notified when model save lifecycle events occur.
 	 */
-	private IModelSaveLifecycleListener modelDirtyChangeListener;
+	private IModelSaveLifecycleListener modelSaveLifecycleListener;
 
 	/**
 	 * Returns whether at least one saveable is dirty (among saveables managed by this provider).
@@ -158,15 +159,15 @@ public class BasicModelSaveablesProvider extends SaveablesProvider implements IM
 
 	@Override
 	protected void doInit() {
-		modelDirtyChangeListener = createModelSaveLifecycleListener();
-		ModelSaveManager.INSTANCE.addModelDirtyChangedListener(modelDirtyChangeListener);
+		modelSaveLifecycleListener = createModelSaveLifecycleListener();
+		ModelSaveManager.INSTANCE.addModelSaveLifecycleListener(modelSaveLifecycleListener);
 		ModelDescriptorRegistry.INSTANCE.addModelDescriptorChangeListener(this);
 	}
 
 	@Override
 	public void dispose() {
 		disposed = true;
-		ModelSaveManager.INSTANCE.removeModelDirtyChangedListener(modelDirtyChangeListener);
+		ModelSaveManager.INSTANCE.removeModelSaveLifecycleListener(modelSaveLifecycleListener);
 		ModelDescriptorRegistry.INSTANCE.removeModelDescriptorChangeListener(this);
 		super.dispose();
 	}
