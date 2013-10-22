@@ -469,7 +469,13 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 */
 	@Deprecated
 	public Object getModelRoot() {
-		return getEditorInputObject();
+		Object editorInputObject = getEditorInputObject();
+		if (editorInputObject instanceof EObject) {
+			return editorInputObject;
+		} else if (editorInputObject instanceof Resource) {
+			return EcoreResourceUtil.getModelRoot((Resource) editorInputObject);
+		}
+		return null;
 	}
 
 	/**
@@ -477,7 +483,13 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 */
 	@Deprecated
 	public Object getOldModelRoot() {
-		return getOldEditorInputObject();
+		Object oldEditorInputObject = getOldEditorInputObject();
+		if (oldEditorInputObject instanceof EObject) {
+			return oldEditorInputObject;
+		} else if (oldEditorInputObject instanceof Resource) {
+			return EcoreResourceUtil.getModelRoot((Resource) oldEditorInputObject);
+		}
+		return null;
 	}
 
 	/**

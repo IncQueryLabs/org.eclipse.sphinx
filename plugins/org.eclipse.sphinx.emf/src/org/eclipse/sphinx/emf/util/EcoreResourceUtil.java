@@ -464,7 +464,7 @@ public final class EcoreResourceUtil {
 	public static EObject getModelRoot(Resource resource) {
 		if (resource != null) {
 			EList<EObject> contents = resource.getContents();
-			if (contents.size() == 1) {
+			if (contents.size() > 1) {
 				return resource.getContents().get(0);
 			}
 		}
