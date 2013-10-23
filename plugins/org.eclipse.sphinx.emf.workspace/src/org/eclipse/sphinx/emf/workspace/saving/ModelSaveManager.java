@@ -30,12 +30,13 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
@@ -45,6 +46,7 @@ import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.Activator;
 import org.eclipse.sphinx.emf.workspace.internal.messages.Messages;
+import org.eclipse.sphinx.emf.workspace.internal.saving.ModelSaveLifecycleListenerRegistry;
 import org.eclipse.sphinx.emf.workspace.referentialintegrity.IURIChangeListener;
 import org.eclipse.sphinx.emf.workspace.referentialintegrity.URIChangeEvent;
 import org.eclipse.sphinx.emf.workspace.referentialintegrity.URIChangeListenerRegistry;
@@ -61,11 +63,6 @@ public class ModelSaveManager {
 	 * The singleton instance.
 	 */
 	public static ModelSaveManager INSTANCE = new ModelSaveManager();
-
-	/**
-	 * Listeners to the model's save lifecycle events.
-	 */
-	private ListenerList modelSaveLifecycleListeners = new ListenerList();
 
 	private IURIChangeListener uriChangeListener = new IURIChangeListener() {
 		public void uriChanged(URIChangeEvent event) {
@@ -119,25 +116,25 @@ public class ModelSaveManager {
 	}
 
 	/**
-	 * Adds the given {@link IModelSaveLifecycleListener listener} for model save lifecycle events to this model save
-	 * manager. Has no effect if an identical listener is already registered.
+	 * Adds the provided {@link IModelSaveLifecycleListener listener} for model save lifecycle events related to given
+	 * {@link IMetaModelDescriptor metamodel}. Has no effect if an identical listener is already registered.
 	 * 
 	 * @param listener
 	 *            the model save lifecycle listener to be added.
 	 */
-	public void addModelSaveLifecycleListener(IModelSaveLifecycleListener listener) {
-		modelSaveLifecycleListeners.add(listener);
+	public void addModelSaveLifecycleListener(IMetaModelDescriptor mmDescriptor, IModelSaveLifecycleListener listener) {
+		ModelSaveLifecycleListenerRegistry.INSTANCE.addListener(mmDescriptor, null, listener, null);
 	}
 
 	/**
-	 * Removes the given {@link IModelSaveLifecycleListener model save lifecycle listener} from this mdoel save manager.
-	 * Has no effect if an identical listener is not registered.
+	 * Removes the given {@link IModelSaveLifecycleListener model save lifecycle listener}. Has no effect if the
+	 * listener is not registered.
 	 * 
 	 * @param listener
 	 *            the model save lifecycle listener to be removed.
 	 */
 	public void removeModelSaveLifecycleListener(IModelSaveLifecycleListener listener) {
-		modelSaveLifecycleListeners.remove(listener);
+		ModelSaveLifecycleListenerRegistry.INSTANCE.removeListener(listener);
 	}
 
 	/**
@@ -150,7 +147,7 @@ public class ModelSaveManager {
 	 */
 	@Deprecated
 	public void addModelDirtyChangedListener(IModelSaveLifecycleListener listener) {
-		addModelSaveLifecycleListener(listener);
+		addModelSaveLifecycleListener(MetaModelDescriptorRegistry.ANY_MM, listener);
 	}
 
 	/**
@@ -174,7 +171,7 @@ public class ModelSaveManager {
 	 */
 	@Deprecated
 	public void addModelPreSaveListener(IModelSaveLifecycleListener listener) {
-		addModelSaveLifecycleListener(listener);
+		addModelSaveLifecycleListener(MetaModelDescriptorRegistry.ANY_MM, listener);
 	}
 
 	/**
@@ -200,8 +197,8 @@ public class ModelSaveManager {
 			return;
 		}
 
-		for (Object listener : modelSaveLifecycleListeners.getListeners()) {
-			for (IModelDescriptor modelDescriptor : getModelDescriptors(source)) {
+		for (IModelDescriptor modelDescriptor : getModelDescriptors(source)) {
+			for (Object listener : ModelSaveLifecycleListenerRegistry.INSTANCE.getListeners(modelDescriptor.getMetaModelDescriptor())) {
 				((IModelSaveLifecycleListener) listener).handleDirtyChangedEvent(modelDescriptor);
 			}
 		}
@@ -213,13 +210,13 @@ public class ModelSaveManager {
 	 * @param source
 	 *            The source object to be saved.
 	 */
-	public void notifyPreSave(Object source) {
+	protected void notifyPreSave(Object source) {
 		if (source == null) {
 			return;
 		}
 
-		for (Object listener : modelSaveLifecycleListeners.getListeners()) {
-			for (IModelDescriptor modelDescriptor : getModelDescriptors(source)) {
+		for (IModelDescriptor modelDescriptor : getModelDescriptors(source)) {
+			for (Object listener : ModelSaveLifecycleListenerRegistry.INSTANCE.getListeners(modelDescriptor.getMetaModelDescriptor())) {
 				((IModelSaveLifecycleListener) listener).handlePreSaveEvent(modelDescriptor);
 			}
 		}

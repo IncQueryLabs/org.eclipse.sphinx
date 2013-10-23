@@ -23,6 +23,7 @@ Contributors:
    <extension-point id="editingDomains" name="%editingDomains.name" schema="schema/editingDomains.exsd"/>
    <extension-point id="uriChangeDetectorDelegates" name="%uriChangeDetectorDelegates.name" schema="schema/uriChangeDetectorDelegates.exsd"/>
    <extension-point id="uriChangeListeners" name="%uriChangeListeners.name" schema="schema/uriChangeListeners.exsd"/>
+   <extension-point id="modelSaveLifecycleListeners" name="%modelSaveLifecycleListeners.name" schema="schema/modelSaveLifecycleListeners.exsd"/>
 
    <extension
          point="org.eclipse.core.runtime.adapters">

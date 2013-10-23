@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.IModelDescriptorChangeListener;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
@@ -160,7 +161,7 @@ public class BasicModelSaveablesProvider extends SaveablesProvider implements IM
 	@Override
 	protected void doInit() {
 		modelSaveLifecycleListener = createModelSaveLifecycleListener();
-		ModelSaveManager.INSTANCE.addModelSaveLifecycleListener(modelSaveLifecycleListener);
+		ModelSaveManager.INSTANCE.addModelSaveLifecycleListener(MetaModelDescriptorRegistry.ANY_MM, modelSaveLifecycleListener);
 		ModelDescriptorRegistry.INSTANCE.addModelDescriptorChangeListener(this);
 	}
 
