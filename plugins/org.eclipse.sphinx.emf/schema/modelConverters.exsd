@@ -95,7 +95,7 @@ These model converters can notably be used in order to ensure compatibility with
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         0.7.0
       </documentation>
    </annotation>
 
@@ -142,4 +142,5 @@ Contributors:
     BMW Car IT - Added elements for behavior details and warnings
       </documentation>
    </annotation>
+
 </schema>

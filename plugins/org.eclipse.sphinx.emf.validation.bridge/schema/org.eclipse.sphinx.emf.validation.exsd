@@ -116,7 +116,7 @@ extension point. If not, defined constraint on object without inheritance from i
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         0.7.0
       </documentation>
    </annotation>
 
