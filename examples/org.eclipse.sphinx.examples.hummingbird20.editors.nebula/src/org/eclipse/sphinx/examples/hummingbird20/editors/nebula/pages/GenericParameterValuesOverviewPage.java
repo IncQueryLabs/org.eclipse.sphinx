@@ -40,7 +40,7 @@ public class GenericParameterValuesOverviewPage extends AbstractFormPage {
 		Composite body = managedForm.getForm().getBody();
 		body.setLayout(LayoutFactory.createFormBodyGridLayout(false, 1));
 
-		// Create model contents tree section
+		// Create generic parameter values section
 		parameterValuesSection = new GenericParameterValuesXViewerSection(this, pageInput);
 		parameterValuesSection.createContent(managedForm, body);
 		addSection(parameterValuesSection);

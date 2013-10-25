@@ -41,7 +41,7 @@ public class EditableParameterValuesOverviewPage extends AbstractFormPage {
 		Composite body = managedForm.getForm().getBody();
 		body.setLayout(LayoutFactory.createFormBodyGridLayout(false, 1));
 
-		// Create model contents tree section
+		// Create editable parameter values section
 		ParameterValuesXViewerFactory xViewerFactory = new ParameterValuesXViewerFactory();
 		parameterValuesSection = new EditableParameterValuesXViewerSection(this, pageInput, xViewerFactory);
 		parameterValuesSection.createContent(managedForm, body);
