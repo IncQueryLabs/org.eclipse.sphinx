@@ -36,13 +36,6 @@ public class EditableParameterValuesOverviewPage extends AbstractFormPage {
 	}
 
 	@Override
-	protected void doRefreshPage() {
-		if (parameterValuesSection != null) {
-			parameterValuesSection.refreshSection();
-		}
-	}
-
-	@Override
 	protected void doCreateFormContent(IManagedForm managedForm) {
 		// Create single columned page layout
 		Composite body = managedForm.getForm().getBody();
