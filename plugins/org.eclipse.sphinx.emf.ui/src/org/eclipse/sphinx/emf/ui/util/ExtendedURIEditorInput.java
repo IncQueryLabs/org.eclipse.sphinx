@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.emf.ui.util;
 
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.ui.URIEditorInput;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
@@ -25,8 +26,10 @@ public class ExtendedURIEditorInput extends URIEditorInput {
 	}
 
 	/*
-	 * Overridden to suppress URI scheme in tooltip if URI references a workspace resource. This makes sure that the
-	 * tootip displayed for {@link URIEditorInput}s is the same as that for {@link FileEditorInput}s.
+	 * Overridden to arrange for that tool tip shows a workspace-relative path (but a not a full platform:/resource URI)
+	 * in case that model object referenced by this {@link URIEditorInput URI editor input} is contained in a workspace
+	 * resource. This makes sure that the tootip displayed for {@link URIEditorInput}s is the same as that for {@link
+	 * FileEditorInput}s.
 	 * @see org.eclipse.emf.common.ui.URIEditorInput#getToolTipText()
 	 */
 	@Override
@@ -36,12 +39,11 @@ public class ExtendedURIEditorInput extends URIEditorInput {
 		if (uri.isPlatformResource()) {
 			StringBuilder uriString = new StringBuilder();
 
-			// Take all but URI scheme from underlying URI
-			String platformURIString = uri.toPlatformString(true);
-			uriString.append(platformURIString.startsWith(ExtendedResource.URI_SEGMENT_SEPARATOR) ? platformURIString.substring(1)
-					: platformURIString);
+			// Retrieve workspace-relative path to underlying resource
+			String path = uri.toPlatformString(true);
+			uriString.append(new Path(path).makeRelative().toString());
 
-			// Append URI fragment
+			// Append URI fragment if any
 			String uriFragment = uri.fragment();
 			if (uriFragment != null) {
 				uriString.append(ExtendedResource.URI_FRAGMENT_SEPARATOR);
