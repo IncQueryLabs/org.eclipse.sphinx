@@ -37,12 +37,10 @@
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird.ide.ui"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird10"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird10.edit"/>
-<project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird10.editor"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird10.ide.ui"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.codegen.xpand"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.edit"/>
-<project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.editor"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.editors.nebula"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.ide.ui"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.transform.xtend"/>
@@ -108,12 +106,10 @@
 <item elementID="=org.eclipse.sphinx.examples.hummingbird.ide.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird10" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird10.edit" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.sphinx.examples.hummingbird10.editor" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird10.ide.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.codegen.xpand" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.edit" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.sphinx.examples.hummingbird20.editor" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.editors.nebula" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.ide.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.examples.hummingbird20.transform.xtend" type="4"/>
