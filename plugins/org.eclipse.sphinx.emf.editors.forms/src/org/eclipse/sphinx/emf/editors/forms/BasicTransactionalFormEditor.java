@@ -1256,7 +1256,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 								URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
 								if (editorInputURI != null && loadedResource.getURI().equals(editorInputURI.trimFragment())) {
 									// Handle loaded editor input resource
-									handleModelRootResourceLoaded();
+									handleEditorInputResourceLoaded();
 									break;
 								}
 							}
@@ -1265,7 +1265,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				}
 			}
 
-			private void handleModelRootResourceLoaded() {
+			private void handleEditorInputResourceLoaded() {
 				IWorkbenchPartSite site = getSite();
 				if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
 					site.getShell().getDisplay().asyncExec(new Runnable() {
@@ -1318,7 +1318,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 							URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
 							if (editorInputURI != null && oldResourceURI != null && oldResourceURI.equals(editorInputURI.trimFragment())) {
 								// Handle moved editor input resource
-								handleModelRootResourceMoved((URI) notification.getNewValue());
+								handleEditorInputResourceMoved((URI) notification.getNewValue());
 								break;
 							}
 						}
@@ -1326,7 +1326,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				}
 			}
 
-			private void handleModelRootResourceMoved(final URI newResourceURI) {
+			private void handleEditorInputResourceMoved(final URI newResourceURI) {
 				IWorkbenchPartSite site = getSite();
 				if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
 					site.getShell().getDisplay().asyncExec(new Runnable() {
@@ -1390,17 +1390,17 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				// Is editor input resource part of removed resources?
 				URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
 				if (editorInputURI != null) {
-					URI modelRootResourceURI = editorInputURI.trimFragment();
+					URI editorInputResourceURI = editorInputURI.trimFragment();
 					for (Resource removedResource : removedResources) {
-						if (removedResource.getURI().equals(modelRootResourceURI)) {
+						if (removedResource.getURI().equals(editorInputResourceURI)) {
 							// Handle removed editor input resource
-							handleModelRootResourceRemoved();
+							handleEditorInputResourceRemoved();
 						}
 					}
 				}
 			}
 
-			private void handleModelRootResourceRemoved() {
+			private void handleEditorInputResourceRemoved() {
 				// Close editor
 				close(false);
 			}
@@ -1451,13 +1451,13 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 					Object oldEditorInputObject = getOldEditorInputObject();
 					if (removedObjects.contains(oldEditorInputObject)) {
 						// Handle removed editor input
-						handleModelRootRemoved();
+						handleEditorInputObjectRemoved();
 					} else {
 						if (oldEditorInputObject instanceof EObject) {
 							for (EObject parent = ((EObject) oldEditorInputObject).eContainer(); parent != null; parent = parent.eContainer()) {
 								if (removedObjects.contains(parent)) {
 									// Handle removed editor input
-									handleModelRootRemoved();
+									handleEditorInputObjectRemoved();
 									return;
 								}
 							}
@@ -1466,7 +1466,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				}
 			}
 
-			private void handleModelRootRemoved() {
+			private void handleEditorInputObjectRemoved() {
 				// Close editor
 				close(false);
 			}
@@ -1535,8 +1535,8 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 							// the latter has been renamed)
 							Object editorInputObject = getEditorInputObject();
 							if (editorInputObject instanceof EObject) {
-								URI newModelRootURI = EcoreUtil.getURI((EObject) editorInputObject);
-								updateEditorInput(newModelRootURI);
+								URI newEditorInputObjectURI = EcoreUtil.getURI((EObject) editorInputObject);
+								updateEditorInput(newEditorInputObjectURI);
 							}
 
 							// Update editor part name
