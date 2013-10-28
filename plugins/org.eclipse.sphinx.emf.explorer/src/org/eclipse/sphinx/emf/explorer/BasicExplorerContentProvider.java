@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [348822] Enable BasicExplorerContentProvider to be used for displaying model content under folders and projects
  *     itemis - [418005] Add support for model files with multiple root elements
+ *     itemis - [420505] Editor shows no content when editor input object is added lately
  *      
  * </copyright>
  */
@@ -93,9 +94,9 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 
 	protected ResourceSetListener resourceMovedListener;
 
-	protected ResourceSetListener nonContainmentReferenceChangeListener;
+	protected ResourceSetListener nonContainmentReferenceChangedListener;
 
-	protected ResourceSetListener modelContentRootChangeListener;
+	protected ResourceSetListener modelContentRootChangedListener;
 
 	/**
 	 * Returns the viewer whose content is provided by this content provider.
@@ -614,17 +615,17 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		}
 		editingDomain.addResourceSetListener(resourceMovedListener);
 
-		if (nonContainmentReferenceChangeListener == null) {
-			nonContainmentReferenceChangeListener = createNonContainmentReferenceChangeListener();
-			Assert.isNotNull(nonContainmentReferenceChangeListener);
+		if (nonContainmentReferenceChangedListener == null) {
+			nonContainmentReferenceChangedListener = createNonContainmentReferenceChangedListener();
+			Assert.isNotNull(nonContainmentReferenceChangedListener);
 		}
-		editingDomain.addResourceSetListener(nonContainmentReferenceChangeListener);
+		editingDomain.addResourceSetListener(nonContainmentReferenceChangedListener);
 
-		if (modelContentRootChangeListener == null) {
-			modelContentRootChangeListener = createModelContentRootChangeListener();
-			Assert.isNotNull(modelContentRootChangeListener);
+		if (modelContentRootChangedListener == null) {
+			modelContentRootChangedListener = createModelContentRootChangedListener();
+			Assert.isNotNull(modelContentRootChangedListener);
 		}
-		editingDomain.addResourceSetListener(modelContentRootChangeListener);
+		editingDomain.addResourceSetListener(modelContentRootChangedListener);
 	}
 
 	protected void removeTransactionalEditingDomainListeners(TransactionalEditingDomain editingDomain) {
@@ -636,11 +637,11 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		if (resourceMovedListener != null) {
 			editingDomain.removeResourceSetListener(resourceMovedListener);
 		}
-		if (nonContainmentReferenceChangeListener != null) {
-			editingDomain.removeResourceSetListener(nonContainmentReferenceChangeListener);
+		if (nonContainmentReferenceChangedListener != null) {
+			editingDomain.removeResourceSetListener(nonContainmentReferenceChangedListener);
 		}
-		if (modelContentRootChangeListener != null) {
-			editingDomain.removeResourceSetListener(modelContentRootChangeListener);
+		if (modelContentRootChangedListener != null) {
+			editingDomain.removeResourceSetListener(modelContentRootChangedListener);
 		}
 	}
 
@@ -753,7 +754,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		};
 	}
 
-	protected ResourceSetListener createNonContainmentReferenceChangeListener() {
+	protected ResourceSetListener createNonContainmentReferenceChangedListener() {
 		return new ResourceSetListenerImpl(NotificationFilter.createNotifierTypeFilter(EObject.class)) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
@@ -777,21 +778,33 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		};
 	}
 
-	protected ResourceSetListener createModelContentRootChangeListener() {
+	/**
+	 * Explicitly refreshes the corresponding workspace resources in case of changes among the direct children of the
+	 * model root objects.
+	 * <p>
+	 * !! Important note !! This is necessary because viewer refreshes triggered by the model content provider only
+	 * affect the model content root objects but not the corresponding workspace resources. As the former are not
+	 * represented by any tree item in the viewer none of these refreshes performed will have any visible effect.
+	 * </p>
+	 * 
+	 * @return
+	 */
+	protected ResourceSetListener createModelContentRootChangedListener() {
 		return new ResourceSetListenerImpl(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__CONTENTS)
 				.or(NotificationFilter.createNotifierTypeFilter(EObject.class))) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
-				Set<EObject> addedValues = new HashSet<EObject>();
-				Set<EObject> removedValues = new HashSet<EObject>();
-				Set<EObject> changedValues = new HashSet<EObject>();
+				Set<EObject> addedObjects = new HashSet<EObject>();
+				Set<EObject> removedObjects = new HashSet<EObject>();
+				Set<EObject> changedObjects = new HashSet<EObject>();
 
-				// Analyze notifications for changed values; record only added and removed values which have not got
-				// removed/added again later on
+				// Analyze notifications for changed objects; record only set/added and unset/removed objects which have
+				// not got unset/removed or set/added again later on
 				for (Notification notification : event.getNotifications()) {
 					Object notifier = notification.getNotifier();
 					if (notifier instanceof Resource || notification.getFeature() instanceof EReference) {
-						if (notification.getEventType() == Notification.ADD || notification.getEventType() == Notification.ADD_MANY) {
+						if (notification.getEventType() == Notification.SET || notification.getEventType() == Notification.ADD
+								|| notification.getEventType() == Notification.ADD_MANY) {
 							List<EObject> newValues = new ArrayList<EObject>();
 							Object newValue = notification.getNewValue();
 							if (newValue instanceof List<?>) {
@@ -803,13 +816,14 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 							}
 
 							for (EObject value : newValues) {
-								if (removedValues.contains(value)) {
-									removedValues.remove(value);
+								if (removedObjects.contains(value)) {
+									removedObjects.remove(value);
 								} else {
-									addedValues.add(value);
+									addedObjects.add(value);
 								}
 							}
-						} else if (notification.getEventType() == Notification.REMOVE || notification.getEventType() == Notification.REMOVE_MANY) {
+						} else if (notification.getEventType() == Notification.UNSET || notification.getEventType() == Notification.REMOVE
+								|| notification.getEventType() == Notification.REMOVE_MANY) {
 							List<EObject> oldValues = new ArrayList<EObject>();
 							Object oldValue = notification.getOldValue();
 							if (oldValue instanceof List<?>) {
@@ -821,25 +835,23 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 							}
 
 							for (EObject value : oldValues) {
-								if (addedValues.contains(value)) {
-									addedValues.remove(value);
+								if (addedObjects.contains(value)) {
+									addedObjects.remove(value);
 								} else {
-									removedValues.add(value);
+									removedObjects.add(value);
 								}
 							}
 						}
 					}
 
 				}
-				changedValues.addAll(addedValues);
-				changedValues.addAll(removedValues);
+				changedObjects.addAll(addedObjects);
+				changedObjects.addAll(removedObjects);
 
-				// Explicitly refresh parents of changed values in case that they are workspace resources. This is
-				// necessary because viewer refreshes triggered by the model content provider only affect the model
-				// content roots behind the workspace resources. The latter are not represented by any tree item
-				// in the viewer and so these refresh attempts have no effect.
+				// Check if changed objects are children of the model content roots and refresh corresponding workspace
+				// resource if so
 				Set<IResource> resourcesToRefresh = new HashSet<IResource>();
-				for (EObject changedObject : changedValues) {
+				for (EObject changedObject : changedObjects) {
 					Object changedObjectParent = getParent(changedObject);
 					if (changedObjectParent instanceof IResource) {
 						resourcesToRefresh.add((IResource) changedObjectParent);

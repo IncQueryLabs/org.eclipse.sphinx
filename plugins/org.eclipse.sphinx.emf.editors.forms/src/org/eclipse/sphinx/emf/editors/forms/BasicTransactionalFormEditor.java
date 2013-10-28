@@ -11,7 +11,8 @@
  *     See4sys - Initial API and implementation
  *     itemis - [393479] Enable BasicTabbedPropertySheetTitleProvider to retrieve same AdapterFactory as underlying IWorkbenchPart is using
  *     itemis - [418005] Add support for model files with multiple root elements
- * 
+ *     itemis - [420505] Editor shows no content when editor input object is added lately
+ *     
  * </copyright>
  */
 package org.eclipse.sphinx.emf.editors.forms;
@@ -52,6 +53,7 @@ import org.eclipse.emf.common.ui.URIEditorInput;
 import org.eclipse.emf.common.ui.viewer.IViewerProvider;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -287,31 +289,9 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	private IOperationHistoryListener affectedObjectsListener;
 
-	private ResourceSetListener objectRemovedListener;
+	private ResourceSetListener objectChangedListener;
 
 	private CommandStackListener commandStackListener;
-
-	/**
-	 * Handles activation of the editor or it's associated views.
-	 */
-	protected void handleActivate() {
-
-		// Recompute the read only state
-		EditingDomain editingDomain = getEditingDomain();
-		if (editingDomain instanceof AdapterFactoryEditingDomain) {
-			if (((AdapterFactoryEditingDomain) editingDomain).getResourceToReadOnlyMap() != null) {
-				((AdapterFactoryEditingDomain) editingDomain).getResourceToReadOnlyMap().clear();
-			}
-		}
-
-		if (refreshOnActivation) {
-			refreshActivePage();
-			refreshOnActivation = false;
-		}
-
-		// Refresh any actions that may become enabled or disabled
-		setSelection(getSelection());
-	}
 
 	/**
 	 * This creates a model editor.
@@ -367,6 +347,63 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	protected Map<?, ?> getSaveOptions() {
 		return EcoreResourceUtil.getDefaultSaveOptions();
+	}
+
+	/**
+	 * Handles activation of the editor or it's associated views.
+	 */
+	protected void handleActivate() {
+
+		// Recompute the read only state
+		EditingDomain editingDomain = getEditingDomain();
+		if (editingDomain instanceof AdapterFactoryEditingDomain) {
+			if (((AdapterFactoryEditingDomain) editingDomain).getResourceToReadOnlyMap() != null) {
+				((AdapterFactoryEditingDomain) editingDomain).getResourceToReadOnlyMap().clear();
+			}
+		}
+
+		if (refreshOnActivation) {
+			refreshActivePage();
+			refreshOnActivation = false;
+		}
+
+		// Refresh any actions that may become enabled or disabled
+		setSelection(getSelection());
+	}
+
+	protected void handleEditorInputObjectAdded() {
+		IWorkbenchPartSite site = getSite();
+		if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
+			site.getShell().getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					// Discard undo context and reset dirty state
+					IOperationHistory operationHistory = getOperationHistory();
+					if (operationHistory != null) {
+						operationHistory.dispose(undoContext, true, true, true);
+					}
+
+					// Update this editor's dirty state
+					firePropertyChange(IEditorPart.PROP_DIRTY);
+
+					// Update editor part name
+					setPartName(getEditorInputName());
+					setTitleImage(getEditorInputImage());
+
+					// Refresh editor if its currently visible; otherwise schedule refresh for when it gets activated
+					// the next time
+					if (getSite().getPage().isPartVisible(BasicTransactionalFormEditor.this)) {
+						refreshActivePage();
+					} else {
+						refreshOnActivation = true;
+					}
+				}
+			});
+		}
+	}
+
+	protected void handleEditorInputObjectRemoved() {
+		// Close editor
+		close(false);
 	}
 
 	/**
@@ -1166,10 +1203,14 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				Assert.isNotNull(resourceRemovedListener);
 				editingDomain.addResourceSetListener(resourceRemovedListener);
 
-				// Create and register ResourceSetChangedListener that detects removed objects
-				objectRemovedListener = createObjectRemovedListener();
-				Assert.isNotNull(objectRemovedListener);
-				editingDomain.addResourceSetListener(objectRemovedListener);
+				// Create and register ResourceSetChangedListener that detects added and removed objects (only necessary
+				// if editor has been opened on a model object but not a model resource)
+				URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
+				if (editorInputURI.hasFragment()) {
+					objectChangedListener = createObjectChangedListener();
+					Assert.isNotNull(objectChangedListener);
+					editingDomain.addResourceSetListener(objectChangedListener);
+				}
 
 				// Create and register IOperationHistoryListener that detects changed objects
 				affectedObjectsListener = createAffectedObjectsListener();
@@ -1190,8 +1231,8 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			if (resourceRemovedListener != null) {
 				editingDomain.removeResourceSetListener(resourceRemovedListener);
 			}
-			if (objectRemovedListener != null) {
-				editingDomain.removeResourceSetListener(objectRemovedListener);
+			if (objectChangedListener != null) {
+				editingDomain.removeResourceSetListener(objectChangedListener);
 			}
 			if (affectedObjectsListener != null) {
 				IOperationHistory operationHistory = ((IWorkspaceCommandStack) editingDomain.getCommandStack()).getOperationHistory();
@@ -1256,42 +1297,12 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 								URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
 								if (editorInputURI != null && loadedResource.getURI().equals(editorInputURI.trimFragment())) {
 									// Handle loaded editor input resource
-									handleEditorInputResourceLoaded();
+									handleEditorInputObjectAdded();
 									break;
 								}
 							}
 						}
 					}
-				}
-			}
-
-			private void handleEditorInputResourceLoaded() {
-				IWorkbenchPartSite site = getSite();
-				if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
-					site.getShell().getDisplay().asyncExec(new Runnable() {
-						public void run() {
-							// Discard undo context and reset dirty state
-							IOperationHistory operationHistory = getOperationHistory();
-							if (operationHistory != null) {
-								operationHistory.dispose(undoContext, true, true, true);
-							}
-
-							// Update this editor's dirty state
-							firePropertyChange(IEditorPart.PROP_DIRTY);
-
-							// Update editor part name
-							setPartName(getEditorInputName());
-							setTitleImage(getEditorInputImage());
-
-							// Refresh editor if its currently active or schedule refresh when it gets
-							// activated next time
-							if (getActionBarContributor().getActiveEditor() == BasicTransactionalFormEditor.this) {
-								refreshActivePage();
-							} else {
-								refreshOnActivation = true;
-							}
-						}
-					});
 				}
 			}
 
@@ -1394,15 +1405,10 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 					for (Resource removedResource : removedResources) {
 						if (removedResource.getURI().equals(editorInputResourceURI)) {
 							// Handle removed editor input resource
-							handleEditorInputResourceRemoved();
+							handleEditorInputObjectRemoved();
 						}
 					}
 				}
-			}
-
-			private void handleEditorInputResourceRemoved() {
-				// Close editor
-				close(false);
 			}
 
 			@Override
@@ -1412,51 +1418,93 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		};
 	}
 
-	protected ResourceSetListener createObjectRemovedListener() {
-		return new ResourceSetListenerImpl(NotificationFilter.createEventTypeFilter(Notification.REMOVE).or(
-				NotificationFilter.createEventTypeFilter(Notification.REMOVE_MANY))) {
+	protected ResourceSetListener createObjectChangedListener() {
+		return new ResourceSetListenerImpl(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__CONTENTS)
+				.or(NotificationFilter.createNotifierTypeFilter(EObject.class))) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
-				// Retrieve removed objects from notification
+				Set<EObject> addedObjects = new HashSet<EObject>();
 				Set<EObject> removedObjects = new HashSet<EObject>();
-				List<?> notifications = event.getNotifications();
-				for (Object object : notifications) {
-					if (object instanceof Notification) {
-						Notification notification = (Notification) object;
-						Object oldValue = notification.getOldValue();
-						if (oldValue instanceof EObject) {
-							EObject oldObject = (EObject) oldValue;
-							// Has old object not been added back subsequently?
-							if (oldObject.eResource() == null) {
-								removedObjects.add(oldObject);
+
+				// Analyze notifications for changed objects; record only set/added and unset/removed objects which have
+				// not got unset/removed or set/added again later on
+				for (Notification notification : event.getNotifications()) {
+					Object notifier = notification.getNotifier();
+					if (notifier instanceof Resource || notification.getFeature() instanceof EReference) {
+						if (notification.getEventType() == Notification.SET || notification.getEventType() == Notification.ADD
+								|| notification.getEventType() == Notification.ADD_MANY) {
+							List<EObject> newValues = new ArrayList<EObject>();
+							Object newValue = notification.getNewValue();
+							if (newValue instanceof List<?>) {
+								@SuppressWarnings("unchecked")
+								List<EObject> newValueList = (List<EObject>) newValue;
+								newValues.addAll(newValueList);
+							} else if (newValue instanceof EObject) {
+								newValues.add((EObject) newValue);
 							}
-						}
-						if (oldValue instanceof List<?>) {
-							for (Object oldValueItem : (List<?>) oldValue) {
-								if (oldValueItem instanceof EObject) {
-									EObject oldObject = (EObject) oldValueItem;
-									// Has old object not been added back subsequently?
-									if (oldObject.eResource() == null) {
-										removedObjects.add(oldObject);
-									}
+
+							for (EObject value : newValues) {
+								if (removedObjects.contains(value)) {
+									removedObjects.remove(value);
+								} else {
+									addedObjects.add(value);
+								}
+							}
+						} else if (notification.getEventType() == Notification.UNSET || notification.getEventType() == Notification.REMOVE
+								|| notification.getEventType() == Notification.REMOVE_MANY) {
+							List<EObject> oldValues = new ArrayList<EObject>();
+							Object oldValue = notification.getOldValue();
+							if (oldValue instanceof List<?>) {
+								@SuppressWarnings("unchecked")
+								List<EObject> oldValueList = (List<EObject>) oldValue;
+								oldValues.addAll(oldValueList);
+							} else if (oldValue instanceof Resource) {
+								oldValues.add((EObject) oldValue);
+							}
+
+							for (EObject value : oldValues) {
+								if (addedObjects.contains(value)) {
+									addedObjects.remove(value);
+								} else {
+									removedObjects.add(value);
 								}
 							}
 						}
 					}
 				}
 
-				// Is editor input on which this editor had been opened so far or one of its containers part of the
-				// objects that have been removed?
-				if (getEditorInputObject() == null) {
+				// Has editor input for which this editor had been opened or one of its containers part of the added
+				// objects?
+				Object editorInputObject = getEditorInputObject();
+				if (editorInputObject != null && !addedObjects.isEmpty()) {
+					if (addedObjects.contains(editorInputObject)) {
+						// Handle added editor input object
+						handleEditorInputObjectAdded();
+					} else {
+						if (editorInputObject instanceof EObject) {
+							for (EObject parent = ((EObject) editorInputObject).eContainer(); parent != null; parent = parent.eContainer()) {
+								if (addedObjects.contains(parent)) {
+									// Handle added editor input object
+									handleEditorInputObjectAdded();
+									return;
+								}
+							}
+						}
+					}
+				}
+
+				// Is editor input object on which this editor had been opened so far or one of its containers part of
+				// the removed objects?
+				if (editorInputObject == null && !removedObjects.isEmpty()) {
 					Object oldEditorInputObject = getOldEditorInputObject();
 					if (removedObjects.contains(oldEditorInputObject)) {
-						// Handle removed editor input
+						// Handle removed editor input object
 						handleEditorInputObjectRemoved();
 					} else {
 						if (oldEditorInputObject instanceof EObject) {
 							for (EObject parent = ((EObject) oldEditorInputObject).eContainer(); parent != null; parent = parent.eContainer()) {
 								if (removedObjects.contains(parent)) {
-									// Handle removed editor input
+									// Handle removed editor input object
 									handleEditorInputObjectRemoved();
 									return;
 								}
@@ -1464,11 +1512,6 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 						}
 					}
 				}
-			}
-
-			private void handleEditorInputObjectRemoved() {
-				// Close editor
-				close(false);
 			}
 
 			@Override
