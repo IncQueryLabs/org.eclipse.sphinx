@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,8 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [420520] Model explorer view state not restored completely when affected model objects are added lately
+ *     
  * </copyright>
  */
 package org.eclipse.sphinx.emf.explorer;
@@ -40,7 +41,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
@@ -74,16 +74,19 @@ import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.emf.workspace.domain.WorkspaceEditingDomainManager;
 import org.eclipse.sphinx.emf.workspace.internal.saving.ModelSavingPerformanceStats;
 import org.eclipse.sphinx.emf.workspace.internal.saving.ModelSavingPerformanceStats.ModelEvent;
+import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.messages.PlatformMessages;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IMemento;
@@ -96,6 +99,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.Saveable;
 import org.eclipse.ui.SaveablesLifecycleEvent;
+import org.eclipse.ui.XMLMemento;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.navigator.SaveablesProvider;
@@ -113,13 +117,11 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedPropertySheetPageContributor, IViewerProvider,
 		ITransactionalEditingDomainFactoryListener {
 
-	private static final String TAG_SELECTION = Activator.getPlugin().getSymbolicName() + ".selection"; //$NON-NLS-1$
+	private static final String TAG_SELECTED = Activator.getPlugin().getSymbolicName() + ".selection"; //$NON-NLS-1$
 	private static final String TAG_EXPANDED = Activator.getPlugin().getSymbolicName() + ".expanded"; //$NON-NLS-1$
 	private static final String TAG_ELEMENT = Activator.getPlugin().getSymbolicName() + ".element"; //$NON-NLS-1$
 	private static final String TAG_PATH = Activator.getPlugin().getSymbolicName() + ".path"; //$NON-NLS-1$
 	private static final String TAG_URI = Activator.getPlugin().getSymbolicName() + ".uri"; //$NON-NLS-1$
-
-	protected IMemento memento;
 
 	private IOperationHistoryListener affectedObjectsListener;
 	private IResourceChangeListener resourceMarkerChangeListener;
@@ -155,7 +157,6 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
-		this.memento = memento;
 
 		if (modelSaveablesProvider == null) {
 			modelSaveablesProvider = createModelSaveablesProvider();
@@ -184,6 +185,23 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 			resourceMarkerChangeListener = createResourceMarkerChangeListener();
 			ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceMarkerChangeListener, IResourceChangeEvent.POST_CHANGE);
 		}
+	}
+
+	@Override
+	protected CommonViewer createCommonViewerObject(Composite aParent) {
+		return new CommonViewer(getViewSite().getId(), aParent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL) {
+			@Override
+			public void refresh() {
+				super.refresh();
+				restoreState(memento);
+			}
+
+			@Override
+			public void refresh(Object element, boolean updateLabels) {
+				super.refresh(element, updateLabels);
+				restoreState(memento);
+			}
+		};
 	}
 
 	@Override
@@ -328,65 +346,104 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 		super.dispose();
 	}
 
-	public void restoreState(final IMemento memento) {
+	public void restoreState(IMemento memento) {
 		final CommonViewer viewer = getCommonViewer();
-		if (viewer != null && memento != null) {
-			// Retrieve visible expanded elements to be restored
-			final ArrayList<Object> expandedElements = new ArrayList<Object>();
-			IMemento expandedMemento = memento.getChild(TAG_EXPANDED);
-			if (expandedMemento != null) {
-				for (IMemento elementMemento : expandedMemento.getChildren(TAG_ELEMENT)) {
-					Object object = null;
-					if (elementMemento.getString(TAG_PATH) != null) {
-						IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-						object = root.findMember(elementMemento.getString(TAG_PATH));
-						if (object instanceof IFile) {
-							EcorePlatformUtil.loadResource((IFile) object, null);
+		if (viewer == null || memento == null) {
+			return;
+		}
+
+		XMLMemento deferredMemento = XMLMemento.createWriteRoot(memento.getType());
+
+		// Retrieve visible expanded elements to be restored
+		final List<Object> expandedElements = new ArrayList<Object>();
+		XMLMemento deferredExpandedMemento = (XMLMemento) deferredMemento.createChild(TAG_EXPANDED);
+		IMemento expandedMemento = memento.getChild(TAG_EXPANDED);
+		if (expandedMemento != null) {
+			for (IMemento elementMemento : expandedMemento.getChildren(TAG_ELEMENT)) {
+
+				String path = elementMemento.getString(TAG_PATH);
+				if (path != null) {
+					IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
+					if (resource instanceof IFile) {
+						IFile file = (IFile) resource;
+						if (EcorePlatformUtil.isFileLoaded(file)) {
+							expandedElements.add(resource);
+						} else {
+							IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel((IFile) resource);
+							if (modelDescriptor != null) {
+								// Request asynchronous loading of model behind given workspace file
+								ModelLoadManager.INSTANCE.loadModel(modelDescriptor, true, null);
+							}
+							deferredExpandedMemento.copyChild(elementMemento);
 						}
-					} else if (elementMemento.getString(TAG_URI) != null) {
-						object = EcorePlatformUtil.getEObject(URI.createURI(elementMemento.getString(TAG_URI), true));
+					} else if (resource != null) {
+						expandedElements.add(resource);
 					}
-					if (object != null) {
-						expandedElements.add(object);
+					continue;
+				}
+
+				String uriString = elementMemento.getString(TAG_URI);
+				if (uriString != null) {
+					URI uri = URI.createURI(uriString, true);
+					if (EcoreResourceUtil.exists(uri)) {
+						EObject eObject = EcorePlatformUtil.getEObject(uri);
+						if (eObject != null) {
+							expandedElements.add(eObject);
+						} else {
+							deferredExpandedMemento.copyChild(elementMemento);
+						}
 					}
 				}
 			}
+		}
 
-			// Retrieve selection to be restored
-			final ArrayList<Object> selectedElements = new ArrayList<Object>();
-			IMemento selectedMemento = memento.getChild(TAG_SELECTION);
-			if (selectedMemento != null) {
-				for (IMemento elementMemento : selectedMemento.getChildren(TAG_ELEMENT)) {
-					Object object = null;
-					if (elementMemento.getString(TAG_URI) != null) {
-						object = EcorePlatformUtil.getEObject(URI.createURI(elementMemento.getString(TAG_URI), true));
-					}
-					if (object != null) {
-						selectedElements.add(object);
+		// Retrieve selected element(s) to be restored
+		final List<Object> selectedElements = new ArrayList<Object>();
+		XMLMemento deferredSelectedMemento = (XMLMemento) deferredMemento.createChild(TAG_SELECTED);
+		IMemento selectedMemento = memento.getChild(TAG_SELECTED);
+		if (selectedMemento != null) {
+			for (IMemento elementMemento : selectedMemento.getChildren(TAG_ELEMENT)) {
+
+				String uriString = elementMemento.getString(TAG_URI);
+				if (uriString != null) {
+					URI uri = URI.createURI(uriString, true);
+					EObject eObject = EcorePlatformUtil.getEObject(uri);
+					if (eObject != null) {
+						selectedElements.add(eObject);
+					} else {
+						deferredSelectedMemento.copyChild(elementMemento);
 					}
 				}
 			}
+		}
 
-			// Perform restoration of expanded elements and selection asynchronously within UI thread
-			if (expandedElements.size() > 0 || selectedElements.size() > 0) {
-				if (viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-					Display display = viewer.getControl().getDisplay();
-					if (display != null) {
-						display.asyncExec(new Runnable() {
-							public void run() {
-								if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-									if (expandedElements.size() > 0) {
-										viewer.setExpandedElements(expandedElements.toArray());
-									}
-									if (selectedElements.size() > 0) {
-										viewer.setSelection(new StructuredSelection(selectedElements));
-									}
+		// Perform restoration of expanded elements and selection asynchronously within UI thread
+		if (!expandedElements.isEmpty() || !selectedElements.isEmpty()) {
+			if (viewer.getControl() != null && !viewer.getControl().isDisposed()) {
+				Display display = viewer.getControl().getDisplay();
+				if (display != null) {
+					display.asyncExec(new Runnable() {
+						public void run() {
+							if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
+								for (Object element : expandedElements) {
+									viewer.setExpandedState(element, true);
+								}
+
+								if (!selectedElements.isEmpty()) {
+									viewer.setSelection(new StructuredSelection(selectedElements));
 								}
 							}
-						});
-					}
+						}
+					});
 				}
 			}
+		}
+
+		// Switch root memento to deferred mementos if any such are still around or null otherwise
+		if (deferredExpandedMemento.getChildren().length > 0 || deferredSelectedMemento.getChildren().length > 0) {
+			this.memento = deferredMemento;
+		} else {
+			this.memento = null;
 		}
 	}
 
@@ -417,7 +474,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 			// Save selection
 			Object selectedElements[] = ((IStructuredSelection) viewer.getSelection()).toArray();
 			if (selectedElements.length > 0) {
-				IMemento selectedMemento = memento.createChild(TAG_SELECTION);
+				IMemento selectedMemento = memento.createChild(TAG_SELECTED);
 				for (Object selectedElement : selectedElements) {
 					if (selectedElement instanceof EObject) {
 						URI uri = getURI((EObject) selectedElement);
