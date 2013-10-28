@@ -18,11 +18,32 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.ui.URIEditorInput;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
+import org.eclipse.sphinx.emf.ui.internal.Activator;
+import org.eclipse.ui.IMemento;
 
 public class ExtendedURIEditorInput extends URIEditorInput {
 
 	public ExtendedURIEditorInput(URI uri) {
 		super(uri);
+	}
+
+	public ExtendedURIEditorInput(URI uri, String name) {
+		super(uri, name);
+	}
+
+	public ExtendedURIEditorInput(IMemento memento) {
+		super(memento);
+	}
+
+	/*
+	 * Overridden to avoid that the restoration of this extended editor input from its saved state results in trying to
+	 * load its class from the org.eclipse.emf.common.ui plug-in and causing a ClassNotFoundException (see
+	 * org.eclipse.emf.common.ui.URIEditorInput.create(IMemento) for details).
+	 * @see org.eclipse.emf.common.ui.URIEditorInput#getBundleSymbolicName()
+	 */
+	@Override
+	protected String getBundleSymbolicName() {
+		return Activator.getPlugin().getSymbolicName();
 	}
 
 	/*
