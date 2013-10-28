@@ -10,6 +10,7 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [409014] Listener URIChangeDetector registered for all transactional editing domains
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  *
  * </copyright>
  */
@@ -33,7 +34,10 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.ResourceSetChangeEvent;
@@ -89,23 +93,34 @@ public class ModelIndexUpdater extends ResourceSetListenerImpl implements IResou
 						}
 					}
 				} else if (notifier instanceof EObject) {
-					// TODO When adding an EObject, note that update the index on the whole resource isn't so good. Use
-					// ExtendedResource API to calculate metamodel-specific URIs
-					if (notification.getNewValue() instanceof EObject && notification.getEventType() == Notification.ADD) {
-						// Below is the improved code, but usage of ExtendedResource API needs to be incorporated since
-						// EcoreUtil.getURI() does not yield appropriate results for metamodels using fragment-based
-						// URIs
-						// URI uri = EcoreUtil.getURI((EObject) notification.getNewValue());
-						// if (ModelIndexManager.INSTANCE.existsProxyURI(uri)) {
-						// ModelIndexManager.INSTANCE.removeProxyURI(uri);
-						// }
-						proxyHelper.getBlackList().updateIndexOnResourceLoaded(((EObject) notifier).eResource());
+					// Check if new model objects that are potential targets for black-listed proxy URIs have been added
+					EStructuralFeature feature = (EStructuralFeature) notification.getFeature();
+					if (feature instanceof EReference) {
+						EReference reference = (EReference) feature;
+						if (reference.isContainment()) {
+							if (notification.getEventType() == Notification.SET || notification.getEventType() == Notification.ADD
+									|| notification.getEventType() == Notification.ADD_MANY) {
+								// Get black-listed proxy URI pointing at changed model object as well as all
+								// black-listed proxy URIs pointing at model objects that are directly and indirectly
+								// contained by the former removed
+								proxyHelper.getBlackList().updateIndexOnResourceLoaded(((EObject) notifier).eResource());
+							}
+						}
 					}
-					// When renaming, since URIs may depend on String attribute values
-					else if (notification.getNewValue() instanceof String && notification.getEventType() == Notification.SET) {
-						// TODO Get rid of updating index on the whole resource by calculating the URI of the notifier
-						// using ExtendedResource API and then look in the index and update entry if there is any
-						proxyHelper.getBlackList().updateIndexOnResourceLoaded(((EObject) notifier).eResource());
+
+					// Check if existing model objects have been renamed and thereby became potential targets for
+					// black-listed proxy URIs (this is necessary for metamodels that derive proxy URIs from the values
+					// of certain string attributes on the target object and/or its containers)
+					else if (feature instanceof EAttribute) {
+						EAttribute attribute = (EAttribute) feature;
+						if (attribute.getEType().getInstanceClass() == String.class) {
+							if (notification.getEventType() == Notification.SET) {
+								// Get black-listed proxy URI pointing at changed model object as well as all
+								// black-listed proxy URIs pointing at model objects that are directly and indirectly
+								// contained by the former removed
+								proxyHelper.getBlackList().updateIndexOnResourceLoaded(((EObject) notifier).eResource());
+							}
+						}
 					}
 				}
 			}
@@ -175,7 +190,6 @@ public class ModelIndexUpdater extends ResourceSetListenerImpl implements IResou
 			IResourceDelta delta = event.getDelta();
 			if (delta != null) {
 				IResourceDeltaVisitor visitor = new ResourceDeltaVisitor(event.getType(), new DefaultResourceChangeHandler() {
-
 					@Override
 					public void handleProjectDescriptionChanged(int eventType, IProject project) {
 						ModelIndexUpdater.this.handleProjectDescriptionChanged(project);
