@@ -830,7 +830,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 								@SuppressWarnings("unchecked")
 								List<EObject> oldValueList = (List<EObject>) oldValue;
 								oldValues.addAll(oldValueList);
-							} else if (oldValue instanceof Resource) {
+							} else if (oldValue instanceof EObject) {
 								oldValues.add((EObject) oldValue);
 							}
 
