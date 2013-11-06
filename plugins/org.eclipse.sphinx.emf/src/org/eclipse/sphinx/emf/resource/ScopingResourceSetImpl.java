@@ -12,6 +12,7 @@
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
+ *     itemis - [420792] Sphinx is not able to load resources that are registered in the EMF package registry
  *     
  * </copyright>
  */
@@ -41,6 +42,7 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.scoping.DefaultResourceScope;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
@@ -50,10 +52,55 @@ import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
  */
 public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements ScopingResourceSet {
 
+	private IResourceScope outsideWorkspaceScope;
+
 	/**
 	 * Default constructor.
 	 */
 	public ScopingResourceSetImpl() {
+	}
+
+	/**
+	 * Returns the {@link IResourceScope resource scope} used to encompass all resources that are located outside of the
+	 * workspace.
+	 * 
+	 * @return The scope used to encompass all resources that are located outside of the workspace.
+	 */
+	protected IResourceScope getOutsideWorkspaceScope() {
+		if (outsideWorkspaceScope == null) {
+			createOutsideWorkspaceScope();
+		}
+		return outsideWorkspaceScope;
+	}
+
+	/**
+	 * Creates the {@link IResourceScope resource scope} used to encompass all resources that are located outside of the
+	 * workspace.
+	 * 
+	 * @return The scope used to encompass all resources that are located outside of the workspace.
+	 */
+	protected void createOutsideWorkspaceScope() {
+		new DefaultResourceScope() {
+
+			@Override
+			public boolean exists() {
+				return true;
+			}
+
+			@Override
+			public boolean belongsTo(URI uri, boolean includeReferencedScopes) {
+				Assert.isNotNull(uri);
+
+				return !uri.isPlatformResource();
+			}
+
+			@Override
+			public boolean belongsTo(Resource resource, boolean includeReferencedScopes) {
+				Assert.isNotNull(resource);
+
+				return !resource.getURI().isPlatformResource();
+			}
+		};
 	}
 
 	/*
@@ -82,111 +129,149 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	}
 
 	/**
-	 * Retrieves the {@link Resource resource}s in this {@link ResourceSet resource set} which belong to the
-	 * {@link IModelDescriptor model} behind the contextObject.
+	 * Retrieves the {@link Resource resource}s contained by this {@link ResourceSet resource set} that belong to the
+	 * {@link IResourceScope resource scope}(s) behind provided <code>contextObject</code>.
 	 * 
 	 * @param contextObject
+	 *            The context object the resource scope to refer to.
 	 * @param includeReferencedScopes
+	 *            <code>true</code> if the resources of resource scopes that are referenced by the resource scope behind
+	 *            the context object are to be retrieved as well, <code>false</code> if only the resources of the
+	 *            resource scope behind the context object are to be retrieved.
 	 * @param ignoreMetaModel
-	 * @return The {@link Resource}s in this {@link ResourceSet resource set} which belong to the
-	 *         {@link IModelDescriptor model} behind the contextObject.
+	 *            <code>true</code> if the resources should be retrieved regardless whether their metamodel descriptor
+	 *            matches that behind the context object, <code>false</code> if the metamodel descriptors of the
+	 *            resources and the context object are required to match.
+	 * @return The resources contained by this resource set that belong to the resource scope(s) behind provided
+	 *         <code>contextObject</code>.
 	 */
 	protected List<Resource> getResourcesInScope(Object contextObject, boolean includeReferencedScopes, boolean ignoreMetaModel) {
-		// Context object in resource being located inside workspace?
-		Resource contextResource = getResource(contextObject);
-		if (contextResource == null || isPlatformResource(contextResource)) {
-			// Retrieve resource scope(s) and metamodel descriptor(s) behind given context object
-			Map<IResourceScope, Set<IMetaModelDescriptor>> contextResourceScopes;
-			if (contextResource != null) {
-				contextResourceScopes = getResourceScopes(contextResource);
-			} else {
-				contextResourceScopes = getResourceScopes(contextObject);
-			}
+		// Retrieve resource scope(s) along with the descriptor(s) of the metamodel(s) using it(them) behind given
+		// context object
+		Map<IResourceScope, Set<IMetaModelDescriptor>> contextResourceScopes = getContextResourceScopes(contextObject);
 
-			// Collect resources which belong to same resource scope(s) and metamodel(s) as the context object does
-			/*
-			 * !! Important Note !! A LinkedHashSet is used to preserve the ordering of the Resources. Using a simple
-			 * HashSet will not preserve the ordering which leads to inconsistent results when implementing Resource
-			 * merging based on the getResourcesInScope() method.
-			 */
-			Set<Resource> resourcesInScope = new LinkedHashSet<Resource>();
-			List<Resource> safeResources = new ArrayList<Resource>(getResources());
-			for (Resource resource : safeResources) {
-				for (IResourceScope contextResourceScope : contextResourceScopes.keySet()) {
-					if (contextResourceScope.belongsTo(resource, includeReferencedScopes)) {
-						if (ignoreMetaModel || hasMatchingMetaModel(contextResourceScopes.get(contextResourceScope), resource)) {
-							resourcesInScope.add(resource);
-							break;
-						}
-					}
-				}
-			}
-			return Collections.unmodifiableList(new ArrayList<Resource>(resourcesInScope));
-		} else {
-			// Retrieve metamodel descriptor behind given context object
-			IMetaModelDescriptor contextMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(contextResource);
-
-			// Collect only resources which are located outside workspace
-			/*
-			 * !! Important Note !! A LinkedHashSet is used to preserve the ordering of the Resources. Using a simple
-			 * HashSet will not preserve the ordering which leads to inconsistent results when implementing Resource
-			 * merging based on the getResourcesInScope() method.
-			 */
-			Set<Resource> resourcesInScope = new LinkedHashSet<Resource>();
-			List<Resource> safeResources = new ArrayList<Resource>(getResources());
-			for (Resource resource : safeResources) {
-				if (!isPlatformResource(resource)) {
-					if (ignoreMetaModel || hasMatchingMetaModel(Collections.singleton(contextMMDescriptor), resource)) {
+		// Collect resources which belong to the same resource scope(s) and metamodel(s) (if required) as the context
+		// object does
+		/*
+		 * !! Important Note !! A LinkedHashSet is used to preserve the ordering of the Resources. Using a simple
+		 * HashSet will not preserve the ordering which leads to inconsistent results when implementing Resource merging
+		 * based on the getResourcesInScope() method.
+		 */
+		Set<Resource> resourcesInScope = new LinkedHashSet<Resource>();
+		List<Resource> safeResources = new ArrayList<Resource>(getResources());
+		for (Resource resource : safeResources) {
+			for (IResourceScope contextResourceScope : contextResourceScopes.keySet()) {
+				if (contextResourceScope.belongsTo(resource, includeReferencedScopes)) {
+					if (ignoreMetaModel || hasMatchingMetaModel(contextResourceScopes.get(contextResourceScope), resource)) {
 						resourcesInScope.add(resource);
+						break;
 					}
 				}
 			}
-			return Collections.unmodifiableList(new ArrayList<Resource>(resourcesInScope));
 		}
+		return Collections.unmodifiableList(new ArrayList<Resource>(resourcesInScope));
 	}
 
-	protected Resource getResource(Object object) {
-		URI uri = null;
-		if (object instanceof IFile) {
-			uri = EcorePlatformUtil.createURI(((IFile) object).getFullPath());
-		} else if (object instanceof URI) {
-			uri = (URI) object;
-		}
+	/**
+	 * Tests if given {@link Resource resource} belongs to the {@link IResourceScope resource scope}(s) behind provided
+	 * <code>contextObject</code>.
+	 * 
+	 * @param resource
+	 *            The resource to be investigated.
+	 * @param contextObject
+	 *            The context object identifying the resource scope to refer to.
+	 * @param includeReferencedScopes
+	 *            <code>true</code> if the resource scopes that are referenced by the resource scope behind the context
+	 *            object are to be considered as well, <code>false</code> if only the resource scope behind the context
+	 *            object is to be considered.
+	 * @param ignoreMetaModel
+	 *            <code>true</code> if the given resource should be considered to belong to the resource scope behind
+	 *            the context object regardless whether its metamodel descriptor matches that of the context object,
+	 *            <code>false</code> if the metamodel descriptors of the given resource and the context object are
+	 *            required to match.
+	 * @return <code>true</code> if given resource belongs to the resource scope behind provided
+	 *         <code>contextObject</code>, or <code>false</code> otherwise.
+	 */
+	protected boolean isInScope(Resource resource, Object contextObject, boolean includeReferencedScopes, boolean ignoreMetaModel) {
+		// Retrieve resource scope(s) along with the descriptor(s) of the metamodel(s) using it(them) behind given
+		// context object
+		Map<IResourceScope, Set<IMetaModelDescriptor>> contextResourceScopes = getContextResourceScopes(contextObject);
 
-		Resource resource = null;
-		if (uri != null) {
-			resource = getResource(uri.trimFragment(), false);
-		} else {
-			resource = EcoreResourceUtil.getResource(object);
+		// Check if resource belongs to the same resource scope(s) and metamodel(s) (if required) as the context
+		// object does
+		for (IResourceScope contextResourceScope : contextResourceScopes.keySet()) {
+			if (contextResourceScope.belongsTo(resource, includeReferencedScopes)) {
+				if (ignoreMetaModel || hasMatchingMetaModel(contextResourceScopes.get(contextResourceScope), resource)) {
+					return true;
+				}
+			}
 		}
-		return resource;
+		return false;
 	}
 
-	protected boolean isPlatformResource(Resource resource) {
-		return resource.getURI().isPlatformResource();
-	}
-
-	protected Map<IResourceScope, Set<IMetaModelDescriptor>> getResourceScopes(Resource contextResource) {
+	/**
+	 * Retrieves a map that is keyed by the {@link IResourceScope resource scopes} behind given context object and
+	 * yields the {@link IMetaModelDescriptor descriptors of the metamodel}s using them.
+	 * 
+	 * @param contextObject
+	 *            The context object to retrieve the resource scopes for.
+	 * @return A map containing the resource scopes behind given context object along with the descriptor of the
+	 *         metamodels using them.
+	 */
+	protected Map<IResourceScope, Set<IMetaModelDescriptor>> getContextResourceScopes(Object contextObject) {
 		Map<IResourceScope, Set<IMetaModelDescriptor>> resourceScopes = new HashMap<IResourceScope, Set<IMetaModelDescriptor>>(1);
-		IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(contextResource);
-		if (modelDescriptor != null) {
-			resourceScopes.put(modelDescriptor.getScope(), Collections.singleton(modelDescriptor.getMetaModelDescriptor()));
-		}
-		return resourceScopes;
-	}
 
-	protected Map<IResourceScope, Set<IMetaModelDescriptor>> getResourceScopes(Object contextObject) {
-		Map<IResourceScope, Set<IMetaModelDescriptor>> resourceScopes = new HashMap<IResourceScope, Set<IMetaModelDescriptor>>(1);
+		// Try to retrieve resource behind given context object
+		Resource resource = EcoreResourceUtil.getResource(contextObject);
+		if (resource != null) {
+			contextObject = resource;
+		}
+
+		if (contextObject instanceof IFile) {
+			IFile contextFile = (IFile) contextObject;
+
+			// Retrieve URI behind context file
+			contextObject = EcorePlatformUtil.createURI(contextFile.getFullPath());
+		}
+
 		if (contextObject instanceof URI) {
 			URI contextURI = (URI) contextObject;
-			if (contextURI.isPlatformResource()) {
-				IPath contextPath = new Path(contextURI.toPlatformString(true));
-				IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(contextPath);
-				if (resource instanceof IContainer) {
-					contextObject = resource;
+
+			// Try to resolve context URI to resource contained by this resource set
+			resource = getResource(contextURI.trimFragment().trimQuery(), false);
+			if (resource != null) {
+				contextObject = resource;
+			} else {
+				// Try to resolve context URI to workspace root, project or folder
+				if (contextURI.isPlatformResource()) {
+					IPath contextPath = new Path(contextURI.toPlatformString(true));
+					IResource member = ResourcesPlugin.getWorkspace().getRoot().findMember(contextPath);
+					if (member instanceof IContainer) {
+						contextObject = member;
+					}
 				}
 			}
 		}
+
+		if (contextObject instanceof Resource) {
+			Resource contextResource = (Resource) contextObject;
+
+			// Try to find descriptor of model that context resource belongs to
+			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(contextResource);
+			if (modelDescriptor != null) {
+				// Return the context model's scope along with the descriptor of its metamodel
+				resourceScopes.put(modelDescriptor.getScope(), Collections.singleton(modelDescriptor.getMetaModelDescriptor()));
+			} else {
+				// Context resource located outside of the workspace?
+				if (getOutsideWorkspaceScope().belongsTo(contextResource, false)) {
+					// Return common scope for resources located outside of the workspace along with the descriptor of
+					// the metamodel behind the context resource
+					IMetaModelDescriptor contextMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(contextResource);
+					resourceScopes.put(getOutsideWorkspaceScope(), Collections.singleton(contextMMDescriptor));
+				}
+			}
+		}
+
 		if (contextObject instanceof IContainer) {
 			IContainer contextContainer = (IContainer) contextObject;
 			for (IModelDescriptor modelDescriptor : ModelDescriptorRegistry.INSTANCE.getModels(contextContainer)) {
@@ -199,10 +284,12 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 				mmDescriptors.add(modelDescriptor.getMetaModelDescriptor());
 			}
 		}
+
 		if (contextObject instanceof IModelDescriptor) {
 			IModelDescriptor modelDescriptor = (IModelDescriptor) contextObject;
 			resourceScopes.put(modelDescriptor.getScope(), Collections.singleton(modelDescriptor.getMetaModelDescriptor()));
 		}
+
 		if (contextObject instanceof IResourceScope) {
 			resourceScopes.put((IResourceScope) contextObject, Collections.singleton(MetaModelDescriptorRegistry.ANY_MM));
 		}
@@ -215,7 +302,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 		IMetaModelDescriptor resourceMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource);
 		if (resourceMMDescriptor != null) {
 			for (IMetaModelDescriptor mmDescriptor : mmDescriptors) {
-				if (mmDescriptor.equals(resourceMMDescriptor) || MetaModelDescriptorRegistry.ANY_MM == mmDescriptor) {
+				if (resourceMMDescriptor.equals(mmDescriptor) || MetaModelDescriptorRegistry.ANY_MM == mmDescriptor) {
 					return true;
 				}
 			}
@@ -243,8 +330,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 				// Do we have any context information?
 				if (contextObject != null) {
 					// Retrieve EObject behind URI fragment only if target resource is in scope
-					List<Resource> resourcesInScope = getResourcesInScope(contextObject, true, true);
-					if (resourcesInScope.contains(resource)) {
+					if (isInScope(resource, contextObject, true, true)) {
 						return safeGetEObjectFromResource(resource, uri.fragment());
 					}
 				} else {
