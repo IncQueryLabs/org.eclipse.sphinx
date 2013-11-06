@@ -192,7 +192,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	 * @return <code>true</code> if given resource belongs to the resource scope behind provided
 	 *         <code>contextObject</code>, or <code>false</code> otherwise.
 	 */
-	protected boolean isInScope(Resource resource, Object contextObject, boolean includeReferencedScopes, boolean ignoreMetaModel) {
+	protected boolean isResourceInScope(Resource resource, Object contextObject, boolean includeReferencedScopes, boolean ignoreMetaModel) {
 		// Retrieve resource scope(s) along with the descriptor(s) of the metamodel(s) using it(them) behind given
 		// context object
 		Map<IResourceScope, Set<IMetaModelDescriptor>> contextResourceScopes = getContextResourceScopes(contextObject);
@@ -330,7 +330,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 				// Do we have any context information?
 				if (contextObject != null) {
 					// Retrieve EObject behind URI fragment only if target resource is in scope
-					if (isInScope(resource, contextObject, true, true)) {
+					if (isResourceInScope(resource, contextObject, true, true)) {
 						return safeGetEObjectFromResource(resource, uri.fragment());
 					}
 				} else {
