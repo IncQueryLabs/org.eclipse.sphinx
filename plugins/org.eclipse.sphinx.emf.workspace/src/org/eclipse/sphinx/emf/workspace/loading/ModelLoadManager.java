@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored
+ *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
  *     itemis - [418005] Add support for model files with multiple root elements
  * 
  * </copyright>
@@ -1580,7 +1581,7 @@ public final class ModelLoadManager {
 											if (referencedObject != null && !referencedObject.eIsProxy()) {
 
 												// Referenced object no longer part of same model as given object?
-												if (!modelDescriptor.belongsTo(referencedObject.eResource(), true)) {
+												if (!modelDescriptor.getScope().belongsTo(referencedObject.eResource(), true)) {
 													referencedObjects.remove(referencedObject);
 													referencedObjects.add(EObjectUtil.createProxyFrom(referencedObject, object.eResource()));
 												}
@@ -1591,7 +1592,7 @@ public final class ModelLoadManager {
 										if (referencedObject != null && !referencedObject.eIsProxy()) {
 
 											// Referenced object no longer part of same model as given object?
-											if (!modelDescriptor.belongsTo(referencedObject.eResource(), true)) {
+											if (!modelDescriptor.getScope().belongsTo(referencedObject.eResource(), true)) {
 												object.eSet(reference, EObjectUtil.createProxyFrom(referencedObject, object.eResource()));
 											}
 										}
