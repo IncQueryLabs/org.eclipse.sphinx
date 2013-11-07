@@ -848,7 +848,7 @@ public final class ModelLoadManager {
 			// Request resolution of all proxies in given resources
 			SubMonitor resolveProxiesProgress = progress.newChild(80).setWorkRemaining(files.size());
 			for (Resource resource : resources) {
-				resolveProxiesProgress.subTask(NLS.bind(Messages.subtask_resolvingProxiesInResource, resource.getURI().toPlatformString(true)));
+				resolveProxiesProgress.subTask(NLS.bind(Messages.subtask_resolvingProxiesInResource, resource.getURI()));
 
 				EObjectUtil.resolveAll(resource);
 
