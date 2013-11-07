@@ -112,8 +112,7 @@ public abstract class AbstractResourceScope implements IResourceScope {
 	 */
 	public boolean isShared(Resource resource) {
 		if (resource != null) {
-			// Consider resources located in plug-ins as shared by default
-			return resource.getURI().isPlatformPlugin();
+			return isShared(resource.getURI());
 		}
 		return false;
 	}
