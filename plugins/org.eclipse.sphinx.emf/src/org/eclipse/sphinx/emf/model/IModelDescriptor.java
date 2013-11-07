@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
  * 
  * </copyright>
  */
@@ -17,6 +18,7 @@ package org.eclipse.sphinx.emf.model;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.emf.common.util.URI;
@@ -55,16 +57,16 @@ public interface IModelDescriptor extends IAdaptable {
 	TransactionalEditingDomain getEditingDomain();
 
 	/**
-	 * @return The root {@link IResource resource} of the model described here.
-	 */
-
-	IResource getRoot();
-
-	/**
 	 * @return The resourceScope {@link IResourceScope resourceScope} of the model described here.
 	 */
 
 	IResourceScope getScope();
+
+	/**
+	 * @return The root {@link IResource resource} of the model described here.
+	 */
+
+	IResource getRoot();
 
 	/**
 	 * @return The list of root{@link IResource resource}s constituting the model described here.
@@ -77,6 +79,16 @@ public interface IModelDescriptor extends IAdaptable {
 	 * @since 0.7.0
 	 */
 	Collection<IResource> getReferencingRoots();
+
+	/**
+	 * @return The resources inside the editing domain's resource set that belong to this model.
+	 */
+	Collection<Resource> getLoadedResources(boolean includeReferencedScopes);
+
+	/**
+	 * @return The {@link IFile file}(s) that belong to this model.
+	 */
+	Collection<IFile> getPersistedFiles(boolean includeReferencedScopes);
 
 	/**
 	 * Indicates if the given {@link IFile file} is part of the model identified by this {@link IModelDescriptor model
@@ -97,24 +109,6 @@ public interface IModelDescriptor extends IAdaptable {
 	boolean belongsTo(IFile file, boolean includeReferencedScopes);
 
 	/**
-	 * Indicates if the given {@link URI uri} is part of the model identified by this {@link IModelDescriptor model
-	 * descriptor}. Criteria applied in order to know that are the following ones:
-	 * <ul>
-	 * <li>encapsulated {@link IMetaModelDescriptor meta-model descriptor} must be equal to {@link IFile file}'s one;</li>
-	 * <li>{@link IFile file} must be a member of the encapsulated {@link IProject project}<br>
-	 * (can be member of a referenced {@link IProject project}).</li>
-	 * </ul>
-	 * 
-	 * @param uri
-	 *            The {@link URI uri} that may belongs to the model.
-	 * @return <ul>
-	 *         <li><tt><b>true</b>&nbsp;&nbsp;</tt> if the given {@link URI uri} belongs to the identified model;</li>
-	 *         <li><tt><b>false</b>&nbsp;</tt> otherwise.</li>
-	 *         </ul>
-	 */
-	boolean belongsTo(URI uri, boolean includeReferencedScopes);
-
-	/**
 	 * Indicates if the given {@link Resource resource} is part of the model identified by this {@link IModelDescriptor
 	 * model descriptor}. Criteria applied in order to know that are the following ones:
 	 * <ul>
@@ -131,6 +125,24 @@ public interface IModelDescriptor extends IAdaptable {
 	 *         </ul>
 	 */
 	boolean belongsTo(Resource resource, boolean includeReferencedScopes);
+
+	/**
+	 * Indicates if the given {@link URI uri} is part of the model identified by this {@link IModelDescriptor model
+	 * descriptor}. Criteria applied in order to know that are the following ones:
+	 * <ul>
+	 * <li>encapsulated {@link IMetaModelDescriptor meta-model descriptor} must be equal to {@link IFile file}'s one;</li>
+	 * <li>{@link IFile file} must be a member of the encapsulated {@link IProject project}<br>
+	 * (can be member of a referenced {@link IProject project}).</li>
+	 * </ul>
+	 * 
+	 * @param uri
+	 *            The {@link URI uri} that may belongs to the model.
+	 * @return <ul>
+	 *         <li><tt><b>true</b>&nbsp;&nbsp;</tt> if the given {@link URI uri} belongs to the identified model;</li>
+	 *         <li><tt><b>false</b>&nbsp;</tt> otherwise.</li>
+	 *         </ul>
+	 */
+	boolean belongsTo(URI uri, boolean includeReferencedScopes);
 
 	/**
 	 * Indicates if the given {@link IFile file} has been part of the model identified by this {@link IModelDescriptor
@@ -155,6 +167,30 @@ public interface IModelDescriptor extends IAdaptable {
 	 *         </ul>
 	 */
 	boolean didBelongTo(IFile file, boolean includeReferencedScopes);
+
+	/**
+	 * Indicates if the given {@link Resource resource} has been part of the model identified by this
+	 * {@link IModelDescriptor model descriptor} before it was changed or deleted. Criteria applied in order to know
+	 * that are the following ones:
+	 * <ul>
+	 * <li>encapsulated {@link IMetaModelDescriptor meta-model descriptor} must be equal to {@link Resource resource}'s
+	 * old {@link IMetaModelDescriptor meta-model descriptor};</li> !Important note! The information will only be
+	 * available during processing of the method
+	 * org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry.FileMetaModelDescriptorCache.removeDescriptor(IFile)
+	 * called from org.eclipse.sphinx.emf.internal.MetaModelDescriptorCacheAndModelDescriptorRegistryUpdater.
+	 * handleModelResourceUnloaded(Collection<Resource>).In any other use case the method will behave as if there was no
+	 * old meta-model descriptor available. The reason is that old meta-model descriptor is removed as soon as model
+	 * descriptor has been removed.
+	 * 
+	 * @param uri
+	 *            The {@link Resource resource} that may belongs to the model.
+	 * @return <ul>
+	 *         <li><tt><b>true</b>&nbsp;&nbsp;</tt> if the given {@link Resource resource} belongs to the identified
+	 *         model;</li>
+	 *         <li><tt><b>false</b>&nbsp;</tt> otherwise.</li>
+	 *         </ul>
+	 */
+	boolean didBelongTo(Resource resource, boolean includeReferencedScopes);
 
 	/**
 	 * if the given {@link URI uri} has been part of the model identified by this {@link IModelDescriptor model
@@ -184,36 +220,33 @@ public interface IModelDescriptor extends IAdaptable {
 	boolean didBelongTo(URI uri, boolean includeReferencedScopes);
 
 	/**
-	 * Indicates if the given {@link Resource resource} has been part of the model identified by this
-	 * {@link IModelDescriptor model descriptor} before it was changed or deleted. Criteria applied in order to know
-	 * that are the following ones:
-	 * <ul>
-	 * <li>encapsulated {@link IMetaModelDescriptor meta-model descriptor} must be equal to {@link Resource resource}'s
-	 * old {@link IMetaModelDescriptor meta-model descriptor};</li> !Important note! The information will only be
-	 * available during processing of the method
-	 * org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry.FileMetaModelDescriptorCache.removeDescriptor(IFile)
-	 * called from org.eclipse.sphinx.emf.internal.MetaModelDescriptorCacheAndModelDescriptorRegistryUpdater.
-	 * handleModelResourceUnloaded(Collection<Resource>).In any other use case the method will behave as if there was no
-	 * old meta-model descriptor available. The reason is that old meta-model descriptor is removed as soon as model
-	 * descriptor has been removed.
+	 * Determines if given {@link IFile file} is shared among multiple models, i.e., can simultaneously belong to
+	 * multiple models, or not.
 	 * 
-	 * @param uri
-	 *            The {@link Resource resource} that may belongs to the model.
-	 * @return <ul>
-	 *         <li><tt><b>true</b>&nbsp;&nbsp;</tt> if the given {@link Resource resource} belongs to the identified
-	 *         model;</li>
-	 *         <li><tt><b>false</b>&nbsp;</tt> otherwise.</li>
-	 *         </ul>
+	 * @param file
+	 *            The file to be investigated.
+	 * @return <code>true</code> if given file is shared across multiple models, or <code>false</code> otherwise.
 	 */
-	boolean didBelongTo(Resource resource, boolean includeReferencedScopes);
+	boolean isShared(IFile file);
 
 	/**
-	 * @return The resources inside the editing domain's resource set that belong to this model.
+	 * Determines if given {@link Resource resource} is shared among multiple models, i.e., can simultaneously belong to
+	 * multiple models, or not.
+	 * 
+	 * @param file
+	 *            The resource to be investigated.
+	 * @return <code>true</code> if given resource is shared across multiple models, or <code>false</code> otherwise.
 	 */
-	Collection<Resource> getLoadedResources(boolean includeReferencedScopes);
+	boolean isShared(Resource resource);
 
 	/**
-	 * @return The {@link IFile file}(s) that belong to this model.
+	 * Determines if given {@link URI} is shared among multiple models, i.e., can simultaneously belong to multiple
+	 * models, or not.
+	 * 
+	 * @param file
+	 *            The URI to be investigated.
+	 * @return <code>true</code> if the resource behind given URI is shared across multiple models, or
+	 *         <code>false</code> otherwise.
 	 */
-	Collection<IFile> getPersistedFiles(boolean includeReferencedScopes);
+	boolean isShared(URI uri);
 }

@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     itemis - Initial API and implementation
+ *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
  * 
  * </copyright>
  */
@@ -39,7 +40,7 @@ public class DefaultResourceScope implements IResourceScope {
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#exists()
 	 */
 	public boolean exists() {
-		return false;
+		return true;
 	}
 
 	/*
@@ -117,6 +118,27 @@ public class DefaultResourceScope implements IResourceScope {
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#didBelongTo(org.eclipse.emf.common.util.URI, boolean)
 	 */
 	public boolean didBelongTo(URI uri, boolean includeReferencedScopes) {
+		return false;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#isShared(org.eclipse.core.resources.IFile)
+	 */
+	public boolean isShared(IFile file) {
+		return false;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#isShared(org.eclipse.emf.ecore.resource.Resource)
+	 */
+	public boolean isShared(Resource resource) {
+		return false;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#isShared(org.eclipse.emf.common.util.URI)
+	 */
+	public boolean isShared(URI uri) {
 		return false;
 	}
 }

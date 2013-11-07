@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
  * 
  * </copyright>
  */
@@ -25,13 +26,6 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 public interface IResourceScope {
 
 	/**
-	 * Returns the root {@link IResource} of that {@link IResourceScope resource scope}.
-	 * 
-	 * @return The root {@link IResource resource} of that scope.
-	 */
-	IResource getRoot();
-
-	/**
 	 * Returns true if this {@link IResourceScope resource scope} exists.
 	 * <p>
 	 * This method is guaranteed to have a very little performance overhead.
@@ -42,77 +36,11 @@ public interface IResourceScope {
 	boolean exists();
 
 	/**
-	 * Determines if a {@link IFile file} belongs to this scope.
+	 * Returns the root {@link IResource} of that {@link IResourceScope resource scope}.
 	 * 
-	 * @param file
-	 *            The {@link IFile file} to be investigated.
-	 * @param includeReferencedScopes
-	 *            Determines if scopes referenced by the current {@link IResourceScope resource scope} must be
-	 *            investigated.
-	 * @return <code>true</code> if the {@link IFile file} is in the scope.
+	 * @return The root {@link IResource resource} of that scope.
 	 */
-	boolean belongsTo(IFile file, boolean includeReferencedScopes);
-
-	/**
-	 * Determines if a {@link Resource resource} belongs to this scope.
-	 * 
-	 * @param resource
-	 *            The {@link Resource resource} to be investigated.
-	 * @param includeReferencedScopes
-	 *            Determines if scopes referenced by the current {@link IResourceScope resource scope} must be
-	 *            investigated.
-	 * @return <code>true</code> if the {@link Resource resource} is in the scope.
-	 */
-	boolean belongsTo(Resource resource, boolean includeReferencedScopes);
-
-	/**
-	 * Determines if an {@link URI uri} point to an element that belongs to this scope.
-	 * 
-	 * @param uri
-	 *            The {@link URI uri} to be investigated.
-	 * @param includeReferencedScopes
-	 *            Determines if scopes referenced by the current {@link IResourceScope resource scope} must be
-	 *            investigated.
-	 * @return <code>true</code> if the {@link URI uri} is in the scope.
-	 */
-	boolean belongsTo(URI uri, boolean includeReferencedScopes);
-
-	/**
-	 * Determines if a {@link IFile file} did belong to this scope (i.e is no more in the scope but was previously in).
-	 * 
-	 * @param file
-	 *            The {@link IFile file} to be investigated.
-	 * @param includeReferencedScopes
-	 *            Determines if scopes referenced by the current {@link IResourceScope resource scope} must be
-	 *            investigated.
-	 * @return <code>true</code> if the {@link IFile file} was in the scope.
-	 */
-	boolean didBelongTo(IFile file, boolean includeReferencedScopes);
-
-	/**
-	 * Determines if a {@link Resource resource} did belong to this scope (i.e is no more in the scope but was
-	 * previously in).
-	 * 
-	 * @param resource
-	 *            The {@link Resource resource} to be investigated.
-	 * @param includeReferencedScopes
-	 *            Determines if scopes referenced by the current {@link IResourceScope resource scope} must be
-	 *            investigated.
-	 * @return <code>true</code> if the {@link Resource resource} was in the scope.
-	 */
-	boolean didBelongTo(Resource resource, boolean includeReferencedScopes);
-
-	/**
-	 * Determines if an {@link URI uri} did belong to this scope (i.e is no more in the scope but was previously in).
-	 * 
-	 * @param uri
-	 *            The {@link URI uri} to be investigated.
-	 * @param includeReferencedScopes
-	 *            Determines if scopes referenced by the current {@link IResourceScope resource scope} must be
-	 *            investigated.
-	 * @return <code>true</code> if the {@link URI uri} was in the scope.
-	 */
-	boolean didBelongTo(URI uri, boolean includeReferencedScopes);
+	IResource getRoot();
 
 	/**
 	 * Returns the roots of other {@link IResourceScope resource scope}s which are referenced by this
@@ -154,4 +82,112 @@ public interface IResourceScope {
 	 *         {@link TransactionalEditingDomain editing domain}.
 	 */
 	Collection<Resource> getLoadedResources(TransactionalEditingDomain editingDomain, boolean includeReferencedScopes);
+
+	/**
+	 * Determines if given {@link IFile file} belongs to this scope.
+	 * 
+	 * @param file
+	 *            The {@link IFile file} to be investigated.
+	 * @param includeReferencedScopes
+	 *            Determines if scopes referenced by the current {@link IResourceScope resource scope} must be
+	 *            investigated.
+	 * @return <code>true</code> if the {@link IFile file} is in this resource scope, or <code>false</code> otherwise.
+	 */
+	boolean belongsTo(IFile file, boolean includeReferencedScopes);
+
+	/**
+	 * Determines if given {@link Resource resource} belongs to this scope.
+	 * 
+	 * @param resource
+	 *            The {@link Resource resource} to be investigated.
+	 * @param includeReferencedScopes
+	 *            Determines if scopes referenced by the current {@link IResourceScope resource scope} must be
+	 *            investigated.
+	 * @return <code>true</code> if the {@link Resource resource} is in this resource scope, or <code>false</code>
+	 *         otherwise.
+	 */
+	boolean belongsTo(Resource resource, boolean includeReferencedScopes);
+
+	/**
+	 * Determines if given {@link URI uri} references a {@link Resource resource} that belongs to this scope.
+	 * 
+	 * @param uri
+	 *            The {@link URI uri} to be investigated.
+	 * @param includeReferencedScopes
+	 *            Determines if scopes referenced by the current {@link IResourceScope resource scope} must be
+	 *            investigated.
+	 * @return <code>true</code> if the {@link URI uri} is in this resource scope, or <code>false</code> otherwise.
+	 */
+	boolean belongsTo(URI uri, boolean includeReferencedScopes);
+
+	/**
+	 * Determines if given {@link IFile file} not belonging to this resource scope did belong to it before.
+	 * 
+	 * @param file
+	 *            The {@link IFile file} to be investigated.
+	 * @param includeReferencedScopes
+	 *            Determines if scopes referenced by the current {@link IResourceScope resource scope} must be
+	 *            investigated.
+	 * @return <code>true</code> if the {@link IFile file} was in this resource scope, or <code>false</code> otherwise.
+	 */
+	boolean didBelongTo(IFile file, boolean includeReferencedScopes);
+
+	/**
+	 * Determines if given {@link Resource resource} not belonging to this resource scope did belong to it before.
+	 * 
+	 * @param resource
+	 *            The {@link Resource resource} to be investigated.
+	 * @param includeReferencedScopes
+	 *            Determines if scopes referenced by the current {@link IResourceScope resource scope} must be
+	 *            investigated.
+	 * @return <code>true</code> if the {@link Resource resource} was in this resource scope, or <code>false</code>
+	 *         otherwise.
+	 */
+	boolean didBelongTo(Resource resource, boolean includeReferencedScopes);
+
+	/**
+	 * Determines if given {@link URI uri} did reference a {@link Resource resource} that does no longer belong to this
+	 * resource scope but did so before.
+	 * 
+	 * @param uri
+	 *            The {@link URI uri} to be investigated.
+	 * @param includeReferencedScopes
+	 *            Determines if scopes referenced by the current {@link IResourceScope resource scope} must be
+	 *            investigated.
+	 * @return <code>true</code> if the {@link URI uri} was in this resource scope, or <code>false</code> otherwise.
+	 */
+	boolean didBelongTo(URI uri, boolean includeReferencedScopes);
+
+	/**
+	 * Determines if given {@link IFile file} is shared among multiple resource scopes, i.e., can simultaneously belong
+	 * to multiple resource scopes, or not.
+	 * 
+	 * @param file
+	 *            The file to be investigated.
+	 * @return <code>true</code> if given file is shared across multiple resource scopes, or <code>false</code>
+	 *         otherwise.
+	 */
+	boolean isShared(IFile file);
+
+	/**
+	 * Determines if given {@link Resource resource} is shared among multiple resource scopes, i.e., can simultaneously
+	 * belong to multiple resource scopes, or not.
+	 * 
+	 * @param file
+	 *            The resource to be investigated.
+	 * @return <code>true</code> if given resource is shared across multiple resource scopes, or <code>false</code>
+	 *         otherwise.
+	 */
+	boolean isShared(Resource resource);
+
+	/**
+	 * Determines if given {@link URI} is shared among multiple resource scopes, i.e., can simultaneously belong to
+	 * multiple resource scopes, or not.
+	 * 
+	 * @param file
+	 *            The URI to be investigated.
+	 * @return <code>true</code> if the resource behind given URI is shared across multiple resource scopes, or
+	 *         <code>false</code> otherwise.
+	 */
+	boolean isShared(URI uri);
 }

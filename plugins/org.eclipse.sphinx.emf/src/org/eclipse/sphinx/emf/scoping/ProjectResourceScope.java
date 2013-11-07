@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 See4sys, itemis, BMW Car IT and others.
+ * Copyright (c) 2008-2013 See4sys, itemis, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
  *     BMW Car IT - [373481] Performance optimizations for model loading. Added referenced projects cache.
+ *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
  * 
  * </copyright>
  */
@@ -50,6 +51,10 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#belongsTo(org.eclipse.core.resources.IFile, boolean)
 	 */
 	public boolean belongsTo(IFile file, boolean includeReferencedScopes) {
+		if (isShared(file)) {
+			return true;
+		}
+
 		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
 	}
 
@@ -57,6 +62,10 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#belongsTo(org.eclipse.emf.ecore.resource.Resource, boolean)
 	 */
 	public boolean belongsTo(Resource resource, boolean includeReferencedScopes) {
+		if (isShared(resource)) {
+			return true;
+		}
+
 		IFile file = EcorePlatformUtil.getFile(resource);
 		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
 	}
@@ -65,6 +74,10 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#belongsTo(org.eclipse.emf.common.util.URI, boolean)
 	 */
 	public boolean belongsTo(URI uri, boolean includeReferencedScopes) {
+		if (isShared(uri)) {
+			return true;
+		}
+
 		IFile file = EcorePlatformUtil.getFile(uri);
 		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
 	}

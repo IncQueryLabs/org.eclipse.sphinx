@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2011 See4sys, itemis and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
+ *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
  * 
  * </copyright>
  */
@@ -24,6 +25,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.RunnableWithResult;
@@ -41,29 +43,6 @@ public abstract class AbstractResourceScope implements IResourceScope {
 	 */
 	public boolean exists() {
 		return getRoot() != null && getRoot().isAccessible();
-	}
-
-	/*
-	 * @see
-	 * org.eclipse.sphinx.emf.model.IResourceScope#getLoadedResources(org.eclipse.emf.transaction.TransactionalEditingDomain
-	 * , boolean)
-	 */
-	public Collection<Resource> getLoadedResources(final TransactionalEditingDomain editingDomain, final boolean includeReferencedScopes) {
-		try {
-			return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<List<Resource>>() {
-				public void run() {
-					ResourceSet resourceSet = editingDomain.getResourceSet();
-					if (resourceSet instanceof ScopingResourceSet) {
-						setResult(((ScopingResourceSet) resourceSet).getResourcesInScope(AbstractResourceScope.this, includeReferencedScopes));
-					} else {
-						setResult(resourceSet.getResources());
-					}
-				}
-			});
-		} catch (InterruptedException ex) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-		}
-		return Collections.emptyList();
 	}
 
 	/*
@@ -96,6 +75,58 @@ public abstract class AbstractResourceScope implements IResourceScope {
 			files.addAll(ExtendedPlatform.getAllFiles(folder));
 		}
 		return files;
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.sphinx.emf.model.IResourceScope#getLoadedResources(org.eclipse.emf.transaction.TransactionalEditingDomain
+	 * , boolean)
+	 */
+	public Collection<Resource> getLoadedResources(final TransactionalEditingDomain editingDomain, final boolean includeReferencedScopes) {
+		try {
+			return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<List<Resource>>() {
+				public void run() {
+					ResourceSet resourceSet = editingDomain.getResourceSet();
+					if (resourceSet instanceof ScopingResourceSet) {
+						setResult(((ScopingResourceSet) resourceSet).getResourcesInScope(AbstractResourceScope.this, includeReferencedScopes));
+					} else {
+						setResult(resourceSet.getResources());
+					}
+				}
+			});
+		} catch (InterruptedException ex) {
+			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+		}
+		return Collections.emptyList();
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#isShared(org.eclipse.core.resources.IFile)
+	 */
+	public boolean isShared(IFile file) {
+		return false;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#isShared(org.eclipse.emf.ecore.resource.Resource)
+	 */
+	public boolean isShared(Resource resource) {
+		if (resource != null) {
+			// Consider resources located in plug-ins as shared by default
+			return resource.getURI().isPlatformPlugin();
+		}
+		return false;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#isShared(org.eclipse.emf.common.util.URI)
+	 */
+	public boolean isShared(URI uri) {
+		if (uri != null) {
+			// Consider URIs referencing resources located in plug-ins as shared by default
+			return uri.isPlatformPlugin();
+		}
+		return false;
 	}
 
 	/*

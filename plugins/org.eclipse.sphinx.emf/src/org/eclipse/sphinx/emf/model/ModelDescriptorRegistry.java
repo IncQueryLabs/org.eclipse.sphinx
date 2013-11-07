@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
+ * Copyright (c) 2008-2013 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
+ *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
  * 
  * </copyright>
  */
@@ -278,6 +279,12 @@ public class ModelDescriptorRegistry {
 							modelDescriptorsForMMDescriptor);
 
 					for (IModelDescriptor modelDescriptor : unsynchronizedModelDescriptorsForMMDescriptor) {
+						// Given file shared among multiple models?
+						if (modelDescriptor.isShared(file)) {
+							// Return null to indicate that there is no unique model which given file belongs to
+							return null;
+						}
+
 						if (modelDescriptor.belongsTo(file, false)) {
 							return modelDescriptor;
 						}
@@ -322,6 +329,12 @@ public class ModelDescriptorRegistry {
 							modelDescriptorsForMMDescriptor);
 
 					for (IModelDescriptor modelDescriptor : unsynchronizedModelDescriptorsForMMDescriptor) {
+						// Given resource shared among multiple models?
+						if (modelDescriptor.isShared(resource)) {
+							// Return null to indicate that there is no unique model which given resource belongs to
+							return null;
+						}
+
 						if (modelDescriptor.belongsTo(resource, false)) {
 							return modelDescriptor;
 						}

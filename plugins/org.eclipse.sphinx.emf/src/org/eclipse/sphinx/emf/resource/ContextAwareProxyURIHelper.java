@@ -10,7 +10,8 @@
  * Contributors: 
  *     itemis - Initial API and implementation
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
- * 
+ *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
+ *     
  * </copyright>
  */
 package org.eclipse.sphinx.emf.resource;
@@ -59,11 +60,12 @@ public class ContextAwareProxyURIHelper {
 	 */
 	public void augmentToContextAwareProxy(EObject proxy, Resource contextResource) {
 		Assert.isNotNull(proxy);
+		Assert.isNotNull(contextResource);
 
-		IMetaModelDescriptor proxyMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy);
-		IModelDescriptor contextModelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(contextResource);
-
+		// Build target metamodel descriptor query field
 		StringBuilder targetMMDescriptorQueryField = null;
+		IMetaModelDescriptor proxyMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy);
+		IMetaModelDescriptor contextMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy);
 		if (proxyMMDescriptor != null) {
 			/*
 			 * Performance optimization: Add target metamodel descriptor field to context-aware URI only when metamodel
@@ -71,7 +73,7 @@ public class ContextAwareProxyURIHelper {
 			 * of the target metamodel descriptor is only required for resolving proxies across different metamodels and
 			 * would needlessly blow up the proxy URI size otherwise.
 			 */
-			if (!proxyMMDescriptor.equals(contextModelDescriptor)) {
+			if (!proxyMMDescriptor.equals(contextMMDescriptor)) {
 				targetMMDescriptorQueryField = new StringBuilder();
 				targetMMDescriptorQueryField.append(CONTEXT_AWARE_PROXY_URI_QUERY_KEY_TARGET_METAMODEL_DESCRIPTOR);
 				targetMMDescriptorQueryField.append(ExtendedResource.URI_KEY_VALUE_SEPARATOR);
@@ -79,7 +81,9 @@ public class ContextAwareProxyURIHelper {
 			}
 		}
 
-		StringBuilder contextURIQueryField = null;
+		// Build context URI query field
+		URI contextURI = null;
+		IModelDescriptor contextModelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(contextResource);
 		if (contextModelDescriptor != null) {
 			/*
 			 * Performance optimization: Don't use URI of context resource itself but only the URI of the root of the
@@ -89,37 +93,35 @@ public class ContextAwareProxyURIHelper {
 			 * grow too long.
 			 */
 			IPath rootPath = contextModelDescriptor.getRoot().getFullPath();
-			URI contextURI = URI.createPlatformResourceURI(rootPath.toString(), true);
+			contextURI = URI.createPlatformResourceURI(rootPath.toString(), true);
+		} else {
+			contextURI = contextResource.getURI();
+		}
+		StringBuilder contextURIQueryField = new StringBuilder();
+		contextURIQueryField.append(CONTEXT_AWARE_PROXY_URI_QUERY_KEY_CONTEXT_URI);
+		contextURIQueryField.append(ExtendedResource.URI_KEY_VALUE_SEPARATOR);
+		contextURIQueryField.append(contextURI);
 
-			contextURIQueryField = new StringBuilder();
-			contextURIQueryField.append(CONTEXT_AWARE_PROXY_URI_QUERY_KEY_CONTEXT_URI);
-			contextURIQueryField.append(ExtendedResource.URI_KEY_VALUE_SEPARATOR);
-			contextURIQueryField.append(contextURI);
+		// Augment existing proxy URI with target metamodel descriptor and context URI query fields
+		URI proxyURI = ((InternalEObject) proxy).eProxyURI();
+		StringBuilder newQuery = new StringBuilder();
+
+		String oldQuery = proxyURI.query();
+		if (oldQuery != null) {
+			newQuery.append(oldQuery);
+			newQuery.append(ExtendedResource.URI_KEY_VALUE_PAIR_SEPARATOR);
 		}
 
-		if (targetMMDescriptorQueryField != null || contextURIQueryField != null) {
-			URI proxyURI = ((InternalEObject) proxy).eProxyURI();
-			StringBuilder newQuery = new StringBuilder();
-
-			String oldQuery = proxyURI.query();
-			if (oldQuery != null) {
-				newQuery.append(oldQuery);
-				newQuery.append(ExtendedResource.URI_KEY_VALUE_PAIR_SEPARATOR);
-			}
-
-			if (targetMMDescriptorQueryField != null) {
-				newQuery.append(targetMMDescriptorQueryField);
-			}
-
-			if (contextURIQueryField != null) {
-				newQuery.append(ExtendedResource.URI_KEY_VALUE_PAIR_SEPARATOR);
-				newQuery.append(contextURIQueryField);
-			}
-
-			proxyURI = URI.createHierarchicalURI(proxyURI.scheme(), proxyURI.authority(), proxyURI.device(), proxyURI.segments(),
-					newQuery.toString(), proxyURI.fragment());
-			((InternalEObject) proxy).eSetProxyURI(proxyURI);
+		if (targetMMDescriptorQueryField != null) {
+			newQuery.append(targetMMDescriptorQueryField);
+			newQuery.append(ExtendedResource.URI_KEY_VALUE_PAIR_SEPARATOR);
 		}
+
+		newQuery.append(contextURIQueryField);
+
+		proxyURI = URI.createHierarchicalURI(proxyURI.scheme(), proxyURI.authority(), proxyURI.device(), proxyURI.segments(), newQuery.toString(),
+				proxyURI.fragment());
+		((InternalEObject) proxy).eSetProxyURI(proxyURI);
 	}
 
 	/**

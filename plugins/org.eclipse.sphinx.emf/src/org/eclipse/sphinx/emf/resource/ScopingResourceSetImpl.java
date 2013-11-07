@@ -13,6 +13,7 @@
  *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  *     itemis - [420792] Sphinx is not able to load resources that are registered in the EMF package registry
+ *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
  *     
  * </copyright>
  */
@@ -81,24 +82,16 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	 */
 	protected void createOutsideWorkspaceScope() {
 		new DefaultResourceScope() {
-
-			@Override
-			public boolean exists() {
-				return true;
-			}
-
-			@Override
-			public boolean belongsTo(URI uri, boolean includeReferencedScopes) {
-				Assert.isNotNull(uri);
-
-				return !uri.isPlatformResource();
-			}
-
 			@Override
 			public boolean belongsTo(Resource resource, boolean includeReferencedScopes) {
 				Assert.isNotNull(resource);
+				return !resource.getURI().isPlatform() || isShared(resource);
+			}
 
-				return !resource.getURI().isPlatformResource();
+			@Override
+			public boolean isShared(Resource resource) {
+				Assert.isNotNull(resource);
+				return resource.getURI().isPlatformPlugin();
 			}
 		};
 	}
