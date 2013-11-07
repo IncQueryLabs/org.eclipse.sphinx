@@ -256,7 +256,7 @@ public abstract class AbstractFormPage extends FormPage {
 		return getTransactionalFormEditor().getEditorInputObject();
 	}
 
-	protected final void setPageInput(Object pageInput) {
+	protected void setPageInput(Object pageInput) {
 		// Initialize page input
 		this.pageInput = pageInput;
 
