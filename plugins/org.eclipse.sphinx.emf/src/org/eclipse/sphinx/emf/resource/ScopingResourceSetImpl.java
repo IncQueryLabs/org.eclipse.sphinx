@@ -69,7 +69,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	 */
 	protected IResourceScope getOutsideWorkspaceScope() {
 		if (outsideWorkspaceScope == null) {
-			createOutsideWorkspaceScope();
+			outsideWorkspaceScope = createOutsideWorkspaceScope();
 		}
 		return outsideWorkspaceScope;
 	}
@@ -80,8 +80,8 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	 * 
 	 * @return The scope used to encompass all resources that are located outside of the workspace.
 	 */
-	protected void createOutsideWorkspaceScope() {
-		new DefaultResourceScope() {
+	protected IResourceScope createOutsideWorkspaceScope() {
+		return new DefaultResourceScope() {
 			@Override
 			public boolean belongsTo(Resource resource, boolean includeReferencedScopes) {
 				Assert.isNotNull(resource);
