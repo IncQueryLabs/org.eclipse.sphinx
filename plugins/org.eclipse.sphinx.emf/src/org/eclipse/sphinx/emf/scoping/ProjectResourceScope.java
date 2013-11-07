@@ -43,8 +43,41 @@ public class ProjectResourceScope extends AbstractResourceScope {
 		rootProject = resource.getProject();
 	}
 
-	void setReferencedProjectsProvider(IReferencedProjectsProvider referencedProjectsProvider) {
+	protected void setReferencedProjectsProvider(IReferencedProjectsProvider referencedProjectsProvider) {
 		this.referencedProjectsProvider = referencedProjectsProvider;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getRoot()
+	 */
+	public IResource getRoot() {
+		return rootProject;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getReferencedRoots()
+	 */
+	@SuppressWarnings("unchecked")
+	public Collection<IResource> getReferencedRoots() {
+		if (rootProject != null) {
+			Collection<?> allReferencedProjects = referencedProjectsProvider.get(rootProject);
+			return (Collection<IResource>) allReferencedProjects;
+		} else {
+			return Collections.emptySet();
+		}
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getReferencingRoots()
+	 */
+	@SuppressWarnings("unchecked")
+	public Collection<IResource> getReferencingRoots() {
+		if (rootProject != null) {
+			Collection<?> allReferencingProjects = ExtendedPlatform.getAllReferencingProjects(rootProject);
+			return (Collection<IResource>) allReferencingProjects;
+		} else {
+			return Collections.emptySet();
+		}
 	}
 
 	/*
@@ -80,39 +113,6 @@ public class ProjectResourceScope extends AbstractResourceScope {
 
 		IFile file = EcorePlatformUtil.getFile(uri);
 		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
-	}
-
-	/*
-	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getReferencingRoots()
-	 */
-	@SuppressWarnings("unchecked")
-	public Collection<IResource> getReferencingRoots() {
-		if (rootProject != null) {
-			Collection<?> allReferencingProjects = ExtendedPlatform.getAllReferencingProjects(rootProject);
-			return (Collection<IResource>) allReferencingProjects;
-		} else {
-			return Collections.emptySet();
-		}
-	}
-
-	/*
-	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getReferencedRoots()
-	 */
-	@SuppressWarnings("unchecked")
-	public Collection<IResource> getReferencedRoots() {
-		if (rootProject != null) {
-			Collection<?> allReferencedProjects = referencedProjectsProvider.get(rootProject);
-			return (Collection<IResource>) allReferencedProjects;
-		} else {
-			return Collections.emptySet();
-		}
-	}
-
-	/*
-	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getRoot()
-	 */
-	public IResource getRoot() {
-		return rootProject;
 	}
 
 	/*
