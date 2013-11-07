@@ -18,8 +18,6 @@ package org.eclipse.sphinx.tests.platform.util;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 
-import junit.framework.TestCase;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -35,7 +33,6 @@ import org.eclipse.emf.validation.internal.util.DisabledConstraintStatus;
 import org.eclipse.emf.validation.model.ConstraintStatus;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
-import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Port;
@@ -385,7 +382,7 @@ public class ReflectUtilTest extends TestCase {
 
 		// Protected method
 		try {
-			assertEquals(testResource, ReflectUtil.invokeMethod(testResourceSet, "getResource", platform));
+			assertEquals(testResource, ReflectUtil.invokeMethod(testResourceSet, "getContextResourceScopes", platform));
 		} catch (Exception e) {
 			if (e instanceof IllegalAccessException) {
 				flag = true;
