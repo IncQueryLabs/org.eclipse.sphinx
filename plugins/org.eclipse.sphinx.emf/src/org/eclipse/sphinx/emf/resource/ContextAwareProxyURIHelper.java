@@ -65,7 +65,7 @@ public class ContextAwareProxyURIHelper {
 		// Build target metamodel descriptor query field
 		StringBuilder targetMMDescriptorQueryField = null;
 		IMetaModelDescriptor proxyMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy);
-		IMetaModelDescriptor contextMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy);
+		IMetaModelDescriptor contextMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(contextResource);
 		if (proxyMMDescriptor != null) {
 			/*
 			 * Performance optimization: Add target metamodel descriptor field to context-aware URI only when metamodel
