@@ -420,7 +420,9 @@ public final class ModelLoadManager {
 			Set<ISchedulingRule> rules = new HashSet<ISchedulingRule>();
 			for (Resource resource : allResources) {
 				IFile file = EcorePlatformUtil.getFile(resource);
-				rules.add(createLoadSchedulingRule(file));
+				if (file != null) {
+					rules.add(createLoadSchedulingRule(file));
+				}
 			}
 			return MultiRule.combine(rules.toArray(new ISchedulingRule[rules.size()]));
 		} else {
