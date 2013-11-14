@@ -12,6 +12,7 @@
  *     itemis - [393479] Enable BasicTabbedPropertySheetTitleProvider to retrieve same AdapterFactory as underlying IWorkbenchPart is using
  *     itemis - [418005] Add support for model files with multiple root elements
  *     itemis - [420505] Editor shows no content when editor input object is added lately
+ *     itemis - [421585] Form Editor silently closes if model is not loaded via Sphinx
  *     
  * </copyright>
  */
@@ -87,6 +88,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IPageChangedListener;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -1733,6 +1735,8 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			IFile file = EcoreUIUtil.getFileFromEditorInput(getEditorInput());
 			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(file);
 			if (modelDescriptor == null) {
+				MessageDialog.openError(getSite().getShell(), Messages.error_editorInitialization_title,
+						NLS.bind(Messages.error_editorInitialization_modelNotLoaded, file.getFullPath().toString()));
 				close(false);
 				return;
 			} else {
@@ -1757,7 +1761,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	}
 
 	protected IFormPage createLoadingEditorInputPage() {
-		return new MessagePage(this, NLS.bind(Messages.label_waitingForModelElementBeingLoaded, getPartName()));
+		return new MessagePage(this, NLS.bind(Messages.msg_waitingForModelObjectToBeLoaded, getEditorInputName()));
 	}
 
 	/**

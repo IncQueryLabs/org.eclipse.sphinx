@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 itemis, See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [393310] Viewer input for GenericContentsTreeSection should be calculated using content provider
+ *     itemis - [421585] Form Editor silently closes if model is not loaded via Sphinx
  * 
  * </copyright>
  */
@@ -24,8 +25,9 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.editors.forms.BasicTransactionalFormEditor;
-import org.eclipse.sphinx.emf.editors.forms.internal.Activator;
+import org.eclipse.sphinx.emf.editors.forms.internal.messages.Messages;
 import org.eclipse.sphinx.emf.editors.forms.pages.AbstractFormPage;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.swt.SWT;
@@ -44,7 +46,7 @@ public class GenericContentsTreeSection extends AbstractViewerFormSection {
 
 	public GenericContentsTreeSection(AbstractFormPage formPage, Object sectionInput, int style) {
 		super(formPage, sectionInput, style);
-		description = Activator.getPlugin().getString("GenericContentsSection_description"); //$NON-NLS-1$
+		description = Messages.section_genericContentsTree_description;
 	}
 
 	protected Object getSectionInputParent() {
@@ -116,7 +118,7 @@ public class GenericContentsTreeSection extends AbstractViewerFormSection {
 
 	protected void refreshSectionTitle() {
 		if (title == null && isControlAccessible(section)) {
-			section.setText(Activator.getPlugin().getString("GenericContentsSection_title", new Object[] { getSectionInputName() })); //$NON-NLS-1$
+			section.setText(NLS.bind(Messages.section_genericContentsTree_title, getSectionInputName()));
 		}
 	}
 }

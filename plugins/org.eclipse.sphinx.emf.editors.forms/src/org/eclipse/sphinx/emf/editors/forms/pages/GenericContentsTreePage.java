@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
+ *     itemis - [421585] Form Editor silently closes if model is not loaded via Sphinx
  * 
  * </copyright>
  */
@@ -26,7 +27,7 @@ public class GenericContentsTreePage extends AbstractFormPage {
 	protected GenericContentsTreeSection contentsTreeSection;
 
 	public GenericContentsTreePage(BasicTransactionalFormEditor formEditor) {
-		this(formEditor, Messages.page_contentsTreePage_title);
+		this(formEditor, Messages.page_contentsTree_title);
 	}
 
 	public GenericContentsTreePage(BasicTransactionalFormEditor formEditor, String title) {
