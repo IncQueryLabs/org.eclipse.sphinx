@@ -10,7 +10,8 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [418005] Add support for model files with multiple root elements
- * 
+ *     itemis - [406298] Sphinx example editors should offer 'Show Properties View' action in context menu
+ *     
  * </copyright>
  */
 package org.eclipse.sphinx.emf.editors.forms;
@@ -210,6 +211,7 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 	 */
 	public BasicTransactionalEditorActionBarContributor() {
 		super(ADDITIONS_LAST_STYLE);
+		showPropertiesViewAction = new ShowPropertiesViewAction();
 	}
 
 	/**
