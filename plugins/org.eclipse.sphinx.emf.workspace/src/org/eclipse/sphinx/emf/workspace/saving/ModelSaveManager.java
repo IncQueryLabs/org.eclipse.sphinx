@@ -13,6 +13,7 @@
  *     itemis - [393268] - [EMF Workspace] The Workspace Model Save Manager should handle pre save actions before saving models
  *     itemis - [419466] Enable models to be modified programmatically without causing them to become dirty
  *     itemis - [419818] Avoid that model dirty change listeners and model pre-save listeners need to be registered separately
+ *     itemis - [421333] ModelSaveManager improvement: Remove File Assumption
  *     
  * </copyright>
  */
@@ -249,7 +250,8 @@ public class ModelSaveManager {
 	 * @return The dirty state of the given resource.
 	 */
 	public boolean isDirty(Resource contextResource) {
-		return isDirty(EcorePlatformUtil.getFile(contextResource));
+		IModelDescriptor model = ModelDescriptorRegistry.INSTANCE.getModel(contextResource);
+		return isDirty(model);
 	}
 
 	/**
