@@ -8,11 +8,14 @@ Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.common,
  org.eclipse.emf.common.ui,
+ org.eclipse.uml2.uml,
+ org.eclipse.uml2.uml.edit,
  org.eclipse.sphinx.emf.explorer,
  org.eclipse.sphinx.emf.editors.forms,
  org.eclipse.sphinx.examples.common.ui,
  org.eclipse.sphinx.examples.uml2.ide
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.eclipse.sphinx.examples.uml2.ide.ui.internal;x-internal:=true
+Export-Package: org.eclipse.sphinx.examples.uml2.ide.ui.internal;x-internal:=true,
+ org.eclipse.sphinx.examples.uml2.ide.ui.properties
 Bundle-Localization: plugin

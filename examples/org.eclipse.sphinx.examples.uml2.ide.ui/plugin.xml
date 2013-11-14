@@ -4,7 +4,7 @@
 <!--
 <copyright>
 
-Copyright (c) 2008-2011 See4sys, itemis and others.
+Copyright (c) 2008-2013 See4sys, itemis and others.
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
 which accompanies this distribution, and is available at
@@ -13,7 +13,8 @@ http://www.eclipse.org/legal/epl-v10.html
 Contributors: 
     See4sys - Initial API and implementation
     itemis - Added support for UML models stored in OMG XMI and CMOF files
-
+    itemis - [421547] Sphinx UML Example integration: support for UML-specific actions and property sheets
+    
 </copyright>
 -->
 
@@ -23,6 +24,11 @@ Contributors:
 
  <extension point="org.eclipse.ui.navigator.viewer">
     <viewerContentBinding viewerId="org.eclipse.sphinx.examples.explorer.views.modelExplorer">
+      <includes>
+        <contentExtension pattern="org.eclipse.sphinx.examples.uml2.ide.ui.navigatorContent.uml2" />
+      </includes>
+    </viewerContentBinding>
+    <viewerContentBinding viewerId="org.eclipse.ui.navigator.ProjectExplorer">
       <includes>
         <contentExtension pattern="org.eclipse.sphinx.examples.uml2.ide.ui.navigatorContent.uml2" />
       </includes>
@@ -53,10 +59,7 @@ Contributors:
          </triggerPoints>
          <possibleChildren>
             <and>
-               <instanceof value="org.eclipse.emf.ecore.EObject" />
-               <test 
-                     property="org.eclipse.sphinx.emf.classNameMatches"
-                     value="org\.eclipse\.uml2\.uml\..*"/>
+               <instanceof value="org.eclipse.uml2.uml.Element" />
             </and>
          </possibleChildren>
          <dropAssistant 
@@ -107,7 +110,7 @@ Contributors:
       <propertySections 
             contributorId="org.eclipse.sphinx.examples.uml2.ide.ui.editors.uml2">
          <propertySection 
-               class="org.eclipse.sphinx.emf.ui.properties.BasicTransactionalAdvancedPropertySection"
+               class="org.eclipse.sphinx.examples.uml2.ide.ui.properties.UML2AdvancedPropertySection"
                id="org.eclipse.sphinx.examples.uml2.ide.ui.propertySections.advanced"
                tab="org.eclipse.sphinx.examples.uml2.ide.ui.propertyTabs.advanced">
             <input type="java.lang.Object" />
