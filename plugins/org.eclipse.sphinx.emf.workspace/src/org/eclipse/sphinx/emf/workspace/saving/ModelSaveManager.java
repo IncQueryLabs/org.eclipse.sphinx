@@ -110,9 +110,7 @@ public class ModelSaveManager {
 
 	public void handleDirtyStateChanged(Resource resource) {
 		IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(resource);
-		if (!SaveIndicatorUtil.isDirty(modelDescriptor)) {
-			notifyDirtyChanged(modelDescriptor);
-		}
+		notifyDirtyChanged(modelDescriptor);
 	}
 
 	/**
