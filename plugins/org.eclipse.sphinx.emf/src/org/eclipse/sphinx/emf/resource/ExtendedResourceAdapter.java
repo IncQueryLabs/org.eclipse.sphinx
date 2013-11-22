@@ -224,12 +224,12 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	public void augmentToContextAwareProxy(EObject proxy) {
 		// Context-aware proxy URIs required?
 		if (isUseContextAwareProxyURIs()) {
-			Resource targetResource = (Resource) getTarget();
-			ResourceSet targetResourceSet = targetResource.getResourceSet();
+			Resource contextResource = (Resource) getTarget();
+			ResourceSet resourceSet = contextResource.getResourceSet();
 
 			// Augment the proxy's URI to a context-aware proxy URI
-			if (targetResourceSet instanceof ExtendedResourceSetImpl) {
-				((ExtendedResourceSetImpl) targetResourceSet).augmentToContextAwareProxy(proxy, targetResource);
+			if (resourceSet instanceof ExtendedResourceSetImpl) {
+				((ExtendedResourceSetImpl) resourceSet).augmentToContextAwareProxy(proxy, contextResource);
 			}
 		}
 	}
