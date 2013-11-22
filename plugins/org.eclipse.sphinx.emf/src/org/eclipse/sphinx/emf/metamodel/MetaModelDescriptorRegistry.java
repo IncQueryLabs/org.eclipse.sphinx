@@ -20,7 +20,7 @@
  *     BMW Car IT - Lazy extension initialization
  *     itemis - [409367] Add a custom URI scheme to metamodel descriptor allowing mapping URI scheme to metamodel descriptor
  *     itemis - [418005] Add support for model files with multiple root elements
- *
+ *     itemis - [422334] Content-type based IMetaModelDescriptor determination for a file gets corrupted if file extension is associated to org.eclipse.emf.compare.ui.contenttype.ModelContentType
  * </copyright>
  */
 package org.eclipse.sphinx.emf.metamodel;
@@ -118,6 +118,12 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * The namespace pattern for OMG-defined XMI formats.
 	 */
 	private static final Pattern OMG_XMI_NAMESPACE_PATTERN = Pattern.compile("http://(schema|www)\\.omg\\.org(/spec)?/XMI.*"); //$NON-NLS-1$
+
+	/**
+	 * The if of the special content type defined by EMF Compare used to identify files that are to be opened in EMF
+	 * Compare editor.
+	 */
+	private static final String EMF_COMPARE_CONTENT_TYPE_ID = "org.eclipse.emf.compare.ui.contenttype.ModelContentType"; //$NON-NLS-1$
 
 	/**
 	 * The extension registry.
@@ -631,19 +637,34 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 					// Retrieve content type id of given file
 					final String contentTypeId = fastGetContentTypeId(file);
 
-					// Determine corresponding meta-model descriptor
 					if (contentTypeId != null) {
-						mmDescriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
-							public boolean accept(IMetaModelDescriptor descriptor) {
-								if (descriptor.getContentTypeIds().contains(contentTypeId)) {
-									return true;
+						// EMF Compare content type encountered?
+						if (EMF_COMPARE_CONTENT_TYPE_ID.equals(contentTypeId)) {
+							// Refer to target metamodel descriptor if any
+							/*
+							 * !! Important Note !! This is a workaround for the fact that EMF Compare has hijacked the
+							 * content type concept for expressing file associations, i.e., to identify which file types
+							 * are to be opened with the EMF Compare editor. As the consequence, the files which yield
+							 * the EMF Compare content type can actually have any content and it becomes impossible to
+							 * determine their real file type based on this content type. To to remedy this defect, we
+							 * enable clients to contribute a target metamodel descriptor provider for the file types in
+							 * question and directly indicate the corresponding metamodel descriptor.
+							 */
+							mmDescriptor = getTargetDescriptor(file);
+						} else {
+							// Determine corresponding meta-model descriptor
+							mmDescriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
+								public boolean accept(IMetaModelDescriptor descriptor) {
+									if (descriptor.getContentTypeIds().contains(contentTypeId)) {
+										return true;
+									}
+									if (descriptor.getCompatibleContentTypeIds().contains(contentTypeId)) {
+										return true;
+									}
+									return false;
 								}
-								if (descriptor.getCompatibleContentTypeIds().contains(contentTypeId)) {
-									return true;
-								}
-								return false;
-							}
-						});
+							});
+						}
 					}
 
 					// Cache resulting meta-model descriptor
