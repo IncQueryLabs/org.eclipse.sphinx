@@ -13,7 +13,7 @@
  *     itemis - [393477] Provider hook for unwrapping elements before letting BasicTabbedPropertySheetTitleProvider retrieve text or image for them
  *     itemis - [408537] Enable property descriptions of model object features to be displayed in status line of Properties view
  *     itemis - [408540] Provide hook for unwrapping selected model object before letting BasicTransactionalAdvancedPropertySection process it
- * 
+ *     itemis - [422130] The original element should be returned when unwrapped if the element is instance of FeatureMapEntryWrapperItemProvider
  * </copyright>
  */
 package org.eclipse.sphinx.emf.ui.properties;
@@ -31,6 +31,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.provider.FeatureMapEntryWrapperItemProvider;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
@@ -166,6 +167,9 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 	 *         original element otherwise.
 	 */
 	protected Object unwrap(Object element) {
+		if (element instanceof FeatureMapEntryWrapperItemProvider) {
+			return element;
+		}
 		return AdapterFactoryEditingDomain.unwrap(element);
 	}
 
