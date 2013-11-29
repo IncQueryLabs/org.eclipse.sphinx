@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     itemis - [419466] Enable models to be modified programmatically without causing them to become dirty
+ *     itemis - [422871] ConcurrentModificationException when trying to retrieve dirty resources
  * 
  * </copyright>
  */
@@ -208,7 +209,9 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	 * @see org.eclipse.sphinx.emf.saving.IResourceSaveIndicator#getDirtyResources()
 	 */
 	public Collection<Resource> getDirtyResources() {
-		return Collections.unmodifiableSet(new HashSet<Resource>(dirtyResources));
+		synchronized (dirtyResources) {
+			return Collections.unmodifiableSet(new HashSet<Resource>(dirtyResources));
+		}
 	}
 
 	/*
