@@ -39,7 +39,7 @@
 <unit id="org.apache.xml.resolver" version="1.2.0.v201005080400"/>
 <unit id="org.apache.xml.serializer" version="2.7.1.v201005080400"/>
 <unit id="org.jdom" version="1.1.1.v201101151400"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20130118183705/repository/"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20130827064939/repository/"/>
 </location>
 </locations>
 <environment>

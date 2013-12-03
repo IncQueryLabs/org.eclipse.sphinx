@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.6"?>
+<target name="Sphinx Eclipse 4.3" sequenceNumber="0">
+<locations>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
+<unit id="org.eclipse.sdk.ide" version="4.3.1.M20130911-1000"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20130807-1835"/>
+<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.0.v20130521-1847"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.3"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
+<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.3.1.v201309030422"/>
+<unit id="org.eclipse.emf.sdk.feature.group" version="2.9.1.v20130902-0605"/>
+<unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.7.0.201306111400"/>
+<unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.7.0.201306111341"/>
+<unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.7.0.201306101425"/>
+<unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.7.0.201306111432"/>
+<unit id="org.eclipse.gmf.tooling.feature.group" version="3.1.0.201306121424"/>
+<unit id="org.eclipse.graphiti.sdk.feature.feature.group" version="0.10.1.v20130918-0838"/>
+<unit id="org.eclipse.uml2.sdk.feature.group" version="4.1.1.v20130902-0826"/>
+<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.5.1.v201307171524-7H7IFiwDxumVt0J7gijShVTqs4BePbKwUtS9PL"/>
+<unit id="org.eclipse.xpand.sdk.feature.group" version="1.4.0.v201306110406"/>
+<unit id="org.eclipse.xsd.sdk.feature.group" version="2.9.1.v20130902-0605"/>
+<repository location="http://download.eclipse.org/releases/kepler"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
+<unit id="org.eclipse.nebula.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.nebula.examples.release.feature.feature.group" version="0.0.0"/>
+<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
+<unit id="com.google.guava" version="10.0.1.v201203051515"/>
+<unit id="javax.xml" version="1.3.4.v201005080400"/>
+<unit id="org.apache.commons.cli" version="1.2.0.v201105210650"/>
+<unit id="org.apache.commons.lang" version="2.6.0.v201205030909"/>
+<unit id="org.apache.xerces" version="2.9.0.v201101211617"/>
+<unit id="org.apache.xml.resolver" version="1.2.0.v201005080400"/>
+<unit id="org.apache.xml.serializer" version="2.7.1.v201005080400"/>
+<unit id="org.jdom" version="1.1.1.v201101151400"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20130827064939/repository/"/>
+</location>
+</locations>
+<environment>
+<nl>en_EN</nl>
+</environment>
+<launcherArgs>
+<vmArgs>-Xms128m -Xmx512m -XX:PermSize=256M -XX:MaxPermSize=512M</vmArgs>
+</launcherArgs>
+</target>
