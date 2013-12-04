@@ -165,7 +165,7 @@
 			<properties>
 				<platform.version>4.2</platform.version>
 				<platform.version.name>juno</platform.version.name>
-				<orbit.version>R20130118183705</orbit.version>
+				<orbit.version>R20130827064939</orbit.version>
 			</properties>
 		</profile>
 		<profile>
@@ -173,7 +173,7 @@
 			<properties>
 				<platform.version>4.3</platform.version>
 				<platform.version.name>kepler</platform.version.name>
-				<orbit.version>R20130118183705</orbit.version>
+				<orbit.version>R20130827064939</orbit.version>
 			</properties>
 		</profile>
 		<profile>
@@ -181,7 +181,7 @@
 			<properties>
 				<platform.version>4.4</platform.version>
 				<platform.version.name>luna</platform.version.name>
-				<orbit.version>R20130118183705</orbit.version>
+				<orbit.version>R20130827064939</orbit.version>
 			</properties>
 		</profile>
 		<profile>
