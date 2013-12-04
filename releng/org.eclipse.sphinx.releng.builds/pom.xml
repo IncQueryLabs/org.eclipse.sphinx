@@ -11,9 +11,6 @@
 
 		<!-- Plug-ins -->
 		<module>../../plugins/org.eclipse.sphinx.emf</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.compare</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.compare.team.subversive.ui</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.compare.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.editors.forms</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.editors.forms.nebula</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.explorer</module>
@@ -78,8 +75,6 @@
 		<!-- Features -->
 		<module>../../features/org.eclipse.sphinx.core-feature</module>
 		<module>../../features/org.eclipse.sphinx.pde-feature</module>
-		<module>../../features/org.eclipse.sphinx.emf.compare-feature</module>
-		<module>../../features/org.eclipse.sphinx.emf.compare.team.subversive-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms.nebula-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.navigators-feature</module>

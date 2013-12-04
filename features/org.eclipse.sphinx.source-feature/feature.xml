@@ -25,27 +25,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.sphinx.emf.compare.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.emf.compare.team.subversive.ui.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.emf.compare.ui.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.sphinx.emf.editors.forms.source"
          download-size="0"
          install-size="0"
@@ -135,7 +114,7 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.eclipse.sphinx.pde.source"
          download-size="0"
