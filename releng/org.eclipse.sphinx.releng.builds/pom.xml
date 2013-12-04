@@ -36,7 +36,6 @@
 		<module>../../examples/org.eclipse.sphinx.examples.codegen.xpand.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.common.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.explorer</module>
-		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.compare</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.ide</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.ide.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10</module>
@@ -94,7 +93,6 @@
 		<module>../../features/org.eclipse.sphinx.doc-feature</module>
 		<module>../../features/org.eclipse.sphinx.sdk-feature</module>
 		<module>../../features/org.eclipse.sphinx.examples-feature</module>
-		<module>../../features/org.eclipse.sphinx.tests-feature</module>
 		<module>../../features/org.eclipse.sphinx.testutils-feature</module>
 		<module>../../features/org.eclipse.sphinx.thirdparty-feature</module>
 

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<cspecExtension xmlns="http://www.eclipse.org/buckminster/CSpec-1.0">
-	<dependencies>
-		<!-- needed since test launch config starts SDK product -->
-		<dependency name="org.eclipse.sdk" componentType="eclipse.feature"/>
-		<!-- needed for org.eclipse.emf.mwe2.runtime -->
-		<dependency name="org.apache.log4j" componentType="osgi.bundle"/>
-	</dependencies>
-</cspecExtension>

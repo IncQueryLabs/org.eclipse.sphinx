@@ -45,7 +45,6 @@
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,features/org.eclipse.sphinx.pde-feature"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,features/org.eclipse.sphinx.sdk-feature"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,features/org.eclipse.sphinx.source-feature"/>
-<project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,features/org.eclipse.sphinx.tests-feature"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,features/org.eclipse.sphinx.testutils-feature"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,features/org.eclipse.sphinx.thirdparty-feature"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,features/org.eclipse.sphinx.xtendxpand-feature"/>
@@ -137,7 +136,6 @@
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.pde-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.sdk-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.source-feature" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.tests-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.thirdparty-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.xtendxpand-feature" type="4"/>
 </workingSets>
