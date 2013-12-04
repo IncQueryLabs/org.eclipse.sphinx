@@ -82,7 +82,7 @@
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,tests/org.eclipse.sphinx.testutils.integration.referenceworkspace"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,tests/org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,tools/org.eclipse.sphinx.psf"/>
-<project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,tools/org.eclipse.sphinx.targetdefs"/>
+<project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,tools/org.eclipse.sphinx.targets"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,tools/org.eclipse.sphinx.templates.project.plugin"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,tools/org.eclipse.sphinx.templates.project.tests.fragment"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,tools/org.eclipse.sphinx.templates.project.tests.plugin"/>
@@ -184,6 +184,6 @@
 <item elementID="=org.eclipse.sphinx.templates.project.tests.fragment" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.templates.project.tests.plugin" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.psf" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.targetdefs" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.targets" type="4"/>
 </workingSets>
 </psf>
