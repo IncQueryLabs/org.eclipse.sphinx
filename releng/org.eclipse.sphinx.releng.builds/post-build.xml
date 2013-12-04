@@ -129,7 +129,7 @@
 
 	<target name="download-eclipse-platform-under-unix" if="runs.under.unix">
 		<mkdir dir="./downloads" />
-		<get src="http://artfiles.org/eclipse.org//eclipse/downloads/${eclipse.downloads.drops.folder.name}/R-${build.eclipse.revision}-${build.eclipse.timestamp}/eclipse-platform-${build.eclipse.revision}-linux-gtk${arch.suffix}.tar.gz" dest="./downloads/eclipse-platform-${build.eclipse.revision}-linux-gtk${arch.suffix}.tar.gz" usetimestamp="true" />
+		<get src="http://artfiles.org/eclipse.org//eclipse/downloads/${eclipse.downloads.drops.folder.name}/R-${build.eclipse.revision}-${build.eclipse.timestamp}/eclipse-platform-${build.eclipse.revision}-linux-gtk${arch.suffix}.tar.gz" dest="./downloads" usetimestamp="true" />
 		<untar src="./downloads/eclipse-platform-${build.eclipse.revision}-linux-gtk${arch.suffix}.tar.gz" dest="." compression="gzip" />
 		<chmod file="./eclipse/eclipse" perm="a+x" />
 		<chmod dir="./eclipse" includes="**/*.so" perm="a+x" />
@@ -154,7 +154,7 @@
 		<delete dir="./target/downloads" />
 
 		<echo message="Packaging downloadable archived Sphinx Update Site" />
-		<copy file="./repository/target/org.eclipse.sphinx.updates-${sphinx.version}${mvn.build.type.suffix}.zip" tofile="./target/downloads/mdt-sphinx-Update-${sphinx.version}.v${env.BUILD_ID}.zip" />
+		<copy file="./repository/target/org.eclipse.sphinx.updates-${sphinx.version}${mvn.build.type.suffix}.zip" tofile="./target/downloads/sphinx-Update-${sphinx.version}.v${env.BUILD_ID}.zip" />
 
 		<echo message="Packaging downloadable Sphinx SDK" />
 		<p2.mirror source="file:${basedir}/repository/target/repository" destination="file:${basedir}/target/downloads/sphinx.sdk">
@@ -162,7 +162,7 @@
 			<slicingOptions followStrict="true" />
 		</p2.mirror>
 		<p2.repo2runnable source="file:${basedir}/target/downloads/sphinx.sdk" destination="file:${basedir}/target/downloads/sphinx.sdk.runnable/eclipse" />
-		<zip destfile="./target/downloads/mdt-sphinx-SDK-${sphinx.version}.v${env.BUILD_ID}.zip">
+		<zip destfile="./target/downloads/sphinx-SDK-${sphinx.version}.v${env.BUILD_ID}.zip">
 			<zipfileset dir="./target/downloads/sphinx.sdk.runnable" excludes="eclipse/*.jar" />
 		</zip>
 
@@ -172,7 +172,7 @@
 			<slicingOptions followStrict="true" />
 		</p2.mirror>
 		<p2.repo2runnable source="file:${basedir}/target/downloads/sphinx.runtime" destination="file:${basedir}/target/downloads/sphinx.runtime.runnable/eclipse" />
-		<zip destfile="./target/downloads/mdt-sphinx-runtime-${sphinx.version}.v${env.BUILD_ID}.zip">
+		<zip destfile="./target/downloads/sphinx-runtime-${sphinx.version}.v${env.BUILD_ID}.zip">
 			<zipfileset dir="./target/downloads/sphinx.runtime.runnable" excludes="eclipse/*.jar" />
 		</zip>
 
@@ -182,7 +182,7 @@
 			<slicingOptions followStrict="true" />
 		</p2.mirror>
 		<p2.repo2runnable source="file:${basedir}/target/downloads/sphinx.examples" destination="file:${basedir}/target/downloads/sphinx.examples.runnable/eclipse" />
-		<zip destfile="./target/downloads/mdt-sphinx-examples-${sphinx.version}.v${env.BUILD_ID}.zip">
+		<zip destfile="./target/downloads/sphinx-examples-${sphinx.version}.v${env.BUILD_ID}.zip">
 			<zipfileset dir="./target/downloads/sphinx.examples.runnable" excludes="eclipse/*.jar" />
 		</zip>
 
@@ -192,7 +192,7 @@
 			<slicingOptions followStrict="true" />
 		</p2.mirror>
 		<p2.repo2runnable source="file:${basedir}/target/downloads/sphinx.testutils" destination="file:${basedir}/target/downloads/sphinx.testutils.runnable/eclipse" />
-		<zip destfile="./target/downloads/mdt-sphinx-testutils-${sphinx.version}.v${env.BUILD_ID}.zip">
+		<zip destfile="./target/downloads/sphinx-testutils-${sphinx.version}.v${env.BUILD_ID}.zip">
 			<zipfileset dir="./target/downloads/sphinx.testutils.runnable" excludes="eclipse/*.jar" />
 		</zip>
 	</target>
