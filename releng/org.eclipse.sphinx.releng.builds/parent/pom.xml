@@ -43,28 +43,6 @@
 	<properties>
 		<tycho.version>0.19.0</tycho.version>
 	</properties>
-	<repositories>
-		<repository>
-			<id>eclipse-updates</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/${platform.version}</url>
-		</repository>
-		<repository>
-			<id>release-train-updates</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/${platform.version.name}</url>
-		</repository>
-		<repository>
-			<id>nebula-updates</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/technology/nebula/snapshot</url>
-		</repository>
-		<repository>
-			<id>orbit-updates</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.version}/repository</url>
-		</repository>
-	</repositories>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -87,7 +65,13 @@
 				<artifactId>target-platform-configuration</artifactId>
 				<version>${tycho.version}</version>
 				<configuration>
-					<resolver>p2</resolver>
+					<target>
+						<artifact>
+							<groupId>org.eclipse.sphinx.targets</groupId>
+							<artifactId>${platform.version.name}</artifactId>
+							<version>0.8.0-SNAPSHOT</version>
+						</artifact>
+					</target>
 					<environments>
 						<environment>
 							<os>win32</os>
@@ -163,25 +147,19 @@
 		<profile>
 			<id>platform-juno</id>
 			<properties>
-				<platform.version>4.2</platform.version>
 				<platform.version.name>juno</platform.version.name>
-				<orbit.version>R20130827064939</orbit.version>
 			</properties>
 		</profile>
 		<profile>
 			<id>platform-kepler</id>
 			<properties>
-				<platform.version>4.3</platform.version>
 				<platform.version.name>kepler</platform.version.name>
-				<orbit.version>R20130827064939</orbit.version>
 			</properties>
 		</profile>
 		<profile>
 			<id>platform-luna</id>
 			<properties>
-				<platform.version>4.4</platform.version>
 				<platform.version.name>luna</platform.version.name>
-				<orbit.version>R20130827064939</orbit.version>
 			</properties>
 		</profile>
 		<profile>
@@ -208,87 +186,87 @@
 			</properties>
 		</profile>
 		<profile>
-      <id>eclipse-sign</id>
+			<id>eclipse-sign</id>
 
-      <pluginRepositories>
-        <pluginRepository>
-          <id>m2e-cbi</id>
-          <url>http://download.eclipse.org/technology/m2e/maven/</url>
-        </pluginRepository>
-      </pluginRepositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>m2e-cbi</id>
+					<url>http://download.eclipse.org/technology/m2e/maven/</url>
+				</pluginRepository>
+			</pluginRepositories>
 
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>target-platform-configuration</artifactId>
-            <version>${tycho.version}</version>
-            <configuration>
-              <includePackedArtifacts>true</includePackedArtifacts>
-            </configuration>
-          </plugin>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<includePackedArtifacts>true</includePackedArtifacts>
+						</configuration>
+					</plugin>
 
-          <plugin>
-            <groupId>org.eclipse.tycho.extras</groupId>
-            <artifactId>tycho-pack200a-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <executions>
-              <execution>
-                <id>pack200-normalize</id>
-                <goals>
-                  <goal>normalize</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+					<plugin>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-pack200a-plugin</artifactId>
+						<version>${tycho.version}</version>
+						<executions>
+							<execution>
+								<id>pack200-normalize</id>
+								<goals>
+									<goal>normalize</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 
-          <plugin>
-            <groupId>org.eclipse.cbi.maven.plugins</groupId>
-            <artifactId>eclipse-jarsigner-plugin</artifactId>
-            <version>1.0.1</version>
-            <executions>
-              <execution>
-                <id>sign</id>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+					<plugin>
+						<groupId>org.eclipse.cbi.maven.plugins</groupId>
+						<artifactId>eclipse-jarsigner-plugin</artifactId>
+						<version>1.0.1</version>
+						<executions>
+							<execution>
+								<id>sign</id>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 
-          <plugin>
-            <groupId>org.eclipse.tycho.extras</groupId>
-            <artifactId>tycho-pack200b-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <executions>
-              <execution>
-                <id>pack200-pack</id>
-                <goals>
-                  <goal>pack</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+					<plugin>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-pack200b-plugin</artifactId>
+						<version>${tycho.version}</version>
+						<executions>
+							<execution>
+								<id>pack200-pack</id>
+								<goals>
+									<goal>pack</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 
-          <plugin>
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>tycho-p2-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <executions>
-              <execution>
-                <id>p2-metadata</id>
-                <goals>
-                  <goal>p2-metadata</goal>
-                </goals>
-                <phase>package</phase>
-              </execution>
-            </executions>
-            <configuration>
-              <defaultP2Metadata>false</defaultP2Metadata>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-p2-plugin</artifactId>
+						<version>${tycho.version}</version>
+						<executions>
+							<execution>
+								<id>p2-metadata</id>
+								<goals>
+									<goal>p2-metadata</goal>
+								</goals>
+								<phase>package</phase>
+							</execution>
+						</executions>
+						<configuration>
+							<defaultP2Metadata>false</defaultP2Metadata>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>

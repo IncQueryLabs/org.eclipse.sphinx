@@ -8,6 +8,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>./parent</module>
+		<module>../../tools/org.eclipse.sphinx.targets/${platform.version.name}</module>
 
 		<!-- Plug-ins -->
 		<module>../../plugins/org.eclipse.sphinx.emf</module>
@@ -98,4 +99,24 @@
 
 		<module>./repository</module>
 	</modules>
+	<profiles>
+		<profile>
+			<id>platform-juno</id>
+			<properties>
+				<platform.version.name>juno</platform.version.name>
+			</properties>
+		</profile>
+		<profile>
+			<id>platform-kepler</id>
+			<properties>
+				<platform.version.name>kepler</platform.version.name>
+			</properties>
+		</profile>
+		<profile>
+			<id>platform-luna</id>
+			<properties>
+				<platform.version.name>luna</platform.version.name>
+			</properties>
+		</profile>
+	</profiles>
 </project>
