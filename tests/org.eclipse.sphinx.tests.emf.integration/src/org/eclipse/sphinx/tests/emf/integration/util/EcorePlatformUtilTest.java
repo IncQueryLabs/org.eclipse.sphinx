@@ -368,16 +368,24 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		// Path pointing to location outside workspace
 		IPath nonExistingLocationPathOutsideWorkspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().removeLastSegments(1)
 				.append("dummy.xml");
-		if (nonExistingLocationPathOutsideWorkspace.getDevice() != null) {
+		String device = nonExistingLocationPathOutsideWorkspace.getDevice();
+		if (device != null) {
 			// Under Windows, location path will include a drive letter
 			// -> it will be interpreted as (non existing) location path outside workspace
-			expectedURI = URI.createFileURI(nonExistingLocationPathOutsideWorkspace.toString());
+
+			// Workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=423284: convert drive letter to lower case
+			String expectedPath = nonExistingLocationPathOutsideWorkspace.toString();
+			expectedPath = expectedPath.substring(0, 1).toLowerCase() + expectedPath.substring(1);
+			expectedURI = URI.createFileURI(expectedPath);
+
+			assertEquals(expectedURI, EcorePlatformUtil.createURI(nonExistingLocationPathOutsideWorkspace));
 		} else {
 			// Under Linux, location path will not include any drive letter but start with a leading separator
 			// -> it will be interpreted as (non existing) full path inside workspace
 			expectedURI = URI.createPlatformResourceURI(nonExistingLocationPathOutsideWorkspace.toString(), true);
+
+			assertEquals(expectedURI, EcorePlatformUtil.createURI(nonExistingLocationPathOutsideWorkspace));
 		}
-		assertEquals(expectedURI, EcorePlatformUtil.createURI(nonExistingLocationPathOutsideWorkspace));
 	}
 
 	/**

@@ -144,9 +144,9 @@ public final class EcoreResourceUtil {
 	public static URI convertToAbsoluteFileURI(URI uri) {
 		Assert.isNotNull(uri);
 
-		// FIXME File bug to EMF: CommonPlugin.asLocalURI() is unable to convert URIs that start with a driver letter
-		// (IOException raised and caught internally)
-		if (!uri.isRelative() && uri.scheme().matches("[A-Z]")) { //$NON-NLS-1$
+		// Workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=423286: manually convert URIs that start with a
+		// Windows drive letter
+		if (!uri.isRelative() && uri.scheme().matches("[A-Za-z]")) { //$NON-NLS-1$
 			uri = URI.createFileURI(uri.toString());
 		}
 
