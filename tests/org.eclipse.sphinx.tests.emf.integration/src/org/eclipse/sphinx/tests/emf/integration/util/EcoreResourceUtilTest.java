@@ -869,6 +869,14 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		uri = URI.createURI(workspaceFile.getLocation().toString(), true);
 		convertedURI = EcoreResourceUtil.convertToAbsoluteFileURI(uri);
 
+		// Workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=423284: convert drive letter to lower case
+		String device = workspaceFile.getLocation().getDevice();
+		if (device != null) {
+			String workspacePath = workspaceFile.getLocation().toString();
+			workspacePath = workspacePath.substring(0, 1).toLowerCase() + workspacePath.substring(1);
+			absoluteWorkspaceFileURI = URI.createFileURI(workspacePath);
+		}
+
 		assertTrue(convertedURI.isFile());
 		assertEquals(absoluteWorkspaceFileURI, convertedURI);
 	}

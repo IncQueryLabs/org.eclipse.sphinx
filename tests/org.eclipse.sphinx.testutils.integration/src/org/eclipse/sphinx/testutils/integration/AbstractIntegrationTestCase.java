@@ -273,7 +273,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		synchronizedDeleteChangedFiles();
 
 		// Unload resources are on memory only, these resources are not marked as dirty
-		synchronizedUnloadAddedReources();
+		synchronizedUnloadAddedResources();
 
 		// If existing Projects' description were changed, reset its by copying contents from reference file
 		syncrhonizedResetProjectDescriptions();
@@ -334,7 +334,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 * Unloads all resources created in the previous test. These resources were added to ResourceSets but were not saved
 	 * and not marked as dirty. So we need to detect and unload them
 	 */
-	private void synchronizedUnloadAddedReources() {
+	private void synchronizedUnloadAddedResources() {
 		List<Resource> resourcesToUnload = new ArrayList<Resource>();
 		for (IMetaModelDescriptor metaModelDescriptor : internalRefWks.getReferenceEditingDomainDescritpors().keySet()) {
 			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(ResourcesPlugin.getWorkspace().getRoot(),
@@ -701,6 +701,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		assertExpectedReferenceFilesExist();
 		assertExpectedReferenceModelResourcesLoaded();
 		assertExpectedReferenceModelDescriptorsExist();
+		assertNoEmptyModelDescriptorsExist();
 	}
 
 	private void assertExpectedReferenceProjectsExist() {
@@ -804,6 +805,25 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				}
 				assertEquals("Missing model(s) in project '" + project.getName() + "'.", 0, missingModelDescriptorsInProject.size());
 			}
+		}
+	}
+
+	// TODO Make this method private when done with debugging
+	protected void assertNoEmptyModelDescriptorsExist() {
+		Set<IModelDescriptor> emptyModelDescriptors = new HashSet<IModelDescriptor>();
+
+		for (IModelDescriptor modelDescriptor : ModelDescriptorRegistry.INSTANCE.getAllModels()) {
+			if (modelDescriptor.getPersistedFiles(true).isEmpty() && modelDescriptor.getLoadedResources(true).isEmpty()) {
+				emptyModelDescriptors.add(modelDescriptor);
+			}
+		}
+
+		if (!emptyModelDescriptors.isEmpty()) {
+			System.err.println("Empty model(s) encountered:");
+			for (IModelDescriptor emptyModelDescriptor : emptyModelDescriptors) {
+				System.err.println("  " + emptyModelDescriptor);
+			}
+			assertEquals("Empty model(s) encountered.", 0, emptyModelDescriptors.size());
 		}
 	}
 
