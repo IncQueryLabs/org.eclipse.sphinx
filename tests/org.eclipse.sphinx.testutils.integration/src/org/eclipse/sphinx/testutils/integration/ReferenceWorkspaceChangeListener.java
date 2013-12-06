@@ -154,6 +154,7 @@ public class ReferenceWorkspaceChangeListener implements IResourceChangeListener
 	public void clearHistory() {
 		changedFiles.clear();
 		addedFiles.clear();
+		addedFolders.clear();
 		renamedProjects.clear();
 		projectsWithChangedDescription.clear();
 		projectsWithChangedSettings.clear();
