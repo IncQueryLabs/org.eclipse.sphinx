@@ -788,6 +788,12 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 	 * Test method for {@link EObjectUtil#createProxyFrom(EObject, Resource)}
 	 */
 	public void testCreateProxyFromEObject() {
+		// TODO Go on here
+		assertNoEmptyModelDescriptorsExist();
+		Collection<IModelDescriptor> hbProjectModels = ModelDescriptorRegistry.INSTANCE.getModels(refWks.hbProject10_A);
+		assertNotNull(hbProjectModels);
+		assertEquals(1, hbProjectModels.size());
+
 		// Context: EObject is Hummingbird Object
 		Resource resource20_2 = refWks.editingDomain20.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A + "/"
@@ -806,15 +812,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		assertEquals(2, hb20Platform_A_2.getInterfaces().size());
 
 		ComponentType componentType1 = hb20Platform_A_2.getComponentTypes().get(0);
-		// Port port1 = componentType1.getPorts().get(0);
-		// Port port2 = componentType1.getPorts().get(1);
-
-		URI compTypeUri1 = URI.createURI("hb:/#//@componentTypes.0");
-		// URI portUri1 = EcoreUtil.getURI(port1);
-		// URI portUri2 = EcoreUtil.getURI(port2);
-
 		ComponentType componentType2 = hb20Platform_A_2.getComponentTypes().get(1);
-		URI compTypeUri2 = URI.createURI("hb:/#//@componentTypes.1");
 
 		Interface interface1 = hb20Platform_A_2.getInterfaces().get(0);
 		Interface interface2 = hb20Platform_A_2.getInterfaces().get(1);
@@ -850,40 +848,32 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		assertNotNull(proxy_1);
 		assertTrue(proxy_1.eIsProxy());
 		assertTrue(proxy_1 instanceof InternalEObject);
-		assertEquals(compTypeUri1, ((InternalEObject) proxy_1).eProxyURI());
 
 		EObject proxy_2 = EObjectUtil.createProxyFrom(componentType2, componentType2.eResource());
 		assertNotNull(proxy_2);
 		assertTrue(proxy_2.eIsProxy());
 		assertTrue(proxy_2 instanceof InternalEObject);
-		assertEquals(compTypeUri2, ((InternalEObject) proxy_2).eProxyURI());
+		assertEquals(URI.createURI("hb:/#//@componentTypes.1"), ((InternalEObject) proxy_2).eProxyURI());
 
 		assertNotNull(interface1);
 		assertFalse(interface1.getProvidingComponentTypes().isEmpty());
 		for (ComponentType componentType : interface1.getProvidingComponentTypes()) {
 			assertFalse(componentType.eIsProxy());
-			// assertTrue(compTypeUri1.equals(EcoreUtil.getURI(componentType)) ||
-			// compTypeUri2.equals(EcoreUtil.getURI(componentType)));
 		}
 
 		assertNotNull(interface2);
 		assertFalse(interface2.getRequiringPorts().isEmpty());
 		for (Port port : interface2.getRequiringPorts()) {
 			assertFalse(port.eIsProxy());
-			// assertTrue(portUri1.equals(EcoreUtil.getURI(port)) || portUri2.equals(EcoreUtil.getURI(port)));
 		}
 
 		assertNotNull(referringComponent_1);
 		assertNotNull(referringComponent_1.getType());
 		assertFalse(referringComponent_1.getType().eIsProxy());
-		// assertTrue(compTypeUri1.equals(EcoreUtil.getURI(referringComponent_1.getType()))
-		// || compTypeUri2.equals(EcoreUtil.getURI(referringComponent_1.getType())));
 
 		assertNotNull(referringComponent_2);
 		assertNotNull(referringComponent_2.getType());
 		assertFalse(referringComponent_2.getType().eIsProxy());
-		// assertTrue(compTypeUri1.equals(EcoreUtil.getURI(referringComponent_2.getType()))
-		// || compTypeUri2.equals(EcoreUtil.getURI(referringComponent_2.getType())));
 
 		// ==================================================================
 		// Context: EObject is Uml2 object
@@ -922,7 +912,6 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 			flag = true;
 		}
 		assertTrue("No assertion when given Object is NULL", flag);
-
 	}
 
 	/**
