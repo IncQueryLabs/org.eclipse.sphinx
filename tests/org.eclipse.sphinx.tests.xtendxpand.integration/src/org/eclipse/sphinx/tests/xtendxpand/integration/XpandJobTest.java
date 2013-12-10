@@ -12,6 +12,7 @@
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  *     itemis - [406564] BasicWorkspaceResourceLoader#getResource should not delegate to super
  *     itemis - [418005] Add support for model files with multiple root elements
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
  *
  * </copyright>
  */
@@ -19,6 +20,7 @@ package org.eclipse.sphinx.tests.xtendxpand.integration;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -43,9 +45,10 @@ import org.eclipse.sphinx.xtendxpand.outlet.ExtendedOutlet;
 
 public class XpandJobTest extends XtendXpandIntegrationTestCase {
 
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_NAME };
+	public XpandJobTest() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(XtendXpandTestReferenceWorkspace.HB_CODEGEN_XPAND_PROJECT_NAME);
 	}
 
 	public void testHummingbird20Codegen_workspaceTemplate() throws Exception {

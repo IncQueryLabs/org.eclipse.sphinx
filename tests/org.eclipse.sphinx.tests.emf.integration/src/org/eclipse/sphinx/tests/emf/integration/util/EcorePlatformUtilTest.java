@@ -12,6 +12,7 @@
  *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  *     itemis - [418005] Add support for model files with multiple root elements
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
  *
  * </copyright>
  */
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -32,7 +34,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -82,20 +83,22 @@ import org.xml.sax.SAXParseException;
 @SuppressWarnings("nls")
 public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E };
-	}
+	public EcorePlatformUtilTest() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E);
 
-	@Override
-	protected Plugin getTestPlugin() {
-		return Activator.getPlugin();
-	}
+		// Remove all project references except:
+		// HB_PROJECT_NAME_20_E -> HB_PROJECT_NAME_20_D
+		Map<String, Set<String>> projectReferences = getProjectReferences();
+		projectReferences.remove(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E);
+		projectReferences.remove(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
 
-	@Override
-	protected String[][] getProjectReferences() {
-		return new String[][] { { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D } };
+		// Set test plug-in for retrieving test input resources
+		setTestPlugin(Activator.getPlugin());
 	}
 
 	private Platform createPlatform() {

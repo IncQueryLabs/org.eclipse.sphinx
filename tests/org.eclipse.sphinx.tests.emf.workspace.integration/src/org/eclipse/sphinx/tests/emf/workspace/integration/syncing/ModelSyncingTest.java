@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.workspace.integration.syncing;
@@ -58,9 +59,9 @@ import org.eclipse.uml2.uml.Port;
 @SuppressWarnings("nls")
 public class ModelSyncingTest extends DefaultIntegrationTestCase {
 
-	@Override
-	protected boolean isProjectsClosedOnStartup() {
-		return true;
+	public ModelSyncingTest() {
+		// Start tests with projects in reference workspace being closed
+		setProjectsClosedOnStartup(true);
 	}
 
 	// + testProjectOpened
@@ -271,11 +272,11 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 		String projectName = DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D + "_NewName"; //$NON-NLS-1$
 
 		synchronizedRenameProject(refWks.hbProject20_D, projectName);
-		// check if project name has been correctly changed
+
+		// Check if project name has been correctly changed
 		IProject newProject = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		assertTrue(newProject.exists());
-		// ModelLoadManager.INSTANCE.reloadProject(newProject, true, false, null);
-		// waitForModelLoading();
+
 		// Check if resources under the project are still loaded.
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, 0);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, hbProject20_DFiles.size());

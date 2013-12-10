@@ -1,20 +1,21 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.integration.internal.expressions;
 
-import junit.framework.Assert;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.sphinx.emf.internal.expressions.FilePropertyTester;
@@ -27,9 +28,11 @@ import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestRe
 @SuppressWarnings("restriction")
 public class FilePropertyTesterTest extends DefaultIntegrationTestCase {
 
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A };
+	public FilePropertyTesterTest() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A);
 	}
 
 	/**
@@ -49,53 +52,53 @@ public class FilePropertyTesterTest extends DefaultIntegrationTestCase {
 		Object[] args = new Object[] {};
 
 		// No receiver object
-		Assert.assertFalse(tester.test(null, validProperty, args, anyHummingbirdReleaseDescriptorIdPattern));
-		Assert.assertFalse(tester.test(null, invalidProperty1, args, anyHummingbirdReleaseDescriptorIdPattern));
-		Assert.assertFalse(tester.test(null, invalidProperty2, args, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(null, validProperty, args, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(null, invalidProperty1, args, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(null, invalidProperty2, args, anyHummingbirdReleaseDescriptorIdPattern));
 
 		// Invalid receiver object
-		Assert.assertFalse(tester.test(new Object(), validProperty, args, anyHummingbirdReleaseDescriptorIdPattern));
-		Assert.assertFalse(tester.test(new Object(), invalidProperty1, args, anyHummingbirdReleaseDescriptorIdPattern));
-		Assert.assertFalse(tester.test(new Object(), invalidProperty2, args, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(new Object(), validProperty, args, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(new Object(), invalidProperty1, args, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(new Object(), invalidProperty2, args, anyHummingbirdReleaseDescriptorIdPattern));
 
 		// HB20 file
 		IFile receiver = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
 		assertNotNull(receiver);
 		assertTrue(receiver.exists());
 
-		Assert.assertTrue(tester.test(receiver, validProperty, args, Hummingbird20MMDescriptor.INSTANCE.getIdentifier()));
-		Assert.assertTrue(tester.test(receiver, validProperty, null, Hummingbird20MMDescriptor.INSTANCE.getIdentifier()));
-		Assert.assertTrue(tester.test(receiver, validProperty, args, anyHummingbirdReleaseDescriptorIdPattern));
-		Assert.assertTrue(tester.test(receiver, validProperty, null, anyHummingbirdReleaseDescriptorIdPattern));
-		Assert.assertFalse(tester.test(receiver, validProperty, args, Hummingbird10MMDescriptor.INSTANCE.getIdentifier()));
-		Assert.assertFalse(tester.test(receiver, validProperty, null, Hummingbird10MMDescriptor.INSTANCE.getIdentifier()));
-		Assert.assertFalse(tester.test(receiver, validProperty, args, UML2MMDescriptor.INSTANCE.getIdentifier()));
-		Assert.assertFalse(tester.test(receiver, validProperty, null, UML2MMDescriptor.INSTANCE.getIdentifier()));
+		assertTrue(tester.test(receiver, validProperty, args, Hummingbird20MMDescriptor.INSTANCE.getIdentifier()));
+		assertTrue(tester.test(receiver, validProperty, null, Hummingbird20MMDescriptor.INSTANCE.getIdentifier()));
+		assertTrue(tester.test(receiver, validProperty, args, anyHummingbirdReleaseDescriptorIdPattern));
+		assertTrue(tester.test(receiver, validProperty, null, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(receiver, validProperty, args, Hummingbird10MMDescriptor.INSTANCE.getIdentifier()));
+		assertFalse(tester.test(receiver, validProperty, null, Hummingbird10MMDescriptor.INSTANCE.getIdentifier()));
+		assertFalse(tester.test(receiver, validProperty, args, UML2MMDescriptor.INSTANCE.getIdentifier()));
+		assertFalse(tester.test(receiver, validProperty, null, UML2MMDescriptor.INSTANCE.getIdentifier()));
 
-		Assert.assertFalse(tester.test(receiver, invalidProperty1, args, anyHummingbirdReleaseDescriptorIdPattern));
-		Assert.assertFalse(tester.test(receiver, invalidProperty1, null, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(receiver, invalidProperty1, args, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(receiver, invalidProperty1, null, anyHummingbirdReleaseDescriptorIdPattern));
 
-		Assert.assertFalse(tester.test(receiver, invalidProperty2, args, anyHummingbirdReleaseDescriptorIdPattern));
-		Assert.assertFalse(tester.test(receiver, invalidProperty2, null, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(receiver, invalidProperty2, args, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(receiver, invalidProperty2, null, anyHummingbirdReleaseDescriptorIdPattern));
 
 		// HB10 file
 		receiver = refWks.hbProject10_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
 		assertNotNull(receiver);
 		assertTrue(receiver.exists());
 
-		Assert.assertTrue(tester.test(receiver, validProperty, args, Hummingbird10MMDescriptor.INSTANCE.getIdentifier()));
-		Assert.assertTrue(tester.test(receiver, validProperty, null, Hummingbird10MMDescriptor.INSTANCE.getIdentifier()));
-		Assert.assertTrue(tester.test(receiver, validProperty, args, anyHummingbirdReleaseDescriptorIdPattern));
-		Assert.assertTrue(tester.test(receiver, validProperty, null, anyHummingbirdReleaseDescriptorIdPattern));
-		Assert.assertFalse(tester.test(receiver, validProperty, args, Hummingbird20MMDescriptor.INSTANCE.getIdentifier()));
-		Assert.assertFalse(tester.test(receiver, validProperty, null, Hummingbird20MMDescriptor.INSTANCE.getIdentifier()));
-		Assert.assertFalse(tester.test(receiver, validProperty, args, UML2MMDescriptor.INSTANCE.getIdentifier()));
-		Assert.assertFalse(tester.test(receiver, validProperty, null, UML2MMDescriptor.INSTANCE.getIdentifier()));
+		assertTrue(tester.test(receiver, validProperty, args, Hummingbird10MMDescriptor.INSTANCE.getIdentifier()));
+		assertTrue(tester.test(receiver, validProperty, null, Hummingbird10MMDescriptor.INSTANCE.getIdentifier()));
+		assertTrue(tester.test(receiver, validProperty, args, anyHummingbirdReleaseDescriptorIdPattern));
+		assertTrue(tester.test(receiver, validProperty, null, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(receiver, validProperty, args, Hummingbird20MMDescriptor.INSTANCE.getIdentifier()));
+		assertFalse(tester.test(receiver, validProperty, null, Hummingbird20MMDescriptor.INSTANCE.getIdentifier()));
+		assertFalse(tester.test(receiver, validProperty, args, UML2MMDescriptor.INSTANCE.getIdentifier()));
+		assertFalse(tester.test(receiver, validProperty, null, UML2MMDescriptor.INSTANCE.getIdentifier()));
 
-		Assert.assertFalse(tester.test(receiver, invalidProperty1, args, anyHummingbirdReleaseDescriptorIdPattern));
-		Assert.assertFalse(tester.test(receiver, invalidProperty1, null, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(receiver, invalidProperty1, args, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(receiver, invalidProperty1, null, anyHummingbirdReleaseDescriptorIdPattern));
 
-		Assert.assertFalse(tester.test(receiver, invalidProperty2, args, anyHummingbirdReleaseDescriptorIdPattern));
-		Assert.assertFalse(tester.test(receiver, invalidProperty2, null, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(receiver, invalidProperty2, args, anyHummingbirdReleaseDescriptorIdPattern));
+		assertFalse(tester.test(receiver, invalidProperty2, null, anyHummingbirdReleaseDescriptorIdPattern));
 	}
 }

@@ -1,23 +1,25 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [410825] Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
  *     itemis - [418005] Add support for model files with multiple root elements
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.integration.model;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -26,7 +28,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -42,7 +43,6 @@ import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
-import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -73,17 +73,15 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 	List<String> hbProject20EResourcesUml2;
 	int resourcesUml2InProject20E;
 
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E };
-	}
-
-	@Override
-	protected String[][] getProjectReferences() {
-		return new String[][] { { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D },
-				{ DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D } };
+	public ModelDescriptorTest() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E);
 	}
 
 	@Override
@@ -930,7 +928,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 				assertNotNull(file10);
 				// Unload file
 				ModelLoadManager.INSTANCE.unloadFile(file10, false, new NullProgressMonitor());
-				Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+				waitForModelLoading();
 
 				assertTrue(file10.isAccessible());
 				assertFalse(EcorePlatformUtil.isFileLoaded(file10));
@@ -968,8 +966,8 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomain10, onlyInMemoryResourceIPath, Hummingbird10Package.eCONTENT_TYPE, modelRoot,
 					false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
-			//
+			waitForModelLoading();
+
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
 			Resource onlyInMemoryResource10 = EcorePlatformUtil.getResource(onlyInMemoryResourceUri);
@@ -987,9 +985,10 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 
 			assertFalse(modelDescriptor20_A.belongsTo(fileInMemory, true));
 			assertFalse(modelDescriptorUml2_E.belongsTo(fileInMemory, true));
-			// Unload fileInMemoryOnly
+
+			// Unload fileInMemory
 			ModelLoadManager.INSTANCE.unloadFile(fileInMemory, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertFalse(modelDescriptor10_D.belongsTo(fileInMemory, true));
 			assertFalse(modelDescriptor10_E.belongsTo(fileInMemory, true));
@@ -1078,7 +1077,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 				assertNotNull(file20);
 				// Unload file
 				ModelLoadManager.INSTANCE.unloadFile(file20, false, new NullProgressMonitor());
-				Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+				waitForModelLoading();
 
 				assertTrue(file20.isAccessible());
 				assertFalse(EcorePlatformUtil.isFileLoaded(file20));
@@ -1106,7 +1105,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomain20, onlyInMemoryResourceIPath,
 					Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId(), modelRoot, false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -1129,7 +1128,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 
 			// Unload fileInMemoryOnly
 			ModelLoadManager.INSTANCE.unloadFile(fileInMemory, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertFalse(modelDescriptor20_D.belongsTo(fileInMemory, true));
 			assertFalse(modelDescriptor20_E.belongsTo(fileInMemory, true));
@@ -1190,7 +1189,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 				assertNotNull(fileUml2);
 				// unload file
 				ModelLoadManager.INSTANCE.unloadFile(fileUml2, false, new NullProgressMonitor());
-				Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+				waitForModelLoading();
 
 				assertTrue(fileUml2.isAccessible());
 				assertFalse(EcorePlatformUtil.isFileLoaded(fileUml2));
@@ -1215,7 +1214,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomainUml2, onlyInMemoryResourceIPath, UMLPackage.eCONTENT_TYPE, modelRoot, false,
 					null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -1237,7 +1236,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 
 			// Unload fileInMemoryOnly
 			ModelLoadManager.INSTANCE.unloadFile(fileInMemory, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertFalse(modelDescriptorUml2_E.belongsTo(fileInMemory, true));
 			assertFalse(modelDescriptorUml2_D.belongsTo(fileInMemory, true));
@@ -1353,7 +1352,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 				Resource resource10 = EcorePlatformUtil.getResource(file10);
 				// Unload file
 				ModelLoadManager.INSTANCE.unloadFile(file10, false, new NullProgressMonitor());
-				Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+				waitForModelLoading();
 				assertFalse(EcorePlatformUtil.isFileLoaded(file10));
 				assertNotNull(resource10);
 
@@ -1378,8 +1377,8 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomain10, onlyInMemoryResourceIPath, Hummingbird10Package.eCONTENT_TYPE, modelRoot,
 					false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
-			//
+			waitForModelLoading();
+
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
 			Resource onlyInMemoryResource10 = EcorePlatformUtil.getResource(onlyInMemoryResourceUri);
@@ -1389,19 +1388,17 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			assertNotNull(fileInMemory);
 			assertFalse(fileInMemory.isAccessible());
 			assertTrue(EcorePlatformUtil.isFileLoaded(fileInMemory));
-			//
 
 			assertTrue(modelDescriptor10_D.belongsTo(onlyInMemoryResource10, true));
 			assertTrue(modelDescriptor10_E.belongsTo(onlyInMemoryResource10, true));
 			assertFalse(modelDescriptor10_E.belongsTo(onlyInMemoryResource10, false));
-			//
 			assertFalse(modelDescriptor10_A.belongsTo(onlyInMemoryResource10, true));
 			assertFalse(modelDescriptor20_A.belongsTo(onlyInMemoryResource10, true));
 			assertFalse(modelDescriptorUml2_E.belongsTo(onlyInMemoryResource10, true));
 
-			// Unload FileInMemoryOnly
+			// Unload FileInMemory
 			ModelLoadManager.INSTANCE.unloadFile(fileInMemory, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertFalse(modelDescriptor10_D.belongsTo(onlyInMemoryResource10, true));
 			assertFalse(modelDescriptor10_E.belongsTo(onlyInMemoryResource10, true));
@@ -1493,7 +1490,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 				// Unload File
 				Resource resource20 = EcorePlatformUtil.getResource(file20);
 				ModelLoadManager.INSTANCE.unloadFile(file20, false, new NullProgressMonitor());
-				Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+				waitForModelLoading();
 
 				assertTrue(file20.isAccessible());
 				assertFalse(EcorePlatformUtil.isFileLoaded(file20));
@@ -1520,7 +1517,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomain20, onlyInMemoryResourceIPath,
 					Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId(), modelRoot, false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -1543,7 +1540,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 
 			// Unload fileInMemoryOnly
 			ModelLoadManager.INSTANCE.unloadFile(fileInMemory, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertFalse(modelDescriptor20_D.belongsTo(onlyInMemoryResource20, true));
 			assertFalse(modelDescriptor20_E.belongsTo(onlyInMemoryResource20, true));
@@ -1598,7 +1595,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 
 				// Unload File
 				ModelLoadManager.INSTANCE.unloadFile(fileUml2, false, new NullProgressMonitor());
-				Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+				waitForModelLoading();
 
 				assertTrue(fileUml2.isAccessible());
 				assertFalse(EcorePlatformUtil.isFileLoaded(fileUml2));
@@ -1624,7 +1621,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomainUml2, onlyInMemoryResourceIPath, UMLPackage.eCONTENT_TYPE, modelRoot, false,
 					null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -1646,7 +1643,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 
 			// Unload FileInMemoryOnly
 			ModelLoadManager.INSTANCE.unloadFile(fileInMemory, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertFalse(modelDescriptorUml2_E.belongsTo(onlyInMemoryResourceUml2, true));
 			assertFalse(modelDescriptorUml2_D.belongsTo(onlyInMemoryResourceUml2, true));
@@ -1783,7 +1780,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 				URI uri10 = resource10.getURI();
 				// Unload file
 				ModelLoadManager.INSTANCE.unloadFile(file10, false, new NullProgressMonitor());
-				Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+				waitForModelLoading();
 
 				assertFalse(EcorePlatformUtil.isFileLoaded(file10));
 				assertNotNull(resource10);
@@ -1808,8 +1805,8 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomain10, onlyInMemoryResourceIPath, Hummingbird10Package.eCONTENT_TYPE, modelRoot,
 					false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
-			//
+			waitForModelLoading();
+
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
 			Resource onlyInMemoryResource10 = EcorePlatformUtil.getResource(onlyInMemoryResourceUri);
@@ -1819,18 +1816,16 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			assertNotNull(fileInMemory);
 			assertFalse(fileInMemory.isAccessible());
 			assertTrue(EcorePlatformUtil.isFileLoaded(fileInMemory));
-			//
 			assertTrue(modelDescriptor10_D.belongsTo(onlyInMemoryResourceUri, true));
 			assertTrue(modelDescriptor10_E.belongsTo(onlyInMemoryResourceUri, true));
 			assertFalse(modelDescriptor10_E.belongsTo(onlyInMemoryResourceUri, false));
-			//
 			assertFalse(modelDescriptor10_A.belongsTo(onlyInMemoryResourceUri, true));
 			assertFalse(modelDescriptor20_A.belongsTo(onlyInMemoryResourceUri, true));
 			assertFalse(modelDescriptorUml2_E.belongsTo(onlyInMemoryResourceUri, true));
 
-			// Unload fileInMemoryOnly
+			// Unload fileInMemory
 			ModelLoadManager.INSTANCE.unloadFile(fileInMemory, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertFalse(modelDescriptor10_D.belongsTo(onlyInMemoryResourceUri, true));
 			assertFalse(modelDescriptor10_E.belongsTo(onlyInMemoryResourceUri, true));
@@ -1938,7 +1933,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 				URI uri20 = resource20.getURI();
 				// Unload file
 				ModelLoadManager.INSTANCE.unloadFile(file20, false, new NullProgressMonitor());
-				Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+				waitForModelLoading();
 
 				assertTrue(file20.isAccessible());
 				assertFalse(EcorePlatformUtil.isFileLoaded(file20));
@@ -1965,7 +1960,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomain20, onlyInMemoryResourceIPath,
 					Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId(), modelRoot, false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -1988,7 +1983,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			// Unload fileInMemoryOnly
 
 			ModelLoadManager.INSTANCE.unloadFile(fileInMemory, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertFalse(modelDescriptor20_D.belongsTo(onlyInMemoryResourceUri, true));
 			assertFalse(modelDescriptor20_E.belongsTo(onlyInMemoryResourceUri, true));
@@ -2057,7 +2052,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 				URI uriUml2 = resourceUml2.getURI();
 				// Unload file
 				ModelLoadManager.INSTANCE.unloadFile(fileUml2, false, new NullProgressMonitor());
-				Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+				waitForModelLoading();
 
 				assertTrue(fileUml2.isAccessible());
 				assertFalse(EcorePlatformUtil.isFileLoaded(fileUml2));
@@ -2083,7 +2078,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomainUml2, onlyInMemoryResourceIPath, UMLPackage.eCONTENT_TYPE, modelRoot, false,
 					null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -2104,7 +2099,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			assertFalse(modelDescriptor20_D.belongsTo(onlyInMemoryResourceUri, true));
 			// Unload
 			ModelLoadManager.INSTANCE.unloadFile(fileInMemory, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 			assertFalse(modelDescriptorUml2_E.belongsTo(onlyInMemoryResourceUri, true));
 			assertFalse(modelDescriptorUml2_D.belongsTo(onlyInMemoryResourceUri, true));
 
@@ -2234,7 +2229,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomain10, onlyInMemoryResourceIPath, Hummingbird10Package.eCONTENT_TYPE, modelRoot,
 					false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -2323,7 +2318,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomain20, onlyInMemoryResourceIPath,
 					Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId(), modelRoot, false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -2409,7 +2404,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomainUml2, onlyInMemoryResourceIPath, UMLPackage.eCONTENT_TYPE, modelRoot, false,
 					null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -2560,7 +2555,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomain10, onlyInMemoryResourceIPath, Hummingbird10Package.eCONTENT_TYPE, modelRoot,
 					false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -2656,7 +2651,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomain20, onlyInMemoryResourceIPath,
 					Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId(), modelRoot, false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -2750,7 +2745,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomainUml2, onlyInMemoryResourceIPath, UMLPackage.eCONTENT_TYPE, modelRoot, false,
 					null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -2907,7 +2902,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomain10, onlyInMemoryResourceIPath, Hummingbird10Package.eCONTENT_TYPE, modelRoot,
 					false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -3004,7 +2999,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomain20, onlyInMemoryResourceIPath,
 					Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId(), modelRoot, false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));
@@ -3100,7 +3095,7 @@ public class ModelDescriptorTest extends DefaultIntegrationTestCase {
 			IPath onlyInMemoryResourceIPath = EcorePlatformUtil.createPath(onlyInMemoryResourceUri);
 			EcorePlatformUtil.addNewModelResource(refWks.editingDomainUml2, onlyInMemoryResourceIPath, UMLPackage.eCONTENT_TYPE, modelRoot, false,
 					null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// We ensure that no underlying file exist on file system for our newly created resource.
 			assertFalse(EcoreResourceUtil.exists(onlyInMemoryResourceUri));

@@ -1,18 +1,21 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.workspace.integration.saving;
+
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
@@ -22,7 +25,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RecordingCommand;
@@ -44,7 +46,6 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Factory;
 import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
-import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 import org.eclipse.uml2.uml.Model;
@@ -54,10 +55,13 @@ import org.eclipse.uml2.uml.UMLFactory;
 @SuppressWarnings("nls")
 public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E };
+	public ModelSaveManagerTest() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E);
 	}
 
 	/**
@@ -98,12 +102,12 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 
 			// Save resource
 			ModelSaveManager.INSTANCE.saveModel(resource20, false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertFalse(ModelSaveManager.INSTANCE.isDirty(resource20));
 
 			ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject20_A, false, false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, resourceInEditingDomain20);
 
@@ -150,17 +154,17 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 				}
 			});
 
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 			assertTrue(ModelSaveManager.INSTANCE.isDirty(resource10));
 
 			// Save resource
 			ModelSaveManager.INSTANCE.saveModel(resource10, false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertFalse(ModelSaveManager.INSTANCE.isDirty(resource10));
 
 			ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject10_A, false, false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, resourceInEditingDomain10);
 
@@ -251,13 +255,13 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 			assertTrue(ModelSaveManager.INSTANCE.isDirty(resource20_2));
 			// Save resource
 			ModelSaveManager.INSTANCE.saveModel(modelDescriptor20, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertFalse(ModelSaveManager.INSTANCE.isDirty(resource20_1));
 			assertFalse(ModelSaveManager.INSTANCE.isDirty(resource20_2));
 
 			ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject20_A, false, false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, resourceInEditingDomain20);
 			Resource savedResource20_1 = refWks.editingDomain20.getResourceSet().getResource(
@@ -347,13 +351,13 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 			assertTrue(ModelSaveManager.INSTANCE.isDirty(resourceUml2_1));
 			// Save resource
 			ModelSaveManager.INSTANCE.saveModel(modelDescriptor20, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertFalse(ModelSaveManager.INSTANCE.isDirty(resource20_1));
 			assertTrue(ModelSaveManager.INSTANCE.isDirty(resourceUml2_1));
 
 			ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject20_D, false, false, null);
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, resourceInEditingDomain20);
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, resourceInEditingDomainUml2);
@@ -455,13 +459,13 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 		assertTrue(ModelSaveManager.INSTANCE.isDirty(resource20E_1));
 		// Save resource
 		ModelSaveManager.INSTANCE.saveModel(modelDescriptor20, false, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertFalse(ModelSaveManager.INSTANCE.isDirty(resource20D_1));
 		assertFalse(ModelSaveManager.INSTANCE.isDirty(resource20E_1));
 
 		ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject20_A, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, resourceInEditingDomain20);
 		Resource savedResource20D_1 = refWks.editingDomain20.getResourceSet().getResource(
@@ -530,7 +534,7 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 			}
 		});
 
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		assertTrue(ModelSaveManager.INSTANCE.isDirty(resource20_1));
 
 		assertNotNull(resource20_2);
@@ -556,7 +560,7 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 			}
 		});
 
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		assertTrue(ModelSaveManager.INSTANCE.isDirty(resource20_2));
 		assertNotNull(refWks
 				.getReferenceFile(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A, DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3));
@@ -573,20 +577,20 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 		};
 
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		assertTrue(ModelSaveManager.INSTANCE.isDirty(refWks.hbProject20_A));
 		// Save Models
 		ModelSaveManager.INSTANCE.saveProject(refWks.hbProject20_A, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertFalse(ModelSaveManager.INSTANCE.isDirty(refWks.hbProject20_A));
 
 		ModelLoadManager.INSTANCE.unloadProject(refWks.hbProject20_A, false, false, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Verify saved resource
 		ModelLoadManager.INSTANCE.loadProject(refWks.hbProject20_A, false, false, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, resourceInEditingDomain20 - 1);
 		Resource savedResource_1 = refWks.editingDomain20.getResourceSet().getResource(
@@ -664,7 +668,7 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 		} catch (Exception e) {
 			fail("Transaction  errors.");
 		}
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		assertTrue(ModelSaveManager.INSTANCE.isDirty(resource20D_1));
 
 		// Modify Resource20D_2
@@ -690,7 +694,7 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 			fail("Transaction  errors.");
 		}
 
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		assertTrue(ModelSaveManager.INSTANCE.isDirty(resource20D_2));
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
@@ -705,22 +709,22 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 		};
 
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		assertTrue(ModelSaveManager.INSTANCE.isDirty(refWks.hbProject20_E));
 		assertTrue(ModelSaveManager.INSTANCE.isDirty(refWks.hbProject20_D));
 		// Save Models
 		ModelSaveManager.INSTANCE.saveProject(refWks.hbProject20_E, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertFalse(ModelSaveManager.INSTANCE.isDirty(refWks.hbProject20_E));
 		assertFalse(ModelSaveManager.INSTANCE.isDirty(refWks.hbProject20_D));
 
 		ModelLoadManager.INSTANCE.unloadProject(refWks.hbProject20_E, false, false, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Verify saved resource
 		ModelLoadManager.INSTANCE.loadProject(refWks.hbProject20_E, false, false, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEquals(refWks.getInitialResourcesInReferenceEditingDomainCount(Hummingbird20MMDescriptor.INSTANCE) - 1, refWks.editingDomain20
 				.getResourceSet().getResources().size());

@@ -1,20 +1,21 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - Improved API for importing external resources to workspace
  *     itemis - Improved handling of reference workspace path names so as to make integration tests more stable when running on different platforms
  *     BMW Car IT - Introduced waitForFamily method, refactored scheduleAndWait method
  *     itemis - Added option to run integration tests without reusing test reference workspace from previous test to avoid side effects across individual tests
  *     itemis - [414125] Enhance ResourceDeltaVisitor to enable the analysis of IFolder added/moved/removed
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.testutils.integration;
@@ -36,7 +37,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IContainer;
@@ -99,17 +99,22 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	private static final String REFERENCE_WORKSPACE_SOURCE_ROOT_DIRECTORY_PROPERTIES_KEY = "referenceWorksaceSourceDirectory";
 
-	private static final String SCHEDULED_JOB_TIMEOUT = System.getProperty(AbstractIntegrationTestCase.class.getName() + ".SCHEDULED_JOB_TIMEOUT",
-			new Integer(10 * 1000).toString());
-
 	private static final String JOB_FAMILY_TIMEOUT = System.getProperty(AbstractIntegrationTestCase.class.getName() + ".JOB_FAMILY_TIMEOUT",
 			new Integer(1 * 60 * 1000).toString());
+
+	private Plugin testPlugin = null;
 
 	private TestFileAccessor testFileAccessor = null;
 
 	private IInternalReferenceWorkspace internalRefWks;
 
 	protected T refWks;
+
+	private Set<String> projectSubsetToLoad = null;
+
+	private Map<String, Set<String>> projectReferences = null;
+
+	private boolean projectsClosedOnStartup = false;
 
 	private ModelLoadingJobTracer modelLoadJobTracer = new ModelLoadingJobTracer();
 
@@ -121,13 +126,9 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	private File referenceWorkspaceSourceDir;
 
-	private boolean reuseRefWks;
+	private boolean recycleReferenceWorkspaceOfPreviousTestRun = true;
 
 	public AbstractIntegrationTestCase(String referenceWorkspaceTempDirBaseName) {
-		this(referenceWorkspaceTempDirBaseName, true);
-	}
-
-	public AbstractIntegrationTestCase(String referenceWorkspaceTempDirBaseName, boolean reuseSameReferenceWorkspaceForAllTests) {
 		String tempDirPath = System.getProperty("java.io.tmpdir");
 		File tempDir = new File(tempDirPath);
 
@@ -140,8 +141,43 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		if (!referenceWorkspaceTempDir.exists()) {
 			referenceWorkspaceTempDir.mkdir();
 		}
+	}
 
-		reuseRefWks = reuseSameReferenceWorkspaceForAllTests;
+	protected void setRecycleReferenceWorkspaceOfPreviousTestRun(boolean recycleReferenceWorkspaceOfPreviousTestRun) {
+		this.recycleReferenceWorkspaceOfPreviousTestRun = recycleReferenceWorkspaceOfPreviousTestRun;
+	}
+
+	protected Set<String> getProjectSubsetToLoad() {
+		if (projectSubsetToLoad == null) {
+			projectSubsetToLoad = new HashSet<String>();
+		}
+		return projectSubsetToLoad;
+	}
+
+	protected Map<String, Set<String>> getProjectReferences() {
+		if (projectReferences == null) {
+			projectReferences = new HashMap<String, Set<String>>();
+		}
+		return projectReferences;
+	}
+
+	protected boolean isProjectsClosedOnStartup() {
+		return projectsClosedOnStartup;
+	}
+
+	protected void setProjectsClosedOnStartup(boolean projectsClosedOnStartup) {
+		this.projectsClosedOnStartup = projectsClosedOnStartup;
+	}
+
+	protected Plugin getTestPlugin() {
+		if (testPlugin == null) {
+			testPlugin = Activator.getPlugin();
+		}
+		return testPlugin;
+	}
+
+	protected void setTestPlugin(Plugin testPlugin) {
+		this.testPlugin = testPlugin;
 	}
 
 	protected final TestFileAccessor getTestFileAccessor() {
@@ -149,12 +185,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			testFileAccessor = new TestFileAccessor(getTestPlugin(), new File("working-dir"));
 		}
 		return testFileAccessor;
-	}
-
-	protected abstract Plugin getTestPlugin();
-
-	protected boolean isProjectsClosedOnStartup() {
-		return false;
 	}
 
 	/**
@@ -185,7 +215,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 		// Delete complete or unused projects depending on whether the reference workspace is intended to be reused or
 		// not
-		if (!reuseRefWks) {
+		if (!recycleReferenceWorkspaceOfPreviousTestRun) {
 			WorkspaceEditingDomainManager.INSTANCE.resetEditingDomainMapping();
 			assertTrue(WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping().getEditingDomains().isEmpty());
 			assertAllModelResourcesUnloaded();
@@ -201,7 +231,9 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		}
 
 		// Create reference workspace descriptor
-		initReferenceWorkspace();
+		refWks = createReferenceWorkspace(getProjectSubsetToLoad());
+		Assert.isTrue(refWks instanceof IInternalReferenceWorkspace);
+		internalRefWks = (IInternalReferenceWorkspace) refWks;
 
 		// Unzip reference workspace from archive if needed
 		if (needToExtractReferenceWorkspaceArchive()) {
@@ -222,7 +254,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 		synchronizedImportMissingReferenceFilesToWorkspace();
 
-		createInterProjectReferences();
+		synchronizedCreateProjectReferences();
 
 		// Add ResourceProblemListener on all editingDomains to listening in problems when loading/unloading resources
 		internalRefWks.addResourceSetProblemListener(resourceProblemListener);
@@ -235,6 +267,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			synchronizedLoadAllProjects();
 			assertReferenceWorkspaceInitialized();
 		}
+		assertReferenceWorkspaceConsistent();
 
 		// Add ReferenceWorkspaceChangeListener to listening in workspace changes during the test
 		internalRefWks.addReferenceWorkspaceChangeListener(referenceWorkspaceChangeListener);
@@ -286,6 +319,8 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		referenceWorkspaceChangeListener.clearHistory();
 
 		Job.getJobManager().removeJobChangeListener(modelLoadJobTracer);
+
+		assertReferenceWorkspaceConsistent();
 	}
 
 	/**
@@ -535,14 +570,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		referenceWorkspaceSourceDir = new File(path);
 	}
 
-	private void initReferenceWorkspace() {
-		final String[] referenceProjectNames = getProjectsToLoad();
-		refWks = createReferenceWorkspace(referenceProjectNames);
-		internalRefWks = (IInternalReferenceWorkspace) refWks;
-
-		waitForModelLoading();
-	}
-
 	private void synchronizedImportMissingReferenceProjectsIntoWorkspace() throws Exception {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
@@ -576,23 +603,12 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		return missingReferenceProjects;
 	}
 
-	protected Set<IProject> getAllReferenceProjects() {
-		Set<IProject> referenceProjects = new HashSet<IProject>();
-		for (ReferenceProjectDescriptor descriptor : internalRefWks.getReferenceProjectDescriptors()) {
-			referenceProjects.add(descriptor.getProject());
-		}
-		return referenceProjects;
-	}
-
 	private Set<IProject> getUnusedReferenceProjects() {
 		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		Set<IProject> unusedReferenceProjects = new HashSet<IProject>();
-		if (getProjectsToLoad() == null) {
-			return Collections.emptySet();
-		}
 		for (IProject project : projects) {
 			boolean used = false;
-			for (String prjName : getProjectsToLoad()) {
+			for (String prjName : getProjectSubsetToLoad()) {
 				if (prjName.equals(project.getName())) {
 					used = true;
 				}
@@ -659,41 +675,54 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, null);
 	}
 
-	protected String[] getProjectsToLoad() {
-		return null;
-	}
+	protected abstract T createReferenceWorkspace(Set<String> referenceProjectNames);
 
-	private T createReferenceWorkspace(String[] referenceProjectNames) {
-		T referenceWorkspace = doCreateReferenceWorkspace(referenceProjectNames);
-		Assert.isTrue(referenceWorkspace instanceof IInternalReferenceWorkspace);
-		return referenceWorkspace;
-	}
+	private void synchronizedCreateProjectReferences() throws CoreException {
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
+						"Problems encountered while creating project references.", new RuntimeException());
+				SubMonitor progress = SubMonitor.convert(monitor, ResourcesPlugin.getWorkspace().getRoot().getProjects().length);
+				for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
+					try {
+						if (project.isAccessible()) {
+							IProjectDescription projectDescription = project.getDescription();
 
-	protected abstract T doCreateReferenceWorkspace(String[] referenceProjectNames);
+							// Any project references configured for current project?
+							if (getProjectReferences().containsKey(project.getName())) {
+								// Set configured project references
+								projectDescription.setReferencedProjects(toReferenceProjectArray(getProjectReferences().get(project.getName())));
+							} else {
+								// Remove all potentially existing project references
+								projectDescription.setReferencedProjects(new IProject[0]);
+							}
 
-	/**
-	 * Setting project description will reload the project
-	 */
-	private void createInterProjectReferences() throws CoreException {
-		for (String[] projectPair : getProjectReferences()) {
-			if (projectPair != null) {
-				if (projectPair.length >= 2) {
-					IProject parent = refWks.getReferenceProject(projectPair[0]);
-					IProject child = refWks.getReferenceProject(projectPair[1]);
-					if (parent != null && parent.isAccessible() && child != null && child.isAccessible()) {
-						// Add 'child' project in list of projects referenced by
-						// 'parent' project
-						IProjectDescription parentDescription = parent.getDescription();
-						parentDescription.setReferencedProjects(new IProject[] { child });
-						parent.setDescription(parentDescription, null);
+							project.setDescription(projectDescription, progress.newChild(1));
+						}
+
+					} catch (Exception ex) {
+						errorStatus.add(StatusUtil.createErrorStatus(Activator.getDefault(), ex));
 					}
 				}
+				if (errorStatus.getChildren().length > 0) {
+					throw new CoreException(errorStatus);
+				}
 			}
-		}
+		};
+		ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+		ResourcesPlugin.getWorkspace().checkpoint(false);
+		waitForModelLoading();
 	}
 
-	protected String[][] getProjectReferences() {
-		return new String[0][0];
+	private IProject[] toReferenceProjectArray(Set<String> referenceProjectNames) {
+		Set<IProject> projects = new HashSet<IProject>(referenceProjectNames.size());
+		for (String referenceProjectName : referenceProjectNames) {
+			IProject referenceProject = refWks.getReferenceProject(referenceProjectName);
+			if (referenceProject != null) {
+				projects.add(referenceProject);
+			}
+		}
+		return projects.toArray(new IProject[projects.size()]);
 	}
 
 	private void assertReferenceWorkspaceInitialized() throws Exception {
@@ -701,7 +730,11 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		assertExpectedReferenceFilesExist();
 		assertExpectedReferenceModelResourcesLoaded();
 		assertExpectedReferenceModelDescriptorsExist();
+	}
+
+	private void assertReferenceWorkspaceConsistent() {
 		assertNoEmptyModelDescriptorsExist();
+		assertNoDuplicatedModelDescriptorsExist();
 	}
 
 	private void assertExpectedReferenceProjectsExist() {
@@ -808,8 +841,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		}
 	}
 
-	// TODO Make this method private when done with debugging
-	protected void assertNoEmptyModelDescriptorsExist() {
+	private void assertNoEmptyModelDescriptorsExist() {
 		Set<IModelDescriptor> emptyModelDescriptors = new HashSet<IModelDescriptor>();
 
 		for (IModelDescriptor modelDescriptor : ModelDescriptorRegistry.INSTANCE.getAllModels()) {
@@ -824,6 +856,27 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				System.err.println("  " + emptyModelDescriptor);
 			}
 			assertEquals("Empty model(s) encountered.", 0, emptyModelDescriptors.size());
+		}
+	}
+
+	private void assertNoDuplicatedModelDescriptorsExist() {
+		Set<IModelDescriptor> duplicatedModelDescriptors = new HashSet<IModelDescriptor>();
+
+		Collection<IModelDescriptor> allModels = ModelDescriptorRegistry.INSTANCE.getAllModels();
+		for (IModelDescriptor modelDescriptor : allModels) {
+			if (!duplicatedModelDescriptors.contains(modelDescriptor)) {
+				if (Collections.frequency(allModels, modelDescriptor) > 1) {
+					duplicatedModelDescriptors.add(modelDescriptor);
+				}
+			}
+		}
+
+		if (!duplicatedModelDescriptors.isEmpty()) {
+			System.err.println("Duplicated model(s) encountered:");
+			for (IModelDescriptor duplicatedModelDescriptor : duplicatedModelDescriptors) {
+				System.err.println("  " + duplicatedModelDescriptor);
+			}
+			assertEquals("Duplicated model(s) encountered.", 0, duplicatedModelDescriptors.size());
 		}
 	}
 
@@ -857,54 +910,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			}
 		}
 		assertTrue("Unexpected number of open project(s).", openProjects.size() == 0);
-	}
-
-	protected void assertStatusIsOK(IStatus status) {
-		if (status != null && !status.isOK()) {
-			if (status instanceof MultiStatus) {
-				MultiStatus multi = (MultiStatus) status;
-				for (IStatus child : multi.getChildren()) {
-					assertStatusIsOK(child);
-				}
-			}
-
-			Throwable throwable = status.getException();
-			if (throwable != null) {
-				fail(throwable);
-			}
-
-			String message = status.getMessage();
-			String severity;
-			switch (status.getSeverity()) {
-			case IStatus.ERROR:
-				severity = "ERROR";
-				break;
-			case IStatus.WARNING:
-				severity = "WARNING";
-				break;
-			case IStatus.INFO:
-				severity = "INFO";
-				break;
-			case IStatus.CANCEL:
-				severity = "CANCEL";
-				break;
-			default:
-				severity = "NON-OK";
-				break;
-			}
-
-			StringBuilder failureMessage = new StringBuilder();
-			if (message == null && message.length() == 0) {
-				failureMessage.append("Unspecified ");
-			}
-			failureMessage.append(severity);
-			failureMessage.append(" status encountered");
-			if (message != null && message.length() > 0) {
-				failureMessage.append(": ");
-				failureMessage.append(message);
-			}
-			fail(failureMessage.toString());
-		}
 	}
 
 	protected void assertEditingDomainResourcesSizeEquals(TransactionalEditingDomain editingDomain, int expected) {
@@ -1283,9 +1288,8 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
 						"Problems encountered while opening projects.", new RuntimeException());
-				Collection<IProject> safeProjects = new ArrayList<IProject>(Arrays.asList(ResourcesPlugin.getWorkspace().getRoot().getProjects()));
-				SubMonitor progress = SubMonitor.convert(monitor, safeProjects.size());
-				for (IProject project : safeProjects) {
+				SubMonitor progress = SubMonitor.convert(monitor, ResourcesPlugin.getWorkspace().getRoot().getProjects().length);
+				for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
 					try {
 						project.open(progress.newChild(1));
 					} catch (CoreException ex) {
@@ -1511,60 +1515,6 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		}
 	}
 
-	/**
-	 * Schedule the job for execution and wait up to 10 seconds until the execution is done. Returns the status returned
-	 * by the job.
-	 * 
-	 * @param job
-	 * @return
-	 * @throws InterruptedException
-	 */
-	protected IStatus scheduleAndWait(Job job) throws InterruptedException {
-		class DoneListener extends JobChangeAdapter {
-			boolean done = false;
-			IStatus result;
-
-			@Override
-			public synchronized void done(IJobChangeEvent event) {
-				done = true;
-				result = event.getResult();
-				notify();
-			}
-		}
-
-		DoneListener doneListener = new DoneListener();
-
-		job.addJobChangeListener(doneListener);
-
-		synchronized (doneListener) {
-			job.schedule();
-
-			// Wait for job to finish
-
-			doneListener.wait(Integer.parseInt(SCHEDULED_JOB_TIMEOUT));
-
-			if (doneListener.done == false) {
-				Thread thread = job.getThread();
-				if (thread != null) {
-					job.getThread().interrupt();
-				}
-			}
-		}
-
-		return doneListener.result;
-	}
-
-	/**
-	 * Fail the testcase and use the Throwable as the cause
-	 * 
-	 * @param throwable
-	 */
-	protected void fail(Throwable throwable) {
-		AssertionFailedError error = new AssertionFailedError();
-		error.initCause(throwable);
-		throw error;
-	}
-
 	private class ModelLoadingJobTracer extends JobChangeAdapter {
 
 		private boolean isModelLoadingJob(IJobChangeEvent event) {
@@ -1709,15 +1659,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		synchronizedImportExternalResourceToWorkspace(new File(inputFileURI), targetContainer);
 	}
 
-	protected File getReferenceWorkspaceSourceDir() {
-		return referenceWorkspaceSourceDir;
-	}
-
 	protected ReferenceWorkspaceChangeListener getReferenceWorkspaceChangeListener() {
 		return referenceWorkspaceChangeListener;
-	}
-
-	protected ResourceProblemListener getResourceProblemListener() {
-		return resourceProblemListener;
 	}
 }

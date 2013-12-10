@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.workspace.integration.internal.loading;
@@ -17,8 +18,7 @@ package org.eclipse.sphinx.tests.emf.workspace.integration.internal.loading;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-
-import junit.framework.Assert;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
@@ -32,7 +32,7 @@ import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 
 /**
- * 
+ *
  */
 @SuppressWarnings({ "restriction" })
 public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
@@ -51,6 +51,14 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 	private IFile uml2File_20B_1;
 	private IFile uml2File_20B_2;
 	private IFile uml2File_20B_3;
+
+	public LoadJobTest_LoadFiles() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_B);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B);
+	}
 
 	@Override
 	protected void setUp() throws Exception {
@@ -83,12 +91,6 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 				DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_2);
 		uml2File_20B_3 = refWks.getReferenceFile(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B,
 				DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_3);
-	}
-
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_B,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B };
 	}
 
 	/**
@@ -175,12 +177,12 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		wakeUp();
 
 		// Check assertions
-		Assert.assertFalse(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
+		assertFalse(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -331,18 +333,18 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		wakeUp();
 
 		// Check assertions
-		Assert.assertFalse(messages[0], shouldCreateJob[0]);
-		Assert.assertFalse(messages[1], shouldCreateJob[1]);
-		Assert.assertFalse(messages[2], shouldCreateJob[2]);
-		Assert.assertFalse(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertFalse(messages[6], shouldCreateJob[6]);
-		Assert.assertFalse(messages[7], shouldCreateJob[7]);
-		Assert.assertFalse(messages[8], shouldCreateJob[8]);
-		Assert.assertFalse(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
+		assertFalse(messages[0], shouldCreateJob[0]);
+		assertFalse(messages[1], shouldCreateJob[1]);
+		assertFalse(messages[2], shouldCreateJob[2]);
+		assertFalse(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertFalse(messages[6], shouldCreateJob[6]);
+		assertFalse(messages[7], shouldCreateJob[7]);
+		assertFalse(messages[8], shouldCreateJob[8]);
+		assertFalse(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -493,18 +495,18 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		wakeUp();
 
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertFalse(messages[6], shouldCreateJob[6]);
-		Assert.assertFalse(messages[7], shouldCreateJob[7]);
-		Assert.assertFalse(messages[8], shouldCreateJob[8]);
-		Assert.assertFalse(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertFalse(messages[6], shouldCreateJob[6]);
+		assertFalse(messages[7], shouldCreateJob[7]);
+		assertFalse(messages[8], shouldCreateJob[8]);
+		assertFalse(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -586,12 +588,12 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		wakeUp();
 
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -777,26 +779,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		wakeUp();
 
 		// Check assertions
-		Assert.assertFalse(messages[0], shouldCreateJob[0]);
-		Assert.assertFalse(messages[1], shouldCreateJob[1]);
-		Assert.assertFalse(messages[2], shouldCreateJob[2]);
-		Assert.assertFalse(messages[3], shouldCreateJob[3]);
-		Assert.assertFalse(messages[4], shouldCreateJob[4]);
-		Assert.assertFalse(messages[5], shouldCreateJob[5]);
-		Assert.assertFalse(messages[6], shouldCreateJob[6]);
-		Assert.assertFalse(messages[7], shouldCreateJob[7]);
-		Assert.assertFalse(messages[8], shouldCreateJob[8]);
-		Assert.assertFalse(messages[9], shouldCreateJob[9]);
-		Assert.assertFalse(messages[10], shouldCreateJob[10]);
-		Assert.assertFalse(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertFalse(messages[0], shouldCreateJob[0]);
+		assertFalse(messages[1], shouldCreateJob[1]);
+		assertFalse(messages[2], shouldCreateJob[2]);
+		assertFalse(messages[3], shouldCreateJob[3]);
+		assertFalse(messages[4], shouldCreateJob[4]);
+		assertFalse(messages[5], shouldCreateJob[5]);
+		assertFalse(messages[6], shouldCreateJob[6]);
+		assertFalse(messages[7], shouldCreateJob[7]);
+		assertFalse(messages[8], shouldCreateJob[8]);
+		assertFalse(messages[9], shouldCreateJob[9]);
+		assertFalse(messages[10], shouldCreateJob[10]);
+		assertFalse(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -981,26 +983,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		wakeUp();
 
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertFalse(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertFalse(messages[5], shouldCreateJob[5]);
-		Assert.assertTrue(messages[6], shouldCreateJob[6]);
-		Assert.assertTrue(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertFalse(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertFalse(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertFalse(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertFalse(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -1186,26 +1188,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		wakeUp();
 
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertFalse(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertFalse(messages[6], shouldCreateJob[6]);
-		Assert.assertTrue(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertTrue(messages[9], shouldCreateJob[9]);
-		Assert.assertFalse(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertFalse(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertFalse(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertFalse(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -1391,26 +1393,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		wakeUp();
 
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertFalse(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertTrue(messages[6], shouldCreateJob[6]);
-		Assert.assertFalse(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertTrue(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertFalse(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertFalse(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertFalse(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertFalse(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -1589,26 +1591,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		wakeUp();
 		// 1111 1110 1001 1111 1100
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertTrue(messages[6], shouldCreateJob[6]);
-		Assert.assertTrue(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertTrue(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -1787,26 +1789,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		wakeUp();
 		// 1011 1010 1001 1111 1100
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertTrue(messages[6], shouldCreateJob[6]);
-		Assert.assertTrue(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertTrue(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -1984,26 +1986,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertTrue(messages[6], shouldCreateJob[6]);
-		Assert.assertTrue(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertTrue(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -2181,26 +2183,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertTrue(messages[6], shouldCreateJob[6]);
-		Assert.assertTrue(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertTrue(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -2383,26 +2385,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertFalse(messages[4], shouldCreateJob[4]);
-		Assert.assertFalse(messages[5], shouldCreateJob[5]);
-		Assert.assertFalse(messages[6], shouldCreateJob[6]);
-		Assert.assertFalse(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertTrue(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertFalse(messages[4], shouldCreateJob[4]);
+		assertFalse(messages[5], shouldCreateJob[5]);
+		assertFalse(messages[6], shouldCreateJob[6]);
+		assertFalse(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -2585,26 +2587,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertFalse(messages[5], shouldCreateJob[5]);
-		Assert.assertTrue(messages[6], shouldCreateJob[6]);
-		Assert.assertTrue(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertTrue(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertFalse(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -2787,26 +2789,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertFalse(messages[6], shouldCreateJob[6]);
-		Assert.assertTrue(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertTrue(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertFalse(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -2989,26 +2991,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertTrue(messages[6], shouldCreateJob[6]);
-		Assert.assertFalse(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertTrue(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertFalse(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -3190,26 +3192,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertTrue(messages[6], shouldCreateJob[6]);
-		Assert.assertTrue(messages[7], shouldCreateJob[7]);
-		Assert.assertFalse(messages[8], shouldCreateJob[8]);
-		Assert.assertFalse(messages[9], shouldCreateJob[9]);
-		Assert.assertFalse(messages[10], shouldCreateJob[10]);
-		Assert.assertFalse(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertFalse(messages[8], shouldCreateJob[8]);
+		assertFalse(messages[9], shouldCreateJob[9]);
+		assertFalse(messages[10], shouldCreateJob[10]);
+		assertFalse(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -3392,26 +3394,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertTrue(messages[6], shouldCreateJob[6]);
-		Assert.assertTrue(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertFalse(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertFalse(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -3593,26 +3595,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertTrue(messages[6], shouldCreateJob[6]);
-		Assert.assertTrue(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertTrue(messages[9], shouldCreateJob[9]);
-		Assert.assertFalse(messages[10], shouldCreateJob[10]);
-		Assert.assertTrue(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertFalse(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -3794,26 +3796,26 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
-		Assert.assertTrue(messages[5], shouldCreateJob[5]);
-		Assert.assertTrue(messages[6], shouldCreateJob[6]);
-		Assert.assertTrue(messages[7], shouldCreateJob[7]);
-		Assert.assertTrue(messages[8], shouldCreateJob[8]);
-		Assert.assertTrue(messages[9], shouldCreateJob[9]);
-		Assert.assertTrue(messages[10], shouldCreateJob[10]);
-		Assert.assertFalse(messages[11], shouldCreateJob[11]);
-		Assert.assertTrue(messages[12], shouldCreateJob[12]);
-		Assert.assertTrue(messages[13], shouldCreateJob[13]);
-		Assert.assertTrue(messages[14], shouldCreateJob[14]);
-		Assert.assertTrue(messages[15], shouldCreateJob[15]);
-		Assert.assertTrue(messages[16], shouldCreateJob[16]);
-		Assert.assertTrue(messages[17], shouldCreateJob[17]);
-		Assert.assertTrue(messages[18], shouldCreateJob[18]);
-		Assert.assertTrue(messages[19], shouldCreateJob[19]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertFalse(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
+		assertTrue(messages[14], shouldCreateJob[14]);
+		assertTrue(messages[15], shouldCreateJob[15]);
+		assertTrue(messages[16], shouldCreateJob[16]);
+		assertTrue(messages[17], shouldCreateJob[17]);
+		assertTrue(messages[18], shouldCreateJob[18]);
+		assertTrue(messages[19], shouldCreateJob[19]);
 
 		// Ends the test by verifying that everything is fine
 		finish();

@@ -1,18 +1,21 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.testutils.integration.referenceworkspace;
+
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -26,7 +29,7 @@ import org.eclipse.sphinx.testutils.integration.AbstractReferenceWorkspace;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.internal.Activator;
 
 /**
- * 
+ *
  */
 @SuppressWarnings("nls")
 public class DefaultTestReferenceWorkspace extends AbstractReferenceWorkspace {
@@ -154,8 +157,8 @@ public class DefaultTestReferenceWorkspace extends AbstractReferenceWorkspace {
 	public TransactionalEditingDomain editingDomain20;
 	public TransactionalEditingDomain editingDomainUml2;
 
-	public DefaultTestReferenceWorkspace(String[] referenceProjectNames) {
-		super(referenceProjectNames);
+	public DefaultTestReferenceWorkspace(Set<String> referenceProjectSubset) {
+		super(referenceProjectSubset);
 	}
 
 	public Plugin getReferenceWorkspacePlugin() {
@@ -235,5 +238,4 @@ public class DefaultTestReferenceWorkspace extends AbstractReferenceWorkspace {
 		return new String[] { HB_PROJECT_NAME_10_A, HB_PROJECT_NAME_10_B, HB_PROJECT_NAME_10_C, HB_PROJECT_NAME_10_D, HB_PROJECT_NAME_10_E,
 				HB_PROJECT_NAME_10_F, HB_PROJECT_NAME_20_A, HB_PROJECT_NAME_20_B, HB_PROJECT_NAME_20_C, HB_PROJECT_NAME_20_D, HB_PROJECT_NAME_20_E };
 	}
-
 }

@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [410825] Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
  *     itemis - [418005] Add support for model files with multiple root elements
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
  *
  * </copyright>
  */
@@ -19,6 +20,7 @@ package org.eclipse.sphinx.tests.emf.integration.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -91,6 +93,18 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 	List<String> hbProject20EResourcesUml2;
 	int resourcesUml2FromHbProject20_E;
 
+	public EcorePlatformUtilTest2() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_F);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E);
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -124,21 +138,6 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		hbProject20EResourcesUml2 = refWks.getReferenceFileNames(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E, UML2MMDescriptor.INSTANCE);
 		resourcesUml2FromHbProject20_E = hbProject20EResourcesUml2.size();
 
-	}
-
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_F,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E };
-	}
-
-	@Override
-	protected String[][] getProjectReferences() {
-		return new String[][] { { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D },
-				{ DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D },
-				{ DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E } };
 	}
 
 	/**
@@ -1155,7 +1154,8 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		assertEquals(resource20FromHbProject20_E, resourcesInModel.size());
 
 		resourcesInModel = EcorePlatformUtil.getResourcesInModel(newHb10Resource, false);
-		// In case the resource doesnot belong to any modeldescriptor, resources in resourceSet will be return
+		// In case the resource does not belong to any model, all resources in underlying resource set must be returned,
+		// i.e., all Hummingbird 2.0 resources in the workspace plus additional Hummingbird 1.0 resource
 		assertEquals(resourcesInEditingDomain20Count, resourcesInModel.size());
 		// --------------------------------------------------
 		// Create UML2 resource in EditingDomain20
@@ -1177,9 +1177,10 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		assertTrue(resourcesInScope.contains(newUml2Resource));
 
 		resourcesInScope = EcorePlatformUtil.getResourcesInScope(newUml2Resource, false);
-		// Hummingbird 2.0 resources in hbProject20_E plus additional Hummingbird 1.0 resource and additional UML2
-		// resource must be returned
-		assertEquals(resourcesUml2FromHbProject20_E + 2, resourcesInScope.size());
+		// In case the resource does not belong to any model, all resources in underlying resource set must be returned,
+		// i.e., all Hummingbird 2.0 resources in the workspace plus additional Hummingbird 1.0 resource and additional
+		// UML2 resource
+		assertEquals(resourcesInEditingDomain20Count, resourcesInScope.size());
 
 		// ======================================
 		// Null Resource
@@ -1868,7 +1869,6 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		assertFalse(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3));
 		assertFalse(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_4));
 		assertFalse(resourceNameInScope.contains(DefaultTestReferenceWorkspace.HB_FILE_NAME_21_20A_4));
-
 	}
 
 	public void testGetResourceInModel_EObject_InResourceSet_WithoutEditingDomain() {
@@ -2288,9 +2288,10 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		assertEquals(resource20FromHbProject20_E + 1, resourcesInScope.size());
 
 		resourcesInScope = EcorePlatformUtil.getResourcesInScope(newUml2Resource, false);
-		// Hummingbird 2.0 resources in hbProject20_E plus additional Hummingbird 1.0 resource and additional UML2
-		// resource must be returned
-		assertEquals(resourcesUml2FromHbProject20_E + 2, resourcesInScope.size());
+		// In case the resource does not belong to any model, all resources in underlying resource set must be returned,
+		// i.e., all Hummingbird 2.0 resources in the workspace plus additional Hummingbird 1.0 resource and additional
+		// UML2 resource
+		assertEquals(resourcesInEditingDomain20Count, resourcesInScope.size());
 
 		// ===================================================
 		// Null Resource

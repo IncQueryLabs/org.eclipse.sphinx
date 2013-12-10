@@ -1,27 +1,27 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [418005] Add support for model files with multiple root elements
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.workspace.integration.inmemoryresources;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -31,7 +31,6 @@ import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
-import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 
@@ -44,9 +43,10 @@ public class HandleResourcesOnlyInMemoryTest extends DefaultIntegrationTestCase 
 	private static final URI WORKSPACE_RESOURCE_URI = URI.createPlatformResourceURI(WORKSPACE_RESOURCE_PATH, true);
 	private static final URI ANY_RESOURCE_URI = URI.createPlatformResourceURI(ANY_RESOURCE_PATH, true);
 
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A };
+	public HandleResourcesOnlyInMemoryTest() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A);
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class HandleResourcesOnlyInMemoryTest extends DefaultIntegrationTestCase 
 		// is not handle by modelLoadManager unloadMoadels when test projects are deleted
 		IFile file = EcorePlatformUtil.getFile(ANY_RESOURCE_URI);
 		ModelLoadManager.INSTANCE.unloadFile(file, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		super.tearDown();
 	}
@@ -73,7 +73,7 @@ public class HandleResourcesOnlyInMemoryTest extends DefaultIntegrationTestCase 
 		// system and add it to editingDomain relative to HB20 release.
 		EcorePlatformUtil.addNewModelResource(refWks.editingDomain20, resourcePath, Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId(),
 				modelRoot, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// We ensure that no underlying file exist on file system for our newly created resource.
 		assertFalse(EcoreResourceUtil.exists(WORKSPACE_RESOURCE_URI));
@@ -111,7 +111,7 @@ public class HandleResourcesOnlyInMemoryTest extends DefaultIntegrationTestCase 
 		// system and add it to editingDomain relative to HB20 release.
 		EcorePlatformUtil.addNewModelResource(refWks.editingDomain20, resourcePath, Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId(),
 				modelRoot, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// We ensure that no underlying file exist on file system for our newly created resource.
 		assertFalse(EcoreResourceUtil.exists(ANY_RESOURCE_URI));

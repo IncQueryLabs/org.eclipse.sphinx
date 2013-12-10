@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.platform.integration.util;
@@ -36,7 +37,6 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.examples.hummingbird.ide.natures.HummingbirdNature;
@@ -48,12 +48,16 @@ import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestRe
 @SuppressWarnings("nls")
 public class ExtendedPlatformTest extends DefaultIntegrationTestCase {
 
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_F, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A };
+	public ExtendedPlatformTest() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_D);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_F);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E);
 	}
 
 	/**
@@ -384,7 +388,7 @@ public class ExtendedPlatformTest extends DefaultIntegrationTestCase {
 		// IFile nullFile = null;
 		// assertNull(ExtendedPlatform.getContentTypeId(nullFile));
 		refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A).close(new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		IFile unaccessableFile = refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A).getFile(
 				DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
@@ -396,7 +400,7 @@ public class ExtendedPlatformTest extends DefaultIntegrationTestCase {
 		// (2) File input not null and sessionProperty instanceof String
 		// #############################################################
 		refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A).open(new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		IFile hbFile_10A_1 = refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A).getFile(
 				DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
@@ -812,7 +816,7 @@ public class ExtendedPlatformTest extends DefaultIntegrationTestCase {
 		// ==========================================================
 		// File input is unloaded
 		refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A).close(new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		IPath unaccessableFilePath = refWks.hbProject10_A.getLocation().append(DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
 		File unaccessableFile = unaccessableFilePath.toFile();

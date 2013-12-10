@@ -10,10 +10,13 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [406564] BasicWorkspaceResourceLoader#getResource should not delegate to super
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
  *
  * </copyright>
  */
 package org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand;
+
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -79,8 +82,8 @@ public class XtendXpandTestReferenceWorkspace extends AbstractReferenceWorkspace
 	public TransactionalEditingDomain editingDomainUml2;
 	public TransactionalEditingDomain editingDomain20;
 
-	public XtendXpandTestReferenceWorkspace(String[] referenceProjectNames) {
-		super(referenceProjectNames);
+	public XtendXpandTestReferenceWorkspace(Set<String> referenceProjectSubset) {
+		super(referenceProjectSubset);
 	}
 
 	public Plugin getReferenceWorkspacePlugin() {

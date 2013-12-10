@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked
  *     itemis - Fixed EObjectUtilTest that was failing since server infrastructure upgrade at Eclipse Foundation
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
  *
  * </copyright>
  */
@@ -19,6 +20,8 @@ package org.eclipse.sphinx.tests.emf.integration.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -60,7 +63,22 @@ public class EObjectUtilTest2 extends DefaultIntegrationTestCase {
 	private Component component20E_1_1;
 
 	public EObjectUtilTest2() {
-		super(false);
+		setRecycleReferenceWorkspaceOfPreviousTestRun(false);
+
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E);
+
+		// Remove all project references except:
+		// HB_PROJECT_NAME_20_E -> HB_PROJECT_NAME_20_D
+		Map<String, Set<String>> projectReferences = getProjectReferences();
+		projectReferences.remove(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E);
+		projectReferences.remove(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
 	}
 
 	@Override
@@ -159,18 +177,6 @@ public class EObjectUtilTest2 extends DefaultIntegrationTestCase {
 		assertEquals(2, application_20E_1.getComponents().size());
 
 		component20E_1_1 = application_20E_1.getComponents().get(0);
-	}
-
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E };
-	}
-
-	@Override
-	protected String[][] getProjectReferences() {
-		return new String[][] { { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D } };
 	}
 
 	public void testGetInverseReferences_StandAloneProject() throws OperationCanceledException, ExecutionException {

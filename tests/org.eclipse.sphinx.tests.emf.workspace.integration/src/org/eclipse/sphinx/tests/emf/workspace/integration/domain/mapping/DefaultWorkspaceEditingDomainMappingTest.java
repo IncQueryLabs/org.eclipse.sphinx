@@ -1,20 +1,22 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.workspace.integration.domain.mapping;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -35,14 +37,17 @@ import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestRe
 public class DefaultWorkspaceEditingDomainMappingTest extends DefaultIntegrationTestCase {
 
 	private IWorkspaceEditingDomainMapping editingDomainMapping;
-	String idEditingDomain20 = "editingDomainFor_org.eclipse.sphinx.examples.hummingbird20";
-	String idEditingDomain10 = "editingDomainFor_org.eclipse.sphinx.examples.hummingbird10";
-	String idEditingDomainUml2 = "editingDomainFor_org.eclipse.sphinx.examples.uml2";
+	private String idEditingDomain20 = "editingDomainFor_org.eclipse.sphinx.examples.hummingbird20";
+	private String idEditingDomain10 = "editingDomainFor_org.eclipse.sphinx.examples.hummingbird10";
+	private String idEditingDomainUml2 = "editingDomainFor_org.eclipse.sphinx.examples.uml2";
 
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_F,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E };
+	public DefaultWorkspaceEditingDomainMappingTest() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_F);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E);
 	}
 
 	@Override

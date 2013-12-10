@@ -1,23 +1,23 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.workspace.integration.internal.loading;
 
 import java.util.Collection;
 import java.util.Collections;
-
-import junit.framework.Assert;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
@@ -31,13 +31,15 @@ import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 
 /**
- * 
+ *
  */
 @SuppressWarnings({ "restriction" })
 public class LoadJobTest_LoadModel extends AbstractLoadJobTest {
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B };
+
+	public LoadJobTest_LoadModel() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B);
 	}
 
 	/**
@@ -105,11 +107,11 @@ public class LoadJobTest_LoadModel extends AbstractLoadJobTest {
 		wakeUp();
 
 		// Check assertions
-		Assert.assertFalse(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
+		assertFalse(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -180,11 +182,11 @@ public class LoadJobTest_LoadModel extends AbstractLoadJobTest {
 		wakeUp();
 
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertFalse(messages[1], shouldCreateJob[1]);
-		Assert.assertTrue(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertFalse(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -255,11 +257,11 @@ public class LoadJobTest_LoadModel extends AbstractLoadJobTest {
 		wakeUp();
 
 		// Check assertions
-		Assert.assertTrue(messages[0], shouldCreateJob[0]);
-		Assert.assertTrue(messages[1], shouldCreateJob[1]);
-		Assert.assertFalse(messages[2], shouldCreateJob[2]);
-		Assert.assertTrue(messages[3], shouldCreateJob[3]);
-		Assert.assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertFalse(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -331,11 +333,11 @@ public class LoadJobTest_LoadModel extends AbstractLoadJobTest {
 		wakeUp();
 
 		// Check assertions
-		Assert.assertFalse(messages[0], shouldCreateJob[0]);
-		Assert.assertFalse(messages[1], shouldCreateJob[1]);
-		Assert.assertFalse(messages[2], shouldCreateJob[2]);
-		Assert.assertFalse(messages[3], shouldCreateJob[3]);
-		Assert.assertFalse(messages[4], shouldCreateJob[4]);
+		assertFalse(messages[0], shouldCreateJob[0]);
+		assertFalse(messages[1], shouldCreateJob[1]);
+		assertFalse(messages[2], shouldCreateJob[2]);
+		assertFalse(messages[3], shouldCreateJob[3]);
+		assertFalse(messages[4], shouldCreateJob[4]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -406,11 +408,11 @@ public class LoadJobTest_LoadModel extends AbstractLoadJobTest {
 		wakeUp();
 
 		// Check assertions
-		Assert.assertFalse(messages[0], shouldCreateJob[0]);
-		Assert.assertFalse(messages[1], shouldCreateJob[1]);
-		Assert.assertFalse(messages[2], shouldCreateJob[2]);
-		Assert.assertFalse(messages[3], shouldCreateJob[3]);
-		Assert.assertFalse(messages[4], shouldCreateJob[4]);
+		assertFalse(messages[0], shouldCreateJob[0]);
+		assertFalse(messages[1], shouldCreateJob[1]);
+		assertFalse(messages[2], shouldCreateJob[2]);
+		assertFalse(messages[3], shouldCreateJob[3]);
+		assertFalse(messages[4], shouldCreateJob[4]);
 
 		// Ends the test by verifying that everything is fine
 		finish();

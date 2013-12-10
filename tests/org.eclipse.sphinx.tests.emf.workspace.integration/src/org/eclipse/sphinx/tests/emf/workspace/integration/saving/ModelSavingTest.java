@@ -1,26 +1,26 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [418005] Add support for model files with multiple root elements
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.workspace.integration.saving;
 
 import java.io.ByteArrayInputStream;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
@@ -29,7 +29,6 @@ import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.examples.hummingbird10.Application;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
-import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 import org.eclipse.uml2.uml.Model;
@@ -39,10 +38,12 @@ import org.eclipse.uml2.uml.UMLPackage;
 @SuppressWarnings("nls")
 public class ModelSavingTest extends DefaultIntegrationTestCase {
 
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_B,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A };
+	public ModelSavingTest() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_B);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A);
 	}
 
 	public void testSaveNewModelAndSaveProjects() throws Exception {
@@ -113,11 +114,7 @@ public class ModelSavingTest extends DefaultIntegrationTestCase {
 		IPath resourcePath = refWks.hbProject10_A.getFullPath().append("/" + resourceName);
 		Model uml2ModelRoot = UMLFactory.eINSTANCE.createModel();
 		EcorePlatformUtil.saveNewModelResource(refWks.editingDomain10, resourcePath, UMLPackage.eCONTENT_TYPE, uml2ModelRoot, false, null);
-		try {
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
-		} catch (Exception ex) {
-			// Ignore exception
-		}
+		waitForModelLoading();
 
 		ModelSaveManager.INSTANCE.saveProject(refWks.hbProject10_A, false, null);
 		ModelSaveManager.INSTANCE.saveProject(refWks.hbProject10_B, false, null);

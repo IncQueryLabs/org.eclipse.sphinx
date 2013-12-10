@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.workspace.integration.loading;
@@ -17,11 +18,10 @@ package org.eclipse.sphinx.tests.emf.workspace.integration.loading;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
@@ -29,7 +29,6 @@ import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
-import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 
@@ -53,6 +52,15 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 	int resources20FromHbProject20_E;
 	List<String> hbProject20EResourcesUml2;
 	int resourcesUml2FromHbProject20_E;
+
+	public ModelLoadManagerTest() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E);
+	}
 
 	@Override
 	protected void setUp() throws Exception {
@@ -81,19 +89,13 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 	}
 
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E };
-	}
-
 	// =================================================================================
 	// ========================== UNLOAD =============================================
 	// =================================================================================
 /**
 	 * Test method for {@link ModelLoadManager#unloadProjects(Collection, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
-	 * 
+	 *
+	 *
 	 * @throws Exception
 	 */
 	public void testUnloadProjects() throws Exception {
@@ -115,7 +117,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		/* Test cases */
 		// Unload projects without its referenced
 		ModelLoadManager.INSTANCE.unloadProjects(projectList20, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_E;
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_E;
@@ -134,7 +136,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Unload projects including its referenced
 		ModelLoadManager.INSTANCE.unloadProjects(projectList20, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_D;
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_D;
@@ -171,8 +173,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 	 * @throws InterruptedException
 	 * @throws OperationCanceledException
 	 *             Test method for
-	 *             {@link ModelLoadManager#unloadProjects(Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
-
+	 *             {@link ModelLoadManager#unloadProjects(Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void testUnloadProjectsWithMMDescriptor() throws Exception {
 		/* Creation of test variables */
@@ -195,7 +196,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// Unload projects without its referenced
 		// Unload Projects 20 with Hummingbird10MM
 		ModelLoadManager.INSTANCE.unloadProjects(projectList20, false, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		// Verify that resources were not unloaded
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -207,7 +208,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertReferenceProjectAllResourcesLoaded(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B);
 		// Unload Projects 20 with Hummingbird20MM
 		ModelLoadManager.INSTANCE.unloadProjects(projectList20, false, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		// Verify that resourcex20 in projects unloaded
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_E;
 
@@ -224,7 +225,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// Unload projects including its referenced
 		// Unload Projects 20 with Hummingbird10MM
 		ModelLoadManager.INSTANCE.unloadProjects(projectList20, true, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		// Verify that resources in projects were not unloaded
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -236,7 +237,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Unload Projects 20 with Hummingbird20MM
 		ModelLoadManager.INSTANCE.unloadProjects(projectList20, true, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		// Verify that resources in projects were unloaded
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_D;
 
@@ -253,7 +254,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Unload Projects 20 with UML2MM
 		ModelLoadManager.INSTANCE.unloadProjects(projectList20, true, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		// Verify that resources in projects were unloaded
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_E - resourcesUml2FromHbProject20_D;
 
@@ -269,7 +270,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// Unload project collection: mixed HB10 and HB20 Projects
 		// Unload with Hummingbird10MM
 		ModelLoadManager.INSTANCE.unloadProjects(projectListMixed1020, true, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		editingDomain10ResourceCount = editingDomain10ResourceCount - resources10FromHbProject10_A;
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -283,7 +284,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Unload with Hummingbird20MM
 		ModelLoadManager.INSTANCE.unloadProjects(projectListMixed1020, true, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_B;
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -297,7 +298,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertReferenceProjectResourcesNotLoaded(Hummingbird20MMDescriptor.INSTANCE, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B);
 		// Unload with UML2MM
 		ModelLoadManager.INSTANCE.unloadProjects(projectListMixed1020, true, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_B;
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -316,7 +317,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#unloadProject(IProject, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testUnloadProject() throws Exception {
@@ -336,7 +337,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// Unload of a simple project
 		// HB20Project
 		ModelLoadManager.INSTANCE.unloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_B;
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_B;
@@ -352,7 +353,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// HB10Project
 		ModelLoadManager.INSTANCE.unloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A), true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount - resources10FromHbProject10_A;
 
@@ -367,7 +368,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ===============================================================
 		// unload of a project and its referenced projects.
 		ModelLoadManager.INSTANCE.unloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_E - resources20FromHbProject20_D;
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_E - resourcesUml2FromHbProject20_D;
@@ -385,8 +386,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for
-	 * {@link ModelLoadManager#unloadProject(IProject, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
-
+	 * {@link ModelLoadManager#unloadProject(IProject, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void testUnloadProjectWithMMDescriptor() throws Exception {
 		/* Creation of test variables */
@@ -407,7 +407,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// HB10Project with its MMDescriptor
 		ModelLoadManager.INSTANCE.unloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A), true,
 				Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount - resources10FromHbProject10_A;
 
@@ -423,7 +423,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// -- with Hummingbird10MM
 		ModelLoadManager.INSTANCE.unloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -436,7 +436,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// -- with Hummingbird20MM
 		ModelLoadManager.INSTANCE.unloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_B;
 
@@ -453,7 +453,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// --with UML2MM
 		ModelLoadManager.INSTANCE.unloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_B;
 
@@ -470,7 +470,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// -- with HB20MM
 		ModelLoadManager.INSTANCE.unloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), true,
 				Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_E - resources20FromHbProject20_D;
 
@@ -488,7 +488,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ---with UML2MM
 		ModelLoadManager.INSTANCE.unloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), true,
 				UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_E - resourcesUml2FromHbProject20_D;
 
@@ -504,8 +504,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for
-	 * {@link ModelLoadManager#unloadModels(Collection, boolean, org.eclipse.core.runtime.IProgressMonitor)
-
+	 * {@link ModelLoadManager#unloadModels(Collection, boolean, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void testUnloadModels() throws Exception {
 		/* Creation of test variables */
@@ -532,13 +531,13 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 				Hummingbird20MMDescriptor.INSTANCE));
 
 		List<IModelDescriptor> modelListUml2 = new ArrayList<IModelDescriptor>();
-		modelListUml2.addAll(ModelDescriptorRegistry.INSTANCE.getModels(refWks
-				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), UML2MMDescriptor.INSTANCE));
+		modelListUml2.addAll(ModelDescriptorRegistry.INSTANCE.getModels(
+				refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), UML2MMDescriptor.INSTANCE));
 
 		// ===============================================================
 		// Unload mixedModelList1020Uml2
 		ModelLoadManager.INSTANCE.unloadModels(mixedModelList1020Uml2, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_B;
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_B;
@@ -555,7 +554,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// ===============================================================
 		ModelLoadManager.INSTANCE.unloadModels(modelList20, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_E - resources20FromHbProject20_D;
 
@@ -572,7 +571,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ===============================================================
 		// unload of a project and its referenced projects.
 		ModelLoadManager.INSTANCE.unloadModels(modelListUml2, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_E - resourcesUml2FromHbProject20_D;
 
@@ -612,7 +611,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// ===============================================================
 		ModelLoadManager.INSTANCE.unloadModels(modelList20Uml2, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_E;
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_E;
@@ -630,8 +629,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for
-	 * {@link ModelLoadManager#unloadModel(org.eclipse.sphinx.emf.model.IModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
-
+	 * {@link ModelLoadManager#unloadModel(org.eclipse.sphinx.emf.model.IModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void testUnloadModel() throws Exception {
 		/* Creation of test variables */
@@ -665,7 +663,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ===============================================================
 		// Unload model 10 in hbProject10A
 		ModelLoadManager.INSTANCE.unloadModel(hb10Model_10A, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount - resources10FromHbProject10_A;
 
@@ -680,7 +678,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ===============================================================
 		// Unload model 20 of hbProject20B
 		ModelLoadManager.INSTANCE.unloadModel(hb20Model_20B, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_B;
 
@@ -697,7 +695,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Unload model Uml2 of hbProject20B
 		ModelLoadManager.INSTANCE.unloadModel(uml2Model_20B, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_B;
 
@@ -712,7 +710,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertReferenceProjectAllResourcesNotLoaded(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B);
 		// ===============================================================
 		ModelLoadManager.INSTANCE.unloadModel(hb20Model_20E, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_E - resources20FromHbProject20_D;
 
@@ -730,7 +728,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ===============================================================
 		// unload of a project and its referenced projects.
 		ModelLoadManager.INSTANCE.unloadModel(uml2Model_20E, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_E - resourcesUml2FromHbProject20_D;
 
@@ -771,7 +769,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// ===============================================================
 		ModelLoadManager.INSTANCE.unloadModel(hb20Model_20E, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - resources20FromHbProject20_E;
 
@@ -788,7 +786,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ===============================================================
 		// unload of a project and its referenced projects.
 		ModelLoadManager.INSTANCE.unloadModel(uml2Model_20E, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - resourcesUml2FromHbProject20_E;
 
@@ -804,8 +802,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for
-	 * {@link ModelLoadManager#unloadFiles(Collection, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
-
+	 * {@link ModelLoadManager#unloadFiles(Collection, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 
 	public void testUnloadFiles() throws Exception {
@@ -923,7 +920,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomain20, resource20_B_3);
 
 		ModelLoadManager.INSTANCE.unloadFiles(filesList_20_Only, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - filesList_20_Only.size();
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -939,7 +936,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomain10, resource10_A_3);
 
 		ModelLoadManager.INSTANCE.unloadFiles(filesList_10_Only, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount - filesList_10_Only.size();
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -951,7 +948,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomain10, resource10_A_3);
 
 		ModelLoadManager.INSTANCE.unloadFiles(filesList_10_20_Mixed_1, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount - 1;
 		editingDomain20ResourceCount = editingDomain20ResourceCount - 1;
@@ -966,8 +963,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for
-	 * {@link ModelLoadManager#unloadFiles(Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
-
+	 * {@link ModelLoadManager#unloadFiles(Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void testUnloadFilesWithMMDescriptor() throws Exception {
 		/* Creation of test variables */
@@ -1086,7 +1082,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ==============================================
 		// Unload hb20 files with Hummingbird10MMDescriptor
 		ModelLoadManager.INSTANCE.unloadFiles(filesList_20_Only, Hummingbird10MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Verify that no resource was unloaded
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1095,7 +1091,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Unload hb20 files with Hummingbird20MMDescriptor
 		ModelLoadManager.INSTANCE.unloadFiles(filesList_20_Only, Hummingbird20MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - filesList_20_Only.size();
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1113,7 +1109,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ==============================================
 		// Unload hb10 files with Uml2MM
 		ModelLoadManager.INSTANCE.unloadFiles(filesList_10_Only, UML2MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// verify that no resource was unloaded
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1122,7 +1118,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Unload hb10 files with Hummingbird10MMDescriptor
 		ModelLoadManager.INSTANCE.unloadFiles(filesList_10_Only, Hummingbird10MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount - filesList_10_Only.size();
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1136,7 +1132,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ==============================================
 		// Unload mixed models with various releases with Hummingbird10MMDescriptor
 		ModelLoadManager.INSTANCE.unloadFiles(filesList_10_20_Mixed_1, Hummingbird10MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1148,7 +1144,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Unload mixed models with various release with Hummingbird20MMDescriptor
 		ModelLoadManager.INSTANCE.unloadFiles(filesList_10_20_Mixed_1, Hummingbird20MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1160,7 +1156,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// ==============================================
 		ModelLoadManager.INSTANCE.unloadFiles(filesList_10_20_Mixed_2, Hummingbird10MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1173,7 +1169,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomain10, resource10_A_3);
 
 		ModelLoadManager.INSTANCE.unloadFiles(filesList_10_20_Mixed_2, Hummingbird20MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - 3;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1192,7 +1188,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#unloadFile(IFile, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testUnloadFile() throws Exception {
@@ -1246,7 +1242,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* test unload file with file only */
 		ModelLoadManager.INSTANCE.unloadFile(hb_file_Project20_B_1, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1259,7 +1255,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* test unload file with file only */
 		ModelLoadManager.INSTANCE.unloadFile(hb_file_Project20_B_2, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1272,7 +1268,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* test unload file with file only */
 		ModelLoadManager.INSTANCE.unloadFile(hb_file_Project20_B_3, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1285,7 +1281,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* test unload file with file only */
 		ModelLoadManager.INSTANCE.unloadFile(uml2_file_Project20_B_1, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1300,7 +1296,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* test unload file with file only */
 		ModelLoadManager.INSTANCE.unloadFile(hb_file_Project10_A_1, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1312,7 +1308,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomain10, hb_file_Project10_A_3.getName());
 		/* test unload file with file only */
 		ModelLoadManager.INSTANCE.unloadFile(hb_file_Project10_A_2, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1325,7 +1321,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* test unload file with file only */
 		ModelLoadManager.INSTANCE.unloadFile(hb_file_Project10_A_3, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1340,7 +1336,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#unloadFile(IFile, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testUnloadFileWithMMDescriptor() throws Exception {
@@ -1394,7 +1390,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* test unload file withfile and metamodel descriptor */
 		ModelLoadManager.INSTANCE.unloadFile(uml2_file_Project20_B_1, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -1406,7 +1402,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* test unload file withfile and metamodel descriptor */
 		ModelLoadManager.INSTANCE.unloadFile(uml2_file_Project20_B_1, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -1418,7 +1414,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* test unload file withfile and metamodel descriptor */
 		ModelLoadManager.INSTANCE.unloadFile(uml2_file_Project20_B_1, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1430,7 +1426,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomainUml2, uml2_file_Project20_B_3.getName());
 
 		ModelLoadManager.INSTANCE.unloadFile(hb_file_Project20_D_1, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -1442,7 +1438,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* test unload file with file and metamodel descriptor */
 		ModelLoadManager.INSTANCE.unloadFile(hb_file_Project20_D_1, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1455,7 +1451,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* test unload file with file and metamodel descriptor */
 		ModelLoadManager.INSTANCE.unloadFile(hb_file_Project20_D_2, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1467,7 +1463,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomain20, hb_file_Project20_D_3.getName());
 		/* test unload file with file and metamodel descriptor */
 		ModelLoadManager.INSTANCE.unloadFile(hb_file_Project20_D_3, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1482,7 +1478,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* test unload file with file and metamodel descriptor */
 		ModelLoadManager.INSTANCE.unloadFile(hb_file_Project10_A_1, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -1494,7 +1490,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* test unload file with file and metamodel descriptor */
 		ModelLoadManager.INSTANCE.unloadFile(hb_file_Project10_A_1, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount - 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1512,7 +1508,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 	// =================================================================================
 /**
 	 * Test method for {@link ModelLoadManager#loadFile(IFile, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 
@@ -1557,7 +1553,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// =======================================================
 		/* Load file HB 20 */
 		ModelLoadManager.INSTANCE.loadFile(hb_file_Project20_B_1, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1567,7 +1563,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomain20, DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20B_1);
 		// --------------------
 		ModelLoadManager.INSTANCE.loadFile(hb_file_Project20_B_2, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1577,7 +1573,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomain20, DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20B_2);
 		// --------------------
 		ModelLoadManager.INSTANCE.loadFile(hb_file_Project20_B_3, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1588,7 +1584,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// =======================================================
 		/* Load file Uml2 file */
 		ModelLoadManager.INSTANCE.loadFile(uml2_file_Project20_B_1, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1598,7 +1594,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_1);
 		// --------------------
 		ModelLoadManager.INSTANCE.loadFile(uml2_file_Project20_B_2, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1609,7 +1605,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// =======================================================
 		/* Load file HB 10 file */
 		ModelLoadManager.INSTANCE.loadFile(hb_file_Project10_A_1, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1622,7 +1618,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#loadFile(IFile, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testLoadFileWithMMDescriptor() throws Exception {
@@ -1661,7 +1657,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		/* Load HB 20 file with metamodelDescriptor */
 
 		ModelLoadManager.INSTANCE.loadFile(hb_file_Project20_D_1, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -1670,7 +1666,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomain20, DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1);
 		// -----------------
 		ModelLoadManager.INSTANCE.loadFile(hb_file_Project20_D_1, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -1680,7 +1676,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ----------------
 
 		ModelLoadManager.INSTANCE.loadFile(hb_file_Project20_D_1, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1692,7 +1688,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		/* Load Uml2 file with metamodelDescriptor */
 
 		ModelLoadManager.INSTANCE.loadFile(uml2_file_Project20_D_1, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -1701,7 +1697,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1);
 		// -------------------------
 		ModelLoadManager.INSTANCE.loadFile(uml2_file_Project20_D_1, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -1710,7 +1706,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_1);
 		// -------------------------
 		ModelLoadManager.INSTANCE.loadFile(uml2_file_Project20_D_1, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1722,7 +1718,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		/* Load HB 10 file with metamodelDescriptor */
 
 		ModelLoadManager.INSTANCE.loadFile(hb_file_Project10_A_1, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -1731,7 +1727,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomain10, DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
 		// --------------------------
 		ModelLoadManager.INSTANCE.loadFile(hb_file_Project10_A_1, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -1740,7 +1736,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomain10, DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
 		// ------------------------------
 		ModelLoadManager.INSTANCE.loadFile(hb_file_Project10_A_1, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1752,7 +1748,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#loadFiles(Collection, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testLoadFiles() throws Exception {
@@ -1843,7 +1839,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* load file with file only */
 		ModelLoadManager.INSTANCE.loadFiles(hb_20_files, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + hb_20_files.size();
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1854,7 +1850,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomain20, DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20D_1);
 
 		ModelLoadManager.INSTANCE.loadFiles(hb_10_files, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount + hb_10_files.size();
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1864,7 +1860,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomain10, DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_1);
 
 		ModelLoadManager.INSTANCE.loadFiles(uml2_files, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + uml2_files.size();
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1875,7 +1871,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_1);
 
 		ModelLoadManager.INSTANCE.loadFiles(hb_10_20_files, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount + 1;
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 1;
@@ -1887,7 +1883,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomain10, DefaultTestReferenceWorkspace.HB_FILE_NAME_10_10A_2);
 
 		ModelLoadManager.INSTANCE.loadFiles(uml2_hb_10_20_files, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount + 1;
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 2;
@@ -1906,7 +1902,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#loadFiles(Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testLoadFilesWithMMDescriptor() throws Exception {
@@ -1953,7 +1949,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		/* load file with file and metamodel descriptor */
 
 		ModelLoadManager.INSTANCE.loadFiles(uml2_hb_10_20_files, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1967,7 +1963,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_2);
 
 		ModelLoadManager.INSTANCE.loadFiles(uml2_hb_10_20_files, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 2;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1981,7 +1977,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_2);
 
 		ModelLoadManager.INSTANCE.loadFiles(uml2_hb_10_20_files, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + 2;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -1997,7 +1993,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#loadProject(IProject, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testLoadProject() throws Exception {
@@ -2014,7 +2010,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		synchronizedUnloadProjects(projectsTestToUnload, true);
 		/* Since all resources previously in the workspace are unloaded we can start testing loadProject method */
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_B;
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + resourcesUml2FromHbProject20_B;
@@ -2031,7 +2027,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_3);
 
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A), false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount + resources10FromHbProject10_A;
 
@@ -2050,7 +2046,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_3);
 
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_E;
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + resourcesUml2FromHbProject20_E + uml2ReferencedFiles_Of_HbProject20_E;
@@ -2084,7 +2080,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_3);
 
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_D;
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - uml2ReferencedFiles_Of_HbProject20_E + resourcesUml2FromHbProject20_D;
@@ -2121,7 +2117,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#loadProject(IProject, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testLoadProjectWithMMDescriptor() throws Exception {
@@ -2141,7 +2137,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// Load Project 20 with Hummingbird10MMDescriptor
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// No resource were loaded
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -2151,7 +2147,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// Load project 20B with Hummingbird20MMDescriptor
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_B;
 
@@ -2170,7 +2166,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + resourcesUml2FromHbProject20_B;
 
@@ -2185,7 +2181,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// Load hb10 project with Hummingbird10MMDescriptor
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A), false,
 				Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount + resources10FromHbProject10_A;
 
@@ -2207,7 +2203,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// Load project with hb20 release
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), false,
 				Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_E;
 		// referenced files of HB_PROJECT_20_D were loaded also :UML2_FILE_NAME_20D_1,UML2_FILE_NAME_20D_2
@@ -2232,7 +2228,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// Load project with Uml2 release
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), false,
 				UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + resourcesUml2FromHbProject20_E + uml2ReferencedFiles_Of_HbProject20_E;
 		// referenced files of HB_PROJECT_20_D were loaded also :UML2_FILE_NAME_20D_1,UML2_FILE_NAME_20D_2
@@ -2258,7 +2254,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// --with hb20 release
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), true,
 				Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_D;
 		// Remove duplicated files in HB_PROJECT_20_D
@@ -2281,7 +2277,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// --with UML2MM
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), true,
 				UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - uml2ReferencedFiles_Of_HbProject20_E + resourcesUml2FromHbProject20_D;
 
@@ -2317,7 +2313,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#loadProjects(Collection, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testLoadProjects() throws Exception {
@@ -2347,7 +2343,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		project10List.add(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A));
 
 		ModelLoadManager.INSTANCE.loadProjects(project20List, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		for (IProject project : project20List) {
 			editingDomain10ResourceCount = editingDomain10ResourceCount
@@ -2388,7 +2384,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ===========================================
 		// Load projects include references
 		ModelLoadManager.INSTANCE.loadProjects(project20List, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount
 				+ refWks.getReferenceFiles(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, Hummingbird10MMDescriptor.INSTANCE).size();
@@ -2424,7 +2420,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ====================================
 		// Load hb10 projects
 		ModelLoadManager.INSTANCE.loadProjects(project10List, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		for (IProject project : project10List) {
 			editingDomain10ResourceCount = editingDomain10ResourceCount
@@ -2468,7 +2464,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#loadProjects(Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testLoadProjectsWithMMDescriptor() throws Exception {
@@ -2499,7 +2495,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ==================================
 		// Load 20 projects with Hummingbird10MMDescriptor
 		ModelLoadManager.INSTANCE.loadProjects(project20List, false, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		for (IProject project : project20List) {
 
 			editingDomain10ResourceCount = editingDomain10ResourceCount
@@ -2514,7 +2510,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// -----------------
 		// Load hb20 projects with Hummingbird20MMDescriptor
 		ModelLoadManager.INSTANCE.loadProjects(project20List, false, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		for (IProject project : project20List) {
 
@@ -2549,7 +2545,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ----------------------------
 		// Load hb20 Projects with Uml2MM
 		ModelLoadManager.INSTANCE.loadProjects(project20List, false, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		for (IProject project : project20List) {
 			editingDomainUml2ResourceCount = editingDomainUml2ResourceCount
@@ -2587,7 +2583,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// Load projects include references
 		// --load with hb20MM
 		ModelLoadManager.INSTANCE.loadProjects(project20List, true, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_D;
 
@@ -2617,7 +2613,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// --load with Uml2MM
 		ModelLoadManager.INSTANCE.loadProjects(project20List, true, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Uml2 resource need to remove duplicated files
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - uml2ReferencedFiles_Of_HbProject20_E + resourcesUml2FromHbProject20_D;
@@ -2646,7 +2642,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ====================================
 		// Load hb10 projecs
 		ModelLoadManager.INSTANCE.loadProjects(project10List, false, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		for (IProject project : project10List) {
 			editingDomain10ResourceCount = editingDomain10ResourceCount
@@ -2686,7 +2682,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 /**
 	 * Test method for
 	 * {@link ModelLoadManager#loadModel(org.eclipse.sphinx.emf.model.IModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testLoadModel() throws Exception {
@@ -2731,7 +2727,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		/* Since all resources previously in the workspace are unloaded we can start testing loadFile method */
 		// --load hb20 model
 		ModelLoadManager.INSTANCE.loadModel(hb20Model_20B, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_B;
 
@@ -2747,7 +2743,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_3);
 		// --load uml2 model
 		ModelLoadManager.INSTANCE.loadModel(uml2Model_20B, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + resourcesUml2FromHbProject20_B;
 
@@ -2764,7 +2760,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// =======================================
 		// load hb10 model
 		ModelLoadManager.INSTANCE.loadModel(hb10Model_10A, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount + resources10FromHbProject10_A;
 
@@ -2787,7 +2783,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// --load hb20Model in hbProject20E
 
 		ModelLoadManager.INSTANCE.loadModel(hb20Model_20E, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_E + resources20FromHbProject20_D;
 
@@ -2819,7 +2815,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_3);
 		// -- load uml2Model in hbProject20E
 		ModelLoadManager.INSTANCE.loadModel(uml2Model_20E, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Uml2 Resource of referenced files in HB_PROJECT_20_D were loaded also (UML2_FILE_NAME_20D_1,
 		// UML2_FILE_NAME_20D_2)
@@ -2858,7 +2854,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 /**
 	 * Test method for
 	 * {@link ModelLoadManager#loadModel(org.eclipse.sphinx.emf.model.IModelDescriptor, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testLoadModelWithoutReferencedRoots() throws Exception {
@@ -2890,7 +2886,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// =================================
 		// Load hb20Model including referenced roots
 		ModelLoadManager.INSTANCE.loadModel(hb20Model_20E, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_E;
 
@@ -2913,7 +2909,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 		// Load Uml2Model including referenced roots
 		ModelLoadManager.INSTANCE.loadModel(uml2Model_20E, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Removed duplicated files of HB_PROJECR_20_D
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + resourcesUml2FromHbProject20_E + uml2ReferencedFiles_Of_HbProject20_E;
@@ -2940,7 +2936,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#loadModels(Collection, boolean, org.eclipse.core.runtime.IProgressMonitor).
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testLoadModels() throws Exception {
@@ -2973,12 +2969,12 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 				Hummingbird20MMDescriptor.INSTANCE));
 
 		List<IModelDescriptor> modelListUml2 = new ArrayList<IModelDescriptor>();
-		modelListUml2.addAll(ModelDescriptorRegistry.INSTANCE.getModels(refWks
-				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), UML2MMDescriptor.INSTANCE));
+		modelListUml2.addAll(ModelDescriptorRegistry.INSTANCE.getModels(
+				refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), UML2MMDescriptor.INSTANCE));
 		// =====================================
 		// Load mixedModelList1020Uml2
 		ModelLoadManager.INSTANCE.loadModels(mixedModelList1020Uml2, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_B;
 		editingDomain10ResourceCount = editingDomain10ResourceCount + resources10FromHbProject10_A;
@@ -3001,7 +2997,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ======================================
 		// Load modelist20 without referenced roots
 		ModelLoadManager.INSTANCE.loadModels(modelList20, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_E + resources20FromHbProject20_D;
 
@@ -3036,7 +3032,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// =====================================
 		// Load modeListUml2 without referenced roots
 		ModelLoadManager.INSTANCE.loadModels(modelListUml2, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + resourcesUml2FromHbProject20_D + resourcesUml2FromHbProject20_E;
 		// Referenced files in HbProject20D were also loaded: UML2_FILE_NAME_20D_1,UML2_FILE_NAME_20D_2
@@ -3110,12 +3106,12 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 				Hummingbird20MMDescriptor.INSTANCE));
 
 		List<IModelDescriptor> modelListUml2 = new ArrayList<IModelDescriptor>();
-		modelListUml2.addAll(ModelDescriptorRegistry.INSTANCE.getModels(refWks
-				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), UML2MMDescriptor.INSTANCE));
+		modelListUml2.addAll(ModelDescriptorRegistry.INSTANCE.getModels(
+				refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), UML2MMDescriptor.INSTANCE));
 		// =====================================
 		// Load mixedModelList1020Uml2
 		ModelLoadManager.INSTANCE.loadModels(mixedModelList1020Uml2, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_B;
 		editingDomain10ResourceCount = editingDomain10ResourceCount + resources10FromHbProject10_A;
@@ -3138,7 +3134,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// ======================================
 		// Load modelist20 without referenced roots
 		ModelLoadManager.INSTANCE.loadModels(modelList20, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + resources20FromHbProject20_E;
 
@@ -3173,7 +3169,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		// =====================================
 		// Load modeListUml2 without referenced roots
 		ModelLoadManager.INSTANCE.loadModels(modelListUml2, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + resourcesUml2FromHbProject20_E + uml2ReferencedFiles_Of_HbProject20_E;
 		// Referenced files in HbProject20D were also loaded: UML2_FILE_NAME_20D_1,UML2_FILE_NAME_20D_2
@@ -3214,7 +3210,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#loadAllProjects(org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor).
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testLoadAllProjects() throws Exception {
@@ -3234,7 +3230,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, editingDomainUml2ResourceCount);
 
 		ModelLoadManager.INSTANCE.loadAllProjects(Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount
 				+ refWks.getInitialResourcesInReferenceEditingDomainCount(Hummingbird20MMDescriptor.INSTANCE);
@@ -3265,7 +3261,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.loadAllProjects(UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount
 				+ refWks.getInitialResourcesInReferenceEditingDomainCount(UML2MMDescriptor.INSTANCE);
@@ -3296,7 +3292,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.loadAllProjects(Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = editingDomain10ResourceCount
 				+ refWks.getInitialResourcesInReferenceEditingDomainCount(Hummingbird10MMDescriptor.INSTANCE);
@@ -3330,7 +3326,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#loadWorkspace(boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testLoadWorkspace() throws Exception {
@@ -3347,7 +3343,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		/* Since all resources previously in the workspace are unloaded we can start testing loadFile method */
 
 		ModelLoadManager.INSTANCE.loadWorkspace(false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain10ResourceCount = refWks.getInitialResourcesInReferenceEditingDomainCount(Hummingbird10MMDescriptor.INSTANCE);
 		editingDomain20ResourceCount = refWks.getInitialResourcesInReferenceEditingDomainCount(Hummingbird20MMDescriptor.INSTANCE);
@@ -3388,7 +3384,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 	// =================================================================================
 /**
 	 * Test method for {@link ModelLoadManager#reloadFile(IFile, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testReloadFile() throws Exception {
@@ -3460,7 +3456,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		/* Since all resources previously in the workspace are unloaded we can start testing loadFile method */
 
 		ModelLoadManager.INSTANCE.reloadFile(hb_file_Project20_B_1, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -3490,7 +3486,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadFile(hb_file_Project20_B_2, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -3519,7 +3515,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Reload loaded file
 		ModelLoadManager.INSTANCE.reloadFile(hb_file_Project10_A_2, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -3547,7 +3543,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Reload Uml2 file
 		ModelLoadManager.INSTANCE.reloadFile(uml2_file_Project20_B_2, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -3577,7 +3573,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#reloadFile(IFile, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testReloadFileWithMMDescriptor() throws Exception {
@@ -3649,7 +3645,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		/* Since all resources previously in the workspace are unloaded we can start testing loadFile method */
 		// Reload hb20 file with Hummingbird10MMDescriptor
 		ModelLoadManager.INSTANCE.reloadFile(hb_file_Project20_B_1, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -3677,7 +3673,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Reload hb20File with Hummingbird10MMDescriptor
 		ModelLoadManager.INSTANCE.reloadFile(hb_file_Project20_B_1, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -3705,7 +3701,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Reload hb20File with Hummingbird20MMDescriptor
 		ModelLoadManager.INSTANCE.reloadFile(hb_file_Project20_B_1, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -3736,7 +3732,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Reload Uml2 file with UML2MM
 		ModelLoadManager.INSTANCE.reloadFile(uml2_file_Project20_B_1, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -3764,7 +3760,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Reload loaded file
 		ModelLoadManager.INSTANCE.reloadFile(uml2_file_Project20_B_1, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -3791,7 +3787,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Reload loaded Uml2 file with Hummingbird10MMDescriptor
 		ModelLoadManager.INSTANCE.reloadFile(uml2_file_Project20_B_1, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -3819,7 +3815,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#reloadFiles(Collection, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testReloadFiles() throws Exception {
@@ -3918,7 +3914,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		/* Since all resources previously in the workspace are unloaded we can start testing loadFile method */
 
 		ModelLoadManager.INSTANCE.reloadFiles(hb_20_files, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + hb_20_files.size();
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -3955,7 +3951,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Reload loaded file
 		ModelLoadManager.INSTANCE.reloadFiles(hb_10_files, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -3989,7 +3985,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadFiles(uml2_files, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + uml2_files.size();
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -4026,7 +4022,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadFiles(hb_10_20_files, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -4063,7 +4059,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadFiles(uml2_hb_10_20_files, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + 2;
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 2;
@@ -4102,7 +4098,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#reloadFiles(Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testReloadFilesWithMMDescriptor() throws Exception {
@@ -4201,14 +4197,14 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		/* Since all resources previously in the workspace are unloaded we can start testing loadFile method */
 		// Reload hb20File with Hummingbird10MMDescriptor
 		ModelLoadManager.INSTANCE.reloadFiles(hb_20_files, Hummingbird10MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, editingDomainUml2ResourceCount);
 		// Reload hb20Files with Uml2MMDescriptor
 		ModelLoadManager.INSTANCE.reloadFiles(hb_20_files, UML2MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -4216,7 +4212,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Reload hb20Files with Hummingbird20MMDescriptor
 		ModelLoadManager.INSTANCE.reloadFiles(hb_20_files, Hummingbird20MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 		editingDomain20ResourceCount = editingDomain20ResourceCount + hb_20_files.size();
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -4242,7 +4238,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 		// Reload loaded files
 		ModelLoadManager.INSTANCE.reloadFiles(hb_10_files, Hummingbird10MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -4269,7 +4265,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		// Reload UML2 files with Hummingbird10MMDescriptor
 		ModelLoadManager.INSTANCE.reloadFiles(uml2_files, Hummingbird10MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -4295,7 +4291,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadFiles(uml2_files, UML2MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + uml2_files.size();
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -4322,7 +4318,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadFiles(hb_10_20_files, Hummingbird10MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -4348,7 +4344,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadFiles(hb_10_20_files, Hummingbird10MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -4374,7 +4370,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadFiles(hb_10_20_files, Hummingbird20MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 1;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -4402,7 +4398,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadFiles(uml2_hb_10_20_files, Hummingbird10MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -4429,7 +4425,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadFiles(uml2_hb_10_20_files, Hummingbird20MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount + 2;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -4457,7 +4453,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadFiles(uml2_hb_10_20_files, UML2MMDescriptor.INSTANCE, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + 2;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
@@ -4490,7 +4486,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 /**
 	 * Test method for
 	 * {@link ModelLoadManager#reloadModel(IProject, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)(IProject, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)(IProject, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testReloadModel() throws Exception {
@@ -4525,7 +4521,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		/* Since all resources previously in the workspace are unloaded we can start testing loadFile method */
 		ModelLoadManager.INSTANCE.reloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount
 				+ refWks.getReferenceFiles(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B, Hummingbird20MMDescriptor.INSTANCE).size();
@@ -4543,7 +4539,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		ModelLoadManager.INSTANCE.reloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount
 				+ refWks.getReferenceFiles(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B, UML2MMDescriptor.INSTANCE).size();
@@ -4565,7 +4561,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		ModelLoadManager.INSTANCE.reloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A), false,
 				Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -4584,7 +4580,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		ModelLoadManager.INSTANCE.reloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A), false,
 				Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -4602,7 +4598,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		ModelLoadManager.INSTANCE.reloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), false,
 				Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount
 				+ refWks.getReferenceFiles(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E, Hummingbird20MMDescriptor.INSTANCE).size();
@@ -4636,7 +4632,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		ModelLoadManager.INSTANCE.reloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), false,
 				UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Referenced files in HB_PROJECT_20_D are aslo loaded:UML2_FILE_NAME_20D_1,UML2_FILE_NAME_20D_2
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount + uml2ReferencedFiles_Of_HbProject20_E
@@ -4671,7 +4667,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		ModelLoadManager.INSTANCE.reloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), true,
 				Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount
 				+ refWks.getReferenceFiles(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, Hummingbird20MMDescriptor.INSTANCE).size();
@@ -4705,7 +4701,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		ModelLoadManager.INSTANCE.reloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), true,
 				UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Remove duplicate files in HB_PROJECT_20_D
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - uml2ReferencedFiles_Of_HbProject20_E
@@ -4743,7 +4739,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 /**
 	 * Test method for {@link ModelLoadManager#reloadProject(IProject, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testReloadProject() throws Exception {
@@ -4775,7 +4771,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 
 		/* Since all resources previously in the workspace are unloaded we can start testing loadFile method */
 		ModelLoadManager.INSTANCE.reloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount
 				+ refWks.getReferenceFiles(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B, Hummingbird20MMDescriptor.INSTANCE).size();
@@ -4794,7 +4790,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_3);
 
 		ModelLoadManager.INSTANCE.reloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A), false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
@@ -4811,7 +4807,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_3);
 
 		ModelLoadManager.INSTANCE.reloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount
 				+ refWks.getReferenceFiles(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E, Hummingbird20MMDescriptor.INSTANCE).size();
@@ -4847,7 +4843,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20B_3);
 
 		ModelLoadManager.INSTANCE.reloadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E), true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount
 				+ refWks.getReferenceFiles(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, Hummingbird20MMDescriptor.INSTANCE).size();
@@ -4887,7 +4883,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 /**
 	 * Test method for
 	 * {@link ModelLoadManager#reloadProjects(Collection, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 
@@ -4927,7 +4923,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		project10List.add(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A));
 
 		ModelLoadManager.INSTANCE.reloadProjects(project20List, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		for (IProject project : project20List) {
 			editingDomainUml2ResourceCount = editingDomainUml2ResourceCount
@@ -4965,7 +4961,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadProjects(project20List, true, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount
 				+ refWks.getReferenceFiles(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, Hummingbird20MMDescriptor.INSTANCE).size();
@@ -4997,7 +4993,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadProjects(project10List, false, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		for (IProject project : project10List) {
 			editingDomainUml2ResourceCount = editingDomainUml2ResourceCount
@@ -5038,7 +5034,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 /**
 	 * Test method for
 	 * {@link ModelLoadManager#reloadProjects(Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor, boolean, org.eclipse.core.runtime.IProgressMonitor)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testReloadProjectsWithMMDescriptor() throws Exception {
@@ -5077,14 +5073,14 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		project10List.add(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A));
 
 		ModelLoadManager.INSTANCE.reloadProjects(project20List, false, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, editingDomainUml2ResourceCount);
 
 		ModelLoadManager.INSTANCE.reloadProjects(project20List, false, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		for (IProject project : project20List) {
 			editingDomain20ResourceCount = editingDomain20ResourceCount
@@ -5115,7 +5111,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadProjects(project20List, false, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		for (IProject project : project20List) {
 			editingDomainUml2ResourceCount = editingDomainUml2ResourceCount
@@ -5148,7 +5144,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadProjects(project20List, true, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		editingDomain20ResourceCount = editingDomain20ResourceCount
 				+ refWks.getReferenceFiles(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, Hummingbird20MMDescriptor.INSTANCE).size();
@@ -5177,7 +5173,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainDoesNotContainResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadProjects(project20List, true, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Removed duplicate files in HB_PROJECT_20_D
 		editingDomainUml2ResourceCount = editingDomainUml2ResourceCount - uml2ReferencedFiles_Of_HbProject20_E
@@ -5207,7 +5203,7 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainContainsResource(refWks.editingDomainUml2, DefaultTestReferenceWorkspace.UML2_FILE_NAME_20D_3);
 
 		ModelLoadManager.INSTANCE.reloadProjects(project10List, false, UML2MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		for (IProject project : project10List) {
 			editingDomainUml2ResourceCount = editingDomainUml2ResourceCount
@@ -5219,14 +5215,14 @@ public class ModelLoadManagerTest extends DefaultIntegrationTestCase {
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, editingDomainUml2ResourceCount);
 
 		ModelLoadManager.INSTANCE.reloadProjects(project10List, false, Hummingbird20MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, editingDomain10ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, editingDomain20ResourceCount);
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomainUml2, editingDomainUml2ResourceCount);
 
 		ModelLoadManager.INSTANCE.reloadProjects(project10List, false, Hummingbird10MMDescriptor.INSTANCE, false, null);
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		for (IProject project : project20List) {
 			editingDomain10ResourceCount = editingDomain10ResourceCount

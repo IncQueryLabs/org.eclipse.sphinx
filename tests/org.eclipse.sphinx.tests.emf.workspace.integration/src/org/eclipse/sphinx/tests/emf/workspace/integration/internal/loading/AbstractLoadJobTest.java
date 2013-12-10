@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.workspace.integration.internal.loading;
@@ -17,13 +18,11 @@ package org.eclipse.sphinx.tests.emf.workspace.integration.internal.loading;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 
-import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.util.NLS;
@@ -33,7 +32,7 @@ import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 
 /**
- * 
+ *
  */
 @SuppressWarnings({ "nls", "restriction", "unchecked" })
 abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
@@ -46,6 +45,11 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 
 	protected static final boolean SHOULD_CREATE = true;
 	protected static final boolean SHOULD_NOT_CREATE = false;
+
+	public AbstractLoadJobTest() {
+		// Start tests with projects in reference workspace being closed
+		setProjectsClosedOnStartup(true);
+	}
 
 	/**
 	 * Creates assertions on the fact that:
@@ -60,7 +64,7 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 			Job[] jobs = Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING);
 
 			// Verify that no loading job is queued
-			Assert.assertEquals(MSG_expectedNoJob, 0, jobs.length);
+			assertEquals(MSG_expectedNoJob, 0, jobs.length);
 		} catch (AssertionFailedError err) {
 			// Resume job manager to avoid deadlocks and failure of successor tests
 			wakeUp();
@@ -84,15 +88,14 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 	 */
 	protected <T extends LoadJob> void assertOnlyOneLoadJobIsSleeping(Class<T> clazz) {
 		try {
-
 			// Retrieves from JobManager the list of jobs that belong to the "model loading" family
 			Job[] jobs = Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING);
 
 			// Verify that one and only one loading job is queued
-			Assert.assertEquals(MSG_expectedOneJob, 1, jobs.length);
+			assertEquals(MSG_expectedOneJob, 1, jobs.length);
 
 			// Verify that type of job is the expected one (usually ModelLoadJob or FileLoadJob)
-			Assert.assertTrue(NLS.bind(MSG_expectedTypeOfJob, clazz.getSimpleName(), getSimpleName(jobs[0].getClass())), clazz.isInstance(jobs[0]));
+			assertTrue(NLS.bind(MSG_expectedTypeOfJob, clazz.getSimpleName(), getSimpleName(jobs[0].getClass())), clazz.isInstance(jobs[0]));
 
 			// Keep a reference on that job
 			loadJob = new WeakReference<LoadJob>(clazz.cast(jobs[0]));
@@ -100,7 +103,7 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 			loadJob.get().sleep();
 
 			// Verify that current loading job is really in the SLEEPING state
-			Assert.assertTrue(MSG_expectedSleepingJob, loadJob.get().getState() == Job.SLEEPING);
+			assertTrue(MSG_expectedSleepingJob, loadJob.get().getState() == Job.SLEEPING);
 
 		} catch (AssertionFailedError err) {
 			// Resume job manager to avoid deadlocks and failure of successor tests
@@ -108,11 +111,6 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 			// Propagate error so that test execution can be interrupted
 			throw err;
 		}
-	}
-
-	@Override
-	protected boolean isProjectsClosedOnStartup() {
-		return true;
 	}
 
 	@Override
@@ -126,7 +124,7 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 		loadJob = null;
 		// Verify that there no loading job left
 		int nbOfJobs = Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING).length;
-		Assert.assertEquals("No job from MODEL LOADING family should exist anymore; ", 0, nbOfJobs);
+		assertEquals("No job from MODEL LOADING family should exist anymore; ", 0, nbOfJobs);
 	}
 
 	protected void wakeUp() {
@@ -144,14 +142,7 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 		// Resume the Job Manager so that loading job could be scheduled
 		Job.getJobManager().resume();
 
-		try {
-			// Waits until loading ends
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, null);
-		} catch (OperationCanceledException ex) {
-			throw new RuntimeException(ex);
-		} catch (InterruptedException ex) {
-			throw new RuntimeException(ex);
-		}
+		waitForModelLoading();
 	}
 
 	private static final String MSG_expectedNoJob = "No job from family MODEL LOADING should be found";

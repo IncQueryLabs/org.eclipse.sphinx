@@ -1,21 +1,23 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.testutils.integration.referenceworkspace.tests;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -48,15 +50,19 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 
 	private ReferenceWorkspaceChangeListener referenceWorkspaceChangeListener = getReferenceWorkspaceChangeListener();
 
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_F,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E };
-	}
+	public ReferenceWorkspaceChangeListenerTest() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_F);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E);
 
-	@Override
-	protected String[][] getProjectReferences() {
-		return new String[][] { { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D } };
+		// Remove all project references except:
+		// HB_PROJECT_NAME_20_E -> HB_PROJECT_NAME_20_D
+		Map<String, Set<String>> projectReferences = getProjectReferences();
+		projectReferences.remove(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E);
+		projectReferences.remove(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
 	}
 
 	@Override

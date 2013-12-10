@@ -1,20 +1,22 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.testutils.integration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,20 +45,20 @@ import org.eclipse.sphinx.testutils.integration.internal.ReferenceModelDescripto
 import org.eclipse.sphinx.testutils.integration.internal.ReferenceProjectDescriptor;
 
 /**
- * 
+ *
  */
 public abstract class AbstractReferenceWorkspace implements IInternalReferenceWorkspace {
 
 	private Map<IMetaModelDescriptor, ReferenceEditingDomainDescriptor> referenceEditingDomainsDescriptors = new HashMap<IMetaModelDescriptor, ReferenceEditingDomainDescriptor>();
 	private Set<ReferenceProjectDescriptor> referenceProjectDescriptors = new HashSet<ReferenceProjectDescriptor>();
 
-	public AbstractReferenceWorkspace(String[] referenceProjectNames) {
-		initContentDescriptors(referenceProjectNames);
+	public AbstractReferenceWorkspace(Set<String> referenceProjectSubset) {
+		initContentDescriptors(referenceProjectSubset);
 		initContentAccessors();
 	}
 
-	protected final void initContentDescriptors(String[] referenceProjectNames) {
-		initReferenceProjectDescriptors(referenceProjectNames);
+	protected final void initContentDescriptors(Set<String> referenceProjectSubset) {
+		initReferenceProjectDescriptors(referenceProjectSubset);
 		initReferenceFileDescriptors();
 	}
 
@@ -64,14 +66,14 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		// Do nothing by default
 	}
 
-	private void initReferenceProjectDescriptors(String[] referenceProjectNames) {
-		if (referenceProjectNames == null) {
-			referenceProjectNames = getReferenceProjectsNames();
+	private void initReferenceProjectDescriptors(Set<String> referenceProjectSubset) {
+		Assert.isNotNull(referenceProjectSubset);
+
+		if (referenceProjectSubset.isEmpty()) {
+			referenceProjectSubset.addAll(Arrays.asList(getReferenceProjectsNames()));
 		}
-		if (referenceProjectNames != null) {
-			for (String referenceProjectName : referenceProjectNames) {
-				addReferenceProjectDescriptor(referenceProjectName);
-			}
+		for (String referenceProjectName : referenceProjectSubset) {
+			addReferenceProjectDescriptor(referenceProjectName);
 		}
 	}
 
@@ -206,7 +208,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 	 * return the first editing domain descriptor of the list corresponding to the given MetaModelDescriptor
 	 */
 
-	public int getInitialReferenceEditingDomainsCount() {
+	public int getInitialReferenceEditingDomainCount() {
 		if (referenceEditingDomainsDescriptors != null) {
 			return referenceEditingDomainsDescriptors.size();
 		}
@@ -221,7 +223,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		return 0;
 	}
 
-	public int getInitialResourcesInAllReferenceEditingDomainsCount() {
+	public int getInitialResourcesInAllReferenceEditingDomainCount() {
 		int count = 0;
 		if (referenceEditingDomainsDescriptors != null) {
 			for (IMetaModelDescriptor metaModelDescriptor : referenceEditingDomainsDescriptors.keySet()) {

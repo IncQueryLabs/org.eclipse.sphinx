@@ -13,6 +13,7 @@
  *     itemis - Fixed EObjectUtilTest that was failing since server infrastructure upgrade at Eclipse Foundation
  *     itemis - [410825] Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
  *     itemis - [418005] Add support for model files with multiple root elements
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
  *
  * </copyright>
  */
@@ -21,6 +22,8 @@ package org.eclipse.sphinx.tests.emf.integration.util;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.AssertionFailedException;
@@ -83,6 +86,23 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 
 	private List<String> hbProject20CResources20;
 
+	public EObjectUtilTest() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E);
+
+		// Remove all project references except:
+		// HB_PROJECT_NAME_20_E -> HB_PROJECT_NAME_20_D
+		Map<String, Set<String>> projectReferences = getProjectReferences();
+		projectReferences.remove(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E);
+		projectReferences.remove(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -102,18 +122,6 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 
 		hbProject10_A_HummingbirdObjectCount = resources10FromHbProject10_A;
 		hbProject20_B_Uml2ObjectCount = resourcesUml2FromHbProject20_B;
-	}
-
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E };
-	}
-
-	@Override
-	protected String[][] getProjectReferences() {
-		return new String[][] { { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D } };
 	}
 
 	private int getNumberOfHB20fApplicationInstances(Collection<String> resourceNames) {
@@ -788,8 +796,6 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 	 * Test method for {@link EObjectUtil#createProxyFrom(EObject, Resource)}
 	 */
 	public void testCreateProxyFromEObject() {
-		// TODO Go on here
-		assertNoEmptyModelDescriptorsExist();
 		Collection<IModelDescriptor> hbProjectModels = ModelDescriptorRegistry.INSTANCE.getModels(refWks.hbProject10_A);
 		assertNotNull(hbProjectModels);
 		assertEquals(1, hbProjectModels.size());
@@ -1250,6 +1256,5 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		assertFalse(referringComponent_1.getType().eIsProxy());
 		assertTrue(hb20Platform_A_2.getComponentTypes().contains(referringComponent_1.getType()));
 		waitForModelLoading();
-
 	}
 }

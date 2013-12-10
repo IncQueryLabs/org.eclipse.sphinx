@@ -1,16 +1,17 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - Added test for EcoreResourceUtil#convertToAbsoluteFileURI()
  *     itemis - [418005] Add support for model files with multiple root elements
+ *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
  *
  * </copyright>
  */
@@ -22,6 +23,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -36,9 +38,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -56,7 +56,6 @@ import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
-import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.eclipse.sphinx.tests.emf.integration.internal.Activator;
@@ -90,9 +89,15 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 	org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application retrievedOutsideWorkspaceHb20Root = null;
 
-	@Override
-	protected Plugin getTestPlugin() {
-		return Activator.getPlugin();
+	public EcoreResourceUtilTest() {
+		// Set subset of projects to load
+		Set<String> projectsToLoad = getProjectSubsetToLoad();
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
+
+		// Set test plug-in for retrieving test input resources
+		setTestPlugin(Activator.getPlugin());
 	}
 
 	@Override
@@ -125,12 +130,6 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		}
 
 		super.tearDown();
-	}
-
-	@Override
-	protected String[] getProjectsToLoad() {
-		return new String[] { DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A, DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D,
-				DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A };
 	}
 
 	/**
@@ -553,7 +552,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		assertTrue(EcoreResourceUtil.isResourceLoaded(refWks.editingDomainUml2.getResourceSet(), uriUml2));
 		// Unload project20_A
 		ModelLoadManager.INSTANCE.unloadProject(refWks.hbProject20_A, false, false, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		resourcesInEditingDomain20 -= resources20FromHbProject20_A;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, resourcesInEditingDomain20);
@@ -565,7 +564,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 		// Unload project10_A
 		ModelLoadManager.INSTANCE.unloadProject(refWks.hbProject10_A, false, false, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		resourcesInEditingDomain10 -= resources10FromHbProject10_A;
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, resourcesInEditingDomain10);
@@ -575,7 +574,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 		// Unload project20_D
 		ModelLoadManager.INSTANCE.unloadProject(refWks.hbProject20_D, false, false, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		resourcesInEditingDomain20 -= resources20FromHbProject20_D;
 		resourcesInEditingDomainUml2 -= resourcesUml2FromHbProject20_D;
@@ -1009,7 +1008,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		EcoreResourceUtil.saveModelResource(testResource10_2, Collections.emptyMap());
 		// Reload project
 		ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject10_A, false, false, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Verify saved resource set
 		Resource retrievedSavedResource10_1 = refWks.editingDomain10.getResourceSet().getResource(
@@ -1081,7 +1080,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		EcoreResourceUtil.saveModelResource(testResource20_1, null);
 		// Reload project
 		ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject20_A, false, false, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Verify saved resource set
 		Resource retrievedSavedResource20_1 = refWks.editingDomain20.getResourceSet().getResource(
@@ -1126,7 +1125,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		assertEquals(changedObjectName, testPackageElement.getName());
 		// Reload project
 		ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject20_A, false, false, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Verify saved resource set
 		Resource retrievedSavedResourceUml2_1 = refWks.editingDomainUml2.getResourceSet().getResource(
@@ -1200,12 +1199,12 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 				}
 			};
 			ResourcesPlugin.getWorkspace().run(runnable, rule, 0, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 			resourceInEditingDomain10++;
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, resourceInEditingDomain10);
 			// Reload project
 			ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject10_A, false, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, resourceInEditingDomain10);
 
@@ -1253,7 +1252,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 				}
 			};
 			ResourcesPlugin.getWorkspace().run(runnable, rule, 0, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			resourceInEditingDomain20++;
@@ -1261,7 +1260,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, resourceInEditingDomain20);
 			// Reload project
 			ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject10_A, false, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			resourceInEditingDomain10++;
@@ -1308,14 +1307,14 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 				}
 			};
 			ResourcesPlugin.getWorkspace().run(runnable, rule, 0, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, resourceInEditingDomain10);
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, resourceInEditingDomain20);
 			// Reload project
 			ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject10_A, false, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, resourceInEditingDomain10);
@@ -1388,7 +1387,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			assertEquals(1, retrievedApplication.getInterfaces().size());
 
 			ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject20_A, false, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 		}
 		// Used wrong ContenTypeID
 		{
@@ -1417,13 +1416,13 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 				}
 			};
 			ResourcesPlugin.getWorkspace().run(runnable, rule, 0, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, ++resourceInEditingDomain10);
 			// Reload project
 			ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject10_A, false, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, resourceInEditingDomain10);
@@ -1452,13 +1451,13 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 			EcoreResourceUtil.saveNewModelResource(null, newResourceURI, Hummingbird10Package.eCONTENT_TYPE, modelToSave, Collections.emptyMap());
 			// ResourcesPlugin.getWorkspace().run(runnable, rule, 0, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, ++resourceInEditingDomain10);
 			// Reload project
 			ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject10_A, false, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, resourceInEditingDomain10);
@@ -1502,13 +1501,13 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 				}
 			};
 			ResourcesPlugin.getWorkspace().run(runnable, rule, 0, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, resourceInEditingDomain10);
 			// Reload project
 			ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject10_A, false, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, resourceInEditingDomain10);
@@ -1543,13 +1542,13 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 				}
 			};
 			ResourcesPlugin.getWorkspace().run(runnable, rule, 0, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, ++resourceInEditingDomain10);
 			// Reload project
 			ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject10_A, false, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, resourceInEditingDomain10);
@@ -1594,13 +1593,13 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 				}
 			};
 			ResourcesPlugin.getWorkspace().run(runnable, rule, 0, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, resourceInEditingDomain10);
 			// Reload project
 			ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject10_A, false, false, new NullProgressMonitor());
-			Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+			waitForModelLoading();
 
 			// Verify saved resource set
 			assertEditingDomainResourcesSizeEquals(refWks.editingDomain10, resourceInEditingDomain10);
@@ -1655,11 +1654,11 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, rule, 0, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Reload project
 		ModelLoadManager.INSTANCE.reloadProject(refWks.hbProject20_D, false, false, new NullProgressMonitor());
-		Job.getJobManager().join(IExtendedPlatformConstants.FAMILY_MODEL_LOADING, new NullProgressMonitor());
+		waitForModelLoading();
 
 		// Verify saved resource set
 		assertEditingDomainResourcesSizeEquals(refWks.editingDomain20, resourceInEditingDomain20);
