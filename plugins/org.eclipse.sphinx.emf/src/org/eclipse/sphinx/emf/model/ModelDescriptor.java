@@ -1,17 +1,18 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [410825] Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
  *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
- * 
+ *     itemis - [423662] Prevent creation of duplicated model descriptors by design
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.model;
@@ -21,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
@@ -37,6 +39,7 @@ import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSet;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
@@ -49,74 +52,81 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/**
 	 * The meta-model descriptor.
 	 */
-	protected IMetaModelDescriptor fMMDescriptor;
-
-	/**
-	 * The editing domain of the described model.
-	 */
-	protected TransactionalEditingDomain fEditingDomain;
+	protected IMetaModelDescriptor mmDescriptor;
 
 	/**
 	 * The {@link IResourceScope resource scope} of the model described here.
 	 */
-	protected IResourceScope fResourceScope;
+	protected IResourceScope resourceScope;
+
+	/**
+	 * The editing domain of the described model.
+	 */
+	private TransactionalEditingDomain editingDomain = null;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param mmDescriptor
 	 *            The meta-model descriptor.
-	 * @param editingDomain
-	 *            The editing domain of the described model.
 	 * @param rootProject
 	 *            The root project of the described model.
 	 */
-	public ModelDescriptor(IMetaModelDescriptor mmDescriptor, TransactionalEditingDomain editingDomain, IResourceScope resourceScope) {
+	public ModelDescriptor(IMetaModelDescriptor mmDescriptor, IResourceScope resourceScope) {
 		Assert.isNotNull(mmDescriptor);
-		Assert.isNotNull(editingDomain);
 		Assert.isNotNull(resourceScope);
-		fMMDescriptor = mmDescriptor;
-		fEditingDomain = editingDomain;
-		fResourceScope = resourceScope;
+		this.mmDescriptor = mmDescriptor;
+		this.resourceScope = resourceScope;
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#getMetaModelDescriptor()
 	 */
 	public IMetaModelDescriptor getMetaModelDescriptor() {
-		return fMMDescriptor;
+		return mmDescriptor;
+	}
+
+	public IResourceScope getScope() {
+		return resourceScope;
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#getEditingDomain()
 	 */
 	public TransactionalEditingDomain getEditingDomain() {
-		return fEditingDomain;
-	}
-
-	public IResourceScope getScope() {
-		return fResourceScope;
+		if (editingDomain == null) {
+			IResource resourceScopeRoot = getRoot();
+			if (resourceScopeRoot instanceof IContainer) {
+				editingDomain = WorkspaceEditingDomainUtil.getEditingDomain((IContainer) resourceScopeRoot, getMetaModelDescriptor());
+			} else if (resourceScopeRoot instanceof IFile) {
+				editingDomain = WorkspaceEditingDomainUtil.getEditingDomain((IFile) resourceScopeRoot);
+			} else {
+				throw new RuntimeException("Unable to retrieve editing domain for resource scope root being an instance of '" //$NON-NLS-1$
+						+ resourceScopeRoot.getClass().getSimpleName() + "'"); //$NON-NLS-1$
+			}
+		}
+		return editingDomain;
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#getRoot()
 	 */
 	public IResource getRoot() {
-		return fResourceScope.getRoot();
+		return resourceScope.getRoot();
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#getProjects()
 	 */
 	public Collection<IResource> getReferencedRoots() {
-		return fResourceScope.getReferencedRoots();
+		return resourceScope.getReferencedRoots();
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#getReferencingRoots()
 	 */
 	public Collection<IResource> getReferencingRoots() {
-		return fResourceScope.getReferencingRoots();
+		return resourceScope.getReferencingRoots();
 	}
 
 	/*
@@ -124,9 +134,9 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	 */
 	public Collection<IFile> getPersistedFiles(boolean includeReferencedScopes) {
 		Collection<IFile> persistedFiles = new HashSet<IFile>();
-		for (IFile file : fResourceScope.getPersistedFiles(includeReferencedScopes)) {
-			IMetaModelDescriptor descriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(file);
-			if (fMMDescriptor.equals(descriptor)) {
+		for (IFile file : resourceScope.getPersistedFiles(includeReferencedScopes)) {
+			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(file);
+			if (this.mmDescriptor.equals(mmDescriptor)) {
 				persistedFiles.add(file);
 			}
 		}
@@ -139,9 +149,9 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	 */
 	public Collection<Resource> getLoadedResources(final boolean includeReferencedScopes) {
 		try {
-			return TransactionUtil.runExclusive(fEditingDomain, new RunnableWithResult.Impl<List<Resource>>() {
+			return TransactionUtil.runExclusive(getEditingDomain(), new RunnableWithResult.Impl<List<Resource>>() {
 				public void run() {
-					ResourceSet resourceSet = fEditingDomain.getResourceSet();
+					ResourceSet resourceSet = getEditingDomain().getResourceSet();
 					if (resourceSet instanceof ScopingResourceSet) {
 						setResult(((ScopingResourceSet) resourceSet).getResourcesInModel(ModelDescriptor.this, includeReferencedScopes));
 					} else {
@@ -161,8 +171,8 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	public boolean belongsTo(IFile file, boolean includeReferencedScopes) {
 		if (file != null) {
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(file);
-			if (fMMDescriptor.equals(mmDescriptor)) {
-				return fResourceScope.belongsTo(file, includeReferencedScopes);
+			if (this.mmDescriptor.equals(mmDescriptor)) {
+				return resourceScope.belongsTo(file, includeReferencedScopes);
 			}
 		}
 
@@ -175,8 +185,8 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	public boolean belongsTo(final Resource resource, boolean includeReferencedScopes) {
 		if (resource != null) {
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource);
-			if (fMMDescriptor.equals(mmDescriptor)) {
-				if (fResourceScope.belongsTo(resource, includeReferencedScopes)) {
+			if (this.mmDescriptor.equals(mmDescriptor)) {
+				if (resourceScope.belongsTo(resource, includeReferencedScopes)) {
 					// Make sure that given resource is actually contained in the resource set of this model
 					// descriptor's editing domain
 					/*
@@ -188,9 +198,9 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 					 * side effects.
 					 */
 					try {
-						return TransactionUtil.runExclusive(fEditingDomain, new RunnableWithResult.Impl<Boolean>() {
+						return TransactionUtil.runExclusive(getEditingDomain(), new RunnableWithResult.Impl<Boolean>() {
 							public void run() {
-								setResult(fEditingDomain.getResourceSet().getResources().contains(resource));
+								setResult(getEditingDomain().getResourceSet().getResources().contains(resource));
 							}
 						});
 					} catch (InterruptedException ex) {
@@ -224,8 +234,8 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	public boolean didBelongTo(IFile file, boolean includeReferencedScopes) {
 		if (file != null) {
 			IMetaModelDescriptor oldMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getOldDescriptor(file);
-			if (fMMDescriptor.equals(oldMMDescriptor)) {
-				return fResourceScope.didBelongTo(file, includeReferencedScopes);
+			if (mmDescriptor.equals(oldMMDescriptor)) {
+				return resourceScope.didBelongTo(file, includeReferencedScopes);
 			}
 		}
 		return false;
@@ -237,8 +247,8 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	public boolean didBelongTo(Resource resource, boolean includeReferencedScopes) {
 		if (resource != null) {
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getOldDescriptor(resource);
-			if (fMMDescriptor.equals(mmDescriptor)) {
-				return fResourceScope.didBelongTo(resource, includeReferencedScopes);
+			if (this.mmDescriptor.equals(mmDescriptor)) {
+				return resourceScope.didBelongTo(resource, includeReferencedScopes);
 			}
 		}
 		return false;
@@ -264,21 +274,21 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#isShared(org.eclipse.core.resources.IFile)
 	 */
 	public boolean isShared(IFile file) {
-		return fResourceScope.isShared(file);
+		return resourceScope.isShared(file);
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#isShared(org.eclipse.emf.ecore.resource.Resource)
 	 */
 	public boolean isShared(Resource resource) {
-		return fResourceScope.isShared(resource);
+		return resourceScope.isShared(resource);
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#isShared(org.eclipse.emf.common.util.URI)
 	 */
 	public boolean isShared(URI uri) {
-		return fResourceScope.isShared(uri);
+		return resourceScope.isShared(uri);
 	}
 
 	/*
@@ -288,8 +298,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	public boolean equals(Object object) {
 		if (object instanceof ModelDescriptor) {
 			ModelDescriptor otherModelDescriptor = (ModelDescriptor) object;
-			return fMMDescriptor.equals(otherModelDescriptor.fMMDescriptor) && fEditingDomain.equals(otherModelDescriptor.fEditingDomain)
-					&& fResourceScope.equals(otherModelDescriptor.getScope());
+			return mmDescriptor.equals(otherModelDescriptor.mmDescriptor) && resourceScope.equals(otherModelDescriptor.getScope());
 		}
 		return false;
 	}
@@ -299,7 +308,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	 */
 	@Override
 	public int hashCode() {
-		return fMMDescriptor.hashCode() + fEditingDomain.hashCode() + fResourceScope.getRoot().hashCode();
+		return mmDescriptor.hashCode() + resourceScope.getRoot().hashCode();
 	}
 
 	/*
@@ -307,7 +316,6 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	 */
 	@Override
 	public String toString() {
-		return fMMDescriptor + "@" + fResourceScope.getRoot().getName(); //$NON-NLS-1$
+		return mmDescriptor + "@" + resourceScope.getRoot().getName(); //$NON-NLS-1$
 	}
-
 }

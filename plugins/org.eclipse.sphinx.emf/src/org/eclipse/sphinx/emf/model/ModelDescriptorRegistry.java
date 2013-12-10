@@ -1,17 +1,18 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
- * 
+ *     itemis - [423662] Prevent creation of duplicated model descriptors by design
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.model;
@@ -33,13 +34,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
 import org.eclipse.sphinx.emf.scoping.IResourceScopeProvider;
 import org.eclipse.sphinx.emf.scoping.ResourceScopeProviderRegistry;
-import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 
 /**
@@ -114,8 +113,6 @@ public class ModelDescriptorRegistry {
 	private void internalAddModel(IFile file) {
 		IMetaModelDescriptor nativeMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(file);
 
-		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(file);
-
 		IMetaModelDescriptor effectiveMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getEffectiveDescriptor(file);
 		IResourceScopeProvider resourceScopeProvider = ResourceScopeProviderRegistry.INSTANCE.getResourceScopeProvider(effectiveMMDescriptor);
 		IResourceScope resourceScope = null;
@@ -123,7 +120,7 @@ public class ModelDescriptorRegistry {
 			resourceScope = resourceScopeProvider.getScope(file);
 		}
 
-		internalAddModel(nativeMMDescriptor, editingDomain, resourceScopeProvider, resourceScope);
+		internalAddModel(nativeMMDescriptor, resourceScopeProvider, resourceScope);
 	}
 
 	/**
@@ -145,8 +142,6 @@ public class ModelDescriptorRegistry {
 	private void internalAddModel(Resource resource) {
 		IMetaModelDescriptor nativeMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource);
 
-		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(resource);
-
 		IMetaModelDescriptor effectiveMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getEffectiveDescriptor(resource);
 		IResourceScopeProvider resourceScopeProvider = ResourceScopeProviderRegistry.INSTANCE.getResourceScopeProvider(effectiveMMDescriptor);
 		IResourceScope resourceScope = null;
@@ -154,37 +149,34 @@ public class ModelDescriptorRegistry {
 			resourceScope = resourceScopeProvider.getScope(resource);
 		}
 
-		internalAddModel(nativeMMDescriptor, editingDomain, resourceScopeProvider, resourceScope);
+		internalAddModel(nativeMMDescriptor, resourceScopeProvider, resourceScope);
 	}
 
 	/**
 	 * Adds the {@linkplain IModelDescriptor model descriptor} corresponding to the specified
-	 * {@linkplain IMetaModelDescriptor meta-model descriptor}, {@linkplain TransactionalEditingDomain editing domain}
-	 * and {@linkplain IProject root model project} to this registry. The model descriptor is also added for the
-	 * referenced projects of the specified <tt>project</tt>.
+	 * {@linkplain IMetaModelDescriptor meta-model descriptor} and {@linkplain IResourceScope resource scope}
+	 * {@link IResource root} to this registry. The model descriptor is also added for the resource scopes referenced by
+	 * the resource scope behind specified <tt>resourceScopeRoot</tt>.
 	 * 
 	 * @param mmDescriptor
 	 *            The meta-model descriptor of the model to add.
-	 * @param editingDomain
-	 *            The editing domain owning the resources of the model to add.
-	 * @param root
-	 *            The (root) project of the model to add.
-	 * @since 0.7.0
+	 * @param resourceScopeRoot
+	 *            The root of the resource scope of the model to add.
+	 * @since 0.8.0
 	 */
-	public void addModel(IMetaModelDescriptor mmDescriptor, TransactionalEditingDomain editingDomain, IResource root) {
+	public void addModel(IMetaModelDescriptor mmDescriptor, IResource resourceScopeRoot) {
 		IResourceScopeProvider resourceScopeProvider = ResourceScopeProviderRegistry.INSTANCE.getResourceScopeProvider(mmDescriptor);
 		IResourceScope resourceScope = null;
 		if (resourceScopeProvider != null) {
-			resourceScope = resourceScopeProvider.getScope(root);
+			resourceScope = resourceScopeProvider.getScope(resourceScopeRoot);
 		}
-		internalAddModel(mmDescriptor, editingDomain, resourceScopeProvider, resourceScope);
+		internalAddModel(mmDescriptor, resourceScopeProvider, resourceScope);
 	}
 
-	private void internalAddModel(IMetaModelDescriptor mmDescriptor, TransactionalEditingDomain editingDomain,
-			IResourceScopeProvider resourceScopeProvider, IResourceScope resourceScope) {
-		if (mmDescriptor != null && editingDomain != null && resourceScope != null) {
+	private void internalAddModel(IMetaModelDescriptor mmDescriptor, IResourceScopeProvider resourceScopeProvider, IResourceScope resourceScope) {
+		if (mmDescriptor != null && resourceScope != null) {
 			// Create and add model descriptor for given root
-			internalAddModel(mmDescriptor, editingDomain, resourceScope);
+			internalAddModel(mmDescriptor, resourceScope);
 
 			// Create and add corresponding model descriptors that are implied on referencing roots if necessary
 			for (IResource referencingRoot : resourceScope.getReferencingRoots()) {
@@ -192,7 +184,7 @@ public class ModelDescriptorRegistry {
 				if (referencedModelDescriptor == null) {
 					IResourceScope referencingResourceScope = resourceScopeProvider.getScope(referencingRoot);
 					if (referencingResourceScope != null) {
-						internalAddModel(mmDescriptor, editingDomain, referencingResourceScope);
+						internalAddModel(mmDescriptor, referencingResourceScope);
 					}
 				}
 			}
@@ -201,19 +193,16 @@ public class ModelDescriptorRegistry {
 
 	/**
 	 * Adds the {@linkplain IModelDescriptor model descriptor} corresponding to the specified
-	 * {@linkplain IMetaModelDescriptor meta-model descriptor}, {@linkplain TransactionalEditingDomain editing domain}
-	 * and {@link IResourceScope resource scope} to this registry.
+	 * {@linkplain IMetaModelDescriptor meta-model descriptor} and {@link IResourceScope resource scope} to this
+	 * registry.
 	 * 
 	 * @param mmDescriptor
 	 *            The meta-model descriptor of the model to add.
-	 * @param editingDomain
-	 *            The editing domain owning the resources of the model to add.
 	 * @param resourceScope
 	 *            The {@link IResourceScope resource scope} of the model to add.
 	 */
-	private void internalAddModel(IMetaModelDescriptor mmDescriptor, TransactionalEditingDomain editingDomain, IResourceScope resourceScope) {
+	private void internalAddModel(IMetaModelDescriptor mmDescriptor, IResourceScope resourceScope) {
 		Assert.isNotNull(mmDescriptor);
-		Assert.isNotNull(editingDomain);
 		Assert.isNotNull(resourceScope);
 
 		Set<IModelDescriptor> modelDescriptorsForMetaModelDescriptor = modelDescriptors.get(mmDescriptor);
@@ -221,7 +210,7 @@ public class ModelDescriptorRegistry {
 			modelDescriptorsForMetaModelDescriptor = Collections.synchronizedSet(new HashSet<IModelDescriptor>(2));
 			modelDescriptors.put(mmDescriptor, modelDescriptorsForMetaModelDescriptor);
 		}
-		ModelDescriptor modelDescriptor = new ModelDescriptor(mmDescriptor, editingDomain, resourceScope);
+		ModelDescriptor modelDescriptor = new ModelDescriptor(mmDescriptor, resourceScope);
 		if (modelDescriptorsForMetaModelDescriptor.add(modelDescriptor)) {
 			fireModelAdded(modelDescriptor);
 			// TODO Surround with appropriate tracing option
@@ -606,7 +595,7 @@ public class ModelDescriptorRegistry {
 	public void moveModels(IProject oldProject, IProject newProject) {
 		for (IModelDescriptor modelDescriptor : getModels(oldProject)) {
 			internalRemoveModel(modelDescriptor);
-			internalAddModel(modelDescriptor.getMetaModelDescriptor(), modelDescriptor.getEditingDomain(), modelDescriptor.getScope());
+			internalAddModel(modelDescriptor.getMetaModelDescriptor(), modelDescriptor.getScope());
 		}
 	}
 
@@ -756,5 +745,12 @@ public class ModelDescriptorRegistry {
 	 */
 	public void removeModelDescriptorChangeListener(IModelDescriptorChangeListener listener) {
 		modelDescriptorChangeListeners.remove(listener);
+	}
+
+	public void printAllModels() {
+		System.out.println("The following models currently exist in this workspace:"); //$NON-NLS-1$
+		for (IModelDescriptor modelDescriptor : getAllModels()) {
+			System.out.println("  " + modelDescriptor + (isModelEmpty(modelDescriptor) ? "(empty)" : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		}
 	}
 }
