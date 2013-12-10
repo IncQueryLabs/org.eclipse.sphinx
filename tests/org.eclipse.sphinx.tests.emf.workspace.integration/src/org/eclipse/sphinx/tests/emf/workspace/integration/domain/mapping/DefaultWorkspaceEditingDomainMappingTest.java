@@ -44,10 +44,10 @@ public class DefaultWorkspaceEditingDomainMappingTest extends DefaultIntegration
 	public DefaultWorkspaceEditingDomainMappingTest() {
 		// Set subset of projects to load
 		Set<String> projectsToLoad = getProjectSubsetToLoad();
-		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_E);
 		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_F);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C);
 		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_D);
-		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_E);
 	}
 
 	@Override

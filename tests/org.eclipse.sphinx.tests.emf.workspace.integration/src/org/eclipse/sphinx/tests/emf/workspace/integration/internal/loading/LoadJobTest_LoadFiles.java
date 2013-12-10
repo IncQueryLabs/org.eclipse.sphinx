@@ -55,7 +55,7 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 	public LoadJobTest_LoadFiles() {
 		// Set subset of projects to load
 		Set<String> projectsToLoad = getProjectSubsetToLoad();
-		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A);
+		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);
 		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_B);
 		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B);
 	}
