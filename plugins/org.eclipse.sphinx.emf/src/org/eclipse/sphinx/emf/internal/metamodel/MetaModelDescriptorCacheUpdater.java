@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Avoid usage of Object.finalize
  *     itemis - [409014] Listener URIChangeDetector registered for all transactional editing domains
+ *     itemis - [423669] Asynchronous cleanup of old metamodel descriptor cache occasionally done too early
  *
  * </copyright>
  */
@@ -33,7 +34,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EcorePackage;
@@ -274,22 +274,25 @@ public class MetaModelDescriptorCacheUpdater extends ResourceSetListenerImpl imp
 
 	private void clearCachedOldDescriptors() {
 		/*
-		 * !! Important Note !! Perform as asynchronous operation belonging to model loading family, assign (lowest
-		 * possible) Job.DECORATE priority and schedule on workspace root to make sure that cached old meta-model
-		 * descriptors get forgotten once all model loading jobs are finished but remain available as long as other
-		 * model loading jobs are still running.
+		 * FIXME Improve comment !! Important Note !! Perform as asynchronous operation belonging to model loading
+		 * family, assign (lowest possible) Job.DECORATE priority and schedule on workspace root to make sure that
+		 * cached old meta-model descriptors get forgotten once all model loading jobs are finished but remain available
+		 * as long as other model loading jobs are still running.
 		 */
 		Job job = new Job(Messages.job_clearingOldMetaModelDescriptors) {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
-					SubMonitor progress = SubMonitor.convert(monitor, 1);
+					// Reschedule this job after some time when other model loading jobs that potentially still need old
+					// metamodel descriptor information are still running
+					if (Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING).length > 1) {
+						schedule(5);
+						return Status.OK_STATUS;
+					}
 
 					// Clear old meta-model descriptors
 					InternalMetaModelDescriptorRegistry.INSTANCE.clearCachedOldDescriptors();
-					progress.worked(1);
-
 					return Status.OK_STATUS;
 				} catch (OperationCanceledException ex) {
 					return Status.CANCEL_STATUS;
@@ -305,9 +308,10 @@ public class MetaModelDescriptorCacheUpdater extends ResourceSetListenerImpl imp
 
 			@Override
 			public boolean shouldSchedule() {
+				// Don't schedule this job if another instance of it has already been scheduled
 				Job[] jobs = Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING);
-				for (Job modelLoadingJob : jobs) {
-					if (modelLoadingJob.getName().equals(Messages.job_clearingOldMetaModelDescriptors)) {
+				for (Job job : jobs) {
+					if (job != this && job.getName().equals(Messages.job_clearingOldMetaModelDescriptors)) {
 						return false;
 					}
 				}
@@ -317,6 +321,6 @@ public class MetaModelDescriptorCacheUpdater extends ResourceSetListenerImpl imp
 		job.setPriority(Job.DECORATE);
 		job.setRule(ResourcesPlugin.getWorkspace().getRoot());
 		job.setSystem(true);
-		job.schedule();
+		job.schedule(5);
 	}
 }

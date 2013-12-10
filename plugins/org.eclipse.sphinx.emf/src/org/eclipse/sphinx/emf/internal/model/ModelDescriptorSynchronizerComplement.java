@@ -10,6 +10,7 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [409014] Listener URIChangeDetector registered for all transactional editing domains
+ *     itemis - [423669] Asynchronous cleanup of old metamodel descriptor cache occasionally done too early
  *
  * </copyright>
  */
@@ -22,16 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.jobs.MultiRule;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -39,15 +30,11 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.ResourceSetChangeEvent;
 import org.eclipse.emf.transaction.ResourceSetListenerImpl;
-import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.domain.factory.AbstractResourceSetListenerInstaller;
-import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.internal.metamodel.InternalMetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
-import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
-import org.eclipse.sphinx.platform.util.StatusUtil;
 
 public class ModelDescriptorSynchronizerComplement extends ResourceSetListenerImpl {
 
@@ -146,62 +133,15 @@ public class ModelDescriptorSynchronizerComplement extends ResourceSetListenerIm
 	 */
 	private void handleModelResourceLoaded(final Collection<Resource> resources) {
 		if (!resources.isEmpty()) {
-			Job job = new Job(Messages.job_addingModelDescriptors) {
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {
-					try {
-						SubMonitor progress = SubMonitor.convert(monitor, resources.size());
-						if (progress.isCanceled()) {
-							throw new OperationCanceledException();
-						}
-
-						for (Resource resource : resources) {
-							// Add descriptor for model behind loaded resource to ModelDescriptorRegistry if not
-							// already done so
-							IFile file = EcorePlatformUtil.getFile(resource);
-							if (file == null || !file.exists()) {
-								ModelDescriptorRegistry.INSTANCE.addModel(resource);
-							}
-
-							progress.worked(1);
-							if (progress.isCanceled()) {
-								throw new OperationCanceledException();
-							}
-						}
-						return Status.OK_STATUS;
-					} catch (OperationCanceledException ex) {
-						return Status.CANCEL_STATUS;
-					} catch (Exception ex) {
-						return StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
-					}
+			for (Resource resource : resources) {
+				// Add descriptor for model behind loaded resource to ModelDescriptorRegistry if not
+				// already done so
+				IFile file = EcorePlatformUtil.getFile(resource);
+				if (file == null || !file.exists()) {
+					ModelDescriptorRegistry.INSTANCE.addModel(resource);
 				}
-
-				@Override
-				public boolean belongsTo(Object family) {
-					return IExtendedPlatformConstants.FAMILY_MODEL_LOADING.equals(family);
-				}
-			};
-
-			job.setPriority(Job.SHORT);
-			job.setRule(createLoadSchedulingRule(resources));
-			job.setSystem(true);
-			job.schedule();
-		}
-	}
-
-	protected ISchedulingRule createLoadSchedulingRule(Collection<Resource> resources) {
-		Assert.isNotNull(resources);
-
-		// Collect files attached to resources
-		Set<ISchedulingRule> rules = new HashSet<ISchedulingRule>();
-		for (Resource resource : resources) {
-			IFile file = EcorePlatformUtil.getFile(resource);
-			if (file != null) {
-				// Use parent resource as rule because URIConverterImpl may refresh file
-				rules.add(file.getParent());
 			}
 		}
-		return MultiRule.combine(rules.toArray(new ISchedulingRule[rules.size()]));
 	}
 
 	/**
@@ -215,51 +155,26 @@ public class ModelDescriptorSynchronizerComplement extends ResourceSetListenerIm
 			for (Resource resource : resources) {
 				// Remove underlying model file from file meta-model descriptor cache if resource exists
 				// only in memory
+				/*
+				 * !! Important Note !! This should normally be the business of MetaModelDescriptorCacheUpdater.
+				 * However, we have to do so here as well because we depend on that cached metamodel descriptors are up
+				 * to date but cannot know which of both BasicModelDescriptorSynchronizerDelegate or
+				 * MetaModelDescriptorCacheUpdater gets called first.
+				 */
 				IFile file = EcorePlatformUtil.getFile(resource);
 				if (!EcoreResourceUtil.exists(resource.getURI())) {
 					InternalMetaModelDescriptorRegistry.INSTANCE.removeCachedDescriptor(file);
 				}
 			}
 
-			Job job = new Job(Messages.job_removingModelDescriptors) {
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {
-					try {
-						SubMonitor progress = SubMonitor.convert(monitor, resources.size());
-						if (progress.isCanceled()) {
-							throw new OperationCanceledException();
-						}
-
-						for (Resource resource : resources) {
-							// Remove descriptor for model behind unloaded only in memory resource from
-							// ModelDescriptorRegistry if it is the last resource of the given model
-							IFile file = EcorePlatformUtil.getFile(resource);
-							if (file == null || !file.exists()) {
-								ModelDescriptorRegistry.INSTANCE.removeModel(resource);
-							}
-
-							progress.worked(1);
-							if (progress.isCanceled()) {
-								throw new OperationCanceledException();
-							}
-						}
-						return Status.OK_STATUS;
-					} catch (OperationCanceledException ex) {
-						return Status.CANCEL_STATUS;
-					} catch (Exception ex) {
-						return StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
-					}
+			for (Resource resource : resources) {
+				// Remove descriptor for model behind unloaded only in memory resource from
+				// ModelDescriptorRegistry if it is the last resource of the given model
+				IFile file = EcorePlatformUtil.getFile(resource);
+				if (file == null || !file.exists()) {
+					ModelDescriptorRegistry.INSTANCE.removeModel(resource);
 				}
-
-				@Override
-				public boolean belongsTo(Object family) {
-					return IExtendedPlatformConstants.FAMILY_MODEL_LOADING.equals(family);
-				}
-			};
-			job.setPriority(Job.SHORT);
-			job.setRule(ResourcesPlugin.getWorkspace().getRoot());
-			job.setSystem(true);
-			job.schedule();
+			}
 		}
 	}
 }
