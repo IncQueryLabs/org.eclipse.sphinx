@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.compare.ui.editor;
@@ -37,7 +37,6 @@ import org.eclipse.emf.workspace.IWorkspaceCommandStack;
 import org.eclipse.emf.workspace.ResourceUndoContext;
 import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
-import org.eclipse.sphinx.emf.messages.EMFMessages;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -86,7 +85,7 @@ public class ModelCompareEditor extends CompareEditor {
 			}
 		}
 		if (editingDomains.isEmpty()) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), new RuntimeException(EMFMessages.error_notFound_editingDomain));
+			PlatformLogUtil.logAsError(Activator.getPlugin(), new RuntimeException(Messages.error_notFound_editingDomain));
 		}
 		// Then creates and registers listeners on resulting editing domains
 		for (TransactionalEditingDomain editingDomain : editingDomains) {
