@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     See4sys - Initial API and implementation
- *     BMW Car IT - Avoid usage of Object.finalize
+ *     BMW Car IT - Avoid usage of Object.finalize()
  *     itemis - [409014] Listener URIChangeDetector registered for all transactional editing domains
  *     itemis - [423669] Asynchronous cleanup of old metamodel descriptor cache occasionally done too early
  *
@@ -81,6 +81,11 @@ public class MetaModelDescriptorCacheUpdater extends ResourceSetListenerImpl imp
 			super(MetaModelDescriptorCacheUpdater.class);
 		}
 	}
+
+	/**
+	 * Delay time in milliseconds to let pass by before to schedule job for removing cached old metamodel descriptors.
+	 */
+	private static final long CLEAR_OLDMETAMODELDESCRIPTORS_SCHEDULING_DELAY_TIME = 5;
 
 	/**
 	 * Default constructor.
@@ -208,7 +213,7 @@ public class MetaModelDescriptorCacheUpdater extends ResourceSetListenerImpl imp
 		Assert.isNotNull(resources);
 
 		for (Resource resource : resources) {
-			// Remove underlying model file from file meta-model descriptor cache if resource exists
+			// Remove underlying model file from file metamodel descriptor cache if resource exists
 			// only in memory
 			IFile file = EcorePlatformUtil.getFile(resource);
 			if (!EcoreResourceUtil.exists(resource.getURI())) {
@@ -216,7 +221,7 @@ public class MetaModelDescriptorCacheUpdater extends ResourceSetListenerImpl imp
 			}
 		}
 
-		// Clear old meta-model descriptors
+		// Clear old metamodel descriptors
 		MetaModelDescriptorCacheUpdater.this.clearCachedOldDescriptors();
 	}
 
@@ -239,29 +244,29 @@ public class MetaModelDescriptorCacheUpdater extends ResourceSetListenerImpl imp
 
 					@Override
 					public void handleFileChanged(int eventType, IFile file) {
-						// Remove entry for changed file from meta-model descriptor cache
+						// Remove entry for changed file from metamodel descriptor cache
 						InternalMetaModelDescriptorRegistry.INSTANCE.removeCachedDescriptor(file);
 
-						// Clear old meta-model descriptors
+						// Clear old metamodel descriptors
 						MetaModelDescriptorCacheUpdater.this.clearCachedOldDescriptors();
 					}
 
 					@Override
 					public void handleFileMoved(int eventType, IFile oldFile, IFile newFile) {
-						// Remove entry for old file from meta-model descriptor cache and add an equivalent entry
+						// Remove entry for old file from metamodel descriptor cache and add an equivalent entry
 						// for new file
 						InternalMetaModelDescriptorRegistry.INSTANCE.moveCachedDescriptor(oldFile, newFile);
 
-						// Clear old meta-model descriptors
+						// Clear old metamodel descriptors
 						MetaModelDescriptorCacheUpdater.this.clearCachedOldDescriptors();
 					}
 
 					@Override
 					public void handleFileRemoved(int eventType, IFile file) {
-						// Remove entry for removed file from meta-model descriptor cache
+						// Remove entry for removed file from metamodel descriptor cache
 						InternalMetaModelDescriptorRegistry.INSTANCE.removeCachedDescriptor(file);
 
-						// Clear old meta-model descriptors
+						// Clear old metamodel descriptors
 						MetaModelDescriptorCacheUpdater.this.clearCachedOldDescriptors();
 					}
 				});
@@ -273,25 +278,26 @@ public class MetaModelDescriptorCacheUpdater extends ResourceSetListenerImpl imp
 	}
 
 	private void clearCachedOldDescriptors() {
+		// Trigger clearance of all cached old metamodel descriptors
 		/*
-		 * FIXME Improve comment !! Important Note !! Perform as asynchronous operation belonging to model loading
-		 * family, assign (lowest possible) Job.DECORATE priority and schedule on workspace root to make sure that
-		 * cached old meta-model descriptors get forgotten once all model loading jobs are finished but remain available
-		 * as long as other model loading jobs are still running.
+		 * !! Important Note !! Perform as asynchronous operation belonging to model loading family, assign (lowest
+		 * possible) Job.DECORATE priority and schedule on workspace root after some delay time to make sure that cached
+		 * old metamodel descriptors don't get forgotten while other model loading jobs that are potentially in need of
+		 * them are still running.
 		 */
 		Job job = new Job(Messages.job_clearingOldMetaModelDescriptors) {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
-					// Reschedule this job after some time when other model loading jobs that potentially still need old
-					// metamodel descriptor information are still running
+					// Reschedule this job after some delay time when other model loading jobs that potentially need
+					// old metamodel descriptor information are still running
 					if (Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING).length > 1) {
-						schedule(5);
+						schedule(CLEAR_OLDMETAMODELDESCRIPTORS_SCHEDULING_DELAY_TIME);
 						return Status.OK_STATUS;
 					}
 
-					// Clear old meta-model descriptors
+					// Clear all cached old metamodel descriptors
 					InternalMetaModelDescriptorRegistry.INSTANCE.clearCachedOldDescriptors();
 					return Status.OK_STATUS;
 				} catch (OperationCanceledException ex) {
@@ -321,6 +327,6 @@ public class MetaModelDescriptorCacheUpdater extends ResourceSetListenerImpl imp
 		job.setPriority(Job.DECORATE);
 		job.setRule(ResourcesPlugin.getWorkspace().getRoot());
 		job.setSystem(true);
-		job.schedule(5);
+		job.schedule(CLEAR_OLDMETAMODELDESCRIPTORS_SCHEDULING_DELAY_TIME);
 	}
 }
