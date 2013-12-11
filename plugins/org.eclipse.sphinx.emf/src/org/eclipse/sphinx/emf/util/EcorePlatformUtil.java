@@ -14,7 +14,8 @@
  *     itemis - [409459] Enable asynchronous loading of affected models when creating or resolving references to elements in other models
  *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
  *     itemis - [418005] Add support for model files with multiple root elements
- *
+ *     itemis - [423687] Synchronize ExtendedPlatformContentHandlerImpl wrt latest changes in EMF's PlatformContentHandlerImpl
+ *     
  * </copyright>
  */
 package org.eclipse.sphinx.emf.util;
@@ -58,6 +59,8 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
@@ -79,7 +82,6 @@ import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
-import org.eclipse.sphinx.platform.util.ReflectUtil;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.xml.sax.SAXException;
 
@@ -843,12 +845,16 @@ public final class EcorePlatformUtil {
 	 */
 	public static IFile getFile(URI uri) {
 		if (uri != null && Platform.isRunning()) {
-			try {
-				return (IFile) ReflectUtil.invokeInvisibleMethod(WorkspaceSynchronizer.class, "getFile", new Object[] { uri, //$NON-NLS-1$
-						EcoreResourceUtil.getURIConverter(), false });
-			} catch (Exception ex) {
-				// Ignore exception
-			}
+			// Create dummy resource transporting given URI
+			Resource resource = new ResourceImpl(uri);
+
+			// Create dummy resource set transporting appropriate URI converter
+			ResourceSet resourceSet = new ResourceSetImpl();
+			resourceSet.getResources().add(resource);
+			resourceSet.setURIConverter(EcoreResourceUtil.getURIConverter());
+
+			// Delegate to getFile(Resource) method
+			return getFile(resource);
 		}
 		return null;
 	}

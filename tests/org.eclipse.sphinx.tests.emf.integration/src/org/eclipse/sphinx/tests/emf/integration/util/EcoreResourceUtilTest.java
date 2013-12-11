@@ -12,6 +12,7 @@
  *     itemis - Added test for EcoreResourceUtil#convertToAbsoluteFileURI()
  *     itemis - [418005] Add support for model files with multiple root elements
  *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *     itemis - [423687] Synchronize ExtendedPlatformContentHandlerImpl wrt latest changes in EMF's PlatformContentHandlerImpl
  *
  * </copyright>
  */
@@ -50,6 +51,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
+import org.eclipse.sphinx.examples.hummingbird.ide.metamodel.HummingbirdMMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Factory;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10MMDescriptor;
@@ -448,7 +450,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 			uri = URI.createFileURI(outsideWorkspacePath);
 			contentTypeId = EcoreResourceUtil.getContentTypeId(uri);
-			assertNull(contentTypeId);
+			assertEquals(HummingbirdMMDescriptor.INSTANCE.getDefaultContentTypeId(), contentTypeId);
 		}
 
 		//
@@ -466,15 +468,15 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		{
 			uri = URI.createPlatformPluginURI("/" + Activator.getPlugin().getSymbolicName() + "/" + "dummy.hummingbird", true);
 			contentTypeId = EcoreResourceUtil.getContentTypeId(uri);
-			assertNull(contentTypeId);
+			assertEquals(HummingbirdMMDescriptor.INSTANCE.getDefaultContentTypeId(), contentTypeId);
 
 			uri = URI.createPlatformPluginURI("/" + Activator.getPlugin().getSymbolicName() + "/" + "dummy.xml", true);
 			contentTypeId = EcoreResourceUtil.getContentTypeId(uri);
-			assertNull(contentTypeId);
+			assertEquals("org.eclipse.core.runtime.xml", contentTypeId);
 
 			uri = URI.createPlatformPluginURI("/" + Activator.getPlugin().getSymbolicName() + "/" + "dummy.uml", true);
 			contentTypeId = EcoreResourceUtil.getContentTypeId(uri);
-			assertNull(contentTypeId);
+			assertEquals(UML2MMDescriptor.XMI_BASE_CONTENT_TYPE_ID, contentTypeId);
 		}
 	}
 

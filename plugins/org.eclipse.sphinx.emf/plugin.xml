@@ -145,7 +145,7 @@ Contributors:
    <extension
           point="org.eclipse.emf.ecore.content_handler">
        <contentHandler
-             class="org.eclipse.sphinx.emf.resource.ExtendedPlatformContentHandlerImpl"
+             class="org.eclipse.sphinx.emf.resource.SphinxManagedModelFileContentHandlerImpl"
              priority="1000">
        </contentHandler>
    </extension>
