@@ -34,9 +34,9 @@ import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestRe
  *
  */
 @SuppressWarnings({ "restriction" })
-public class LoadJobTest_LoadModel extends AbstractLoadJobTest {
+public class ModelLoadJobTest extends AbstractLoadJobTest {
 
-	public LoadJobTest_LoadModel() {
+	public ModelLoadJobTest() {
 		// Set subset of projects to load
 		Set<String> projectsToLoad = getProjectSubsetToLoad();
 		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B);

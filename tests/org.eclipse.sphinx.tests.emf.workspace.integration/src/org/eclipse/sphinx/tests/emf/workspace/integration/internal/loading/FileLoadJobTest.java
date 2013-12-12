@@ -35,7 +35,7 @@ import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestRe
  *
  */
 @SuppressWarnings({ "restriction" })
-public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
+public class FileLoadJobTest extends AbstractLoadJobTest {
 	private IFile hbFile10_10A_1;
 	private IFile hbFile10_10A_2;
 	private IFile hbFile10_10A_3;
@@ -52,7 +52,7 @@ public class LoadJobTest_LoadFiles extends AbstractLoadJobTest {
 	private IFile uml2File_20B_2;
 	private IFile uml2File_20B_3;
 
-	public LoadJobTest_LoadFiles() {
+	public FileLoadJobTest() {
 		// Set subset of projects to load
 		Set<String> projectsToLoad = getProjectSubsetToLoad();
 		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_A);

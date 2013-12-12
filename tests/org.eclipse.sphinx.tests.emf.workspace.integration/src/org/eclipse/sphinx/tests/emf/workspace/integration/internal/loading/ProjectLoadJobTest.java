@@ -33,9 +33,9 @@ import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestRe
  *
  */
 @SuppressWarnings({ "restriction" })
-public class LoadJobTest_LoadProjects extends AbstractLoadJobTest {
+public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
-	public LoadJobTest_LoadProjects() {
+	public ProjectLoadJobTest() {
 		// Set project references as follows:
 		// HB_PROJECT_NAME_20_C -> HB_PROJECT_NAME_20_B -> HB_PROJECT_NAME_20_A
 		Map<String, Set<String>> projectReferences = getProjectReferences();

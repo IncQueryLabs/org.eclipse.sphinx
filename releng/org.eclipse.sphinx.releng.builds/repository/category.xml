@@ -10,14 +10,25 @@
       <category name="org.eclipse.sphinx.category"/>
    </feature>
    <feature url="features/org.eclipse.sphinx.testutils_0.8.0.qualifier.jar" id="org.eclipse.sphinx.testutils" version="0.8.0.qualifier">
-      <category name="org.eclipse.sphinx.category"/>
+      <category name="org.eclipse.sphinx.auxiliaries.category"/>
    </feature>
    <feature url="features/org.eclipse.sphinx.thirdparty_0.8.0.qualifier.jar" id="org.eclipse.sphinx.thirdparty" version="0.8.0.qualifier">
+      <category name="org.eclipse.sphinx.auxiliaries.category"/>
+   </feature>
+   <feature url="features/org.eclipse.sphinx.nebula_0.8.0.qualifier.jar" id="org.eclipse.sphinx.nebula" version="0.8.0.qualifier">
+      <category name="org.eclipse.sphinx.category"/>
+   </feature>
+   <feature url="features/org.eclipse.sphinx.nebula.sdk_0.8.0.qualifier.jar" id="org.eclipse.sphinx.nebula.sdk" version="0.8.0.qualifier">
       <category name="org.eclipse.sphinx.category"/>
    </feature>
    <category-def name="org.eclipse.sphinx.category" label="Sphinx (Incubation)">
       <description>
-         Integrated modeling tool platform that eases the development of IDE-like tool support for modeling languages used in software and systems development
+         Integrated modeling tool platform that eases the development of IDE-like tool support for modeling languages used in software and systems development.
+      </description>
+   </category-def>
+   <category-def name="org.eclipse.sphinx.auxiliaries.category" label="Sphinx Auxiliaries (Incubation)">
+      <description>
+         Third-party libraries, test helpers, and other things that can be used along with Sphinx.
       </description>
    </category-def>
 </site>
