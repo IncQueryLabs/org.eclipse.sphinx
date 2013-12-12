@@ -131,9 +131,33 @@
 							<goal>source-feature</goal>
 						</goals>
 						<configuration>
-						<includeBinaryFeature>false</includeBinaryFeature>
-							<labelSuffix>Source</labelSuffix>
+							<includeBinaryFeature>false</includeBinaryFeature>
+							<!-- Non-breakable space, as normal spaces are trimmed. -->
+							<labelSuffix>&nbsp;Source</labelSuffix>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<executions>
+					<execution>
+						<!-- Don't attach (default) metadata before the "generate-source-feature" 
+							execution. -->
+						<id>default-p2-metadata-default</id>
+						<configuration>
+							<attachP2Metadata>false</attachP2Metadata>
+						</configuration>
+					</execution>
+					<execution>
+						<!-- Do attach metadata after the "generate-source-feature" execution. -->
+						<id>attach-p2-metadata</id>
+						<phase>package</phase>
+						<goals>
+							<goal>p2-metadata</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>

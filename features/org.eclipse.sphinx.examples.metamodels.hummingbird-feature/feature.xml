@@ -25,21 +25,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.sphinx.examples.hummingbird.ide.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.sphinx.examples.hummingbird.ide.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.hummingbird.ide.ui.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -53,21 +39,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.sphinx.examples.hummingbird10.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.sphinx.examples.hummingbird10.edit"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.hummingbird10.edit.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -81,13 +53,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.sphinx.examples.hummingbird20.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.sphinx.examples.hummingbird20.edit"
          download-size="0"
          install-size="0"
@@ -95,21 +60,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.sphinx.examples.hummingbird20.edit.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.sphinx.examples.hummingbird20.codegen.xpand"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.hummingbird20.codegen.xpand.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -130,21 +81,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.sphinx.examples.hummingbird20.validation.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.sphinx.examples.hummingbird10.ide.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.hummingbird10.ide.ui.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -158,21 +95,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.sphinx.examples.hummingbird20.ide.ui.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.sphinx.examples.hummingbird20.editors.nebula"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.examples.hummingbird20.editors.nebula.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
