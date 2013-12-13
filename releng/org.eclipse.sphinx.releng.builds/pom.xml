@@ -44,6 +44,7 @@
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10.ide.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.codegen.xpand</module>
+		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.diagram.gmf</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.edit</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.editors.nebula</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.ide.ui</module>
