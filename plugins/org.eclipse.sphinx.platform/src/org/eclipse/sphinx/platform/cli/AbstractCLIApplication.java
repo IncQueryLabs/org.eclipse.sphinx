@@ -212,21 +212,14 @@ public abstract class AbstractCLIApplication implements IApplication {
 	/**
 	 * Returns the set of command line {@link Option option}s to be used for parsing the application arguments. The
 	 * command line usage help option is supported by default.
-	 * 
-	 * @nooverride Clients intending to provide their own options should override {@link #doDefineOptions()}.
-	 */
-	protected void defineOptions() {
-		addOption(new Option(OPTION_HELP_NAME, OPTION_HELP_DESCRIPTION));
-		doDefineOptions();
-	}
-
-	/**
-	 * Overriding point to provide application-specific command line {@link Option option}s.
+	 * <p>
+	 * Clients should override this method to provide their own command line options.
+	 * </p>
 	 * 
 	 * @see http://commons.apache.org/cli/usage.html
 	 */
-	protected void doDefineOptions() {
-		// Do nothing by default
+	protected void defineOptions() {
+		addOption(new Option(OPTION_HELP_NAME, OPTION_HELP_DESCRIPTION));
 	}
 
 	/**
@@ -259,6 +252,7 @@ public abstract class AbstractCLIApplication implements IApplication {
 	 * implementations.
 	 * 
 	 * @return The command line parser instance to be used for analyzing application arguments.
+	 * @see #defineOptions()
 	 * @see http://commons.apache.org/cli/usage.html
 	 */
 	protected CommandLineParser createParser() {
@@ -267,11 +261,15 @@ public abstract class AbstractCLIApplication implements IApplication {
 
 	/**
 	 * Implements the interrogation stage that is invoked after the parsing stage analyzing the command line options. It
-	 * is the place where this {@link AbstractCLIApplication application}'s semantics according to the options that have
-	 * been detected in the application arguments needs to be defined. The semantics for the command line usage help
-	 * option is implemented by default.
+	 * is the place where this {@link AbstractCLIApplication application}'s semantics according to the command line
+	 * options that have been detected in the application arguments needs to be defined. The semantics for the command
+	 * line usage help option is implemented by default.
+	 * <p>
+	 * Clients should override this method to implement the semantics for their own command line options.
+	 * </p>
 	 * 
-	 * @nooverride Clients should override {@link #doInterrogate()} to implement the semantics for their own options.
+	 * @see #defineOptions()
+	 * @see http://commons.apache.org/cli/usage.html
 	 */
 	protected Object interrogate() throws Throwable {
 		CommandLine commandLine = getCommandLine();
@@ -279,17 +277,6 @@ public abstract class AbstractCLIApplication implements IApplication {
 			printHelp();
 			throw new OperationCanceledException();
 		}
-		return doInterrogate();
-	}
-
-	/**
-	 * Overriding point to implement this {@link AbstractCLIApplication application}'s semantics according to the
-	 * options that have been detected in the application arguments.
-	 * 
-	 * @return The return code of the application indicating normal or abnormal termination.
-	 * @see http://commons.apache.org/cli/usage.html
-	 */
-	protected Object doInterrogate() throws Throwable {
 		return ERROR_NO;
 	}
 
