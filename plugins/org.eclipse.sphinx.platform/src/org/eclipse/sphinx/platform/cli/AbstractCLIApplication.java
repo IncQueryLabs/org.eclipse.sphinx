@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2011 See4sys and others.
+ * Copyright (c) 2011-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,8 @@
  * 
  * Contributors: 
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [424028] Improve AbstractCLIApplication
+ *     
  * </copyright>
  */
 package org.eclipse.sphinx.platform.cli;
@@ -24,7 +25,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.Parser;
 import org.apache.commons.cli.PosixParser;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.equinox.app.IApplication;
@@ -58,23 +58,44 @@ public abstract class AbstractCLIApplication implements IApplication {
 	/**
 	 * Returns the name of this {@link AbstractCLIApplication application}.
 	 * 
-	 * @return The {@link AbstractCLIApplication application}'s name.
+	 * @return The application's name.
+	 * @deprecated Use {@link #getCommandLineSyntax()} instead.
 	 */
-	protected abstract String getApplicationName();
+	@Deprecated
+	protected String getApplicationName() {
+		return null;
+	}
 
 	/**
 	 * Returns a brief description of what this {@link AbstractCLIApplication application} is doing.
 	 * 
-	 * @return The {@link AbstractCLIApplication application}'s description.
+	 * @return Theapplication's description.
 	 */
 	protected String getApplicationDescription() {
 		return null;
 	}
 
 	/**
+	 * Returns the command line syntax for this {@link AbstractCLIApplication application}. Is expected to include
+	 * relevant Eclipse runtime options, application id, and arguments but not a detailed description of the command
+	 * line options. The latter is automatically added upon printing the application's help with {@link #printHelp()}.
+	 * E.g.,
+	 * 
+	 * <pre>
+	 * eclipse -noSplash -data workspaceLocation -application org.example.cli.SomeApplication [OPTION]... [PROGRAM_ARGUMENT]...
+	 * </pre>
+	 * 
+	 * @return The application's command line syntax.
+	 * @see #printHelp()
+	 */
+	protected String getCommandLineSyntax() {
+		return getApplicationName();
+	}
+
+	/**
 	 * Returns the list of arguments passed to this {@link AbstractCLIApplication application}.
 	 * 
-	 * @return The {@link AbstractCLIApplication application}'s argument list.
+	 * @return The application's argument list.
 	 */
 	protected String[] getApplicationArgs() {
 		return applicationArgs;
@@ -83,7 +104,7 @@ public abstract class AbstractCLIApplication implements IApplication {
 	/**
 	 * Returns the supported {@link Options command line options}.
 	 * 
-	 * @return The supported {@link Options command line options}.
+	 * @return The supported command line options.
 	 */
 	protected Options getOptions() {
 		return options;
@@ -101,19 +122,57 @@ public abstract class AbstractCLIApplication implements IApplication {
 	}
 
 	/**
-	 * Returns the {@link CommandLine} resulting of the parsing operation on application arguments.
+	 * Returns the {@link CommandLine command line} resulting of the parsing operation on application arguments.
 	 * 
-	 * @return The {@link CommandLine} resulting of the parsing operation on application arguments.
+	 * @return The command line resulting of the parsing operation on application arguments.
 	 */
 	protected CommandLine getCommandLine() {
 		return commandLine;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
+	 */
 	public Object start(IApplicationContext context) {
-		try {
-			// Initialize application arguments
-			initApplicationArgs(context);
+		// Initialize application arguments
+		initApplicationArgs(context);
 
+		// Run application
+		return doRun();
+	}
+
+	/*
+	 * @see org.eclipse.equinox.app.IApplication#stop()
+	 */
+	public void stop() {
+	}
+
+	/**
+	 * Alternative entry point that can be used to invoke this {@link AbstractCLIApplication application} from
+	 * non-Eclipse headless contexts (e.g., Ant task, Java standalone application).
+	 * 
+	 * @param args
+	 *            The arguments for the application. The content of this argument will be checked for if it conforms to
+	 *            the expectations of the application being invoked.
+	 * @return The return code of the application indicating normal or abnormal termination.
+	 */
+	public Object run(String[] args) {
+		// Initialize application arguments
+		initApplicationArgs(args);
+
+		// Run application
+		return doRun();
+	}
+
+	/**
+	 * Common run method to which Eclipse headless and non-Eclipse headless invocations of this
+	 * {@link AbstractCLIApplication application} get redirected.
+	 * 
+	 * @return The return code of the application indicating normal or abnormal termination.
+	 */
+	private Object doRun() {
+		try {
 			// Definition stage
 			defineOptions();
 
@@ -128,49 +187,63 @@ public abstract class AbstractCLIApplication implements IApplication {
 		}
 	}
 
-	/*
-	 * @see org.eclipse.equinox.app.IApplication#stop()
-	 */
-	public void stop() {
-	}
-
 	/**
 	 * Initializes the application arguments from given {@link IApplicationContext application context}.
 	 * 
 	 * @param context
+	 *            The application context that has been passed to this application.
 	 */
 	private void initApplicationArgs(IApplicationContext context) {
 		Map<?, ?> arguments = context.getArguments();
-		Object applicationArgs = arguments.get(IApplicationContext.APPLICATION_ARGS);
-		if (applicationArgs instanceof String[]) {
-			this.applicationArgs = (String[]) applicationArgs;
-		} else {
-			this.applicationArgs = new String[0];
-		}
+		Object args = arguments.get(IApplicationContext.APPLICATION_ARGS);
+		applicationArgs = args instanceof String[] ? (String[]) args : new String[0];
 	}
 
 	/**
-	 * Lets define the set of {@link Option}s used for parsing the application arguments. see {@link Options} for more
-	 * details.Note that the help option is defined by default, user wanting to keep that option defined must overload
-	 * this method and call super.defineOptions() inside overloaded method.
+	 * Initializes the application arguments from given <code>args</code>.
+	 * 
+	 * @param args
+	 *            The arguments that have been passed to this application.
+	 */
+	private void initApplicationArgs(String[] args) {
+		applicationArgs = args != null ? args : new String[0];
+	}
+
+	/**
+	 * Returns the set of command line {@link Option option}s to be used for parsing the application arguments. The
+	 * command line usage help option is supported by default.
+	 * 
+	 * @nooverride Clients intending to provide their own options should override {@link #doDefineOptions()}.
 	 */
 	protected void defineOptions() {
 		addOption(new Option(OPTION_HELP_NAME, OPTION_HELP_DESCRIPTION));
+		doDefineOptions();
 	}
 
 	/**
-	 * Implements parsing operation on application arguments.
+	 * Overriding point to provide application-specific command line {@link Option option}s.
+	 * 
+	 * @see http://commons.apache.org/cli/usage.html
+	 */
+	protected void doDefineOptions() {
+		// Do nothing by default
+	}
+
+	/**
+	 * Parses the application arguments based on the command line {@link Option}s supported by this
+	 * {@link AbstractCLIApplication application}.
 	 * 
 	 * @throws ParseException
+	 * @see {@link #defineOptions()}
 	 */
 	protected void parse() throws ParseException {
 		commandLine = getParser().parse(getOptions(), getApplicationArgs());
 	}
 
 	/**
-	 * Returns the Instance of {@link CommandLineParser} used for parsing application arguments.
+	 * Returns the {@link CommandLineParser command line parser} to be used for analyzing the application arguments.
 	 * 
-	 * @return The Instance of {@link CommandLineParser} used for parsing application arguments.
+	 * @return The command line parser to be used for analyzing application arguments.
 	 */
 	protected CommandLineParser getParser() {
 		if (parser == null) {
@@ -180,21 +253,25 @@ public abstract class AbstractCLIApplication implements IApplication {
 	}
 
 	/**
-	 * Creates the instance of parser used for parsing application arguments.Three kind of predefined parser can be
-	 * created , {@link BasicParser}, {@link GnuParser}, {@link PosixParser} and any of user defined parser extending
-	 * {@link Parser}.
+	 * Creates an instance of the {@link CommandLineParser command line parser} to be used for analyzing the application
+	 * arguments. Three command line parser types are available out-of-the box: {@link BasicParser}, {@link GnuParser},
+	 * {@link PosixParser}. In addition, clients are free to provide and use their own command line parser
+	 * implementations.
 	 * 
-	 * @return The Instance of {@link CommandLineParser} used for parsing application arguments.
+	 * @return The command line parser instance to be used for analyzing application arguments.
+	 * @see http://commons.apache.org/cli/usage.html
 	 */
 	protected CommandLineParser createParser() {
-		return new GnuParser();
+		return new PosixParser();
 	}
 
 	/**
-	 * Implements interrogation stage after parsing operation occurred. Let define the behavior of the application when
-	 * an option is detected in application arguments.Note that by default the help option is evaluated and its default
-	 * behavior is applied, user wanting to keep that default behavior must overload this method and call
-	 * super.interrogate() in overloaded method.
+	 * Implements the interrogation stage that is invoked after the parsing stage analyzing the command line options. It
+	 * is the place where this {@link AbstractCLIApplication application}'s semantics according to the options that have
+	 * been detected in the application arguments needs to be defined. The semantics for the command line usage help
+	 * option is implemented by default.
+	 * 
+	 * @nooverride Clients should override {@link #doInterrogate()} to implement the semantics for their own options.
 	 */
 	protected Object interrogate() throws Throwable {
 		CommandLine commandLine = getCommandLine();
@@ -202,11 +279,22 @@ public abstract class AbstractCLIApplication implements IApplication {
 			printHelp();
 			throw new OperationCanceledException();
 		}
+		return doInterrogate();
+	}
+
+	/**
+	 * Overriding point to implement this {@link AbstractCLIApplication application}'s semantics according to the
+	 * options that have been detected in the application arguments.
+	 * 
+	 * @return The return code of the application indicating normal or abnormal termination.
+	 * @see http://commons.apache.org/cli/usage.html
+	 */
+	protected Object doInterrogate() throws Throwable {
 		return ERROR_NO;
 	}
 
 	/**
-	 * Default implementation of the default help option behavior.
+	 * Prints the command line usage help.
 	 */
 	protected void printHelp() {
 		String description = getApplicationDescription();
@@ -216,17 +304,22 @@ public abstract class AbstractCLIApplication implements IApplication {
 		}
 
 		HelpFormatter formatter = new HelpFormatter();
-		// FIXME Provide complete command line syntax rather than just application name, e.g., "java " +
-		// WorkflowRunner.class.getName() + " some_workflow_file.mwe [options]"
-		formatter.printHelp(getApplicationName(), getOptions());
+		formatter.printHelp(getCommandLineSyntax(), getOptions());
 	}
 
-	protected Object handleError(Throwable t) {
-		if (t instanceof OperationCanceledException) {
+	/**
+	 * Central place for handling errors occurring while this {@link AbstractCLIApplication application} is run.
+	 * 
+	 * @param throwable
+	 *            The {@link Throwable exception} describing the error that has occurred.
+	 * @return The corresponding error code to be returned by this application.
+	 */
+	protected Object handleError(Throwable throwable) {
+		if (throwable instanceof OperationCanceledException) {
 			return ERROR_NO;
 		}
 
-		System.err.println(t.getMessage());
+		System.err.println(throwable.getMessage());
 		return ERROR_UNSPECIFIED;
 	}
 }
