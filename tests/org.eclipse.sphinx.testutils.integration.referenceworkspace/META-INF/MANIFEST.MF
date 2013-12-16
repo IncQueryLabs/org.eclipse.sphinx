@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.sphinx.testutils.integration.referenceworkspace;singleton:=true
 Bundle-Version: 0.8.0.qualifier
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.sphinx.examples.uml2.ide;visibility:=reexport,
  org.eclipse.sphinx.examples.hummingbird10;visibility:=reexport,
  org.eclipse.sphinx.examples.hummingbird20;visibility:=reexport,

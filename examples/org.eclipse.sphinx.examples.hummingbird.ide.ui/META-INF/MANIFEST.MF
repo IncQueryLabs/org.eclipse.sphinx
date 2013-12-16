@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sphinx.examples.common.ui,
  org.eclipse.sphinx.examples.hummingbird.ide;visibility:=reexport
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.sphinx.examples.hummingbird.ide.ui.decorators,
  org.eclipse.sphinx.examples.hummingbird.ide.ui.internal;x-internal:=true,
  org.eclipse.sphinx.examples.hummingbird.ide.ui.internal.preferences;x-internal:=true,

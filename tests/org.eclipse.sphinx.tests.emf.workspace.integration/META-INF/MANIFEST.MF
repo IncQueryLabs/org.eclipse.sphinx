@@ -6,7 +6,7 @@ Bundle-Version: 0.8.0.qualifier
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.sphinx.testutils.integration.referenceworkspace
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: org.eclipse.sphinx.tests.emf.workspace.integration.inmemoryresources,

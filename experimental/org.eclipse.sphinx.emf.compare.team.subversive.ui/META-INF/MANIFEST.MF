@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.compare.ui,
  org.eclipse.sphinx.emf.compare.ui
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.sphinx.emf.compare.team.subversive.ui.actions,
  org.eclipse.sphinx.emf.compare.team.subversive.ui.internal;x-internal:=true,
  org.eclipse.sphinx.emf.compare.team.subversive.ui.operations

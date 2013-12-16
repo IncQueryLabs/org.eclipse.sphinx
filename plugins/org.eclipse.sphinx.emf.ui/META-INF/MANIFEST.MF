@@ -16,7 +16,7 @@ Require-Bundle: org.eclipse.ui.navigator;visibility:=reexport,
  org.eclipse.ui.ide
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.emf.ui.internal.Activator$Implementation
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.sphinx.emf.ui.actions,
  org.eclipse.sphinx.emf.ui.actions.providers,
  org.eclipse.sphinx.emf.ui.forms.messages,

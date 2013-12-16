@@ -17,4 +17,4 @@ Export-Package: org.eclipse.sphinx.emf.explorer,
  org.eclipse.sphinx.emf.explorer.internal.actions;x-internal:=true,
  org.eclipse.sphinx.emf.explorer.internal.actions.providers;x-internal:=true,
  org.eclipse.sphinx.emf.explorer.internal.messages;x-internal:=true
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

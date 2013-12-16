@@ -17,4 +17,4 @@ Export-Package: org.eclipse.sphinx.emf.editors.forms,
  org.eclipse.sphinx.emf.editors.forms.sections,
  org.eclipse.sphinx.emf.editors.forms.widgets
 Bundle-Activator: org.eclipse.sphinx.emf.editors.forms.internal.Activator$Implementation
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

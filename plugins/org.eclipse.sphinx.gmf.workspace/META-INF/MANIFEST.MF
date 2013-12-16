@@ -13,4 +13,4 @@ Export-Package: org.eclipse.sphinx.gmf.workspace.domain.factory,
  org.eclipse.sphinx.gmf.workspace.internal;x-internal:=true,
  org.eclipse.sphinx.gmf.workspace.metamodel
 Bundle-Activator: org.eclipse.sphinx.gmf.workspace.internal.Activator$Implementation
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

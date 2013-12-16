@@ -11,7 +11,7 @@ Export-Package: org.eclipse.sphinx.examples.common.ui,
  org.eclipse.sphinx.examples.common.ui.internal.messages;x-internal:=true,
  org.eclipse.sphinx.examples.common.ui.perspectives,
  org.eclipse.sphinx.examples.common.ui.providers
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.eclipse.sphinx.examples.common.ui.internal.Activator$Implementation
 Require-Bundle: org.eclipse.sphinx.emf.ui,
  org.eclipse.sphinx.emf.workspace.ui

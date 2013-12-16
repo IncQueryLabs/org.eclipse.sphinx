@@ -1,10 +1,4 @@
-#Wed Feb 02 19:34:14 CET 2011
 eclipse.preferences.version=1
 encoding//design/default.ecore=UTF-8
 encoding//design/resources.ecore_diagram=UTF-8
-encoding//model/Common20XMI.xsd=UTF8
-encoding//model/XMI.xsd=UTF8
-encoding//model/archive/Common200XMI.xsd=UTF8
-encoding//model/archive/InstanceModel200XMI.xsd=UTF8
-encoding//model/archive/TypeModel200XMI.xsd=UTF8
 encoding/<project>=Cp1252

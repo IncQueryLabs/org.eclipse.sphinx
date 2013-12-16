@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.sphinx.templates.project.tests.fragment;singleton:=true
 Bundle-Version: 0.8.0.qualifier
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Fragment-Host: org.eclipse.sphinx.templates.project.plugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
