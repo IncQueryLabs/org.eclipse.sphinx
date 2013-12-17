@@ -73,6 +73,7 @@ public class BasicModelSaveablesProvider extends SaveablesProvider implements IM
 			siteSaveablesLifecycleListener = (ISaveablesLifecycleListener) workbenchPart.getSite().getService(ISaveablesLifecycleListener.class);
 		}
 
+		@Override
 		public void handleLifecycleEvent(SaveablesLifecycleEvent event) {
 			/*
 			 * !! Important Note !! Try to use internal API for filtering out irrelevant saveables. Otherwise warnings
@@ -145,6 +146,7 @@ public class BasicModelSaveablesProvider extends SaveablesProvider implements IM
 	 */
 	protected IModelSaveLifecycleListener createModelSaveLifecycleListener() {
 		return new IModelSaveLifecycleListener() {
+			@Override
 			public void handleDirtyChangedEvent(IModelDescriptor modelDescriptor) {
 				Saveable saveable = getSaveable(modelDescriptor);
 				if (saveable != null) {
@@ -152,6 +154,7 @@ public class BasicModelSaveablesProvider extends SaveablesProvider implements IM
 				}
 			}
 
+			@Override
 			public void handlePreSaveEvent(IModelDescriptor modelDescriptor) {
 				// Do nothing by default.
 			}
@@ -249,12 +252,14 @@ public class BasicModelSaveablesProvider extends SaveablesProvider implements IM
 		if (display != null) {
 			if (async) {
 				display.asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						doRun(saveable, SaveablesLifecycleEventType);
 					}
 				});
 			} else {
 				display.syncExec(new Runnable() {
+					@Override
 					public void run() {
 						doRun(saveable, SaveablesLifecycleEventType);
 					}
@@ -288,6 +293,7 @@ public class BasicModelSaveablesProvider extends SaveablesProvider implements IM
 	/**
 	 * Nothing to do since {@linkplain Saveable} are created lazily.
 	 */
+	@Override
 	public void handleModelAdded(IModelDescriptor modelDescriptor) {
 
 	}
@@ -296,6 +302,7 @@ public class BasicModelSaveablesProvider extends SaveablesProvider implements IM
 	 * Removes {@linkplain Saveable} from saveables map and fires {@linkplain SaveablesLifecycleEvent.PRE_CLOSE} and
 	 * {@linkplain SaveablesLifecycleEvent.POST_CLOSE} notification.
 	 */
+	@Override
 	public void handleModelRemoved(IModelDescriptor modelDescriptor) {
 		if (disposed) {
 			return;

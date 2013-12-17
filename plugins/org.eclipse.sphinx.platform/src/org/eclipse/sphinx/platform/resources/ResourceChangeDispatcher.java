@@ -89,6 +89,7 @@ public class ResourceChangeDispatcher implements IResourceChangeListener {
 	 * org.eclipse.core.resources.IResourceChangeListener#resourceChanged(org.eclipse.core.resources.IResourceChangeEvent
 	 * )
 	 */
+	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		// Dispatch resource change event to registered resource change listeners honoring their respective dispatch
 		// phases

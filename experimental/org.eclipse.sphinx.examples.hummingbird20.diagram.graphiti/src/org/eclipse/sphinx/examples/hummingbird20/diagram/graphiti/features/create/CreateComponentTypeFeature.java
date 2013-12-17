@@ -44,10 +44,12 @@ public class CreateComponentTypeFeature extends AbstractCreateFeature {
 		return Hummingbird20PlatformDiagramImageProvider.IMAGE_COMPONENT_TYPE;
 	}
 
+	@Override
 	public boolean canCreate(ICreateContext context) {
 		return context.getTargetContainer() instanceof Diagram;
 	}
 
+	@Override
 	public Object[] create(ICreateContext context) {
 		// Ask user for ComponentType name
 		String newComponentTypeName = ExampleUtil.askString(TITLE, USER_QUESTION, ""); //$NON-NLS-1$

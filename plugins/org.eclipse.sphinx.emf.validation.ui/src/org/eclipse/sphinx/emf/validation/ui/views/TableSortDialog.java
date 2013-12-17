@@ -57,6 +57,7 @@ public class TableSortDialog extends TrayDialog {
 	private boolean dirty;
 
 	private final Comparator columnComparator = new Comparator() {
+		@Override
 		public int compare(Object arg0, Object arg1) {
 			int index0 = -1;
 			int index1 = -1;

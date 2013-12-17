@@ -51,6 +51,7 @@ public class DefaultEcoreTraversalHelper implements EcoreTraversalHelper {
 	 */
 	// TODO Change signature to Collection<EObject> getPossibleValuesForReference(EObject object, EReference
 	// reference)
+	@Override
 	public Collection<EObject> getReachableEObjects(EObject referenceSource, EReference reference) {
 		LinkedList<EObject> itemQueue = new LinkedList<EObject>();
 		Collection<EObject> visited = new HashSet<EObject>();
@@ -164,10 +165,12 @@ public class DefaultEcoreTraversalHelper implements EcoreTraversalHelper {
 		}
 	}
 
+	@Override
 	public boolean collectReachableObjectsOfTypeUnderObject(Collection<EObject> result, EObject object, EClassifier type) {
 		return false;
 	}
 
+	@Override
 	public List<EStructuralFeature> getFeaturesToTraverseFor(EObject object, EClassifier type) {
 		return getDefaultFeaturesToTraverseFor(object, type);
 	}

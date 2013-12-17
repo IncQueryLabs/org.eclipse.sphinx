@@ -64,6 +64,7 @@ final public class ModelSavingPerformanceStats extends AbstractPerformanceStats<
 		/*
 		 * @see org.eclipse.sphinx.platform.stats.IEventTypeEnumerator#getName()
 		 */
+		@Override
 		public String getName() {
 			return name;
 		}
@@ -107,6 +108,7 @@ final public class ModelSavingPerformanceStats extends AbstractPerformanceStats<
 		/*
 		 * @see org.eclipse.sphinx.platform.stats.IEventTypeEnumerator#getName()
 		 */
+		@Override
 		public String getName() {
 			return name;
 		}

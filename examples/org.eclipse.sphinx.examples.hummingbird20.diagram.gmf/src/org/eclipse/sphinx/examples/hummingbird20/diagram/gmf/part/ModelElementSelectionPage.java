@@ -80,6 +80,7 @@ public class ModelElementSelectionPage extends WizardPage {
 	/**
 	 * @generated
 	 */
+	@Override
 	public void createControl(Composite parent) {
 		initializeDialogUnits(parent);
 
@@ -108,6 +109,7 @@ public class ModelElementSelectionPage extends WizardPage {
 			modelViewer.setSelection(new StructuredSelection(selectedModelElement));
 		}
 		modelViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				ModelElementSelectionPage.this.updateSelection((IStructuredSelection) event.getSelection());
 			}

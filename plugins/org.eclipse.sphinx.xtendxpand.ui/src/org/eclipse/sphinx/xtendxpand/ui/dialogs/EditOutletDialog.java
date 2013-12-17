@@ -393,6 +393,7 @@ public class EditOutletDialog extends StatusDialog {
 			}
 		}
 
+		@Override
 		public void modifyText(ModifyEvent e) {
 			Object source = e.getSource();
 			if (source == nameText) {
@@ -402,6 +403,7 @@ public class EditOutletDialog extends StatusDialog {
 			}
 		}
 
+		@Override
 		public void dialogFieldChanged(IField field) {
 			if (field == protectedRegionField) {
 				outlet.setProtectedRegion(protectedRegionField.isSelected());

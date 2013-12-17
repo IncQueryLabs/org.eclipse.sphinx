@@ -65,6 +65,7 @@ public class BasicValidateSelectedCategoriesAction extends BaseSelectionListener
 
 		try {
 			IRunnableWithProgress operation = new WorkspaceModifyDelegatingOperation(new IRunnableWithProgress() {
+				@Override
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					List<Object> objects = new ArrayList<Object>();
 					for (Iterator<?> it = getStructuredSelection().iterator(); it.hasNext();) {
@@ -117,15 +118,18 @@ public class BasicValidateSelectedCategoriesAction extends BaseSelectionListener
 	private IStructuredContentProvider createContentProvider() {
 		return new IStructuredContentProvider() {
 
+			@Override
 			public Object[] getElements(Object inputElement) {
 				// Retrieve the top level constraints categories
 				return CategoryManager.getInstance().getTopLevelCategories().toArray();
 			}
 
+			@Override
 			public void dispose() {
 				// Do nothing
 			}
 
+			@Override
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 				// Do nothing
 			}
@@ -135,10 +139,12 @@ public class BasicValidateSelectedCategoriesAction extends BaseSelectionListener
 	private ILabelProvider createLabelProvider() {
 		return new ILabelProvider() {
 
+			@Override
 			public Image getImage(Object element) {
 				return null;
 			}
 
+			@Override
 			public String getText(Object element) {
 				if (element instanceof Category) {
 					return ((Category) element).getName();
@@ -146,18 +152,22 @@ public class BasicValidateSelectedCategoriesAction extends BaseSelectionListener
 				return element != null ? element.toString() : ""; //$NON-NLS-1$
 			}
 
+			@Override
 			public void addListener(ILabelProviderListener listener) {
 				// Do nothing
 			}
 
+			@Override
 			public void dispose() {
 				// Do nothing
 			}
 
+			@Override
 			public boolean isLabelProperty(Object element, String property) {
 				return false;
 			}
 
+			@Override
 			public void removeListener(ILabelProviderListener listener) {
 				// Do nothing
 			}

@@ -22,6 +22,7 @@ public class EObjectAdapaterFactory implements IAdapterFactory {
 
 	public static final EObjectAdapaterFactory INSTANCE = new EObjectAdapaterFactory();
 
+	@Override
 	public Object getAdapter(Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
 		if (IResource.class.equals(adapterType)) {
 			return EcorePlatformUtil.getFile(adaptableObject);
@@ -29,6 +30,7 @@ public class EObjectAdapaterFactory implements IAdapterFactory {
 		return null;
 	}
 
+	@Override
 	@SuppressWarnings("rawtypes")
 	public Class[] getAdapterList() {
 		return new Class[] { IResource.class };

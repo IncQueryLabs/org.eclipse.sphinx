@@ -93,6 +93,7 @@ public class ActionPasteMarker extends MarkerSelectionProviderAction {
 
 		try {
 			ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
+				@Override
 				public void run(IProgressMonitor monitor) throws CoreException {
 					for (IMarker marker : markers) {
 						// Collect info about the markers to be pasted.
@@ -125,6 +126,7 @@ public class ActionPasteMarker extends MarkerSelectionProviderAction {
 		// sent after the operation is executed.
 		if (getSelectionProvider() != null && op.getMarkers() != null) {
 			part.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					getSelectionProvider().setSelection(new StructuredSelection(op.getMarkers()));
 				}

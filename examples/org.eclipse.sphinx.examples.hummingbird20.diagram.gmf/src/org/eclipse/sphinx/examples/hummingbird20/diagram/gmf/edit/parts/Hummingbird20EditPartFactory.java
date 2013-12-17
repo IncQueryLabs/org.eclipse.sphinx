@@ -37,6 +37,7 @@ public class Hummingbird20EditPartFactory implements EditPartFactory {
 	/**
 	 * @generated
 	 */
+	@Override
 	public EditPart createEditPart(EditPart context, Object model) {
 		if (model instanceof View) {
 			View view = (View) model;
@@ -108,6 +109,7 @@ public class Hummingbird20EditPartFactory implements EditPartFactory {
 		/**
 		 * @generated
 		 */
+		@Override
 		public void relocate(CellEditor celleditor) {
 			Text text = (Text) celleditor.getControl();
 			Rectangle rect = getWrapLabel().getTextBounds().getCopy();
@@ -153,6 +155,7 @@ public class Hummingbird20EditPartFactory implements EditPartFactory {
 		/**
 		 * @generated
 		 */
+		@Override
 		public void relocate(CellEditor celleditor) {
 			Text text = (Text) celleditor.getControl();
 			Rectangle rect = getLabel().getTextBounds().getCopy();

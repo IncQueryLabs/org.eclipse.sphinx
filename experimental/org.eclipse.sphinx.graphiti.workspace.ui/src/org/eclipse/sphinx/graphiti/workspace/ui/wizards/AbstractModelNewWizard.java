@@ -143,6 +143,7 @@ public abstract class AbstractModelNewWizard extends Wizard implements INewWizar
 	/**
 	 * This just records the information.
 	 */
+	@Override
 	public abstract void init(IWorkbench workbench, IStructuredSelection selection);
 
 	/**
@@ -268,6 +269,7 @@ public abstract class AbstractModelNewWizard extends Wizard implements INewWizar
 		if (activePart instanceof ISetSelectionTarget) {
 			final ISelection targetSelection = new StructuredSelection(getModelFile());
 			getShell().getDisplay().asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					((ISetSelectionTarget) activePart).selectReveal(targetSelection);
 				}
@@ -386,6 +388,7 @@ public abstract class AbstractModelNewWizard extends Wizard implements INewWizar
 			super(pageId);
 		}
 
+		@Override
 		public void createControl(Composite parent) {
 			Composite composite = new Composite(parent, SWT.NONE);
 			{
@@ -455,6 +458,7 @@ public abstract class AbstractModelNewWizard extends Wizard implements INewWizar
 		}
 
 		protected ModifyListener validator = new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				setPageComplete(validatePage());
 			}

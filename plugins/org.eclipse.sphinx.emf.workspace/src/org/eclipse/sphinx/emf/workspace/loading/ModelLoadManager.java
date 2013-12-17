@@ -284,6 +284,7 @@ public final class ModelLoadManager {
 			try {
 				List<Resource> resourcesToUnloadInEditingDomain = TransactionUtil.runExclusive(editingDomain,
 						new RunnableWithResult.Impl<List<Resource>>() {
+							@Override
 							public void run() {
 								List<Resource> resources = new ArrayList<Resource>();
 								ProjectResourceScope projectResourceScope = new ProjectResourceScope(project);
@@ -742,6 +743,7 @@ public final class ModelLoadManager {
 
 		try {
 			editingDomain.runExclusive(new Runnable() {
+				@Override
 				public void run() {
 					SubMonitor progress = SubMonitor.convert(monitor, 100);
 					if (progress.isCanceled()) {
@@ -1447,6 +1449,7 @@ public final class ModelLoadManager {
 			try {
 				// Create read transaction to ensure that reload procedure is atomic
 				editingDomain.runExclusive(new Runnable() {
+					@Override
 					public void run() {
 						// Unload files to be unloaded from current editing domain
 						Collection<IFile> filesToUnloadInEditingDomain = filesToUnload.get(editingDomain);
@@ -1560,6 +1563,7 @@ public final class ModelLoadManager {
 		Assert.isNotNull(modelDescriptor);
 
 		Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				Collection<Resource> resources = modelDescriptor.getLoadedResources(true);
 				SubMonitor progress = SubMonitor.convert(monitor, resources.size());
@@ -1984,6 +1988,7 @@ public final class ModelLoadManager {
 
 		try {
 			editingDomain.runExclusive(new Runnable() {
+				@Override
 				public void run() {
 					SubMonitor progress = SubMonitor.convert(monitor, filesToUpdateResourceURIForInEditingDomain.size());
 					if (progress.isCanceled()) {

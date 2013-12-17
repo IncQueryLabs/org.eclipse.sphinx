@@ -255,6 +255,7 @@ public class TableComparator extends ViewerComparator implements Comparator {
 	 * (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
+	@Override
 	public int compare(Object o1, Object o2) {
 		return compare(null, o1, o2);
 	}
@@ -349,6 +350,7 @@ public class TableComparator extends ViewerComparator implements Comparator {
 	 */
 	public void sort(final Viewer viewer, Object[] elements, int start, int end) {
 		Arrays.sort(elements, start, end, new Comparator() {
+			@Override
 			public int compare(Object a, Object b) {
 				return TableComparator.this.compare(viewer, a, b);
 			}

@@ -23,7 +23,7 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.impl.EcoreFactoryImpl;
 import org.eclipse.sphinx.emf.internal.expressions.EMFObjectPropertyTester;
 
-@SuppressWarnings( { "nls", "restriction" })
+@SuppressWarnings({ "nls", "restriction" })
 public class EMFObjectPropertyTesterTest extends TestCase {
 
 	private static final String INSTANCE_OF = "instanceOf";

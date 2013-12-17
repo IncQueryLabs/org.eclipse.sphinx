@@ -388,6 +388,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	/*
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
+	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapterType) {
 		if (adapterType.equals(IFileMetaModelDescriptorCache.class)) {
 			return fFileMetaModelDescriptorCache;
@@ -456,6 +457,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		}
 		if (sorted) {
 			Collections.sort(descriptors, new Comparator<T>() {
+				@Override
 				public int compare(IMetaModelDescriptor mmd1, IMetaModelDescriptor mmd2) {
 					String label1 = String.format(IMetaModelDescriptor.LABEL_PATTERN, mmd1.getName(), mmd1.getNamespace());
 					String label2 = String.format(IMetaModelDescriptor.LABEL_PATTERN, mmd2.getName(), mmd2.getNamespace());
@@ -543,6 +545,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	@Deprecated
 	public <T extends IMetaModelDescriptor> T getDescriptor(T mmDescriptor, final int ordinal) {
 		return getDescriptor(mmDescriptor, new IDescriptorFilter() {
+			@Override
 			public boolean accept(IMetaModelDescriptor descriptor) {
 				return descriptor.getOrdinal() == ordinal;
 			}
@@ -556,6 +559,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 */
 	public <T extends IMetaModelDescriptor> T getDescriptor(T mmDescriptor, final String name) {
 		return getDescriptor(mmDescriptor, new IDescriptorFilter() {
+			@Override
 			public boolean accept(IMetaModelDescriptor descriptor) {
 				return descriptor.getName().equals(name);
 			}
@@ -654,6 +658,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 						} else {
 							// Determine corresponding meta-model descriptor
 							mmDescriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
+								@Override
 								public boolean accept(IMetaModelDescriptor descriptor) {
 									if (descriptor.getContentTypeIds().contains(contentTypeId)) {
 										return true;
@@ -987,6 +992,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			synchronized (getMetaModelDescriptors()) {
 				final String namespaceURIString = namespaceURI.toString();
 				IMetaModelDescriptor mmDescriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
+					@Override
 					public boolean accept(IMetaModelDescriptor mmDescriptor) {
 						if (namespaceURIString.equals(mmDescriptor.getNamespace())) {
 							return true;
@@ -1041,6 +1047,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	public IMetaModelDescriptor getDescriptor(final Class<?> clazz) {
 		if (clazz != null) {
 			IMetaModelDescriptor descriptor = getDescriptor(ANY_MM, new IDescriptorFilter() {
+				@Override
 				public boolean accept(IMetaModelDescriptor descriptor) {
 					// Test if the class name of one of the metamodel's EPackages is the prefix of the given class' name
 					for (EPackage ePackage : descriptor.getEPackages()) {
@@ -1342,6 +1349,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		 * org.eclipse.sphinx.emf.metamodel.InternalMetaModelDescriptorRegistry#addCachedMetaModelDescriptor(org.eclipse
 		 * . core.resources.IFile, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)
 		 */
+		@Override
 		public void addDescriptor(IFile file, IMetaModelDescriptor mmDescriptor) {
 			if (file != null) {
 				// Encode and cache given meta-model descriptor
@@ -1371,6 +1379,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		 * org.eclipse.sphinx.emf.internal.metamodel.IFileMetaModelDescriptorCache#moveDescriptor(org.eclipse.core.resources
 		 * .IFile, org.eclipse.core.resources.IFile)
 		 */
+		@Override
 		public void moveDescriptor(IFile oldFile, IFile newFile) {
 			if (oldFile != null && newFile != null) {
 				synchronized (fFileMetaModelDescriptors) {
@@ -1404,6 +1413,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		 * org.eclipse.sphinx.emf.metamodel.InternalMetaModelDescriptorRegistry#removeCachedMetaModelDescriptor(org.
 		 * eclipse .core.resources.IFile)
 		 */
+		@Override
 		public void removeDescriptor(IFile file) {
 			if (file != null) {
 				synchronized (fFileMetaModelDescriptors) {
@@ -1435,6 +1445,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		/*
 		 * @see org.eclipse.sphinx.emf.internal.metamodel.IFileMetaModelDescriptorCache#clearOldDescriptors()
 		 */
+		@Override
 		public void clearOldDescriptors() {
 			fOldFileMetaModelDescriptors.clear();
 		}

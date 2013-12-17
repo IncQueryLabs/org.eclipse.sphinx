@@ -58,6 +58,7 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 	 */
 	public class BrowseItemListLabelProvider implements ILabelProvider {
 
+		@Override
 		public Image getImage(Object element) {
 			return null;
 		}
@@ -65,6 +66,7 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 		/*
 		 * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
 		 */
+		@Override
 		public String getText(Object element) {
 			// To make the labels more readable, the element names are used as the text label, instead of simply use
 			// the object.toString().
@@ -75,6 +77,7 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 		/*
 		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
 		 */
+		@Override
 		public void dispose() {
 		}
 
@@ -82,12 +85,14 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 		 * @see
 		 * org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
 		 */
+		@Override
 		public void addListener(ILabelProviderListener listener) {
 		}
 
 		/*
 		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
 		 */
+		@Override
 		public boolean isLabelProperty(Object element, String property) {
 			return false;
 		}
@@ -96,6 +101,7 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 		 * @see
 		 * org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
 		 */
+		@Override
 		public void removeListener(ILabelProviderListener listener) {
 		}
 	}
@@ -197,6 +203,7 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 	@Override
 	protected Comparator<?> getItemsComparator() {
 		return new Comparator<Object>() {
+			@Override
 			@SuppressWarnings("unchecked")
 			public int compare(Object item1, Object item2) {
 				// Compares the String of the two objects, pay attention to the null case

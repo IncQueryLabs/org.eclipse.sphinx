@@ -28,6 +28,7 @@ import org.eclipse.emf.common.util.Enumerator;
  */
 public class EnumeratorComparator<T extends Enumerator> implements Comparator<T> {
 
+	@Override
 	public int compare(T e1, T e2) {
 		return compareNames(e1.getName(), e2.getName());
 	}

@@ -32,6 +32,7 @@ public class GraphitiTargetMetaModelDescriptorProvider implements ITargetMetaMod
 
 	String targetNamespaceExcludePatterns = "http://eclipse.org/graphiti/.*"; //$NON-NLS-1$
 
+	@Override
 	public IMetaModelDescriptor getDescriptor(IFile file) {
 		try {
 			String targetNamespace = EcorePlatformUtil.readTargetNamespace(file, targetNamespaceExcludePatterns);
@@ -44,6 +45,7 @@ public class GraphitiTargetMetaModelDescriptorProvider implements ITargetMetaMod
 		return null;
 	}
 
+	@Override
 	public IMetaModelDescriptor getDescriptor(Resource resource) {
 		if (resource != null && !resource.getContents().isEmpty()) {
 			EObject rootObject = resource.getContents().get(0);

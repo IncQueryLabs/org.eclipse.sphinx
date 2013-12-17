@@ -57,6 +57,7 @@ public class OrderedFeatureMap extends BasicFeatureMap {
 			this.order = order;
 		}
 
+		@Override
 		public void add(int index, T t) {
 			// find index where t may be added without violating the order of the list
 
@@ -114,6 +115,7 @@ public class OrderedFeatureMap extends BasicFeatureMap {
 			}
 		}
 
+		@Override
 		public T set(int index, T t) {
 			T previous = list.get(index);
 
@@ -124,6 +126,7 @@ public class OrderedFeatureMap extends BasicFeatureMap {
 			return list.set(index, t);
 		}
 
+		@Override
 		public void addAll(int index, Collection<? extends T> c) {
 			int i = 0;
 			for (T t : c) {
@@ -152,6 +155,7 @@ public class OrderedFeatureMap extends BasicFeatureMap {
 			return OrderedFeatureMap.super.doSet(index, object);
 		};
 	}, new Order<Entry>() {
+		@Override
 		public int order(Entry e) {
 			int order = owner.eClass().getFeatureID(e.getEStructuralFeature());
 			if (order != -1) {

@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.workspace.Activator;
 import org.eclipse.sphinx.emf.workspace.internal.messages.Messages;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;

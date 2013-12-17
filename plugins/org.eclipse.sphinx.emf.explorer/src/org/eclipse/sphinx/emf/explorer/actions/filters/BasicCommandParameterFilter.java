@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 
 public class BasicCommandParameterFilter implements ICommandParameterFilter {
 
+	@Override
 	public boolean accept(IStructuredSelection selection, CommandParameter commandParameter) {
 		return true;
 	}

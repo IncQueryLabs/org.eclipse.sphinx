@@ -18,7 +18,6 @@ package org.eclipse.sphinx.emf.validation.ui.views;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
@@ -31,6 +30,7 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.validation.ui.Activator;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
@@ -70,6 +70,7 @@ public class ActionResolveMarker extends MarkerSelectionProviderAction {
 		final Object[] resolutions = new Object[1];
 
 		IRunnableWithProgress resolutionsRunnable = new IRunnableWithProgress() {
+			@Override
 			public void run(IProgressMonitor monitor) {
 				monitor.beginTask(NLS.bind(MarkerMessages.resolveMarkerAction_computationAction, getMarkerDescription()), 100);
 				monitor.worked(25);
@@ -96,8 +97,8 @@ public class ActionResolveMarker extends MarkerSelectionProviderAction {
 
 		IMarkerResolution[] foundResolutions = (IMarkerResolution[]) resolutions[0];
 		if (foundResolutions.length == 0) {
-			MessageDialog.openInformation(view.getSite().getShell(), MarkerMessages.MarkerResolutionDialog_CannotFixTitle, NLS.bind(
-					MarkerMessages.MarkerResolutionDialog_CannotFixMessage, getMarkerDescription()));
+			MessageDialog.openInformation(view.getSite().getShell(), MarkerMessages.MarkerResolutionDialog_CannotFixTitle,
+					NLS.bind(MarkerMessages.MarkerResolutionDialog_CannotFixMessage, getMarkerDescription()));
 		} else {
 			Dialog dialog = new MarkerResolutionDialog(view.getSite().getShell(), getSelectedMarker(), foundResolutions, view);
 			dialog.open();
@@ -112,8 +113,8 @@ public class ActionResolveMarker extends MarkerSelectionProviderAction {
 	 */
 	private void handleException(Exception exception) {
 		PlatformLogUtil.logAsError(Activator.getDefault(), exception);
-		ErrorDialog.openError(view.getSite().getShell(), MarkerMessages.Error, NLS.bind(MarkerMessages.MarkerResolutionDialog_CannotFixMessage,
-				getMarkerDescription()), Util.errorStatus(exception));
+		ErrorDialog.openError(view.getSite().getShell(), MarkerMessages.Error,
+				NLS.bind(MarkerMessages.MarkerResolutionDialog_CannotFixMessage, getMarkerDescription()), Util.errorStatus(exception));
 	}
 
 	/**

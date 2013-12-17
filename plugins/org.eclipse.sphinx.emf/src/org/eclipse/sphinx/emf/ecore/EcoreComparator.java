@@ -56,6 +56,7 @@ public class EcoreComparator implements Comparator<Object> {
 	 *             if the arguments' types prevent them from being compared by this Comparator.
 	 */
 
+	@Override
 	public int compare(Object o1, Object o2) {
 		if (o1 == null && o2 == null) {
 			return 0;

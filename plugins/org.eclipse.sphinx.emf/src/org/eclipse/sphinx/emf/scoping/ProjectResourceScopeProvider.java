@@ -42,6 +42,7 @@ public class ProjectResourceScopeProvider extends AbstractResourceScopeProvider 
 	}
 
 	static class ReferencedProjectsProvider implements IReferencedProjectsProvider {
+		@Override
 		public Collection<IProject> get(IProject p) {
 			return ExtendedPlatform.getAllReferencedProjects(p);
 		}
@@ -49,6 +50,7 @@ public class ProjectResourceScopeProvider extends AbstractResourceScopeProvider 
 
 	static class ReferencedProjectsCache implements IReferencedProjectsProvider {
 		class InvalidationListener implements IResourceChangeListener {
+			@Override
 			public void resourceChanged(IResourceChangeEvent event) {
 				try {
 					IResourceDelta delta = event.getDelta();
@@ -101,6 +103,7 @@ public class ProjectResourceScopeProvider extends AbstractResourceScopeProvider 
 			ResourcesPlugin.getWorkspace().addResourceChangeListener(new InvalidationListener());
 		}
 
+		@Override
 		public synchronized Collection<IProject> get(IProject p) {
 			Collection<IProject> referencedProjects = cache.get(p);
 

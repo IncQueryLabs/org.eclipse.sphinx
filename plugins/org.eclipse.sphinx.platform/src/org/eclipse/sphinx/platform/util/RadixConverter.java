@@ -217,7 +217,7 @@ public class RadixConverter {
 	}
 
 	/**
-	 *Converts from octal to hex
+	 * Converts from octal to hex
 	 * 
 	 * @param oct
 	 * @return the hex value of oct
@@ -228,7 +228,7 @@ public class RadixConverter {
 	}
 
 	/**
-	 *Converts from decimal to binary
+	 * Converts from decimal to binary
 	 * 
 	 * @param nb
 	 *            the decimal value

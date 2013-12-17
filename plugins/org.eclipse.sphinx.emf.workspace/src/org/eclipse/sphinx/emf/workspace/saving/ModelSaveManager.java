@@ -66,6 +66,7 @@ public class ModelSaveManager {
 	public static ModelSaveManager INSTANCE = new ModelSaveManager();
 
 	private IURIChangeListener uriChangeListener = new IURIChangeListener() {
+		@Override
 		public void uriChanged(URIChangeEvent event) {
 			if (event == null) {
 				return;

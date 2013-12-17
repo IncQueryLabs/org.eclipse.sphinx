@@ -153,6 +153,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		if (editingDomain != null) {
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Diagram>() {
+					@Override
 					public void run() {
 						Map<?, ?> options = getLoadOptions();
 						if (options == null) {
@@ -434,6 +435,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	 * org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChangeHandler#handleEditorInputObjectChanged
 	 * (org.eclipse.ui.IEditorInput)
 	 */
+	@Override
 	public void handleEditorInputObjectChanged(final IEditorInput editorInput) {
 		// Do nothing
 	}
@@ -443,8 +445,10 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	 * org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChangeHandler#handleEditorInputObjectRemoved
 	 * (org.eclipse.ui.IEditorInput)
 	 */
+	@Override
 	public void handleEditorInputObjectRemoved(final IEditorInput editorInput) {
 		Display.getDefault().asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				fireElementDeleted(editorInput);
 			}
@@ -456,6 +460,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	 * org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChangeHandler#handleEditorInputResourceLoaded
 	 * (org.eclipse.ui.IEditorInput)
 	 */
+	@Override
 	public void handleEditorInputResourceLoaded(final IEditorInput editorInput) {
 		// Do nothing
 	}
@@ -465,11 +470,13 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	 * org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChangeHandler#handleEditorInputResourceMoved
 	 * (org.eclipse.ui.IEditorInput, org.eclipse.emf.common.util.URI, org.eclipse.emf.common.util.URI)
 	 */
+	@Override
 	public void handleEditorInputResourceMoved(final IEditorInput editorInput, final URI oldURI, final URI newURI) {
 		DiagramElementInfo info = getDiagramElementInfo(editorInput);
 		if (info != null) {
 			if (oldURI.equals(info.getDiagramResourceURI())) {
 				Display.getDefault().asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						if (editorInput instanceof FileEditorInput) {
 							IFile newFile = ResourcesPlugin.getWorkspace().getRoot()
@@ -492,8 +499,10 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	 * org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChangeHandler#handleEditorInputResourceRemoved
 	 * (org.eclipse.ui.IEditorInput)
 	 */
+	@Override
 	public void handleEditorInputResourceRemoved(final IEditorInput editorInput) {
 		Display.getDefault().asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				fireElementDeleted(editorInput);
 			}
@@ -505,6 +514,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.IDiagramDocumentProvider#createInputWithEditingDomain
 	 * (org.eclipse.ui.IEditorInput, org.eclipse.emf.transaction.TransactionalEditingDomain)
 	 */
+	@Override
 	public IEditorInput createInputWithEditingDomain(IEditorInput editorInput, TransactionalEditingDomain domain) {
 		return editorInput;
 	}
@@ -514,6 +524,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	 * org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.IDiagramDocumentProvider#getDiagramDocument(java
 	 * .lang.Object)
 	 */
+	@Override
 	public IDiagramDocument getDiagramDocument(Object element) {
 		IDocument doc = getDocument(element);
 		if (doc instanceof IDiagramDocument) {
@@ -649,6 +660,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		 * org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChangeAnalyzer#containEditorInputObject
 		 * (org.eclipse.ui.IEditorInput, java.util.Set)
 		 */
+		@Override
 		public boolean containEditorInputObject(IEditorInput editorInput, Set<EObject> removedObjects) {
 			return removedObjects.contains(diagramDocument.getDiagram());
 		}
@@ -658,6 +670,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		 * org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChangeAnalyzer#containEditorInputResourceURI
 		 * (org.eclipse.ui.IEditorInput, java.util.Set)
 		 */
+		@Override
 		public boolean containEditorInputResourceURI(IEditorInput editorInput, Set<URI> resourceURIs) {
 			for (URI resourceURI : resourceURIs) {
 				if (resourceURI.equals(diagramResourceURI) || resourceURI.equals(domainModelResourceURI)) {
@@ -673,6 +686,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		if (editingDomain != null && resource != null) {
 			try {
 				editingDomain.runExclusive(new Runnable() {
+					@Override
 					public void run() {
 						try {
 							if (editingDomain.getResourceSet().getResources().contains(resource)) {

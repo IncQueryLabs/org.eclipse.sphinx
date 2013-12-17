@@ -55,6 +55,7 @@ public class UML2AdvancedPropertySection extends BasicTransactionalAdvancedPrope
 			@Override
 			protected IPropertySource createPropertySource(final Object object, final IItemPropertySource itemPropertySource) {
 				return wrap(run(new RunnableWithResult.Impl<IPropertySource>() {
+					@Override
 					public void run() {
 						setResult(new UML2PropertySource(object, itemPropertySource));
 					}

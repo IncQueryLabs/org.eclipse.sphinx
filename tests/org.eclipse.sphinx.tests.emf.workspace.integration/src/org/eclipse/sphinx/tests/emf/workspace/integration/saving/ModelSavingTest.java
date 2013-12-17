@@ -63,6 +63,7 @@ public class ModelSavingTest extends DefaultIntegrationTestCase {
 		final Component hbProject10_A_Hb10Resource_1_Component = hbProject10_A_Hb10Resource_1_ModelRoot.getComponents().get(0);
 
 		Runnable runnable1 = new Runnable() {
+			@Override
 			public void run() {
 				hbProject10_A_Hb10Resource_1_Component.setName("NewName");
 			}
@@ -82,6 +83,7 @@ public class ModelSavingTest extends DefaultIntegrationTestCase {
 				.getComponents().get(0);
 
 		Runnable runnable2 = new Runnable() {
+			@Override
 			public void run() {
 				hbProject20_A_Hb20Resource_1_Component.setName("NewName");
 			}
@@ -99,6 +101,7 @@ public class ModelSavingTest extends DefaultIntegrationTestCase {
 		final Component hbProject10_B_Hb10Resource_1_Component = hbProject10_B_Hb10Resource_1_ModelRoot.getComponents().get(0);
 
 		Runnable runnable3 = new Runnable() {
+			@Override
 			public void run() {
 				hbProject10_B_Hb10Resource_1_Component.setName("NewName");
 			}
@@ -133,6 +136,7 @@ public class ModelSavingTest extends DefaultIntegrationTestCase {
 		final Component hbProject10_A_Hb10Resource_1_Component = hbProject10_A_Hb10Resource_1_HbModelRoot.getComponents().get(0);
 
 		Runnable runnable1 = new Runnable() {
+			@Override
 			public void run() {
 				hbProject10_A_Hb10Resource_1_Component.setName("NewName");
 			}
@@ -161,6 +165,7 @@ public class ModelSavingTest extends DefaultIntegrationTestCase {
 		final Component hbProject10_A_Hb10Resource_1_Component = hbProject10_A_Hb10Resource_1_HbModelRoot.getComponents().get(0);
 
 		Runnable runnable1 = new Runnable() {
+			@Override
 			public void run() {
 				hbProject10_A_Hb10Resource_1_Component.setName("NewName");
 			}

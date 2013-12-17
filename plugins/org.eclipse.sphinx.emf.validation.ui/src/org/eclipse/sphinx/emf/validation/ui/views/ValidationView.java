@@ -48,6 +48,7 @@ import org.eclipse.ui.handlers.IHandlerActivation;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.ide.IDEInternalPreferences;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
+import org.eclipse.ui.views.markers.internal.ProblemView;
 
 import com.ibm.icu.text.MessageFormat;
 
@@ -503,6 +504,7 @@ public class ValidationView extends MarkerView {
 			 * @seeorg.eclipse.ui.activities.IActivityManagerListener#activityManagerChanged(org.eclipse.ui.activities.
 			 * ActivityManagerEvent)
 			 */
+			@Override
 			public void activityManagerChanged(ActivityManagerEvent activityManagerEvent) {
 				clearEnabledFilters();
 				refreshViewer();

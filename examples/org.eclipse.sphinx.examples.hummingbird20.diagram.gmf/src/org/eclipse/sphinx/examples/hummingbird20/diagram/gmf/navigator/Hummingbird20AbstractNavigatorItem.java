@@ -30,12 +30,14 @@ public abstract class Hummingbird20AbstractNavigatorItem extends PlatformObject 
 	static {
 		final Class[] supportedTypes = new Class[] { ITabbedPropertySheetPageContributor.class };
 		final ITabbedPropertySheetPageContributor propertySheetPageContributor = new ITabbedPropertySheetPageContributor() {
+			@Override
 			public String getContributorId() {
 				return "org.eclipse.sphinx.examples.hummingbird20.diagram"; //$NON-NLS-1$
 			}
 		};
 		Platform.getAdapterManager().registerAdapters(new IAdapterFactory() {
 
+			@Override
 			public Object getAdapter(Object adaptableObject, Class adapterType) {
 				if (adaptableObject instanceof org.eclipse.sphinx.examples.hummingbird20.diagram.gmf.navigator.Hummingbird20AbstractNavigatorItem
 						&& adapterType == ITabbedPropertySheetPageContributor.class) {
@@ -44,6 +46,7 @@ public abstract class Hummingbird20AbstractNavigatorItem extends PlatformObject 
 				return null;
 			}
 
+			@Override
 			public Class[] getAdapterList() {
 				return supportedTypes;
 			}

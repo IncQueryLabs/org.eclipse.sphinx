@@ -51,6 +51,7 @@ public class BasicGraphitiDiagramEditorPersistencyBehavior extends DefaultPersis
 			if (editingDomain != null) {
 				try {
 					diagramRoot = TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Diagram>() {
+						@Override
 						public void run() {
 							EObject modelObject = null;
 							if (uri.hasFragment()) {

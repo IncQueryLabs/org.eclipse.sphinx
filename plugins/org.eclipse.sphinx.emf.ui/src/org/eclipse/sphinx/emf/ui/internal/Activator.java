@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.ui.internal;
@@ -21,7 +21,6 @@ import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.ui.EclipseUIPlugin;
 import org.eclipse.emf.common.util.ResourceLocator;
 import org.eclipse.emf.edit.ui.provider.ExtendedImageRegistry;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -31,7 +30,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -105,16 +103,16 @@ public final class Activator extends EMFPlugin {
 	 */
 	public static class Implementation extends EclipseUIPlugin {
 
-		private ScopedPreferenceStore scopedPreferenceStore;
-
 		private IWorkbenchListener workbenchListener = new IWorkbenchListener() {
 
+			@Override
 			public boolean preShutdown(IWorkbench workbench, boolean forced) {
 				// Shut down long running system jobs
 				Job.getJobManager().cancel(IExtendedPlatformConstants.FAMILY_LONG_RUNNING);
 				return true;
 			}
 
+			@Override
 			public void postShutdown(IWorkbench workbench) {
 			}
 		};
@@ -142,15 +140,6 @@ public final class Activator extends EMFPlugin {
 			super.stop(context);
 		}
 
-		@Override
-		public IPreferenceStore getPreferenceStore() {
-			if (scopedPreferenceStore == null) {
-				org.eclipse.sphinx.emf.Activator.Implementation targetActivator = org.eclipse.sphinx.emf.Activator.getPlugin();
-				scopedPreferenceStore = new ScopedPreferenceStore(targetActivator.getInstanceScope(), targetActivator.getSymbolicName());
-			}
-			return scopedPreferenceStore;
-		}
-
 		public ImageDescriptor getImageDescriptor(String key) {
 			Object imageURL = getImage(key);
 			if (imageURL instanceof URL) {
@@ -160,7 +149,8 @@ public final class Activator extends EMFPlugin {
 		}
 
 		public ImageDescriptor getImageDescriptor(final URL url) {
-			// FIXME EMF bug: Impossible to use ExtendedImageRegistry.INSTANCE when Display.getCurrent() returns null
+			// FIXME File bug to EMF: Impossible to use ExtendedImageRegistry.INSTANCE when Display.getCurrent() returns
+			// null
 			if (Display.getCurrent() != null) {
 				return ExtendedImageRegistry.INSTANCE.getImageDescriptor(url);
 			}

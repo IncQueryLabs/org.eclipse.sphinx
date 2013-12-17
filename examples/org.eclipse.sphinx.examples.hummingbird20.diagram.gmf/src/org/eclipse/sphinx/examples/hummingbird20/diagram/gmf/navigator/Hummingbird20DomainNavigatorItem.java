@@ -34,6 +34,7 @@ public class Hummingbird20DomainNavigatorItem extends PlatformObject {
 		final Class[] supportedTypes = new Class[] { EObject.class, IPropertySource.class };
 		Platform.getAdapterManager().registerAdapters(new IAdapterFactory() {
 
+			@Override
 			public Object getAdapter(Object adaptableObject, Class adapterType) {
 				if (adaptableObject instanceof org.eclipse.sphinx.examples.hummingbird20.diagram.gmf.navigator.Hummingbird20DomainNavigatorItem) {
 					org.eclipse.sphinx.examples.hummingbird20.diagram.gmf.navigator.Hummingbird20DomainNavigatorItem domainNavigatorItem = (org.eclipse.sphinx.examples.hummingbird20.diagram.gmf.navigator.Hummingbird20DomainNavigatorItem) adaptableObject;
@@ -49,6 +50,7 @@ public class Hummingbird20DomainNavigatorItem extends PlatformObject {
 				return null;
 			}
 
+			@Override
 			public Class[] getAdapterList() {
 				return supportedTypes;
 			}

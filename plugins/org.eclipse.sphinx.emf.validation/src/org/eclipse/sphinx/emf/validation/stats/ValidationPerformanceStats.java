@@ -33,6 +33,7 @@ public class ValidationPerformanceStats extends AbstractPerformanceStats<Validat
 			name = EventName;
 		}
 
+		@Override
 		public String getName() {
 			// TODO Auto-generated method stub
 			return name;

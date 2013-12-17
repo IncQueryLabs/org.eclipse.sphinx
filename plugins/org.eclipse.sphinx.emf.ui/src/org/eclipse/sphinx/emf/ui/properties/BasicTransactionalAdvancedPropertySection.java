@@ -85,6 +85,7 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 	 * {@link org.eclipse.jface.viewers.ISelectionChangedListener} does nothing in this case)
 	 */
 	protected ISelectionListener selectionListener = new ISelectionListener() {
+		@Override
 		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 			if (tabbedPropertySheetPage != null) {
 				IStructuredSelection structuredSelection = SelectionUtil.getStructuredSelection(selection);
@@ -135,6 +136,7 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 					IPageSite site = tabbedPropertySheetPage.getSite();
 					if (site != null) {
 						site.getShell().getDisplay().asyncExec(new Runnable() {
+							@Override
 							public void run() {
 								// Refresh property section content
 								if (page != null) {
@@ -233,6 +235,7 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 	/*
 	 * @see org.eclipse.ui.views.properties.IPropertySourceProvider#getPropertySource(java.lang.Object)
 	 */
+	@Override
 	public IPropertySource getPropertySource(Object object) {
 		// Let EMF.Edit try to find a property source adapter
 		/*
@@ -279,6 +282,7 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 			@Override
 			protected IPropertySource createPropertySource(final Object object, final IItemPropertySource itemPropertySource) {
 				return wrap(run(new RunnableWithResult.Impl<IPropertySource>() {
+					@Override
 					public void run() {
 						setResult(new PropertySource(object, itemPropertySource) {
 							@Override

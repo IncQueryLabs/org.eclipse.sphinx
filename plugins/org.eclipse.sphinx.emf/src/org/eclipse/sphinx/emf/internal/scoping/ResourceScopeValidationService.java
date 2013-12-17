@@ -27,6 +27,7 @@ import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.scoping.IResourceScope;
 import org.eclipse.sphinx.emf.scoping.IResourceScopeProvider;
 import org.eclipse.sphinx.emf.scoping.ResourceScopeProviderRegistry;
 import org.eclipse.sphinx.platform.resources.MarkerJob;

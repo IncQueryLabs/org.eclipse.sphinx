@@ -16,7 +16,6 @@ package org.eclipse.sphinx.emf.validation.listeners;
 
 import java.util.ArrayList;
 
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -25,6 +24,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.sphinx.emf.validation.Activator;
 import org.eclipse.sphinx.emf.validation.markers.ValidationMarkerManager;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public class ResourceURIChangeListener implements IResourceChangeListener {
 
@@ -33,6 +33,7 @@ public class ResourceURIChangeListener implements IResourceChangeListener {
 	 */
 	private static ArrayList<IResource> cache = new ArrayList<IResource>();
 
+	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 
 		switch (event.getType()) {
@@ -83,6 +84,7 @@ public class ResourceURIChangeListener implements IResourceChangeListener {
 		IResourceDelta rootDelta = event.getDelta();
 
 		IResourceDeltaVisitor visitor = new IResourceDeltaVisitor() {
+			@Override
 			public boolean visit(IResourceDelta delta) {
 				IResource resource = delta.getResource();
 				// Changes into resource are not interesting here

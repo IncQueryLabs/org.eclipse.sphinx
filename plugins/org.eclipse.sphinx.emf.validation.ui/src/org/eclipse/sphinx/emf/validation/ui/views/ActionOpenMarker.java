@@ -16,8 +16,6 @@
  *******************************************************************************/
 package org.eclipse.sphinx.emf.validation.ui.views;
 
-import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -27,8 +25,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.util.OpenStrategy;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
 import org.eclipse.sphinx.emf.validation.markers.util.MarkerUtil;
 import org.eclipse.sphinx.emf.validation.ui.Activator;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;

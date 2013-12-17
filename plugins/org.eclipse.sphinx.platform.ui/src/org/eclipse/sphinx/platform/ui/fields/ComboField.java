@@ -151,6 +151,7 @@ public class ComboField extends BasicField implements IComboField {
 		if (fComboControl == null) {
 			assertCompositeNotNull(parent);
 			fModifyListener = new ModifyListener() {
+				@Override
 				public void modifyText(ModifyEvent e) {
 					if (firesChangeEvent) {
 						doModifyText(e);
@@ -158,12 +159,14 @@ public class ComboField extends BasicField implements IComboField {
 				}
 			};
 			SelectionListener selectionListener = new SelectionListener() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					if (firesChangeEvent) {
 						doSelectionChanged(e);
 					}
 				}
 
+				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}
 			};
@@ -243,6 +246,7 @@ public class ComboField extends BasicField implements IComboField {
 	/**
 	 * Gets the combo items.
 	 */
+	@Override
 	public String[] getItems() {
 		return fItems;
 	}
@@ -250,6 +254,7 @@ public class ComboField extends BasicField implements IComboField {
 	/**
 	 * Sets the combo items. Triggers a dialog-changed event.
 	 */
+	@Override
 	public void setItems(String[] items) {
 		setItems(items, false);
 	}
@@ -278,6 +283,7 @@ public class ComboField extends BasicField implements IComboField {
 	/**
 	 * Sets the text. Triggers a dialog-changed event.
 	 */
+	@Override
 	public void setText(String text) {
 		fText = text;
 		if (isOkToUse(fComboControl)) {
@@ -290,6 +296,7 @@ public class ComboField extends BasicField implements IComboField {
 	/**
 	 * Selects an item.
 	 */
+	@Override
 	public boolean selectItem(int index) {
 		return selectItem(index, false);
 	}
@@ -327,6 +334,7 @@ public class ComboField extends BasicField implements IComboField {
 		return false;
 	}
 
+	@Override
 	public int getSelectionIndex() {
 		return fSelectionIndex;
 	}
@@ -352,6 +360,7 @@ public class ComboField extends BasicField implements IComboField {
 		setTextWithoutUpdate(fText);
 	}
 
+	@Override
 	public Control getComboControl() {
 		Control control = null;
 		if (isOkToUse(fComboControl)) {

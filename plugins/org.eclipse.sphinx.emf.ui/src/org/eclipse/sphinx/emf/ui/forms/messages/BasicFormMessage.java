@@ -22,10 +22,12 @@ public class BasicFormMessage implements IFormMessage {
 	protected Object data;
 	protected int messageType = IMessageProvider.NONE;
 
+	@Override
 	public String getMessageKey() {
 		return messageText == null || messageText.length() == 0 ? "UnknownMessage" : messageText.replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
+	@Override
 	public String getMessageText() {
 		return messageText;
 	}
@@ -34,6 +36,7 @@ public class BasicFormMessage implements IFormMessage {
 		messageText = text;
 	}
 
+	@Override
 	public Object getData() {
 		return data;
 	}
@@ -42,6 +45,7 @@ public class BasicFormMessage implements IFormMessage {
 		this.data = data;
 	}
 
+	@Override
 	public int getMessageType() {
 		return messageType;
 	}

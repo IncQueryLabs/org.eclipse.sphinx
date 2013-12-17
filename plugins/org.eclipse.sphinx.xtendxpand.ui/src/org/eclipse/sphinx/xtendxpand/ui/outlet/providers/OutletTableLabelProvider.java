@@ -22,10 +22,12 @@ import org.eclipse.xpand2.output.Outlet;
 
 public class OutletTableLabelProvider extends LabelProvider implements ITableLabelProvider {
 
+	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
 	}
 
+	@Override
 	public String getColumnText(Object element, int columnIndex) {
 		if (element instanceof Outlet) {
 			ExtendedOutlet outlet = (ExtendedOutlet) element;

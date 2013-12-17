@@ -278,6 +278,7 @@ public final class EcorePlatformUtil {
 		if (editingDomain != null && file != null) {
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
+					@Override
 					public void run() {
 						URI uri = createURI(file.getFullPath());
 						setResult(EcoreResourceUtil.getModelRoot(editingDomain.getResourceSet(), uri));
@@ -388,6 +389,7 @@ public final class EcorePlatformUtil {
 		if (editingDomain != null && file != null) {
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
+					@Override
 					public void run() {
 						URI uri = createURI(file.getFullPath());
 						setResult(EcoreResourceUtil.loadModelRoot(editingDomain.getResourceSet(), uri, options));
@@ -438,6 +440,7 @@ public final class EcorePlatformUtil {
 		if (editingDomain != null && uri != null) {
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
+					@Override
 					public void run() {
 						setResult(EcoreResourceUtil.getEObject(editingDomain.getResourceSet(), uri));
 					}
@@ -485,6 +488,7 @@ public final class EcorePlatformUtil {
 		if (editingDomain != null && uri != null) {
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
+					@Override
 					public void run() {
 						setResult(EcoreResourceUtil.loadEObject(editingDomain.getResourceSet(), uri));
 					}
@@ -547,6 +551,7 @@ public final class EcorePlatformUtil {
 		if (editingDomain != null) {
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Resource>() {
+					@Override
 					public void run() {
 						URI uri = createURI(file.getFullPath());
 						setResult(editingDomain.getResourceSet().getResource(uri, false));
@@ -572,6 +577,7 @@ public final class EcorePlatformUtil {
 		if (editingDomain != null) {
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Resource>() {
+					@Override
 					public void run() {
 						setResult(editingDomain.getResourceSet().getResource(uri.trimFragment().trimQuery(), false));
 					}
@@ -674,6 +680,7 @@ public final class EcorePlatformUtil {
 		if (editingDomain != null && file != null) {
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Resource>() {
+					@Override
 					public void run() {
 						URI uri = createURI(file.getFullPath());
 						setResult(EcoreResourceUtil.loadResource(editingDomain.getResourceSet(), uri, options));
@@ -702,6 +709,7 @@ public final class EcorePlatformUtil {
 		if (editingDomain != null && resource != null) {
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Boolean>() {
+					@Override
 					public void run() {
 						setResult(EcoreResourceUtil.isResourceLoaded(editingDomain.getResourceSet(), resource.getURI()));
 					}
@@ -976,6 +984,7 @@ public final class EcorePlatformUtil {
 		if (editingDomain != null && file != null) {
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Boolean>() {
+					@Override
 					public void run() {
 						URI uri = createURI(file.getFullPath());
 						setResult(EcoreResourceUtil.isResourceLoaded(editingDomain.getResourceSet(), uri));
@@ -1567,6 +1576,7 @@ public final class EcorePlatformUtil {
 				job.schedule();
 			} else {
 				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+					@Override
 					public void run(IProgressMonitor monitor) throws CoreException {
 						runAddNewModelResources(editingDomain, modelResourceDescriptors, monitor);
 					}
@@ -1594,6 +1604,7 @@ public final class EcorePlatformUtil {
 			@Override
 			protected IStatus doExecute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+					@Override
 					public void run(IProgressMonitor monitor) throws CoreException {
 						SubMonitor progress = SubMonitor.convert(monitor, modelResourceDescriptors.size());
 						for (ModelResourceDescriptor descriptor : modelResourceDescriptors) {
@@ -1683,6 +1694,7 @@ public final class EcorePlatformUtil {
 				job.schedule();
 			} else {
 				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+					@Override
 					public void run(IProgressMonitor monitor) throws CoreException {
 						runSaveNewModelResources(editingDomain, modelResourceDescriptors, options, monitor);
 					}
@@ -1721,6 +1733,7 @@ public final class EcorePlatformUtil {
 			@Override
 			protected IStatus doExecute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+					@Override
 					public void run(IProgressMonitor monitor) throws CoreException {
 						SubMonitor progress = SubMonitor.convert(monitor, modelResourceDescriptors.size());
 						for (ModelResourceDescriptor descriptor : modelResourceDescriptors) {
@@ -1853,6 +1866,7 @@ public final class EcorePlatformUtil {
 				job.schedule();
 			} else {
 				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+					@Override
 					public void run(IProgressMonitor monitor) throws CoreException {
 						runSaveModelResources(resourcesToSave, options, monitor);
 					}
@@ -1918,6 +1932,7 @@ public final class EcorePlatformUtil {
 				job.schedule();
 			} else {
 				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+					@Override
 					public void run(IProgressMonitor monitor) throws CoreException {
 						runSaveModelResources(resourcesToSave, options, monitor);
 					}
@@ -1993,6 +2008,7 @@ public final class EcorePlatformUtil {
 				@Override
 				protected IStatus doExecute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 					IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+						@Override
 						public void run(IProgressMonitor monitor) throws CoreException {
 							SubMonitor progress = SubMonitor.convert(monitor, resourcesToSave.get(editingDomain).size());
 							for (Resource resource : resourcesToSave.get(editingDomain)) {
@@ -2101,6 +2117,7 @@ public final class EcorePlatformUtil {
 		if (editingDomain != null && file != null) {
 			try {
 				editingDomain.runExclusive(new Runnable() {
+					@Override
 					public void run() {
 						try {
 							URI uri = createURI(file.getFullPath());
@@ -2136,6 +2153,7 @@ public final class EcorePlatformUtil {
 
 			try {
 				editingDomain.runExclusive(new Runnable() {
+					@Override
 					public void run() {
 						for (IFile file : files) {
 							progress.subTask(NLS.bind(Messages.subtask_unloadingModelFile, file.getFullPath().toString()));
@@ -2182,6 +2200,7 @@ public final class EcorePlatformUtil {
 
 			try {
 				editingDomain.runExclusive(new Runnable() {
+					@Override
 					public void run() {
 						List<Resource> safeResources = new ArrayList<Resource>(resources);
 						for (Resource resource : safeResources) {
@@ -2226,6 +2245,7 @@ public final class EcorePlatformUtil {
 
 			try {
 				editingDomain.runExclusive(new Runnable() {
+					@Override
 					public void run() {
 						List<Resource> safeResources = new ArrayList<Resource>(editingDomain.getResourceSet().getResources());
 						for (Resource resource : safeResources) {

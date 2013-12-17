@@ -109,6 +109,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	 * 
 	 * @see org.eclipse.sphinx.platform.preferences.IEclipsePreference#getQualifier()
 	 */
+	@Override
 	public String getQualifier() {
 		return workspacePreference.getQualifier();
 	}
@@ -116,6 +117,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IEclipsePreference#getKey()
 	 */
+	@Override
 	public String getKey() {
 		return workspacePreference.getKey();
 	}
@@ -123,6 +125,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IEclipsePreference#getDefaultValueAsString()
 	 */
+	@Override
 	public String getDefaultValueAsString() {
 		return workspacePreference.getDefaultValueAsString();
 	}
@@ -130,6 +133,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IProjectPreference#getRequiredProjectNatureId()
 	 */
+	@Override
 	public String getRequiredProjectNatureId() {
 		return projectPreference.getRequiredProjectNatureId();
 	}
@@ -137,6 +141,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#get(org.eclipse.core.resources.IProject)
 	 */
+	@Override
 	public T get(IProject project) {
 		if (project != null) {
 			try {
@@ -162,6 +167,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#getDefaultValueAsObject()
 	 */
+	@Override
 	public T getDefaultValueAsObject() {
 		return workspacePreference.getDefaultValueAsObject();
 	}
@@ -171,6 +177,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	 * org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#getFromProject(org.eclipse.core.resources
 	 * .IProject)
 	 */
+	@Override
 	public T getFromProject(IProject project) {
 		return projectPreference.get(project);
 	}
@@ -180,6 +187,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	 * org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#setInProject(org.eclipse.core.resources.IProject
 	 * , T)
 	 */
+	@Override
 	public void setInProject(IProject project, T valueAsObject) {
 		projectPreference.set(project, valueAsObject);
 	}
@@ -189,6 +197,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	 * org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#setToDefaultInProject(org.eclipse.core.resources
 	 * .IProject)
 	 */
+	@Override
 	public void setToDefaultInProject(IProject project) {
 		projectPreference.setToDefault(project);
 	}
@@ -199,6 +208,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	 * eclipse.core.resources.IProject,
 	 * org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener)
 	 */
+	@Override
 	public void addPreferenceChangeListenerToProject(IProject project, IPreferenceChangeListener listener) {
 		projectPreference.addPreferenceChangeListener(project, listener);
 	}
@@ -209,6 +219,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	 * (org.eclipse.core.resources.IProject,
 	 * org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener)
 	 */
+	@Override
 	public void removePreferenceChangeListenerFromProject(IProject project, IPreferenceChangeListener listener) {
 		projectPreference.removePreferenceChangeListener(project, listener);
 	}
@@ -216,6 +227,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#getFromWorkspace()
 	 */
+	@Override
 	public T getFromWorkspace() {
 		return workspacePreference.get();
 	}
@@ -225,6 +237,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	 * org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#getFromWorkspaceForProject(org.eclipse.core
 	 * .resources.IProject)
 	 */
+	@Override
 	public T getFromWorkspaceForProject(IProject project) {
 		try {
 			if (project.isAccessible()) {
@@ -248,6 +261,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#setInWorkspace(T)
 	 */
+	@Override
 	public void setInWorkspace(T valueAsObject) {
 		workspacePreference.set(valueAsObject);
 	}
@@ -255,6 +269,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#setToDefaultInWorkspace()
 	 */
+	@Override
 	public void setToDefaultInWorkspace() {
 		workspacePreference.setToDefault();
 	}
@@ -264,6 +279,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	 * org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#addPreferenceChangeListenerToWorkspace(org
 	 * .eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener)
 	 */
+	@Override
 	public void addPreferenceChangeListenerToWorkspace(IPreferenceChangeListener listener) {
 		workspacePreference.addPreferenceChangeListener(listener);
 	}
@@ -273,6 +289,7 @@ public abstract class AbstractProjectWorkspacePreference<T> implements IProjectW
 	 * org.eclipse.sphinx.platform.preferences.IProjectWorkspacePreference#removePreferenceChangeListenerFromWorkspace
 	 * (org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener)
 	 */
+	@Override
 	public void removePreferenceChangeListenerFromWorkspace(IPreferenceChangeListener listener) {
 		workspacePreference.removePreferenceChangeListener(listener);
 	}

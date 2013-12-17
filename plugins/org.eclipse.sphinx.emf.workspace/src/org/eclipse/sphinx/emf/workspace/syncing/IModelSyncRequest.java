@@ -19,7 +19,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.sphinx.platform.resources.syncing.IResourceSyncRequest;
 
-public interface IModelSyncRequest extends IResourceSyncRequest{
+public interface IModelSyncRequest extends IResourceSyncRequest {
 
 	void addProjectToLoad(IProject project);
 

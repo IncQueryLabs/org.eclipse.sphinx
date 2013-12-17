@@ -33,7 +33,8 @@ public abstract class AbstractValidationActionProvider extends BasicActionProvid
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider#fillSubMenu(org.eclipse.jface.action.IMenuManager)
+	 * org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider#fillSubMenu(org.eclipse.jface.action.IMenuManager
+	 * )
 	 */
 	@Override
 	public void fillSubMenu(IMenuManager subMenuManager) {

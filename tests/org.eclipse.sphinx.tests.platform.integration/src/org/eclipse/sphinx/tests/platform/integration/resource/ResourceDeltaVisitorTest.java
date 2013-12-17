@@ -99,6 +99,7 @@ public class ResourceDeltaVisitorTest extends DefaultIntegrationTestCase {
 		resourcesHandled.clear();
 		// Create new project
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				IProject project = EcorePlugin.getWorkspaceRoot().getProject("NewProject");
 				if (!project.exists()) {
@@ -339,6 +340,7 @@ public class ResourceDeltaVisitorTest extends DefaultIntegrationTestCase {
 		assertFalse(resourceSaveIndicator.isDirty(hbResource10));
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+				@Override
 				public void run() {
 					testComponent.setName("newName1");
 					testInterface.setName("newName2");
@@ -376,6 +378,7 @@ public class ResourceDeltaVisitorTest extends DefaultIntegrationTestCase {
 
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, new Runnable() {
+				@Override
 				public void run() {
 					component20.setName("newName3");
 
@@ -428,6 +431,7 @@ public class ResourceDeltaVisitorTest extends DefaultIntegrationTestCase {
 		final String newName2 = "newName2";
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomainUml2, new Runnable() {
+				@Override
 				public void run() {
 					// Rename objects in first resource
 					element1.setName(newName1);

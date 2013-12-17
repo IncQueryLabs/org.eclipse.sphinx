@@ -377,6 +377,7 @@ public class BasicModelEditActionProvider extends BasicActionProvider {
 				}
 			}
 			Collections.sort(actions, new Comparator<IAction>() {
+				@Override
 				public int compare(IAction a1, IAction a2) {
 					if (a1.getText() == null && a2.getText() != null) {
 						return -1;
@@ -408,6 +409,7 @@ public class BasicModelEditActionProvider extends BasicActionProvider {
 				}
 			}
 			Collections.sort(actions, new Comparator<IAction>() {
+				@Override
 				public int compare(IAction a1, IAction a2) {
 					if (a1.getText() == null && a2.getText() != null) {
 						return -1;

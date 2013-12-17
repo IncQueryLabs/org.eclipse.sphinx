@@ -17,33 +17,31 @@ package org.eclipse.sphinx.examples.hummingbird10;
 import org.eclipse.emf.ecore.EObject;
 
 /**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Connection</b></em>'.
- * <!-- end-user-doc -->
- *
+ * <!-- begin-user-doc --> A representation of the model object '<em><b>Connection</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getRequiredInterface <em>Required Interface</em>}</li>
- *   <li>{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getTargetComponent <em>Target Component</em>}</li>
- *   <li>{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getSourceComponent <em>Source Component</em>}</li>
- *   <li>{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getName <em>Name</em>}</li>
+ * <li>{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getRequiredInterface <em>Required Interface</em>}</li>
+ * <li>{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getTargetComponent <em>Target Component</em>}</li>
+ * <li>{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getSourceComponent <em>Source Component</em>}</li>
+ * <li>{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getName <em>Name</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @see org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package#getConnection()
- * @model annotation="http://www.eclipse.org/emf/2002/Ecore constraints='validateInterfacesImplementedByTargetComponent'"
+ * @model 
+ *        annotation="http://www.eclipse.org/emf/2002/Ecore constraints='validateInterfacesImplementedByTargetComponent'"
  * @generated
  */
 public interface Connection extends EObject {
 	/**
-	 * Returns the value of the '<em><b>Required Interface</b></em>' reference.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Required Interface</b></em>' reference. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Required Interface</em>' reference isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Required Interface</em>' reference isn't clear, there really should be more of a
+	 * description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Required Interface</em>' reference.
 	 * @see #setRequiredInterface(Interface)
 	 * @see org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package#getConnection_RequiredInterface()
@@ -53,24 +51,26 @@ public interface Connection extends EObject {
 	Interface getRequiredInterface();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getRequiredInterface <em>Required Interface</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Required Interface</em>' reference.
+	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getRequiredInterface
+	 * <em>Required Interface</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Required Interface</em>' reference.
 	 * @see #getRequiredInterface()
 	 * @generated
 	 */
 	void setRequiredInterface(Interface value);
 
 	/**
-	 * Returns the value of the '<em><b>Target Component</b></em>' reference.
-	 * It is bidirectional and its opposite is '{@link org.eclipse.sphinx.examples.hummingbird10.Component#getIncomingConnections <em>Incoming Connections</em>}'.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Target Component</b></em>' reference. It is bidirectional and its opposite is '
+	 * {@link org.eclipse.sphinx.examples.hummingbird10.Component#getIncomingConnections <em>Incoming Connections</em>}
+	 * '. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Target Component</em>' reference isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Target Component</em>' reference isn't clear, there really should be more of a
+	 * description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Target Component</em>' reference.
 	 * @see #setTargetComponent(Component)
 	 * @see org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package#getConnection_TargetComponent()
@@ -81,24 +81,26 @@ public interface Connection extends EObject {
 	Component getTargetComponent();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getTargetComponent <em>Target Component</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Target Component</em>' reference.
+	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getTargetComponent
+	 * <em>Target Component</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Target Component</em>' reference.
 	 * @see #getTargetComponent()
 	 * @generated
 	 */
 	void setTargetComponent(Component value);
 
 	/**
-	 * Returns the value of the '<em><b>Source Component</b></em>' container reference.
-	 * It is bidirectional and its opposite is '{@link org.eclipse.sphinx.examples.hummingbird10.Component#getOutgoingConnections <em>Outgoing Connections</em>}'.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Source Component</b></em>' container reference. It is bidirectional and its
+	 * opposite is '{@link org.eclipse.sphinx.examples.hummingbird10.Component#getOutgoingConnections
+	 * <em>Outgoing Connections</em>}'. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Source Component</em>' container reference isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Source Component</em>' container reference isn't clear, there really should be more of
+	 * a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Source Component</em>' container reference.
 	 * @see #setSourceComponent(Component)
 	 * @see org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package#getConnection_SourceComponent()
@@ -109,23 +111,23 @@ public interface Connection extends EObject {
 	Component getSourceComponent();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getSourceComponent <em>Source Component</em>}' container reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Source Component</em>' container reference.
+	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getSourceComponent
+	 * <em>Source Component</em>}' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Source Component</em>' container reference.
 	 * @see #getSourceComponent()
 	 * @generated
 	 */
 	void setSourceComponent(Component value);
 
 	/**
-	 * Returns the value of the '<em><b>Name</b></em>' attribute.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Name</em>' attribute isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Name</em>' attribute.
 	 * @see #setName(String)
 	 * @see org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package#getConnection_Name()
@@ -135,10 +137,11 @@ public interface Connection extends EObject {
 	String getName();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getName <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Name</em>' attribute.
+	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getName <em>Name</em>}'
+	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Name</em>' attribute.
 	 * @see #getName()
 	 * @generated
 	 */

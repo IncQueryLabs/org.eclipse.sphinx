@@ -43,8 +43,7 @@ public interface IModelConverterDescription {
 	 * Determines if any user relevant information is provided by this IModelConverterDescription. User relevant means
 	 * any data which is to be displayed to the user within the UI.
 	 * 
-	 * @return
-	 *         <code>true<code> if no user relevant information is provided by this IModelConverterDescription, <code>false</code>
+	 * @return <code>true<code> if no user relevant information is provided by this IModelConverterDescription, <code>false</code>
 	 *         otherwise.
 	 */
 	boolean isEmpty();

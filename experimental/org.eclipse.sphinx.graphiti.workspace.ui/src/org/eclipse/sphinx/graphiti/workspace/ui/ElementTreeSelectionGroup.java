@@ -120,6 +120,7 @@ public class ElementTreeSelectionGroup extends Composite {
 		treeViewer.setComparator(comparator);
 		treeViewer.setUseHashlookup(true);
 		treeViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
 			public void doubleClick(DoubleClickEvent event) {
 				ISelection selection = event.getSelection();
 				if (selection instanceof IStructuredSelection) {

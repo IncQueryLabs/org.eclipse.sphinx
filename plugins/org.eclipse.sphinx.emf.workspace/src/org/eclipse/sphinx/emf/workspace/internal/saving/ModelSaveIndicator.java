@@ -40,6 +40,7 @@ public class ModelSaveIndicator implements IModelSaveIndicator {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isDirty(IModelDescriptor modelDescriptor) {
 		Assert.isNotNull(modelDescriptor);
 		IResourceSaveIndicator resourceSaveIndicator = SaveIndicatorUtil.getResourceSaveIndicator(modelDescriptor.getEditingDomain());
@@ -55,6 +56,7 @@ public class ModelSaveIndicator implements IModelSaveIndicator {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setSaved(IModelDescriptor modelDescriptor) {
 		Assert.isNotNull(modelDescriptor);
 		IResourceSaveIndicator resourceSaveIndicator = SaveIndicatorUtil.getResourceSaveIndicator(modelDescriptor.getEditingDomain());

@@ -36,6 +36,7 @@ public class ContentTypeIdCachePurger implements IResourceChangeListener {
 	 * org.eclipse.core.resources.IResourceChangeListener#resourceChanged(org.eclipse.core.resources.IResourceChangeEvent
 	 * )
 	 */
+	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		try {
 			IResourceDelta delta = event.getDelta();

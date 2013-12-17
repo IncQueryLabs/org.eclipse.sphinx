@@ -24,10 +24,6 @@ import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.ReflectUtil;
-import org.eclipse.team.svn.core.SVNMessages;
-import org.eclipse.team.svn.core.operation.CompositeOperation;
-import org.eclipse.team.svn.core.operation.IActionOperation;
-import org.eclipse.team.svn.core.operation.IConsoleStream;
 
 public class DelegatingCompositeOperation implements IActionOperation {
 

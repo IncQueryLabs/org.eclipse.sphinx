@@ -165,6 +165,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		}
 	}
 
+	@Override
 	public void addResourceSetProblemListener(ResourceProblemListener resourceProblemListener) {
 		for (IMetaModelDescriptor metaModelDescriptor : referenceEditingDomainsDescriptors.keySet()) {
 			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(ResourcesPlugin.getWorkspace().getRoot(),
@@ -175,6 +176,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		}
 	}
 
+	@Override
 	public void removeResourceSetProblemListener(ResourceProblemListener resourceProblemListener) {
 		for (IMetaModelDescriptor metaModelDescriptor : referenceEditingDomainsDescriptors.keySet()) {
 			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(ResourcesPlugin.getWorkspace().getRoot(),
@@ -185,14 +187,17 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		}
 	}
 
+	@Override
 	public void addReferenceWorkspaceChangeListener(ReferenceWorkspaceChangeListener referenceWorkspaceChangeListener) {
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(referenceWorkspaceChangeListener);
 	}
 
+	@Override
 	public void removeReferenceWorkspaceChangeListener(ReferenceWorkspaceChangeListener referenceWorkspaceChangeListener) {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(referenceWorkspaceChangeListener);
 	}
 
+	@Override
 	public ReferenceEditingDomainDescriptor getReferenceEditingDomainDescriptor(IMetaModelDescriptor metaModeldescriptor) {
 		if (referenceEditingDomainsDescriptors != null && metaModeldescriptor != null) {
 			return referenceEditingDomainsDescriptors.get(metaModeldescriptor);
@@ -200,6 +205,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		return null;
 	}
 
+	@Override
 	public Map<IMetaModelDescriptor, ReferenceEditingDomainDescriptor> getReferenceEditingDomainDescritpors() {
 		return referenceEditingDomainsDescriptors;
 	}
@@ -208,6 +214,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 	 * return the first editing domain descriptor of the list corresponding to the given MetaModelDescriptor
 	 */
 
+	@Override
 	public int getInitialReferenceEditingDomainCount() {
 		if (referenceEditingDomainsDescriptors != null) {
 			return referenceEditingDomainsDescriptors.size();
@@ -215,6 +222,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		return 0;
 	}
 
+	@Override
 	public int getInitialResourcesInReferenceEditingDomainCount(IMetaModelDescriptor metaModeldescriptor) {
 		ReferenceEditingDomainDescriptor referenceEditingDomainDescriptor = getReferenceEditingDomainDescriptor(metaModeldescriptor);
 		if (referenceEditingDomainDescriptor != null) {
@@ -223,6 +231,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		return 0;
 	}
 
+	@Override
 	public int getInitialResourcesInAllReferenceEditingDomainCount() {
 		int count = 0;
 		if (referenceEditingDomainsDescriptors != null) {
@@ -233,6 +242,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		return count;
 	}
 
+	@Override
 	public Set<IFile> getAllReferenceFiles() {
 		Assert.isNotNull(referenceProjectDescriptors);
 
@@ -245,6 +255,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		return results;
 	}
 
+	@Override
 	public Set<IFile> getReferenceFiles(IMetaModelDescriptor metaModelDescriptor) {
 		Assert.isNotNull(referenceProjectDescriptors);
 
@@ -257,6 +268,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		return results;
 	}
 
+	@Override
 	public Set<String> getReferenceFileNames(IMetaModelDescriptor metaModelDescriptor) {
 		Assert.isNotNull(referenceProjectDescriptors);
 
@@ -271,6 +283,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		return results;
 	}
 
+	@Override
 	public Set<IFile> getReferenceFiles(String projectName) {
 		ReferenceProjectDescriptor referenceProjectdescriptor = getReferenceProjectDescriptor(projectName);
 		if (referenceProjectdescriptor != null) {
@@ -279,6 +292,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		return new HashSet<IFile>();
 	}
 
+	@Override
 	public Set<IFile> getReferenceFiles(String projectName, IMetaModelDescriptor metaModelDescriptor) {
 		ReferenceProjectDescriptor referenceProjectdescriptor = getReferenceProjectDescriptor(projectName);
 		if (referenceProjectdescriptor != null) {
@@ -288,6 +302,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 	}
 
 	// TODO reduce API to only use IPath
+	@Override
 	public IFile getReferenceFile(String projectName, String fileName) {
 		ReferenceProjectDescriptor referenceProjectDescriptor = getReferenceProjectDescriptor(projectName);
 		if (referenceProjectDescriptor != null) {
@@ -302,6 +317,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 
 	protected abstract String[] getReferenceProjectsNames();
 
+	@Override
 	public IProject getReferenceProject(String projectName) {
 		ReferenceProjectDescriptor referenceProjectdescriptor = getReferenceProjectDescriptor(projectName);
 		if (referenceProjectdescriptor != null) {
@@ -310,6 +326,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		return null;
 	}
 
+	@Override
 	public List<String> getReferenceFileNames(String projectName, IMetaModelDescriptor metaModelDescriptor) {
 		ReferenceProjectDescriptor referenceProjectDescriptor = getReferenceProjectDescriptor(projectName);
 		if (referenceProjectDescriptor != null) {
@@ -318,6 +335,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		return new ArrayList<String>();
 	}
 
+	@Override
 	public List<String> getReferenceFileNames(String projectName) {
 		ReferenceProjectDescriptor referenceProjectDescriptor = getReferenceProjectDescriptor(projectName);
 		if (referenceProjectDescriptor != null) {
@@ -326,6 +344,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		return new ArrayList<String>();
 	}
 
+	@Override
 	public ReferenceProjectDescriptor getReferenceProjectDescriptor(String projectName) {
 		Assert.isNotNull(referenceProjectDescriptors);
 
@@ -347,6 +366,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 		return projects;
 	}
 
+	@Override
 	public Set<ReferenceProjectDescriptor> getReferenceProjectDescriptors() {
 		return referenceProjectDescriptors;
 	}
@@ -360,6 +380,7 @@ public abstract class AbstractReferenceWorkspace implements IInternalReferenceWo
 	protected final IProject createSimpleProject(final String projectName) throws CoreException {
 		final IProject[] project = new IProject[1];
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				project[0] = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 				if (!project[0].exists()) {

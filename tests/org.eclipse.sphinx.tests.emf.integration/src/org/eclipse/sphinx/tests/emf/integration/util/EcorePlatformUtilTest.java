@@ -2494,6 +2494,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		// Modify resource
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+				@Override
 				public void run() {
 					// Rename objects in first resource
 					testComponent1.setName(newComponentName1);
@@ -2602,6 +2603,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		// Modify resource
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+				@Override
 				public void run() {
 					// Rename objects in first resource
 					testComponent1.setName(newComponentName1);
@@ -2705,6 +2707,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		// Modify resource
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+				@Override
 				public void run() {
 					// Rename objects in first resource
 					testComponent1.setName(newComponentName1);
@@ -2814,6 +2817,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		// Modify resource
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+				@Override
 				public void run() {
 					// Rename objects in first resource
 					testComponent1.setName(newComponentName1);
@@ -2913,6 +2917,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		// Modify resource
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+				@Override
 				public void run() {
 					// Rename objects in first resource
 					testComponent1.setName(newComponentName1);
@@ -3010,6 +3015,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		// Modify resource
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+				@Override
 				public void run() {
 					// Rename objects in first resource
 					testComponent1.setName(newComponentName1);

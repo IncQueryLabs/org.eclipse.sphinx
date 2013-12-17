@@ -86,6 +86,7 @@ public class Hummingbird20DomainNavigatorContentProvider implements ICommonConte
 			}
 		});
 		myViewerRefreshRunnable = new Runnable() {
+			@Override
 			public void run() {
 				if (myViewer != null) {
 					myViewer.refresh();
@@ -93,21 +94,25 @@ public class Hummingbird20DomainNavigatorContentProvider implements ICommonConte
 			}
 		};
 		myWorkspaceSynchronizer = new WorkspaceSynchronizer(editingDomain, new WorkspaceSynchronizer.Delegate() {
+			@Override
 			public void dispose() {
 			}
 
+			@Override
 			public boolean handleResourceChanged(final Resource resource) {
 				unloadAllResources();
 				asyncRefresh();
 				return true;
 			}
 
+			@Override
 			public boolean handleResourceDeleted(Resource resource) {
 				unloadAllResources();
 				asyncRefresh();
 				return true;
 			}
 
+			@Override
 			public boolean handleResourceMoved(Resource resource, final URI newURI) {
 				unloadAllResources();
 				asyncRefresh();
@@ -119,6 +124,7 @@ public class Hummingbird20DomainNavigatorContentProvider implements ICommonConte
 	/**
 	 * @generated
 	 */
+	@Override
 	public void dispose() {
 		myWorkspaceSynchronizer.dispose();
 		myWorkspaceSynchronizer = null;
@@ -132,6 +138,7 @@ public class Hummingbird20DomainNavigatorContentProvider implements ICommonConte
 	/**
 	 * @generated
 	 */
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		myViewer = viewer;
 	}
@@ -157,6 +164,7 @@ public class Hummingbird20DomainNavigatorContentProvider implements ICommonConte
 	/**
 	 * @generated
 	 */
+	@Override
 	public Object[] getElements(Object inputElement) {
 		return getChildren(inputElement);
 	}
@@ -164,24 +172,28 @@ public class Hummingbird20DomainNavigatorContentProvider implements ICommonConte
 	/**
 	 * @generated
 	 */
+	@Override
 	public void restoreState(IMemento aMemento) {
 	}
 
 	/**
 	 * @generated
 	 */
+	@Override
 	public void saveState(IMemento aMemento) {
 	}
 
 	/**
 	 * @generated
 	 */
+	@Override
 	public void init(ICommonContentExtensionSite aConfig) {
 	}
 
 	/**
 	 * @generated
 	 */
+	@Override
 	public Object[] getChildren(Object parentElement) {
 		if (parentElement instanceof IFile) {
 			IFile file = (IFile) parentElement;
@@ -213,6 +225,7 @@ public class Hummingbird20DomainNavigatorContentProvider implements ICommonConte
 	/**
 	 * @generated
 	 */
+	@Override
 	public Object getParent(Object element) {
 		if (element instanceof Hummingbird20AbstractNavigatorItem) {
 			Hummingbird20AbstractNavigatorItem abstractNavigatorItem = (Hummingbird20AbstractNavigatorItem) element;
@@ -224,6 +237,7 @@ public class Hummingbird20DomainNavigatorContentProvider implements ICommonConte
 	/**
 	 * @generated
 	 */
+	@Override
 	public boolean hasChildren(Object element) {
 		return element instanceof IFile || getChildren(element).length > 0;
 	}

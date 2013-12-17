@@ -374,6 +374,7 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 	 * 
 	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
 	 */
+	@Override
 	public void createControl(Composite parent) {
 		container = new Composite(parent, SWT.NULL);
 		GridLayout gridLayout = new GridLayout(3, false);
@@ -496,6 +497,7 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 		 * org.eclipse.sphinx.platform.ui.fields.IFieldListener#dialogFieldChanged(org.eclipse.sphinx.platform.ui.fields
 		 * .IField)
 		 */
+		@Override
 		public void dialogFieldChanged(IField field) {
 			if (field == metaModelCombo) {
 				storeSelectionMetaModel((ComboButtonField) field);
@@ -513,6 +515,7 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 		/*
 		 * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
 		 */
+		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 			// do nothing
 		}
@@ -520,6 +523,7 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 		/*
 		 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 		 */
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			widgetDefaultSelected(e);
 		}

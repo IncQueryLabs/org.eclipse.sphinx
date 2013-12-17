@@ -217,6 +217,7 @@ public class LocalProxifyMechanismTest extends DefaultIntegrationTestCase {
 
 		// delete object
 		Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				EcoreUtil.remove(componentType1);
 			}
@@ -257,6 +258,7 @@ public class LocalProxifyMechanismTest extends DefaultIntegrationTestCase {
 
 		// delete object
 		Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				EcoreUtil.remove(componentType1);
 			}
@@ -307,6 +309,7 @@ public class LocalProxifyMechanismTest extends DefaultIntegrationTestCase {
 
 		// delete object
 		Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				EcoreUtil.remove(port1);
 			}
@@ -348,6 +351,7 @@ public class LocalProxifyMechanismTest extends DefaultIntegrationTestCase {
 
 		// delete object
 		Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				EcoreUtil.remove(port2);
 			}
@@ -368,6 +372,7 @@ public class LocalProxifyMechanismTest extends DefaultIntegrationTestCase {
 
 		// Create a new one
 		Runnable runnable2 = new Runnable() {
+			@Override
 			public void run() {
 				Port newPort = TypeModel20Factory.eINSTANCE.createPort();
 				newPort.setName("newPort");

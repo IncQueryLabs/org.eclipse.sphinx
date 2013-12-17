@@ -452,6 +452,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 */
 	private void syncrhonizedResetProjectDescriptions() throws Exception {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
 						"Problems encountered while resetting project descriptions.", new RuntimeException());
@@ -483,6 +484,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	 */
 	private void synchronizedResetProjectSettings() throws Exception {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
 						"Problems encountered while resetting project settings.", new RuntimeException());
@@ -572,6 +574,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	private void synchronizedImportMissingReferenceProjectsIntoWorkspace() throws Exception {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
 						"Problems encountered while importing missing reference projects into workspace.", new RuntimeException());
@@ -622,6 +625,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	private void synchronizedImportMissingReferenceFilesToWorkspace() throws Exception {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
 						"Problems encountered while importing missing reference projects into workspace.", new RuntimeException());
@@ -658,6 +662,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	private void extractReferenceWorkspaceArchive() throws CoreException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				ReferenceWorkspaceExtractor extractor = new ReferenceWorkspaceExtractor();
 				extractor.extract(getReferenceWorkspaceFileAccessor(), internalRefWks.getReferenceWorkspaceArchiveFileName(),
@@ -679,6 +684,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	private void synchronizedCreateProjectReferences() throws CoreException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
 						"Problems encountered while creating project references.", new RuntimeException());
@@ -1114,6 +1120,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		assertNotNull(file);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				file.delete(true, true, monitor);
 			}
@@ -1128,6 +1135,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		assertNotNull(target);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				file.move(target, true, new NullProgressMonitor());
 			}
@@ -1144,6 +1152,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 		final IPath newPath = file.getFullPath().removeLastSegments(1).append(newname);
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				file.move(newPath, true, new NullProgressMonitor());
 			}
@@ -1207,6 +1216,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		assertNotNull(folder);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				folder.delete(true, true, monitor);
 			}
@@ -1221,6 +1231,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		assertNotNull(target);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				folder.move(target, true, new NullProgressMonitor());
 			}
@@ -1259,6 +1270,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		assertNotNull(project);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				project.open(monitor);
 			}
@@ -1272,6 +1284,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		assertNotNull(projects);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				for (IProject project : projects) {
 					project.open(monitor);
@@ -1285,6 +1298,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	protected void synchronizedOpenAllProjects() throws Exception {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
 						"Problems encountered while opening projects.", new RuntimeException());
@@ -1310,6 +1324,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		assertNotNull(project);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				project.move(project.getFullPath().removeLastSegments(1).append(newName), true, monitor);
 			}
@@ -1323,6 +1338,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		assertNotNull(project);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				project.close(monitor);
 			}
@@ -1334,6 +1350,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	protected void synchronizedCloseAllProjects() throws Exception {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
 						"Problems encountered while closing projects.", new RuntimeException());
@@ -1360,6 +1377,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		assertNotNull(project);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				safeDeleteProject(project, monitor);
 			}
@@ -1373,6 +1391,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		assertNotNull(projects);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				MultiStatus errorStatus = new MultiStatus(Activator.getPlugin().getSymbolicName(), IStatus.ERROR,
 						"Problems encountered while closing projects.", new RuntimeException());
@@ -1423,6 +1442,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	protected void synchronizedDeleteWorkspace() throws CoreException {
 		final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				workspace.getRoot().delete(true, true, null);
 			}
@@ -1640,6 +1660,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	protected void synchronizedImportExternalResourceToWorkspace(final File externalResource, final IContainer targetContainer) throws Exception {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 					importExternalResourceToWorkspace(externalResource, targetContainer);

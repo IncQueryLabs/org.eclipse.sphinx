@@ -40,10 +40,12 @@ public class BasicAdvancedSectionDescriptor extends AbstractSectionDescriptor {
 		this.customAdapterFactory = customAdapterFactory;
 	}
 
+	@Override
 	public String getId() {
 		return id;
 	}
 
+	@Override
 	public String getTargetTab() {
 		return targetTab;
 	}
@@ -57,6 +59,7 @@ public class BasicAdvancedSectionDescriptor extends AbstractSectionDescriptor {
 		return ENABLES_FOR_ONE;
 	}
 
+	@Override
 	public ISection getSectionClass() {
 		return new BasicTransactionalAdvancedPropertySection() {
 			@Override

@@ -161,10 +161,12 @@ public class DefaultTestReferenceWorkspace extends AbstractReferenceWorkspace {
 		super(referenceProjectSubset);
 	}
 
+	@Override
 	public Plugin getReferenceWorkspacePlugin() {
 		return Activator.getPlugin();
 	}
 
+	@Override
 	public String getReferenceWorkspaceArchiveFileName() {
 		return DEFAULT_TEST_REFERENCE_WORKSPACE_ARCHIVE_FILE_NAME;
 	}

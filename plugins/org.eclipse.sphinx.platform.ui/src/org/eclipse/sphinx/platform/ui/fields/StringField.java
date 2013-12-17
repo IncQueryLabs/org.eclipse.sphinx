@@ -155,6 +155,7 @@ public class StringField extends BasicField implements IStringField {
 		if (fTextControl == null) {
 			assertCompositeNotNull(parent);
 			fModifyListener = new ModifyListener() {
+				@Override
 				public void modifyText(ModifyEvent e) {
 					doModifyText(e);
 				}
@@ -242,6 +243,7 @@ public class StringField extends BasicField implements IStringField {
 	/*
 	 * @see org.eclipse.sphinx.platform.ui.fields.IStringField#getText()
 	 */
+	@Override
 	public String getText() {
 		return fText;
 	}
@@ -261,6 +263,7 @@ public class StringField extends BasicField implements IStringField {
 	/*
 	 * @see org.eclipse.sphinx.platform.ui.fields.IStringField#setText(java.lang.String)
 	 */
+	@Override
 	public void setText(String text) {
 		fText = text;
 		if (isOkToUse(fTextControl)) {
@@ -293,6 +296,7 @@ public class StringField extends BasicField implements IStringField {
 	/**
 	 * Sets the text without triggering a dialog-changed event.
 	 */
+	@Override
 	public void setTextWithoutUpdate(String text) {
 		fText = text;
 		if (isOkToUse(fTextControl)) {
@@ -302,6 +306,7 @@ public class StringField extends BasicField implements IStringField {
 		}
 	}
 
+	@Override
 	public Control getTextControl() {
 		Control control = null;
 		if (isOkToUse(fTextControl)) {
@@ -310,6 +315,7 @@ public class StringField extends BasicField implements IStringField {
 		return control;
 	}
 
+	@Override
 	public void setEditable(boolean editable) {
 		if (editable != fEditable) {
 			fEditable = editable;

@@ -44,6 +44,7 @@ public class MetaModelDescriptorsEP extends AbstractMockExtensionPoint {
 		return ID;
 	}
 
+	@Override
 	public String getLabel(String locale) throws InvalidRegistryObjectException {
 		return null;
 	}

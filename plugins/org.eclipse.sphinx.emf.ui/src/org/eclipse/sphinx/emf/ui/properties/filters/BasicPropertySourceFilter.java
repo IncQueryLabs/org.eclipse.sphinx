@@ -36,6 +36,7 @@ public class BasicPropertySourceFilter implements IPropertySourceFilter {
 		this.propertyFilter = propertyFilter;
 	}
 
+	@Override
 	public void setPropertyFilter(PropertyFilter propertyFilter) {
 		this.propertyFilter = propertyFilter;
 	}
@@ -43,15 +44,17 @@ public class BasicPropertySourceFilter implements IPropertySourceFilter {
 	/*
 	 * @see org.eclipse.sphinx.emf.explorer.properties.filters.IPropertySourceFilter#isFilterForObject(java.lang.Object)
 	 */
+	@Override
 	public boolean isFilterForObject(Object object) {
 		return true;
 	}
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.explorer.properties.IPropertySourceFilter#getAcceptedPropertyDescriptors(org.eclipse.ui.views
-	 * .properties.IPropertySource)
+	 * org.eclipse.sphinx.emf.explorer.properties.IPropertySourceFilter#getAcceptedPropertyDescriptors(org.eclipse.ui
+	 * .views .properties.IPropertySource)
 	 */
+	@Override
 	public IPropertyDescriptor[] getAcceptedPropertyDescriptors(IPropertySource propertySource) {
 		List<IPropertyDescriptor> acceptedDescriptors = new ArrayList<IPropertyDescriptor>();
 		if (propertySource != null) {
@@ -68,6 +71,7 @@ public class BasicPropertySourceFilter implements IPropertySourceFilter {
 		return acceptedDescriptors.toArray(new IPropertyDescriptor[acceptedDescriptors.size()]);
 	}
 
+	@Override
 	public boolean accept(Object owner, IPropertyDescriptor propertyDescriptor) {
 		Assert.isTrue(propertyFilter != null);
 

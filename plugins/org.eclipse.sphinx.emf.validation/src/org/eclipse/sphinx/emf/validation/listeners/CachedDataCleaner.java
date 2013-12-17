@@ -25,6 +25,7 @@ import org.eclipse.sphinx.emf.validation.eobject.adapter.EObjectValidationDataCa
  */
 public class CachedDataCleaner implements IValidationListener {
 
+	@Override
 	public void validationOccurred(ValidationEvent event) {
 		EObjectValidationDataCacheAdapterFactory.initVAdapters();
 	}

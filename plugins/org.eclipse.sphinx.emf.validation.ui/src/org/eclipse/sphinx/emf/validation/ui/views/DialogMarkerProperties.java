@@ -410,7 +410,7 @@ public class DialogMarkerProperties extends TrayDialog {
 		GridData gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
 		label.setLayoutData(gd);
 
-		descriptionText = new Text(parent, (SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL));
+		descriptionText = new Text(parent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		GridData gridData = new GridData(GridData.FILL_BOTH);
 		gridData.widthHint = convertHorizontalDLUsToPixels(400);
 		gridData.heightHint = 80;
@@ -418,6 +418,7 @@ public class DialogMarkerProperties extends TrayDialog {
 		descriptionText.setBackground(new Color(null, 255, 255, 255));
 
 		descriptionText.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				markDirty();
 			}

@@ -38,6 +38,7 @@ public class CloseWorkbenchListener implements IWorkbenchListener {
 	/*
 	 * @see org.eclipse.ui.IWorkbenchListener#postShutdown(org.eclipse.ui.IWorkbench)
 	 */
+	@Override
 	public void postShutdown(IWorkbench workbench) {
 		// Nothing to do.
 	}
@@ -45,12 +46,15 @@ public class CloseWorkbenchListener implements IWorkbenchListener {
 	/*
 	 * @see org.eclipse.ui.IWorkbenchListener#preShutdown(org.eclipse.ui.IWorkbench, boolean)
 	 */
+	@Override
 	public boolean preShutdown(IWorkbench workbench, boolean forced) {
 
 		final boolean canceled[] = new boolean[1];
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+			@Override
 			public void run() {
 				SafeRunner.run(new SafeRunnable(Messages.error_failedToSaveModelsDuringWorkbenchClosing) {
+					@Override
 					public void run() {
 						IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 						if (window == null) {
@@ -91,6 +95,7 @@ public class CloseWorkbenchListener implements IWorkbenchListener {
 	 */
 	private class AllSaveablesFilter implements ISaveableFilter {
 
+		@Override
 		public boolean select(Saveable saveable, IWorkbenchPart[] containingParts) {
 			return saveable.isDirty();
 		}

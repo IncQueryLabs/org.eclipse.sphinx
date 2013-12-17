@@ -46,6 +46,7 @@ public class DelegatingTransactionalEditingDomainFactory implements IExtendedTra
 		return null;
 	}
 
+	@Override
 	public TransactionalEditingDomain createEditingDomain(Collection<IMetaModelDescriptor> metaModelDescriptors) {
 		ResourceSet resourceSet = createResourceSet();
 		if (resourceSet == null) {
@@ -55,6 +56,7 @@ public class DelegatingTransactionalEditingDomainFactory implements IExtendedTra
 		}
 	}
 
+	@Override
 	public TransactionalEditingDomain createEditingDomain(Collection<IMetaModelDescriptor> metaModelDescriptors, ResourceSet resourceSet) {
 		return factoryDelegate.createEditingDomain(metaModelDescriptors, resourceSet);
 	}

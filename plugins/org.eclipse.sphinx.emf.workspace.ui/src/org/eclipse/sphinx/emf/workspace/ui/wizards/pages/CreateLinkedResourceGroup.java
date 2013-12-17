@@ -193,6 +193,7 @@ public class CreateLinkedResourceGroup {
 		linkTargetField.setLayoutData(data);
 		linkTargetField.setEnabled(enabled);
 		linkTargetField.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				linkTarget = linkTargetField.getText();
 				resolveVariable();

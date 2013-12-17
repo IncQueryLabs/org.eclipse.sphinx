@@ -109,6 +109,7 @@ public class DialogProblemFilter extends DialogMarkerFilter {
 			// Prevent Esc and Return from closing the dialog when the combo is
 			// active.
 			combo.addTraverseListener(new TraverseListener() {
+				@Override
 				public void keyTraversed(TraverseEvent e) {
 					if (e.detail == SWT.TRAVERSE_ESCAPE || e.detail == SWT.TRAVERSE_RETURN) {
 						e.doit = false;
@@ -123,6 +124,7 @@ public class DialogProblemFilter extends DialogMarkerFilter {
 
 			description.setLayoutData(data);
 			description.addModifyListener(new ModifyListener() {
+				@Override
 				public void modifyText(ModifyEvent e) {
 					markDirty();
 				}
@@ -535,6 +537,7 @@ public class DialogProblemFilter extends DialogMarkerFilter {
 			 * (non-Javadoc)
 			 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
 			 */
+			@Override
 			public Object[] getElements(Object inputElement) {
 				return MarkerSupportRegistry.getInstance().getRegisteredFilters().toArray();
 			}
@@ -543,6 +546,7 @@ public class DialogProblemFilter extends DialogMarkerFilter {
 			 * (non-Javadoc)
 			 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 			 */
+			@Override
 			public void dispose() {
 				// Do nothing
 			}
@@ -552,6 +556,7 @@ public class DialogProblemFilter extends DialogMarkerFilter {
 			 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
 			 * java.lang.Object, java.lang.Object)
 			 */
+			@Override
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 				// Do nothing
 			}
@@ -575,6 +580,7 @@ public class DialogProblemFilter extends DialogMarkerFilter {
 			 * @seeorg.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.
 			 * SelectionChangedEvent)
 			 */
+			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 
 				ISelection selection = event.getSelection();

@@ -1,22 +1,27 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 BMW Car IT, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     BMW Car IT - Initial API and implementation
  *     See4sys - Added support for EPackage URIs
  *     BMW Car IT - Added robustness and support for singleton instantiation of descriptors
  *     See4sys - Added facilities for retrieving descriptor(s) from identifier, name, ordinal, object, etc.
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.saving;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 
 /**

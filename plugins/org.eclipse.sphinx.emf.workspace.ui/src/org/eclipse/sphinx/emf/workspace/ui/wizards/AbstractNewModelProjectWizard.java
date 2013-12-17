@@ -171,6 +171,7 @@ public abstract class AbstractNewModelProjectWizard<T extends IMetaModelDescript
 					Display display = ExtendedPlatformUI.getDisplay();
 					if (display != null) {
 						display.asyncExec(new Runnable() {
+							@Override
 							public void run() {
 								updatePerspective();
 

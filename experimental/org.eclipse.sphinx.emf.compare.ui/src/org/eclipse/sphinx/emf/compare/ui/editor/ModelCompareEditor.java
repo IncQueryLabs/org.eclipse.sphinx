@@ -144,6 +144,7 @@ public class ModelCompareEditor extends CompareEditor {
 	protected IOperationHistoryListener createAffectedObjectsListener() {
 		return new IOperationHistoryListener() {
 
+			@Override
 			public void historyNotification(final OperationHistoryEvent event) {
 				IUndoableOperation operation = event.getOperation();
 				if (event.getEventType() == OperationHistoryEvent.ABOUT_TO_EXECUTE) {
@@ -165,6 +166,7 @@ public class ModelCompareEditor extends CompareEditor {
 					IWorkbenchPartSite site = getSite();
 					if (site != null) {
 						site.getShell().getDisplay().syncExec(new Runnable() {
+							@Override
 							public void run() {
 								if (isActivePart()) {
 									Resource[] resources = getModelRootsResources();
@@ -189,6 +191,7 @@ public class ModelCompareEditor extends CompareEditor {
 
 			private void handleOperationFinished(final IUndoableOperation operation) {
 				getSite().getShell().getDisplay().asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						// Update editor part name
 						// FIXME Not needed for the moment.

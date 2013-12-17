@@ -83,6 +83,7 @@ public class OutletsGroup extends AbstractGroup {
 
 	private Listener listener = new Listener() {
 
+		@Override
 		public void handleEvent(Event event) {
 			if (event.widget == addButton) {
 				add();
@@ -161,12 +162,14 @@ public class OutletsGroup extends AbstractGroup {
 
 	protected void addTableViewerListener() {
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
 			public void doubleClick(DoubleClickEvent e) {
 				edit();
 			}
 		});
 
 		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(SelectionChangedEvent e) {
 				updateButtons();
 			}

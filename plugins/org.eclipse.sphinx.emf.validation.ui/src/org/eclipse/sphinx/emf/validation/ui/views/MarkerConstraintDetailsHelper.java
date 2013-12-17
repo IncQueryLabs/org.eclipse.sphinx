@@ -87,8 +87,8 @@ public class MarkerConstraintDetailsHelper {
 			messagePattern = CONSTRAINT_DESCRIPTION_PATTERN;
 		}
 
-		String text = NLS.bind(messagePattern, new Object[] { constraint.getId(), constraint.getEvaluationMode(), description,
-				constraint.getSeverity() });
+		String text = NLS.bind(messagePattern,
+				new Object[] { constraint.getId(), constraint.getEvaluationMode(), description, constraint.getSeverity() });
 
 		return parseStyles(text, styles);
 	}

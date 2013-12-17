@@ -81,6 +81,7 @@ public class XtendConfigurationPage extends AbstractWizardPage {
 		extensionGroup.createContent(parent, 3);
 		extensionGroup.addGroupListener(new IGroupListener() {
 
+			@Override
 			public void groupChanged(IField field) {
 				getWizard().getContainer().updateButtons();
 			}

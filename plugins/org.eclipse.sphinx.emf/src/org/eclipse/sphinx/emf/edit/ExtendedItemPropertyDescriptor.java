@@ -114,6 +114,7 @@ public class ExtendedItemPropertyDescriptor extends ItemPropertyDescriptor {
 	public IItemLabelProvider getLabelProvider(Object object) {
 		final IItemLabelProvider delegate = super.getLabelProvider(object);
 		return new IItemLabelProvider() {
+			@Override
 			public String getText(Object object) {
 				if (object instanceof EList<?>) {
 					StringBuffer text = new StringBuffer();
@@ -138,6 +139,7 @@ public class ExtendedItemPropertyDescriptor extends ItemPropertyDescriptor {
 				return delegate.getText(object);
 			}
 
+			@Override
 			public Object getImage(Object object) {
 				if (object instanceof EList<?>) {
 					for (Object item : (EList<?>) (EList<?>) object) {

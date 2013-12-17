@@ -17,6 +17,7 @@ package org.eclipse.sphinx.emf.internal.ecore.proxymanagement;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -101,6 +102,7 @@ public class ProxyHelperAdapterFactory extends AdapterFactoryImpl implements ITr
 	 * org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener#postCreateEditingDomain(org.
 	 * eclipse .emf.transaction.TransactionalEditingDomain)
 	 */
+	@Override
 	public void postCreateEditingDomain(TransactionalEditingDomain editingDomain) {
 		// Nothing to do
 	}
@@ -110,6 +112,7 @@ public class ProxyHelperAdapterFactory extends AdapterFactoryImpl implements ITr
 	 * org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener#preDisposeEditingDomain(org.
 	 * eclipse .emf.transaction.TransactionalEditingDomain)
 	 */
+	@Override
 	public void preDisposeEditingDomain(TransactionalEditingDomain editingDomain) {
 		Adapter adapter = EcoreUtil.getExistingAdapter(editingDomain.getResourceSet(), ProxyHelper.class);
 		if (adapter instanceof ProxyHelperAdapter) {

@@ -212,8 +212,8 @@ public abstract class AbstractDialog extends Dialog {
 		if (fMessage != null) {
 			fMessageLabel = new Label(composite, getMessageLabelStyle());
 			fMessageLabel.setText(fMessage);
-			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).grab(true, false).hint(
-					convertHorizontalDLUsToPixels(IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH), SWT.DEFAULT).applyTo(fMessageLabel);
+			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).grab(true, false)
+					.hint(convertHorizontalDLUsToPixels(IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH), SWT.DEFAULT).applyTo(fMessageLabel);
 		}
 		return composite;
 	}

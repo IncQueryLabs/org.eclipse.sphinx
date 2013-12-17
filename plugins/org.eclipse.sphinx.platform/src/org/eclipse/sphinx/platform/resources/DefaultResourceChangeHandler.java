@@ -23,66 +23,82 @@ import org.eclipse.core.resources.IProject;
 
 public class DefaultResourceChangeHandler implements IResourceChangeHandler {
 
+	@Override
 	public void handleProjectCreated(int eventType, IProject project) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleProjectOpened(int eventType, IProject project) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleProjectRenamed(int eventType, IProject oldProject, IProject newProject) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleProjectDescriptionChanged(int eventType, IProject project) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleProjectSettingsChanged(int eventType, IProject project, Collection<String> preferenceFileNames) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleProjectAboutToBeClosed(IProject project) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleProjectAboutToBeDeleted(IProject project) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleProjectClosed(int eventType, IProject project) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleProjectRemoved(int eventType, IProject project) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleFolderAdded(int eventType, IFolder folder) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleFolderMoved(int eventType, IFolder oldFolder, IFolder newFolder) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleFolderRemoved(int eventType, IFolder folder) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleFileAdded(int eventType, IFile file) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleFileChanged(int eventType, IFile file) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleFileMoved(int eventType, IFile oldFile, IFile newFile) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void handleFileRemoved(int eventType, IFile file) {
 		// Do nothing by default
 	}

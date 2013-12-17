@@ -58,6 +58,7 @@ public abstract class AbstractViewerFormSection extends AbstractFormSection impl
 		}
 	}
 
+	@Override
 	public StructuredViewer getViewer() {
 		return viewer;
 	}
@@ -74,6 +75,7 @@ public abstract class AbstractViewerFormSection extends AbstractFormSection impl
 			// Register viewer as selection provider
 			formPage.getTransactionalFormEditor().setSelectionProvider(viewer);
 			viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+				@Override
 				public void selectionChanged(SelectionChangedEvent event) {
 					managedForm.fireSelectionChanged(sectionPart, event.getSelection());
 					formPage.getTransactionalFormEditor().setSelectionProvider(viewer);

@@ -15,23 +15,19 @@
 package org.eclipse.sphinx.examples.hummingbird10.util;
 
 import org.eclipse.emf.common.util.URI;
-
 import org.eclipse.emf.ecore.resource.Resource;
-
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 
 /**
- * <!-- begin-user-doc -->
- * The <b>Resource Factory</b> associated with the package.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> The <b>Resource Factory</b> associated with the package. <!-- end-user-doc -->
+ * 
  * @see org.eclipse.sphinx.examples.hummingbird10.util.Hummingbird10ResourceImpl
  * @generated
  */
 public class Hummingbird10ResourceFactoryImpl extends ResourceFactoryImpl {
 	/**
-	 * Creates an instance of the resource factory.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Creates an instance of the resource factory. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public Hummingbird10ResourceFactoryImpl() {
@@ -39,9 +35,8 @@ public class Hummingbird10ResourceFactoryImpl extends ResourceFactoryImpl {
 	}
 
 	/**
-	 * Creates an instance of the resource.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Creates an instance of the resource. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -50,4 +45,4 @@ public class Hummingbird10ResourceFactoryImpl extends ResourceFactoryImpl {
 		return result;
 	}
 
-} //Hummingbird10ResourceFactoryImpl
+} // Hummingbird10ResourceFactoryImpl

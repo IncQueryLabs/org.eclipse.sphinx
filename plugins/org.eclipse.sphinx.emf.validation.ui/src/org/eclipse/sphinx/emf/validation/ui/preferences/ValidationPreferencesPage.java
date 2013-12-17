@@ -41,6 +41,7 @@ public class ValidationPreferencesPage extends FieldEditorPreferencePage impleme
 	/*
 	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
+	@Override
 	public void init(IWorkbench workbench) {
 
 	}
@@ -93,8 +94,8 @@ public class ValidationPreferencesPage extends FieldEditorPreferencePage impleme
 		GridData gridData = new GridData(SWT.FILL, SWT.TOP, true, false);
 		gridData.horizontalSpan = 2;
 
-		fMaxNumberOfErrorsField = new IntegerFieldEditor(IValidationPreferences.PREF_MAX_NUMBER_OF_ERRORS, Messages._UI_ProblemIndicationFieldLabelText,
-				problemIndicationGroup);
+		fMaxNumberOfErrorsField = new IntegerFieldEditor(IValidationPreferences.PREF_MAX_NUMBER_OF_ERRORS,
+				Messages._UI_ProblemIndicationFieldLabelText, problemIndicationGroup);
 		addField(fMaxNumberOfErrorsField);
 
 		problemIndicationGroup.setLayoutData(gridData);

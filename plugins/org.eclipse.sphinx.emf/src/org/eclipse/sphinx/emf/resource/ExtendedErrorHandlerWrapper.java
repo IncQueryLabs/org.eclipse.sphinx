@@ -14,6 +14,8 @@
  */
 package org.eclipse.sphinx.emf.resource;
 
+import javax.sql.rowset.spi.SyncProviderException;
+
 import org.apache.xerces.impl.msg.XMLMessageFormatter;
 import org.apache.xerces.impl.xs.XSMessageFormatter;
 import org.apache.xerces.util.ErrorHandlerWrapper;

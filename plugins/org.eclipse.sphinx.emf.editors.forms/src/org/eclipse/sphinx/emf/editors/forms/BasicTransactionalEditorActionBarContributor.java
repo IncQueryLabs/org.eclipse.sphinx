@@ -350,6 +350,7 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 		// Force an update because Eclipse hides empty menus now.
 		//
 		submenuManager.addMenuListener(new IMenuListener() {
+			@Override
 			public void menuAboutToShow(IMenuManager menuManager) {
 				menuManager.updateAll(true);
 			}
@@ -391,6 +392,7 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 	 * {@link org.eclipse.jface.viewers.SelectionChangedEvent}s by querying for the children and siblings that can be
 	 * added to the selected object and updating the menus accordingly.
 	 */
+	@Override
 	public void selectionChanged(SelectionChangedEvent event) {
 		ISelection selection = event.getSelection();
 		IStructuredSelection structuredSelection = SelectionUtil.getStructuredSelection(selection);
@@ -582,6 +584,7 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 				actions.add(createCreateChildAction(activeEditor, selection, descriptor));
 			}
 			Collections.sort(actions, new Comparator<IAction>() {
+				@Override
 				public int compare(IAction a1, IAction a2) {
 					return CommonPlugin.INSTANCE.getComparator().compare(a1.getText(), a2.getText());
 				}
@@ -601,6 +604,7 @@ public class BasicTransactionalEditorActionBarContributor extends EditingDomainA
 				actions.add(createCreateSiblingAction(activeEditor, selection, descriptor));
 			}
 			Collections.sort(actions, new Comparator<IAction>() {
+				@Override
 				public int compare(IAction a1, IAction a2) {
 					return CommonPlugin.INSTANCE.getComparator().compare(a1.getText(), a2.getText());
 				}

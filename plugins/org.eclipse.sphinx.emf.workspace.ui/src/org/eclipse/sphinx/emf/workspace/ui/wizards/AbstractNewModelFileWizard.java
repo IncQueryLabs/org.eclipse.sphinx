@@ -116,6 +116,7 @@ public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor>
 					Display display = ExtendedPlatformUI.getDisplay();
 					if (display != null) {
 						display.asyncExec(new Runnable() {
+							@Override
 							public void run() {
 								// Reveal and select new model file in current view
 								selectAndReveal(newFile);

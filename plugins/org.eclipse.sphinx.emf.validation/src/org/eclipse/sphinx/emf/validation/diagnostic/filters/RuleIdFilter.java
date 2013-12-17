@@ -34,6 +34,7 @@ public class RuleIdFilter implements IConstraintFilter {
 		this.ruleIds = ruleIds;
 	}
 
+	@Override
 	public boolean accept(IConstraintDescriptor constraint, EObject target) {
 		if (ruleIds == null) {
 			return true;

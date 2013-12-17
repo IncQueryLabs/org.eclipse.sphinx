@@ -30,6 +30,7 @@ public class LoadResourceAction extends AbstractHandler {
 	/**
 	 * @generated
 	 */
+	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IEditorPart diagramEditor = HandlerUtil.getActiveEditorChecked(event);
 		Shell shell = diagramEditor.getEditorSite().getShell();

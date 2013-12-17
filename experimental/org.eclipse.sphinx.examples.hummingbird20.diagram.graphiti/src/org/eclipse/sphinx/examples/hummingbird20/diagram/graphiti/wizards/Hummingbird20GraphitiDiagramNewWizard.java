@@ -43,7 +43,7 @@ public class Hummingbird20GraphitiDiagramNewWizard extends AbstractGraphitiDiagr
 	protected void setEditPluginActivator() {
 		editPlugin = org.eclipse.sphinx.examples.hummingbird20.edit.Activator.INSTANCE;
 	}
-	
+
 	@Override
 	protected void initMetamodelPackage() {
 		metamodelPackage = TypeModel20Package.eINSTANCE;
@@ -59,6 +59,7 @@ public class Hummingbird20GraphitiDiagramNewWizard extends AbstractGraphitiDiagr
 		graphitiDiagramType = Hummingbird20PlatformDiagramTypeProvider.DIAGRAM_TYPE_TYPE;
 	}
 
+	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		this.selection = selection;
 		// Create the first page

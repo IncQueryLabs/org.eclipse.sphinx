@@ -172,6 +172,7 @@ public class ExtendedDiagramEditingDomainFactory extends DiagramEditingDomainFac
 		return OperationHistoryFactory.getOperationHistory();
 	}
 
+	@Override
 	public TransactionalEditingDomain createEditingDomain(Collection<IMetaModelDescriptor> metaModelDescriptors) {
 		return createEditingDomain(metaModelDescriptors, createResourceSet(), createOperationHistory());
 	}
@@ -180,6 +181,7 @@ public class ExtendedDiagramEditingDomainFactory extends DiagramEditingDomainFac
 		return createEditingDomain(metaModelDescriptors, createResourceSet(), history);
 	}
 
+	@Override
 	public TransactionalEditingDomain createEditingDomain(Collection<IMetaModelDescriptor> metaModelDescriptors, ResourceSet resourceSet) {
 		return createEditingDomain(metaModelDescriptors, resourceSet, createOperationHistory());
 	}

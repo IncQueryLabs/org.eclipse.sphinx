@@ -227,6 +227,7 @@ public class ConnectionLabelEditPart extends LabelEditPart implements ITextAware
 	/**
 	 * @generated
 	 */
+	@Override
 	public void setLabelText(String text) {
 		setLabelTextHelper(getFigure(), text);
 		Object pdEditPolicy = getEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE);
@@ -242,6 +243,7 @@ public class ConnectionLabelEditPart extends LabelEditPart implements ITextAware
 	/**
 	 * @generated
 	 */
+	@Override
 	public String getEditText() {
 		if (getParserElement() == null || getParser() == null) {
 			return ""; //$NON-NLS-1$
@@ -259,9 +261,11 @@ public class ConnectionLabelEditPart extends LabelEditPart implements ITextAware
 	/**
 	 * @generated
 	 */
+	@Override
 	public ICellEditorValidator getEditTextValidator() {
 		return new ICellEditorValidator() {
 
+			@Override
 			public String isValid(final Object value) {
 				if (value instanceof String) {
 					final EObject element = getParserElement();
@@ -270,6 +274,7 @@ public class ConnectionLabelEditPart extends LabelEditPart implements ITextAware
 						IParserEditStatus valid = (IParserEditStatus) getEditingDomain().runExclusive(
 								new RunnableWithResult.Impl<IParserEditStatus>() {
 
+									@Override
 									public void run() {
 										setResult(parser.isValidEditString(new EObjectAdapter(element), (String) value));
 									}
@@ -289,6 +294,7 @@ public class ConnectionLabelEditPart extends LabelEditPart implements ITextAware
 	/**
 	 * @generated
 	 */
+	@Override
 	public IContentAssistProcessor getCompletionProcessor() {
 		if (getParserElement() == null || getParser() == null) {
 			return null;
@@ -299,6 +305,7 @@ public class ConnectionLabelEditPart extends LabelEditPart implements ITextAware
 	/**
 	 * @generated
 	 */
+	@Override
 	public ParserOptions getParserOptions() {
 		return ParserOptions.NONE;
 	}
@@ -306,6 +313,7 @@ public class ConnectionLabelEditPart extends LabelEditPart implements ITextAware
 	/**
 	 * @generated
 	 */
+	@Override
 	public IParser getParser() {
 		if (parser == null) {
 			parser = Hummingbird20ParserProvider.getParser(Hummingbird20ElementTypes.Connection_4001, getParserElement(),
@@ -369,6 +377,7 @@ public class ConnectionLabelEditPart extends LabelEditPart implements ITextAware
 		try {
 			getEditingDomain().runExclusive(new Runnable() {
 
+				@Override
 				public void run() {
 					if (isActive() && isEditable()) {
 						if (theRequest.getExtendedData().get(RequestConstants.REQ_DIRECTEDIT_EXTENDEDDATA_INITIAL_CHAR) instanceof Character) {

@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.instancemodel.edit;
 
-
 import java.util.Collection;
 import java.util.List;
 
@@ -37,23 +36,16 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Fa
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
 
 /**
- * This is the item provider adapter for a {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component} object.
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
+ * This is the item provider adapter for a {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component}
+ * object. <!-- begin-user-doc --> <!-- end-user-doc -->
+ * 
  * @generated
  */
-public class ComponentItemProvider
-	extends IdentifiableItemProvider
-	implements
-		IEditingDomainItemProvider,
-		IStructuredItemContentProvider,
-		ITreeItemContentProvider,
-		IItemLabelProvider,
-		IItemPropertySource {
+public class ComponentItemProvider extends IdentifiableItemProvider implements IEditingDomainItemProvider, IStructuredItemContentProvider,
+		ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
 	/**
-	 * This constructs an instance from a factory and a notifier.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This constructs an instance from a factory and a notifier. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public ComponentItemProvider(AdapterFactory adapterFactory) {
@@ -61,9 +53,8 @@ public class ComponentItemProvider
 	}
 
 	/**
-	 * This returns the property descriptors for the adapted class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This returns the property descriptors for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -78,55 +69,36 @@ public class ComponentItemProvider
 	}
 
 	/**
-	 * This adds a property descriptor for the Type feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This adds a property descriptor for the Type feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected void addTypePropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_Component_type_feature"), //$NON-NLS-1$
-				 getString("_UI_PropertyDescriptor_description", "_UI_Component_type_feature", "_UI_Component_type"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				 InstanceModel20Package.Literals.COMPONENT__TYPE,
-				 true,
-				 false,
-				 true,
-				 null,
-				 null,
-				 null));
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+				getResourceLocator(), getString("_UI_Component_type_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_Component_type_feature", "_UI_Component_type"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				InstanceModel20Package.Literals.COMPONENT__TYPE, true, false, true, null, null, null));
 	}
 
 	/**
-	 * This adds a property descriptor for the Incoming Connections feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This adds a property descriptor for the Incoming Connections feature. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @generated
 	 */
 	protected void addIncomingConnectionsPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_Component_incomingConnections_feature"), //$NON-NLS-1$
-				 getString("_UI_PropertyDescriptor_description", "_UI_Component_incomingConnections_feature", "_UI_Component_type"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				 InstanceModel20Package.Literals.COMPONENT__INCOMING_CONNECTIONS,
-				 true,
-				 false,
-				 true,
-				 null,
-				 null,
-				 null));
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+				getResourceLocator(), getString("_UI_Component_incomingConnections_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_Component_incomingConnections_feature", "_UI_Component_type"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				InstanceModel20Package.Literals.COMPONENT__INCOMING_CONNECTIONS, true, false, true, null, null, null));
 	}
 
 	/**
 	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
 	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
-	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -141,8 +113,8 @@ public class ComponentItemProvider
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -154,9 +126,8 @@ public class ComponentItemProvider
 	}
 
 	/**
-	 * This returns Component.gif.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This returns Component.gif. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -165,24 +136,22 @@ public class ComponentItemProvider
 	}
 
 	/**
-	 * This returns the label text for the adapted class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This returns the label text for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public String getText(Object object) {
-		String label = ((Component)object).getName();
-		return label == null || label.length() == 0 ?
-			getString("_UI_Component_type") : //$NON-NLS-1$
-			getString("_UI_Component_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
+		String label = ((Component) object).getName();
+		return label == null || label.length() == 0 ? getString("_UI_Component_type") : //$NON-NLS-1$
+				getString("_UI_Component_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
-	 * This handles model notifications by calling {@link #updateChildren} to update any cached
-	 * children and by creating a viewer notification, which it passes to {@link #fireNotifyChanged}.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This handles model notifications by calling {@link #updateChildren} to update any cached children and by creating
+	 * a viewer notification, which it passes to {@link #fireNotifyChanged}. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -190,46 +159,38 @@ public class ComponentItemProvider
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(Component.class)) {
-			case InstanceModel20Package.COMPONENT__OUTGOING_CONNECTIONS:
-			case InstanceModel20Package.COMPONENT__PARAMETER_VALUES:
-			case InstanceModel20Package.COMPONENT__PARAMETER_EXPRESSIONS:
-				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
-				return;
+		case InstanceModel20Package.COMPONENT__OUTGOING_CONNECTIONS:
+		case InstanceModel20Package.COMPONENT__PARAMETER_VALUES:
+		case InstanceModel20Package.COMPONENT__PARAMETER_EXPRESSIONS:
+			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
+			return;
 		}
 		super.notifyChanged(notification);
 	}
 
 	/**
-	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children
-	 * that can be created under this object.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children that can be created
+	 * under this object. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
 
-		newChildDescriptors.add
-			(createChildParameter
-				(InstanceModel20Package.Literals.COMPONENT__OUTGOING_CONNECTIONS,
-				 InstanceModel20Factory.eINSTANCE.createConnection()));
+		newChildDescriptors.add(createChildParameter(InstanceModel20Package.Literals.COMPONENT__OUTGOING_CONNECTIONS,
+				InstanceModel20Factory.eINSTANCE.createConnection()));
 
-		newChildDescriptors.add
-			(createChildParameter
-				(InstanceModel20Package.Literals.COMPONENT__PARAMETER_VALUES,
-				 InstanceModel20Factory.eINSTANCE.createParameterValue()));
+		newChildDescriptors.add(createChildParameter(InstanceModel20Package.Literals.COMPONENT__PARAMETER_VALUES,
+				InstanceModel20Factory.eINSTANCE.createParameterValue()));
 
-		newChildDescriptors.add
-			(createChildParameter
-				(InstanceModel20Package.Literals.COMPONENT__PARAMETER_EXPRESSIONS,
-				 InstanceModel20Factory.eINSTANCE.createParameterExpresssion()));
+		newChildDescriptors.add(createChildParameter(InstanceModel20Package.Literals.COMPONENT__PARAMETER_EXPRESSIONS,
+				InstanceModel20Factory.eINSTANCE.createParameterExpresssion()));
 	}
 
 	/**
-	 * Return the resource locator for this item provider's resources.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Return the resource locator for this item provider's resources. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override

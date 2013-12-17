@@ -44,6 +44,7 @@ public class BasicEditorActionProvider extends BasicActionProvider {
 	protected BasicOpenInEditorAction openInEditorAction;
 
 	protected IDoubleClickListener doubleClickListener = new IDoubleClickListener() {
+		@Override
 		public void doubleClick(DoubleClickEvent evt) {
 			ISelection selection = evt.getSelection();
 			if (selection instanceof IStructuredSelection) {

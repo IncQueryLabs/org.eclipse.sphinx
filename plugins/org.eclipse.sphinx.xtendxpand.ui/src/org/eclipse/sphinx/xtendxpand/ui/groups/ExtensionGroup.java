@@ -126,6 +126,7 @@ public class ExtensionGroup extends AbstractGroup {
 		// Extension file field
 		extensionFileField = new StringButtonField(new IButtonAdapter() {
 
+			@Override
 			public void changeControlPressed(IField field) {
 				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(parent.getShell(), new WorkbenchLabelProvider(),
 						new WorkbenchContentProvider());
@@ -152,6 +153,7 @@ public class ExtensionGroup extends AbstractGroup {
 				});
 				dialog.setValidator(new ISelectionStatusValidator() {
 
+					@Override
 					public IStatus validate(Object[] selection) {
 						int nSelected = selection.length;
 						String pluginId = Activator.getPlugin().getSymbolicName();
@@ -178,6 +180,7 @@ public class ExtensionGroup extends AbstractGroup {
 		extensionFileField.fillIntoGrid(parent, numColumns);
 		extensionFileField.addFieldListener(new IFieldListener() {
 
+			@Override
 			public void dialogFieldChanged(IField field) {
 				updateFunctionFieldItems(getFile(extensionFileField.getText()));
 				updateExtensionNameField();
@@ -191,6 +194,7 @@ public class ExtensionGroup extends AbstractGroup {
 		functionField.fillIntoGrid(parent, numColumns);
 		functionField.addFieldListener(new IFieldListener() {
 
+			@Override
 			public void dialogFieldChanged(IField field) {
 				updateExtensionNameField();
 				notifyGroupChanged(extensionFileField);

@@ -32,6 +32,7 @@ import org.eclipse.ui.IMemento;
 @SuppressWarnings("restriction")
 public class BasicDiagramEditorFactory implements IElementFactory {
 
+	@Override
 	public IAdaptable createElement(IMemento memento) {
 		// Get diagram URI
 		final String diagramUriString = memento.getString(DiagramEditorInput.KEY_URI);

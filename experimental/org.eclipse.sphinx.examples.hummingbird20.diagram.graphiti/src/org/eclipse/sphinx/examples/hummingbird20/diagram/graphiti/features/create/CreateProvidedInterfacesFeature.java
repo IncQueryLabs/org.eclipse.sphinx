@@ -42,6 +42,7 @@ public class CreateProvidedInterfacesFeature extends AbstractCreateConnectionFea
 		return Hummingbird20PlatformDiagramImageProvider.IMAGE_PROVIDED_INTERFACES;
 	}
 
+	@Override
 	public boolean canCreate(ICreateConnectionContext context) {
 		Object source = null, target = null;
 		Anchor sourceAnchor = context.getSourceAnchor();
@@ -60,6 +61,7 @@ public class CreateProvidedInterfacesFeature extends AbstractCreateConnectionFea
 		return false;
 	}
 
+	@Override
 	public Connection create(ICreateConnectionContext context) {
 		Connection newConnection = null;
 		// get ComponentType which should be connected
@@ -83,6 +85,7 @@ public class CreateProvidedInterfacesFeature extends AbstractCreateConnectionFea
 		return newConnection;
 	}
 
+	@Override
 	public boolean canStartConnection(ICreateConnectionContext context) {
 		// return true if start anchor belongs to a ComponentType
 		if (context.getSourceAnchor() != null && context.getSourceAnchor().getLink() == null && context.getSourceAnchor().eContainer() != null) {

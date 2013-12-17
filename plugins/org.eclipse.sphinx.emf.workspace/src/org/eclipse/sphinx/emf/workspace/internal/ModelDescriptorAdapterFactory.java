@@ -23,6 +23,7 @@ public class ModelDescriptorAdapterFactory implements IAdapterFactory {
 
 	IModelSaveIndicator saveIndicator = new ModelSaveIndicator();
 
+	@Override
 	public Object getAdapter(Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
 		if (IModelSaveIndicator.class.equals(adapterType) && adaptableObject instanceof IModelDescriptor) {
 			return saveIndicator;
@@ -30,6 +31,7 @@ public class ModelDescriptorAdapterFactory implements IAdapterFactory {
 		return null;
 	}
 
+	@Override
 	@SuppressWarnings("rawtypes")
 	public Class[] getAdapterList() {
 		return new Class<?>[] { IModelSaveIndicator.class };

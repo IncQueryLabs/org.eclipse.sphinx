@@ -146,6 +146,7 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 
 	protected XViewerFactory createXViewerFactory() {
 		XViewerFactory xViewerFactory = new XViewerFactory(exampleValue.eClass().getName()) {
+			@Override
 			public boolean isAdmin() {
 				return true;
 			}

@@ -92,14 +92,17 @@ public abstract class AbstractPreferenceAndPropertyPage extends FieldEditorPrefe
 		data = null;
 	}
 
+	@Override
 	public void init(IWorkbench workbench) {
 
 	}
 
+	@Override
 	public IAdaptable getElement() {
 		return project;
 	}
 
+	@Override
 	public void setElement(IAdaptable element) {
 		project = (IProject) element.getAdapter(IResource.class);
 	}
@@ -155,6 +158,7 @@ public abstract class AbstractPreferenceAndPropertyPage extends FieldEditorPrefe
 				composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 				IFieldListener listener = new IFieldListener() {
+					@Override
 					public void dialogFieldChanged(IField field) {
 						boolean enabled = ((SelectionButtonField) field).isSelected();
 						enableProjectSpecificSettings(enabled);
@@ -284,10 +288,12 @@ public abstract class AbstractPreferenceAndPropertyPage extends FieldEditorPrefe
 		link.setFont(composite.getFont());
 		link.setText("<A>" + text + "</A>"); //$NON-NLS-1$//$NON-NLS-2$
 		link.addSelectionListener(new SelectionListener() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				doLinkActivated((Link) e.widget);
 			}
 
+			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				doLinkActivated((Link) e.widget);
 			}

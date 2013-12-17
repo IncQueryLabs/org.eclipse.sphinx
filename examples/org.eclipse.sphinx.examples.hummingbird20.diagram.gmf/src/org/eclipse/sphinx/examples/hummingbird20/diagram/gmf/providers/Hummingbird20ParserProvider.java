@@ -95,6 +95,7 @@ public class Hummingbird20ParserProvider extends AbstractProvider implements IPa
 	/**
 	 * @generated
 	 */
+	@Override
 	public IParser getParser(IAdaptable hint) {
 		String vid = (String) hint.getAdapter(String.class);
 		if (vid != null) {
@@ -110,6 +111,7 @@ public class Hummingbird20ParserProvider extends AbstractProvider implements IPa
 	/**
 	 * @generated
 	 */
+	@Override
 	public boolean provides(IOperation operation) {
 		if (operation instanceof GetParserOperation) {
 			IAdaptable hint = ((GetParserOperation) operation).getHint();

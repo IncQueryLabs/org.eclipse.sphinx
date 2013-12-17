@@ -41,6 +41,7 @@ public abstract class AbstractResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#exists()
 	 */
+	@Override
 	public boolean exists() {
 		return getRoot() != null && getRoot().isAccessible();
 	}
@@ -51,6 +52,7 @@ public abstract class AbstractResourceScope implements IResourceScope {
 	// TODO Add filtering process to only return files matching the scope
 	// see org.eclipse.sphinx.platform.util.ExtendedPlatform.collectAllFiles(IProject, IResource[], List<IFile>,
 	// Collection<IProject>, boolean) for details
+	@Override
 	public Collection<IFile> getPersistedFiles(boolean includeReferencedScopes) {
 		HashSet<IFile> files = new HashSet<IFile>();
 		files.addAll(getFilesUnderRoot(getRoot()));
@@ -82,9 +84,11 @@ public abstract class AbstractResourceScope implements IResourceScope {
 	 * org.eclipse.sphinx.emf.model.IResourceScope#getLoadedResources(org.eclipse.emf.transaction.TransactionalEditingDomain
 	 * , boolean)
 	 */
+	@Override
 	public Collection<Resource> getLoadedResources(final TransactionalEditingDomain editingDomain, final boolean includeReferencedScopes) {
 		try {
 			return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<List<Resource>>() {
+				@Override
 				public void run() {
 					ResourceSet resourceSet = editingDomain.getResourceSet();
 					if (resourceSet instanceof ScopingResourceSet) {
@@ -103,6 +107,7 @@ public abstract class AbstractResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#isShared(org.eclipse.core.resources.IFile)
 	 */
+	@Override
 	public boolean isShared(IFile file) {
 		return false;
 	}
@@ -110,6 +115,7 @@ public abstract class AbstractResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#isShared(org.eclipse.emf.ecore.resource.Resource)
 	 */
+	@Override
 	public boolean isShared(Resource resource) {
 		if (resource != null) {
 			return isShared(resource.getURI());
@@ -120,6 +126,7 @@ public abstract class AbstractResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#isShared(org.eclipse.emf.common.util.URI)
 	 */
+	@Override
 	public boolean isShared(URI uri) {
 		if (uri != null) {
 			// Consider URIs referencing resources located in plug-ins as shared by default

@@ -48,6 +48,7 @@ public class ConnectionLabelExpressionLabelParser implements IParser {
 	/**
 	 * @generated
 	 */
+	@Override
 	public String getEditString(IAdaptable element, int flags) {
 		return getPrintString(element, flags);
 	}
@@ -55,6 +56,7 @@ public class ConnectionLabelExpressionLabelParser implements IParser {
 	/**
 	 * @generated
 	 */
+	@Override
 	public IParserEditStatus isValidEditString(IAdaptable element, String editString) {
 		return ParserEditStatus.EDITABLE_STATUS;
 	}
@@ -62,6 +64,7 @@ public class ConnectionLabelExpressionLabelParser implements IParser {
 	/**
 	 * @generated
 	 */
+	@Override
 	public ICommand getParseCommand(IAdaptable element, final String newString, int flags) {
 		final EObject target = (EObject) element.getAdapter(EObject.class);
 		if (!validateValues(target, newString)) {
@@ -83,6 +86,7 @@ public class ConnectionLabelExpressionLabelParser implements IParser {
 	/**
 	 * @generated
 	 */
+	@Override
 	public String getPrintString(IAdaptable element, int flags) {
 		return evaluatePrintExpression((EObject) element.getAdapter(EObject.class));
 	}
@@ -90,6 +94,7 @@ public class ConnectionLabelExpressionLabelParser implements IParser {
 	/**
 	 * @generated
 	 */
+	@Override
 	public boolean isAffectingEvent(Object event, int flags) {
 		// XXX Any event is recognized as important, unless there's a way to extract this information from expression
 		// itself.
@@ -100,6 +105,7 @@ public class ConnectionLabelExpressionLabelParser implements IParser {
 	/**
 	 * @generated
 	 */
+	@Override
 	public IContentAssistProcessor getCompletionProcessor(IAdaptable element) {
 		return null;
 	}

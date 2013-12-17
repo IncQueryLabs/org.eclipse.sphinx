@@ -29,6 +29,7 @@ public class Hummingbird20IconProvider extends AbstractProvider implements IIcon
 	/**
 	 * @generated
 	 */
+	@Override
 	public Image getIcon(IAdaptable hint, int flags) {
 		return Hummingbird20ElementTypes.getImage(hint);
 	}
@@ -36,6 +37,7 @@ public class Hummingbird20IconProvider extends AbstractProvider implements IIcon
 	/**
 	 * @generated
 	 */
+	@Override
 	public boolean provides(IOperation operation) {
 		if (operation instanceof GetIconOperation) {
 			return ((GetIconOperation) operation).execute(this) != null;

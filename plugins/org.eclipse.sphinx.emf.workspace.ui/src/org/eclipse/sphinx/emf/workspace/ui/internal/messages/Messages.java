@@ -98,7 +98,7 @@ public class Messages extends NLS {
 	public static String default_requiredProjectType;
 
 	public static String job_creatingNewModelFile_name;
-	
+
 	public static String default_metamodelName;
 	public static String default_metamodelName_cap;
 

@@ -74,6 +74,7 @@ final public class EcorePerformanceStats extends AbstractPerformanceStats<EcoreP
 		/*
 		 * @see org.eclipse.sphinx.platform.stats.IEventTypeEnumerator#getName()
 		 */
+		@Override
 		public String getName() {
 			return name;
 		}
@@ -104,6 +105,7 @@ final public class EcorePerformanceStats extends AbstractPerformanceStats<EcoreP
 		/*
 		 * @see org.eclipse.sphinx.platform.stats.IEventTypeEnumerator#getName()
 		 */
+		@Override
 		public String getName() {
 			return name;
 		}

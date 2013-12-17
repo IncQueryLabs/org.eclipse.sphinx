@@ -39,6 +39,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#exists()
 	 */
+	@Override
 	public boolean exists() {
 		return true;
 	}
@@ -46,6 +47,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getRoot()
 	 */
+	@Override
 	public IResource getRoot() {
 		return null;
 	}
@@ -53,6 +55,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getReferencedRoots()
 	 */
+	@Override
 	public Collection<IResource> getReferencedRoots() {
 		return Collections.emptyList();
 	}
@@ -60,6 +63,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getReferencingRoots()
 	 */
+	@Override
 	public Collection<IResource> getReferencingRoots() {
 		return Collections.emptyList();
 	}
@@ -67,6 +71,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getPersistedFiles(boolean)
 	 */
+	@Override
 	public Collection<IFile> getPersistedFiles(boolean includeReferencedScopes) {
 		return Collections.emptyList();
 	}
@@ -75,6 +80,7 @@ public class DefaultResourceScope implements IResourceScope {
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getLoadedResources(org.eclipse.emf.transaction.
 	 * TransactionalEditingDomain, boolean)
 	 */
+	@Override
 	public Collection<Resource> getLoadedResources(TransactionalEditingDomain editingDomain, boolean includeReferencedScopes) {
 		return Collections.emptyList();
 	}
@@ -82,6 +88,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#belongsTo(org.eclipse.core.resources.IFile, boolean)
 	 */
+	@Override
 	public boolean belongsTo(IFile file, boolean includeReferencedScopes) {
 		return false;
 	}
@@ -89,6 +96,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#belongsTo(org.eclipse.emf.ecore.resource.Resource, boolean)
 	 */
+	@Override
 	public boolean belongsTo(Resource resource, boolean includeReferencedScopes) {
 		return false;
 	}
@@ -96,6 +104,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#belongsTo(org.eclipse.emf.common.util.URI, boolean)
 	 */
+	@Override
 	public boolean belongsTo(URI uri, boolean includeReferencedScopes) {
 		return false;
 	}
@@ -103,6 +112,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#didBelongTo(org.eclipse.core.resources.IFile, boolean)
 	 */
+	@Override
 	public boolean didBelongTo(IFile file, boolean includeReferencedScopes) {
 		return false;
 	}
@@ -110,6 +120,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#didBelongTo(org.eclipse.emf.ecore.resource.Resource, boolean)
 	 */
+	@Override
 	public boolean didBelongTo(Resource resource, boolean includeReferencedScopes) {
 		return false;
 	}
@@ -117,6 +128,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#didBelongTo(org.eclipse.emf.common.util.URI, boolean)
 	 */
+	@Override
 	public boolean didBelongTo(URI uri, boolean includeReferencedScopes) {
 		return false;
 	}
@@ -124,6 +136,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#isShared(org.eclipse.core.resources.IFile)
 	 */
+	@Override
 	public boolean isShared(IFile file) {
 		return false;
 	}
@@ -131,6 +144,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#isShared(org.eclipse.emf.ecore.resource.Resource)
 	 */
+	@Override
 	public boolean isShared(Resource resource) {
 		return false;
 	}
@@ -138,6 +152,7 @@ public class DefaultResourceScope implements IResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#isShared(org.eclipse.emf.common.util.URI)
 	 */
+	@Override
 	public boolean isShared(URI uri) {
 		return false;
 	}

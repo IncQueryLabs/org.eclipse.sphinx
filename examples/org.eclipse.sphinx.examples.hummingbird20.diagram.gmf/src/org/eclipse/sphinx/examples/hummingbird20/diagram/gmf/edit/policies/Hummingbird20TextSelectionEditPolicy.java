@@ -216,6 +216,7 @@ public class Hummingbird20TextSelectionEditPolicy extends SelectionEditPolicy {
 	private FigureListener getHostPositionListener() {
 		if (hostPositionListener == null) {
 			hostPositionListener = new FigureListener() {
+				@Override
 				public void figureMoved(IFigure source) {
 					refreshFeedback();
 				}

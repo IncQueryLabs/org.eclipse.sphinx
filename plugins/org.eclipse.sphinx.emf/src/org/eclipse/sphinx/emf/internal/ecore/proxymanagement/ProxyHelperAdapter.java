@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -40,10 +41,12 @@ public class ProxyHelperAdapter extends AdapterImpl implements ProxyHelper {
 	private EcoreIndex fLookupResolver = new EcoreIndex();
 	private ModelIndex fBlackList = new ModelIndex();
 
+	@Override
 	public boolean isIgnoreFragmentBasedProxies() {
 		return fIgnoreFragmentBasedProxies;
 	}
 
+	@Override
 	public void setIgnoreFragmentBasedProxies(boolean ignore) {
 		fIgnoreFragmentBasedProxies = ignore;
 
@@ -54,10 +57,12 @@ public class ProxyHelperAdapter extends AdapterImpl implements ProxyHelper {
 		}
 	}
 
+	@Override
 	public EcoreIndex getLookupResolver() {
 		return fLookupResolver;
 	}
 
+	@Override
 	public ModelIndex getBlackList() {
 		return fBlackList;
 	}

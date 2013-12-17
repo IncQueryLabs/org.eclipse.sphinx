@@ -21,6 +21,7 @@ public class Hummingbird20MMDescriptorItemLabelProvider implements IItemLabelPro
 
 	private static String IMG_OVR_HUMMINGBIRD20 = "full/ovr16/hummingbird20_ovr"; //$NON-NLS-1$
 
+	@Override
 	public Object getImage(Object object) {
 		if (object instanceof Hummingbird20MMDescriptor) {
 			return Activator.INSTANCE.getImage(IMG_OVR_HUMMINGBIRD20);
@@ -28,6 +29,7 @@ public class Hummingbird20MMDescriptorItemLabelProvider implements IItemLabelPro
 		return null;
 	}
 
+	@Override
 	public String getText(Object object) {
 		if (object instanceof Hummingbird20MMDescriptor) {
 			return ((Hummingbird20MMDescriptor) object).getName();

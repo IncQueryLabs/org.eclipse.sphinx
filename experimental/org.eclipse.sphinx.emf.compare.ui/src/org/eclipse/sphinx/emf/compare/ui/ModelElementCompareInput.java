@@ -17,16 +17,9 @@ package org.eclipse.sphinx.emf.compare.ui;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.compare.structuremergeviewer.DiffElement;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.emf.compare.diff.merge.service.MergeService;
-import org.eclipse.emf.compare.diff.metamodel.DiffElement;
-import org.eclipse.emf.compare.diff.metamodel.DiffModel;
-import org.eclipse.emf.compare.diff.metamodel.DiffResourceSet;
-import org.eclipse.emf.compare.match.metamodel.MatchModel;
-import org.eclipse.emf.compare.match.metamodel.MatchResourceSet;
-import org.eclipse.emf.compare.ui.ICompareInputDetailsProvider;
-import org.eclipse.emf.compare.ui.ModelCompareInput;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
@@ -66,20 +59,23 @@ public class ModelElementCompareInput extends ModelCompareInput {
 
 	@Override
 	protected void doCopy(DiffElement element, boolean leftToRight) {
-		doTransactionalCopy(leftToRight ? WorkspaceEditingDomainUtil.getEditingDomain(getRightResource()) : WorkspaceEditingDomainUtil
-				.getEditingDomain(getLeftResource()), Collections.singletonList(element), leftToRight);
+		doTransactionalCopy(
+				leftToRight ? WorkspaceEditingDomainUtil.getEditingDomain(getRightResource())
+						: WorkspaceEditingDomainUtil.getEditingDomain(getLeftResource()), Collections.singletonList(element), leftToRight);
 	}
 
 	@Override
 	protected void doCopy(List<DiffElement> elements, boolean leftToRight) {
-		doTransactionalCopy(leftToRight ? WorkspaceEditingDomainUtil.getEditingDomain(getRightResource()) : WorkspaceEditingDomainUtil
-				.getEditingDomain(getLeftResource()), elements, leftToRight);
+		doTransactionalCopy(
+				leftToRight ? WorkspaceEditingDomainUtil.getEditingDomain(getRightResource())
+						: WorkspaceEditingDomainUtil.getEditingDomain(getLeftResource()), elements, leftToRight);
 	}
 
 	protected void doTransactionalCopy(TransactionalEditingDomain editingDomain, final List<DiffElement> elements, final boolean leftToRight) {
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, new Runnable() {
 
+				@Override
 				public void run() {
 					MergeService.merge(elements, leftToRight);
 				}

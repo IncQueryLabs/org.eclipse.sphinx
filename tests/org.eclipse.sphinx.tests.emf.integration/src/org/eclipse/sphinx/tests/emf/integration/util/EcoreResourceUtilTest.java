@@ -991,6 +991,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+				@Override
 				public void run() {
 					testComponent10_1.setName(changedObjectName);
 					testComponent10_2.setName(changedObjectName);
@@ -1068,6 +1069,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, new Runnable() {
+				@Override
 				public void run() {
 					testComponent20_1.setName(changedObjectName);
 
@@ -1115,6 +1117,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomainUml2, new Runnable() {
+				@Override
 				public void run() {
 					testPackageElement.setName(changedObjectName);
 
@@ -1185,9 +1188,11 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			ISchedulingRule rule = ExtendedPlatform.createSaveNewSchedulingRule(newFilePath1);
 
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				@Override
 				public void run(IProgressMonitor monitor) throws CoreException {
 					try {
 						WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+							@Override
 							public void run() {
 								EcoreResourceUtil.saveNewModelResource(resourceSet10, newResourceURI1, Hummingbird10Package.eCONTENT_TYPE,
 										modelToSave, Collections.emptyMap());
@@ -1238,9 +1243,11 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			ISchedulingRule rule = ExtendedPlatform.createSaveNewSchedulingRule(newFilePath2);
 
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				@Override
 				public void run(IProgressMonitor monitor) throws CoreException {
 					try {
 						WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, new Runnable() {
+							@Override
 							public void run() {
 								EcoreResourceUtil.saveNewModelResource(resourceSet20, newResourceURI2, Hummingbird10Package.eCONTENT_TYPE,
 										modelToSave, Collections.emptyMap());
@@ -1293,9 +1300,11 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			ISchedulingRule rule = ExtendedPlatform.createSaveNewSchedulingRule(existingFilePath);
 
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				@Override
 				public void run(IProgressMonitor monitor) throws CoreException {
 					try {
 						WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+							@Override
 							public void run() {
 								EcoreResourceUtil.saveNewModelResource(resourceSet10, existingResourceURI, Hummingbird10Package.eCONTENT_TYPE,
 										modelToSave, Collections.emptyMap());
@@ -1346,9 +1355,11 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			ISchedulingRule rule = ExtendedPlatform.createSaveNewSchedulingRule(existingFilePath);
 
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				@Override
 				public void run(IProgressMonitor monitor) throws CoreException {
 					try {
 						WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+							@Override
 							public void run() {
 								EcoreResourceUtil.saveNewModelResource(resourceSet10, newResourceURI, Hummingbird10Package.eCONTENT_TYPE,
 										modelToSave, Collections.emptyMap());
@@ -1402,9 +1413,11 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			ISchedulingRule rule = ExtendedPlatform.createSaveNewSchedulingRule(newResourcePath);
 
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				@Override
 				public void run(IProgressMonitor monitor) throws CoreException {
 					try {
 						WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+							@Override
 							public void run() {
 								EcoreResourceUtil.saveNewModelResource(resourceSet10, newResourceURI,
 										Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId(), modelToSave, Collections.emptyMap());
@@ -1487,9 +1500,11 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			ISchedulingRule rule = ExtendedPlatform.createSaveNewSchedulingRule(existingFilePath);
 
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				@Override
 				public void run(IProgressMonitor monitor) throws CoreException {
 					try {
 						WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+							@Override
 							public void run() {
 								EcoreResourceUtil.saveNewModelResource(resourceSet10, null, Hummingbird10Package.eCONTENT_TYPE, modelToSave,
 										Collections.emptyMap());
@@ -1529,9 +1544,11 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			ISchedulingRule rule = ExtendedPlatform.createSaveNewSchedulingRule(existingFilePath);
 
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				@Override
 				public void run(IProgressMonitor monitor) throws CoreException {
 					try {
 						WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+							@Override
 							public void run() {
 								EcoreResourceUtil.saveNewModelResource(resourceSet10, newResourceURI, null, modelToSave, Collections.emptyMap());
 							}
@@ -1579,9 +1596,11 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			ISchedulingRule rule = ExtendedPlatform.createSaveNewSchedulingRule(existingFilePath);
 
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				@Override
 				public void run(IProgressMonitor monitor) throws CoreException {
 					try {
 						WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+							@Override
 							public void run() {
 								EcoreResourceUtil.saveNewModelResource(resourceSet10, newResourceURI, Hummingbird10Package.eCONTENT_TYPE,
 										modelToSave, Collections.emptyMap());
@@ -1626,6 +1645,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		// Transaction to save new model
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomainUml2, new Runnable() {
+				@Override
 				public void run() {
 					Package Uml2Pack = UMLFactory.eINSTANCE.createPackage();
 					Uml2Pack.setName(packageName);
@@ -1640,9 +1660,11 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 		ISchedulingRule rule = ExtendedPlatform.createSaveNewSchedulingRule(newFilePath);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 					WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomainUml2, new Runnable() {
+						@Override
 						public void run() {
 							EcoreResourceUtil.saveNewModelResource(resourceSetUml2, newResourceURI, UMLPackage.eCONTENT_TYPE, Uml2Model,
 									Collections.emptyMap());

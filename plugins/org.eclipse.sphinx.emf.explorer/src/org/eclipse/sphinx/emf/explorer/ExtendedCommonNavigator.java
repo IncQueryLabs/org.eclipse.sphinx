@@ -133,12 +133,15 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 
 	protected IPartListener partListener = new IPartListener() {
 
+		@Override
 		public void partActivated(IWorkbenchPart part) {
 		}
 
+		@Override
 		public void partBroughtToTop(IWorkbenchPart part) {
 		}
 
+		@Override
 		public void partClosed(IWorkbenchPart part) {
 			if (part instanceof PropertySheet) {
 				((PropertySheet) part).getCurrentPage().dispose();
@@ -146,9 +149,11 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 			}
 		}
 
+		@Override
 		public void partDeactivated(IWorkbenchPart part) {
 		}
 
+		@Override
 		public void partOpened(IWorkbenchPart part) {
 		}
 
@@ -294,6 +299,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 		return saveables.toArray(new Saveable[saveables.size()]);
 	}
 
+	@Override
 	public String getContributorId() {
 		return getViewSite().getId();
 	}
@@ -312,6 +318,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 	/*
 	 * @see org.eclipse.emf.common.ui.viewer.IViewerProvider#getViewer()
 	 */
+	@Override
 	public Viewer getViewer() {
 		return getCommonViewer();
 	}
@@ -423,6 +430,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 				Display display = viewer.getControl().getDisplay();
 				if (display != null) {
 					display.asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
 								for (Object element : expandedElements) {
@@ -635,6 +643,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 			if (editingDomain != null) {
 				try {
 					return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<URI>() {
+						@Override
 						public void run() {
 							setResult(EcoreUtil.getURI(eObject));
 						}
@@ -688,6 +697,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 	 */
 	protected IResourceChangeListener createResourceMarkerChangeListener() {
 		return new IResourceChangeListener() {
+			@Override
 			public void resourceChanged(IResourceChangeEvent event) {
 				Assert.isNotNull(event);
 
@@ -722,6 +732,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 
 	protected IOperationHistoryListener createAffectedObjectsListener() {
 		return new IOperationHistoryListener() {
+			@Override
 			public void historyNotification(final OperationHistoryEvent event) {
 				if (event.getEventType() == OperationHistoryEvent.ABOUT_TO_EXECUTE) {
 					handleOperationAboutToExecute(event.getOperation());
@@ -736,6 +747,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 					IWorkbenchPartSite site = getSite();
 					if (site != null) {
 						site.getShell().getDisplay().syncExec(new Runnable() {
+							@Override
 							public void run() {
 								if (isActivePart() || isMyActivePropertySheetPage()) {
 									for (TransactionalEditingDomain editingDomain : getEditingDomainsFromSelection()) {
@@ -760,6 +772,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 				IWorkbenchPartSite site = getSite();
 				if (site != null) {
 					site.getShell().getDisplay().asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							// Try to show the affected objects in viewer
 							if (operation instanceof EMFCommandOperation) {
@@ -807,6 +820,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void postCreateEditingDomain(TransactionalEditingDomain editingDomain) {
 		// Register the ResourceListener that detects objects changed by EMF commands
 		WorkspaceTransactionUtil.getOperationHistory(editingDomain).addOperationHistoryListener(affectedObjectsListener);
@@ -815,6 +829,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void preDisposeEditingDomain(TransactionalEditingDomain editingDomain) {
 		if (affectedObjectsListener != null) {
 			WorkspaceTransactionUtil.getOperationHistory(editingDomain).removeOperationHistoryListener(affectedObjectsListener);

@@ -331,6 +331,7 @@ public class XpandJob extends WorkspaceJob {
 			for (final TransactionalEditingDomain editingDomain : requests.keySet()) {
 
 				Runnable runnable = new Runnable() {
+					@Override
 					public void run() {
 						for (XpandEvaluationRequest request : requests.get(editingDomain)) {
 							log.info("Generating code for " + request.getTargetObject() + " with '" + request.getDefinitionName()); //$NON-NLS-1$ //$NON-NLS-2$ //);

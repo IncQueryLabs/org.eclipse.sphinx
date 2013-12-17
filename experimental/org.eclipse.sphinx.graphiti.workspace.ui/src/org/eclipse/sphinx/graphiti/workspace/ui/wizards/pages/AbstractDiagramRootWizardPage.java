@@ -81,6 +81,7 @@ public abstract class AbstractDiagramRootWizardPage extends AbstractWizardPage {
 		modelObjectSelectionGroup.setLayoutData(modelObjectLayoutData);
 		modelObjectSelectionGroup.getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
 
+			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStatus status = validateRules();
 				setPageComplete(status == null || status.isOK());

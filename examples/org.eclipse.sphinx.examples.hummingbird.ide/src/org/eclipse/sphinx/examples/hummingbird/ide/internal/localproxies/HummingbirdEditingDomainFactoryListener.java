@@ -27,6 +27,7 @@ public class HummingbirdEditingDomainFactoryListener implements ITransactionalEd
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void postCreateEditingDomain(TransactionalEditingDomain editingDomain) {
 		// Install local proxy management
 		editingDomain.addResourceSetListener(localProxyChangeListener);
@@ -35,6 +36,7 @@ public class HummingbirdEditingDomainFactoryListener implements ITransactionalEd
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void preDisposeEditingDomain(TransactionalEditingDomain editingDomain) {
 		// Uninstall local proxy management
 		editingDomain.removeResourceSetListener(localProxyChangeListener);

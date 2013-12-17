@@ -70,6 +70,7 @@ public class AbstractModelInitialObjectCreationPage extends WizardPage {
 		editPlugin = plugin;
 	}
 
+	@Override
 	public void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		{
@@ -139,6 +140,7 @@ public class AbstractModelInitialObjectCreationPage extends WizardPage {
 	}
 
 	protected ModifyListener validator = new ModifyListener() {
+		@Override
 		public void modifyText(ModifyEvent e) {
 			setPageComplete(validatePage());
 		}

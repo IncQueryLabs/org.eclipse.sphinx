@@ -20,6 +20,7 @@ import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 
 public class Hummingbird20MMDescriptorItemProviderAdapterFactory implements IAdapterFactory {
 
+	@Override
 	public Object getAdapter(Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
 		if (adapterType.equals(IItemLabelProvider.class)) {
 			if (adaptableObject instanceof Hummingbird20MMDescriptor) {
@@ -29,6 +30,7 @@ public class Hummingbird20MMDescriptorItemProviderAdapterFactory implements IAda
 		return null;
 	}
 
+	@Override
 	@SuppressWarnings("rawtypes")
 	public Class[] getAdapterList() {
 		return new Class<?>[] { IItemLabelProvider.class };

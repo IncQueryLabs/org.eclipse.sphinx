@@ -76,7 +76,7 @@ public abstract class AbstractOutletsPreferencePage extends AbstractPreferenceAn
 	}
 
 	protected void addProtectedRegionGroup(Composite parent) {
-		protectedRegionGroup = new ProtectedRegionGroup(Messages.label_protectedRegionGroupName, ((IProject) getElement()));
+		protectedRegionGroup = new ProtectedRegionGroup(Messages.label_protectedRegionGroupName, (IProject) getElement());
 		protectedRegionGroup.createContent(parent, 3);
 	}
 

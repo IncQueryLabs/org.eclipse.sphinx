@@ -35,18 +35,22 @@ class MarkerSelectionProviderAdapter implements ISelectionProvider {
 
 	ISelection theSelection = null;
 
+	@Override
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		listeners.add(listener);
 	}
 
+	@Override
 	public ISelection getSelection() {
 		return theSelection;
 	}
 
+	@Override
 	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 		listeners.remove(listener);
 	}
 
+	@Override
 	public void setSelection(ISelection selection) {
 		theSelection = selection;
 		final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
@@ -55,6 +59,7 @@ class MarkerSelectionProviderAdapter implements ISelectionProvider {
 		for (Object element : listenersArray) {
 			final ISelectionChangedListener l = (ISelectionChangedListener) element;
 			SafeRunner.run(new SafeRunnable() {
+				@Override
 				public void run() {
 					l.selectionChanged(e);
 				}

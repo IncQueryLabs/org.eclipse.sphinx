@@ -42,18 +42,22 @@ public class ParameterValuesXViewerLabelProvider extends XViewerLabelProvider {
 		return ""; //$NON-NLS-1$
 	}
 
+	@Override
 	public void addListener(ILabelProviderListener listener) {
 		// do nothing
 	}
 
+	@Override
 	public void removeListener(ILabelProviderListener listener) {
 		// do nothing
 	}
 
+	@Override
 	public void dispose() {
 		// do nothing
 	}
 
+	@Override
 	public boolean isLabelProperty(Object element, String property) {
 		return false;
 	}

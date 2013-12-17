@@ -63,6 +63,7 @@ public abstract class AbstractResourceSynchronizer<T extends IResourceSyncReques
 	 * org.eclipse.core.resources.IResourceChangeListener#resourceChanged(org.eclipse.core.resources.IResourceChangeEvent
 	 * )
 	 */
+	@Override
 	public void resourceChanged(final IResourceChangeEvent event) {
 		try {
 			switch (event.getType()) {

@@ -29,6 +29,7 @@ public class BasicTabDescriptorProvider implements ITabDescriptorProvider {
 	 */
 	protected List<ITabDescriptor> currentTabDescriptors = new ArrayList<ITabDescriptor>();
 
+	@Override
 	public ITabDescriptor[] getTabDescriptors(IWorkbenchPart part, ISelection selection) {
 		currentTabDescriptors.clear();
 		createBasicTabDescriptors(selection);

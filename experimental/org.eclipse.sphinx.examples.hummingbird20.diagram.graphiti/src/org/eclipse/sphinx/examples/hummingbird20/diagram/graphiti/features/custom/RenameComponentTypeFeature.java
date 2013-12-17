@@ -60,6 +60,7 @@ public class RenameComponentTypeFeature extends AbstractCustomFeature {
 		return hasDoneChanges;
 	}
 
+	@Override
 	public void execute(ICustomContext context) {
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {

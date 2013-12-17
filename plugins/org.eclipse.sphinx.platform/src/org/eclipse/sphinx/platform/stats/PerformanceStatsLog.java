@@ -224,6 +224,7 @@ public class PerformanceStatsLog implements FrameworkLog {
 	 *             if an error occurs writing to the log
 	 */
 
+	@Override
 	public void close() {
 		try {
 			if (writer != null) {
@@ -270,6 +271,7 @@ public class PerformanceStatsLog implements FrameworkLog {
 		}
 	}
 
+	@Override
 	public void log(FrameworkEvent frameworkEvent) {
 		Bundle b = frameworkEvent.getBundle();
 		Throwable t = frameworkEvent.getThrowable();
@@ -292,6 +294,7 @@ public class PerformanceStatsLog implements FrameworkLog {
 		log(logEntry);
 	}
 
+	@Override
 	public synchronized void log(FrameworkLogEntry logEntry) {
 		if (logEntry == null) {
 			return;
@@ -324,10 +327,12 @@ public class PerformanceStatsLog implements FrameworkLog {
 		}
 	}
 
+	@Override
 	public synchronized void setWriter(Writer newWriter, boolean append) {
 		setOutput(null, newWriter, append);
 	}
 
+	@Override
 	public synchronized void setFile(File newFile, boolean append) throws IOException {
 		if (newFile != null && !newFile.equals(outFile)) {
 			// If it's a new file, then reset.
@@ -338,10 +343,12 @@ public class PerformanceStatsLog implements FrameworkLog {
 		setProperty(PROP_LOGFILE, newFile.getAbsolutePath());
 	}
 
+	@Override
 	public synchronized File getFile() {
 		return outFile;
 	}
 
+	@Override
 	public void setConsoleLog(boolean consoleLog) {
 		this.consoleLog = consoleLog;
 	}

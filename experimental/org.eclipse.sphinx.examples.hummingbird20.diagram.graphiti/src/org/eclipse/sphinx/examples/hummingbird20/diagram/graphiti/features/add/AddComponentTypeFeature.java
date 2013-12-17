@@ -59,6 +59,7 @@ public class AddComponentTypeFeature extends AbstractAddShapeFeature {
 	/*
 	 * @see org.eclipse.graphiti.func.IAdd#canAdd(org.eclipse.graphiti.features.context.IAddContext)
 	 */
+	@Override
 	public boolean canAdd(IAddContext context) {
 		// Is it an add request for a ComponentType?
 		if (context.getNewObject() instanceof ComponentType) {
@@ -73,6 +74,7 @@ public class AddComponentTypeFeature extends AbstractAddShapeFeature {
 	/*
 	 * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
 	 */
+	@Override
 	public PictogramElement add(IAddContext context) {
 		ComponentType componentTypeToAdd = (ComponentType) context.getNewObject();
 		Diagram targetContainer = (Diagram) context.getTargetContainer();

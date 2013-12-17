@@ -122,6 +122,7 @@ public class Hummingbird20DiagramEditor extends BasicDiagramDocumentEditor imple
 	public Object getAdapter(Class type) {
 		if (type == IShowInTargetList.class) {
 			return new IShowInTargetList() {
+				@Override
 				public String[] getShowInTargetIds() {
 					return new String[] { ProjectExplorer.VIEW_ID };
 				}
@@ -173,6 +174,7 @@ public class Hummingbird20DiagramEditor extends BasicDiagramDocumentEditor imple
 	/**
 	 * @generated
 	 */
+	@Override
 	public void gotoMarker(IMarker marker) {
 		MarkerNavigationService.getInstance().gotoMarker(this, marker);
 	}

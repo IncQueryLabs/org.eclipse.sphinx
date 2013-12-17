@@ -196,6 +196,7 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 						final IEditorPart activeEditor = editorPart.getSite().getPage().getActiveEditor();
 						if (activeEditor == editorPart) {
 							getShell().getDisplay().asyncExec(new Runnable() {
+								@Override
 								public void run() {
 									handleActivate();
 								}
@@ -227,6 +228,7 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 							if (activeEditor == editorPart) {
 								if (getShell() != null && getShell().getDisplay() != null) {
 									getShell().getDisplay().asyncExec(new Runnable() {
+										@Override
 										public void run() {
 											handleActivate();
 										}
@@ -244,6 +246,7 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 			Display display = ExtendedPlatformUI.getDisplay();
 			if (display != null) {
 				display.asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						closeEditor();
 					}
@@ -432,6 +435,7 @@ public class BasicGraphitiDiagramEditorUpdateBehavior extends DefaultUpdateBehav
 				// which may provoke deadlocks.
 				shell.getDisplay().asyncExec(new Runnable() {
 
+					@Override
 					public void run() {
 						if (editorPart == null) {
 							return; // disposed

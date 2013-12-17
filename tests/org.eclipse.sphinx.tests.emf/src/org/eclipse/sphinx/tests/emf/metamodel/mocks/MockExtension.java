@@ -53,6 +53,7 @@ public class MockExtension implements IExtension {
 		fContributor = new RegistryContributor(bundleId, bundleName, hostId, hostName);
 	}
 
+	@Override
 	public IConfigurationElement[] getConfigurationElements() throws InvalidRegistryObjectException {
 		return getConfigElemsList().toArray(new IConfigurationElement[] {});
 	}
@@ -69,42 +70,52 @@ public class MockExtension implements IExtension {
 		getConfigElemsList().add(configElem);
 	}
 
+	@Override
 	public IContributor getContributor() throws InvalidRegistryObjectException {
 		return fContributor;
 	}
 
+	@Override
 	public IPluginDescriptor getDeclaringPluginDescriptor() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getExtensionPointUniqueIdentifier() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getLabel() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getNamespace() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getNamespaceIdentifier() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getSimpleIdentifier() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getUniqueIdentifier() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public boolean isValid() {
 		return false;
 	}
 
+	@Override
 	public String getLabel(String locale) throws InvalidRegistryObjectException {
 		return null;
 	}

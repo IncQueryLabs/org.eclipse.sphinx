@@ -24,13 +24,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.compare.diff.metamodel.ComparisonResourceSetSnapshot;
-import org.eclipse.emf.compare.diff.metamodel.ComparisonResourceSnapshot;
-import org.eclipse.emf.compare.diff.metamodel.ComparisonSnapshot;
-import org.eclipse.emf.compare.match.metamodel.MatchModel;
-import org.eclipse.emf.compare.ui.ModelCompareInput;
-import org.eclipse.emf.compare.ui.editor.ModelCompareEditorInput;
-import org.eclipse.emf.compare.ui.viewer.content.ModelContentMergeViewer;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -44,6 +37,7 @@ import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.team.internal.ui.mapping.ModelCompareEditorInput;
 import org.eclipse.ui.ISaveablesLifecycleListener;
 import org.eclipse.ui.ISaveablesSource;
 import org.eclipse.ui.Saveable;
@@ -289,10 +283,12 @@ public class ModelElementCompareEditorInput extends ModelCompareEditorInput impl
 		}
 	}
 
+	@Override
 	public Saveable[] getActiveSaveables() {
 		return getSaveables();
 	}
 
+	@Override
 	public Saveable[] getSaveables() {
 		Set<Saveable> saveables = new HashSet<Saveable>();
 		if (modelSaveablesProvider != null) {

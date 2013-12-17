@@ -16,13 +16,6 @@ package org.eclipse.sphinx.emf.compare.ui.viewer.content;
 
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.contentmergeviewer.IMergeViewerContentProvider;
-import org.eclipse.emf.compare.diff.metamodel.ComparisonResourceSetSnapshot;
-import org.eclipse.emf.compare.diff.metamodel.ComparisonResourceSnapshot;
-import org.eclipse.emf.compare.diff.metamodel.ComparisonSnapshot;
-import org.eclipse.emf.compare.ui.ICompareInputDetailsProvider;
-import org.eclipse.emf.compare.ui.ModelCompareInput;
-import org.eclipse.emf.compare.ui.viewer.content.ModelContentMergeViewer;
-import org.eclipse.emf.compare.ui.viewer.content.part.ModelContentMergeTabFolder;
 import org.eclipse.sphinx.emf.compare.ui.ModelElementCompareInput;
 import org.eclipse.swt.widgets.Composite;
 

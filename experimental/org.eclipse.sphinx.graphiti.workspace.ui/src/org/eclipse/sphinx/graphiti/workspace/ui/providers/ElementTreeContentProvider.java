@@ -38,20 +38,24 @@ public class ElementTreeContentProvider implements ITreeContentProvider {
 		};
 	}
 
+	@Override
 	public void dispose() {
 		workbenchContentProvider.dispose();
 		emfContentProvider.dispose();
 	}
 
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		workbenchContentProvider.inputChanged(viewer, oldInput, newInput);
 		emfContentProvider.inputChanged(viewer, oldInput, newInput);
 	}
 
+	@Override
 	public Object[] getElements(Object inputElement) {
 		return getChildren(inputElement);
 	}
 
+	@Override
 	public Object[] getChildren(Object parentElement) {
 		if (parentElement instanceof IContainer || parentElement instanceof IWorkspace) {
 			return workbenchContentProvider.getChildren(parentElement);
@@ -59,6 +63,7 @@ public class ElementTreeContentProvider implements ITreeContentProvider {
 		return emfContentProvider.getChildren(parentElement);
 	}
 
+	@Override
 	public Object getParent(Object element) {
 		if (element instanceof IResource || element instanceof IWorkspace) {
 			return workbenchContentProvider.getParent(element);
@@ -66,6 +71,7 @@ public class ElementTreeContentProvider implements ITreeContentProvider {
 		return emfContentProvider.getParent(element);
 	}
 
+	@Override
 	public boolean hasChildren(Object element) {
 		if (element instanceof IContainer || element instanceof IWorkspace) {
 			return workbenchContentProvider.hasChildren(element);

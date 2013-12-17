@@ -78,8 +78,10 @@ public class XMLCommentTargetMetaModelDescriptorProvider implements ITargetMetaM
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.metamodel.ITargetMetaModelDescriptorProvider#getDescriptor(org.eclipse.core.resources.IFile)
+	 * org.eclipse.sphinx.emf.metamodel.ITargetMetaModelDescriptorProvider#getDescriptor(org.eclipse.core.resources.
+	 * IFile)
 	 */
+	@Override
 	public IMetaModelDescriptor getDescriptor(IFile file) {
 		if (file != null) {
 			Collection<String> comments = EcorePlatformUtil.readRootElementComments(file);
@@ -95,9 +97,10 @@ public class XMLCommentTargetMetaModelDescriptorProvider implements ITargetMetaM
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.metamodel.ITargetMetaModelDescriptorProvider#getDescriptor(org.eclipse.emf.ecore.resource.Resource
-	 * )
+	 * org.eclipse.sphinx.emf.metamodel.ITargetMetaModelDescriptorProvider#getDescriptor(org.eclipse.emf.ecore.resource
+	 * .Resource )
 	 */
+	@Override
 	public IMetaModelDescriptor getDescriptor(Resource resource) {
 		IFile file = EcorePlatformUtil.getFile(resource);
 		return getDescriptor(file);

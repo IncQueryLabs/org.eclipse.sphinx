@@ -77,10 +77,12 @@ public abstract class AbstractFormPage extends FormPage {
 	private List<IFormMessageProvider> messageProviders = new ArrayList<IFormMessageProvider>();
 
 	protected IPropertyListener inputChangeListener = new IPropertyListener() {
+		@Override
 		public void propertyChanged(Object source, int propId) {
 			if (source.equals(getEditor()) && AbstractFormPage.this.equals(((FormEditor) source).getActivePageInstance())
 					&& propId == IWorkbenchPartConstants.PROP_INPUT) {
 				getSite().getShell().getDisplay().asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						if (!created) {
 							createFormContent(getManagedForm());
@@ -94,9 +96,11 @@ public abstract class AbstractFormPage extends FormPage {
 	};
 
 	protected IPageChangedListener pageChangedListener = new IPageChangedListener() {
+		@Override
 		public void pageChanged(PageChangedEvent event) {
 			if (event.getSelectedPage().equals(AbstractFormPage.this)) {
 				getSite().getShell().getDisplay().asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						refreshPage();
 					}
@@ -106,6 +110,7 @@ public abstract class AbstractFormPage extends FormPage {
 	};
 
 	protected IOperationHistoryListener operationHistoryListener = new IOperationHistoryListener() {
+		@Override
 		public void historyNotification(OperationHistoryEvent event) {
 			switch (event.getEventType()) {
 			case OperationHistoryEvent.DONE:
@@ -113,6 +118,7 @@ public abstract class AbstractFormPage extends FormPage {
 			case OperationHistoryEvent.REDONE:
 				if (AbstractFormPage.this.equals(getEditor().getActivePageInstance())) {
 					getSite().getShell().getDisplay().asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							refreshPage();
 						}
@@ -124,10 +130,12 @@ public abstract class AbstractFormPage extends FormPage {
 	};
 
 	protected IValidationProblemMarkersChangeListener validationProblemMarkersChangeListener = new IValidationProblemMarkersChangeListener() {
+		@Override
 		public void validationProblemMarkersChanged(final EventObject event) {
 			if (AbstractFormPage.this.equals(getEditor().getActivePageInstance())) {
 				if ((EObject) event.getSource() == pageInput) {
 					getSite().getShell().getDisplay().asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							refreshMessages();
 						}

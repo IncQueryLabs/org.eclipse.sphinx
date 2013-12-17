@@ -24,13 +24,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.emf.compare.diff.merge.service.MergeService;
-import org.eclipse.emf.compare.diff.metamodel.ComparisonSnapshot;
-import org.eclipse.emf.compare.diff.metamodel.DiffModel;
-import org.eclipse.emf.compare.diff.service.DiffService;
-import org.eclipse.emf.compare.match.metamodel.MatchModel;
-import org.eclipse.emf.compare.match.service.MatchService;
-import org.eclipse.emf.compare.util.AdapterUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
@@ -251,6 +244,7 @@ public class BasicAutoMergeAction extends BaseSelectionListenerAction implements
 			final TransactionalEditingDomain leftEditingDomain, final boolean leftToRight) {
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(leftEditingDomain, new Runnable() {
+				@Override
 				public void run() {
 					doRun(rightEObject, leftEObject, leftToRight);
 				}
@@ -274,9 +268,11 @@ public class BasicAutoMergeAction extends BaseSelectionListenerAction implements
 			final boolean leftToRight) {
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(outerTransactionEditingDomain, new Runnable() {
+				@Override
 				public void run() {
 					try {
 						WorkspaceTransactionUtil.executeInWriteTransaction(innerTransactionEditingDomain, new Runnable() {
+							@Override
 							public void run() {
 								doRun(rightEObject, leftEObject, leftToRight);
 							}

@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.emf.internal.ecore.proxymanagement;
 
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.blacklist.ModelIndex;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.lookupresolver.EcoreIndex;
 

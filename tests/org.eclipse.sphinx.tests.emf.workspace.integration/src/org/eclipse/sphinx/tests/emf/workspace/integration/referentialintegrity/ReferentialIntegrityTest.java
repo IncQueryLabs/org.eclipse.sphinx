@@ -84,6 +84,7 @@ public class ReferentialIntegrityTest extends DefaultIntegrationTestCase {
 
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomainUml2, new Runnable() {
+				@Override
 				public void run() {
 					for (FunctionBehavior funcBehavior : behaviorToChangeIdenfitier) {
 						String Name = funcBehavior.getName();
@@ -160,6 +161,7 @@ public class ReferentialIntegrityTest extends DefaultIntegrationTestCase {
 		assertFalse(behaviorToChangeIdenfitier.isEmpty());
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomainUml2, new Runnable() {
+				@Override
 				public void run() {
 					for (FunctionBehavior funcBehavior : behaviorToChangeIdenfitier) {
 						String Name = funcBehavior.getName();
@@ -362,6 +364,7 @@ public class ReferentialIntegrityTest extends DefaultIntegrationTestCase {
 		assertFalse(behaviors.isEmpty());
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomainUml2, new Runnable() {
+				@Override
 				public void run() {
 					for (FunctionBehavior funcBehavior : behaviors) {
 						Package container = funcBehavior.getPackage();

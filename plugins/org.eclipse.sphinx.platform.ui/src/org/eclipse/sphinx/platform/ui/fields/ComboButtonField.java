@@ -75,6 +75,7 @@ public class ComboButtonField extends ComboField implements IComboButtonField {
 		fStringButtonAdapter = adapter;
 	}
 
+	@Override
 	public void setButtonLabel(String label) {
 		fBrowseButtonLabel = label;
 	}
@@ -160,10 +161,12 @@ public class ComboButtonField extends ComboField implements IComboButtonField {
 			fBrowseButton.setText(fBrowseButtonLabel);
 			fBrowseButton.setEnabled(isEnabled() && fButtonEnabled);
 			fBrowseButton.addSelectionListener(new SelectionListener() {
+				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {
 					changeControlPressed();
 				}
 
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					changeControlPressed();
 				}
@@ -176,6 +179,7 @@ public class ComboButtonField extends ComboField implements IComboButtonField {
 	/*
 	 * @see org.eclipse.sphinx.platform.ui.fields.IComboButtonField#getButtonControl()
 	 */
+	@Override
 	public Control getButtonControl() {
 		Control control = null;
 		if (isOkToUse(fBrowseButton)) {

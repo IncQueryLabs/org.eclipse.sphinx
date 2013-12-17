@@ -64,10 +64,12 @@ public abstract class AbstractGroup implements IGroup {
 		this.dialogSettings = dialogSettings;
 	}
 
+	@Override
 	public void createContent(Composite parent, int numColumns) {
 		createContent(parent, numColumns, false);
 	}
 
+	@Override
 	public void createContent(Composite parent, int numColumns, boolean suppressGroupFrame) {
 		Composite parentComposite;
 		if (suppressGroupFrame) {
@@ -122,6 +124,7 @@ public abstract class AbstractGroup implements IGroup {
 	 * org.eclipse.sphinx.platform.ui.groups.IGroup#addGroupListener(org.eclipse.sphinx.platform.ui.groups.IGroupListener
 	 * )
 	 */
+	@Override
 	public final void addGroupListener(IGroupListener listener) {
 		groupListeners.add(listener);
 	}
@@ -131,6 +134,7 @@ public abstract class AbstractGroup implements IGroup {
 	 * org.eclipse.sphinx.platform.ui.groups.IGroup#removeGroupListener(org.eclipse.sphinx.platform.ui.groups.IGroupListener
 	 * )
 	 */
+	@Override
 	public void removeGroupListener(IGroupListener listener) {
 		groupListeners.remove(listener);
 	}
@@ -138,6 +142,7 @@ public abstract class AbstractGroup implements IGroup {
 	/**
 	 * Returns true or false if the group is complete or not.
 	 */
+	@Override
 	public boolean isGroupComplete() {
 		return true;
 	}

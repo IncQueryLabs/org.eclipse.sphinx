@@ -33,6 +33,7 @@ public class Hummingbird20SheetLabelProvider extends BaseLabelProvider implement
 	/**
 	 * @generated
 	 */
+	@Override
 	public String getText(Object element) {
 		element = unwrap(element);
 		if (element instanceof Hummingbird20NavigatorGroup) {
@@ -45,6 +46,7 @@ public class Hummingbird20SheetLabelProvider extends BaseLabelProvider implement
 	/**
 	 * @generated
 	 */
+	@Override
 	public Image getImage(Object element) {
 		IElementType etype = getElementType(getView(unwrap(element)));
 		return etype == null ? null : Hummingbird20ElementTypes.getImage(etype);

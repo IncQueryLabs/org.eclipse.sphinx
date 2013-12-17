@@ -212,6 +212,7 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 		assertFalse(ModelSaveManager.INSTANCE.isDirty(hbResource10));
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain10, new Runnable() {
+				@Override
 				public void run() {
 					testComponent.setName("newName1");
 					testInterface.setName("newName2");
@@ -250,6 +251,7 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, new Runnable() {
+				@Override
 				public void run() {
 					component20.setName("newName3");
 
@@ -297,6 +299,7 @@ public class ReferenceWorkspaceChangeListenerTest extends DefaultIntegrationTest
 		final String newName2 = "newName2";
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomainUml2, new Runnable() {
+				@Override
 				public void run() {
 					// Rename objects in first resource
 					element1.setName(newName1);

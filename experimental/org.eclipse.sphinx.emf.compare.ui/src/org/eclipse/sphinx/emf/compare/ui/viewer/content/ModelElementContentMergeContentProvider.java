@@ -17,11 +17,6 @@ package org.eclipse.sphinx.emf.compare.ui.viewer.content;
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.ITypedElement;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
-import org.eclipse.emf.compare.diff.metamodel.DiffModel;
-import org.eclipse.emf.compare.match.metamodel.MatchModel;
-import org.eclipse.emf.compare.ui.ModelCompareInput;
-import org.eclipse.emf.compare.ui.TypedElementWrapper;
-import org.eclipse.emf.compare.ui.viewer.content.ModelContentMergeContentProvider;
 
 /**
  * 

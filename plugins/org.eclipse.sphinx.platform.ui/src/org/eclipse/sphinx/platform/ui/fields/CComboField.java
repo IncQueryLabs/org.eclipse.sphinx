@@ -150,15 +150,18 @@ public class CComboField extends BasicField implements ICComboField {
 		if (fCComboControl == null) {
 			assertCompositeNotNull(parent);
 			fModifyListener = new ModifyListener() {
+				@Override
 				public void modifyText(ModifyEvent e) {
 					doModifyText(e);
 				}
 			};
 			SelectionListener selectionListener = new SelectionListener() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					doSelectionChanged(e);
 				}
 
+				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}
 			};
@@ -230,6 +233,7 @@ public class CComboField extends BasicField implements ICComboField {
 	/**
 	 * Gets the combo items.
 	 */
+	@Override
 	public String[] getItems() {
 		return fItems;
 	}
@@ -237,6 +241,7 @@ public class CComboField extends BasicField implements ICComboField {
 	/**
 	 * Sets the combo items. Triggers a dialog-changed event.
 	 */
+	@Override
 	public void setItems(String[] items) {
 		fItems = items;
 		if (isOkToUse(fCComboControl)) {
@@ -255,6 +260,7 @@ public class CComboField extends BasicField implements ICComboField {
 	/**
 	 * Sets the text. Triggers a dialog-changed event.
 	 */
+	@Override
 	public void setText(String text) {
 		fText = text;
 		if (isOkToUse(fCComboControl)) {
@@ -267,6 +273,7 @@ public class CComboField extends BasicField implements ICComboField {
 	/**
 	 * Selects an item.
 	 */
+	@Override
 	public boolean selectItem(int index) {
 		boolean success = false;
 		if (isOkToUse(fCComboControl)) {
@@ -297,6 +304,7 @@ public class CComboField extends BasicField implements ICComboField {
 		return false;
 	}
 
+	@Override
 	public int getSelectionIndex() {
 		if (isOkToUse(fCComboControl)) {
 			return fCComboControl.getSelectionIndex();
@@ -326,6 +334,7 @@ public class CComboField extends BasicField implements ICComboField {
 		setTextWithoutUpdate(fText);
 	}
 
+	@Override
 	public Control getCComboControl() {
 		Control control = null;
 		if (isOkToUse(fCComboControl)) {

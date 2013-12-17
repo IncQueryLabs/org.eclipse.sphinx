@@ -15,8 +15,6 @@
 package org.eclipse.sphinx.emf.compare.match;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.compare.match.engine.GenericMatchEngine;
-import org.eclipse.emf.compare.match.metamodel.MatchModel;
 import org.eclipse.emf.ecore.EObject;
 
 /**

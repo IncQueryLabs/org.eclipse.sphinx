@@ -30,18 +30,22 @@ public class AutomaticValidationActionContributor implements IWorkbenchWindowAct
 
 	private IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
 
+	@Override
 	public void init(IWorkbenchWindow window) {
 		preferenceStore.addPropertyChangeListener(this);
 	}
 
+	@Override
 	public void dispose() {
 		preferenceStore.removePropertyChangeListener(this);
 	}
 
+	@Override
 	public void run(IAction action) {
 		preferenceStore.setValue(IValidationPreferences.PREF_ENABLE_AUTOMATIC_VALIDATION, action.isChecked());
 	}
 
+	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
 		// Init action part
 		if (me == null) {
@@ -50,6 +54,7 @@ public class AutomaticValidationActionContributor implements IWorkbenchWindowAct
 		}
 	}
 
+	@Override
 	public void propertyChange(PropertyChangeEvent event) {
 		if (me != null) {
 			if (event.getProperty().equals(IValidationPreferences.PREF_ENABLE_AUTOMATIC_VALIDATION)) {

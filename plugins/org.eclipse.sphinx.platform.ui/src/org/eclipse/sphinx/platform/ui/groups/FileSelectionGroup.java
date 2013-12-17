@@ -95,6 +95,7 @@ public class FileSelectionGroup extends AbstractGroup {
 			enableButton.setSelection(false);
 			enableButton.fillIntoGrid(parent, numColumns);
 			enableButton.addFieldListener(new IFieldListener() {
+				@Override
 				public void dialogFieldChanged(IField field) {
 					updateFileSelectionEnableState(enableButton.isSelected());
 				}
@@ -126,14 +127,17 @@ public class FileSelectionGroup extends AbstractGroup {
 	private IListAdapter createListAdapter(final Composite parent) {
 		return new IListAdapter() {
 
+			@Override
 			public void selectionChanged(ListField field) {
 				// Do nothing.
 			}
 
+			@Override
 			public void doubleClicked(ListField field) {
 				// Do nothing.
 			}
 
+			@Override
 			public void customButtonPressed(ListField field, int index) {
 				if (index == 0) {
 					selectFiles(parent);
@@ -164,13 +168,14 @@ public class FileSelectionGroup extends AbstractGroup {
 					return fileExtension.equals(((IFile) element).getFileExtension());
 				}
 				if (element instanceof IResource) {
-					return !ExtendedPlatform.isPlatformPrivateResource(((IResource) element));
+					return !ExtendedPlatform.isPlatformPrivateResource((IResource) element);
 				}
 				return true;
 			}
 		});
 		dialog.setValidator(new ISelectionStatusValidator() {
 
+			@Override
 			public IStatus validate(Object[] selection) {
 				String pluginId = Activator.getDefault().getBundle().getSymbolicName();
 				for (Object file : selection) {

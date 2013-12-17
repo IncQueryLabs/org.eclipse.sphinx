@@ -57,6 +57,7 @@ public class Hummingbird20NavigatorLabelProvider extends LabelProvider implement
 	/**
 	 * @generated
 	 */
+	@Override
 	public void updateLabel(ViewerLabel label, TreePath elementPath) {
 		Object element = elementPath.getLastSegment();
 		if (element instanceof Hummingbird20NavigatorItem && !isOwnView(((Hummingbird20NavigatorItem) element).getView())) {
@@ -220,24 +221,28 @@ public class Hummingbird20NavigatorLabelProvider extends LabelProvider implement
 	/**
 	 * @generated
 	 */
+	@Override
 	public void init(ICommonContentExtensionSite aConfig) {
 	}
 
 	/**
 	 * @generated
 	 */
+	@Override
 	public void restoreState(IMemento aMemento) {
 	}
 
 	/**
 	 * @generated
 	 */
+	@Override
 	public void saveState(IMemento aMemento) {
 	}
 
 	/**
 	 * @generated
 	 */
+	@Override
 	public String getDescription(Object anElement) {
 		return null;
 	}

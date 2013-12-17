@@ -192,6 +192,7 @@ public class ExtendedDiagnosticComposite extends Composite {
 		diagnosticTreeViewer.setLabelProvider(createLabelProvider());
 
 		diagnosticTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				if (!event.getSelection().isEmpty()) {
 					Diagnostic diagnostic = (Diagnostic) ((IStructuredSelection) event.getSelection()).getFirstElement();
@@ -249,18 +250,22 @@ public class ExtendedDiagnosticComposite extends Composite {
 			private Map<String, Diagnostic[]> rootToChildrenMap = new HashMap<String, Diagnostic[]>();
 			private Map<Diagnostic, Diagnostic[]> parentToChildrenMap = new HashMap<Diagnostic, Diagnostic[]>();
 
+			@Override
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 				parentToChildrenMap.clear();
 			}
 
+			@Override
 			public void dispose() {
 				parentToChildrenMap.clear();
 			}
 
+			@Override
 			public Object getParent(Object element) {
 				return null;
 			}
 
+			@Override
 			public Object[] getElements(Object inputElement) {
 				if (isRootElement) {
 					isRootElement = false;
@@ -276,10 +281,12 @@ public class ExtendedDiagnosticComposite extends Composite {
 				return getChildren(inputElement);
 			}
 
+			@Override
 			public boolean hasChildren(Object element) {
 				return getChildren(element).length > 0;
 			}
 
+			@Override
 			public Object[] getChildren(Object parentElement) {
 				Diagnostic[] children = parentToChildrenMap.get(parentElement);
 				if (children == null) {

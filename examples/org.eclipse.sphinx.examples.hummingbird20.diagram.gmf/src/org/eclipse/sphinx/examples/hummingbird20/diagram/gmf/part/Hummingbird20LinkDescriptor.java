@@ -55,6 +55,7 @@ public class Hummingbird20LinkDescriptor extends Hummingbird20NodeDescriptor {
 		this(source, destination, (EObject) null, linkVID);
 		final IElementType elementTypeCopy = elementType;
 		mySemanticAdapter = new IAdaptable() {
+			@Override
 			public Object getAdapter(Class adapter) {
 				if (IElementType.class.equals(adapter)) {
 					return elementTypeCopy;

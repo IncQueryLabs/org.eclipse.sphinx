@@ -34,11 +34,12 @@ import org.eclipse.sphinx.examples.hummingbird10.Interface;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.sphinx.examples.hummingbird10.impl.InterfaceImpl#getName <em>Name</em>}</li>
- *   <li>{@link org.eclipse.sphinx.examples.hummingbird10.impl.InterfaceImpl#getProvidingComponents <em>Providing Components</em>}</li>
+ * <li>{@link org.eclipse.sphinx.examples.hummingbird10.impl.InterfaceImpl#getName <em>Name</em>}</li>
+ * <li>{@link org.eclipse.sphinx.examples.hummingbird10.impl.InterfaceImpl#getProvidingComponents <em>Providing
+ * Components</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  */
 public class InterfaceImpl extends EObjectImpl implements Interface {
@@ -74,6 +75,7 @@ public class InterfaceImpl extends EObjectImpl implements Interface {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected InterfaceImpl() {
@@ -82,6 +84,7 @@ public class InterfaceImpl extends EObjectImpl implements Interface {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -91,134 +94,151 @@ public class InterfaceImpl extends EObjectImpl implements Interface {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
+	@Override
 	public void setName(String newName) {
 		String oldName = name;
 		name = newName;
-		if (eNotificationRequired())
+		if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET, Hummingbird10Package.INTERFACE__NAME, oldName, name));
+		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<Component> getProvidingComponents() {
 		if (providingComponents == null) {
-			providingComponents = new EObjectWithInverseResolvingEList.ManyInverse<Component>(Component.class, this, Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS, Hummingbird10Package.COMPONENT__PROVIDED_INTERFACES);
+			providingComponents = new EObjectWithInverseResolvingEList.ManyInverse<Component>(Component.class, this,
+					Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS, Hummingbird10Package.COMPONENT__PROVIDED_INTERFACES);
 		}
 		return providingComponents;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS:
-				return ((InternalEList<InternalEObject>)(InternalEList<?>)getProvidingComponents()).basicAdd(otherEnd, msgs);
+		case Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS:
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getProvidingComponents()).basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS:
-				return ((InternalEList<?>)getProvidingComponents()).basicRemove(otherEnd, msgs);
+		case Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS:
+			return ((InternalEList<?>) getProvidingComponents()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case Hummingbird10Package.INTERFACE__NAME:
-				return getName();
-			case Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS:
-				return getProvidingComponents();
+		case Hummingbird10Package.INTERFACE__NAME:
+			return getName();
+		case Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS:
+			return getProvidingComponents();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case Hummingbird10Package.INTERFACE__NAME:
-				setName((String)newValue);
-				return;
-			case Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS:
-				getProvidingComponents().clear();
-				getProvidingComponents().addAll((Collection<? extends Component>)newValue);
-				return;
+		case Hummingbird10Package.INTERFACE__NAME:
+			setName((String) newValue);
+			return;
+		case Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS:
+			getProvidingComponents().clear();
+			getProvidingComponents().addAll((Collection<? extends Component>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case Hummingbird10Package.INTERFACE__NAME:
-				setName(NAME_EDEFAULT);
-				return;
-			case Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS:
-				getProvidingComponents().clear();
-				return;
+		case Hummingbird10Package.INTERFACE__NAME:
+			setName(NAME_EDEFAULT);
+			return;
+		case Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS:
+			getProvidingComponents().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case Hummingbird10Package.INTERFACE__NAME:
-				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
-			case Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS:
-				return providingComponents != null && !providingComponents.isEmpty();
+		case Hummingbird10Package.INTERFACE__NAME:
+			return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
+		case Hummingbird10Package.INTERFACE__PROVIDING_COMPONENTS:
+			return providingComponents != null && !providingComponents.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy()) return super.toString();
+		if (eIsProxy()) {
+			return super.toString();
+		}
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (name: "); //$NON-NLS-1$

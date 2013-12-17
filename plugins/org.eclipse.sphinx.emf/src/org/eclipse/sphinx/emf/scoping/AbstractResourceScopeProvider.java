@@ -33,6 +33,7 @@ public abstract class AbstractResourceScopeProvider implements IResourceScopePro
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScopeProvider#isApplicableTo(org.eclipse.core.resources.IFile)
 	 */
+	@Override
 	public boolean isApplicableTo(IFile file) {
 		IResourceScope scope = createScope(file);
 		if (scope == null || !scope.exists()) {
@@ -47,6 +48,7 @@ public abstract class AbstractResourceScopeProvider implements IResourceScopePro
 	 * org.eclipse.sphinx.emf.scoping.IResourceScopeProvider#hasApplicableFileExtension(org.eclipse.core.resources.IFile
 	 * )
 	 */
+	@Override
 	public boolean hasApplicableFileExtension(IFile file) {
 		Assert.isNotNull(file);
 		// Reject files without extension
@@ -85,6 +87,7 @@ public abstract class AbstractResourceScopeProvider implements IResourceScopePro
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScopeProvider#getScope(org.eclipse.core.resources.IResource)
 	 */
+	@Override
 	public IResourceScope getScope(IResource resource) {
 		IResourceScope scope = createScope(resource);
 		if (scope == null || !scope.exists()) {
@@ -111,6 +114,7 @@ public abstract class AbstractResourceScopeProvider implements IResourceScopePro
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScopeProvider#getScope(org.eclipse.emf.ecore.resource.Resource)
 	 */
+	@Override
 	public IResourceScope getScope(Resource resource) {
 		IFile file = EcorePlatformUtil.getFile(resource);
 		if (file != null) {
@@ -122,6 +126,7 @@ public abstract class AbstractResourceScopeProvider implements IResourceScopePro
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScopeProvider#validate(org.eclipse.core.resources.IFile)
 	 */
+	@Override
 	public Diagnostic validate(IFile file) {
 		return Diagnostic.OK_INSTANCE;
 	}

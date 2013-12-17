@@ -56,7 +56,8 @@ public class BasicCompareActionProvider extends BasicActionProvider {
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider#addSubMenu(org.eclipse.jface.action.IMenuManager)
+	 * @see
+	 * org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider#addSubMenu(org.eclipse.jface.action.IMenuManager)
 	 */
 	@Override
 	protected IMenuManager addSubMenu(IMenuManager contextMenuManager) {
@@ -70,7 +71,8 @@ public class BasicCompareActionProvider extends BasicActionProvider {
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider#fillSubMenu(org.eclipse.jface.action.IMenuManager)
+	 * org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider#fillSubMenu(org.eclipse.jface.action.IMenuManager
+	 * )
 	 */
 	@Override
 	protected void fillSubMenu(IMenuManager subMenuManager) {

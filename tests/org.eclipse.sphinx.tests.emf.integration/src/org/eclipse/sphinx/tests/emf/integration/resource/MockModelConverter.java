@@ -37,10 +37,12 @@ public class MockModelConverter extends AbstractModelConverter {
 		return IHummingbirdPreferences.RESOURCE_VERSION.get(project);
 	}
 
+	@Override
 	public IMetaModelDescriptor getResourceVersionDescriptor() {
 		return Hummingbird20MMCompatibility.HUMMINGBIRD_2_0_0_RESOURCE_DESCRIPTOR;
 	}
 
+	@Override
 	public IMetaModelDescriptor getMetaModelVersionDescriptor() {
 
 		return Hummingbird20MMDescriptor.INSTANCE;

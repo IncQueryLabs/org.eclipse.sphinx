@@ -29,6 +29,7 @@ public class FieldDummy extends AbstractField implements IField {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.views.markers.internal.IField#getDescription()
 	 */
+	@Override
 	public String getDescription() {
 		return Util.EMPTY_STRING;
 	}
@@ -37,6 +38,7 @@ public class FieldDummy extends AbstractField implements IField {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.views.markers.internal.IField#getDescriptionImage()
 	 */
+	@Override
 	public Image getDescriptionImage() {
 		return null;
 	}
@@ -45,6 +47,7 @@ public class FieldDummy extends AbstractField implements IField {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.views.markers.internal.IField#getColumnHeaderText()
 	 */
+	@Override
 	public String getColumnHeaderText() {
 		return Util.EMPTY_STRING;
 	}
@@ -53,6 +56,7 @@ public class FieldDummy extends AbstractField implements IField {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.views.markers.internal.IField#getColumnHeaderImage()
 	 */
+	@Override
 	public Image getColumnHeaderImage() {
 		return null;
 	}
@@ -61,6 +65,7 @@ public class FieldDummy extends AbstractField implements IField {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.views.markers.internal.IField#getValue(java.lang.Object)
 	 */
+	@Override
 	public String getValue(Object obj) {
 		return Util.EMPTY_STRING;
 	}
@@ -69,6 +74,7 @@ public class FieldDummy extends AbstractField implements IField {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.views.markers.internal.IField#getImage(java.lang.Object)
 	 */
+	@Override
 	public Image getImage(Object obj) {
 		return null;
 	}
@@ -77,6 +83,7 @@ public class FieldDummy extends AbstractField implements IField {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.views.markers.internal.IField#compare(java.lang.Object, java.lang.Object)
 	 */
+	@Override
 	public int compare(Object obj1, Object obj2) {
 		return 0;
 	}
@@ -85,6 +92,7 @@ public class FieldDummy extends AbstractField implements IField {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.views.markers.internal.IField#getDefaultDirection()
 	 */
+	@Override
 	public int getDefaultDirection() {
 		return TableComparator.ASCENDING;
 	}
@@ -93,6 +101,7 @@ public class FieldDummy extends AbstractField implements IField {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.views.markers.internal.IField#getPreferredWidth()
 	 */
+	@Override
 	public int getPreferredWidth() {
 		return 0;
 	}

@@ -40,6 +40,7 @@ public class Test1MM extends AbstractMetaModelDescriptor implements Comparable<T
 		setEPackageRegistry(MOCK_EPKG_REGISTRY);
 	}
 
+	@Override
 	public int compareTo(Test1MM otherMMDescriptor) {
 		Assert.isNotNull(otherMMDescriptor);
 		int result = 0;

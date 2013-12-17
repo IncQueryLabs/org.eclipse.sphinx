@@ -29,6 +29,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
  */
 public class EObjectComparator<T extends EObject> implements Comparator<T> {
 
+	@Override
 	public int compare(T o1, T o2) {
 		return compareIDs(EcoreUtil.getID(o1), EcoreUtil.getID(o2));
 	}

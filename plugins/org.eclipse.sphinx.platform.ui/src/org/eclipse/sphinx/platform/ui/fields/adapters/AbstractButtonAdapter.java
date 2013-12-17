@@ -35,9 +35,10 @@ public abstract class AbstractButtonAdapter implements IButtonAdapter {
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.platform.ui.fields.adapters.IButtonAdapter#changeControlPressed(org.eclipse.sphinx.platform.ui.fields
-	 * .BasicField)
+	 * org.eclipse.sphinx.platform.ui.fields.adapters.IButtonAdapter#changeControlPressed(org.eclipse.sphinx.platform
+	 * .ui.fields .BasicField)
 	 */
+	@Override
 	public void changeControlPressed(IField field) {
 		Assert.isNotNull(field);
 		Dialog dialog = createDialog();

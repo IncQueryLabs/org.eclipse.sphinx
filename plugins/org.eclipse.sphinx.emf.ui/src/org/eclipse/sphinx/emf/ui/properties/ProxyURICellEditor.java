@@ -55,6 +55,7 @@ public class ProxyURICellEditor extends TextCellEditor {
 			this.value = value;
 		}
 
+		@Override
 		public String isValid(Object value) {
 			ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(owner.eResource());
 			if (extendedResource != null) {

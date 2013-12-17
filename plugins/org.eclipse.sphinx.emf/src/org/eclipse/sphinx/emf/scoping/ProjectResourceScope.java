@@ -50,6 +50,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getRoot()
 	 */
+	@Override
 	public IResource getRoot() {
 		return rootProject;
 	}
@@ -57,6 +58,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getReferencedRoots()
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<IResource> getReferencedRoots() {
 		if (rootProject != null) {
@@ -70,6 +72,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#getReferencingRoots()
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<IResource> getReferencingRoots() {
 		if (rootProject != null) {
@@ -83,6 +86,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#belongsTo(org.eclipse.core.resources.IFile, boolean)
 	 */
+	@Override
 	public boolean belongsTo(IFile file, boolean includeReferencedScopes) {
 		if (isShared(file)) {
 			return true;
@@ -94,6 +98,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#belongsTo(org.eclipse.emf.ecore.resource.Resource, boolean)
 	 */
+	@Override
 	public boolean belongsTo(Resource resource, boolean includeReferencedScopes) {
 		if (isShared(resource)) {
 			return true;
@@ -106,6 +111,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#belongsTo(org.eclipse.emf.common.util.URI, boolean)
 	 */
+	@Override
 	public boolean belongsTo(URI uri, boolean includeReferencedScopes) {
 		if (isShared(uri)) {
 			return true;
@@ -118,6 +124,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#didBelongTo(org.eclipse.core.resources.IFile, boolean)
 	 */
+	@Override
 	public boolean didBelongTo(IFile file, boolean includeReferencedScopes) {
 		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
 	}
@@ -125,6 +132,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#didBelongTo(org.eclipse.emf.ecore.resource.Resource, boolean)
 	 */
+	@Override
 	public boolean didBelongTo(Resource resource, boolean includeReferencedScopes) {
 		IFile file = EcorePlatformUtil.getFile(resource);
 		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
@@ -133,6 +141,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	/*
 	 * @see org.eclipse.sphinx.emf.scoping.IResourceScope#didBelongTo(org.eclipse.emf.common.util.URI, boolean)
 	 */
+	@Override
 	public boolean didBelongTo(URI uri, boolean includeReferencedScopes) {
 		IFile file = EcorePlatformUtil.getFile(uri);
 		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);

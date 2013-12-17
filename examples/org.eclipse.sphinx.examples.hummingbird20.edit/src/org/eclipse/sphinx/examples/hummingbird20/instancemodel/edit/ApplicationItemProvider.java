@@ -21,7 +21,6 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.ResourceLocator;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
@@ -39,15 +38,16 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Fa
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
 
 /**
- * This is the item provider adapter for a {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application} object.
- * <!-- begin-user-doc --> <!-- end-user-doc -->
+ * This is the item provider adapter for a {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application}
+ * object. <!-- begin-user-doc --> <!-- end-user-doc -->
+ * 
  * @generated
  */
 public class ApplicationItemProvider extends IdentifiableItemProvider implements IEditingDomainItemProvider, IStructuredItemContentProvider,
 		ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
 	/**
-	 * This constructs an instance from a factory and a notifier.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This constructs an instance from a factory and a notifier. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public ApplicationItemProvider(AdapterFactory adapterFactory) {
@@ -55,8 +55,8 @@ public class ApplicationItemProvider extends IdentifiableItemProvider implements
 	}
 
 	/**
-	 * This returns the property descriptors for the adapted class.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This returns the property descriptors for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -71,9 +71,9 @@ public class ApplicationItemProvider extends IdentifiableItemProvider implements
 	/**
 	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
 	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
-	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
-	 * <!-- begin-user-doc --> <!--
+	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -88,6 +88,7 @@ public class ApplicationItemProvider extends IdentifiableItemProvider implements
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -99,8 +100,8 @@ public class ApplicationItemProvider extends IdentifiableItemProvider implements
 	}
 
 	/**
-	 * This returns Application.gif.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This returns Application.gif. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -109,16 +110,15 @@ public class ApplicationItemProvider extends IdentifiableItemProvider implements
 	}
 
 	/**
-	 * This returns the label text for the adapted class.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This returns the label text for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public String getText(Object object) {
-		String label = ((Application)object).getName();
-		return label == null || label.length() == 0 ?
-			getString("_UI_Application_type") : //$NON-NLS-1$
-			getString("_UI_Application_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
+		String label = ((Application) object).getName();
+		return label == null || label.length() == 0 ? getString("_UI_Application_type") : //$NON-NLS-1$
+				getString("_UI_Application_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -133,61 +133,45 @@ public class ApplicationItemProvider extends IdentifiableItemProvider implements
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(Application.class)) {
-			case InstanceModel20Package.APPLICATION__COMPONENTS:
-			case InstanceModel20Package.APPLICATION__MIXED:
-				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
-				return;
+		case InstanceModel20Package.APPLICATION__COMPONENTS:
+		case InstanceModel20Package.APPLICATION__MIXED:
+			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
+			return;
 		}
 		super.notifyChanged(notification);
 	}
 
 	/**
-	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children
-	 * that can be created under this object.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children that can be created
+	 * under this object. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
 
-		newChildDescriptors.add
-			(createChildParameter
-				(InstanceModel20Package.Literals.APPLICATION__COMPONENTS,
-				 InstanceModel20Factory.eINSTANCE.createComponent()));
+		newChildDescriptors.add(createChildParameter(InstanceModel20Package.Literals.APPLICATION__COMPONENTS,
+				InstanceModel20Factory.eINSTANCE.createComponent()));
 
-		newChildDescriptors.add
-			(createChildParameter
-				(InstanceModel20Package.Literals.APPLICATION__MIXED,
-				 FeatureMapUtil.createEntry
-					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT,
-					 ""))); //$NON-NLS-1$
+		newChildDescriptors.add(createChildParameter(InstanceModel20Package.Literals.APPLICATION__MIXED,
+				FeatureMapUtil.createEntry(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT, ""))); //$NON-NLS-1$
 
-		newChildDescriptors.add
-			(createChildParameter
-				(InstanceModel20Package.Literals.APPLICATION__MIXED,
-				 FeatureMapUtil.createEntry
-					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT,
-					 ""))); //$NON-NLS-1$
+		newChildDescriptors.add(createChildParameter(InstanceModel20Package.Literals.APPLICATION__MIXED,
+				FeatureMapUtil.createEntry(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT, ""))); //$NON-NLS-1$
 
-		newChildDescriptors.add
-			(createChildParameter
-				(InstanceModel20Package.Literals.APPLICATION__MIXED,
-				 FeatureMapUtil.createEntry
-					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION,
-					 XMLTypeFactory.eINSTANCE.createProcessingInstruction())));
+		newChildDescriptors.add(createChildParameter(
+				InstanceModel20Package.Literals.APPLICATION__MIXED,
+				FeatureMapUtil.createEntry(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION,
+						XMLTypeFactory.eINSTANCE.createProcessingInstruction())));
 
-		newChildDescriptors.add
-			(createChildParameter
-				(InstanceModel20Package.Literals.APPLICATION__MIXED,
-				 FeatureMapUtil.createEntry
-					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA,
-					 ""))); //$NON-NLS-1$
+		newChildDescriptors.add(createChildParameter(InstanceModel20Package.Literals.APPLICATION__MIXED,
+				FeatureMapUtil.createEntry(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA, ""))); //$NON-NLS-1$
 	}
 
 	/**
-	 * Return the resource locator for this item provider's resources.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Return the resource locator for this item provider's resources. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override

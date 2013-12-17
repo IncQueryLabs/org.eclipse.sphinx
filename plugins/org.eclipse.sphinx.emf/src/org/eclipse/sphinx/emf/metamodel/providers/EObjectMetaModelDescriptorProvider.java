@@ -14,9 +14,9 @@
  */
 package org.eclipse.sphinx.emf.metamodel.providers;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
-import org.eclipse.emf.ecore.EObject;
 
 /**
  * Provides a metamodel descriptor based on a given context EMF object.
@@ -43,6 +43,7 @@ public class EObjectMetaModelDescriptorProvider implements IMetaModelDescriptorP
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public IMetaModelDescriptor getMetaModelDescriptor() {
 		return MetaModelDescriptorRegistry.INSTANCE.getDescriptor(fContextEObject);
 	}

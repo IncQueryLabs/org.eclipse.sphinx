@@ -134,6 +134,7 @@ public abstract class AbstractCLIApplication implements IApplication {
 	 * (non-Javadoc)
 	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
 	 */
+	@Override
 	public Object start(IApplicationContext context) {
 		// Initialize application arguments
 		initApplicationArgs(context);
@@ -145,6 +146,7 @@ public abstract class AbstractCLIApplication implements IApplication {
 	/*
 	 * @see org.eclipse.equinox.app.IApplication#stop()
 	 */
+	@Override
 	public void stop() {
 	}
 

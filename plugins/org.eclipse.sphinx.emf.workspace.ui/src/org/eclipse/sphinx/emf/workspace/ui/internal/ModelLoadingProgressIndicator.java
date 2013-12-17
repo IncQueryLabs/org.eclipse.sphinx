@@ -86,8 +86,10 @@ public class ModelLoadingProgressIndicator extends JobChangeAdapter {
 			 * model loading jobs would never be complete when the progress dialog's short operation time delay is over.
 			 */
 			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					SafeRunner.run(new SafeRunnable("Creating dialog showing model loading progress...") { //$NON-NLS-1$ (internal message)
+								@Override
 								public void run() {
 									PlatformUI.getWorkbench().getProgressService().showInDialog(null, event.getJob());
 								}

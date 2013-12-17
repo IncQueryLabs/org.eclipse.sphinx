@@ -18,7 +18,6 @@ import org.eclipse.sphinx.emf.properties.PropertyFilter;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 
-
 public interface IPropertySourceFilter {
 
 	void setPropertyFilter(PropertyFilter propertyFilter);

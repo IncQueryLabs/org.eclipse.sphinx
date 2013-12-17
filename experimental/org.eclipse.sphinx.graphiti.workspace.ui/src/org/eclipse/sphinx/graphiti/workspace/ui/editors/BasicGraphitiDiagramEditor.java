@@ -37,8 +37,8 @@ import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.editor.EditorInputAdapter;
 import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
 import org.eclipse.graphiti.ui.internal.config.ConfigurationProvider;
-import org.eclipse.graphiti.ui.internal.config.IConfigurationProvider;
 import org.eclipse.graphiti.ui.internal.services.GraphitiUiInternal;
+import org.eclipse.graphiti.ui.platform.IConfigurationProvider;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
@@ -120,10 +120,12 @@ public class BasicGraphitiDiagramEditor extends DiagramEditor implements ISaveab
 		configurationProvider = new ConfigurationProvider(this, getDiagramTypeProvider());
 	}
 
+	@Override
 	public Saveable[] getActiveSaveables() {
 		return getSaveables();
 	}
 
+	@Override
 	public Saveable[] getSaveables() {
 		if (modelSaveablesProvider != null) {
 			List<Saveable> saveables = new ArrayList<Saveable>(2);
@@ -180,6 +182,7 @@ public class BasicGraphitiDiagramEditor extends DiagramEditor implements ISaveab
 		if (editingDomain != null) {
 			try {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
+					@Override
 					public void run() {
 						Map<?, ?> options = EcoreResourceUtil.getDefaultLoadOptions();
 
@@ -259,6 +262,7 @@ public class BasicGraphitiDiagramEditor extends DiagramEditor implements ISaveab
 	/**
 	 * @return the diagramEditorInput
 	 */
+	@Override
 	public DiagramEditorInput getDiagramEditorInput() {
 		return diagramEditorInput;
 	}

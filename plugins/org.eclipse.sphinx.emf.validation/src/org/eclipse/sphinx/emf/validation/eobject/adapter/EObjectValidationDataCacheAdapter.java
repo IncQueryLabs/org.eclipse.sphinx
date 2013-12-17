@@ -15,6 +15,7 @@
 package org.eclipse.sphinx.emf.validation.eobject.adapter;
 
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
+import org.eclipse.sphinx.emf.validation.markers.ValidationStatusCode;
 
 /**
  * This adapter represent a behaviour extension to {@link org.eclipse.emf.ecore.EObject EObject} in order to store them
@@ -27,10 +28,12 @@ public class EObjectValidationDataCacheAdapter extends AdapterImpl implements IE
 	protected int severity = -1;
 	protected boolean isSeverityOk = DEFAULT_SEVERITY_OK;
 
+	@Override
 	public boolean isSeverityOk() {
 		return isSeverityOk;
 	}
 
+	@Override
 	public int getSeverity() {
 		return severity;
 	}

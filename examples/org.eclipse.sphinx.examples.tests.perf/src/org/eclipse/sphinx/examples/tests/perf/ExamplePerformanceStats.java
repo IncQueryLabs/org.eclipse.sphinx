@@ -37,6 +37,7 @@ public class ExamplePerformanceStats extends AbstractPerformanceStats<ExamplePer
 			name = EventName;
 		}
 
+		@Override
 		public String getName() {
 
 			return name;

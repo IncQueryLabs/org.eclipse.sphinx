@@ -26,6 +26,7 @@ public class ModelElementContentMergeViewerCreator implements IViewerCreator {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Viewer createViewer(Composite parent, CompareConfiguration config) {
 		return new ModelElementContentMergeViewer(parent, config);
 	}

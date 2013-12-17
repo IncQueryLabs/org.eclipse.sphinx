@@ -373,6 +373,7 @@ public class ExtendedDiagnostician extends Diagnostician {
 		final TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(eObject);
 		if (editingDomain != null) {
 			RunnableWithResult<String> runnable = new RunnableWithResult.Impl<String>() {
+				@Override
 				public void run() {
 					setResult(doGetObjectLabel(editingDomain, eObject));
 				}

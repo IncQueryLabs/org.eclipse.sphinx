@@ -56,12 +56,14 @@ public class FileCompareAction implements IObjectActionDelegate {
 		}
 	}
 
+	@Override
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 		if (eclipseCompareActionDelegate != null) {
 			eclipseCompareActionDelegate.setActivePart(action, targetPart);
 		}
 	}
 
+	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
 		// Propagate selection to delegates
 		if (eclipseCompareActionDelegate != null) {
@@ -75,6 +77,7 @@ public class FileCompareAction implements IObjectActionDelegate {
 		}
 	}
 
+	@Override
 	public void run(IAction action) {
 		if (modelCompareActionDelegate.isEnabled()) {
 			modelCompareActionDelegate.run();

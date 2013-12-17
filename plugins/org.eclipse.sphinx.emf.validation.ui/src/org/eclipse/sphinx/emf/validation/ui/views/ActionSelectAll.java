@@ -63,6 +63,7 @@ public class ActionSelectAll extends MarkerSelectionProviderAction {
 			 * (non-Javadoc)
 			 * @see org.eclipse.jface.operation.IRunnableWithProgress#run(org.eclipse.core.runtime.IProgressMonitor)
 			 */
+			@Override
 			public void run(IProgressMonitor monitor) {
 
 				try {

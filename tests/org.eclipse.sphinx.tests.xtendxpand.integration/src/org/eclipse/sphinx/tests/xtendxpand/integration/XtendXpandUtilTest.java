@@ -90,6 +90,7 @@ public class XtendXpandUtilTest extends XtendXpandIntegrationTestCase {
 	private void synchronizedCreateLinkFile(final IContainer targetContainer, final File fileToBeLinked) throws Exception {
 		waitForModelLoading();
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				IFile linkedFile = targetContainer.getFile(new Path(fileToBeLinked.getName()));
 				linkedFile.createLink(new Path(fileToBeLinked.getAbsolutePath()), IResource.REPLACE, null);

@@ -41,6 +41,7 @@ public class Hummingbird20PropertySection extends AdvancedPropertySection implem
 	/**
 	 * @generated
 	 */
+	@Override
 	public IPropertySource getPropertySource(Object object) {
 		if (object instanceof IPropertySource) {
 			return (IPropertySource) object;

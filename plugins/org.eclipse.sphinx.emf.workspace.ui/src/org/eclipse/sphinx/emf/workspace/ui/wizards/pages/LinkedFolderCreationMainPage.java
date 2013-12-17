@@ -118,6 +118,7 @@ public class LinkedFolderCreationMainPage extends WizardPage implements Listener
 	/**
 	 * (non-Javadoc) Method declared on IDialogPage.
 	 */
+	@Override
 	public void createControl(Composite parent) {
 		initializeDialogUnits(parent);
 		// Top level group
@@ -151,15 +152,18 @@ public class LinkedFolderCreationMainPage extends WizardPage implements Listener
 
 		}
 		linkedResourceGroup = new CreateLinkedResourceGroup(IResource.FOLDER, new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				firstLinkCheck = false;
 				setPageComplete(validatePage());
 			}
 		}, new CreateLinkedResourceGroup.IStringValue() {
+			@Override
 			public String getValue() {
 				return getFolderName();
 			}
 
+			@Override
 			public void setValue(String string) {
 				setFolderName(string);
 			}
@@ -224,14 +228,16 @@ public class LinkedFolderCreationMainPage extends WizardPage implements Listener
 
 		createLinkTarget();
 		IRunnableWithProgress runnable = new IRunnableWithProgress() {
+			@Override
 			public void run(IProgressMonitor monitor) {
 				CreateFolderOperation createFolderOperation = new CreateFolderOperation(newFolderHandle, linkTargetPath,
 						Messages.wizardNewLinkedFolderCreationPage_title);
 				try {
-					PlatformUI.getWorkbench().getOperationSupport().getOperationHistory().execute(createFolderOperation, monitor,
-							WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
+					PlatformUI.getWorkbench().getOperationSupport().getOperationHistory()
+							.execute(createFolderOperation, monitor, WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
 				} catch (final ExecutionException e) {
 					getContainer().getShell().getDisplay().syncExec(new Runnable() {
+						@Override
 						public void run() {
 							if (e.getCause() instanceof CoreException) {
 								ErrorDialog.openError(getContainer().getShell(), // Was Utilities.getFocusShell()
@@ -241,8 +247,8 @@ public class LinkedFolderCreationMainPage extends WizardPage implements Listener
 										((CoreException) e.getCause()).getStatus());
 							} else {
 								PlatformLogUtil.logAsError(Activator.getPlugin(), "createNewLinkedFolder()" + e.getCause()); //$NON-NLS-1$
-								MessageDialog.openError(getContainer().getShell(), Messages.wizardNewLinkedFolderCreationPage_internalErrorTitle, NLS
-										.bind(Messages.wizardNewLinkedFolderCreationPage_internalErrorMessage, e.getCause().getMessage()));
+								MessageDialog.openError(getContainer().getShell(), Messages.wizardNewLinkedFolderCreationPage_internalErrorTitle,
+										NLS.bind(Messages.wizardNewLinkedFolderCreationPage_internalErrorMessage, e.getCause().getMessage()));
 							}
 						}
 					});
@@ -258,8 +264,8 @@ public class LinkedFolderCreationMainPage extends WizardPage implements Listener
 			// ExecutionExceptions are handled above, but unexpected runtime
 			// exceptions and errors may still occur.
 			PlatformLogUtil.logAsError(Activator.getPlugin(), "createNewFolder()" + e.getTargetException()); //$NON-NLS-1$
-			MessageDialog.openError(getContainer().getShell(), Messages.wizardNewLinkedFolderCreationPage_internalErrorTitle, NLS.bind(
-					Messages.wizardNewLinkedFolderCreationPage_internalErrorMessage, e.getTargetException().getMessage()));
+			MessageDialog.openError(getContainer().getShell(), Messages.wizardNewLinkedFolderCreationPage_internalErrorTitle,
+					NLS.bind(Messages.wizardNewLinkedFolderCreationPage_internalErrorMessage, e.getTargetException().getMessage()));
 			return null;
 		}
 
@@ -296,6 +302,7 @@ public class LinkedFolderCreationMainPage extends WizardPage implements Listener
 	 * The <code>WizardNewFolderCreationPage</code> implementation of this <code>Listener</code> method handles all
 	 * events and enablements for controls on this page. Subclasses may extend.
 	 */
+	@Override
 	public void handleEvent(Event ev) {
 		setPageComplete(validatePage());
 	}

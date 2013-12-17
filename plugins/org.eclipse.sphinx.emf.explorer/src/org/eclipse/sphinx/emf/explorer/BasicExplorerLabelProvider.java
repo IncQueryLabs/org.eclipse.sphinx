@@ -50,13 +50,16 @@ public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICo
 
 	protected ILabelProviderListener modelLabelProviderListener;
 
+	@Override
 	public void init(ICommonContentExtensionSite aConfig) {
 	}
 
+	@Override
 	public void saveState(IMemento memento) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void restoreState(IMemento memento) {
 		// Do nothing by default
 	}
@@ -165,6 +168,7 @@ public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICo
 	/*
 	 * @see org.eclipse.ui.navigator.IDescriptionProvider#getDescription(java.lang.Object)
 	 */
+	@Override
 	public String getDescription(Object anElement) {
 		// Don't try to retrieve descriptions for files - leave this to other common label providers which are more
 		// appropriate
@@ -199,6 +203,7 @@ public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICo
 		return true;
 	}
 
+	@Override
 	public String getText(Object element) {
 		// Don't try to retrieve texts for files - leave this to other common label providers which are more
 		// appropriate
@@ -212,6 +217,7 @@ public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICo
 		return null;
 	}
 
+	@Override
 	public Image getImage(Object element) {
 		// Don't try to retrieve images for files - leave this to other common label providers which are more
 		// appropriate
@@ -243,6 +249,7 @@ public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICo
 
 	protected ILabelProviderListener createModelLabelProviderListener() {
 		return new ILabelProviderListener() {
+			@Override
 			public void labelProviderChanged(LabelProviderChangedEvent event) {
 				// Route LabelProviderChangedEvent from embedded AdapterFactoryLabelProvider to enclosing
 				// BaseLabelProvider

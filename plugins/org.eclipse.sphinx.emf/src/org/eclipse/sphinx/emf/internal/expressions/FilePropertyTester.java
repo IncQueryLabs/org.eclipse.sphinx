@@ -41,6 +41,7 @@ public class FilePropertyTester extends PropertyTester {
 	 */
 	private static final String METAMODEL_ID_MATCHES = "metaModelIdMatches"; //$NON-NLS-1$
 
+	@Override
 	public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
 		if (receiver instanceof IFile) {
 			if (IS_IN_SCOPE.equals(property)) {

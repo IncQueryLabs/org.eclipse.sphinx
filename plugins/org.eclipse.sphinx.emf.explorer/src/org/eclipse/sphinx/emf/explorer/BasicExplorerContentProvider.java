@@ -103,10 +103,12 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * 
 	 * @return the viewer for this content provider
 	 */
+	@Override
 	public Viewer getViewer() {
 		return viewer;
 	}
 
+	@Override
 	public void init(ICommonContentExtensionSite config) {
 		contentDescriptor = config.getExtension().getDescriptor();
 	}
@@ -119,10 +121,12 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		return contentDescriptor.isPossibleChild(object);
 	}
 
+	@Override
 	public void saveState(IMemento memento) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void restoreState(IMemento memento) {
 		// Do nothing by default
 	}
@@ -524,18 +528,22 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		return null;
 	}
 
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		this.viewer = viewer;
 	}
 
+	@Override
 	public Object[] getElements(Object inputElement) {
 		return getChildren(inputElement);
 	}
 
+	@Override
 	public boolean hasChildren(Object element) {
 		return getChildren(element).length > 0;
 	}
 
+	@Override
 	public Object[] getChildren(Object parentElement) {
 		ArrayList<Object> children = new ArrayList<Object>();
 		try {
@@ -574,6 +582,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		return children.toArray(new Object[children.size()]);
 	}
 
+	@Override
 	public Object getParent(Object element) {
 		Object parent = null;
 		AdapterFactoryContentProvider contentProvider = getModelContentProvider(element);
@@ -591,6 +600,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		return parent;
 	}
 
+	@Override
 	public void dispose() {
 		for (TransactionalEditingDomain editingDomain : modelContentProviders.keySet()) {
 			removeTransactionalEditingDomainListeners(editingDomain);
@@ -983,6 +993,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		if (object != null) {
 			if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
 				viewer.getControl().getDisplay().asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
 							if (viewer instanceof StructuredViewer) {
@@ -1002,6 +1013,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	protected void refreshViewer() {
 		if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
 			viewer.getControl().getDisplay().asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
 						if (viewer instanceof StructuredViewer) {

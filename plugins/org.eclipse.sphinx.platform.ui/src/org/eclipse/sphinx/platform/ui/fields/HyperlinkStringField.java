@@ -138,6 +138,7 @@ public class HyperlinkStringField extends BasicHyperlinkField implements IString
 		if (fTextControl == null) {
 			assertCompositeNotNull(parent);
 			fModifyListener = new ModifyListener() {
+				@Override
 				public void modifyText(ModifyEvent e) {
 					doModifyText(e);
 				}
@@ -223,6 +224,7 @@ public class HyperlinkStringField extends BasicHyperlinkField implements IString
 	/**
 	 * Gets the text. Can not be <code>null</code>
 	 */
+	@Override
 	public String getText() {
 		return fText;
 	}
@@ -242,6 +244,7 @@ public class HyperlinkStringField extends BasicHyperlinkField implements IString
 	/**
 	 * Sets the text. Triggers a dialog-changed event.
 	 */
+	@Override
 	public void setText(String text) {
 		fText = text;
 		if (isOkToUse(fTextControl)) {
@@ -274,6 +277,7 @@ public class HyperlinkStringField extends BasicHyperlinkField implements IString
 	/**
 	 * Sets the text without triggering a dialog-changed event.
 	 */
+	@Override
 	public void setTextWithoutUpdate(String text) {
 		fText = text;
 		if (isOkToUse(fTextControl)) {
@@ -283,6 +287,7 @@ public class HyperlinkStringField extends BasicHyperlinkField implements IString
 		}
 	}
 
+	@Override
 	public Control getTextControl() {
 		Control control = null;
 		if (isOkToUse(fTextControl)) {
@@ -291,6 +296,7 @@ public class HyperlinkStringField extends BasicHyperlinkField implements IString
 		return control;
 	}
 
+	@Override
 	public void setEditable(boolean editable) {
 		if (editable != fEditable) {
 			fEditable = editable;

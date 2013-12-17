@@ -16,10 +16,10 @@
  *******************************************************************************/
 package org.eclipse.sphinx.emf.validation.ui.views;
 
-import org.eclipse.sphinx.emf.resource.IXMLMarker;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.sphinx.emf.resource.IXMLMarker;
 import org.eclipse.sphinx.emf.validation.markers.IValidationMarker;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPluginContribution;
@@ -330,6 +330,7 @@ public class ProblemFilter extends MarkerFilter {
 			 * (non-Javadoc)
 			 * @see org.eclipse.ui.IPluginContribution#getLocalId()
 			 */
+			@Override
 			public String getLocalId() {
 				return id;
 			}
@@ -338,6 +339,7 @@ public class ProblemFilter extends MarkerFilter {
 			 * (non-Javadoc)
 			 * @see org.eclipse.ui.IPluginContribution#getPluginId()
 			 */
+			@Override
 			public String getPluginId() {
 				return namespace;
 			}

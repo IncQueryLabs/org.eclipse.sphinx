@@ -25,13 +25,13 @@ public class MockAttribute {
 
 	public MockAttribute(String name, String value) {
 		this(name);
-		fValue = value; 
+		fValue = value;
 	}
-	
+
 	public String getName() {
 		return fName;
 	}
-	
+
 	public String getValue() {
 		return fValue;
 	}

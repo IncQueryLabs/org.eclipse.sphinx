@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.typemodel.edit;
 
-
 import java.util.Collection;
 import java.util.List;
 
@@ -40,22 +39,15 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
 
 /**
  * This is the item provider adapter for a {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform} object.
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> <!-- end-user-doc -->
+ * 
  * @generated
  */
-public class PlatformItemProvider
-	extends IdentifiableItemProvider
-	implements
-		IEditingDomainItemProvider,
-		IStructuredItemContentProvider,
-		ITreeItemContentProvider,
-		IItemLabelProvider,
-		IItemPropertySource {
+public class PlatformItemProvider extends IdentifiableItemProvider implements IEditingDomainItemProvider, IStructuredItemContentProvider,
+		ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
 	/**
-	 * This constructs an instance from a factory and a notifier.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This constructs an instance from a factory and a notifier. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public PlatformItemProvider(AdapterFactory adapterFactory) {
@@ -63,9 +55,8 @@ public class PlatformItemProvider
 	}
 
 	/**
-	 * This returns the property descriptors for the adapted class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This returns the property descriptors for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -80,9 +71,9 @@ public class PlatformItemProvider
 	/**
 	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
 	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
-	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -97,8 +88,8 @@ public class PlatformItemProvider
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -110,9 +101,8 @@ public class PlatformItemProvider
 	}
 
 	/**
-	 * This returns Platform.gif.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This returns Platform.gif. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -121,24 +111,22 @@ public class PlatformItemProvider
 	}
 
 	/**
-	 * This returns the label text for the adapted class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This returns the label text for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public String getText(Object object) {
-		String label = ((Platform)object).getName();
-		return label == null || label.length() == 0 ?
-			getString("_UI_Platform_type") : //$NON-NLS-1$
-			getString("_UI_Platform_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
+		String label = ((Platform) object).getName();
+		return label == null || label.length() == 0 ? getString("_UI_Platform_type") : //$NON-NLS-1$
+				getString("_UI_Platform_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
-	 * This handles model notifications by calling {@link #updateChildren} to update any cached
-	 * children and by creating a viewer notification, which it passes to {@link #fireNotifyChanged}.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This handles model notifications by calling {@link #updateChildren} to update any cached children and by creating
+	 * a viewer notification, which it passes to {@link #fireNotifyChanged}. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -146,69 +134,49 @@ public class PlatformItemProvider
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(Platform.class)) {
-			case TypeModel20Package.PLATFORM__COMPONENT_TYPES:
-			case TypeModel20Package.PLATFORM__INTERFACES:
-			case TypeModel20Package.PLATFORM__MIXED:
-				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
-				return;
+		case TypeModel20Package.PLATFORM__COMPONENT_TYPES:
+		case TypeModel20Package.PLATFORM__INTERFACES:
+		case TypeModel20Package.PLATFORM__MIXED:
+			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
+			return;
 		}
 		super.notifyChanged(notification);
 	}
 
 	/**
-	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children
-	 * that can be created under this object.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children that can be created
+	 * under this object. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
 
-		newChildDescriptors.add
-			(createChildParameter
-				(TypeModel20Package.Literals.PLATFORM__COMPONENT_TYPES,
-				 TypeModel20Factory.eINSTANCE.createComponentType()));
+		newChildDescriptors.add(createChildParameter(TypeModel20Package.Literals.PLATFORM__COMPONENT_TYPES,
+				TypeModel20Factory.eINSTANCE.createComponentType()));
 
-		newChildDescriptors.add
-			(createChildParameter
-				(TypeModel20Package.Literals.PLATFORM__INTERFACES,
-				 TypeModel20Factory.eINSTANCE.createInterface()));
+		newChildDescriptors
+				.add(createChildParameter(TypeModel20Package.Literals.PLATFORM__INTERFACES, TypeModel20Factory.eINSTANCE.createInterface()));
 
-		newChildDescriptors.add
-			(createChildParameter
-				(TypeModel20Package.Literals.PLATFORM__MIXED,
-				 FeatureMapUtil.createEntry
-					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT,
-					 ""))); //$NON-NLS-1$
+		newChildDescriptors.add(createChildParameter(TypeModel20Package.Literals.PLATFORM__MIXED,
+				FeatureMapUtil.createEntry(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT, ""))); //$NON-NLS-1$
 
-		newChildDescriptors.add
-			(createChildParameter
-				(TypeModel20Package.Literals.PLATFORM__MIXED,
-				 FeatureMapUtil.createEntry
-					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT,
-					 ""))); //$NON-NLS-1$
+		newChildDescriptors.add(createChildParameter(TypeModel20Package.Literals.PLATFORM__MIXED,
+				FeatureMapUtil.createEntry(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT, ""))); //$NON-NLS-1$
 
-		newChildDescriptors.add
-			(createChildParameter
-				(TypeModel20Package.Literals.PLATFORM__MIXED,
-				 FeatureMapUtil.createEntry
-					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION,
-					 XMLTypeFactory.eINSTANCE.createProcessingInstruction())));
+		newChildDescriptors.add(createChildParameter(
+				TypeModel20Package.Literals.PLATFORM__MIXED,
+				FeatureMapUtil.createEntry(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION,
+						XMLTypeFactory.eINSTANCE.createProcessingInstruction())));
 
-		newChildDescriptors.add
-			(createChildParameter
-				(TypeModel20Package.Literals.PLATFORM__MIXED,
-				 FeatureMapUtil.createEntry
-					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA,
-					 ""))); //$NON-NLS-1$
+		newChildDescriptors.add(createChildParameter(TypeModel20Package.Literals.PLATFORM__MIXED,
+				FeatureMapUtil.createEntry(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA, ""))); //$NON-NLS-1$
 	}
 
 	/**
-	 * Return the resource locator for this item provider's resources.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Return the resource locator for this item provider's resources. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override

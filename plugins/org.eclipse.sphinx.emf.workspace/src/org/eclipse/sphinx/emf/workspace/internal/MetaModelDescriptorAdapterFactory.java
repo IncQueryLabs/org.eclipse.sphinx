@@ -26,6 +26,7 @@ public class MetaModelDescriptorAdapterFactory implements IAdapterFactory {
 	/*
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
 	 */
+	@Override
 	public Object getAdapter(final Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
 
 		if (adapterType.equals(IModelLoadService.class) && adaptableObject instanceof IMetaModelDescriptor) {
@@ -37,6 +38,7 @@ public class MetaModelDescriptorAdapterFactory implements IAdapterFactory {
 	/*
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
 	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public Class[] getAdapterList() {
 		return new Class<?>[] { IModelLoadService.class };

@@ -212,6 +212,7 @@ public class ComponentNameEditPart extends CompartmentEditPart implements ITextA
 	/**
 	 * @generated
 	 */
+	@Override
 	public void setLabelText(String text) {
 		setLabelTextHelper(getFigure(), text);
 		Object pdEditPolicy = getEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE);
@@ -227,6 +228,7 @@ public class ComponentNameEditPart extends CompartmentEditPart implements ITextA
 	/**
 	 * @generated
 	 */
+	@Override
 	public String getEditText() {
 		if (getParserElement() == null || getParser() == null) {
 			return ""; //$NON-NLS-1$
@@ -244,9 +246,11 @@ public class ComponentNameEditPart extends CompartmentEditPart implements ITextA
 	/**
 	 * @generated
 	 */
+	@Override
 	public ICellEditorValidator getEditTextValidator() {
 		return new ICellEditorValidator() {
 
+			@Override
 			public String isValid(final Object value) {
 				if (value instanceof String) {
 					final EObject element = getParserElement();
@@ -255,6 +259,7 @@ public class ComponentNameEditPart extends CompartmentEditPart implements ITextA
 						IParserEditStatus valid = (IParserEditStatus) getEditingDomain().runExclusive(
 								new RunnableWithResult.Impl<IParserEditStatus>() {
 
+									@Override
 									public void run() {
 										setResult(parser.isValidEditString(new EObjectAdapter(element), (String) value));
 									}
@@ -274,6 +279,7 @@ public class ComponentNameEditPart extends CompartmentEditPart implements ITextA
 	/**
 	 * @generated
 	 */
+	@Override
 	public IContentAssistProcessor getCompletionProcessor() {
 		if (getParserElement() == null || getParser() == null) {
 			return null;
@@ -284,6 +290,7 @@ public class ComponentNameEditPart extends CompartmentEditPart implements ITextA
 	/**
 	 * @generated
 	 */
+	@Override
 	public ParserOptions getParserOptions() {
 		return ParserOptions.NONE;
 	}
@@ -291,6 +298,7 @@ public class ComponentNameEditPart extends CompartmentEditPart implements ITextA
 	/**
 	 * @generated
 	 */
+	@Override
 	public IParser getParser() {
 		if (parser == null) {
 			parser = Hummingbird20ParserProvider.getParser(Hummingbird20ElementTypes.Component_2001, getParserElement(),
@@ -354,6 +362,7 @@ public class ComponentNameEditPart extends CompartmentEditPart implements ITextA
 		try {
 			getEditingDomain().runExclusive(new Runnable() {
 
+				@Override
 				public void run() {
 					if (isActive() && isEditable()) {
 						if (theRequest.getExtendedData().get(RequestConstants.REQ_DIRECTEDIT_EXTENDEDDATA_INITIAL_CHAR) instanceof Character) {

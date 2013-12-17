@@ -15,9 +15,6 @@
 package org.eclipse.sphinx.emf.compare.ui.viewer.content;
 
 import org.eclipse.compare.contentmergeviewer.ContentMergeViewer;
-import org.eclipse.emf.compare.ui.viewer.content.ModelContentMergeViewer;
-import org.eclipse.emf.compare.ui.viewer.content.part.IModelContentMergeViewerTab;
-import org.eclipse.emf.compare.ui.viewer.content.part.ModelContentMergeTabFolder;
 import org.eclipse.swt.widgets.Composite;
 
 /**

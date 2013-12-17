@@ -270,6 +270,7 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 		final int inset = 1;
 		if (inset > 0) {
 			textEditorParent.addListener(SWT.Paint, new Listener() {
+				@Override
 				public void handleEvent(Event e) {
 					Point textSize = textEditor.getSize();
 					Point parentSize = textEditorParent.getSize();
@@ -282,6 +283,7 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 		textEditor.setFont(viewer.getTree().getFont());
 		textEditorParent.setBackground(textEditor.getBackground());
 		textEditor.addListener(SWT.Modify, new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				Point textSize = textEditor.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 				textSize.x += textSize.y; // Add extra space for new
@@ -292,6 +294,7 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 			}
 		});
 		textEditor.addListener(SWT.Traverse, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 
 				// Workaround for Bug 20214 due to extra
@@ -351,6 +354,7 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 		// icon of the item being renamed is clicked (i.e., which causes the
 		// rename text widget to lose focus and trigger this method).
 		Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				try {
 					String oldName = getOldName(inlinedObject);

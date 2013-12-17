@@ -177,6 +177,7 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 			choiceTableViewer.addFilter(filter);
 			assert patternText != null;
 			patternText.addModifyListener(new ModifyListener() {
+				@Override
 				public void modifyText(ModifyEvent e) {
 					filter.setPattern(((Text) e.widget).getText());
 					choiceTableViewer.refresh();
@@ -287,6 +288,7 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 
 		if (choiceTableViewer != null) {
 			choiceTableViewer.addDoubleClickListener(new IDoubleClickListener() {
+				@Override
 				public void doubleClick(DoubleClickEvent event) {
 					if (addButton.isEnabled()) {
 						addButton.notifyListeners(SWT.Selection, null);
@@ -295,6 +297,7 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 			});
 
 			featureTableViewer.addDoubleClickListener(new IDoubleClickListener() {
+				@Override
 				public void doubleClick(DoubleClickEvent event) {
 					if (removeButton.isEnabled()) {
 						removeButton.notifyListeners(SWT.Selection, null);
@@ -501,6 +504,7 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 
 		// Listener that disables/enables proxy URI widgets when feature table selection changes
 		featureTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 				if (!selection.isEmpty()) {
@@ -530,6 +534,7 @@ public class ProxyURIFeatureEditorDialog extends FeatureEditorDialog {
 
 		// Listener that disables proxy URI widgets when choice table selection changes
 		choiceTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				proxyURIText.setVisible(false);
 				proxyURILabel.setVisible(false);

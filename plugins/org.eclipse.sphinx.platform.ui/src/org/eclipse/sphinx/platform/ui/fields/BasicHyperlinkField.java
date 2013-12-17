@@ -40,8 +40,8 @@ public class BasicHyperlinkField extends BasicField {
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#createLabelControl(org.eclipse.swt.widgets.Composite, boolean,
-	 * int)
+	 * @see org.eclipse.sphinx.platform.ui.fields.BasicField#createLabelControl(org.eclipse.swt.widgets.Composite,
+	 * boolean, int)
 	 */
 	@Override
 	protected Control createLabelControl(Composite parent, boolean multiLine, int hspan) {

@@ -41,6 +41,7 @@ public abstract class AbstractWizardPage extends WizardPage implements IWizardPa
 		setDescription(getPageDescription());
 	}
 
+	@Override
 	public final void createControl(Composite parent) {
 		Control control = doCreateControl(parent);
 		setControl(control);

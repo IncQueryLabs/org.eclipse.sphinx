@@ -76,6 +76,7 @@ public final class ExtendedPlatformUI {
 	public static IWorkbenchPage getActivePage() {
 		final IWorkbenchPage[] page = new IWorkbenchPage[1];
 		getDisplay().syncExec(new Runnable() {
+			@Override
 			public void run() {
 				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 				if (window != null) {

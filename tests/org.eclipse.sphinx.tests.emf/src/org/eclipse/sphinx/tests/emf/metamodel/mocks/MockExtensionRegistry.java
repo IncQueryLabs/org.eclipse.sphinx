@@ -31,23 +31,29 @@ public class MockExtensionRegistry implements IExtensionRegistry {
 
 	private Map<String, IExtensionPoint> fExtPoints;
 
+	@Override
 	public boolean addContribution(InputStream is, IContributor contributor, boolean persist, String name, ResourceBundle translationBundle,
 			Object token) throws IllegalArgumentException {
 		return false;
 	}
 
+	@Override
 	public void addListener(IRegistryEventListener listener) {
 	}
 
+	@Override
 	public void addListener(IRegistryEventListener listener, String extensionPointId) {
 	}
 
+	@Override
 	public void addRegistryChangeListener(IRegistryChangeListener listener) {
 	}
 
+	@Override
 	public void addRegistryChangeListener(IRegistryChangeListener listener, String namespace) {
 	}
 
+	@Override
 	public IConfigurationElement[] getConfigurationElementsFor(String extensionPointId) {
 		if (!fExtPoints.containsKey(extensionPointId)) {
 			fExtPoints.put(extensionPointId, new NotContributedExtensionPoint());
@@ -55,72 +61,90 @@ public class MockExtensionRegistry implements IExtensionRegistry {
 		return fExtPoints.get(extensionPointId).getConfigurationElements();
 	}
 
+	@Override
 	public IConfigurationElement[] getConfigurationElementsFor(String namespace, String extensionPointName) {
 		return getConfigurationElementsFor(extensionPointName);
 	}
 
+	@Override
 	public IConfigurationElement[] getConfigurationElementsFor(String namespace, String extensionPointName, String extensionId) {
 		return null;
 	}
 
+	@Override
 	public IExtension getExtension(String extensionId) {
 		return null;
 	}
 
+	@Override
 	public IExtension getExtension(String extensionPointId, String extensionId) {
 		return null;
 	}
 
+	@Override
 	public IExtension getExtension(String namespace, String extensionPointName, String extensionId) {
 		return null;
 	}
 
+	@Override
 	public IExtensionPoint getExtensionPoint(String extensionPointId) {
 		return getExtPoints().get(extensionPointId);
 	}
 
+	@Override
 	public IExtensionPoint getExtensionPoint(String namespace, String extensionPointName) {
 		return null;
 	}
 
+	@Override
 	public IExtensionPoint[] getExtensionPoints() {
 		return null;
 	}
 
+	@Override
 	public IExtensionPoint[] getExtensionPoints(String namespace) {
 		return null;
 	}
 
+	@Override
 	public IExtensionPoint[] getExtensionPoints(IContributor contributor) {
 		return null;
 	}
 
+	@Override
 	public IExtension[] getExtensions(String namespace) {
 		return null;
 	}
 
+	@Override
 	public IExtension[] getExtensions(IContributor contributor) {
 		return null;
 	}
 
+	@Override
 	public String[] getNamespaces() {
 		return null;
 	}
 
+	@Override
 	public boolean removeExtension(IExtension extension, Object token) throws IllegalArgumentException {
 		return false;
 	}
 
+	@Override
 	public boolean removeExtensionPoint(IExtensionPoint extensionPoint, Object token) throws IllegalArgumentException {
 		return false;
 	}
 
+	@Override
 	public void removeListener(IRegistryEventListener listener) {
 	}
 
+	@Override
 	public void removeRegistryChangeListener(IRegistryChangeListener listener) {
 	}
 
+	@Override
 	public void stop(Object token) throws IllegalArgumentException {
 	}
 
@@ -135,6 +159,7 @@ public class MockExtensionRegistry implements IExtensionRegistry {
 		return fExtPoints;
 	}
 
+	@Override
 	public boolean isMultiLanguage() {
 		return false;
 	}

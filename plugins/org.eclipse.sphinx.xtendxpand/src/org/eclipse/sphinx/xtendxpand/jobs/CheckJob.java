@@ -259,6 +259,7 @@ public class CheckJob extends Job {
 			for (final TransactionalEditingDomain editingDomain : requests.keySet()) {
 
 				Runnable runnable = new Runnable() {
+					@Override
 					public void run() {
 						for (CheckEvaluationRequest request : requests.get(editingDomain)) {
 							// Update resource loader context

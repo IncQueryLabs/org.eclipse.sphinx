@@ -18,18 +18,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.sphinx.emf.compare.team.subversive.ui.operations.DelegatingCompositeOperation;
 import org.eclipse.sphinx.emf.compare.team.subversive.ui.operations.ExtendedCompareResourcesOperation;
-import org.eclipse.team.svn.core.connector.SVNRevision;
-import org.eclipse.team.svn.core.operation.IActionOperation;
-import org.eclipse.team.svn.core.resource.ILocalResource;
-import org.eclipse.team.svn.core.resource.IRepositoryResource;
-import org.eclipse.team.svn.core.svnstorage.SVNRemoteStorage;
-import org.eclipse.team.svn.core.utility.SVNUtility;
-import org.eclipse.team.svn.ui.SVNTeamUIPlugin;
-import org.eclipse.team.svn.ui.action.local.CompareWithLatestRevisionAction;
-import org.eclipse.team.svn.ui.history.ISVNHistoryView;
-import org.eclipse.team.svn.ui.operation.CorrectRevisionOperation;
-import org.eclipse.team.svn.ui.operation.ShowHistoryViewOperation;
-import org.eclipse.team.svn.ui.preferences.SVNTeamPreferences;
 
 public class CompareWithLatestFromRepositoryAction extends CompareWithLatestRevisionAction {
 

@@ -132,7 +132,7 @@ public class StatsEvent {
 	}
 
 	/**
-	 *Return the event name.
+	 * Return the event name.
 	 * 
 	 * @return A string representing the event ID.
 	 */
@@ -208,7 +208,7 @@ public class StatsEvent {
 	}
 
 	/**
-	 *Return the context containing the event.
+	 * Return the context containing the event.
 	 * 
 	 * @return string
 	 */

@@ -103,6 +103,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#isEnabled()
 	 */
+	@Override
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -142,6 +143,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#isEventTriggered()
 	 */
+	@Override
 	public boolean isEventTriggered() {
 		return true;
 	}
@@ -149,6 +151,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#openContextIfFirstOne(java.lang.String)
 	 */
+	@Override
 	public boolean openContextIfFirstOne(String context) {
 		if (contextStackCall.isEmpty()) {
 			openContext(context);
@@ -160,6 +163,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#openContext(java.lang.String, java.lang.Object)
 	 */
+	@Override
 	public void openContext(String context, Object blame) {
 		if (blame != null) {
 			openContext(context + blame.toString());
@@ -171,6 +175,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#openContext(java.lang.String)
 	 */
+	@Override
 	public void openContext(String context) {
 		if (context != null) {
 			if (isEnabled()) {
@@ -204,6 +209,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#closeAndLogContext(java.lang.String, java.lang.Object)
 	 */
+	@Override
 	public void closeAndLogContext(String context, Object blame) {
 		closeAndLogContext(context + blame.toString());
 	}
@@ -211,6 +217,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#closeAndLogContext(java.lang.String)
 	 */
+	@Override
 	public void closeAndLogContext(String context) {
 		if (isEnabled()) {
 			if (contextStackCall != null && !contextStackCall.isEmpty()) {
@@ -242,6 +249,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#closeAndLogCurrentContext()
 	 */
+	@Override
 	public void closeAndLogCurrentContext() {
 		if (isEnabled()) {
 			if (contextStackCall != null && !contextStackCall.isEmpty()) {
@@ -258,6 +266,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#closeAllParentContext()
 	 */
+	@Override
 	public void closeAllParentContext() {
 		if (isEnabled()) {
 			while (!contextStackCall.isEmpty()) {
@@ -269,6 +278,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#closeContext(java.lang.String)
 	 */
+	@Override
 	public void closeContext(String context) {
 		if (contextStackCall != null && !contextStackCall.isEmpty()) {
 			if (context.equals(contextStackCall.getLast())) {
@@ -368,6 +378,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#removeStat(T, java.lang.Object, java.lang.String)
 	 */
+	@Override
 	public void removeStat(T enumerator, Object blameObject, String context) {
 		if (enumerator != null && blameObject != null && context != null) {
 			Map<Integer, StatsEvent> eventMap = getEventStats(enumerator, context);
@@ -380,6 +391,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#removeContext(java.lang.String)
 	 */
+	@Override
 	public void removeContext(String context) {
 		if (context != null && contextNames != null) {
 			contextNames.remove(context.hashCode());
@@ -390,6 +402,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#removeStatsForContext(java.lang.String)
 	 */
+	@Override
 	public void removeStatsForContext(String context) {
 		if (context != null && eventStatsMap != null) {
 			Map<Integer, Map<Integer, StatsEvent>> mapEventStats = eventStatsMap.get(context.hashCode());
@@ -412,6 +425,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#removeStatsForEvent(T, java.lang.String)
 	 */
+	@Override
 	public void removeStatsForEvent(T enumerator, String context) {
 		if (enumerator != null && eventStatsMap != null) {
 			Map<Integer, Map<Integer, StatsEvent>> mapEventStats = eventStatsMap.get(context.hashCode());
@@ -424,6 +438,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#removeAllStats()
 	 */
+	@Override
 	public void removeAllStats() {
 		if (eventStatsMap != null && eventStatsMap != null && contextArborescence != null) {
 			eventStatsMap.clear();
@@ -435,6 +450,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#isEventTimeFail(T, java.lang.Object)
 	 */
+	@Override
 	public boolean isEventTimeFail(T enumerator, Object blameObject) {
 		return isEventTimeFail(enumerator, blameObject, DEFAULT_CONTEXT);
 	}
@@ -442,6 +458,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#isEventTimeFail(T, java.lang.Object, java.lang.String)
 	 */
+	@Override
 	public boolean isEventTimeFail(T enumerator, Object blameObject, String context) {
 		if (blameObject != null && enumerator != null) {
 			return isEventTimeFailure(getEventStat(enumerator, blameObject, context));
@@ -481,6 +498,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#startNewEvent(T, java.lang.Object)
 	 */
+	@Override
 	public void startNewEvent(T enumerator, Object blameObject) {
 		if (blameObject != null && enumerator != null) {
 			if (contextStackCall != null) {
@@ -509,6 +527,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#startEvent(T, java.lang.Object)
 	 */
+	@Override
 	public void startEvent(T enumerator, Object blameObject) {
 		if (blameObject != null && enumerator != null) {
 			if (contextStackCall != null) {
@@ -537,6 +556,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#startNewEvent(T, java.lang.Object, java.lang.String)
 	 */
+	@Override
 	public void startNewEvent(T enumerator, Object blameObject, String context) {
 		startEvent(enumerator, blameObject, context, true);
 	}
@@ -544,6 +564,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#startEvent(T, java.lang.Object, java.lang.String)
 	 */
+	@Override
 	public void startEvent(T enumerator, Object blameObject, String context) {
 		startEvent(enumerator, blameObject, context, false);
 	}
@@ -580,6 +601,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#endEvent(T, java.lang.Object)
 	 */
+	@Override
 	public void endEvent(T enumerator, Object blameObject) {
 		endEvent(enumerator, blameObject, getLastContext());
 	}
@@ -587,6 +609,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#endEvent(T, java.lang.Object, java.lang.String)
 	 */
+	@Override
 	public void endEvent(T enumerator, Object blameObject, String context) {
 		long time = getTime();
 		if (blameObject != null && enumerator != null && context != null) {
@@ -636,6 +659,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#getEventStat(T, java.lang.Object, java.lang.String)
 	 */
+	@Override
 	public StatsEvent getEventStat(T enumerator, Object blameObject, String context) {
 		if (blameObject != null && enumerator != null && context != null) {
 			Map<Integer, StatsEvent> statsForEvent = getEventStats(enumerator, context);
@@ -662,6 +686,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#getEventStats(T, java.lang.String)
 	 */
+	@Override
 	public Map<Integer, StatsEvent> getEventStats(T enumerator, String context) {
 		if (enumerator != null && context != null) {
 			return getEventStats(enumerator.getName().hashCode(), context.hashCode());
@@ -722,6 +747,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#getContextNames()
 	 */
+	@Override
 	public Collection<String> getContextNames() {
 		if (contextNames != null) {
 			return contextNames.values();
@@ -733,6 +759,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#contextRunningTimeExceedTimeOut(java.lang.String, long)
 	 */
+	@Override
 	public boolean contextRunningTimeExceedTimeOut(String context, long timeOut) {
 		if (context != null) {
 			return getContextRunningTime(context) >= timeOut;
@@ -744,6 +771,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#isRegisteredContext(java.lang.String)
 	 */
+	@Override
 	public boolean isRegisteredContext(String context) {
 		if (contextNames != null) {
 			return contextNames.containsKey(context.hashCode());
@@ -755,6 +783,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#getContextRunningTime(java.lang.String)
 	 */
+	@Override
 	public long getContextRunningTime(String context) {
 		long result = 0;
 		if (contextNames.containsKey(context.hashCode())) {
@@ -768,6 +797,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#getTimeFailureEventsInContext(java.lang.String)
 	 */
+	@Override
 	public List<StatsEvent> getTimeFailureEventsInContext(String context) {
 		if (isRegisteredContext(context) && context != null) {
 			return getTimeFailureEventsInContext(context.hashCode());
@@ -803,6 +833,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#isEventsTimeFailure()
 	 */
+	@Override
 	public boolean isEventsTimeFailure() {
 		boolean result = false;
 		for (Integer contextId : contextNames.keySet()) {
@@ -814,6 +845,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#numberOfEventsTimeFailure(java.lang.String)
 	 */
+	@Override
 	public int numberOfEventsTimeFailure(String context) {
 		if (context != null) {
 			return getTimeFailureEventsInContext(context).size();
@@ -825,6 +857,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#getEventsTimeFailure()
 	 */
+	@Override
 	public List<StatsEvent> getEventsTimeFailure() {
 		LinkedList<StatsEvent> result = null;
 		if (isEnabled() && eventStatsMap != null) {
@@ -849,6 +882,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#isContextEventsTimeFailure(java.lang.String)
 	 */
+	@Override
 	public boolean isContextEventsTimeFailure(String context) {
 		if (isRegisteredContext(context)) {
 			return isContextEventsTimeFailure(context.hashCode()) > 0;
@@ -860,6 +894,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#numberOfContextEventsTimeFailure(java.lang.String)
 	 */
+	@Override
 	public int numberOfContextEventsTimeFailure(String context) {
 		if (isRegisteredContext(context)) {
 			return isContextEventsTimeFailure(context.hashCode());
@@ -917,6 +952,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#printContextTree(java.lang.String)
 	 */
+	@Override
 	public String printContextTree(String context) {
 		return printContextTree(context.hashCode());
 	}
@@ -939,6 +975,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#printContextsTree()
 	 */
+	@Override
 	public String printContextsTree() {
 		if (isEnabled() && contextArborescence != null) {
 			StringBuffer result = new StringBuffer();
@@ -955,6 +992,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#printAllStats()
 	 */
+	@Override
 	public String printAllStats() {
 		contextPrinted.clear();
 		if (isEnabled() && contextNames != null) {
@@ -975,6 +1013,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#printContextStats(java.lang.String)
 	 */
+	@Override
 	public String printContextStats(String context) {
 		return printContextStats(context, ""); //$NON-NLS-1$
 	}
@@ -1008,6 +1047,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#printEventStat(T, java.lang.Object, java.lang.String)
 	 */
+	@Override
 	public String printEventStat(T enumerator, Object blameObject, String context) {
 		if (isEnabled() && enumerator != null && blameObject != null && context != null) {
 			StatsEvent event = getEventStat(enumerator, blameObject, context);
@@ -1039,6 +1079,7 @@ public abstract class AbstractPerformanceStats<T extends IEventTypeEnumerator> i
 	/*
 	 * @see org.eclipse.sphinx.platform.stats.IPerformanceStats#printEventStats(T, java.lang.String)
 	 */
+	@Override
 	public String printEventStats(T enumerator, String context) {
 		if (isEnabled() && enumerator != null && context != null) {
 			Map<Integer, StatsEvent> eventMap = getEventStats(enumerator, context);

@@ -61,6 +61,7 @@ public class BasicTabbedPropertySheetTitleProvider extends LabelProvider {
 			this.labelProvider = labelProvider;
 		}
 
+		@Override
 		public String getDescription(Object anElement) {
 			if (anElement instanceof IStructuredSelection) {
 				Collection<?> collection = ((IStructuredSelection) anElement).toList();

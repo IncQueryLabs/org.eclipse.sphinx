@@ -161,6 +161,7 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 	/*
 	 * @see org.xml.sax.ext.LexicalHandler#comment(char[], int, int)
 	 */
+	@Override
 	public void comment(char[] ch, int start, int length) throws SAXException {
 		// we store comments inside document
 		if (ch != null && length > 0 && start <= ch.length) {
@@ -173,12 +174,14 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 	/*
 	 * @see org.xml.sax.ext.LexicalHandler#endCDATA()
 	 */
+	@Override
 	public void endCDATA() throws SAXException {
 	}
 
 	/*
 	 * @see org.xml.sax.ext.LexicalHandler#endDTD()
 	 */
+	@Override
 	public void endDTD() throws SAXException {
 
 	}
@@ -186,6 +189,7 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 	/*
 	 * @see org.xml.sax.ext.LexicalHandler#endEntity(java.lang.String)
 	 */
+	@Override
 	public void endEntity(String name) throws SAXException {
 
 	}
@@ -193,6 +197,7 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 	/*
 	 * @see org.xml.sax.ext.LexicalHandler#startCDATA()
 	 */
+	@Override
 	public void startCDATA() throws SAXException {
 
 	}
@@ -200,6 +205,7 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 	/*
 	 * @see org.xml.sax.ext.LexicalHandler#startDTD(java.lang.String, java.lang.String, java.lang.String)
 	 */
+	@Override
 	public void startDTD(String name, String publicId, String systemId) throws SAXException {
 
 	}
@@ -207,6 +213,7 @@ public class XMLRootElementHandler extends DefaultHandler implements LexicalHand
 	/*
 	 * @see org.xml.sax.ext.LexicalHandler#startEntity(java.lang.String)
 	 */
+	@Override
 	public void startEntity(String name) throws SAXException {
 	}
 

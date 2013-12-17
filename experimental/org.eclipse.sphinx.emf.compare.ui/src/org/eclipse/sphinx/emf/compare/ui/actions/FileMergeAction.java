@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.emf.compare.ui.actions;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
@@ -34,6 +35,7 @@ public class FileMergeAction implements IObjectActionDelegate {
 	 * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction,
 	 * org.eclipse.ui.IWorkbenchPart)
 	 */
+	@Override
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 		// Nothing to do
 	}
@@ -41,6 +43,7 @@ public class FileMergeAction implements IObjectActionDelegate {
 	/*
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
+	@Override
 	public void run(IAction action) {
 		if (modelMergeActionDelegate.isEnabled()) {
 			modelMergeActionDelegate.run();
@@ -51,6 +54,7 @@ public class FileMergeAction implements IObjectActionDelegate {
 	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
 	 * org.eclipse.jface.viewers.ISelection)
 	 */
+	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
 		// Propagate selection to delegates
 		modelMergeActionDelegate.selectionChanged(SelectionUtil.getStructuredSelection(selection));

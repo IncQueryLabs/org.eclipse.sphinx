@@ -58,6 +58,7 @@ public abstract class AbstractProjectPreference<T> extends AbstractEclipsePrefer
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IProjectPreference#getRequiredProjectNature()
 	 */
+	@Override
 	public String getRequiredProjectNatureId() {
 		return requiredProjectNatureId;
 	}
@@ -65,6 +66,7 @@ public abstract class AbstractProjectPreference<T> extends AbstractEclipsePrefer
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IProjectPreference#get(org.eclipse.core.resources.IProject)
 	 */
+	@Override
 	public T get(IProject project) {
 		Assert.isNotNull(project);
 
@@ -90,6 +92,7 @@ public abstract class AbstractProjectPreference<T> extends AbstractEclipsePrefer
 	 * @see org.eclipse.sphinx.platform.preferences.IProjectPreference#set(org.eclipse.core.resources.IProject,
 	 * java.lang.Object)
 	 */
+	@Override
 	public void set(IProject project, T valueAsObject) {
 		Assert.isNotNull(project);
 
@@ -122,6 +125,7 @@ public abstract class AbstractProjectPreference<T> extends AbstractEclipsePrefer
 	 * org.eclipse.sphinx.platform.preferences.IProjectPreference#getDefaultValueAsObject(org.eclipse.core.resources
 	 * .IProject)
 	 */
+	@Override
 	public T getDefaultValueAsObject(IProject project) {
 		return toObject(project, defaultValueAsString);
 	}
@@ -129,6 +133,7 @@ public abstract class AbstractProjectPreference<T> extends AbstractEclipsePrefer
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IProjectPreference#setToDefault(org.eclipse.core.resources.IProject)
 	 */
+	@Override
 	public void setToDefault(IProject project) {
 		IEclipsePreferences prefs = getProjectPreferences(project);
 		if (prefs != null) {
@@ -141,6 +146,7 @@ public abstract class AbstractProjectPreference<T> extends AbstractEclipsePrefer
 	 * org.eclipse.sphinx.platform.preferences.IProjectPreference#addPreferenceChangeListener(org.eclipse.core.resources
 	 * .IProject, org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener)
 	 */
+	@Override
 	public void addPreferenceChangeListener(IProject project, IPreferenceChangeListener listener) {
 		IEclipsePreferences prefs = getProjectPreferences(project);
 		if (prefs != null) {
@@ -153,6 +159,7 @@ public abstract class AbstractProjectPreference<T> extends AbstractEclipsePrefer
 	 * org.eclipse.sphinx.platform.preferences.IProjectPreference#removePreferenceChangeListener(org.eclipse.core.resources
 	 * .IProject, org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener)
 	 */
+	@Override
 	public void removePreferenceChangeListener(IProject project, IPreferenceChangeListener listener) {
 		IEclipsePreferences prefs = getProjectPreferences(project);
 		if (prefs != null) {

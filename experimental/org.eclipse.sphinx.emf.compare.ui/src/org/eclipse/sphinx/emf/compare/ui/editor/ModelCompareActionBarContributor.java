@@ -73,6 +73,7 @@ public class ModelCompareActionBarContributor extends EditingDomainActionBarCont
 	 */
 	protected IOperationHistoryListener createOperationHistoryListener() {
 		return new IOperationHistoryListener() {
+			@Override
 			public void historyNotification(OperationHistoryEvent event) {
 				if (event.getEventType() == OperationHistoryEvent.DONE || event.getEventType() == OperationHistoryEvent.UNDONE
 						|| event.getEventType() == OperationHistoryEvent.REDONE) {

@@ -46,6 +46,7 @@ public class ParameterValuesXViewerFactory extends XViewerFactory {
 				ParameterValueImpl.class));
 	}
 
+	@Override
 	public boolean isAdmin() {
 		return true;
 	}

@@ -42,6 +42,7 @@ public class EditingDomainAdapterFactory implements IAdapterFactory {
 	/*
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
 	 */
+	@Override
 	public Object getAdapter(final Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
 		// The workspace editing domain mapping
 		final IWorkspaceEditingDomainMapping mapping = WorkspaceEditingDomainManager.INSTANCE.getEditingDomainMapping();
@@ -50,6 +51,7 @@ public class EditingDomainAdapterFactory implements IAdapterFactory {
 			// IEditingDomainProvider adapter for IFile?
 			if (adaptableObject instanceof IFile) {
 				return new IEditingDomainProvider() {
+					@Override
 					public EditingDomain getEditingDomain() {
 						return mapping.getEditingDomain((IFile) adaptableObject);
 					}
@@ -59,10 +61,12 @@ public class EditingDomainAdapterFactory implements IAdapterFactory {
 			// IContainerEditingDomainProvider adapter for IContainer?
 			if (adaptableObject instanceof IContainer) {
 				return new IContainerEditingDomainProvider() {
+					@Override
 					public Collection<TransactionalEditingDomain> getEditingDomains() {
 						return mapping.getEditingDomains((IContainer) adaptableObject);
 					}
 
+					@Override
 					public TransactionalEditingDomain getEditingDomain(IMetaModelDescriptor mmDescriptor) {
 						return mapping.getEditingDomain((IContainer) adaptableObject, mmDescriptor);
 					}
@@ -80,6 +84,7 @@ public class EditingDomainAdapterFactory implements IAdapterFactory {
 	/*
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
 	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public Class[] getAdapterList() {
 		return new Class<?>[] { IEditingDomainProvider.class, IContainerEditingDomainProvider.class, IResourceSaveIndicator.class };

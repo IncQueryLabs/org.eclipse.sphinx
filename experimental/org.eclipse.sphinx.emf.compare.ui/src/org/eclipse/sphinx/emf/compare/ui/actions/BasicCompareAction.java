@@ -25,13 +25,6 @@ import org.eclipse.compare.CompareEditorInput;
 import org.eclipse.compare.internal.ComparePreferencePage;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.compare.diff.metamodel.ComparisonResourceSnapshot;
-import org.eclipse.emf.compare.diff.metamodel.ComparisonSnapshot;
-import org.eclipse.emf.compare.diff.metamodel.DiffFactory;
-import org.eclipse.emf.compare.diff.metamodel.DiffModel;
-import org.eclipse.emf.compare.diff.service.DiffService;
-import org.eclipse.emf.compare.match.metamodel.MatchModel;
-import org.eclipse.emf.compare.match.service.MatchService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -183,8 +176,8 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 		if (configuration != null) {
 			IPreferenceStore ps = configuration.getPreferenceStore();
 			if (ps != null) {
-				configuration.setProperty(CompareConfiguration.USE_OUTLINE_VIEW, Boolean.valueOf(ps
-						.getBoolean(ComparePreferencePage.USE_OUTLINE_VIEW)));
+				configuration.setProperty(CompareConfiguration.USE_OUTLINE_VIEW,
+						Boolean.valueOf(ps.getBoolean(ComparePreferencePage.USE_OUTLINE_VIEW)));
 			}
 		}
 		return input;
@@ -207,6 +200,7 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 	 */
 	protected void openCompareEditor(final CompareEditorInput input, final IWorkbenchPage page, final IReusableEditor editor) {
 		Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				if (editor != null && !editor.getSite().getShell().isDisposed()) {
 					// Reuse the given editor

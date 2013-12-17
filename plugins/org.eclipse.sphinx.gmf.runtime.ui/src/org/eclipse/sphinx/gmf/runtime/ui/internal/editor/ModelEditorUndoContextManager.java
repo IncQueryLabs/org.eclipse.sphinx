@@ -104,6 +104,7 @@ public class ModelEditorUndoContextManager implements IDisposable {
 
 	protected IOperationHistoryListener createUndoableOperationBeginListener() {
 		return new IOperationHistoryListener() {
+			@Override
 			public void historyNotification(final OperationHistoryEvent event) {
 				IUndoableOperation operation = event.getOperation();
 				if (event.getEventType() == OperationHistoryEvent.ABOUT_TO_EXECUTE) {
@@ -116,6 +117,7 @@ public class ModelEditorUndoContextManager implements IDisposable {
 			private void handleUndoableOperationBegin(final IUndoableOperation operation) {
 				if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
 					site.getShell().getDisplay().syncExec(new Runnable() {
+						@Override
 						public void run() {
 							if (isTargetPartActive() || isTargetPropertySheetPageActive()) {
 								// Remove default undo context such is available, and add the underlying editor's undo
@@ -136,6 +138,7 @@ public class ModelEditorUndoContextManager implements IDisposable {
 	/*
 	 * @see org.eclipse.emf.edit.provider.IDisposable#dispose()
 	 */
+	@Override
 	public void dispose() {
 		getOperationHistory().removeOperationHistoryListener(undoableOperationBeginListener);
 

@@ -31,6 +31,7 @@ final class MapResourceDeltaVisitor implements IResourceDeltaVisitor {
 	public MapResourceDeltaVisitor() {
 	}
 
+	@Override
 	public boolean visit(IResourceDelta delta) throws CoreException {
 		IResource resource = delta.getResource();
 		if (!resource.isDerived()) {

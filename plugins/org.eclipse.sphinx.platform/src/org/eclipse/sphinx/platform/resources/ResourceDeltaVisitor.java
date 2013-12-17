@@ -74,6 +74,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 	/*
 	 * @see org.eclipse.core.resources.IResourceDeltaVisitor#visit(org.eclipse.core.resources.IResourceDelta)
 	 */
+	@Override
 	public boolean visit(IResourceDelta delta) throws CoreException {
 		try {
 			IResource resource = delta.getResource();

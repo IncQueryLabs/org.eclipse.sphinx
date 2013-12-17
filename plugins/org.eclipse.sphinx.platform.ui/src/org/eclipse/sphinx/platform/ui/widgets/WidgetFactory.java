@@ -26,18 +26,22 @@ import org.eclipse.ui.forms.widgets.Hyperlink;
 
 public class WidgetFactory implements IWidgetFactory {
 
+	@Override
 	public Button createButton(Composite parent, String text) {
 		return createButton(parent, text, SWT.PUSH, SWT.FILL, SWT.BEGINNING, false, false, 1, 1);
 	}
 
+	@Override
 	public Button createButton(Composite parent, String text, int style) {
 		return createButton(parent, text, style, SWT.FILL, SWT.BEGINNING, false, false, 1, 1);
 	}
 
+	@Override
 	public Button createButton(Composite parent, String text, int style, int valign, boolean hgrab, int hspan) {
 		return createButton(parent, text, style, SWT.FILL, valign, hgrab, false, hspan, 1);
 	}
 
+	@Override
 	public Button createButton(Composite parent, String text, int style, int halign, int valign, boolean hgrab, boolean vgrab, int hspan, int vspan) {
 		Button button = new Button(parent, style);
 		button.setText(text);
@@ -50,30 +54,37 @@ public class WidgetFactory implements IWidgetFactory {
 		return button;
 	}
 
+	@Override
 	public Label createLabel(Composite parent, String text) {
 		return createLabel(parent, text, SWT.NONE, 1, false, SWT.CENTER);
 	}
 
+	@Override
 	public Label createLabel(Composite parent, String text, int hspan, boolean hgrab) {
 		return createLabel(parent, text, SWT.NONE, hspan, hgrab, SWT.CENTER);
 	}
 
+	@Override
 	public Label createLabel(Composite parent, String text, boolean multiLine, int hspan, boolean hgrab) {
 		return createLabel(parent, text, SWT.NONE, SWT.FILL, multiLine ? SWT.BEGINNING : SWT.CENTER, hgrab, false, hspan, 1);
 	}
 
+	@Override
 	public Label createLabel(Composite parent, String text, int valign) {
 		return createLabel(parent, text, SWT.NONE, 1, false, valign);
 	}
 
+	@Override
 	public Label createLabel(Composite parent, String text, int hspan, boolean grabHorizontal, int valign) {
 		return createLabel(parent, text, SWT.NONE, hspan, grabHorizontal, valign);
 	}
 
+	@Override
 	public Label createLabel(Composite parent, String text, int style, int hspan, boolean hgrab, int valign) {
 		return createLabel(parent, text, style, SWT.FILL, valign, hgrab, false, hspan, 1);
 	}
 
+	@Override
 	public Label createLabel(Composite parent, String text, int style, int halign, int valign, boolean hgrab, boolean vgrab, int hspan, int vspan) {
 		Label label = new Label(parent, style);
 
@@ -87,30 +98,37 @@ public class WidgetFactory implements IWidgetFactory {
 		return label;
 	}
 
+	@Override
 	public Text createText(Composite parent) {
 		return createText(parent, false, SWT.NONE, 1, true);
 	}
 
+	@Override
 	public Text createText(Composite parent, int style) {
 		return createText(parent, false, style, 1, true);
 	}
 
+	@Override
 	public Text createText(Composite parent, boolean multiLine) {
 		return createText(parent, multiLine, SWT.NONE, 1, true);
 	}
 
+	@Override
 	public Text createText(Composite parent, int hspan, boolean grabHorizontal) {
 		return createText(parent, false, SWT.NONE, hspan, grabHorizontal);
 	}
 
+	@Override
 	public Text createText(Composite parent, boolean multiLine, int hspan, boolean grabHorizontal) {
 		return createText(parent, multiLine, SWT.NONE, hspan, grabHorizontal);
 	}
 
+	@Override
 	public Text createText(Composite parent, boolean multiLine, int style, int hspan, boolean hgrab) {
 		return createText(parent, multiLine, style, SWT.FILL, SWT.FILL, hgrab, false, hspan, 1);
 	}
 
+	@Override
 	public Text createText(Composite parent, boolean multiLine, int style, int halign, int valign, boolean hgrab, boolean vgrab, int hspan, int vspan) {
 		style |= SWT.BORDER;
 		if (multiLine) {
@@ -133,10 +151,12 @@ public class WidgetFactory implements IWidgetFactory {
 		return text;
 	}
 
+	@Override
 	public Combo createCombo(Composite parent, int style, boolean hgrab, int hspan) {
 		return createCombo(parent, style, SWT.FILL, SWT.FILL, hgrab, false, hspan, 1);
 	}
 
+	@Override
 	public Combo createCombo(Composite parent, int style, int halign, int valign, boolean hgrab, boolean vgrab, int hspan, int vspan) {
 		Combo combo = new Combo(parent, style | SWT.BORDER);
 
@@ -148,30 +168,37 @@ public class WidgetFactory implements IWidgetFactory {
 		return combo;
 	}
 
+	@Override
 	public CCombo createCCombo(Composite parent) {
 		return createCCombo(parent, false, SWT.NONE, 1, true);
 	}
 
+	@Override
 	public CCombo createCCombo(Composite parent, boolean editable) {
 		return createCCombo(parent, editable, SWT.NONE, 1, true);
 	}
 
+	@Override
 	public CCombo createCCombo(Composite parent, int colspan, boolean grabHorizontal) {
 		return createCCombo(parent, false, SWT.NONE, colspan, grabHorizontal);
 	}
 
+	@Override
 	public CCombo createCCombo(Composite parent, int style, boolean hgrab, int hspan) {
 		return createCCombo(parent, style, SWT.FILL, SWT.FILL, hgrab, false, hspan, 1);
 	}
 
+	@Override
 	public CCombo createCCombo(Composite parent, boolean editable, int colspan, boolean grabHorizontal) {
 		return createCCombo(parent, editable, SWT.NONE, colspan, grabHorizontal);
 	}
 
+	@Override
 	public CCombo createCCombo(Composite parent, boolean editable, int style, int hspan, boolean hgrab) {
 		return createCCombo(parent, editable, style, SWT.FILL, SWT.FILL, hgrab, false, hspan, 1);
 	}
 
+	@Override
 	public CCombo createCCombo(Composite parent, boolean editable, int style, int halign, int valign, boolean hgrab, boolean vgrab, int hspan,
 			int vspan) {
 		// If not editable, add READ_ONLY in combo style
@@ -181,6 +208,7 @@ public class WidgetFactory implements IWidgetFactory {
 		return createCCombo(parent, style, halign, valign, hgrab, vgrab, hspan, vspan);
 	}
 
+	@Override
 	public CCombo createCCombo(Composite parent, int style, int halign, int valign, boolean hgrab, boolean vgrab, int hspan, int vspan) {
 		// boolean readOnly = (style & SWT.READ_ONLY) != 0;
 		// style &= ~SWT.READ_ONLY;
@@ -197,18 +225,22 @@ public class WidgetFactory implements IWidgetFactory {
 		return combo;
 	}
 
+	@Override
 	public Button createCheckBoxButton(Composite parent, String text) {
 		return createCheckBoxButton(parent, text, SWT.NONE, 1, true);
 	}
 
+	@Override
 	public Button createCheckBoxButton(Composite parent, String text, int colspan, boolean grabHorizontal) {
 		return createCheckBoxButton(parent, text, SWT.NONE, colspan, grabHorizontal);
 	}
 
+	@Override
 	public Button createCheckBoxButton(Composite parent, String text, int style, int hspan, boolean hgrab) {
 		return createCheckBoxButton(parent, text, style, SWT.FILL, SWT.FILL, hgrab, false, hspan, 1);
 	}
 
+	@Override
 	public Button createCheckBoxButton(Composite parent, String text, int style, int halign, int valign, boolean hgrab, boolean vgrab, int hspan,
 			int vspan) {
 		Button button = new Button(parent, SWT.CHECK | style);
@@ -222,26 +254,32 @@ public class WidgetFactory implements IWidgetFactory {
 		return button;
 	}
 
+	@Override
 	public Hyperlink createHyperlink(Composite parent, String text) {
 		return null;
 	}
 
+	@Override
 	public Hyperlink createHyperlink(Composite parent, String text, int colspan, boolean grabHorizontal) {
 		return null;
 	}
 
+	@Override
 	public Hyperlink createHyperlink(Composite parent, String text, int valign) {
 		return null;
 	}
 
+	@Override
 	public Hyperlink createHyperlink(Composite parent, String text, int colspan, boolean grabHorizontal, int valign) {
 		return null;
 	}
 
+	@Override
 	public Hyperlink createHyperlink(Composite parent, String text, int style, int hspan, boolean grabHorizontal, int valign) {
 		return null;
 	}
 
+	@Override
 	public Hyperlink createHyperlink(Composite parent, String text, int style, int halign, int valign, boolean hgrab, boolean vgrab, int colspan,
 			int rowspan) {
 		return null;

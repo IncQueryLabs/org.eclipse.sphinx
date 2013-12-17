@@ -127,6 +127,7 @@ public class ValidationMarkerManager {
 		if (max_err > 0 && nb_err + to_be_added > max_err) {
 			int nb_removed = 0;
 			Arrays.sort(markers, new Comparator<IMarker>() {
+				@Override
 				public int compare(IMarker o1, IMarker o2) {
 					try {
 						return Long.valueOf(o1.getCreationTime()).compareTo(Long.valueOf(o2.getCreationTime()));

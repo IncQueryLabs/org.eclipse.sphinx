@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Text;
 
 public class ParameterValuesXViewerConverter implements XViewerConverter {
 
+	@Override
 	public void setInput(Control c, CellEditDescriptor ced, Object selObject) {
 		if (c instanceof Text) {
 			Text textField = (Text) c;
@@ -43,6 +44,7 @@ public class ParameterValuesXViewerConverter implements XViewerConverter {
 		}
 	}
 
+	@Override
 	public void getInput(Control c, CellEditDescriptor ced, Object selObject) {
 		if (c instanceof Text) {
 			Text textField = (Text) c;
@@ -73,6 +75,7 @@ public class ParameterValuesXViewerConverter implements XViewerConverter {
 			if (editingDomain != null) {
 				Runnable runnable = new Runnable() {
 
+					@Override
 					public void run() {
 						parameterValue.setName(name);
 					}
@@ -92,6 +95,7 @@ public class ParameterValuesXViewerConverter implements XViewerConverter {
 			if (editingDomain != null) {
 				Runnable runnable = new Runnable() {
 
+					@Override
 					public void run() {
 						parameterValue.setValue(value);
 					}

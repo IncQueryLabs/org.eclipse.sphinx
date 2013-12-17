@@ -185,6 +185,7 @@ public class ModelIndexUpdater extends ResourceSetListenerImpl implements IResou
 		}
 	}
 
+	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		try {
 			IResourceDelta delta = event.getDelta();

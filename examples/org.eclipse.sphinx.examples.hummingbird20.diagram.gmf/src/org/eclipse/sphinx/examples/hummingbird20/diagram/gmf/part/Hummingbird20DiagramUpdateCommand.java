@@ -37,18 +37,21 @@ public class Hummingbird20DiagramUpdateCommand implements IHandler {
 	/**
 	 * @generated
 	 */
+	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
 	}
 
 	/**
 	 * @generated
 	 */
+	@Override
 	public void dispose() {
 	}
 
 	/**
 	 * @generated
 	 */
+	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		ISelection selection = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().getSelection();
 		if (selection instanceof IStructuredSelection) {
@@ -73,6 +76,7 @@ public class Hummingbird20DiagramUpdateCommand implements IHandler {
 	/**
 	 * @generated
 	 */
+	@Override
 	public boolean isEnabled() {
 		return true;
 	}
@@ -80,6 +84,7 @@ public class Hummingbird20DiagramUpdateCommand implements IHandler {
 	/**
 	 * @generated
 	 */
+	@Override
 	public boolean isHandled() {
 		return true;
 	}
@@ -87,6 +92,7 @@ public class Hummingbird20DiagramUpdateCommand implements IHandler {
 	/**
 	 * @generated
 	 */
+	@Override
 	public void removeHandlerListener(IHandlerListener handlerListener) {
 	}
 

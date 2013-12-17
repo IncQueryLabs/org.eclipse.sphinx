@@ -93,6 +93,7 @@ public class RulesExtCache implements IRegistryChangeListener {
 		reg.removeRegistryChangeListener(this);
 	}
 
+	@Override
 	public void registryChanged(IRegistryChangeEvent event) {
 
 		IExtensionDelta[] deltas = event.getExtensionDeltas();

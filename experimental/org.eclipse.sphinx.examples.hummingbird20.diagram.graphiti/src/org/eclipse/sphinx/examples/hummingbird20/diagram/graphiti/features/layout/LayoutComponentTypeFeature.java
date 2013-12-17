@@ -57,6 +57,7 @@ public class LayoutComponentTypeFeature extends AbstractLayoutFeature {
 		super(fp);
 	}
 
+	@Override
 	public boolean canLayout(ILayoutContext context) {
 		// return true, if pictogram element is linked to a ComponentType
 		PictogramElement pe = context.getPictogramElement();
@@ -70,6 +71,7 @@ public class LayoutComponentTypeFeature extends AbstractLayoutFeature {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean layout(final ILayoutContext context) {
 		boolean anythingChanged = false;
 		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();

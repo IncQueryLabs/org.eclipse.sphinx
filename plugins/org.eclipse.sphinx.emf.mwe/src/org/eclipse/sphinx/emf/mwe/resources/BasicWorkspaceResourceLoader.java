@@ -54,24 +54,29 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 
 	protected boolean searchArchives = true;
 
+	@Override
 	public IProject getContextProject() {
 		return contextProject;
 	}
 
+	@Override
 	public void setContextProject(IProject contextProject) {
 		resetContext();
 		this.contextProject = contextProject;
 	}
 
+	@Override
 	public IModelDescriptor getContextModel() {
 		return contextModel;
 	}
 
+	@Override
 	public void setContextModel(IModelDescriptor contextModel) {
 		resetContext();
 		this.contextModel = contextModel;
 	}
 
+	@Override
 	public void setSearchArchives(boolean searchArchives) {
 		this.searchArchives = searchArchives;
 	}

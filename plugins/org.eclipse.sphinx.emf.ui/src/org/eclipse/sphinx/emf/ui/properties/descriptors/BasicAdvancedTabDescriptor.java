@@ -43,14 +43,17 @@ public class BasicAdvancedTabDescriptor extends AbstractTabDescriptor {
 		sectionDescriptors.add(new BasicAdvancedSectionDescriptor(id + ".sectionDesc", id, customAdapterFactory)); //$NON-NLS-1$
 	}
 
+	@Override
 	public String getId() {
 		return id;
 	}
 
+	@Override
 	public String getLabel() {
 		return label;
 	}
 
+	@Override
 	public String getCategory() {
 		return category;
 	}

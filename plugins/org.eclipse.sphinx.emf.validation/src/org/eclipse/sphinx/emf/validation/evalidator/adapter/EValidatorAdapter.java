@@ -84,6 +84,7 @@ public class EValidatorAdapter extends EObjectValidator {
 						IValidationPreferences.PREF_ENABLE_EMF_DEFAULT_RULES_DEFAULT);
 
 				prefs.addPreferenceChangeListener(new IEclipsePreferences.IPreferenceChangeListener() {
+					@Override
 					public void preferenceChange(org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent event) {
 						String key = event.getKey();
 						if (key.equals(IValidationPreferences.PREF_ENABLE_EMF_DEFAULT_RULES)) {
@@ -158,6 +159,7 @@ public class EValidatorAdapter extends EObjectValidator {
 				if (editingDomain != null) {
 					final EObject tgt = eObject;
 					RunnableWithResult<IStatus> run = new RunnableWithResult.Impl<IStatus>() {
+						@Override
 						public void run() {
 							IStatus status = Status.OK_STATUS;
 

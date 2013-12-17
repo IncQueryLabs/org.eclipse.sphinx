@@ -1,21 +1,20 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Avoid usage of Object.finalize
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.util.ResourceLocator;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelperAdapterFactory;
@@ -80,8 +79,6 @@ public final class Activator extends EMFPlugin {
 	 */
 	public static class Implementation extends EclipsePlugin {
 
-		private InstanceScope instanceScope;
-
 		/**
 		 * Creates an instance.
 		 */
@@ -110,18 +107,6 @@ public final class Activator extends EMFPlugin {
 			stopWorkspaceSynchronizing();
 
 			super.stop(context);
-		}
-
-		/**
-		 * Returns the InstanceScope of the Plug-in.
-		 * 
-		 * @return The Plug-in's InstanceScope.
-		 */
-		public InstanceScope getInstanceScope() {
-			if (instanceScope == null) {
-				instanceScope = new InstanceScope();
-			}
-			return instanceScope;
 		}
 
 		/**

@@ -17,6 +17,7 @@ package org.eclipse.sphinx.emf.scoping;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.sphinx.emf.internal.scoping.IResourceScopeMarker;
 import org.eclipse.sphinx.emf.internal.scoping.ResourceScopeMarkerSyncRequest;
 import org.eclipse.sphinx.platform.resources.syncing.AbstractResourceSynchronizer;
 

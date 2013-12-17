@@ -18,13 +18,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.validation.service.ConstraintRegistry;
 import org.eclipse.emf.validation.service.IConstraintDescriptor;
+import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.validation.constraint.IExtendedConstraintDescriptor;
 import org.eclipse.sphinx.emf.validation.markers.IValidationMarker;
 import org.eclipse.sphinx.emf.validation.util.ConstraintExtensionUtil;

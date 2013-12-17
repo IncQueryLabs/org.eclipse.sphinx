@@ -139,6 +139,7 @@ public class DiagramUtil {
 	public static void addObjectToBOResource(final EObject parentObject, final EReference reference, final EObject objectToAdd) {
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(parentObject);
 		final Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				// if the user knows the reference
 				if (reference != null) {
@@ -181,6 +182,7 @@ public class DiagramUtil {
 	public static void deleteObjectFromBOResource(final EObject objectToDelete) {
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(objectToDelete);
 		final Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				// Use EcoreUtil as in Default Delete feature
 				EcoreUtil.delete(objectToDelete, true);
@@ -211,6 +213,7 @@ public class DiagramUtil {
 	public static void removeObjectFromBOResource(final EObject parentObject, final EReference reference, final EObject objectToRemove) {
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(parentObject);
 		final Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				// if the user knows the reference
 				if (reference != null) {
@@ -254,6 +257,7 @@ public class DiagramUtil {
 	public static void addReferenceToBOResource(final EObject sourceObject, final EReference reference, final EObject targetObject) {
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(sourceObject);
 		final Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				// if the user knows the reference
 				if (reference != null) {
@@ -296,6 +300,7 @@ public class DiagramUtil {
 	public static void removeReferencefromBOResource(final EObject sourceObject, final String referenceName, final EObject targetObject) {
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(sourceObject);
 		final Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				// Set the sourceBO new value to null
 				EList<EReference> eAllReferences = sourceObject.eClass().getEAllReferences();

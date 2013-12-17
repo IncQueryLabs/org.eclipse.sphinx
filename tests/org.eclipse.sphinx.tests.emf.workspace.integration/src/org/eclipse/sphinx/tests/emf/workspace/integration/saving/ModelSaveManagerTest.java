@@ -67,7 +67,7 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 	/**
 	 * Test method for {@link ModelSaveManager#saveModel(Resource, boolean)}
 	 * 
-	 * @throws ExecutionException
+	 * @throws Exception
 	 */
 	public void testSaveModel_Resource() throws Exception {
 
@@ -566,6 +566,7 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 				.getReferenceFile(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A, DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_3));
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 
@@ -698,6 +699,7 @@ public class ModelSaveManagerTest extends DefaultIntegrationTestCase {
 		assertTrue(ModelSaveManager.INSTANCE.isDirty(resource20D_2));
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 

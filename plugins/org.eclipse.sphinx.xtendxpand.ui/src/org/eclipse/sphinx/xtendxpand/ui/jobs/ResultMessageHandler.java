@@ -89,6 +89,7 @@ public class ResultMessageHandler extends AbstractM2xResultHandler {
 		final Display display = ExtendedPlatformUI.getDisplay();
 		if (display != null) {
 			display.asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					XpandJob xpandJob = getXpandJob();
 					String title = xpandJob != null ? Messages.title_codeGen : Messages.title_modelTransformation;

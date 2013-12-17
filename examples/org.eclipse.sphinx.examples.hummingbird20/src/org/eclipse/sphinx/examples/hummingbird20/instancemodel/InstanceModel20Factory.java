@@ -17,84 +17,74 @@ package org.eclipse.sphinx.examples.hummingbird20.instancemodel;
 import org.eclipse.emf.ecore.EFactory;
 
 /**
- * <!-- begin-user-doc -->
- * The <b>Factory</b> for the model.
- * It provides a create method for each non-abstract class of the model.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> The <b>Factory</b> for the model. It provides a create method for each non-abstract class of
+ * the model. <!-- end-user-doc -->
+ * 
  * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package
  * @generated
  */
-public interface InstanceModel20Factory extends EFactory
-{
+public interface InstanceModel20Factory extends EFactory {
 	/**
-	 * The singleton instance of the factory.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The singleton instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	InstanceModel20Factory eINSTANCE = org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.InstanceModel20FactoryImpl.init();
 
 	/**
-	 * Returns a new object of class '<em>Application</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns a new object of class '<em>Application</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @return a new object of class '<em>Application</em>'.
 	 * @generated
 	 */
 	Application createApplication();
 
 	/**
-	 * Returns a new object of class '<em>Component</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns a new object of class '<em>Component</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @return a new object of class '<em>Component</em>'.
 	 * @generated
 	 */
 	Component createComponent();
 
 	/**
-	 * Returns a new object of class '<em>Connection</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns a new object of class '<em>Connection</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @return a new object of class '<em>Connection</em>'.
 	 * @generated
 	 */
 	Connection createConnection();
 
 	/**
-	 * Returns a new object of class '<em>Parameter Value</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns a new object of class '<em>Parameter Value</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @return a new object of class '<em>Parameter Value</em>'.
 	 * @generated
 	 */
 	ParameterValue createParameterValue();
 
 	/**
-	 * Returns a new object of class '<em>Parameter Expresssion</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns a new object of class '<em>Parameter Expresssion</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @return a new object of class '<em>Parameter Expresssion</em>'.
 	 * @generated
 	 */
 	ParameterExpresssion createParameterExpresssion();
 
 	/**
-	 * Returns a new object of class '<em>Formula</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns a new object of class '<em>Formula</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @return a new object of class '<em>Formula</em>'.
 	 * @generated
 	 */
 	Formula createFormula();
 
 	/**
-	 * Returns the package supported by this factory.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns the package supported by this factory. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @return the package supported by this factory.
 	 * @generated
 	 */
 	InstanceModel20Package getInstanceModel20Package();
 
-} //InstanceModel20Factory
+} // InstanceModel20Factory

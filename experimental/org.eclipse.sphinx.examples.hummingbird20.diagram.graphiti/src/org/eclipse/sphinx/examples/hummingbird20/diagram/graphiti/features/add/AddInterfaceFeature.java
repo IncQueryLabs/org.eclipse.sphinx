@@ -50,6 +50,7 @@ public class AddInterfaceFeature extends AbstractAddFeature {
 		super(fp);
 	}
 
+	@Override
 	public boolean canAdd(IAddContext context) {
 		// Is it an add request for an Interface ?
 		if (context.getNewObject() instanceof Interface) {
@@ -61,6 +62,7 @@ public class AddInterfaceFeature extends AbstractAddFeature {
 		return false;
 	}
 
+	@Override
 	public PictogramElement add(IAddContext context) {
 		Interface interfaceToAdd = (Interface) context.getNewObject();
 		Diagram targetContainer = (Diagram) context.getTargetContainer();

@@ -108,6 +108,7 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 	/*
 	 * @see org.eclipse.ui.ISaveablesSource#getActiveSaveables()
 	 */
+	@Override
 	public Saveable[] getActiveSaveables() {
 		return getSaveables();
 	}
@@ -115,6 +116,7 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 	/*
 	 * @see org.eclipse.ui.ISaveablesSource#getSaveables()
 	 */
+	@Override
 	public Saveable[] getSaveables() {
 		if (modelSaveablesProvider != null) {
 			List<Saveable> saveables = new ArrayList<Saveable>(2);

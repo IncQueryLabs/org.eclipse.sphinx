@@ -115,6 +115,7 @@ public class ScopingResourceSetImplTest {
 			}
 		}
 
+		@Override
 		public Resource createResource(URI uri) {
 			return fResources.get(uri);
 		}

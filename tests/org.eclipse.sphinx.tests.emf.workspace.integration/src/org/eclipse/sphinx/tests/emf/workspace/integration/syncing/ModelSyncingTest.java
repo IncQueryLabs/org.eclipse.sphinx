@@ -822,6 +822,7 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 		assertNotNull(hbFileProject20B_3);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 					// set empty content to hbFileProject20B_1 HB20 file

@@ -46,18 +46,22 @@ public class BasicModelXViewerLabelProvider extends XViewerLabelProvider impleme
 		this.itemDelegator = itemDelegator;
 	}
 
+	@Override
 	public void addListener(ILabelProviderListener listener) {
 		// do nothing
 	}
 
+	@Override
 	public void removeListener(ILabelProviderListener listener) {
 		// do nothing
 	}
 
+	@Override
 	public void dispose() {
 		// do nothing
 	}
 
+	@Override
 	public boolean isLabelProperty(Object element, String property) {
 		return false;
 	}
@@ -104,6 +108,7 @@ public class BasicModelXViewerLabelProvider extends XViewerLabelProvider impleme
 		return null;
 	}
 
+	@Override
 	public Font getFont(Object element, int columnIndex) {
 		return viewer.getControl().getFont();
 	}

@@ -32,6 +32,7 @@ public class ConvertToXtendXpandEnabledPluginProjectHandler extends AbstractHand
 	 * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands.ExecutionEvent)
 	 */
 	// TODO Support simultaneous conversion of multiple projects
+	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IProject project = UIUtil.unwrap(event, IProject.class);
 		if (project != null) {

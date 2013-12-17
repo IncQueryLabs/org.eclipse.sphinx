@@ -31,12 +31,14 @@ public class UpdateInterfaceFeature extends AbstractUpdateFeature {
 		super(fp);
 	}
 
+	@Override
 	public boolean canUpdate(IUpdateContext context) {
 		// return true, if linked business object is an Interface
 		Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
 		return bo instanceof Interface;
 	}
 
+	@Override
 	public IReason updateNeeded(IUpdateContext context) {
 		// retrieve name from pictogram model
 		String pictogramName = null;
@@ -66,6 +68,7 @@ public class UpdateInterfaceFeature extends AbstractUpdateFeature {
 		}
 	}
 
+	@Override
 	public boolean update(IUpdateContext context) {
 		// retrieve name from business model
 		String businessName = null;

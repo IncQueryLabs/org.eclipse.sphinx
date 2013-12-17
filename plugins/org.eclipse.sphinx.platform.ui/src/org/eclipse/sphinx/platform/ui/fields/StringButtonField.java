@@ -61,6 +61,7 @@ public class StringButtonField extends StringField implements IStringButtonField
 	/*
 	 * @see org.eclipse.sphinx.platform.ui.fields.IStringButtonField#setButtonLabel(java.lang.String)
 	 */
+	@Override
 	public void setButtonLabel(String label) {
 		fBrowseButtonLabel = label;
 	}
@@ -149,10 +150,12 @@ public class StringButtonField extends StringField implements IStringButtonField
 			fBrowseButton.setText(fBrowseButtonLabel);
 			fBrowseButton.setEnabled(isEnabled() && fButtonEnabled);
 			fBrowseButton.addSelectionListener(new SelectionListener() {
+				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {
 					changeControlPressed();
 				}
 
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					changeControlPressed();
 				}
@@ -165,6 +168,7 @@ public class StringButtonField extends StringField implements IStringButtonField
 	/*
 	 * @see org.eclipse.sphinx.platform.ui.fields.IStringButtonField#getButtonControl()
 	 */
+	@Override
 	public Control getButtonControl() {
 		Control control = null;
 		if (isOkToUse(fBrowseButton)) {

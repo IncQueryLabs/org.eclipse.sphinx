@@ -110,20 +110,24 @@ public class ReferencesView extends ViewPart {
 	protected IContentProvider createModelCrossReferenceContentProvider() {
 		return new ITreeContentProvider() {
 
+			@Override
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 				// Do nothing
 			}
 
+			@Override
 			public Object[] getElements(Object inputElement) {
 				return getChildren(inputElement);
 			}
 
+			@Override
 			public boolean hasChildren(Object element) {
 				return getChildren(element).length > 0;
 			}
 
 			// TODO Add defer and abort capability
 			// TODO Avoid infinite number of children in case of cyclic references
+			@Override
 			public Object[] getChildren(Object parentElement) {
 				if (parentElement instanceof EObject) {
 					final EObject parentEObject = (EObject) parentElement;
@@ -132,6 +136,7 @@ public class ReferencesView extends ViewPart {
 					if (editingDomain != null) {
 						try {
 							return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Object[]>() {
+								@Override
 								public void run() {
 									Collection<EObject> eCrossReferences = getECrossReferences(parentEObject, showInverseReferences);
 									setResult(eCrossReferences.toArray(new EObject[eCrossReferences.size()]));
@@ -161,10 +166,12 @@ public class ReferencesView extends ViewPart {
 				}
 			}
 
+			@Override
 			public Object getParent(Object element) {
 				return null;
 			}
 
+			@Override
 			public void dispose() {
 				// Do nothing
 			}
@@ -274,6 +281,7 @@ public class ReferencesView extends ViewPart {
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
+			@Override
 			public void menuAboutToShow(IMenuManager manager) {
 				ReferencesView.this.fillContextMenu(manager);
 			}
@@ -341,6 +349,7 @@ public class ReferencesView extends ViewPart {
 
 	private void hookDoubleClickAction() {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
 			public void doubleClick(DoubleClickEvent event) {
 				doubleClickAction.run();
 			}

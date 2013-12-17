@@ -33,6 +33,7 @@ public abstract class AbstractResourceVisitor implements IResourceVisitor {
 	/*
 	 * @see org.eclipse.core.resources.IResourceVisitor#visit(org.eclipse.core.resources.IResource)
 	 */
+	@Override
 	public final boolean visit(IResource resource) throws CoreException {
 		if (!ExtendedPlatform.isPlatformPrivateResource(resource)) {
 			return doVisit(resource);

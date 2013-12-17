@@ -252,6 +252,7 @@ public abstract class AbstractModelNewWizard extends Wizard implements INewWizar
 		if (activePart instanceof ISetSelectionTarget) {
 			final ISelection targetSelection = new StructuredSelection(modelFile);
 			getShell().getDisplay().asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					((ISetSelectionTarget) activePart).selectReveal(targetSelection);
 				}

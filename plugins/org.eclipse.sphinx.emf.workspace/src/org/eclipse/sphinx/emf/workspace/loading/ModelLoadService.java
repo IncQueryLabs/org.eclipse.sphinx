@@ -25,6 +25,7 @@ public class ModelLoadService implements IModelLoadService {
 	/**
 	 * @see org.eclipse.sphinx.emf.model.IModelLoadService.loadModel(IModelDescriptor, boolean, IProgressMonitor)
 	 */
+	@Override
 	public void loadModel(IModelDescriptor modelDescriptor, boolean async, IProgressMonitor monitor) {
 		ModelLoadManager.INSTANCE.loadModel(modelDescriptor, async, monitor);
 	}
@@ -33,6 +34,7 @@ public class ModelLoadService implements IModelLoadService {
 	 * @see org.eclipse.sphinx.emf.model.IModelLoadService.loadModels(Collection<IModelDescriptor>, boolean,
 	 *      IProgressMonitor)
 	 */
+	@Override
 	public void loadModels(Collection<IModelDescriptor> modelDescriptors, boolean async, IProgressMonitor monitor) {
 		ModelLoadManager.INSTANCE.loadModels(modelDescriptors, true, async, monitor);
 	}

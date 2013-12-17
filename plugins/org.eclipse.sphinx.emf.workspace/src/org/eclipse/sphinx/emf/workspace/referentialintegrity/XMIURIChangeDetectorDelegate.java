@@ -45,6 +45,7 @@ public class XMIURIChangeDetectorDelegate implements IURIChangeDetectorDelegate 
 	 * org.eclipse.sphinx.emf.workspace.referencialintegrity.IURIChangeDetectorDelegate#detectChangedURIs(org.eclipse
 	 * .emf .common.notify.Notification)
 	 */
+	@Override
 	public List<URIChangeNotification> detectChangedURIs(Notification notification) {
 		List<URIChangeNotification> uriChangeNotifications = new ArrayList<URIChangeNotification>();
 
@@ -65,6 +66,7 @@ public class XMIURIChangeDetectorDelegate implements IURIChangeDetectorDelegate 
 	 * org.eclipse.sphinx.emf.workspace.referencialintegrity.IURIChangeDetectorDelegate#detectChangedURIs(org.eclipse
 	 * .core .resources.IFile, org.eclipse.core.resources.IFile)
 	 */
+	@Override
 	public List<URIChangeNotification> detectChangedURIs(IFile oldFile, IFile newFile) {
 		if (!oldFile.getFullPath().equals(newFile.getFullPath())) {
 			final Resource resource = EcorePlatformUtil.getResource(oldFile);
@@ -73,6 +75,7 @@ public class XMIURIChangeDetectorDelegate implements IURIChangeDetectorDelegate 
 				if (editingDomain != null) {
 					try {
 						return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<List<URIChangeNotification>>() {
+							@Override
 							public void run() {
 								List<URIChangeNotification> uriChangeNotifications = new ArrayList<URIChangeNotification>();
 								ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);

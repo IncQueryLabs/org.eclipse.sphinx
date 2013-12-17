@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -73,6 +72,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.validation.ui.Activator;
 import org.eclipse.sphinx.emf.validation.ui.util.Messages;
 import org.eclipse.sphinx.emf.validation.ui.views.MarkerAdapter.MarkerCategory;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceAdapter;
@@ -383,6 +383,7 @@ public abstract class MarkerView extends TableView {
 		 * @seeorg.eclipse.core.resources.IResourceChangeListener#resourceChanged(org.eclipse.core.resources.
 		 * IResourceChangeEvent)
 		 */
+		@Override
 		public void resourceChanged(IResourceChangeEvent event) {
 			if (!hasMarkerDelta(event)) {
 				return;
@@ -425,10 +426,12 @@ public abstract class MarkerView extends TableView {
 	};
 
 	private class ContextProvider implements IContextProvider {
+		@Override
 		public int getContextChangeMask() {
 			return SELECTION;
 		}
 
+		@Override
 		public IContext getContext(Object target) {
 			String contextId = null;
 			// See if there is a context registered for the current selection
@@ -465,6 +468,7 @@ public abstract class MarkerView extends TableView {
 		 * (non-Javadoc)
 		 * @see org.eclipse.help.IContextProvider#getSearchExpression(java.lang.Object)
 		 */
+		@Override
 		public String getSearchExpression(Object target) {
 			return null;
 		}
@@ -491,6 +495,7 @@ public abstract class MarkerView extends TableView {
 	protected RedoActionHandler redoAction;
 
 	private ISelectionListener focusListener = new ISelectionListener() {
+		@Override
 		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 			MarkerView.this.focusSelectionChanged(part, selection);
 		}
@@ -524,6 +529,7 @@ public abstract class MarkerView extends TableView {
 			 * @see
 			 * org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
 			 */
+			@Override
 			public void propertyChange(PropertyChangeEvent event) {
 				if (event.getProperty().equals(getFiltersPreferenceName())) {
 					loadFiltersPreferences();
@@ -729,6 +735,7 @@ public abstract class MarkerView extends TableView {
 			 * (non-Javadoc)
 			 * @see org.eclipse.swt.events.HelpListener#helpRequested(org.eclipse.swt.events.HelpEvent)
 			 */
+			@Override
 			public void helpRequested(HelpEvent e) {
 				IContext context = contextProvider.getContext(getViewer().getControl());
 				PlatformUI.getWorkbench().getHelpSystem().displayHelp(context);
@@ -751,6 +758,7 @@ public abstract class MarkerView extends TableView {
 		}
 		if (adaptable.equals(IShowInSource.class)) {
 			return new IShowInSource() {
+				@Override
 				public ShowInContext getShowInContext() {
 					ISelection selection = getViewer().getSelection();
 					if (!(selection instanceof IStructuredSelection)) {
@@ -1152,7 +1160,7 @@ public abstract class MarkerView extends TableView {
 			if (element instanceof IResource) {
 				selectionCollection.add(element);
 			} else if (element instanceof ResourceMapping) {
-				addResources(selectionCollection, ((ResourceMapping) element));
+				addResources(selectionCollection, (ResourceMapping) element);
 			} else if (element instanceof EObject) {
 				selectionCollection.add(element);
 			} else if (element instanceof IWrapperItemProvider) {
@@ -1685,6 +1693,7 @@ public abstract class MarkerView extends TableView {
 			 * @see
 			 * org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
 			 */
+			@Override
 			public void propertyChange(PropertyChangeEvent event) {
 				clearEnabledFilters();
 				refreshViewer();

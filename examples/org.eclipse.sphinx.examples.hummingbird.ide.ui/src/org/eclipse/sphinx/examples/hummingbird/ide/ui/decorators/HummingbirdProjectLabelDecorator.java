@@ -25,6 +25,7 @@ import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ILightweightLabelDecorator;
 import org.eclipse.sphinx.examples.hummingbird.ide.metamodel.HummingbirdMMDescriptor;
+import org.eclipse.sphinx.examples.hummingbird.ide.natures.HummingbirdNature;
 import org.eclipse.sphinx.examples.hummingbird.ide.preferences.IHummingbirdPreferences;
 import org.eclipse.sphinx.examples.hummingbird.ide.ui.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -40,6 +41,7 @@ public class HummingbirdProjectLabelDecorator implements ILightweightLabelDecora
 	 * @see org.eclipse.jface.viewers.ILightweightLabelDecorator#decorate(java.lang.Object,
 	 * org.eclipse.jface.viewers.IDecoration)
 	 */
+	@Override
 	public void decorate(Object element, IDecoration decoration) {
 		// Handle only projects
 		if (element instanceof IProject) {
@@ -71,6 +73,7 @@ public class HummingbirdProjectLabelDecorator implements ILightweightLabelDecora
 	/*
 	 * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
 	 */
+	@Override
 	public boolean isLabelProperty(Object element, String property) {
 		return false;
 	}
@@ -78,6 +81,7 @@ public class HummingbirdProjectLabelDecorator implements ILightweightLabelDecora
 	/*
 	 * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
 	 */
+	@Override
 	public void addListener(ILabelProviderListener listener) {
 		// Do nothing
 	}
@@ -86,6 +90,7 @@ public class HummingbirdProjectLabelDecorator implements ILightweightLabelDecora
 	 * @see
 	 * org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
 	 */
+	@Override
 	public void removeListener(ILabelProviderListener listener) {
 		// Do nothing
 	}
@@ -93,6 +98,7 @@ public class HummingbirdProjectLabelDecorator implements ILightweightLabelDecora
 	/*
 	 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
 	 */
+	@Override
 	public void dispose() {
 		// Do nothing
 	}

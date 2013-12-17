@@ -28,10 +28,12 @@ public class BasicPropertyType implements IPropertyType {
 		this.valueType = valueType;
 	}
 
+	@Override
 	public String getFeatureName() {
 		return featureName;
 	}
 
+	@Override
 	public Class<?> getValueType() {
 		return valueType;
 	}

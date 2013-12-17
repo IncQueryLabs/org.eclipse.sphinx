@@ -141,6 +141,7 @@ public class OutletsPreference extends AbstractProjectWorkspacePreference<Collec
 	 * @return the adapted object or <code>null</code>
 	 * @see IAdaptable#getAdapter(Class)
 	 */
+	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}

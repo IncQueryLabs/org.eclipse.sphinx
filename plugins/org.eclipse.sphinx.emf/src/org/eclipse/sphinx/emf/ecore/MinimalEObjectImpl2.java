@@ -59,15 +59,18 @@ public class MinimalEObjectImpl2 extends BasicEObjectImpl implements EObject, ES
 					super(eClass);
 				}
 
+				@Override
 				@SuppressWarnings("unchecked")
 				public K getKey() {
 					return (K) eGet(keyFeature);
 				}
 
+				@Override
 				public void setKey(Object key) {
 					eSet(keyFeature, key);
 				}
 
+				@Override
 				public int getHash() {
 					if (hash == -1) {
 						Object theKey = getKey();
@@ -76,15 +79,18 @@ public class MinimalEObjectImpl2 extends BasicEObjectImpl implements EObject, ES
 					return hash;
 				}
 
+				@Override
 				public void setHash(int hash) {
 					this.hash = hash;
 				}
 
+				@Override
 				@SuppressWarnings("unchecked")
 				public V getValue() {
 					return (V) eGet(valueFeature);
 				}
 
+				@Override
 				public V setValue(V value) {
 					@SuppressWarnings("unchecked")
 					V result = (V) eGet(valueFeature);
@@ -455,6 +461,7 @@ public class MinimalEObjectImpl2 extends BasicEObjectImpl implements EObject, ES
 				}
 			}
 
+			@Override
 			public void addListener(Listener listener) {
 				Listener[] listeners = (Listener[]) getField(ADAPTER_LISTENER);
 				if (listeners == null) {
@@ -468,6 +475,7 @@ public class MinimalEObjectImpl2 extends BasicEObjectImpl implements EObject, ES
 				setField(ADAPTER_LISTENER, listeners);
 			}
 
+			@Override
 			public void removeListener(Listener listener) {
 				Listener[] listeners = (Listener[]) getField(ADAPTER_LISTENER);
 				if (listeners != null) {
@@ -639,16 +647,19 @@ public class MinimalEObjectImpl2 extends BasicEObjectImpl implements EObject, ES
 		return settings;
 	}
 
+	@Override
 	public Object dynamicGet(int dynamicFeatureID) {
 		Object[] settings = eDynamicSettings();
 		return settings[dynamicFeatureID];
 	}
 
+	@Override
 	public void dynamicSet(int dynamicFeatureID, Object newValue) {
 		Object[] settings = eDynamicSettings();
 		settings[dynamicFeatureID] = newValue;
 	}
 
+	@Override
 	public void dynamicUnset(int dynamicFeatureID) {
 		Object[] settings = eDynamicSettings();
 		settings[dynamicFeatureID] = null;

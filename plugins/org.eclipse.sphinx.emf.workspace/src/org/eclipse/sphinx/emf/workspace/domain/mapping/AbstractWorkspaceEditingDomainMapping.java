@@ -137,6 +137,7 @@ public abstract class AbstractWorkspaceEditingDomainMapping implements IWorkspac
 		return getDefaultEditingDomainId(mmDescriptors);
 	}
 
+	@Override
 	public TransactionalEditingDomain getEditingDomain(IFile file) {
 		IMetaModelDescriptor descriptor = MetaModelDescriptorRegistry.INSTANCE.getEffectiveDescriptor(file);
 		if (descriptor != null) {
@@ -150,6 +151,7 @@ public abstract class AbstractWorkspaceEditingDomainMapping implements IWorkspac
 	 * <p>
 	 * Delegates to the right protected method according to the type of the specified {@link IContainer container}.
 	 */
+	@Override
 	public final List<TransactionalEditingDomain> getEditingDomains(IContainer container) {
 		if (container instanceof IFolder) {
 			return getEditingDomains((IFolder) container);
@@ -200,6 +202,7 @@ public abstract class AbstractWorkspaceEditingDomainMapping implements IWorkspac
 		return getEditingDomains();
 	}
 
+	@Override
 	public void addGlobalResourceSetListener(ResourceSetListener listener) {
 		for (TransactionalEditingDomain editingDomain : getEditingDomains()) {
 			editingDomain.addResourceSetListener(listener);
@@ -207,6 +210,7 @@ public abstract class AbstractWorkspaceEditingDomainMapping implements IWorkspac
 		globalResourceSetListeners.add(listener);
 	}
 
+	@Override
 	public void removeGlobalResourceSetListener(ResourceSetListener listener) {
 		for (TransactionalEditingDomain editingDomain : getEditingDomains()) {
 			editingDomain.removeResourceSetListener(listener);
@@ -214,6 +218,7 @@ public abstract class AbstractWorkspaceEditingDomainMapping implements IWorkspac
 		globalResourceSetListeners.remove(listener);
 	}
 
+	@Override
 	public void addGlobalOperationHistoryListener(IOperationHistoryListener listener) {
 		for (TransactionalEditingDomain editingDomain : getEditingDomains()) {
 			WorkspaceTransactionUtil.getOperationHistory(editingDomain).addOperationHistoryListener(listener);
@@ -221,6 +226,7 @@ public abstract class AbstractWorkspaceEditingDomainMapping implements IWorkspac
 		globalOperationHistoryListeners.add(listener);
 	}
 
+	@Override
 	public void removeGlobalOperationHistoryListener(IOperationHistoryListener listener) {
 		for (TransactionalEditingDomain editingDomain : getEditingDomains()) {
 			WorkspaceTransactionUtil.getOperationHistory(editingDomain).removeOperationHistoryListener(listener);
@@ -228,10 +234,12 @@ public abstract class AbstractWorkspaceEditingDomainMapping implements IWorkspac
 		globalOperationHistoryListeners.remove(listener);
 	}
 
+	@Override
 	public IResourceSaveIndicator getResourceSaveIndicator(TransactionalEditingDomain editingDomain) {
 		return resourceSaveIndicators.get(editingDomain);
 	}
 
+	@Override
 	public void postCreateEditingDomain(TransactionalEditingDomain editingDomain) {
 		// Install a WorkspaceSynchronizer with an IResourceSaveIndicator delegate on newly created EditingDomain
 		IResourceSaveIndicator resourceSaveIndicator = createResourceSaveIndicator(editingDomain);
@@ -248,6 +256,7 @@ public abstract class AbstractWorkspaceEditingDomainMapping implements IWorkspac
 		}
 	}
 
+	@Override
 	public void preDisposeEditingDomain(TransactionalEditingDomain editingDomain) {
 		// Discard WorkspaceSynchronizer and IResourceSaveIndicator associated with EditingDomain to be disposed
 		resourceSaveIndicators.remove(editingDomain);
@@ -265,6 +274,7 @@ public abstract class AbstractWorkspaceEditingDomainMapping implements IWorkspac
 		}
 	}
 
+	@Override
 	public void dispose() {
 		// Unregister this EditingDomainMapping as listener of all encountered EditingDomainFactories
 		EditingDomainFactoryListenerRegistry.INSTANCE.removeListener(this);

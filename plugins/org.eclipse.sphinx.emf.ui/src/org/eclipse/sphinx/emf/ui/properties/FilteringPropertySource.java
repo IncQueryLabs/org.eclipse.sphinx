@@ -39,10 +39,12 @@ public class FilteringPropertySource implements IPropertySource {
 		return propertySourceFilter;
 	}
 
+	@Override
 	public Object getEditableValue() {
 		return propertySourceDelegate.getEditableValue();
 	}
 
+	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		if (getPropertySourceFilter() != null) {
 			return getPropertySourceFilter().getAcceptedPropertyDescriptors(propertySourceDelegate);
@@ -51,18 +53,22 @@ public class FilteringPropertySource implements IPropertySource {
 		}
 	}
 
+	@Override
 	public Object getPropertyValue(Object id) {
 		return propertySourceDelegate.getPropertyValue(id);
 	}
 
+	@Override
 	public boolean isPropertySet(Object id) {
 		return propertySourceDelegate.isPropertySet(id);
 	}
 
+	@Override
 	public void resetPropertyValue(Object id) {
 		propertySourceDelegate.resetPropertyValue(id);
 	}
 
+	@Override
 	public void setPropertyValue(Object id, Object value) {
 		propertySourceDelegate.setPropertyValue(id, value);
 	}

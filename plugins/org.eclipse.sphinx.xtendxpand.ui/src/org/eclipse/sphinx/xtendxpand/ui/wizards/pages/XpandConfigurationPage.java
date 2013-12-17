@@ -93,6 +93,7 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 		templateGroup.createContent(parent, 3);
 		templateGroup.addGroupListener(new IGroupListener() {
 
+			@Override
 			public void groupChanged(IField field) {
 				getWizard().getContainer().updateButtons();
 			}
@@ -107,6 +108,7 @@ public class XpandConfigurationPage extends AbstractWizardPage {
 		outputGroup.createContent(parent, 3);
 		outputGroup.addGroupListener(new IGroupListener() {
 
+			@Override
 			public void groupChanged(IField field) {
 				getWizard().getContainer().updateButtons();
 			}

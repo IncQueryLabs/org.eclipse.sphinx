@@ -37,6 +37,7 @@ public class PlatformLogWriter implements ILogListener {
 	/**
 	 * @see ILogListener#logging(IStatus, String)
 	 */
+	@Override
 	public synchronized void logging(IStatus status, String plugin) {
 		frameworkLog.log(getLog(status));
 	}

@@ -63,6 +63,7 @@ public class ReferenceWorkspaceChangeListener implements IResourceChangeListener
 		super.finalize();
 	}
 
+	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		try {
 			IResourceDelta delta = event.getDelta();

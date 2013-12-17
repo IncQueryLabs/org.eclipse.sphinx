@@ -42,6 +42,7 @@ public class CreatePortFeature extends AbstractCreateFeature {
 		return Hummingbird20PlatformDiagramImageProvider.IMAGE_PORT;
 	}
 
+	@Override
 	public boolean canCreate(ICreateContext context) {
 		// Create a port only for a ComponentType
 		ContainerShape container = context.getTargetContainer();
@@ -53,6 +54,7 @@ public class CreatePortFeature extends AbstractCreateFeature {
 		return false;
 	}
 
+	@Override
 	public Object[] create(ICreateContext context) {
 		// Ask user for Port name
 		String newPortName = ExampleUtil.askString(TITLE, USER_QUESTION, ""); //$NON-NLS-1$

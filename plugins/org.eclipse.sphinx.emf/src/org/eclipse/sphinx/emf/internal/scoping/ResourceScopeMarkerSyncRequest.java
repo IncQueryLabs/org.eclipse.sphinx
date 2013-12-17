@@ -33,6 +33,7 @@ public class ResourceScopeMarkerSyncRequest implements IResourceScopeMarkerSyncR
 	/*
 	 * @see org.eclipse.sphinx.platform.resources.syncing.IResourceSyncRequest#init()
 	 */
+	@Override
 	public void init() {
 		// Do nothing
 	}
@@ -42,6 +43,7 @@ public class ResourceScopeMarkerSyncRequest implements IResourceScopeMarkerSyncR
 	 * org.eclipse.sphinx.emf.internal.scoping.IResourceScopeMarkerSyncRequest#addFileToValidate(org.eclipse.core.resources
 	 * .IFile)
 	 */
+	@Override
 	public void addFileToValidate(IFile file) {
 		if (file != null) {
 			// Exclude inaccessible files
@@ -59,6 +61,7 @@ public class ResourceScopeMarkerSyncRequest implements IResourceScopeMarkerSyncR
 	 * org.eclipse.sphinx.emf.internal.scoping.IResourceScopeMarkerSyncRequest#addFileToClean(org.eclipse.core.resources
 	 * . IFile)
 	 */
+	@Override
 	public void addFileToClean(IFile file) {
 		if (file != null) {
 			// Exclude inaccessible files
@@ -71,6 +74,7 @@ public class ResourceScopeMarkerSyncRequest implements IResourceScopeMarkerSyncR
 		}
 	}
 
+	@Override
 	public boolean canPerform() {
 		return filesToValidate.size() > 0 || filesToClean.size() > 0;
 	}
@@ -78,6 +82,7 @@ public class ResourceScopeMarkerSyncRequest implements IResourceScopeMarkerSyncR
 	/*
 	 * @see org.eclipse.sphinx.platform.resources.syncing.IResourceSyncRequest#perform()
 	 */
+	@Override
 	public void perform() {
 		if (!canPerform()) {
 			return;
@@ -97,6 +102,7 @@ public class ResourceScopeMarkerSyncRequest implements IResourceScopeMarkerSyncR
 	/*
 	 * @see org.eclipse.sphinx.platform.resources.syncing.IResourceSyncRequest#dispose()
 	 */
+	@Override
 	public void dispose() {
 		// Do nothing
 	}

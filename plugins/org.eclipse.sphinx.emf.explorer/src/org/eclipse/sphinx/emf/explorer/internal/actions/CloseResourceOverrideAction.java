@@ -100,8 +100,10 @@ public class CloseResourceOverrideAction extends CloseResourceAction {
 
 		final boolean canceled[] = new boolean[1];
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+			@Override
 			public void run() {
 				SafeRunner.run(new SafeRunnable(Messages.error_failedToSaveModelsInWorkbench) {
+					@Override
 					public void run() {
 						IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 						if (window == null) {

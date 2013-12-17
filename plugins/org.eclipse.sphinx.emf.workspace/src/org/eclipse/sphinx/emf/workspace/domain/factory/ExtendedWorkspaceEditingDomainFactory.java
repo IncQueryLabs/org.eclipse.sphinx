@@ -171,6 +171,7 @@ public class ExtendedWorkspaceEditingDomainFactory extends WorkspaceEditingDomai
 		return OperationHistoryFactory.getOperationHistory();
 	}
 
+	@Override
 	public TransactionalEditingDomain createEditingDomain(Collection<IMetaModelDescriptor> metaModelDescriptors) {
 		return createEditingDomain(metaModelDescriptors, createResourceSet(), createOperationHistory());
 	}
@@ -179,6 +180,7 @@ public class ExtendedWorkspaceEditingDomainFactory extends WorkspaceEditingDomai
 		return createEditingDomain(metaModelDescriptors, createResourceSet(), history);
 	}
 
+	@Override
 	public TransactionalEditingDomain createEditingDomain(Collection<IMetaModelDescriptor> metaModelDescriptors, ResourceSet resourceSet) {
 		return createEditingDomain(metaModelDescriptors, resourceSet, createOperationHistory());
 	}

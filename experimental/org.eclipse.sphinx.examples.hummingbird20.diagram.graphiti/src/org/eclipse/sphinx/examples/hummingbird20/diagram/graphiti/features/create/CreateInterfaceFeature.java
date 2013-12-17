@@ -38,10 +38,12 @@ public class CreateInterfaceFeature extends AbstractCreateFeature {
 		return Hummingbird20PlatformDiagramImageProvider.IMAGE_INTERFACE;
 	}
 
+	@Override
 	public boolean canCreate(ICreateContext context) {
 		return context.getTargetContainer() instanceof Diagram;
 	}
 
+	@Override
 	public Object[] create(ICreateContext context) {
 		// Ask user for Interface name
 		String newInterfaceName = ExampleUtil.askString(TITLE, USER_QUESTION, ""); //$NON-NLS-1$

@@ -58,6 +58,7 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getDefaultLoadOptions()
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Map<Object, Object> getDefaultLoadOptions() {
 		Map<Object, Object> defaultLoadOptions = null;
@@ -77,6 +78,7 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getDefaultSaveOptions()
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Map<Object, Object> getDefaultSaveOptions() {
 		Map<Object, Object> defaultSaveOptions = null;
@@ -96,6 +98,7 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getLoadProblemOptions()
 	 */
+	@Override
 	public Map<Object, Object> getProblemHandlingOptions() {
 		if (problemHandlingOptions == null) {
 			problemHandlingOptions = new HashMap<Object, Object>();
@@ -117,6 +120,7 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#unloaded(org.eclipse.emf.ecore.InternalEObject)
 	 */
+	@Override
 	public void unloaded(EObject eObject) {
 		// Memory-optimized unload to be performed?
 		if (getDefaultLoadOptions().get(ExtendedResource.OPTION_UNLOAD_MEMORY_OPTIMIZED) == Boolean.TRUE) {
@@ -145,6 +149,7 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getURI(org.eclipse.emf.ecore.EObject)
 	 */
+	@Override
 	public URI getURI(EObject eObject) {
 		return getURI(null, null, eObject);
 	}
@@ -153,6 +158,7 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getURI(org.eclipse.emf.ecore.EObject,
 	 * org.eclipse.emf.ecore.EStructuralFeature, org.eclipse.emf.ecore.EObject)
 	 */
+	@Override
 	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
 		Resource resource = (Resource) getTarget();
 
@@ -208,6 +214,7 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#validateURI(java.lang.String)
 	 */
+	@Override
 	public Diagnostic validateURI(String uri) {
 		Assert.isNotNull(uri);
 		try {
@@ -221,6 +228,7 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#augmentToContextAwareProxy(org.eclipse.emf.ecore.EObject)
 	 */
+	@Override
 	public void augmentToContextAwareProxy(EObject proxy) {
 		// Context-aware proxy URIs required?
 		if (isUseContextAwareProxyURIs()) {

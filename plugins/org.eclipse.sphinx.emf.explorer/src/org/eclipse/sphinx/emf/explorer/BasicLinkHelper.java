@@ -35,6 +35,7 @@ import org.eclipse.ui.navigator.ILinkHelper;
 
 public class BasicLinkHelper implements ILinkHelper {
 
+	@Override
 	public void activateEditor(IWorkbenchPage page, IStructuredSelection selection) {
 		if (selection != null && selection.size() == 1) {
 			Object selected = selection.getFirstElement();
@@ -50,6 +51,7 @@ public class BasicLinkHelper implements ILinkHelper {
 		}
 	}
 
+	@Override
 	public IStructuredSelection findSelection(IEditorInput anInput) {
 		if (anInput instanceof URIEditorInput) {
 			URIEditorInput input = (URIEditorInput) anInput;
@@ -70,6 +72,7 @@ public class BasicLinkHelper implements ILinkHelper {
 			if (editingDomain != null) {
 				try {
 					return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<EObject>() {
+						@Override
 						public void run() {
 							setResult(EcoreResourceUtil.loadEObject(editingDomain.getResourceSet(), uri));
 						}

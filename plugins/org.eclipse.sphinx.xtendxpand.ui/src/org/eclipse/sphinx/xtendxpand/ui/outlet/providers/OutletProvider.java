@@ -109,6 +109,7 @@ public class OutletProvider implements IPreferenceChangeListener {
 		}
 	}
 
+	@Override
 	public void preferenceChange(PreferenceChangeEvent event) {
 		if (outletsPreference.getKey().equals(event.getKey())) {
 			updateOutlets();

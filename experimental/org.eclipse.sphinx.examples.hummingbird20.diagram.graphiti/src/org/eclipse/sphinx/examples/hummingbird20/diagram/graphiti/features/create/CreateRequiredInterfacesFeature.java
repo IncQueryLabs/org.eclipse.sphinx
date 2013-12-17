@@ -40,6 +40,7 @@ public class CreateRequiredInterfacesFeature extends AbstractCreateConnectionFea
 		return Hummingbird20PlatformDiagramImageProvider.IMAGE_REQUIRED_INTERFACES;
 	}
 
+	@Override
 	public boolean canCreate(ICreateConnectionContext context) {
 		// return true if source anchor belongs to an ComponentType and target anchor to Interface
 		Port source = getPort(context.getSourceAnchor());
@@ -51,6 +52,7 @@ public class CreateRequiredInterfacesFeature extends AbstractCreateConnectionFea
 
 	}
 
+	@Override
 	public Connection create(ICreateConnectionContext context) {
 		Connection newConnection = null;
 		// get Port which should be connected
@@ -71,6 +73,7 @@ public class CreateRequiredInterfacesFeature extends AbstractCreateConnectionFea
 		return newConnection;
 	}
 
+	@Override
 	public boolean canStartConnection(ICreateConnectionContext context) {
 		// return true if start anchor belongs to a ComponentType
 		if (getPort(context.getSourceAnchor()) != null) {

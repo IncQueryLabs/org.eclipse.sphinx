@@ -82,6 +82,7 @@ public class DefaultWorkspaceEditingDomainMapping extends AbstractWorkspaceEditi
 	 * 
 	 * @see {@linkplain IWorkspaceEditingDomainMapping#getEditingDomain(IContainer, IMetaModelDescriptor)}
 	 */
+	@Override
 	public TransactionalEditingDomain getEditingDomain(IContainer container, IMetaModelDescriptor mmDescriptor) {
 		if (mmDescriptor != null) {
 			synchronized (mappedEditingDomains) {
@@ -103,6 +104,7 @@ public class DefaultWorkspaceEditingDomainMapping extends AbstractWorkspaceEditi
 	/*
 	 * @see org.eclipse.sphinx.emf.workspace.domain.mapping.IWorkspaceEditingDomainMapping#getEditingDomains()
 	 */
+	@Override
 	public List<TransactionalEditingDomain> getEditingDomains() {
 		return Collections.unmodifiableList(new ArrayList<TransactionalEditingDomain>(mappedEditingDomains.values()));
 	}

@@ -97,6 +97,7 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	/*
 	 * @see org.eclipse.emf.workspace.util.WorkspaceSynchronizer.Delegate#dispose()
 	 */
+	@Override
 	public void dispose() {
 		removeTransactionalEditingDomainListeners();
 	}
@@ -155,6 +156,7 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	 * org.eclipse.emf.workspace.util.WorkspaceSynchronizer.Delegate#handleResourceChanged(org.eclipse.emf.ecore.resource
 	 * .Resource)
 	 */
+	@Override
 	public boolean handleResourceChanged(Resource resource) {
 		unsetSaved(resource);
 		return true;
@@ -165,6 +167,7 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	 * org.eclipse.emf.workspace.util.WorkspaceSynchronizer.Delegate#handleResourceDeleted(org.eclipse.emf.ecore.resource
 	 * .Resource)
 	 */
+	@Override
 	public boolean handleResourceDeleted(Resource resource) {
 		return true;
 	}
@@ -174,6 +177,7 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	 * org.eclipse.emf.workspace.util.WorkspaceSynchronizer.Delegate#handleResourceMoved(org.eclipse.emf.ecore.resource
 	 * .Resource, org.eclipse.emf.common.util.URI)
 	 */
+	@Override
 	public boolean handleResourceMoved(Resource resource, URI newURI) {
 		return true;
 	}
@@ -181,6 +185,7 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	/*
 	 * @see org.eclipse.sphinx.emf.saving.IResourceSaveIndicator#isDirty(org.eclipse.emf.ecore.resource.Resource)
 	 */
+	@Override
 	public boolean isDirty(Resource resource) {
 		return dirtyResources.contains(resource);
 	}
@@ -188,6 +193,7 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	/*
 	 * @see org.eclipse.sphinx.emf.saving.IResourceSaveIndicator#setDirty(org.eclipse.emf.ecore.resource.Resource)
 	 */
+	@Override
 	public void setDirty(Resource resource) {
 		if (resource != null && EcoreResourceUtil.exists(resource.getURI())) {
 			if (dirtyResources.add(resource)) {
@@ -199,6 +205,7 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	/*
 	 * @see org.eclipse.sphinx.emf.saving.IResourceSaveIndicator#unsetDirty(org.eclipse.emf.ecore.resource.Resource)
 	 */
+	@Override
 	public void unsetDirty(Resource resource) {
 		if (dirtyResources.remove(resource)) {
 			ModelSaveManager.INSTANCE.handleDirtyStateChanged(resource);
@@ -208,6 +215,7 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	/*
 	 * @see org.eclipse.sphinx.emf.saving.IResourceSaveIndicator#getDirtyResources()
 	 */
+	@Override
 	public Collection<Resource> getDirtyResources() {
 		synchronized (dirtyResources) {
 			return Collections.unmodifiableSet(new HashSet<Resource>(dirtyResources));
@@ -217,6 +225,7 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	/*
 	 * @see org.eclipse.sphinx.emf.saving.IResourceSaveIndicator#isSaved(org.eclipse.emf.common.util.URI)
 	 */
+	@Override
 	public boolean isSaved(URI uri) {
 		return savedURIs.contains(uri);
 	}
@@ -224,6 +233,7 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	/*
 	 * @see org.eclipse.sphinx.emf.saving.IResourceSaveIndicator#setSaved(org.eclipse.emf.ecore.resource.Resource)
 	 */
+	@Override
 	public void setSaved(Resource resource) {
 		if (resource != null) {
 			setSaved(Collections.singletonList(resource));
@@ -233,6 +243,7 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	/*
 	 * @see org.eclipse.sphinx.emf.saving.IResourceSaveIndicator#setSaved(java.util.Collection)
 	 */
+	@Override
 	public void setSaved(Collection<Resource> resources) {
 		if (resources != null) {
 			synchronized (savedURIs) {

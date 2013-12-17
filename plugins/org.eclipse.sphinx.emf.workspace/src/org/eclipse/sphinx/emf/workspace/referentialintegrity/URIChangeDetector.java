@@ -105,6 +105,7 @@ public class URIChangeDetector extends ResourceSetListenerImpl implements IResou
 	 * @seeorg.eclipse.core.resources.IResourceChangeListener#resourceChanged(org.eclipse.core.resources.
 	 * IResourceChangeEvent)
 	 */
+	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		try {
 			IResourceDelta delta = event.getDelta();

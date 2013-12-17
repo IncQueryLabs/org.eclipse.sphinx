@@ -15,39 +15,34 @@
 package org.eclipse.sphinx.examples.hummingbird10;
 
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EObject;
 
 /**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Component</b></em>'.
- * <!-- end-user-doc -->
- *
+ * <!-- begin-user-doc --> A representation of the model object '<em><b>Component</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.eclipse.sphinx.examples.hummingbird10.Component#getName <em>Name</em>}</li>
- *   <li>{@link org.eclipse.sphinx.examples.hummingbird10.Component#getOutgoingConnections <em>Outgoing Connections</em>}</li>
- *   <li>{@link org.eclipse.sphinx.examples.hummingbird10.Component#getProvidedInterfaces <em>Provided Interfaces</em>}</li>
- *   <li>{@link org.eclipse.sphinx.examples.hummingbird10.Component#getParameters <em>Parameters</em>}</li>
- *   <li>{@link org.eclipse.sphinx.examples.hummingbird10.Component#getIncomingConnections <em>Incoming Connections</em>}</li>
+ * <li>{@link org.eclipse.sphinx.examples.hummingbird10.Component#getName <em>Name</em>}</li>
+ * <li>{@link org.eclipse.sphinx.examples.hummingbird10.Component#getOutgoingConnections <em>Outgoing Connections</em>}</li>
+ * <li>{@link org.eclipse.sphinx.examples.hummingbird10.Component#getProvidedInterfaces <em>Provided Interfaces</em>}</li>
+ * <li>{@link org.eclipse.sphinx.examples.hummingbird10.Component#getParameters <em>Parameters</em>}</li>
+ * <li>{@link org.eclipse.sphinx.examples.hummingbird10.Component#getIncomingConnections <em>Incoming Connections</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @see org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package#getComponent()
  * @model
  * @generated
  */
 public interface Component extends EObject {
 	/**
-	 * Returns the value of the '<em><b>Name</b></em>' attribute.
-	 * The default value is <code>""</code>.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Name</b></em>' attribute. The default value is <code>""</code>. <!--
+	 * begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Name</em>' attribute isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Name</em>' attribute.
 	 * @see #setName(String)
 	 * @see org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package#getComponent_Name()
@@ -57,25 +52,27 @@ public interface Component extends EObject {
 	String getName();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird10.Component#getName <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Name</em>' attribute.
+	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird10.Component#getName <em>Name</em>}'
+	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Name</em>' attribute.
 	 * @see #getName()
 	 * @generated
 	 */
 	void setName(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Outgoing Connections</b></em>' containment reference list.
-	 * The list contents are of type {@link org.eclipse.sphinx.examples.hummingbird10.Connection}.
-	 * It is bidirectional and its opposite is '{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getSourceComponent <em>Source Component</em>}'.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Outgoing Connections</b></em>' containment reference list. The list contents are
+	 * of type {@link org.eclipse.sphinx.examples.hummingbird10.Connection}. It is bidirectional and its opposite is '
+	 * {@link org.eclipse.sphinx.examples.hummingbird10.Connection#getSourceComponent <em>Source Component</em>}'. <!--
+	 * begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Outgoing Connections</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Outgoing Connections</em>' containment reference list isn't clear, there really should
+	 * be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Outgoing Connections</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package#getComponent_OutgoingConnections()
 	 * @see org.eclipse.sphinx.examples.hummingbird10.Connection#getSourceComponent
@@ -85,15 +82,16 @@ public interface Component extends EObject {
 	EList<Connection> getOutgoingConnections();
 
 	/**
-	 * Returns the value of the '<em><b>Provided Interfaces</b></em>' reference list.
-	 * The list contents are of type {@link org.eclipse.sphinx.examples.hummingbird10.Interface}.
-	 * It is bidirectional and its opposite is '{@link org.eclipse.sphinx.examples.hummingbird10.Interface#getProvidingComponents <em>Providing Components</em>}'.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Provided Interfaces</b></em>' reference list. The list contents are of type
+	 * {@link org.eclipse.sphinx.examples.hummingbird10.Interface}. It is bidirectional and its opposite is '
+	 * {@link org.eclipse.sphinx.examples.hummingbird10.Interface#getProvidingComponents <em>Providing Components</em>}
+	 * '. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Provided Interfaces</em>' reference list isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Provided Interfaces</em>' reference list isn't clear, there really should be more of a
+	 * description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Provided Interfaces</em>' reference list.
 	 * @see #isSetProvidedInterfaces()
 	 * @see #unsetProvidedInterfaces()
@@ -105,9 +103,9 @@ public interface Component extends EObject {
 	EList<Interface> getProvidedInterfaces();
 
 	/**
-	 * Unsets the value of the '{@link org.eclipse.sphinx.examples.hummingbird10.Component#getProvidedInterfaces <em>Provided Interfaces</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Unsets the value of the '{@link org.eclipse.sphinx.examples.hummingbird10.Component#getProvidedInterfaces
+	 * <em>Provided Interfaces</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #isSetProvidedInterfaces()
 	 * @see #getProvidedInterfaces()
 	 * @generated
@@ -115,9 +113,10 @@ public interface Component extends EObject {
 	void unsetProvidedInterfaces();
 
 	/**
-	 * Returns whether the value of the '{@link org.eclipse.sphinx.examples.hummingbird10.Component#getProvidedInterfaces <em>Provided Interfaces</em>}' reference list is set.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns whether the value of the '
+	 * {@link org.eclipse.sphinx.examples.hummingbird10.Component#getProvidedInterfaces <em>Provided Interfaces</em>}'
+	 * reference list is set. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @return whether the value of the '<em>Provided Interfaces</em>' reference list is set.
 	 * @see #unsetProvidedInterfaces()
 	 * @see #getProvidedInterfaces()
@@ -126,14 +125,14 @@ public interface Component extends EObject {
 	boolean isSetProvidedInterfaces();
 
 	/**
-	 * Returns the value of the '<em><b>Parameters</b></em>' containment reference list.
-	 * The list contents are of type {@link org.eclipse.sphinx.examples.hummingbird10.Parameter}.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Parameters</b></em>' containment reference list. The list contents are of type
+	 * {@link org.eclipse.sphinx.examples.hummingbird10.Parameter}. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Parameters</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Parameters</em>' containment reference list isn't clear, there really should be more
+	 * of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Parameters</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package#getComponent_Parameters()
 	 * @model containment="true"
@@ -142,15 +141,16 @@ public interface Component extends EObject {
 	EList<Parameter> getParameters();
 
 	/**
-	 * Returns the value of the '<em><b>Incoming Connections</b></em>' reference list.
-	 * The list contents are of type {@link org.eclipse.sphinx.examples.hummingbird10.Connection}.
-	 * It is bidirectional and its opposite is '{@link org.eclipse.sphinx.examples.hummingbird10.Connection#getTargetComponent <em>Target Component</em>}'.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Incoming Connections</b></em>' reference list. The list contents are of type
+	 * {@link org.eclipse.sphinx.examples.hummingbird10.Connection}. It is bidirectional and its opposite is '
+	 * {@link org.eclipse.sphinx.examples.hummingbird10.Connection#getTargetComponent <em>Target Component</em>}'. <!--
+	 * begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Incoming Connections</em>' reference list isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Incoming Connections</em>' reference list isn't clear, there really should be more of
+	 * a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Incoming Connections</em>' reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package#getComponent_IncomingConnections()
 	 * @see org.eclipse.sphinx.examples.hummingbird10.Connection#getTargetComponent

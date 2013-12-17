@@ -47,10 +47,12 @@ public class ModelSyncRequest implements IModelSyncRequest {
 	private Map<IFile, IPath> filesToUpdateResourceURIFor = Collections.synchronizedMap(new HashMap<IFile, IPath>());
 	private Map<IFile, IPath> filesWithUpdatedResourceURI = Collections.synchronizedMap(new HashMap<IFile, IPath>());
 
+	@Override
 	public void init() {
 		// Noting to do
 	}
 
+	@Override
 	public void addProjectToLoad(IProject project) {
 		if (project != null) {
 			// Do not request loading of given project when the same project has already has been requested for
@@ -72,6 +74,7 @@ public class ModelSyncRequest implements IModelSyncRequest {
 		return projectsToLoad.contains(project) || loadedProjects.contains(project);
 	}
 
+	@Override
 	public void addProjectToUnload(IProject project) {
 		if (project != null) {
 			// Do not request unloading of given project when the same project has already has been requested for
@@ -93,6 +96,7 @@ public class ModelSyncRequest implements IModelSyncRequest {
 		return projectsToUnload.contains(project) || unloadedProjects.contains(project);
 	}
 
+	@Override
 	public void addProjectToReload(IProject project) {
 		if (project != null) {
 			projectsToReload.add(project);
@@ -107,6 +111,7 @@ public class ModelSyncRequest implements IModelSyncRequest {
 		return projectsToReload.contains(project) || reloadedProjects.contains(project);
 	}
 
+	@Override
 	public void addProjectToUnresolveUnreachableCrossReferencesFor(IProject project) {
 		if (project != null && !isProjectWithUnreachableCrossReferencesAboutToBeUnresolved(project)) {
 			projectsToUnresolveUnreachableCrossReferencesFor.add(project);
@@ -118,6 +123,7 @@ public class ModelSyncRequest implements IModelSyncRequest {
 				|| projectsWithUnresolvedUnreachableCrossReferences.contains(project);
 	}
 
+	@Override
 	public void addFileToLoad(IFile file) {
 		if (file != null) {
 			// Do not request loading of given file when it belongs to a project that has already has been requested for
@@ -148,6 +154,7 @@ public class ModelSyncRequest implements IModelSyncRequest {
 		}
 	}
 
+	@Override
 	public void addFileToUnload(IFile file) {
 		if (file != null) {
 			// Do not request unloading of given file when it belongs to a project that has already has been requested
@@ -175,6 +182,7 @@ public class ModelSyncRequest implements IModelSyncRequest {
 		}
 	}
 
+	@Override
 	public void addFileToReload(IFile file) {
 		if (file != null) {
 			// Do not request reloading of given file when it belongs to a project that has already has been requested
@@ -202,6 +210,7 @@ public class ModelSyncRequest implements IModelSyncRequest {
 		}
 	}
 
+	@Override
 	public void addFileToUpdateResourceURIFor(IFile oldFile, IPath newPath) {
 		// Exclude obvious non-model files and model files which are out of scope
 		if (!ResourceScopeProviderRegistry.INSTANCE.isNotInAnyScope(oldFile)) {
@@ -209,6 +218,7 @@ public class ModelSyncRequest implements IModelSyncRequest {
 		}
 	}
 
+	@Override
 	public boolean canPerform() {
 		boolean canPerform = projectsToLoad.size() > 0 || projectsToUnload.size() > 0 || projectsToReload.size() > 0
 				|| projectsToUnresolveUnreachableCrossReferencesFor.size() > 0 || filesToLoad.size() > 0 || filesToUnload.size() > 0
@@ -220,6 +230,7 @@ public class ModelSyncRequest implements IModelSyncRequest {
 		return canPerform;
 	}
 
+	@Override
 	public void perform() {
 		if (!canPerform()) {
 			return;
@@ -292,6 +303,7 @@ public class ModelSyncRequest implements IModelSyncRequest {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		projectsToLoad.clear();
 		loadedProjects.clear();

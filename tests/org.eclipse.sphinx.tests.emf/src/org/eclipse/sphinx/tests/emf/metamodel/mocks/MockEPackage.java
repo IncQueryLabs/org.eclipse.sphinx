@@ -35,127 +35,160 @@ public class MockEPackage implements EPackage {
 
 	private EFactory fEFactory;
 
+	@Override
 	public EClassifier getEClassifier(String name) {
 		return null;
 	}
 
+	@Override
 	public EList<EClassifier> getEClassifiers() {
 		return null;
 	}
 
+	@Override
 	public EFactory getEFactoryInstance() {
 		return fEFactory;
 	}
 
+	@Override
 	public EList<EPackage> getESubpackages() {
 		return null;
 	}
 
+	@Override
 	public EPackage getESuperPackage() {
 		return null;
 	}
 
+	@Override
 	public String getNsPrefix() {
 		return null;
 	}
 
+	@Override
 	public String getNsURI() {
 		return null;
 	}
 
+	@Override
 	public void setEFactoryInstance(EFactory eFactory) {
 		fEFactory = eFactory;
 	}
 
+	@Override
 	public void setNsPrefix(String value) {
 	}
 
+	@Override
 	public void setNsURI(String value) {
 	}
 
+	@Override
 	public String getName() {
 		return null;
 	}
 
+	@Override
 	public void setName(String value) {
 	}
 
+	@Override
 	public EAnnotation getEAnnotation(String source) {
 		return null;
 	}
 
+	@Override
 	public EList<EAnnotation> getEAnnotations() {
 		return null;
 	}
 
+	@Override
 	public TreeIterator<EObject> eAllContents() {
 		return null;
 	}
 
+	@Override
 	public EClass eClass() {
 		return null;
 	}
 
+	@Override
 	public EObject eContainer() {
 		return null;
 	}
 
+	@Override
 	public EStructuralFeature eContainingFeature() {
 		return null;
 	}
 
+	@Override
 	public EReference eContainmentFeature() {
 		return null;
 	}
 
+	@Override
 	public EList<EObject> eContents() {
 		return null;
 	}
 
+	@Override
 	public EList<EObject> eCrossReferences() {
 		return null;
 	}
 
+	@Override
 	public Object eGet(EStructuralFeature feature) {
 		return null;
 	}
 
+	@Override
 	public Object eGet(EStructuralFeature feature, boolean resolve) {
 		return null;
 	}
 
+	@Override
 	public boolean eIsProxy() {
 		return false;
 	}
 
+	@Override
 	public boolean eIsSet(EStructuralFeature feature) {
 		return false;
 	}
 
+	@Override
 	public Resource eResource() {
 		return null;
 	}
 
+	@Override
 	public void eSet(EStructuralFeature feature, Object newValue) {
 	}
 
+	@Override
 	public void eUnset(EStructuralFeature feature) {
 	}
 
+	@Override
 	public EList<Adapter> eAdapters() {
 		return null;
 	}
 
+	@Override
 	public boolean eDeliver() {
 		return false;
 	}
 
+	@Override
 	public void eNotify(Notification notification) {
 	}
 
+	@Override
 	public void eSetDeliver(boolean deliver) {
 	}
 
+	@Override
 	public Object eInvoke(EOperation operation, EList<?> arguments) throws InvocationTargetException {
 		return null;
 	}

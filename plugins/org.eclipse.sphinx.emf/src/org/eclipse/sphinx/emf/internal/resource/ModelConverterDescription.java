@@ -43,6 +43,7 @@ public class ModelConverterDescription implements IModelConverterDescription {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getBehaviorDetails() {
 		if (fBehaviorDetails == null) {
 			return NO_DETAILS_AVAILABLE_TEXT;
@@ -53,6 +54,7 @@ public class ModelConverterDescription implements IModelConverterDescription {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getWarning() {
 		return fWarning;
 	}
@@ -60,6 +62,7 @@ public class ModelConverterDescription implements IModelConverterDescription {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isEmpty() {
 		return !hasWarning() && !hasBehaviorDetails();
 	}
@@ -67,6 +70,7 @@ public class ModelConverterDescription implements IModelConverterDescription {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean hasBehaviorDetails() {
 		return !isEmpty(getBehaviorDetails());
 	}
@@ -74,6 +78,7 @@ public class ModelConverterDescription implements IModelConverterDescription {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean hasWarning() {
 		return !isEmpty(getWarning());
 	}

@@ -156,6 +156,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getIdentifier()
 	 */
+	@Override
 	public String getIdentifier() {
 		return fIdentifier;
 	}
@@ -163,6 +164,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getNamespaceURI()
 	 */
+	@Override
 	public URI getNamespaceURI() {
 		return fNamespaceURI;
 	}
@@ -197,6 +199,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getNamespace()
 	 */
+	@Override
 	public String getNamespace() {
 		return getNamespaceURI().toString();
 	}
@@ -204,6 +207,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getName()
 	 */
+	@Override
 	public String getName() {
 		if (fName == null) {
 			initName();
@@ -222,6 +226,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getBaseDescriptor()
 	 */
+	@Override
 	public IMetaModelDescriptor getBaseDescriptor() {
 		if (fVersionData != null) {
 			return fVersionData.getBaseDescriptor();
@@ -232,6 +237,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getSupportedCustomURIScheme()
 	 */
+	@Override
 	public String getCustomURIScheme() {
 		return null;
 	}
@@ -239,6 +245,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getOrdinal()
 	 */
+	@Override
 	@Deprecated
 	public int getOrdinal() {
 		if (fVersionData != null) {
@@ -250,6 +257,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEPackageNsURIPattern()
 	 */
+	@Override
 	@Deprecated
 	public String getEPackageNsURIPattern() {
 		if (fEPackageNsURIPattern == null) {
@@ -258,6 +266,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 		return fEPackageNsURIPattern.pattern();
 	}
 
+	@Override
 	public boolean matchesEPackageNsURIPattern(String uri) {
 		if (fEPackageNsURIPattern == null) {
 			initEPackageNsURIPattern();
@@ -283,6 +292,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEPackages()
 	 */
+	@Override
 	public Collection<EPackage> getEPackages() {
 		synchronized (getEPackageRegistry()) {
 			if (fEPackages == null) {
@@ -308,6 +318,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getRootEPackage()
 	 */
+	@Override
 	public EPackage getRootEPackage() {
 		synchronized (getEPackageRegistry()) {
 			if (fRootEPackage == null) {
@@ -336,6 +347,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEPackage()
 	 */
+	@Override
 	@Deprecated
 	public EPackage getEPackage() {
 		return getRootEPackage();
@@ -344,6 +356,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#isEPackageRegistered()
 	 */
+	@Override
 	@Deprecated
 	public boolean isEPackageRegistered() {
 		return getRootEPackage() != null;
@@ -352,6 +365,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getRootEFactory()
 	 */
+	@Override
 	public EFactory getRootEFactory() {
 		EPackage ePackage = getRootEPackage();
 		if (ePackage != null) {
@@ -363,11 +377,13 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getEFactory()
 	 */
+	@Override
 	@Deprecated
 	public EFactory getEFactory() {
 		return getRootEFactory();
 	}
 
+	@Override
 	public List<String> getContentTypeIds() {
 		if (fContentTypeIds == null) {
 			initContentTypeIds();
@@ -392,6 +408,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/*
 	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#getDefaultContentTypeId()
 	 */
+	@Override
 	public abstract String getDefaultContentTypeId();
 
 	/**
@@ -424,6 +441,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 		return ""; //$NON-NLS-1$
 	}
 
+	@Override
 	public List<String> getCompatibleContentTypeIds() {
 		Set<String> compatibleContentTypeIds = new HashSet<String>();
 		for (IMetaModelDescriptor resourceVersionDescriptor : getCompatibleResourceVersionDescriptors()) {
@@ -434,6 +452,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 		return Collections.unmodifiableList(new ArrayList<String>(compatibleContentTypeIds));
 	}
 
+	@Override
 	public List<URI> getCompatibleNamespaceURIs() {
 		List<URI> compatibleNamespaceURIs = new ArrayList<URI>();
 		for (IMetaModelDescriptor resourceVersionDescriptor : getCompatibleResourceVersionDescriptors()) {
@@ -444,6 +463,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 		return Collections.unmodifiableList(compatibleNamespaceURIs);
 	}
 
+	@Override
 	public Collection<IMetaModelDescriptor> getCompatibleResourceVersionDescriptors() {
 		return Collections.emptyList();
 	}

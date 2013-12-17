@@ -87,6 +87,7 @@ public class RangeField extends BasicField {
 		if (fTextsControls[i] == null) {
 			assertCompositeNotNull(parent);
 			fModifyListeners[i] = new ModifyListener() {
+				@Override
 				public void modifyText(ModifyEvent e) {
 					doModifyText(e);
 				}

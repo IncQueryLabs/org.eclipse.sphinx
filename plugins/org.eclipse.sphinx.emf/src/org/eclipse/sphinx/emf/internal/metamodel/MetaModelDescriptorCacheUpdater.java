@@ -236,6 +236,7 @@ public class MetaModelDescriptorCacheUpdater extends ResourceSetListenerImpl imp
 	/*
 	 * @see org.eclipse.core.resources.IResourceChangeListener#resourceChanged(IResourceChangeEvent)
 	 */
+	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		try {
 			IResourceDelta delta = event.getDelta();

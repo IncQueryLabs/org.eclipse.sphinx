@@ -86,6 +86,7 @@ public class ProjectStatisticsAction extends BaseSelectionListenerAction {
 			for (final IModelDescriptor modelDescriptor : ModelDescriptorRegistry.INSTANCE.getModels(project)) {
 				try {
 					modelDescriptor.getEditingDomain().runExclusive(new Runnable() {
+						@Override
 						public void run() {
 							for (Resource resource : modelDescriptor.getLoadedResources(true)) {
 								totalResources[0]++;

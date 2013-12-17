@@ -82,10 +82,12 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#getMetaModelDescriptor()
 	 */
+	@Override
 	public IMetaModelDescriptor getMetaModelDescriptor() {
 		return mmDescriptor;
 	}
 
+	@Override
 	public IResourceScope getScope() {
 		return resourceScope;
 	}
@@ -93,6 +95,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#getEditingDomain()
 	 */
+	@Override
 	public TransactionalEditingDomain getEditingDomain() {
 		if (editingDomain == null) {
 			IResource resourceScopeRoot = getRoot();
@@ -111,6 +114,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#getRoot()
 	 */
+	@Override
 	public IResource getRoot() {
 		return resourceScope.getRoot();
 	}
@@ -118,6 +122,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#getProjects()
 	 */
+	@Override
 	public Collection<IResource> getReferencedRoots() {
 		return resourceScope.getReferencedRoots();
 	}
@@ -125,6 +130,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#getReferencingRoots()
 	 */
+	@Override
 	public Collection<IResource> getReferencingRoots() {
 		return resourceScope.getReferencingRoots();
 	}
@@ -132,6 +138,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#getPersistedFiles(boolean)
 	 */
+	@Override
 	public Collection<IFile> getPersistedFiles(boolean includeReferencedScopes) {
 		Collection<IFile> persistedFiles = new HashSet<IFile>();
 		for (IFile file : resourceScope.getPersistedFiles(includeReferencedScopes)) {
@@ -147,9 +154,11 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#getLoadedResources()
 	 */
+	@Override
 	public Collection<Resource> getLoadedResources(final boolean includeReferencedScopes) {
 		try {
 			return TransactionUtil.runExclusive(getEditingDomain(), new RunnableWithResult.Impl<List<Resource>>() {
+				@Override
 				public void run() {
 					ResourceSet resourceSet = getEditingDomain().getResourceSet();
 					if (resourceSet instanceof ScopingResourceSet) {
@@ -168,6 +177,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#belongsTo(org.eclipse.core.resources.IFile, boolean)
 	 */
+	@Override
 	public boolean belongsTo(IFile file, boolean includeReferencedScopes) {
 		if (file != null) {
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(file);
@@ -182,6 +192,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#belongsTo(org.eclipse.emf.ecore.resource.Resource, boolean)
 	 */
+	@Override
 	public boolean belongsTo(final Resource resource, boolean includeReferencedScopes) {
 		if (resource != null) {
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource);
@@ -199,6 +210,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 					 */
 					try {
 						return TransactionUtil.runExclusive(getEditingDomain(), new RunnableWithResult.Impl<Boolean>() {
+							@Override
 							public void run() {
 								setResult(getEditingDomain().getResourceSet().getResources().contains(resource));
 							}
@@ -215,6 +227,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#belongsTo(org.eclipse.emf.common.util.URI, boolean)
 	 */
+	@Override
 	public boolean belongsTo(URI uri, boolean includeReferencedScopes) {
 		if (uri != null) {
 			Resource resource = EcorePlatformUtil.getResource(uri);
@@ -231,6 +244,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#didBelongTo(org.eclipse.core.resources.IFile)
 	 */
+	@Override
 	public boolean didBelongTo(IFile file, boolean includeReferencedScopes) {
 		if (file != null) {
 			IMetaModelDescriptor oldMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getOldDescriptor(file);
@@ -244,6 +258,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#didBelongTo(org.eclipse.emf.ecore.resource.Resource)
 	 */
+	@Override
 	public boolean didBelongTo(Resource resource, boolean includeReferencedScopes) {
 		if (resource != null) {
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getOldDescriptor(resource);
@@ -257,6 +272,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#didBelongTo(org.eclipse.core.resources.IFile)
 	 */
+	@Override
 	public boolean didBelongTo(URI uri, boolean includeReferencedScopes) {
 		if (uri != null) {
 			Resource resource = EcorePlatformUtil.getResource(uri);
@@ -273,6 +289,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#isShared(org.eclipse.core.resources.IFile)
 	 */
+	@Override
 	public boolean isShared(IFile file) {
 		return resourceScope.isShared(file);
 	}
@@ -280,6 +297,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#isShared(org.eclipse.emf.ecore.resource.Resource)
 	 */
+	@Override
 	public boolean isShared(Resource resource) {
 		return resourceScope.isShared(resource);
 	}
@@ -287,6 +305,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	/*
 	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#isShared(org.eclipse.emf.common.util.URI)
 	 */
+	@Override
 	public boolean isShared(URI uri) {
 		return resourceScope.isShared(uri);
 	}

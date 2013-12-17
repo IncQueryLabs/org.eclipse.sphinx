@@ -26,6 +26,7 @@ public class ParameterValuesXViewerContentProvider implements ITreeContentProvid
 		super();
 	}
 
+	@Override
 	public Object[] getElements(Object inputElement) {
 		if (inputElement instanceof String) {
 			return new Object[] { inputElement };
@@ -33,6 +34,7 @@ public class ParameterValuesXViewerContentProvider implements ITreeContentProvid
 		return getChildren(inputElement);
 	}
 
+	@Override
 	@SuppressWarnings("rawtypes")
 	public Object[] getChildren(Object parentElement) {
 		if (parentElement instanceof Object[]) {
@@ -47,18 +49,22 @@ public class ParameterValuesXViewerContentProvider implements ITreeContentProvid
 		return new Object[0];
 	}
 
+	@Override
 	public Object getParent(Object element) {
 		return null;
 	}
 
+	@Override
 	public boolean hasChildren(Object element) {
 		return getChildren(element).length > 0;
 	}
 
+	@Override
 	public void dispose() {
 		// do nothing
 	}
 
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		// do nothing
 	}

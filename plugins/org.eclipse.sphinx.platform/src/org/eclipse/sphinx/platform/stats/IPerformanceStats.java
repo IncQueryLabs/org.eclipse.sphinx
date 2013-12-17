@@ -23,8 +23,8 @@ public interface IPerformanceStats<T extends IEventTypeEnumerator> {
 	/**
 	 * Return activation status for performanceStats framework.
 	 * 
-	 * @return true if option "org.eclipse.sphinx.platform/perf/jUnitOptions/resetEventBase" = true in ".option" file and if
-	 *         -debug flag is set in configuration launch arguments.
+	 * @return true if option "org.eclipse.sphinx.platform/perf/jUnitOptions/resetEventBase" = true in ".option" file
+	 *         and if -debug flag is set in configuration launch arguments.
 	 */
 	public abstract boolean isEnabled();
 
@@ -59,8 +59,8 @@ public interface IPerformanceStats<T extends IEventTypeEnumerator> {
 	/**
 	 * Close a context using name provided in argument and remove it from <b><code>contextStackCall</code></b> list. In
 	 * runTime mode context description is logged after context is closed. If the option
-	 * <i><b>org.eclipse.sphinx.platform/perf/jUnitOptions/resetEventBase</b></i> in .option file is set <code>true</code>
-	 * all the events included in this context are removed from the base after logging.
+	 * <i><b>org.eclipse.sphinx.platform/perf/jUnitOptions/resetEventBase</b></i> in .option file is set
+	 * <code>true</code> all the events included in this context are removed from the base after logging.
 	 * 
 	 * @param context
 	 *            the name of the context to close. This must not be null.
@@ -70,8 +70,8 @@ public interface IPerformanceStats<T extends IEventTypeEnumerator> {
 	/**
 	 * Close a context using name provided in argument and remove it from <b><code>contextStackCall</code></b> list. In
 	 * runTime mode context description is logged after context is closed. If the option
-	 * <i><b>org.eclipse.sphinx.platform/perf/jUnitOptions/resetEventBase</b></i> in .option file is set <code>true</code>
-	 * all the events included in this context are removed from the base after logging.
+	 * <i><b>org.eclipse.sphinx.platform/perf/jUnitOptions/resetEventBase</b></i> in .option file is set
+	 * <code>true</code> all the events included in this context are removed from the base after logging.
 	 * 
 	 * @param context
 	 *            the name of the context to close. This must not be null.
@@ -81,16 +81,16 @@ public interface IPerformanceStats<T extends IEventTypeEnumerator> {
 	/**
 	 * Close the last context in <b><code>contextStackCall</code></b> list and remove it from the list. In runTime mode
 	 * context description is logged after context is closed. If the option
-	 * <i><b>org.eclipse.sphinx.platform/perf/jUnitOptions/resetEventBase</b></i> in .option file is set <code>true</code>
-	 * all the events included in this context are removed from the base after logging.
+	 * <i><b>org.eclipse.sphinx.platform/perf/jUnitOptions/resetEventBase</b></i> in .option file is set
+	 * <code>true</code> all the events included in this context are removed from the base after logging.
 	 */
 	public abstract void closeAndLogCurrentContext();
 
 	/**
 	 * Close all the context in <b><code>contextStackCall</code></b> list and remove them from the list. In runTime mode
 	 * context description of the first context in the list (the parent context)is logged. If the option
-	 * <i><b>org.eclipse.sphinx.platform/perf/jUnitOptions/resetEventBase</b></i> in .option file is set <code>true</code>
-	 * all the events included in this context are removed from the base after logging.
+	 * <i><b>org.eclipse.sphinx.platform/perf/jUnitOptions/resetEventBase</b></i> in .option file is set
+	 * <code>true</code> all the events included in this context are removed from the base after logging.
 	 */
 	public abstract void closeAllParentContext();
 
@@ -331,14 +331,14 @@ public interface IPerformanceStats<T extends IEventTypeEnumerator> {
 	public abstract boolean isEventsTimeFailure();
 
 	/**
-	 *Return the number of events triggered under any of the contexts,that are in time failure state.
+	 * Return the number of events triggered under any of the contexts,that are in time failure state.
 	 * 
 	 * @return int
 	 */
 	public abstract int numberOfEventsTimeFailure(String context);
 
 	/**
-	 *Return a list of all the events triggered under any of the contexts,that are in time failure state.
+	 * Return a list of all the events triggered under any of the contexts,that are in time failure state.
 	 * 
 	 * @return LinkedList<StatsEvent>
 	 */
@@ -355,7 +355,7 @@ public interface IPerformanceStats<T extends IEventTypeEnumerator> {
 	public abstract boolean isContextEventsTimeFailure(String context);
 
 	/**
-	 *Return the number of events triggered under the context,that are in time failure state.
+	 * Return the number of events triggered under the context,that are in time failure state.
 	 * 
 	 * @param context
 	 *            the name of the context.
@@ -364,7 +364,7 @@ public interface IPerformanceStats<T extends IEventTypeEnumerator> {
 	public abstract int numberOfContextEventsTimeFailure(String context);
 
 	/**
-	 *Provided a string representing the tree architecture for one context. All its child contexts are listed.
+	 * Provided a string representing the tree architecture for one context. All its child contexts are listed.
 	 * 
 	 * @param context
 	 *            the name of the context.
@@ -373,7 +373,7 @@ public interface IPerformanceStats<T extends IEventTypeEnumerator> {
 	public abstract String printContextTree(String context);
 
 	/**
-	 *Provided a string representing the tree architecture for all the contexts. All contexts stored in the base and
+	 * Provided a string representing the tree architecture for all the contexts. All contexts stored in the base and
 	 * there child contexts are listed.
 	 * 
 	 * @return String
@@ -381,7 +381,7 @@ public interface IPerformanceStats<T extends IEventTypeEnumerator> {
 	public abstract String printContextsTree();
 
 	/**
-	 *Provided a string representing all data stored in the base. All contexts stored in the base and their events are
+	 * Provided a string representing all data stored in the base. All contexts stored in the base and their events are
 	 * listed.
 	 * 
 	 * @return String
@@ -389,7 +389,7 @@ public interface IPerformanceStats<T extends IEventTypeEnumerator> {
 	public abstract String printAllStats();
 
 	/**
-	 *Provided a string representing all data stored in the base for one context. All events and child contexts stored
+	 * Provided a string representing all data stored in the base for one context. All events and child contexts stored
 	 * in the base for this context are listed.
 	 * 
 	 * @param context
@@ -399,7 +399,7 @@ public interface IPerformanceStats<T extends IEventTypeEnumerator> {
 	public abstract String printContextStats(String context);
 
 	/**
-	 *Provided a string representing data stored in the base for one event.
+	 * Provided a string representing data stored in the base for one event.
 	 * 
 	 * @param enumerator
 	 *            The ID of the event.Must be an enumerator provided by the enum declared in the concrete class of
@@ -413,7 +413,7 @@ public interface IPerformanceStats<T extends IEventTypeEnumerator> {
 	public abstract String printEventStat(T enumerator, Object blameObject, String context);
 
 	/**
-	 *Provided a string representing data stored in the base for one ID type of event under a given context.
+	 * Provided a string representing data stored in the base for one ID type of event under a given context.
 	 * 
 	 * @param enumerator
 	 *            The ID of the event.Must be an enumerator provided by the enum declared in the concrete class of

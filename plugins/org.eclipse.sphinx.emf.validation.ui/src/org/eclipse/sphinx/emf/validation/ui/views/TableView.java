@@ -135,6 +135,7 @@ public abstract class TableView extends ViewPart {
 		viewer.setContentProvider(contentProvider);
 
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 				viewerSelectionChanged(selection);
@@ -172,6 +173,7 @@ public abstract class TableView extends ViewPart {
 		registerGlobalActions(getViewSite().getActionBars());
 
 		viewer.addOpenListener(new IOpenListener() {
+			@Override
 			public void open(OpenEvent event) {
 				handleOpenEvent(event);
 			}
@@ -342,6 +344,7 @@ public abstract class TableView extends ViewPart {
 		MenuManager mgr = new MenuManager();
 		mgr.setRemoveAllWhenShown(true);
 		mgr.addMenuListener(new IMenuListener() {
+			@Override
 			public void menuAboutToShow(IMenuManager mgr) {
 
 				getViewer().cancelEditing();
@@ -463,6 +466,7 @@ public abstract class TableView extends ViewPart {
 							 * (non-Javadoc)
 							 * @see java.lang.Runnable#run()
 							 */
+							@Override
 							public void run() {
 								resortTable(column, field, new NullProgressMonitor());
 
@@ -475,6 +479,7 @@ public abstract class TableView extends ViewPart {
 							 * @seeorg.eclipse.jface.operation.IRunnableWithProgress#run(org.eclipse.core.runtime.
 							 * IProgressMonitor)
 							 */
+							@Override
 							public void run(IProgressMonitor monitor) {
 								resortTable(column, field, monitor);
 							}
@@ -513,6 +518,7 @@ public abstract class TableView extends ViewPart {
 					 * (non-Javadoc)
 					 * @see java.lang.Runnable#run()
 					 */
+					@Override
 					public void run() {
 						viewer.refresh();
 						updateDirectionIndicator(column);

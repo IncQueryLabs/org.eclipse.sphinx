@@ -49,6 +49,7 @@ public abstract class AbstractWorkspacePreference<T> extends AbstractEclipsePref
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IWorkspacePreference#get()
 	 */
+	@Override
 	public T get() {
 		try {
 			IEclipsePreferences prefs = getWorkspacePreferences();
@@ -67,6 +68,7 @@ public abstract class AbstractWorkspacePreference<T> extends AbstractEclipsePref
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IWorkspacePreference#set(java.lang.Object)
 	 */
+	@Override
 	public void set(T valueAsObject) {
 		try {
 			String valueAsString = toString(valueAsObject);
@@ -91,6 +93,7 @@ public abstract class AbstractWorkspacePreference<T> extends AbstractEclipsePref
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IWorkspacePreference#getDefaultValueAsObject()
 	 */
+	@Override
 	public T getDefaultValueAsObject() {
 		return toObject(defaultValueAsString);
 	}
@@ -98,6 +101,7 @@ public abstract class AbstractWorkspacePreference<T> extends AbstractEclipsePref
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IWorkspacePreference#setToDefault()
 	 */
+	@Override
 	public void setToDefault() {
 		IEclipsePreferences prefs = getWorkspacePreferences();
 		if (prefs != null) {
@@ -110,6 +114,7 @@ public abstract class AbstractWorkspacePreference<T> extends AbstractEclipsePref
 	 * org.eclipse.sphinx.platform.preferences.IWorkspacePreference#addPreferenceChangeListener(org.eclipse.core.runtime
 	 * .preferences.IEclipsePreferences.IPreferenceChangeListener)
 	 */
+	@Override
 	public void addPreferenceChangeListener(IPreferenceChangeListener listener) {
 		IEclipsePreferences prefs = getWorkspacePreferences();
 		if (prefs != null) {
@@ -122,6 +127,7 @@ public abstract class AbstractWorkspacePreference<T> extends AbstractEclipsePref
 	 * org.eclipse.sphinx.platform.preferences.IWorkspacePreference#removePreferenceChangeListener(org.eclipse.core.
 	 * runtime.preferences.IEclipsePreferences.IPreferenceChangeListener)
 	 */
+	@Override
 	public void removePreferenceChangeListener(IPreferenceChangeListener listener) {
 		IEclipsePreferences prefs = getWorkspacePreferences();
 		if (prefs != null) {

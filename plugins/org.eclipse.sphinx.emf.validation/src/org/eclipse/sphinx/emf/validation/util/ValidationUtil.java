@@ -91,6 +91,7 @@ public class ValidationUtil {
 			if (editingDomain != null) {
 				try {
 					return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<URI>() {
+						@Override
 						public void run() {
 							setResult(EcoreUtil.getURI(eObject));
 						}

@@ -51,10 +51,12 @@ public class ModelDescriptorSyncRequest implements IModelDescriptorSyncRequest {
 
 	private Set<IModelDescriptor> modelDescriptorsToRemove = new HashSet<IModelDescriptor>();
 
+	@Override
 	public void init() {
 		// Nothing to do
 	}
 
+	@Override
 	public void addProjectToMoveModelDescriptorsFor(IProject oldProject, IProject newProject) {
 		if (oldProject != null && newProject != null) {
 			IProject storedNewProject = projectsToMoveModelDescriptorsFor.get(oldProject);
@@ -69,6 +71,7 @@ public class ModelDescriptorSyncRequest implements IModelDescriptorSyncRequest {
 		}
 	}
 
+	@Override
 	public void addProjectToRemoveModelDescriptorsFor(IProject project) {
 		if (project != null) {
 			Collection<IModelDescriptor> modelDescriptorsForProject = ModelDescriptorRegistry.INSTANCE.getModels(project);
@@ -78,6 +81,7 @@ public class ModelDescriptorSyncRequest implements IModelDescriptorSyncRequest {
 		}
 	}
 
+	@Override
 	public void addFileToAddModelDescriptorFor(IFile file) {
 		if (file != null) {
 			// Exclude obvious non-model files and model files which are out of scope
@@ -87,6 +91,7 @@ public class ModelDescriptorSyncRequest implements IModelDescriptorSyncRequest {
 		}
 	}
 
+	@Override
 	public void addFileToUpdateModelDescriptorFor(IFile file) {
 		if (file != null) {
 			// Exclude obvious non-model files and model files which are out of scope
@@ -96,6 +101,7 @@ public class ModelDescriptorSyncRequest implements IModelDescriptorSyncRequest {
 		}
 	}
 
+	@Override
 	public void addFileToRemoveModelDescriptorFor(IFile file) {
 		if (file != null) {
 			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getOldModel(file);
@@ -122,11 +128,13 @@ public class ModelDescriptorSyncRequest implements IModelDescriptorSyncRequest {
 		}
 	}
 
+	@Override
 	public boolean canPerform() {
 		return projectsToMoveModelDescriptorsFor.size() > 0 || filesToAddModelDescriptorsFor.size() > 0
 				|| filesToUpdateModelDescriptorsFor.size() > 0 || modelDescriptorsToRemove.size() > 0;
 	}
 
+	@Override
 	public void perform() {
 		if (!canPerform()) {
 			return;
@@ -149,6 +157,7 @@ public class ModelDescriptorSyncRequest implements IModelDescriptorSyncRequest {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		projectsToMoveModelDescriptorsFor.clear();
 		filesToAddModelDescriptorsFor.clear();

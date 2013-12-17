@@ -81,6 +81,7 @@ public class CComboButtonField extends CComboField implements ICComboButtonField
 	/*
 	 * @see org.eclipse.sphinx.platform.ui.fields.ICComboButtonField#setButtonLabel(java.lang.String)
 	 */
+	@Override
 	public void setButtonLabel(String label) {
 		fBrowseButtonLabel = label;
 	}
@@ -167,10 +168,12 @@ public class CComboButtonField extends CComboField implements ICComboButtonField
 			fBrowseButton.setEnabled(isEnabled() && fButtonEnabled);
 			fBrowseButton.addSelectionListener(new SelectionListener() {
 
+				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {
 					changeControlPressed();
 				}
 
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					changeControlPressed();
 				}
@@ -182,6 +185,7 @@ public class CComboButtonField extends CComboField implements ICComboButtonField
 	/*
 	 * @see org.eclipse.sphinx.platform.ui.fields.ICComboButtonField#getButtonControl()
 	 */
+	@Override
 	public Control getButtonControl() {
 		Control control = null;
 		if (isOkToUse(fBrowseButton)) {

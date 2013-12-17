@@ -36,6 +36,7 @@ public abstract class AbstractMockExtensionPoint implements IExtensionPoint {
 
 	protected abstract String getId();
 
+	@Override
 	public IConfigurationElement[] getConfigurationElements() throws InvalidRegistryObjectException {
 		List<IConfigurationElement> allConfigElems = new ArrayList<IConfigurationElement>();
 		for (IExtension extension : getExtensionsList()) {
@@ -45,55 +46,66 @@ public abstract class AbstractMockExtensionPoint implements IExtensionPoint {
 		return allConfigElems.toArray(new IConfigurationElement[] {});
 	}
 
+	@Override
 	public IContributor getContributor() throws InvalidRegistryObjectException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public IPluginDescriptor getDeclaringPluginDescriptor() throws InvalidRegistryObjectException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public IExtension getExtension(String extensionId) throws InvalidRegistryObjectException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public IExtension[] getExtensions() throws InvalidRegistryObjectException {
 		return getExtensionsList().toArray(new IExtension[] {});
 	}
 
+	@Override
 	public String getLabel() throws InvalidRegistryObjectException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getNamespace() throws InvalidRegistryObjectException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getNamespaceIdentifier() throws InvalidRegistryObjectException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getSchemaReference() throws InvalidRegistryObjectException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getSimpleIdentifier() throws InvalidRegistryObjectException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getUniqueIdentifier() throws InvalidRegistryObjectException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public boolean isValid() {
 		// TODO Auto-generated method stub
 		return false;

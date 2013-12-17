@@ -51,6 +51,7 @@ public class Hummingbird20EMFModelNewWizard extends AbstractGraphitiDiagramNewWi
 	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench,
 	 * org.eclipse.jface.viewers.IStructuredSelection)
 	 */
+	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		this.selection = selection;
 		setDefaultPageImageDescriptor(ExtendedImageRegistry.INSTANCE.getImageDescriptor(Activator.INSTANCE.getImage("wizban16/NewModel"))); //$NON-NLS-1$
@@ -66,12 +67,12 @@ public class Hummingbird20EMFModelNewWizard extends AbstractGraphitiDiagramNewWi
 	protected void initDiagramType() {
 		// TODO Auto-generated method stub
 	}
-	
+
 	@Override
 	protected void setEditPluginActivator() {
 		// TODO Auto-generated method stub
 	}
-	
+
 	@Override
 	protected void initFileExtensions() {
 		FILE_EXTENSIONS = Collections.unmodifiableList(Arrays.asList(editPlugin

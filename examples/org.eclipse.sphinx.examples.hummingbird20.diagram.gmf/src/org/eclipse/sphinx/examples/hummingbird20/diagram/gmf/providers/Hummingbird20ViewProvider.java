@@ -68,6 +68,7 @@ public class Hummingbird20ViewProvider extends AbstractProvider implements IView
 	/**
 	 * @generated
 	 */
+	@Override
 	public final boolean provides(IOperation operation) {
 		if (operation instanceof CreateViewForKindOperation) {
 			return provides((CreateViewForKindOperation) operation);
@@ -175,6 +176,7 @@ public class Hummingbird20ViewProvider extends AbstractProvider implements IView
 	/**
 	 * @generated
 	 */
+	@Override
 	public Diagram createDiagram(IAdaptable semanticAdapter, String diagramKind, PreferencesHint preferencesHint) {
 		Diagram diagram = NotationFactory.eINSTANCE.createDiagram();
 		diagram.getStyles().add(NotationFactory.eINSTANCE.createDiagramStyle());
@@ -187,6 +189,7 @@ public class Hummingbird20ViewProvider extends AbstractProvider implements IView
 	/**
 	 * @generated
 	 */
+	@Override
 	public Node createNode(IAdaptable semanticAdapter, View containerView, String semanticHint, int index, boolean persisted,
 			PreferencesHint preferencesHint) {
 		final EObject domainElement = getSemanticElement(semanticAdapter);
@@ -207,6 +210,7 @@ public class Hummingbird20ViewProvider extends AbstractProvider implements IView
 	/**
 	 * @generated
 	 */
+	@Override
 	public Edge createEdge(IAdaptable semanticAdapter, View containerView, String semanticHint, int index, boolean persisted,
 			PreferencesHint preferencesHint) {
 		IElementType elementType = getSemanticElementType(semanticAdapter);

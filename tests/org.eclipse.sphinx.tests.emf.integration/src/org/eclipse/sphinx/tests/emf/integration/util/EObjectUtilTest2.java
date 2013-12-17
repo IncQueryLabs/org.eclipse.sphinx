@@ -251,6 +251,7 @@ public class EObjectUtilTest2 extends DefaultIntegrationTestCase {
 		// ==============================================
 		// Containment
 		Runnable runnable1 = new Runnable() {
+			@Override
 			public void run() {
 				EcoreUtil.delete(port20D_2_1);
 			}
@@ -284,6 +285,7 @@ public class EObjectUtilTest2 extends DefaultIntegrationTestCase {
 		// ==============================================
 		// References
 		Runnable runnable2 = new Runnable() {
+			@Override
 			public void run() {
 				EcoreUtil.delete(component20D_3_1);
 				EcoreUtil.delete(component20E_1_1);
@@ -339,6 +341,7 @@ public class EObjectUtilTest2 extends DefaultIntegrationTestCase {
 		assertNotNull(modelRoot);
 
 		Runnable runnable0 = new Runnable() {
+			@Override
 			public void run() {
 				resourceSet.getResources().remove(resource20D_2);
 			}
@@ -382,6 +385,7 @@ public class EObjectUtilTest2 extends DefaultIntegrationTestCase {
 		assertNotNull(modelRoot);
 
 		Runnable runnable2 = new Runnable() {
+			@Override
 			public void run() {
 				EcoreUtil.delete(componentType20D_2_1);
 			}

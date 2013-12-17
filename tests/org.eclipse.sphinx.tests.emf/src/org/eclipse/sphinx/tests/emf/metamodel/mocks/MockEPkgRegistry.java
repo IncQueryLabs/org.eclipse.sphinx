@@ -24,11 +24,13 @@ import org.eclipse.emf.ecore.EPackage.Registry;
 @SuppressWarnings("serial")
 public class MockEPkgRegistry extends HashMap<String, Object> implements Registry {
 
+	@Override
 	public EFactory getEFactory(String nsURI) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public EPackage getEPackage(String nsURI) {
 		return (EPackage) get(nsURI);
 	}

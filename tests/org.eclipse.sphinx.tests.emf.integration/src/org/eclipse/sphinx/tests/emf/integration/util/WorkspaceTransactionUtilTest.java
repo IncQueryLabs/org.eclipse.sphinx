@@ -92,6 +92,7 @@ public class WorkspaceTransactionUtilTest extends DefaultIntegrationTestCase {
 		final Application modelRoot = (Application) object;
 		assertFalse(newNameValue.equals(modelRoot.getName()));
 		Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				modelRoot.setName(newNameValue);
 			}

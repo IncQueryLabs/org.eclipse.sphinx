@@ -47,6 +47,7 @@ public abstract class ConstraintPreferencePage extends PreferencePage implements
 		constraintsComposite.performDefaults();
 	}
 
+	@Override
 	public void init(IWorkbench workbench) {
 		/* Does nothing. */
 	}

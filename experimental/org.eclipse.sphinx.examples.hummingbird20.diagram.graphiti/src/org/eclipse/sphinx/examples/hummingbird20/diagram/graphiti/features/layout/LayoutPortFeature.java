@@ -26,11 +26,13 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
 		super(fp);
 	}
 
+	@Override
 	public boolean canLayout(final ILayoutContext context) {
 		Object object = getBusinessObjectForPictogramElement(context.getPictogramElement());
 		return object instanceof Port;
 	}
 
+	@Override
 	public boolean layout(final ILayoutContext context) {
 		BoxRelativeAnchor boxAnchor = (BoxRelativeAnchor) context.getPictogramElement();
 		float widthPercent = (float) boxAnchor.getRelativeWidth();

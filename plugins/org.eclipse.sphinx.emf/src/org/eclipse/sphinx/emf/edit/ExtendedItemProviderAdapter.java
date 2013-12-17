@@ -45,6 +45,7 @@ import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.edit.EMFEditPlugin;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.CommandParameter;
+import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -88,8 +89,8 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 			EObject eObject = (EObject) object;
 			if (parentReferences != null) {
 				Collection<Object> result = new UniqueEList<Object>();
-				for (int i = 0; i < parentReferences.length; ++i) {
-					result.addAll(getTraversalHelper().getReachableEObjects(eObject, parentReferences[i]));
+				for (EReference parentReference : parentReferences) {
+					result.addAll(getTraversalHelper().getReachableEObjects(eObject, parentReference));
 				}
 				return result;
 			} else if (feature != null) {

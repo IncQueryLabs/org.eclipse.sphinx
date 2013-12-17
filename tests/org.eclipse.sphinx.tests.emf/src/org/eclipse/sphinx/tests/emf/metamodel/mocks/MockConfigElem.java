@@ -33,6 +33,7 @@ public class MockConfigElem implements IConfigurationElement {
 		fName = name;
 	}
 
+	@Override
 	public Object createExecutableExtension(String propertyName) throws CoreException {
 		MockAttribute attribute = getMockAttribute(propertyName);
 		if (attribute != null && attribute instanceof MockClassAttribute) {
@@ -41,6 +42,7 @@ public class MockConfigElem implements IConfigurationElement {
 		return null;
 	}
 
+	@Override
 	public String getAttribute(String name) throws InvalidRegistryObjectException {
 		MockAttribute attribute = getMockAttribute(name);
 		if (attribute != null) {
@@ -58,54 +60,67 @@ public class MockConfigElem implements IConfigurationElement {
 		return null;
 	}
 
+	@Override
 	public String getAttributeAsIs(String name) throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String[] getAttributeNames() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public IConfigurationElement[] getChildren() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public IConfigurationElement[] getChildren(String name) throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public IExtension getDeclaringExtension() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getNamespace() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getNamespaceIdentifier() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public Object getParent() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getValue() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getValueAsIs() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public boolean isValid() {
 		return false;
 	}
 
+	@Override
 	public IContributor getContributor() throws InvalidRegistryObjectException {
 		return fContributor;
 	}
 
+	@Override
 	public String getName() throws InvalidRegistryObjectException {
 		return fName;
 	}
@@ -125,10 +140,12 @@ public class MockConfigElem implements IConfigurationElement {
 		return fAttributes;
 	}
 
+	@Override
 	public String getAttribute(String attrName, String locale) throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getValue(String locale) throws InvalidRegistryObjectException {
 		return null;
 	}

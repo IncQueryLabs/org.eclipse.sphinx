@@ -80,6 +80,7 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> extends 
 		 * org.eclipse.sphinx.platform.ui.fields.IFieldListener#dialogFieldChanged(org.eclipse.sphinx.platform.ui.fields
 		 * .IField)
 		 */
+		@Override
 		public void dialogFieldChanged(IField field) {
 			updateEnableState();
 			if (field == workspaceDefaultMetaModelVersionButton) {
@@ -98,6 +99,7 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> extends 
 		/*
 		 * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
 		 */
+		@Override
 		public void widgetDefaultSelected(SelectionEvent event) {
 			PreferencesUtil.createPreferenceDialogOn(null, metaModelVersionPreferencePageId, new String[] { metaModelVersionPreferencePageId }, null)
 					.open();
@@ -106,6 +108,7 @@ public class BasicMetaModelVersionGroup<T extends IMetaModelDescriptor> extends 
 		/*
 		 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 		 */
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			widgetDefaultSelected(event);
 		}

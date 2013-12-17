@@ -54,6 +54,7 @@ public class AddPortFeature extends AbstractAddShapeFeature {
 		super(fp);
 	}
 
+	@Override
 	public boolean canAdd(IAddContext context) {
 		// Is it an add request for a Port ?
 		if (context.getNewObject() instanceof Port) {
@@ -73,6 +74,7 @@ public class AddPortFeature extends AbstractAddShapeFeature {
 		return false;
 	}
 
+	@Override
 	public PictogramElement add(IAddContext context) {
 		Port portToAdd = (Port) context.getNewObject();
 		ContainerShape parentContainer = context.getTargetContainer();

@@ -46,6 +46,7 @@ public class WorkspaceStorageFinder implements StorageFinder2 {
 	 * @see org.eclipse.xtend.shared.ui.StorageFinder2#findXtendXpandResourceID(org.eclipse.jdt.core.IJavaProject,
 	 * org.eclipse.core.resources.IStorage)
 	 */
+	@Override
 	public ResourceID findXtendXpandResourceID(IJavaProject javaProject, IStorage storage) {
 		workspaceResourceLoader.setContextProject(javaProject.getProject());
 
@@ -76,6 +77,7 @@ public class WorkspaceStorageFinder implements StorageFinder2 {
 	 * @see org.eclipse.xtend.shared.ui.StorageFinder#findStorage(org.eclipse.jdt.core.IJavaProject,
 	 * org.eclipse.xtend.shared.ui.core.internal.ResourceID, boolean)
 	 */
+	@Override
 	public IStorage findStorage(IJavaProject javaProject, ResourceID resourceID, boolean searchJars) {
 		workspaceResourceLoader.setContextProject(javaProject.getProject());
 		workspaceResourceLoader.setSearchArchives(false);
@@ -95,6 +97,7 @@ public class WorkspaceStorageFinder implements StorageFinder2 {
 	/*
 	 * @see org.eclipse.xtend.shared.ui.StorageFinder#getPriority()
 	 */
+	@Override
 	public int getPriority() {
 		return 2;
 	}

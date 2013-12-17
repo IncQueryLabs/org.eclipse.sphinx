@@ -141,6 +141,7 @@ public class ResourceProblemHandler extends ResourceSetListenerImpl implements I
 	/*
 	 * @see org.eclipse.core.resources.IResourceChangeListener#resourceChanged(IResourceChangeEvent)
 	 */
+	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		try {
 			IResourceDelta delta = event.getDelta();

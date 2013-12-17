@@ -1,16 +1,16 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [418005] Add support for model files with multiple root elements
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.ui.util;
@@ -36,6 +36,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.sphinx.emf.ui.actions.providers.OpenWithMenu;
 import org.eclipse.sphinx.emf.ui.internal.Activator;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
@@ -48,7 +49,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
 /**
- * 
+ *
  */
 public class EcoreUIUtil {
 
@@ -76,6 +77,7 @@ public class EcoreUIUtil {
 		Assert.isNotNull(wizard);
 
 		final Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				// Creates and opens the wizard dialog
 				int result = new WizardDialog(ExtendedPlatformUI.getDisplay().getActiveShell(), wizard).open();

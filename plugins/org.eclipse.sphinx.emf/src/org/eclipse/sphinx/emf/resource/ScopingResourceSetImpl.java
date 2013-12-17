@@ -99,6 +99,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ScopingResourceSet#getResourcesInModel(java.lang.Object)
 	 */
+	@Override
 	public List<Resource> getResourcesInModel(Object contextObject) {
 		return getResourcesInScope(contextObject, true, false);
 	}
@@ -106,6 +107,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ScopingResourceSet#getResourcesInModel(java.lang.Object, boolean)
 	 */
+	@Override
 	public List<Resource> getResourcesInModel(Object contextObject, boolean includeReferencedScopes) {
 		return getResourcesInScope(contextObject, includeReferencedScopes, false);
 	}
@@ -113,10 +115,12 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ScopingResourceSet#getResourcesInScope(java.lang.Object)
 	 */
+	@Override
 	public List<Resource> getResourcesInScope(Object contextObject) {
 		return getResourcesInScope(contextObject, true, true);
 	}
 
+	@Override
 	public List<Resource> getResourcesInScope(Object contextObject, boolean includeReferencedScopes) {
 		return getResourcesInScope(contextObject, includeReferencedScopes, true);
 	}

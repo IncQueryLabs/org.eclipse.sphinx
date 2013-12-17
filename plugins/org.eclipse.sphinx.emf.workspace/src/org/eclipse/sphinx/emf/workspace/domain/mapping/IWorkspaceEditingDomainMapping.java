@@ -20,6 +20,7 @@ import java.util.List;
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.emf.transaction.ResourceSetListener;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;

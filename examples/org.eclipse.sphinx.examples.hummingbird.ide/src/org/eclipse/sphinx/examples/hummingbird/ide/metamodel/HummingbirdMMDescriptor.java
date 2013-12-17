@@ -69,6 +69,7 @@ public class HummingbirdMMDescriptor extends AbstractMetaModelDescriptor impleme
 	/*
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+	@Override
 	public int compareTo(HummingbirdMMDescriptor otherMMDescriptor) {
 		Assert.isNotNull(otherMMDescriptor);
 		int result = 0;

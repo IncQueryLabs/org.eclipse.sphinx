@@ -88,6 +88,7 @@ public class CategoryComparator extends ViewerComparator implements Comparator {
 	 * (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
+	@Override
 	public int compare(Object arg0, Object arg1) {
 		return compare(arg0, arg1, 0, true);
 	}

@@ -14,8 +14,6 @@
  */
 package org.eclipse.sphinx.emf.validation.ui.decorators;
 
-import org.eclipse.sphinx.emf.util.EObjectUtil;
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -25,9 +23,11 @@ import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ILightweightLabelDecorator;
+import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.validation.markers.ValidationMarkerManager;
 import org.eclipse.sphinx.emf.validation.markers.ValidationStatusCode;
 import org.eclipse.sphinx.emf.validation.ui.Activator;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 
@@ -68,25 +68,31 @@ public class BasicLightweightValidationDecorator implements ILabelDecorator, ILi
 		markerManager = ValidationMarkerManager.getInstance();
 	}
 
+	@Override
 	public Image decorateImage(Image image, Object element) {
 		return null;
 	}
 
+	@Override
 	public String decorateText(String text, Object element) {
 		return null;
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public boolean isLabelProperty(Object element, String property) {
 		return true;
 	}
 
+	@Override
 	public void removeListener(ILabelProviderListener listener) {
 
 	}
 
+	@Override
 	public void decorate(Object element, IDecoration decoration) {
 		ImageDescriptor img = null;
 		switch (computeValidationStatusCode(element)) {
@@ -112,6 +118,7 @@ public class BasicLightweightValidationDecorator implements ILabelDecorator, ILi
 	 * (non-Javadoc)
 	 * @see IBaseLabelProvider#addListener(ILabelProviderListener)
 	 */
+	@Override
 	public void addListener(ILabelProviderListener listener) {
 	}
 

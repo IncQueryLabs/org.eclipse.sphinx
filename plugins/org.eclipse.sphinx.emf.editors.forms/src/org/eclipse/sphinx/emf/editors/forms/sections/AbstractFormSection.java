@@ -71,6 +71,7 @@ public abstract class AbstractFormSection implements IFormSection {
 		this.style = style;
 	}
 
+	@Override
 	public void setTitle(String title) {
 		this.title = title;
 		if (section != null) {
@@ -82,6 +83,7 @@ public abstract class AbstractFormSection implements IFormSection {
 		return title;
 	}
 
+	@Override
 	public void setDescription(String description) {
 		this.description = description;
 		if (section != null) {
@@ -93,6 +95,7 @@ public abstract class AbstractFormSection implements IFormSection {
 		return Section.DESCRIPTION | ExpandableComposite.TITLE_BAR;
 	}
 
+	@Override
 	public void setSectionInput(Object sectionInput) {
 		this.sectionInput = sectionInput;
 	}
@@ -120,6 +123,7 @@ public abstract class AbstractFormSection implements IFormSection {
 		return sectionInput != null ? sectionInput.getClass().getSimpleName() : ""; //$NON-NLS-1$
 	}
 
+	@Override
 	public void createContent(IManagedForm managedForm, Composite parent) {
 		Assert.isNotNull(managedForm);
 		Assert.isNotNull(parent);
@@ -198,6 +202,7 @@ public abstract class AbstractFormSection implements IFormSection {
 		toolbar.setCursor(handCursor);
 		// Cursor needs to be explicitly disposed
 		toolbar.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				if (handCursor != null && handCursor.isDisposed() == false) {
 					handCursor.dispose();
@@ -247,10 +252,12 @@ public abstract class AbstractFormSection implements IFormSection {
 	protected FocusListener createFocusListner() {
 		return new FocusListener() {
 
+			@Override
 			public void focusLost(FocusEvent e) {
 				AbstractFormSection.this.focusLost(e);
 			}
 
+			@Override
 			public void focusGained(FocusEvent e) {
 				AbstractFormSection.this.focusGained(e);
 			}
@@ -280,10 +287,12 @@ public abstract class AbstractFormSection implements IFormSection {
 		return formPage;
 	}
 
+	@Override
 	public void refreshSection() {
 		// Do nothing by default
 	}
 
+	@Override
 	public void refreshMessages(IMessageManager messageManager, Map<EStructuralFeature, Set<IFormMessage>> messages) {
 		// Do nothing by default
 	}

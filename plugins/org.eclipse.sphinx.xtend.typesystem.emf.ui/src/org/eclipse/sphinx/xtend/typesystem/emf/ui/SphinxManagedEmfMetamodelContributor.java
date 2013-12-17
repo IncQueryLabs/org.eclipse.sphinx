@@ -22,6 +22,7 @@ import org.eclipse.xtend.typesystem.MetaModel;
 
 public class SphinxManagedEmfMetamodelContributor implements MetamodelContributor {
 
+	@Override
 	public MetaModel[] getMetamodels(IJavaProject project, TypeSystem ctx) {
 		return new MetaModel[] { new SphinxManagedEmfMetaModel(project.getProject()) };
 	}

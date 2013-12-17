@@ -59,6 +59,7 @@ public abstract class AbstractEclipsePreference<T> implements IEclipsePreference
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IEclipsePreference#getQualifier()
 	 */
+	@Override
 	public String getQualifier() {
 		return qualifier;
 	}
@@ -66,6 +67,7 @@ public abstract class AbstractEclipsePreference<T> implements IEclipsePreference
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IEclipsePreference#getKey()
 	 */
+	@Override
 	public String getKey() {
 		return key;
 	}
@@ -73,6 +75,7 @@ public abstract class AbstractEclipsePreference<T> implements IEclipsePreference
 	/*
 	 * @see org.eclipse.sphinx.platform.preferences.IEclipsePreference#getDefaultValueAsString()
 	 */
+	@Override
 	public String getDefaultValueAsString() {
 		return defaultValueAsString;
 	}

@@ -111,6 +111,7 @@ public class OutputGroup extends AbstractGroup {
 
 			useDefaultPathButtonField.addFieldListener(new IFieldListener() {
 
+				@Override
 				public void dialogFieldChanged(IField field) {
 					updateEnableState(!useDefaultPathButtonField.isSelected());
 				}
@@ -119,6 +120,7 @@ public class OutputGroup extends AbstractGroup {
 
 			outputPathField = new StringButtonField(new IButtonAdapter() {
 
+				@Override
 				public void changeControlPressed(IField field) {
 					ContainerSelectionDialog dialog = new ContainerSelectionDialog(parent.getShell(), ResourcesPlugin.getWorkspace().getRoot(), true,
 							""); //$NON-NLS-1$
@@ -143,6 +145,7 @@ public class OutputGroup extends AbstractGroup {
 			outputPathField.fillIntoGrid(parent, numColumns);
 			outputPathField.addFieldListener(new IFieldListener() {
 
+				@Override
 				public void dialogFieldChanged(IField field) {
 					notifyGroupChanged(outputPathField);
 				}
@@ -156,10 +159,12 @@ public class OutputGroup extends AbstractGroup {
 		link.setFont(composite.getFont());
 		link.setText("<A>" + text + "</A>"); //$NON-NLS-1$//$NON-NLS-2$
 		link.addSelectionListener(new SelectionListener() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				doLinkActivated(composite.getShell(), (Link) e.widget);
 			}
 
+			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				doLinkActivated(composite.getShell(), (Link) e.widget);
 			}

@@ -36,6 +36,7 @@ public class ExtensionPointFilter implements IConstraintFilter {
 		cfvs.add(cfv);
 	}
 
+	@Override
 	public boolean accept(IConstraintDescriptor constraint, EObject target) {
 
 		if (cfvs == null) {

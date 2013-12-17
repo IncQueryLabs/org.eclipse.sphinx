@@ -129,8 +129,8 @@ public class MarkerAdapter {
 
 				return NLS.bind(MarkerMessages.Category_Label, new Object[] { name, String.valueOf(getDisplayedSize()) });
 			}
-			return NLS.bind(MarkerMessages.Category_Limit_Label, new Object[] { name, String.valueOf(getDisplayedSize()),
-					String.valueOf(getTotalSize()) });
+			return NLS.bind(MarkerMessages.Category_Limit_Label,
+					new Object[] { name, String.valueOf(getDisplayedSize()), String.valueOf(getTotalSize()) });
 		}
 
 		/**

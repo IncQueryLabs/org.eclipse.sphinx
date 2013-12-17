@@ -270,6 +270,7 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 
 	protected IOperationHistoryListener createObjectChangedListener() {
 		return new IOperationHistoryListener() {
+			@Override
 			public void historyNotification(final OperationHistoryEvent event) {
 				if (event.getEventType() == OperationHistoryEvent.DONE || event.getEventType() == OperationHistoryEvent.UNDONE
 						|| event.getEventType() == OperationHistoryEvent.REDONE) {
@@ -297,6 +298,7 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 	/*
 	 * @see org.eclipse.emf.edit.provider.IDisposable#dispose()
 	 */
+	@Override
 	public void dispose() {
 		uninstallModelChangeListeners();
 	}

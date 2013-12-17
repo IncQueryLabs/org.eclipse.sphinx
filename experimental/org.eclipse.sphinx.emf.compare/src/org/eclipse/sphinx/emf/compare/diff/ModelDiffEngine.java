@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.emf.compare.diff;
 
-import org.eclipse.emf.compare.diff.engine.GenericDiffEngine;
 
 /**
  * Extends the generic {@linkplain GenericDiffEngine diff engine} provided by EMF Compare so that this engine becomes

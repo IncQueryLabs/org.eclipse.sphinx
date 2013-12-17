@@ -135,6 +135,7 @@ public class SaveIndicatorUtilTest extends DefaultIntegrationTestCase {
 
 		TestResourceSaveIndicatorImpl testResourceSaveIndicatorImpl = new TestResourceSaveIndicatorImpl(testEditingDomain);
 
+		@Override
 		public Object getAdapter(final Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
 
 			// IResourceSaveIndicator adapter for TransactionalEditingDomain?
@@ -145,6 +146,7 @@ public class SaveIndicatorUtilTest extends DefaultIntegrationTestCase {
 			return null;
 		}
 
+		@Override
 		@SuppressWarnings("rawtypes")
 		public Class[] getAdapterList() {
 			return new Class<?>[] { IEditingDomainProvider.class, IResourceSaveIndicator.class };
@@ -344,6 +346,7 @@ public class SaveIndicatorUtilTest extends DefaultIntegrationTestCase {
 		final Parameter[] param = new Parameter[1];
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, new Runnable() {
+				@Override
 				public void run() {
 					platform.setName("platform");
 					ComponentType cType = TypeModel20Factory.eINSTANCE.createComponentType();
@@ -369,6 +372,7 @@ public class SaveIndicatorUtilTest extends DefaultIntegrationTestCase {
 
 		try {
 			WorkspaceTransactionUtil.executeInWriteTransaction(refWks.editingDomain20, new Runnable() {
+				@Override
 				public void run() {
 					application.setName("application");
 					Component component = InstanceModel20Factory.eINSTANCE.createComponent();

@@ -65,6 +65,7 @@ public abstract class AbstractModelConverter implements IModelConverter {
 
 	private final Format format = Format.getRawFormat().setLineSeparator(System.getProperty("line.separator")); //$NON-NLS-1$
 
+	@Override
 	public boolean isLoadConverterFor(XMLResource resource, Map<?, ?> options) {
 		if (resource == null) {
 			return false;
@@ -94,6 +95,7 @@ public abstract class AbstractModelConverter implements IModelConverter {
 		return matching;
 	}
 
+	@Override
 	public boolean isSaveConverterFor(XMLResource resource, Map<?, ?> options) {
 		if (resource == null) {
 			return false;
@@ -125,6 +127,7 @@ public abstract class AbstractModelConverter implements IModelConverter {
 		return new XMIException(ex, location, 1, 1);
 	}
 
+	@Override
 	public InputSource convertLoad(XMLResource resource, InputStream inputStream, Map<?, ?> options) throws IOException {
 		try {
 			InputStream converted = doConvertLoad(resource, inputStream, options);
@@ -216,6 +219,7 @@ public abstract class AbstractModelConverter implements IModelConverter {
 		final PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream);
 		final XMLOutputter out = new XMLOutputter(format);
 		Thread thread = new Thread(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					out.output(document, pipedOutputStream);
@@ -248,6 +252,7 @@ public abstract class AbstractModelConverter implements IModelConverter {
 	// lists rather than logging them in error log
 	protected abstract void convertLoadElement(Element element, Map<?, ?> options);
 
+	@Override
 	public void convertSave(final XMLString xml, final int flushThreshold, URI uri, OutputStream outputStream, final String encoding,
 			final XMLHelper helper, Map<?, ?> options) throws IOException {
 		try {
@@ -255,6 +260,7 @@ public abstract class AbstractModelConverter implements IModelConverter {
 			PipedInputStream pipedInputStream = new PipedInputStream();
 			final PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream);
 			Thread thread = new Thread(new Runnable() {
+				@Override
 				public void run() {
 					try {
 						if ("US-ASCII".equals(encoding) || "ASCII".equals(encoding)) { //$NON-NLS-1$ //$NON-NLS-2$
@@ -312,10 +318,12 @@ public abstract class AbstractModelConverter implements IModelConverter {
 	// lists rather than logging them in error log
 	protected abstract void convertSaveElement(Element element, Map<?, ?> options);
 
+	@Override
 	public void addExtraAttributesToSavedRootElement(XMLString rootElement, Map<?, ?> options) {
 		// Do nothing by default
 	}
 
+	@Override
 	public void dispose() {
 		// Do nothing by default
 	}

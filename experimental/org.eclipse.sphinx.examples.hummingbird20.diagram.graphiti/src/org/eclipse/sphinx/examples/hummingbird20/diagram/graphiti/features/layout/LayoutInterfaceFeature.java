@@ -39,6 +39,7 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
 		super(fp);
 	}
 
+	@Override
 	public boolean canLayout(ILayoutContext context) {
 		// return true, if pictogram element is linked to a ComponentType
 		PictogramElement pe = context.getPictogramElement();
@@ -49,6 +50,7 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
 		return businessObjects.get(0) instanceof Interface;
 	}
 
+	@Override
 	public boolean layout(ILayoutContext context) {
 		boolean anythingChanged = false;
 		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();

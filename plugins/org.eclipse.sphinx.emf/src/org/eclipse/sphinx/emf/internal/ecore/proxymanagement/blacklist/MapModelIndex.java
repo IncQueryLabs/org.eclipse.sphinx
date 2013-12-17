@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.internal.ecore.proxymanagement.blacklist;
@@ -38,7 +38,7 @@ import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
- * 
+ *
  */
 // TODO Add JavaDoc comments.
 // FIXME aakar: make access to index thread safe
@@ -156,6 +156,7 @@ public class MapModelIndex implements IResourceChangeListener {
 		return null;
 	}
 
+	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		try {
 			IResourceDelta delta = event.getDelta();
@@ -163,7 +164,6 @@ public class MapModelIndex implements IResourceChangeListener {
 				delta.accept(resourceDeltaVisitor);
 			}
 		} catch (CoreException exc) {
-			// TODO Create and use a dedicated NLS message.
 			PlatformLogUtil.logAsError(Activator.getPlugin(), "Error indexing models" + exc); //$NON-NLS-1$
 		}
 	}

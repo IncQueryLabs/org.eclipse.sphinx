@@ -82,6 +82,7 @@ public class BasicModelSaveableFilter implements ISaveableFilter {
 	/*
 	 * @see org.eclipse.ui.ISaveableFilter#select(org.eclipse.ui.Saveable, org.eclipse.ui.IWorkbenchPart[])
 	 */
+	@Override
 	public boolean select(Saveable saveable, IWorkbenchPart[] containingParts) {
 		if (saveable instanceof BasicModelSaveable) {
 			IModelDescriptor modelDescriptor = ((BasicModelSaveable) saveable).getModelDescriptor();

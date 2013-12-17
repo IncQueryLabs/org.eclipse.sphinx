@@ -278,6 +278,7 @@ public class ResourceMgmtOverrideActionProvider extends CommonActionProvider {
 							Shell shell = provider.getShell();
 							if (shell != null && !shell.isDisposed()) {
 								shell.getDisplay().asyncExec(new Runnable() {
+									@Override
 									public void run() {
 										// FIXME Couldn't this be replaced by:
 										// 'TreeViewer viewer = navigator.getViewer();'?

@@ -61,6 +61,7 @@ public class ConstraintCategoryFilter implements IConstraintFilter {
 	 * org.eclipse.emf.validation.service.IConstraintFilter#accept(org.eclipse.emf.validation.service.IConstraintDescriptor
 	 * , org.eclipse.emf.ecore.EObject)
 	 */
+	@Override
 	public boolean accept(IConstraintDescriptor constraint, EObject target) {
 		if (constraint != null) {
 			for (Category category : constraint.getCategories()) {

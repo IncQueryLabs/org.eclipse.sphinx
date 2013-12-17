@@ -170,6 +170,7 @@ public class MessageFormatParser extends AbstractParser {
 	/**
 	 * @generated
 	 */
+	@Override
 	public String getEditString(IAdaptable adapter, int flags) {
 		EObject element = (EObject) adapter.getAdapter(EObject.class);
 		return getEditorProcessor().format(getEditableValues(element), new StringBuffer(), new FieldPosition(0)).toString();
@@ -178,6 +179,7 @@ public class MessageFormatParser extends AbstractParser {
 	/**
 	 * @generated
 	 */
+	@Override
 	public IParserEditStatus isValidEditString(IAdaptable adapter, String editString) {
 		ParsePosition pos = new ParsePosition(0);
 		Object[] values = getEditProcessor().parse(editString, pos);
@@ -191,6 +193,7 @@ public class MessageFormatParser extends AbstractParser {
 	/**
 	 * @generated
 	 */
+	@Override
 	public ICommand getParseCommand(IAdaptable adapter, String newString, int flags) {
 		Object[] values = getEditProcessor().parse(newString, new ParsePosition(0));
 		return getParseCommand(adapter, values, flags);
@@ -199,6 +202,7 @@ public class MessageFormatParser extends AbstractParser {
 	/**
 	 * @generated
 	 */
+	@Override
 	public String getPrintString(IAdaptable adapter, int flags) {
 		EObject element = (EObject) adapter.getAdapter(EObject.class);
 		return getViewProcessor().format(getValues(element), new StringBuffer(), new FieldPosition(0)).toString();

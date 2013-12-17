@@ -336,6 +336,7 @@ public class XtendJob extends Job {
 			for (final TransactionalEditingDomain editingDomain : requests.keySet()) {
 
 				Runnable runnable = new Runnable() {
+					@Override
 					public void run() {
 						for (XtendEvaluationRequest request : requests.get(editingDomain)) {
 							log.info("Xtend transformation for " + request.getTargetObject() + " with '" + request.getExtensionName() + "'"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

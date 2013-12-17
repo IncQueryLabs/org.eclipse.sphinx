@@ -15,13 +15,6 @@
 package org.eclipse.sphinx.emf.compare.team.subversive.ui.operations;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.team.svn.core.operation.IActionOperation;
-import org.eclipse.team.svn.core.operation.local.RunExternalCompareOperation;
-import org.eclipse.team.svn.core.operation.local.UDiffGenerateOperation;
-import org.eclipse.team.svn.core.resource.ILocalResource;
-import org.eclipse.team.svn.core.resource.IRepositoryResource;
-import org.eclipse.team.svn.ui.operation.CompareResourcesInternalOperation;
-import org.eclipse.team.svn.ui.preferences.SVNTeamDiffViewerPage;
 
 public class ExtendedCompareResourcesOperation extends DelegatingCompositeOperation {
 

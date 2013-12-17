@@ -125,6 +125,7 @@ public class TemplateGroup extends AbstractGroup {
 		// Template file field
 		templateFileField = new StringButtonField(new IButtonAdapter() {
 
+			@Override
 			public void changeControlPressed(IField field) {
 				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(parent.getShell(), new WorkbenchLabelProvider(),
 						new WorkbenchContentProvider());
@@ -151,6 +152,7 @@ public class TemplateGroup extends AbstractGroup {
 				});
 				dialog.setValidator(new ISelectionStatusValidator() {
 
+					@Override
 					public IStatus validate(Object[] selection) {
 						int nSelected = selection.length;
 						String pluginId = Activator.getPlugin().getSymbolicName();
@@ -177,6 +179,7 @@ public class TemplateGroup extends AbstractGroup {
 		templateFileField.fillIntoGrid(parent, numColumns);
 		templateFileField.addFieldListener(new IFieldListener() {
 
+			@Override
 			public void dialogFieldChanged(IField field) {
 				updateDefinitionFieldItems(getFile(templateFileField.getText()));
 				updateDefinitionNameField();
@@ -190,6 +193,7 @@ public class TemplateGroup extends AbstractGroup {
 		definitionField.fillIntoGrid(parent, numColumns);
 		definitionField.addFieldListener(new IFieldListener() {
 
+			@Override
 			public void dialogFieldChanged(IField field) {
 				updateDefinitionNameField();
 				notifyGroupChanged(templateFileField);

@@ -70,6 +70,7 @@ public abstract class AbstractWizard extends Wizard implements IWizard {
 	 */
 	private final IRunnableWithProgress getFinishRunnable() {
 		return new IRunnableWithProgress() {
+			@Override
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {
 				try {
 					doPerformFinish(monitor);
@@ -87,6 +88,7 @@ public abstract class AbstractWizard extends Wizard implements IWizard {
 	 */
 	private final IRunnableWithProgress getCancelRunnable() {
 		return new IRunnableWithProgress() {
+			@Override
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {
 				try {
 					doPerformCancel(monitor);

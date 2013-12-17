@@ -28,10 +28,12 @@ public class TypeNameLabelDecorator extends BaseLabelProvider implements ILabelD
 		return ""; //$NON-NLS-1$
 	}
 
+	@Override
 	public Image decorateImage(Image image, Object element) {
 		return null;
 	}
 
+	@Override
 	public String decorateText(String text, Object element) {
 		if (text != null && text.length() > 0) {
 			String typeName = getTypeName(element);

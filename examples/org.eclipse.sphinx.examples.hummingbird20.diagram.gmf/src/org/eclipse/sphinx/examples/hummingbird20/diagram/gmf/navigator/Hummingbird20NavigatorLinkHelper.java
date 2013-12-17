@@ -64,6 +64,7 @@ public class Hummingbird20NavigatorLinkHelper implements ILinkHelper {
 	/**
 	 * @generated
 	 */
+	@Override
 	public IStructuredSelection findSelection(IEditorInput anInput) {
 		IDiagramDocument document = Hummingbird20DiagramEditorPlugin.getInstance().getDocumentProvider().getDiagramDocument(anInput);
 		if (document == null) {
@@ -84,6 +85,7 @@ public class Hummingbird20NavigatorLinkHelper implements ILinkHelper {
 	/**
 	 * @generated
 	 */
+	@Override
 	public void activateEditor(IWorkbenchPage aPage, IStructuredSelection aSelection) {
 		if (aSelection == null || aSelection.isEmpty()) {
 			return;

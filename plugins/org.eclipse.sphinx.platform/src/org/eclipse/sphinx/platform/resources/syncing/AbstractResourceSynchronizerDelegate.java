@@ -22,6 +22,7 @@ public abstract class AbstractResourceSynchronizerDelegate<T extends IResourceSy
 
 	protected T syncRequest;
 
+	@Override
 	public void setSyncRequest(T syncRequest) {
 		Assert.isNotNull(syncRequest);
 		this.syncRequest = syncRequest;

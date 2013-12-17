@@ -75,6 +75,7 @@ public abstract class AbstractResourceSetListenerInstaller<T extends ResourceSet
 	 * org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener#postCreateEditingDomain(org.
 	 * eclipse.emf.transaction.TransactionalEditingDomain)
 	 */
+	@Override
 	public void postCreateEditingDomain(TransactionalEditingDomain editingDomain) {
 		// Do nothing if a resource set listener from this installer is already present on given editing domain
 		// (should normally not happen)
@@ -98,6 +99,7 @@ public abstract class AbstractResourceSetListenerInstaller<T extends ResourceSet
 	 * org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener#preDisposeEditingDomain(org.
 	 * eclipse.emf.transaction.TransactionalEditingDomain)
 	 */
+	@Override
 	public void preDisposeEditingDomain(TransactionalEditingDomain editingDomain) {
 		// Retrieve resource set listener that has been installed by this installer on given editing domain
 		T listener = resourceSetListeners.get(editingDomain);

@@ -70,8 +70,8 @@ public interface IHummingbirdPreferences {
 
 		/*
 		 * @see
-		 * org.eclipse.sphinx.platform.preferences.AbstractProjectPreference#toObject(org.eclipse.core.resources.IProject,
-		 * java.lang.String)
+		 * org.eclipse.sphinx.platform.preferences.AbstractProjectPreference#toObject(org.eclipse.core.resources.IProject
+		 * , java.lang.String)
 		 */
 		@Override
 		protected HummingbirdMMDescriptor toObject(IProject project, String valueAsString) {
@@ -98,8 +98,8 @@ public interface IHummingbirdPreferences {
 
 		/*
 		 * @see
-		 * org.eclipse.sphinx.platform.preferences.AbstractProjectPreference#toString(org.eclipse.core.resources.IProject,
-		 * java.lang.Object)
+		 * org.eclipse.sphinx.platform.preferences.AbstractProjectPreference#toString(org.eclipse.core.resources.IProject
+		 * , java.lang.Object)
 		 */
 		@Override
 		protected String toString(IProject project, HummingbirdMMDescriptor valueAsObject) {

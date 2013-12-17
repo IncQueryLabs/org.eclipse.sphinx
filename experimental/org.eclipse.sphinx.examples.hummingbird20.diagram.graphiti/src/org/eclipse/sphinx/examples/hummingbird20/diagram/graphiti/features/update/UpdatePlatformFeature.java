@@ -37,12 +37,14 @@ public class UpdatePlatformFeature extends AbstractUpdateFeature {
 		super(fp);
 	}
 
+	@Override
 	public boolean canUpdate(IUpdateContext context) {
 		// return true, if linked business object is a ComponentType
 		Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
 		return bo instanceof Platform;
 	}
 
+	@Override
 	public IReason updateNeeded(IUpdateContext context) {
 		ContainerShape container = (ContainerShape) context.getPictogramElement();
 		EObject boRoot = (EObject) getBusinessObjectForPictogramElement(container);
@@ -56,6 +58,7 @@ public class UpdatePlatformFeature extends AbstractUpdateFeature {
 		return Reason.createFalseReason("Update is not needed on Platform"); //$NON-NLS-1$
 	}
 
+	@Override
 	public boolean update(IUpdateContext context) {
 		List<Shape> shapesToRemove = new ArrayList<Shape>();
 		ContainerShape container = (ContainerShape) context.getPictogramElement();

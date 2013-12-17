@@ -100,6 +100,7 @@ public class OutletsConfigurationPage extends AbstractWizardPage {
 				enableButton.setSelection(true);
 				enableButton.fillIntoGrid(parent, 2);
 				enableButton.addFieldListener(new IFieldListener() {
+					@Override
 					public void dialogFieldChanged(IField field) {
 						updateOutletsGroupEnableState(enableButton.isSelected());
 					}
@@ -111,6 +112,7 @@ public class OutletsConfigurationPage extends AbstractWizardPage {
 			outletsGroup.createContent(parent, 2);
 			restoreDefaultButton = SWTUtil.createButton(outletsGroup.getButtonsComposite(), Messages.label_restoreDefaultButtons, SWT.PUSH);
 			restoreDefaultButton.addListener(SWT.Selection, new Listener() {
+				@Override
 				public void handleEvent(Event event) {
 					if (event.widget == restoreDefaultButton) {
 						restoreDefaults();

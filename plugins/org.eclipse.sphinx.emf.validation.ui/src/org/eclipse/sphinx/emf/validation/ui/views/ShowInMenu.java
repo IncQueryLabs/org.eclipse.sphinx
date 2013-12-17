@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -33,6 +32,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -70,6 +70,7 @@ public class ShowInMenu extends ContributionItem {
 	private String targetObjectURI = null;
 
 	private IMenuListener menuListener = new IMenuListener() {
+		@Override
 		public void menuAboutToShow(IMenuManager manager) {
 			manager.markDirty();
 			dirty = true;
@@ -154,8 +155,8 @@ public class ShowInMenu extends ContributionItem {
 			return;
 		}
 
-		for (int i = 0; i < viewDescs.length; ++i) {
-			IAction action = getAction(viewDescs[i]);
+		for (IViewDescriptor viewDesc : viewDescs) {
+			IAction action = getAction(viewDesc);
 			if (action != null) {
 				innerMgr.add(action);
 			}

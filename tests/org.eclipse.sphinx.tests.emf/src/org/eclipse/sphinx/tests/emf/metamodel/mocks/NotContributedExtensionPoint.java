@@ -24,54 +24,67 @@ import org.eclipse.core.runtime.InvalidRegistryObjectException;
 @SuppressWarnings("deprecation")
 public class NotContributedExtensionPoint implements IExtensionPoint {
 
+	@Override
 	public IConfigurationElement[] getConfigurationElements() throws InvalidRegistryObjectException {
 		return new IConfigurationElement[] {};
 	}
 
+	@Override
 	public IContributor getContributor() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public IPluginDescriptor getDeclaringPluginDescriptor() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public IExtension getExtension(String extensionId) throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public IExtension[] getExtensions() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getLabel() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getNamespace() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getNamespaceIdentifier() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getSchemaReference() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getSimpleIdentifier() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public String getUniqueIdentifier() throws InvalidRegistryObjectException {
 		return null;
 	}
 
+	@Override
 	public boolean isValid() {
 		return false;
 	}
 
+	@Override
 	public String getLabel(String locale) throws InvalidRegistryObjectException {
 		return null;
 	}

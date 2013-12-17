@@ -249,6 +249,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * This listens for when Outline and Properties view become active/inactive
 	 */
 	protected IPartListener partListener = new IPartListener() {
+		@Override
 		public void partActivated(IWorkbenchPart part) {
 			if (part instanceof ContentOutline) {
 				if (((ContentOutline) part).getCurrentPage() == contentOutlinePage) {
@@ -266,9 +267,11 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			}
 		}
 
+		@Override
 		public void partBroughtToTop(IWorkbenchPart part) {
 		}
 
+		@Override
 		public void partClosed(IWorkbenchPart part) {
 			if (part instanceof PropertySheet) {
 				((PropertySheet) part).getCurrentPage().dispose();
@@ -276,9 +279,11 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			}
 		}
 
+		@Override
 		public void partDeactivated(IWorkbenchPart part) {
 		}
 
+		@Override
 		public void partOpened(IWorkbenchPart part) {
 		}
 	};
@@ -304,6 +309,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 		// Ensures that this editor will only display the page's tab area if there is more than one page
 		addPageChangedListener(new IPageChangedListener() {
+			@Override
 			public void pageChanged(PageChangedEvent event) {
 				if (getPageCount() <= 1) {
 					hideTabs();
@@ -324,6 +330,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			// I don't know if this should be run this deferred because we might have to give the editor a chance to
 			// process the viewer update events and hence to update the views first
 			Runnable runnable = new Runnable() {
+				@Override
 				public void run() {
 					// Try to select the items in the current content viewer of the editor
 					try {
@@ -377,6 +384,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		IWorkbenchPartSite site = getSite();
 		if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
 			site.getShell().getDisplay().asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					// Discard undo context and reset dirty state
 					IOperationHistory operationHistory = getOperationHistory();
@@ -428,6 +436,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				// Create the listener on demand
 				selectionChangedListener = new ISelectionChangedListener() {
 					// This just notifies those things that are affected by the section
+					@Override
 					public void selectionChanged(SelectionChangedEvent selectionChangedEvent) {
 						setSelection(selectionChangedEvent.getSelection());
 					}
@@ -455,6 +464,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	/**
 	 * This returns the viewer as required by the {@link IViewerProvider} interface.
 	 */
+	@Override
 	public Viewer getViewer() {
 		if (currentSelectionProvider instanceof Viewer) {
 			return (Viewer) currentSelectionProvider;
@@ -737,6 +747,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			contentOutlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
 				// This ensures that we handle selections correctly.
 				//
+				@Override
 				public void selectionChanged(SelectionChangedEvent event) {
 					handleContentOutlineSelection(event.getSelection());
 				}
@@ -755,6 +766,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		return propertySheetPage;
 	}
 
+	@Override
 	public String getContributorId() {
 		return getSite().getId();
 	}
@@ -932,6 +944,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				EditingDomain editingDomain = getEditingDomain();
 				if (editingDomain != null) {
 					((TransactionalEditingDomain) editingDomain).runExclusive(new Runnable() {
+						@Override
 						public void run() {
 							// Change saved resource's URI
 							Resource editorInputResource = getEditorInputResource();
@@ -958,6 +971,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		}
 	}
 
+	@Override
 	public void gotoMarker(IMarker marker) {
 		try {
 			if (marker.isSubtypeOf(EValidator.MARKER)) {
@@ -1014,6 +1028,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	/**
 	 * This implements {@link org.eclipse.jface.viewers.ISelectionProvider}.
 	 */
+	@Override
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionChangedListeners.add(listener);
 	}
@@ -1021,6 +1036,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	/**
 	 * This implements {@link org.eclipse.jface.viewers.ISelectionProvider}.
 	 */
+	@Override
 	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionChangedListeners.remove(listener);
 	}
@@ -1028,6 +1044,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	/**
 	 * This implements {@link org.eclipse.jface.viewers.ISelectionProvider} to return this editor's overall selection.
 	 */
+	@Override
 	public ISelection getSelection() {
 		return editorSelection;
 	}
@@ -1036,6 +1053,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * This implements {@link org.eclipse.jface.viewers.ISelectionProvider} to set this editor's overall selection.
 	 * Calling this result will notify the listeners.
 	 */
+	@Override
 	public void setSelection(ISelection selection) {
 		editorSelection = !SelectionUtil.getStructuredSelection(selection).isEmpty() ? selection : getDefaultSelection();
 
@@ -1101,6 +1119,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * This implements {@link org.eclipse.jface.action.IMenuListener} to help fill the context menus with contributions
 	 * from the Edit menu.
 	 */
+	@Override
 	public void menuAboutToShow(IMenuManager menuManager) {
 		((IMenuListener) getEditorSite().getActionBarContributor()).menuAboutToShow(menuManager);
 	}
@@ -1254,8 +1273,10 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 */
 	protected CommandStackListener createCommandStackListener() {
 		return new CommandStackListener() {
+			@Override
 			public void commandStackChanged(final EventObject event) {
 				ExtendedPlatformUI.getDisplay().asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						firePropertyChange(IEditorPart.PROP_DIRTY);
 						// Try to select the affected objects.
@@ -1343,6 +1364,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				IWorkbenchPartSite site = getSite();
 				if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
 					site.getShell().getDisplay().asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							// Discard undo context
 							IOperationHistory operationHistory = getOperationHistory();
@@ -1525,6 +1547,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	protected IOperationHistoryListener createAffectedObjectsListener() {
 		return new IOperationHistoryListener() {
+			@Override
 			public void historyNotification(final OperationHistoryEvent event) {
 				if (event.getEventType() == OperationHistoryEvent.ABOUT_TO_EXECUTE) {
 					handleOperationAboutToExecute(event.getOperation());
@@ -1542,6 +1565,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 					IWorkbenchPartSite site = getSite();
 					if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
 						site.getShell().getDisplay().syncExec(new Runnable() {
+							@Override
 							public void run() {
 								if (isActivePart() || isMyActivePropertySheetPage()) {
 									EditingDomain editingDomain = getEditingDomain();
@@ -1565,6 +1589,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				IWorkbenchPartSite site = getSite();
 				if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
 					site.getShell().getDisplay().asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							if (isActivePart() || isMyActivePropertySheetPage()) {
 								// Try to select the affected objects
@@ -1633,6 +1658,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * for implementing the static methods of {@link AdapterFactoryEditingDomain} and for supporting
 	 * {@link org.eclipse.emf.edit.ui.action.CommandAction}.
 	 */
+	@Override
 	public EditingDomain getEditingDomain() {
 		URI uri = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
 		return getEditingDomain(uri);
@@ -1823,11 +1849,13 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		return null;
 	}
 
+	@Override
 	public void saveState(IMemento memento) {
 		// Save editor dirty state; required upon editor restoration
 		memento.putBoolean(TAG_EDITOR_DIRTY_ON_WORKBENCH_CLOSE, isDirty());
 	}
 
+	@Override
 	public void restoreState(IMemento memento) {
 		// Close editor if it has been left dirty upon last workbench close; in this case the editor input URI might be
 		// pointing at some model element that hasn't been saved and therefore doesn't exist upon editor restoration
@@ -1836,10 +1864,12 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		}
 	}
 
+	@Override
 	public Saveable[] getActiveSaveables() {
 		return getSaveables();
 	}
 
+	@Override
 	public Saveable[] getSaveables() {
 		// As Saveables management is based on ModelDescriptors & no ModelDescriptor for files outside the workspace, we
 		// return here a default Saveable

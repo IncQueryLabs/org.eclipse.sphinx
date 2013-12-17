@@ -91,6 +91,7 @@ public class BasicValidateAction extends BaseSelectionListenerAction {
 
 		final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		IRunnableWithProgress runnableWithProgress = new IRunnableWithProgress() {
+			@Override
 			public void run(final IProgressMonitor progressMonitor) throws InvocationTargetException, InterruptedException {
 				try {
 					// FIXME Shouldn't this profiling be started and stopped inside 'asyncExec'?
@@ -99,6 +100,7 @@ public class BasicValidateAction extends BaseSelectionListenerAction {
 					final List<Diagnostic> diagnostics = validateMulti(selectedModelObjects, progressMonitor);
 
 					shell.getDisplay().asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							if (progressMonitor.isCanceled()) {
 								handleDiagnostic(selectedModelObjects, Diagnostic.CANCEL_INSTANCE);

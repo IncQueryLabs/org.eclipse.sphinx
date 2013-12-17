@@ -336,6 +336,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResourceSet#getEObject(org.eclipse.emf.ecore.EObject,
 	 * org.eclipse.emf.ecore.EObject, boolean)
 	 */
+	@Override
 	public EObject getEObject(EObject proxy, EObject contextObject, boolean loadOnDemand) {
 		if (proxy == null) {
 			return null;
@@ -458,6 +459,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 
 		if (targetMetaModelDescriptor != null) {
 			return getFilteredResources(allResources, new ResourceFilter() {
+				@Override
 				public boolean accept(Resource resource) {
 					// Accept only resources that match provided metamodel descriptor
 					if (targetMetaModelDescriptor.equals(MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource))) {

@@ -16,9 +16,6 @@ package org.eclipse.sphinx.emf.validation.markers.util;
 
 import java.util.Set;
 
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
-import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -28,7 +25,11 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
+import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.validation.Activator;
+import org.eclipse.sphinx.emf.validation.markers.IValidationMarker;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
  * Utility class for markers

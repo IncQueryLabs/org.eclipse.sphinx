@@ -27,6 +27,7 @@ import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 
 public class GMFTargetMetaModelDescriptorProvider implements ITargetMetaModelDescriptorProvider {
 
+	@Override
 	public IMetaModelDescriptor getDescriptor(IFile file) {
 		try {
 			String targetNamespace = EcorePlatformUtil.readTargetNamespace(file);
@@ -39,6 +40,7 @@ public class GMFTargetMetaModelDescriptorProvider implements ITargetMetaModelDes
 		return null;
 	}
 
+	@Override
 	public IMetaModelDescriptor getDescriptor(Resource resource) {
 		try {
 			String targetNamespace = EcoreResourceUtil.readTargetNamespace(resource);

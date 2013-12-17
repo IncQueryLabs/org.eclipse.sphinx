@@ -92,6 +92,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 		 * (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
 		 */
+		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
 			return null;
 		}
@@ -100,6 +101,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 		 * (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
 		 */
+		@Override
 		public String getColumnText(Object element, int columnIndex) {
 			return ((AbstractNode) element).getName();
 		}
@@ -679,6 +681,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 			 * (non-Javadoc)
 			 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
 			 */
+			@Override
 			public Object[] getElements(Object inputElement) {
 				return filters;
 			}
@@ -687,6 +690,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 			 * (non-Javadoc)
 			 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 			 */
+			@Override
 			public void dispose() {
 				// Do nothing
 			}
@@ -696,6 +700,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 			 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
 			 * java.lang.Object, java.lang.Object)
 			 */
+			@Override
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 				// Do nothing
 			}
@@ -722,6 +727,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 			 * @seeorg.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.
 			 * SelectionChangedEvent)
 			 */
+			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				updateFilterFromUI();
 				setSelectedFilter(event);
@@ -757,6 +763,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 							 * (non-Javadoc)
 							 * @see org.eclipse.jface.dialogs.IInputValidator#isValid(java.lang.String)
 							 */
+							@Override
 							public String isValid(String newText) {
 								if (newText.length() == 0) {
 									return MarkerMessages.MarkerFilterDialog_emptyMessage;
@@ -978,6 +985,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 		typesViewer.setLabelProvider(getLabelProvider());
 		typesViewer.setComparator(getComparator());
 		typesViewer.addCheckStateListener(new ICheckStateListener() {
+			@Override
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				markDirty();
 				Object element = event.getElement();
@@ -1020,6 +1028,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 			 * (non-Javadoc)
 			 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
 			 */
+			@Override
 			public Object[] getElements(Object inputElement) {
 				MarkerFilter selected = getSelectedFilter();
 				if (selected == null) {
@@ -1033,6 +1042,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 			 * (non-Javadoc)
 			 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 			 */
+			@Override
 			public void dispose() {
 			}
 
@@ -1041,6 +1051,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 			 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
 			 * java.lang.Object, java.lang.Object)
 			 */
+			@Override
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			}
 
@@ -1048,6 +1059,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 			 * (non-Javadoc)
 			 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
 			 */
+			@Override
 			public Object[] getChildren(Object parentElement) {
 				return ((AbstractNode) parentElement).getChildren();
 			}
@@ -1056,6 +1068,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 			 * (non-Javadoc)
 			 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
 			 */
+			@Override
 			public Object getParent(Object element) {
 				return ((AbstractNode) element).getParent();
 			}
@@ -1064,6 +1077,7 @@ public abstract class DialogMarkerFilter extends TrayDialog {
 			 * (non-Javadoc)
 			 * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
 			 */
+			@Override
 			public boolean hasChildren(Object element) {
 				return ((AbstractNode) element).hasChildren();
 			}

@@ -55,6 +55,7 @@ public class AddRequiredInterfacesFeature extends AbstractAddFeature {
 		super(fp);
 	}
 
+	@Override
 	public boolean canAdd(IAddContext context) {
 		// return true if given business object is an EReference
 		// note, that the context must be an instance of IAddConnectionContext
@@ -117,6 +118,7 @@ public class AddRequiredInterfacesFeature extends AbstractAddFeature {
 		}
 	}
 
+	@Override
 	public PictogramElement add(IAddContext context) {
 		IAddConnectionContext addConContext = (IAddConnectionContext) context;
 		Port addedEReference = (Port) context.getNewObject();

@@ -54,6 +54,7 @@ public class HyperlinkCComboButtonField extends HyperlinkCComboField implements 
 	/**
 	 * Sets the label of the button.
 	 */
+	@Override
 	public void setButtonLabel(String label) {
 		fBrowseButtonLabel = label;
 	}
@@ -139,10 +140,12 @@ public class HyperlinkCComboButtonField extends HyperlinkCComboField implements 
 			fBrowseButton.setText(fBrowseButtonLabel);
 			fBrowseButton.setEnabled(isEnabled() && fButtonEnabled);
 			fBrowseButton.addSelectionListener(new SelectionListener() {
+				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {
 					changeControlPressed();
 				}
 
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					changeControlPressed();
 				}
@@ -155,6 +158,7 @@ public class HyperlinkCComboButtonField extends HyperlinkCComboField implements 
 	/*
 	 * @see org.eclipse.sphinx.platform.ui.fields.ICComboButtonField#getButtonControl()
 	 */
+	@Override
 	public Control getButtonControl() {
 		Control control = null;
 		if (isOkToUse(fBrowseButton)) {

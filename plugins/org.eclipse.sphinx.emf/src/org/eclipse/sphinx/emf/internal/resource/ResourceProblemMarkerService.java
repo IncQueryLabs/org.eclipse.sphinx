@@ -340,6 +340,7 @@ public class ResourceProblemMarkerService {
 		Assert.isNotNull(resourcesToUpdate);
 
 		Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				Collection<Resource> resourcesToUpdateInEditingDomain = resourcesToUpdate.get(editingDomain);
 				SubMonitor progress = SubMonitor.convert(monitor, resourcesToUpdateInEditingDomain.size());

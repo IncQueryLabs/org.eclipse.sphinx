@@ -32,6 +32,7 @@ public class Hummingbird20NavigatorItem extends Hummingbird20AbstractNavigatorIt
 		final Class[] supportedTypes = new Class[] { View.class, EObject.class };
 		Platform.getAdapterManager().registerAdapters(new IAdapterFactory() {
 
+			@Override
 			public Object getAdapter(Object adaptableObject, Class adapterType) {
 				if (adaptableObject instanceof org.eclipse.sphinx.examples.hummingbird20.diagram.gmf.navigator.Hummingbird20NavigatorItem
 						&& (adapterType == View.class || adapterType == EObject.class)) {
@@ -40,6 +41,7 @@ public class Hummingbird20NavigatorItem extends Hummingbird20AbstractNavigatorIt
 				return null;
 			}
 
+			@Override
 			public Class[] getAdapterList() {
 				return supportedTypes;
 			}
