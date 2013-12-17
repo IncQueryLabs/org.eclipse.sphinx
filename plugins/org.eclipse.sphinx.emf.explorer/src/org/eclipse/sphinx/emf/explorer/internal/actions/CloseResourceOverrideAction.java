@@ -1,21 +1,22 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.explorer.internal.actions;
 
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
@@ -24,9 +25,10 @@ import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.sphinx.emf.explorer.internal.Activator;
 import org.eclipse.sphinx.emf.explorer.internal.messages.Messages;
-import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
+import org.eclipse.sphinx.emf.model.IModelDescriptor;
+import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveableFilter;
-import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.CloseResourceAction;
@@ -128,11 +130,12 @@ public class CloseResourceOverrideAction extends CloseResourceAction {
 		// Force reset of dirty information on all models in given projects for clearing dirty information of those
 		// models that have not been taken into account by the save operation (happens e.g. when user deselects some
 		// or all of them before proceeding with the save operation)
+		Set<IModelDescriptor> modelDescriptors = new HashSet<IModelDescriptor>();
 		for (IProject project : projects) {
-			Collection<IProject> projectGroup = ExtendedPlatform.getProjectGroup(project, true);
-			for (IProject proj : projectGroup) {
-				ModelSaveManager.INSTANCE.setSaved(proj);
-			}
+			modelDescriptors.addAll(ModelDescriptorRegistry.INSTANCE.getModels(project));
+		}
+		for (IModelDescriptor modelDescriptor : modelDescriptors) {
+			SaveIndicatorUtil.setSaved(modelDescriptor);
 		}
 
 		return true;

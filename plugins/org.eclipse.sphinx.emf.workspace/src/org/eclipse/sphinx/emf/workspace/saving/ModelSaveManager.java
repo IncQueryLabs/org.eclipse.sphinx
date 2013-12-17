@@ -1,20 +1,20 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Avoid usage of Object.finalize
  *     itemis - [393268] - [EMF Workspace] The Workspace Model Save Manager should handle pre save actions before saving models
  *     itemis - [419466] Enable models to be modified programmatically without causing them to become dirty
  *     itemis - [419818] Avoid that model dirty change listeners and model pre-save listeners need to be registered separately
  *     itemis - [421333] ModelSaveManager improvement: Remove File Assumption
- *     
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.saving;
@@ -397,9 +397,7 @@ public class ModelSaveManager {
 	 */
 	@Deprecated
 	public void setSaved(IModelDescriptor modelDescriptor) {
-		if (modelDescriptor != null) {
-			SaveIndicatorUtil.setSaved(modelDescriptor);
-		}
+		SaveIndicatorUtil.setSaved(modelDescriptor);
 	}
 
 	/**

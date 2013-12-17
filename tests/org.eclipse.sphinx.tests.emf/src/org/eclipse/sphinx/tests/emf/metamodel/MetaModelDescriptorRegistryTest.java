@@ -131,19 +131,6 @@ public class MetaModelDescriptorRegistryTest extends TestCase {
 		assertTrue(resolvedReleases.contains(Test1Release100.INSTANCE));
 	}
 
-	public void testGetDescriptorByOrdinal() {
-		registerWithRegistryUT();
-		IMetaModelDescriptor version = fRegistryUT.getDescriptor(Test1MM.INSTANCE, Test1Release100.ORDINAL);
-		assertNull(version);
-
-		registerWithRegistryUT(Test1Release100.INSTANCE);
-		version = fRegistryUT.getDescriptor(Test1MM.INSTANCE, Test1Release100.ORDINAL);
-		assertEquals(Test1Release100.INSTANCE, version);
-
-		version = fRegistryUT.getDescriptor(Test1MM.INSTANCE, Test1Release200.ORDINAL);
-		assertNull(version);
-	}
-
 	public void testGetDescriptorByName() {
 		registerWithRegistryUT();
 		IMetaModelDescriptor version = fRegistryUT.getDescriptor(Test1MM.INSTANCE, Test1Release100.NAME);

@@ -29,6 +29,7 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.resource.IModelConverter;
 import org.eclipse.sphinx.emf.resource.ModelConverterRegistry;
+import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
@@ -90,7 +91,7 @@ public class ModelConverterTest extends DefaultIntegrationTestCase {
 		IHummingbirdPreferences.RESOURCE_VERSION.set(contextProject, Hummingbird20MMCompatibility.HUMMINGBIRD_2_0_0_RESOURCE_DESCRIPTOR);
 
 		// we place the resource in dirty state before saving
-		ModelSaveManager.INSTANCE.setDirty(hb201Resource);
+		SaveIndicatorUtil.setDirty(refWks.editingDomain20, hb201Resource);
 		MockModelConverter modelConveter = (MockModelConverter) ModelConverterRegistry.INSTANCE.getSaveConverter((XMLResource) hb201Resource,
 				Collections.EMPTY_MAP);
 		assertNotNull(modelConveter);

@@ -1,20 +1,20 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [358082] Precedence of Xtend MetaModels gets lost in Xtend/Xpand runtime enhancements implemented in Sphinx
  *     itemis - Revised implementation (redesigned overriding points and getters/setters, improved of naming, fixed progress monitor issues)
- *     See4sys - Replaced ConvertProjectToPluginOperation with ConvertProjectToPluginProjectJob and 
+ *     See4sys - Replaced ConvertProjectToPluginOperation with ConvertProjectToPluginProjectJob and
  *               moved from org.eclipse.sphinx.xtendxpand.ui.jobs to org.eclipse.sphinx.xtendxpand.jobs
  *     itemis - [405696] Create separate plug-in for PDE dependencies
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.jobs;
@@ -325,7 +325,14 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 		IBundle pluginBundle = model.getBundleModel().getBundle();
 		pluginBundle.setHeader(org.osgi.framework.Constants.REQUIRE_BUNDLE, requiredBundleIdsStr.toString());
 		if (requiredExecutionEnvironment != null) {
-			pluginBundle.setHeader(org.osgi.framework.Constants.BUNDLE_REQUIREDEXECUTIONENVIRONMENT, requiredExecutionEnvironment);
+			/*
+			 * Ignore deprecation warning - Eclipse Platform still uses same constant (see
+			 * org.eclipse.pde.internal.ui.editor.plugin.ExecutionEnvironmentSection#addExecutionEnvironments() for
+			 * details)
+			 */
+			@SuppressWarnings("deprecation")
+			String BUNDLE_REQUIREDEXECUTIONENVIRONMENT = org.osgi.framework.Constants.BUNDLE_REQUIREDEXECUTIONENVIRONMENT;
+			pluginBundle.setHeader(BUNDLE_REQUIREDEXECUTIONENVIRONMENT, requiredExecutionEnvironment);
 		}
 		model.save();
 	}

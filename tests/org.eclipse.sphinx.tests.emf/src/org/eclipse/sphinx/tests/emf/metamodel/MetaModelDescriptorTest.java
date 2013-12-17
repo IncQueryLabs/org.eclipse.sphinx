@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     BMW Car IT - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.metamodel;
@@ -76,19 +76,19 @@ public class MetaModelDescriptorTest extends TestCase {
 	public void testVersionCreation() {
 		// Test exception throw on null identifier.
 		try {
-			new NewDescriptor(null, Test1MM.NS, new MetaModelVersionData("nspostfix", "pattern", "name", 0));
+			new NewDescriptor(null, Test1MM.NS, new MetaModelVersionData("nspostfix", "pattern", "name"));
 			fail("An AssertionFailedException was expected as the Identifier shall not be null.");
 		} catch (AssertionFailedException afe) {
 		}
 		// Test exception throw on null namespace.
 		try {
-			new NewDescriptor(Test1MM.ID, null, new MetaModelVersionData("nspostfix", "pattern", "name", 0));
+			new NewDescriptor(Test1MM.ID, null, new MetaModelVersionData("nspostfix", "pattern", "name"));
 			fail("An AssertionFailedException was expected as the namespace shall not be null.");
 		} catch (AssertionFailedException afe) {
 		}
 		// Test exception throw on illegal namespace postfix in MetaModelVersion
 		try {
-			MetaModelVersionData data = new MetaModelVersionData("ILLEGAL NS POSTFIX", "pattern", "Release 1.0.0", 100);
+			MetaModelVersionData data = new MetaModelVersionData("ILLEGAL NS POSTFIX", "pattern", "Release 1.0.0");
 			new NewDescriptor(Test1MM.ID, Test1MM.NS, data);
 			fail("A WrappedException was expected as the nsPostfix of the MetamodelReleaseData contains illegal characters.");
 		} catch (WrappedException we) {
@@ -101,7 +101,7 @@ public class MetaModelDescriptorTest extends TestCase {
 		}
 		// Test correct creation.
 		try {
-			new NewDescriptor(Test1MM.ID, Test1MM.NS, new MetaModelVersionData("nspostfix", "pattern", "name", 0));
+			new NewDescriptor(Test1MM.ID, Test1MM.NS, new MetaModelVersionData("nspostfix", "pattern", "name"));
 		} catch (Exception e) {
 			fail("No exception was expected.");
 		}
@@ -174,12 +174,6 @@ public class MetaModelDescriptorTest extends TestCase {
 		assertTrue(ePackages.contains(InstanceModel20Package.eINSTANCE));
 	}
 
-	public void testGetOrdinal() {
-		assertEquals(Test1Release100.ORDINAL, Test1Release100.INSTANCE.getOrdinal());
-		assertEquals(Test1Release200.ORDINAL, Test1Release200.INSTANCE.getOrdinal());
-		assertEquals(-1, Test1MM.INSTANCE.getOrdinal());
-	}
-
 	public void testGetName() {
 		assertEquals(Test1Release100.NAME, Test1Release100.INSTANCE.getName());
 		assertEquals(Test1Release200.NAME, Test1Release200.INSTANCE.getName());
@@ -209,13 +203,6 @@ public class MetaModelDescriptorTest extends TestCase {
 		eFactory = new MockEFactory();
 		ePkg.setEFactoryInstance(eFactory);
 		assertEquals(eFactory, Test1MM.INSTANCE.getRootEFactory());
-	}
-
-	public void testGetEPackageNsURIPattern() {
-		assertEquals("http://testA.sphinx.org/1\\.0\\.0/\\d+", Test1Release100.INSTANCE.getEPackageNsURIPattern());
-		assertEquals("http://testA.sphinx.org/2\\.0\\.0/\\d+", Test1Release200.INSTANCE.getEPackageNsURIPattern());
-		assertEquals("http://testB.sphinx.org/1\\.0\\.0/\\d+", Test2Release100.INSTANCE.getEPackageNsURIPattern());
-		assertEquals("http://testA.sphinx.org", Test1MM.INSTANCE.getEPackageNsURIPattern());
 	}
 
 	private class NewDescriptor extends AbstractMetaModelDescriptor {

@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.ui.wizards.pages;
@@ -28,7 +28,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -139,9 +139,9 @@ public class LinkedFolderCreationMainPage extends WizardPage implements Listener
 	 *            the parent composite
 	 */
 	protected void doCreateControls(Composite parent) {
-		Preferences preferences = ResourcesPlugin.getPlugin().getPluginPreferences();
-
-		if (preferences.getBoolean(ResourcesPlugin.PREF_DISABLE_LINKING) == false) {
+		boolean disableLinking = Platform.getPreferencesService().getBoolean(ResourcesPlugin.getPlugin().getBundle().getSymbolicName(),
+				ResourcesPlugin.PREF_DISABLE_LINKING, false, null);
+		if (!disableLinking) {
 			linkedResourceParent = new Composite(parent, SWT.NONE);
 			linkedResourceParent.setFont(parent.getFont());
 			linkedResourceParent.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));

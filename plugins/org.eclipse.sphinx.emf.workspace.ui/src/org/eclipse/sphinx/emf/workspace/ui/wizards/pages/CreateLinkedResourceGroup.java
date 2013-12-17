@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.ui.wizards.pages;
@@ -33,6 +33,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -66,6 +67,10 @@ import org.eclipse.ui.internal.ide.filesystem.FileSystemSupportRegistry;
 public class CreateLinkedResourceGroup {
 	private Listener listener;
 
+	// linkTarget can contain either:
+	// 1) A URI, ex: foo://bar/file.txt
+	// 2) A path, ex: c:\foo\bar\file.txt
+	// 3) A path variable relative path, ex: VAR\foo\bar\file.txt
 	private String linkTarget = ""; //$NON-NLS-1$
 
 	private String[] filterExtensions = new String[0];
@@ -474,18 +479,25 @@ public class CreateLinkedResourceGroup {
 	 * Displays the resolved value if the entered value is a variable.
 	 */
 	private void resolveVariable() {
-		IPathVariableManager pathVariableManager = ResourcesPlugin.getWorkspace().getPathVariableManager();
-		IPath path = new Path(linkTarget);
-		IPath resolvedPath = pathVariableManager.resolvePath(path);
+		try {
+			URI uri = new URI(linkTarget);
 
-		if (path.equals(resolvedPath)) {
-			resolvedPathLabelText.setVisible(false);
-			resolvedPathLabelData.setVisible(false);
-		} else {
-			resolvedPathLabelText.setVisible(true);
-			resolvedPathLabelData.setVisible(true);
+			IPathVariableManager pathVariableManager = ResourcesPlugin.getWorkspace().getPathVariableManager();
+			URI resolvedURI = pathVariableManager.resolveURI(uri);
+
+			if (uri.equals(resolvedURI)) {
+				resolvedPathLabelText.setVisible(false);
+				resolvedPathLabelData.setVisible(false);
+			} else {
+				resolvedPathLabelText.setVisible(true);
+				resolvedPathLabelData.setVisible(true);
+
+				IPath resolvedPath = URIUtil.toPath(resolvedURI);
+				resolvedPathLabelData.setText(resolvedPath.toOSString());
+			}
+		} catch (URISyntaxException ex) {
+			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
-		resolvedPathLabelData.setText(resolvedPath.toOSString());
 	}
 
 	/**

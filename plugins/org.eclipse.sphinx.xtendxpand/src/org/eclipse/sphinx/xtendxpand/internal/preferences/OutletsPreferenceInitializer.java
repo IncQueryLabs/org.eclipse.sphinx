@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.internal.preferences;
@@ -65,7 +65,7 @@ public class OutletsPreferenceInitializer extends AbstractPreferenceInitializer 
 	 */
 	@Override
 	public void initializeDefaultPreferences() {
-		IEclipsePreferences defaultPreferences = getDefaultPreferences();
+		IEclipsePreferences defaultPreferences = DefaultScope.INSTANCE.getNode(QUALIFIER);
 		if (defaultPreferences == null) {
 			RuntimeException ex = new RuntimeException("Failed to retrieve default preferences for '" + QUALIFIER + "'."); //$NON-NLS-1$ //$NON-NLS-2$
 			PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
@@ -74,19 +74,5 @@ public class OutletsPreferenceInitializer extends AbstractPreferenceInitializer 
 		defaultPreferences.put(PREF_OUTLETS, PREF_OUTLETS_DEFAULT);
 		defaultPreferences.put(PREF_PR_EXCLUDES, PREF_PR_EXCLUDES_DEFAULT);
 		defaultPreferences.putBoolean(PREF_PR_DEFAULT_EXCLUDES, PREF_PR_DEFAULT_EXCLUDES_DEFAULT);
-	}
-
-	/**
-	 * Returns the {@link IEclipsePreferences default preference} for {@link OutletsPreferenceInitializer#QUALIFIER}.
-	 * 
-	 * @return The {@link IEclipsePreferences default preferences} for {@link OutletsPreferenceInitializer#QUALIFIER} or
-	 *         <code>null</code> if no such could be determined.
-	 */
-	private IEclipsePreferences getDefaultPreferences() {
-		// Use deprecated API so as to ensure backward compatibility with Eclipse 3.6.x and earlier
-		/*
-		 * !! Important Note !! @since annotation on DefaultScope#INSTANCE is wrong, it should be 3.7 instead of 3.4.
-		 */
-		return new DefaultScope().getNode(QUALIFIER);
 	}
 }

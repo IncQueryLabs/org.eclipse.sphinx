@@ -378,8 +378,8 @@ public class InitialModelCreationPage<T extends IMetaModelDescriptor> extends Wi
 	public void createControl(Composite parent) {
 		container = new Composite(parent, SWT.NULL);
 		GridLayout gridLayout = new GridLayout(3, false);
-		gridLayout.marginRight = IDialogConstants.SMALL_INDENT;
-		gridLayout.marginLeft = IDialogConstants.SMALL_INDENT;
+		gridLayout.marginRight = IDialogConstants.HORIZONTAL_MARGIN;
+		gridLayout.marginLeft = IDialogConstants.HORIZONTAL_MARGIN;
 		gridLayout.horizontalSpacing = IDialogConstants.HORIZONTAL_MARGIN;
 		gridLayout.verticalSpacing = IDialogConstants.VERTICAL_MARGIN;
 		container.setLayout(gridLayout);

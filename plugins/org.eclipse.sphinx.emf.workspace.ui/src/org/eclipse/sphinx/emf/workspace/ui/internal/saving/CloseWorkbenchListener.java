@@ -1,24 +1,25 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2012 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [387211] CloseWorkbenchListener prevents Eclipse from showing "Save Resource"-Dialog on Exit
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.ui.internal.saving;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.util.SafeRunnable;
-import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
+import org.eclipse.sphinx.emf.model.IModelDescriptor;
+import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
 import org.eclipse.ui.ISaveableFilter;
 import org.eclipse.ui.IWorkbench;
@@ -83,10 +84,13 @@ public class CloseWorkbenchListener implements IWorkbenchListener {
 			return false;
 		}
 
-		// Force reset of dirty information on all models in given projects for clearing dirty information of those
+		// Force reset of dirty information on all models in the workspace for clearing dirty information of those
 		// models that have not been taken into account by the save operation (happens e.g. when user deselects some
 		// or all of them before proceeding with the save operation)
-		ModelSaveManager.INSTANCE.setSaved(ResourcesPlugin.getWorkspace().getRoot());
+		for (IModelDescriptor modelDescriptor : ModelDescriptorRegistry.INSTANCE.getAllModels()) {
+			SaveIndicatorUtil.setSaved(modelDescriptor);
+		}
+
 		return true;
 	}
 
