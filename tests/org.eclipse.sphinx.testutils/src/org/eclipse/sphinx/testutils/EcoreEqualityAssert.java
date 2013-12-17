@@ -20,8 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -34,6 +32,7 @@ import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
+import org.junit.Assert;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -303,6 +302,7 @@ public class EcoreEqualityAssert extends Assert {
 		Iterator<Entry> iter2 = featureMap2.iterator();
 
 		Predicate<Entry> isXmlFeature = new Predicate<Entry>() {
+			@Override
 			public boolean apply(Entry entry) {
 				EStructuralFeature feature = entry.getEStructuralFeature();
 				return feature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION

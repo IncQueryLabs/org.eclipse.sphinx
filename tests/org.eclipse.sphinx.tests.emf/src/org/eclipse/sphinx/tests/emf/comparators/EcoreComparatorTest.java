@@ -1,20 +1,19 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.comparators;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.eclipse.sphinx.emf.ecore.EcoreComparator;
@@ -51,17 +50,17 @@ public class EcoreComparatorTest extends TestCase {
 
 		EcoreComparator comparator = new EcoreComparator();
 
-		Assert.assertTrue(comparator.compare(true, true) == 0);
-		Assert.assertFalse(comparator.compare(true, false) == 0);
-		Assert.assertTrue(comparator.compare("String", "String") == 0);
-		Assert.assertTrue(comparator.compare("String", "NoTheSameString") > 0);
-		Assert.assertTrue(comparator.compare(appHummingbird10, appHummingbird10) == 0);
-		Assert.assertTrue(comparator.compare(appHummingbird10, appHummingbird10_) == 0);
-		// Assert.assertTrue("res: " + comparator.compare(appHummingbird10, appHummingbird20),
+		assertTrue(comparator.compare(true, true) == 0);
+		assertFalse(comparator.compare(true, false) == 0);
+		assertTrue(comparator.compare("String", "String") == 0);
+		assertTrue(comparator.compare("String", "NoTheSameString") > 0);
+		assertTrue(comparator.compare(appHummingbird10, appHummingbird10) == 0);
+		assertTrue(comparator.compare(appHummingbird10, appHummingbird10_) == 0);
+		// assertTrue("res: " + comparator.compare(appHummingbird10, appHummingbird20),
 		// comparator.compare(appHummingbird10, appHummingbird20) > 0);
-		// Assert.assertTrue(comparator.compare(appHummingbird10_, appHummingbird20) > 0);
-		// Assert.assertTrue(comparator.compare(component, componentType) > 0);
-		// Assert.assertTrue("res: " + comparator.compare(appHummingbird10, component),
+		// assertTrue(comparator.compare(appHummingbird10_, appHummingbird20) > 0);
+		// assertTrue(comparator.compare(component, componentType) > 0);
+		// assertTrue("res: " + comparator.compare(appHummingbird10, component),
 		// comparator.compare(appHummingbird10, component) > 0);
 	}
 }

@@ -1,20 +1,19 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.platform.util;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.CoreException;
@@ -70,11 +69,11 @@ public class StatusUtilTest extends TestCase {
 
 		throwableEx = new Throwable("Throwable Exception");
 		throwableEx.initCause(coreEx);
-		Assert.assertNotNull(throwableEx.getCause());
+		assertNotNull(throwableEx.getCause());
 
 		throwableEx_noCause = new Throwable("Throwable Exception without cause");
 		throwableEx_noCause.initCause(null);
-		Assert.assertNull(throwableEx_noCause.getCause());
+		assertNull(throwableEx_noCause.getCause());
 	}
 
 	protected IStatus getFirstChildStatus(IStatus status) {
@@ -85,11 +84,11 @@ public class StatusUtilTest extends TestCase {
 	}
 
 	protected void assertStatusEquals(int expectedSeverity, IStatus expectedStatus, IStatus actualStatus) {
-		Assert.assertEquals(expectedStatus.getCode(), actualStatus.getCode());
-		Assert.assertEquals(expectedStatus.getPlugin(), actualStatus.getPlugin());
-		Assert.assertEquals(expectedSeverity, actualStatus.getSeverity());
-		Assert.assertEquals(expectedStatus.getMessage(), actualStatus.getMessage());
-		Assert.assertEquals(expectedStatus.getException(), expectedStatus.getException());
+		assertEquals(expectedStatus.getCode(), actualStatus.getCode());
+		assertEquals(expectedStatus.getPlugin(), actualStatus.getPlugin());
+		assertEquals(expectedSeverity, actualStatus.getSeverity());
+		assertEquals(expectedStatus.getMessage(), actualStatus.getMessage());
+		assertEquals(expectedStatus.getException(), expectedStatus.getException());
 
 	}
 
@@ -98,7 +97,7 @@ public class StatusUtilTest extends TestCase {
 	 */
 
 	public void testCreateErrorStatus() {
-		Assert.assertNotNull(testBundle);
+		assertNotNull(testBundle);
 		IStatus testStatusChild;
 		IStatus testStatus;
 
@@ -107,46 +106,55 @@ public class StatusUtilTest extends TestCase {
 		Throwable nullObject = null;
 		testStatus = StatusUtil.createErrorStatus(testBundle, cancel_throwableEx);
 
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.ERROR, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin,
-				testBundle.getSymbolicName(), cancel_throwableEx.getMessage()), nullObject), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.ERROR,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin, testBundle.getSymbolicName(),
+						cancel_throwableEx.getMessage()), nullObject), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.ERROR, cancel_throwableEx, testStatusChild);
 
 		// Create from ERROR status
 		testStatus = StatusUtil.createErrorStatus(testBundle, error_coreEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.ERROR, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(
-				PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] { coreEx.getClass().getSimpleName(), testBundle.getSymbolicName(),
-						coreEx.getLocalizedMessage() }), nullObject), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.ERROR,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] {
+						coreEx.getClass().getSimpleName(), testBundle.getSymbolicName(), coreEx.getLocalizedMessage() }), nullObject), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.ERROR, error_coreEx, testStatusChild);
 
 		// create from WARNING Status
 		testStatus = StatusUtil.createErrorStatus(testBundle, warning_interruptedEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.ERROR, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin,
-				testBundle.getSymbolicName(), warning_interruptedEx.getMessage()), nullObject), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.ERROR,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin, testBundle.getSymbolicName(),
+						warning_interruptedEx.getMessage()), nullObject), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.ERROR, warning_interruptedEx, testStatusChild);
 
 		// create from INFO status
 		testStatus = StatusUtil.createErrorStatus(testBundle, info_opCancelEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.ERROR, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin,
-				testBundle.getSymbolicName(), info_opCancelEx.getMessage()), nullObject), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.ERROR,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin, testBundle.getSymbolicName(),
+						info_opCancelEx.getMessage()), nullObject), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.ERROR, info_opCancelEx, testStatusChild);
 
 		// create from OK Status
 		testStatus = StatusUtil.createErrorStatus(testBundle, ok_interruptedEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.ERROR, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin,
-				testBundle.getSymbolicName(), ok_interruptedEx.getMessage()), nullObject), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.ERROR,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin, testBundle.getSymbolicName(),
+						ok_interruptedEx.getMessage()), nullObject), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.ERROR, ok_interruptedEx, testStatusChild);
@@ -154,10 +162,11 @@ public class StatusUtilTest extends TestCase {
 		// -----------------------------------------EXCEPTION---------------------------------------------------------
 		// Create from CoreException
 		testStatus = StatusUtil.createErrorStatus(testBundle, coreEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.ERROR, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(
-				PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] { coreEx.getClass().getSimpleName(), testBundle.getSymbolicName(),
-						coreEx.getLocalizedMessage() }), coreEx), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.ERROR,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] {
+						coreEx.getClass().getSimpleName(), testBundle.getSymbolicName(), coreEx.getLocalizedMessage() }), coreEx), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.ERROR, new Status(IStatus.ERROR, coreEx.getStatus().getPlugin(), coreEx.getStatus().getCode(), coreEx.getStatus()
@@ -171,10 +180,12 @@ public class StatusUtilTest extends TestCase {
 		// Create from Throwable
 		// ------------Throwable with Cause
 		testStatus = StatusUtil.createErrorStatus(testBundle, throwableEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.ERROR, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(
-				PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] { throwableEx.getClass().getSimpleName(),
-						testBundle.getSymbolicName(), throwableEx.getLocalizedMessage() }), throwableEx), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.ERROR,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] {
+						throwableEx.getClass().getSimpleName(), testBundle.getSymbolicName(), throwableEx.getLocalizedMessage() }), throwableEx),
+				testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.ERROR, new Status(IStatus.ERROR, testBundle.getSymbolicName(), 0, throwableEx.getCause().getLocalizedMessage(),
@@ -182,10 +193,12 @@ public class StatusUtilTest extends TestCase {
 
 		// ------------Throwable without Cause
 		testStatus = StatusUtil.createErrorStatus(testBundle, throwableEx_noCause);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.ERROR, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(
-				PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] { throwableEx_noCause.getClass().getSimpleName(),
-						testBundle.getSymbolicName(), throwableEx_noCause.getLocalizedMessage() }), throwableEx_noCause), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.ERROR,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] {
+						throwableEx_noCause.getClass().getSimpleName(), testBundle.getSymbolicName(), throwableEx_noCause.getLocalizedMessage() }),
+						throwableEx_noCause), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.ERROR, new Status(IStatus.ERROR, testBundle.getSymbolicName(), 0, throwableEx_noCause.getLocalizedMessage(),
@@ -195,18 +208,22 @@ public class StatusUtilTest extends TestCase {
 		// Create from Others objects
 		String object = "Information";
 		testStatus = StatusUtil.createErrorStatus(testBundle, object);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.ERROR, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin,
-				testBundle.getSymbolicName(), object.toString()), null), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.ERROR,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin, testBundle.getSymbolicName(),
+						object.toString()), null), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.ERROR, new Status(IStatus.ERROR, testBundle.getSymbolicName(), 0, object.toString(), null), testStatusChild);
 
 		// Create from NULL object
 		testStatus = StatusUtil.createErrorStatus(testBundle, null);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.ERROR, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin,
-				testBundle.getSymbolicName(), PlatformMessages.message_none), null), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.ERROR,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin, testBundle.getSymbolicName(),
+						PlatformMessages.message_none), null), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.ERROR, new Status(IStatus.ERROR, testBundle.getSymbolicName(), 0, PlatformMessages.message_none, null),
@@ -214,9 +231,11 @@ public class StatusUtilTest extends TestCase {
 
 		// Create from Unknown Bundle and unknown Error
 		testStatus = StatusUtil.createErrorStatus((Plugin) null, null);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.ERROR, new MultiStatus(PlatformMessages.pluginId_unknown, 0, NLS.bind(
-				PlatformMessages.problem_whenInvokingUnknownPlugin, PlatformMessages.message_none), null), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.ERROR,
+				new MultiStatus(PlatformMessages.pluginId_unknown, 0, NLS.bind(PlatformMessages.problem_whenInvokingUnknownPlugin,
+						PlatformMessages.message_none), null), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.ERROR, new Status(IStatus.ERROR, PlatformMessages.pluginId_unknown, 0, PlatformMessages.message_none, null),
@@ -224,10 +243,11 @@ public class StatusUtilTest extends TestCase {
 
 		// Create from Unknown Bundle and an Error
 		testStatus = StatusUtil.createErrorStatus((Plugin) null, coreEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.ERROR, new MultiStatus(PlatformMessages.pluginId_unknown, 0, NLS.bind(
-				PlatformMessages.error_exceptionWhenInvokingUnknownPlugin, new Object[] { coreEx.getClass().getSimpleName(),
-						coreEx.getLocalizedMessage() }), null), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.ERROR,
+				new MultiStatus(PlatformMessages.pluginId_unknown, 0, NLS.bind(PlatformMessages.error_exceptionWhenInvokingUnknownPlugin,
+						new Object[] { coreEx.getClass().getSimpleName(), coreEx.getLocalizedMessage() }), null), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.ERROR, new Status(IStatus.ERROR, coreEx.getStatus().getPlugin(), coreEx.getStatus().getCode(), coreEx.getStatus()
@@ -274,7 +294,7 @@ public class StatusUtilTest extends TestCase {
 		// Create from Throwable
 		// ------------Throwable with Cause
 		testStatus = StatusUtil.createInfoStatus(testBundle, throwableEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
+		assertTrue(testStatus instanceof MultiStatus);
 		assertStatusEquals(IStatus.INFO, new MultiStatus(testBundle.getSymbolicName(), 0, throwableEx.getLocalizedMessage(), throwableEx), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
@@ -306,7 +326,7 @@ public class StatusUtilTest extends TestCase {
 	}
 
 	public void testCreateWarningStatus() {
-		Assert.assertNotNull(testBundle);
+		assertNotNull(testBundle);
 		IStatus testStatusChild;
 		IStatus testStatus;
 
@@ -315,46 +335,55 @@ public class StatusUtilTest extends TestCase {
 		Throwable nullObject = null;
 		testStatus = StatusUtil.createWarningStatus(testBundle, cancel_throwableEx);
 
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.WARNING, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin,
-				testBundle.getSymbolicName(), cancel_throwableEx.getMessage()), nullObject), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.WARNING,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin, testBundle.getSymbolicName(),
+						cancel_throwableEx.getMessage()), nullObject), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.WARNING, cancel_throwableEx, testStatusChild);
 
 		// Create from ERROR status
 		testStatus = StatusUtil.createWarningStatus(testBundle, error_coreEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.WARNING, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(
-				PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] { coreEx.getClass().getSimpleName(), testBundle.getSymbolicName(),
-						coreEx.getLocalizedMessage() }), nullObject), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.WARNING,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] {
+						coreEx.getClass().getSimpleName(), testBundle.getSymbolicName(), coreEx.getLocalizedMessage() }), nullObject), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.WARNING, error_coreEx, testStatusChild);
 
 		// create from WARNING Status
 		testStatus = StatusUtil.createWarningStatus(testBundle, warning_interruptedEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.WARNING, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin,
-				testBundle.getSymbolicName(), warning_interruptedEx.getMessage()), nullObject), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.WARNING,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin, testBundle.getSymbolicName(),
+						warning_interruptedEx.getMessage()), nullObject), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.WARNING, warning_interruptedEx, testStatusChild);
 
 		// create from INFO status
 		testStatus = StatusUtil.createWarningStatus(testBundle, info_opCancelEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.WARNING, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin,
-				testBundle.getSymbolicName(), info_opCancelEx.getMessage()), nullObject), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.WARNING,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin, testBundle.getSymbolicName(),
+						info_opCancelEx.getMessage()), nullObject), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.WARNING, info_opCancelEx, testStatusChild);
 
 		// create from OK Status
 		testStatus = StatusUtil.createWarningStatus(testBundle, ok_interruptedEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.WARNING, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin,
-				testBundle.getSymbolicName(), ok_interruptedEx.getMessage()), nullObject), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.WARNING,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin, testBundle.getSymbolicName(),
+						ok_interruptedEx.getMessage()), nullObject), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.WARNING, ok_interruptedEx, testStatusChild);
@@ -362,10 +391,11 @@ public class StatusUtilTest extends TestCase {
 		// -----------------------------------------EXCEPTION---------------------------------------------------------
 		// Create from CoreException
 		testStatus = StatusUtil.createWarningStatus(testBundle, coreEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.WARNING, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(
-				PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] { coreEx.getClass().getSimpleName(), testBundle.getSymbolicName(),
-						coreEx.getLocalizedMessage() }), coreEx), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.WARNING,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] {
+						coreEx.getClass().getSimpleName(), testBundle.getSymbolicName(), coreEx.getLocalizedMessage() }), coreEx), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.WARNING, new Status(IStatus.WARNING, coreEx.getStatus().getPlugin(), coreEx.getStatus().getCode(), coreEx
@@ -379,10 +409,12 @@ public class StatusUtilTest extends TestCase {
 		// Create from Throwable
 		// ------------Throwable with Cause
 		testStatus = StatusUtil.createWarningStatus(testBundle, throwableEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.WARNING, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(
-				PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] { throwableEx.getClass().getSimpleName(),
-						testBundle.getSymbolicName(), throwableEx.getLocalizedMessage() }), throwableEx), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.WARNING,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] {
+						throwableEx.getClass().getSimpleName(), testBundle.getSymbolicName(), throwableEx.getLocalizedMessage() }), throwableEx),
+				testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.WARNING, new Status(IStatus.WARNING, testBundle.getSymbolicName(), 0,
@@ -390,10 +422,12 @@ public class StatusUtilTest extends TestCase {
 
 		// ------------Throwable without Cause
 		testStatus = StatusUtil.createWarningStatus(testBundle, throwableEx_noCause);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.WARNING, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(
-				PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] { throwableEx_noCause.getClass().getSimpleName(),
-						testBundle.getSymbolicName(), throwableEx_noCause.getLocalizedMessage() }), throwableEx_noCause), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.WARNING,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.error_exceptionWhenInvokingPlugin, new Object[] {
+						throwableEx_noCause.getClass().getSimpleName(), testBundle.getSymbolicName(), throwableEx_noCause.getLocalizedMessage() }),
+						throwableEx_noCause), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.WARNING, new Status(IStatus.WARNING, testBundle.getSymbolicName(), 0, throwableEx_noCause.getLocalizedMessage(),
@@ -403,18 +437,22 @@ public class StatusUtilTest extends TestCase {
 		// Create from Others objects
 		String object = "Information";
 		testStatus = StatusUtil.createWarningStatus(testBundle, object);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.WARNING, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin,
-				testBundle.getSymbolicName(), object.toString()), null), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.WARNING,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin, testBundle.getSymbolicName(),
+						object.toString()), null), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.WARNING, new Status(IStatus.WARNING, testBundle.getSymbolicName(), 0, object.toString(), null), testStatusChild);
 
 		// Create from NULL object
 		testStatus = StatusUtil.createWarningStatus(testBundle, null);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.WARNING, new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin,
-				testBundle.getSymbolicName(), PlatformMessages.message_none), null), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.WARNING,
+				new MultiStatus(testBundle.getSymbolicName(), 0, NLS.bind(PlatformMessages.problem_whenInvokingPlugin, testBundle.getSymbolicName(),
+						PlatformMessages.message_none), null), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.WARNING, new Status(IStatus.WARNING, testBundle.getSymbolicName(), 0, PlatformMessages.message_none, null),
@@ -422,9 +460,11 @@ public class StatusUtilTest extends TestCase {
 
 		// Create from Unknown Bundle and unknown Error
 		testStatus = StatusUtil.createWarningStatus((Plugin) null, null);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.WARNING, new MultiStatus(PlatformMessages.pluginId_unknown, 0, NLS.bind(
-				PlatformMessages.problem_whenInvokingUnknownPlugin, PlatformMessages.message_none), null), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.WARNING,
+				new MultiStatus(PlatformMessages.pluginId_unknown, 0, NLS.bind(PlatformMessages.problem_whenInvokingUnknownPlugin,
+						PlatformMessages.message_none), null), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.WARNING, new Status(IStatus.WARNING, PlatformMessages.pluginId_unknown, 0, PlatformMessages.message_none, null),
@@ -432,10 +472,11 @@ public class StatusUtilTest extends TestCase {
 
 		// Create from Unknown Bundle and an Error
 		testStatus = StatusUtil.createWarningStatus((Plugin) null, coreEx);
-		Assert.assertTrue(testStatus instanceof MultiStatus);
-		assertStatusEquals(IStatus.WARNING, new MultiStatus(PlatformMessages.pluginId_unknown, 0, NLS.bind(
-				PlatformMessages.error_exceptionWhenInvokingUnknownPlugin, new Object[] { coreEx.getClass().getSimpleName(),
-						coreEx.getLocalizedMessage() }), null), testStatus);
+		assertTrue(testStatus instanceof MultiStatus);
+		assertStatusEquals(
+				IStatus.WARNING,
+				new MultiStatus(PlatformMessages.pluginId_unknown, 0, NLS.bind(PlatformMessages.error_exceptionWhenInvokingUnknownPlugin,
+						new Object[] { coreEx.getClass().getSimpleName(), coreEx.getLocalizedMessage() }), null), testStatus);
 
 		testStatusChild = getFirstChildStatus(testStatus);
 		assertStatusEquals(IStatus.WARNING, new Status(IStatus.WARNING, coreEx.getStatus().getPlugin(), coreEx.getStatus().getCode(), coreEx
@@ -448,20 +489,20 @@ public class StatusUtilTest extends TestCase {
 	 */
 	public void testGetMostSevereStatusFromTwoGivenStatus() {
 		coreEx = new CoreException(cancel_throwableEx);
-		Assert.assertSame(cancel_interruptedEx, StatusUtil.getMoreSevereStatus(cancel_throwableEx, cancel_interruptedEx));
-		Assert.assertSame(cancel_throwableEx, StatusUtil.getMoreSevereStatus(cancel_throwableEx, error_coreEx));
-		Assert.assertSame(cancel_throwableEx, StatusUtil.getMoreSevereStatus(cancel_throwableEx, warning_interruptedEx));
-		Assert.assertSame(cancel_throwableEx, StatusUtil.getMoreSevereStatus(cancel_throwableEx, info_opCancelEx));
-		Assert.assertSame(cancel_throwableEx, StatusUtil.getMoreSevereStatus(cancel_throwableEx, ok_interruptedEx));
+		assertSame(cancel_interruptedEx, StatusUtil.getMoreSevereStatus(cancel_throwableEx, cancel_interruptedEx));
+		assertSame(cancel_throwableEx, StatusUtil.getMoreSevereStatus(cancel_throwableEx, error_coreEx));
+		assertSame(cancel_throwableEx, StatusUtil.getMoreSevereStatus(cancel_throwableEx, warning_interruptedEx));
+		assertSame(cancel_throwableEx, StatusUtil.getMoreSevereStatus(cancel_throwableEx, info_opCancelEx));
+		assertSame(cancel_throwableEx, StatusUtil.getMoreSevereStatus(cancel_throwableEx, ok_interruptedEx));
 
-		Assert.assertSame(error_coreEx, StatusUtil.getMoreSevereStatus(error_coreEx, ok_interruptedEx));
-		Assert.assertSame(error_coreEx, StatusUtil.getMoreSevereStatus(error_coreEx, warning_interruptedEx));
-		Assert.assertSame(error_coreEx, StatusUtil.getMoreSevereStatus(error_coreEx, info_opCancelEx));
+		assertSame(error_coreEx, StatusUtil.getMoreSevereStatus(error_coreEx, ok_interruptedEx));
+		assertSame(error_coreEx, StatusUtil.getMoreSevereStatus(error_coreEx, warning_interruptedEx));
+		assertSame(error_coreEx, StatusUtil.getMoreSevereStatus(error_coreEx, info_opCancelEx));
 
-		Assert.assertSame(warning_interruptedEx, StatusUtil.getMoreSevereStatus(warning_interruptedEx, info_opCancelEx));
-		Assert.assertSame(warning_interruptedEx, StatusUtil.getMoreSevereStatus(warning_interruptedEx, ok_interruptedEx));
+		assertSame(warning_interruptedEx, StatusUtil.getMoreSevereStatus(warning_interruptedEx, info_opCancelEx));
+		assertSame(warning_interruptedEx, StatusUtil.getMoreSevereStatus(warning_interruptedEx, ok_interruptedEx));
 
-		Assert.assertSame(info_opCancelEx, StatusUtil.getMoreSevereStatus(info_opCancelEx, ok_interruptedEx));
+		assertSame(info_opCancelEx, StatusUtil.getMoreSevereStatus(info_opCancelEx, ok_interruptedEx));
 	}
 
 	/**
@@ -474,10 +515,10 @@ public class StatusUtilTest extends TestCase {
 				ok_interruptedEx };
 		IStatus[] statusList4 = new IStatus[] { info_opCancelEx, error_coreEx, cancel_interruptedEx, cancel_throwableEx, warning_interruptedEx,
 				ok_interruptedEx };
-		Assert.assertSame(warning_interruptedEx, StatusUtil.getMostSevereStatus(statusList1));
-		Assert.assertSame(error_coreEx, StatusUtil.getMostSevereStatus(statusList2));
-		Assert.assertSame(error_coreEx, StatusUtil.getMostSevereStatus(statusList3));
-		Assert.assertSame(error_coreEx, StatusUtil.getMostSevereStatus(statusList4));
+		assertSame(warning_interruptedEx, StatusUtil.getMostSevereStatus(statusList1));
+		assertSame(error_coreEx, StatusUtil.getMostSevereStatus(statusList2));
+		assertSame(error_coreEx, StatusUtil.getMostSevereStatus(statusList3));
+		assertSame(error_coreEx, StatusUtil.getMostSevereStatus(statusList4));
 
 	}
 }

@@ -1,20 +1,19 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.tests.perf;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 @SuppressWarnings("nls")
@@ -34,12 +33,12 @@ public class ExamplePerformanceJUnitTest extends TestCase {
 		// org.eclipse.sphinx.platform/perf=true in ".option" file.
 
 		// We check if the context "All Methods" was created.
-		Assert.assertTrue(ExamplePerformanceStats.INSTANCE.isRegisteredContext("All Methods"));
+		assertTrue(ExamplePerformanceStats.INSTANCE.isRegisteredContext("All Methods"));
 
 		// We check if the context "All Methods" running time is under a given
 		// timeout (for this example 10000 ms).
 
-		Assert.assertTrue(!ExamplePerformanceStats.INSTANCE.contextRunningTimeExceedTimeOut("All Methods", 10000));
+		assertTrue(!ExamplePerformanceStats.INSTANCE.contextRunningTimeExceedTimeOut("All Methods", 10000));
 
 		// printAllStats() is used to display all the performance events stored
 		// in the base .
@@ -82,7 +81,7 @@ public class ExamplePerformanceJUnitTest extends TestCase {
 		ExampleApplication application = new ExampleApplication();
 		application.method2("Param3");
 		/* We check if the context "Method2" was created */
-		Assert.assertTrue(ExamplePerformanceStats.INSTANCE.isRegisteredContext("Method2"));
+		assertTrue(ExamplePerformanceStats.INSTANCE.isRegisteredContext("Method2"));
 
 		// printContextStats("Method2") is used to display all the performance
 		// events for the context "Method2" stored in the base .
@@ -115,7 +114,7 @@ public class ExamplePerformanceJUnitTest extends TestCase {
 		// exist and has a running time upper
 		// than its timeout value.
 
-		Assert.assertTrue(ExamplePerformanceStats.INSTANCE.isEventTimeFail(ExamplePerformanceStats.EventsEnum.EVENT_INSIDE_SAMPLE_METHOD3, "Param4"));
+		assertTrue(ExamplePerformanceStats.INSTANCE.isEventTimeFail(ExamplePerformanceStats.EventsEnum.EVENT_INSIDE_SAMPLE_METHOD3, "Param4"));
 		System.out.println("################### Performance report testMethod3:" + ExamplePerformanceStats.INSTANCE.printAllStats());
 
 	}

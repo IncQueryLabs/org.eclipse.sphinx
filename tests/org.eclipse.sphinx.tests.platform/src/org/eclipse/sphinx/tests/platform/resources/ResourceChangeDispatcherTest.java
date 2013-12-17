@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2013 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     itemis - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.platform.resources;
@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.eclipse.core.internal.events.ResourceChangeEvent;
@@ -42,6 +41,7 @@ public class ResourceChangeDispatcherTest extends TestCase {
 	private class Listener1 implements IResourceChangeListener {
 		private ResourceChangeDispatchPhase phase;
 
+		@Override
 		public void resourceChanged(IResourceChangeEvent event) {
 			// changedListenerInvocations.add(this);
 			phaseInvocations.add(phase);
@@ -58,6 +58,7 @@ public class ResourceChangeDispatcherTest extends TestCase {
 	private class Listener2 implements IResourceChangeListener {
 		private ResourceChangeDispatchPhase phase;
 
+		@Override
 		public void resourceChanged(IResourceChangeEvent event) {
 			phaseInvocations.add(phase);
 		}
@@ -73,6 +74,7 @@ public class ResourceChangeDispatcherTest extends TestCase {
 	private class Listener3 implements IResourceChangeListener {
 		private ResourceChangeDispatchPhase phase;
 
+		@Override
 		public void resourceChanged(IResourceChangeEvent event) {
 			phaseInvocations.add(phase);
 		}
@@ -114,27 +116,27 @@ public class ResourceChangeDispatcherTest extends TestCase {
 	public void testAddResourceChangeListener() {
 		// TEST add a PRE listener
 		Listener1 listenerPRE = new Listener1("listenerPRE1", ResourceChangeDispatchPhase.PRE); //$NON-NLS-1$
-		Assert.assertFalse(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPRE, ResourceChangeDispatchPhase.PRE));
+		assertFalse(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPRE, ResourceChangeDispatchPhase.PRE));
 
 		ResourceChangeDispatcher.INSTANCE.addResourceChangeListener(listenerPRE, ResourceChangeDispatchPhase.PRE);
 
-		Assert.assertTrue(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPRE, ResourceChangeDispatchPhase.PRE));
+		assertTrue(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPRE, ResourceChangeDispatchPhase.PRE));
 
 		// add a MAIN listener
 		Listener2 listenerMAIN = new Listener2("listenerMAIN1", ResourceChangeDispatchPhase.MAIN); //$NON-NLS-1$
-		Assert.assertFalse(resourceChangeListenersContainsListener(resourceChangeListeners, listenerMAIN, ResourceChangeDispatchPhase.MAIN));
+		assertFalse(resourceChangeListenersContainsListener(resourceChangeListeners, listenerMAIN, ResourceChangeDispatchPhase.MAIN));
 
 		ResourceChangeDispatcher.INSTANCE.addResourceChangeListener(listenerMAIN, ResourceChangeDispatchPhase.MAIN);
 
-		Assert.assertTrue(resourceChangeListenersContainsListener(resourceChangeListeners, listenerMAIN, ResourceChangeDispatchPhase.MAIN));
+		assertTrue(resourceChangeListenersContainsListener(resourceChangeListeners, listenerMAIN, ResourceChangeDispatchPhase.MAIN));
 
 		// add a POST listener
 		Listener3 listenerPOST = new Listener3("listenerPOST1", ResourceChangeDispatchPhase.POST); //$NON-NLS-1$
-		Assert.assertFalse(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPOST, ResourceChangeDispatchPhase.POST));
+		assertFalse(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPOST, ResourceChangeDispatchPhase.POST));
 
 		ResourceChangeDispatcher.INSTANCE.addResourceChangeListener(listenerPOST, ResourceChangeDispatchPhase.POST);
 
-		Assert.assertTrue(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPOST, ResourceChangeDispatchPhase.POST));
+		assertTrue(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPOST, ResourceChangeDispatchPhase.POST));
 	}
 
 	/**
@@ -144,30 +146,30 @@ public class ResourceChangeDispatcherTest extends TestCase {
 	public void testAddResourceChangeListenerWithMask() {
 		// TEST add a PRE listener
 		Listener1 listenerPRE = new Listener1("listenerPRE2", ResourceChangeDispatchPhase.PRE); //$NON-NLS-1$
-		Assert.assertFalse(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPRE, ResourceChangeDispatchPhase.PRE));
+		assertFalse(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPRE, ResourceChangeDispatchPhase.PRE));
 
 		ResourceChangeDispatcher.INSTANCE.addResourceChangeListener(listenerPRE, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE
 				| IResourceChangeEvent.POST_CHANGE, ResourceChangeDispatchPhase.PRE);
 
-		Assert.assertTrue(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPRE, ResourceChangeDispatchPhase.PRE));
+		assertTrue(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPRE, ResourceChangeDispatchPhase.PRE));
 
 		// add a MAIN listener
 		Listener2 listenerMAIN = new Listener2("listenerMAIN2", ResourceChangeDispatchPhase.MAIN); //$NON-NLS-1$
-		Assert.assertFalse(resourceChangeListenersContainsListener(resourceChangeListeners, listenerMAIN, ResourceChangeDispatchPhase.MAIN));
+		assertFalse(resourceChangeListenersContainsListener(resourceChangeListeners, listenerMAIN, ResourceChangeDispatchPhase.MAIN));
 
 		ResourceChangeDispatcher.INSTANCE.addResourceChangeListener(listenerMAIN, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE
 				| IResourceChangeEvent.POST_CHANGE, ResourceChangeDispatchPhase.MAIN);
 
-		Assert.assertTrue(resourceChangeListenersContainsListener(resourceChangeListeners, listenerMAIN, ResourceChangeDispatchPhase.MAIN));
+		assertTrue(resourceChangeListenersContainsListener(resourceChangeListeners, listenerMAIN, ResourceChangeDispatchPhase.MAIN));
 
 		// add a POST listener
 		Listener3 listenerPOST = new Listener3("listenerPOST2", ResourceChangeDispatchPhase.POST); //$NON-NLS-1$
-		Assert.assertFalse(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPOST, ResourceChangeDispatchPhase.POST));
+		assertFalse(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPOST, ResourceChangeDispatchPhase.POST));
 
 		ResourceChangeDispatcher.INSTANCE.addResourceChangeListener(listenerPOST, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE
 				| IResourceChangeEvent.POST_CHANGE, ResourceChangeDispatchPhase.POST);
 
-		Assert.assertTrue(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPOST, ResourceChangeDispatchPhase.POST));
+		assertTrue(resourceChangeListenersContainsListener(resourceChangeListeners, listenerPOST, ResourceChangeDispatchPhase.POST));
 	}
 
 	/**

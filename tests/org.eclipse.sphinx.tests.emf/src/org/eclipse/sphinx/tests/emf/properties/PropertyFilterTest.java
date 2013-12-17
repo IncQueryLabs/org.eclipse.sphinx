@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.properties;
@@ -17,7 +17,6 @@ package org.eclipse.sphinx.tests.emf.properties;
 import java.util.LinkedList;
 import java.util.List;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.eclipse.sphinx.emf.properties.PropertyFilter;
@@ -48,19 +47,19 @@ public class PropertyFilterTest extends TestCase {
 		PropertyFilter filter = new PropertyFilter(true);
 		filter.setFeatureNames(new String[] { "name" });
 
-		Assert.assertTrue(filter.accept(application, application.eClass().getEStructuralFeature("name")));
-		Assert.assertTrue(filter.accept(application, componentType.eClass().getEStructuralFeature("name")));
-		Assert.assertFalse(filter.accept(application, Hummingbird10Package.eINSTANCE.getApplication_Components()));
+		assertTrue(filter.accept(application, application.eClass().getEStructuralFeature("name")));
+		assertTrue(filter.accept(application, componentType.eClass().getEStructuralFeature("name")));
+		assertFalse(filter.accept(application, Hummingbird10Package.eINSTANCE.getApplication_Components()));
 
 	}
 
 	public void testPropertyFilterAcceptStringArray() {
 		PropertyFilter filter = new PropertyFilter(true);
 		filter.setFeatureNames(new String[] { "name", "components" });
-		Assert.assertTrue(filter.accept(application, application.eClass().getEStructuralFeature("name")));
-		Assert.assertTrue(filter.accept(application, InstanceModel20Package.eINSTANCE.getApplication_Components()));
-		Assert.assertFalse(filter.accept(application, TypeModel20Package.eINSTANCE.getPlatform_Interfaces()));
-		Assert.assertFalse(filter.accept(application, TypeModel20Package.eINSTANCE.getComponentType_Parameters()));
+		assertTrue(filter.accept(application, application.eClass().getEStructuralFeature("name")));
+		assertTrue(filter.accept(application, InstanceModel20Package.eINSTANCE.getApplication_Components()));
+		assertFalse(filter.accept(application, TypeModel20Package.eINSTANCE.getPlatform_Interfaces()));
+		assertFalse(filter.accept(application, TypeModel20Package.eINSTANCE.getComponentType_Parameters()));
 	}
 
 	public void testPropertyFilterAcceptList() {
@@ -72,8 +71,8 @@ public class PropertyFilterTest extends TestCase {
 		list.add("components");
 
 		filter.setFeatureNames(list);
-		Assert.assertTrue(filter.accept(application, application.eClass().getEStructuralFeature("name")));
-		Assert.assertTrue(filter.accept(application, InstanceModel20Package.eINSTANCE.getApplication_Components()));
-		Assert.assertFalse(filter.accept(application, TypeModel20Package.eINSTANCE.getPlatform_Interfaces()));
+		assertTrue(filter.accept(application, application.eClass().getEStructuralFeature("name")));
+		assertTrue(filter.accept(application, InstanceModel20Package.eINSTANCE.getApplication_Components()));
+		assertFalse(filter.accept(application, TypeModel20Package.eINSTANCE.getPlatform_Interfaces()));
 	}
 }
