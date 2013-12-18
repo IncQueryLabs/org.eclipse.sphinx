@@ -16,9 +16,10 @@
 package org.eclipse.sphinx.tests.emf.metamodel.descs;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelVersionData;
-import org.eclipse.sphinx.tests.emf.metamodel.mocks.MockEPkgRegistry;
 
 @SuppressWarnings("nls")
 public class Test1MM extends AbstractMetaModelDescriptor implements Comparable<Test1MM> {
@@ -27,9 +28,9 @@ public class Test1MM extends AbstractMetaModelDescriptor implements Comparable<T
 	public static final String NS = "http://testA.sphinx.org";
 	public static final String URI_SCHEME = "tr1"; //$NON-NLS-1$
 
-	public static final MockEPkgRegistry MOCK_EPKG_REGISTRY = new MockEPkgRegistry();
-
 	public static final Test1MM INSTANCE = new Test1MM();
+
+	private static EPackage.Registry sharedPackageRegistry = null;
 
 	public Test1MM() {
 		this(ID, null);
@@ -37,7 +38,20 @@ public class Test1MM extends AbstractMetaModelDescriptor implements Comparable<T
 
 	protected Test1MM(String identifier, MetaModelVersionData versionData) {
 		super(identifier, NS, versionData);
-		setEPackageRegistry(MOCK_EPKG_REGISTRY);
+	}
+
+	@Override
+	public Registry getEPackageRegistry() {
+		if (sharedPackageRegistry != null) {
+			return sharedPackageRegistry;
+		}
+		return super.getEPackageRegistry();
+	}
+
+	@Override
+	public void setEPackageRegistry(Registry ePkgRegistry) {
+		sharedPackageRegistry = ePkgRegistry;
+
 	}
 
 	@Override

@@ -10,14 +10,20 @@ Require-Bundle: org.eclipse.core.expressions,
  org.eclipse.sphinx.examples.hummingbird10,
  org.eclipse.sphinx.examples.hummingbird20,
  org.eclipse.sphinx.examples.uml2.ide,
- org.eclipse.uml2.uml
+ org.eclipse.uml2.uml,
+ org.easymock
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.sphinx.tests.emf.comparators,
- org.eclipse.sphinx.tests.emf.internal,
- org.eclipse.sphinx.tests.emf.internal.expressions,
+ org.eclipse.sphinx.tests.emf.ecore,
+ org.eclipse.sphinx.tests.emf.ecore.proxymanagement,
+ org.eclipse.sphinx.tests.emf.internal;x-internal:=true,
+ org.eclipse.sphinx.tests.emf.internal.expressions;x-internal:=true,
+ org.eclipse.sphinx.tests.emf.internal.mocks;x-internal:=true,
  org.eclipse.sphinx.tests.emf.metamodel,
  org.eclipse.sphinx.tests.emf.metamodel.descs,
- org.eclipse.sphinx.tests.emf.metamodel.mocks,
- org.eclipse.sphinx.tests.emf.properties
+ org.eclipse.sphinx.tests.emf.properties,
+ org.eclipse.sphinx.tests.emf.resource,
+ org.eclipse.sphinx.tests.emf.serialization,
+ org.eclipse.sphinx.tests.emf.util
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.tests.emf.internal.Activator$Implementation

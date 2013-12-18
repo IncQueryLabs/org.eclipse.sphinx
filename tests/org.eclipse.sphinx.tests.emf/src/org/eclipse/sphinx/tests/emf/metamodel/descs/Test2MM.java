@@ -17,7 +17,6 @@ package org.eclipse.sphinx.tests.emf.metamodel.descs;
 
 import org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelVersionData;
-import org.eclipse.sphinx.tests.emf.metamodel.mocks.MockEPkgRegistry;
 
 @SuppressWarnings("nls")
 public class Test2MM extends AbstractMetaModelDescriptor {
@@ -28,8 +27,6 @@ public class Test2MM extends AbstractMetaModelDescriptor {
 
 	public static final String URI_SCHEME = "tr2"; //$NON-NLS-1$
 
-	public static final MockEPkgRegistry MOCK_EPKG_REGISTRY = new MockEPkgRegistry();
-
 	public static final Test2MM INSTANCE = new Test2MM();
 
 	public Test2MM() {
@@ -38,7 +35,6 @@ public class Test2MM extends AbstractMetaModelDescriptor {
 
 	protected Test2MM(String identifier, MetaModelVersionData versionData) {
 		super(identifier, NS, versionData);
-		setEPackageRegistry(MOCK_EPKG_REGISTRY);
 	}
 
 	@Override
