@@ -32,6 +32,7 @@ import org.eclipse.sphinx.emf.workspace.ui.wizards.pages.NewModelFileCreationPag
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -159,8 +160,10 @@ public abstract class AbstractNewModelFileWizard<T extends IMetaModelDescriptor>
 			if (window != null) {
 				IWorkbenchPage page = window.getActivePage();
 				if (page != null) {
-					page.openEditor(new FileEditorInput(newFile),
-							getWorkbench().getEditorRegistry().getDefaultEditor(newFile.getFullPath().toString()).getId());
+					IEditorDescriptor defaultEditor = getWorkbench().getEditorRegistry().getDefaultEditor(newFile.getFullPath().toString());
+					if (defaultEditor != null) {
+						page.openEditor(new FileEditorInput(newFile), defaultEditor.getId());
+					}
 				}
 			}
 		} catch (PartInitException exception) {
