@@ -1,19 +1,20 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [393479] Enable BasicTabbedPropertySheetTitleProvider to retrieve same AdapterFactory as underlying IWorkbenchPart is using
  *     itemis - [418005] Add support for model files with multiple root elements
  *     itemis - [420505] Editor shows no content when editor input object is added lately
  *     itemis - [421585] Form Editor silently closes if model is not loaded via Sphinx
- *     
+ *     itemis - [425173] Form editor closes when the input resource are changed externally
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.editors.forms;
@@ -142,6 +143,7 @@ import org.eclipse.ui.ISaveablesLifecycleListener;
 import org.eclipse.ui.ISaveablesSource;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.Saveable;
@@ -232,12 +234,6 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * This keeps track of the selection of the editor as a whole.
 	 */
 	protected ISelection editorSelection = StructuredSelection.EMPTY;
-
-	/**
-	 * Indicated if this editor needs to be refreshed upon activation due to changed editor input resource while editor
-	 * has been inactive.
-	 */
-	protected boolean refreshOnActivation = false;
 
 	protected IFormPage loadingEditorInputPage;
 
@@ -371,15 +367,13 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			}
 		}
 
-		if (refreshOnActivation) {
-			refreshActivePage();
-			refreshOnActivation = false;
-		}
-
 		// Refresh any actions that may become enabled or disabled
 		setSelection(getSelection());
 	}
 
+	/**
+	 * Handles editor input object added.
+	 */
 	protected void handleEditorInputObjectAdded() {
 		IWorkbenchPartSite site = getSite();
 		if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
@@ -399,13 +393,14 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 					setPartName(getEditorInputName());
 					setTitleImage(getEditorInputImage());
 
-					// Refresh editor if its currently visible; otherwise schedule refresh for when it gets activated
-					// the next time
-					if (getSite().getPage().isPartVisible(BasicTransactionalFormEditor.this)) {
-						refreshActivePage();
-					} else {
-						refreshOnActivation = true;
-					}
+					// Update this editor's input state.
+					/*
+					 * !! Important Note !! Doing so will trigger IPropertyListener implementations that listen for
+					 * IWorkbenchPartConstants.PROP_INPUT events (such as e.g., the
+					 * AbstractFormPage#inputChangeListener). This kind or listeners are useful to update the input
+					 * object of affected JFace viewers and/or the titles of affected form pages and sections.
+					 */
+					firePropertyChange(IWorkbenchPartConstants.PROP_INPUT);
 				}
 			});
 		}
@@ -1389,36 +1384,72 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		};
 	}
 
+	/**
+	 * Creates a ResourceRemovedListener that detects removed resources and handles them.
+	 */
 	protected ResourceSetListener createResourceRemovedListener() {
-		return new ResourceSetListenerImpl(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResourceSet(),
-				ResourceSet.RESOURCE_SET__RESOURCES).and(
-				NotificationFilter.createEventTypeFilter(Notification.REMOVE).or(NotificationFilter.createEventTypeFilter(Notification.REMOVE_MANY)))) {
+		return new ResourceSetListenerImpl(NotificationFilter
+				.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__IS_LOADED).or(
+						NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResourceSet(), ResourceSet.RESOURCE_SET__RESOURCES))) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
-				// Retrieve removed resources from notification
+				// Retrieve removed and added resources from notification
 				Set<Resource> removedResources = new HashSet<Resource>();
+				Set<Resource> addedResources = new HashSet<Resource>();
+
+				// Analyze notifications for changed resources; record only added and removed resources which have not
+				// got removed/added again later on
 				List<?> notifications = event.getNotifications();
 				for (Object object : notifications) {
 					if (object instanceof Notification) {
 						Notification notification = (Notification) object;
-						Object oldValue = notification.getOldValue();
-						if (oldValue instanceof Resource) {
-							Resource oldResource = (Resource) oldValue;
-							// Has old resource not been added back subsequently?
-							if (oldResource.getResourceSet() == null) {
-								removedResources.add(oldResource);
-							}
-						}
-						if (oldValue instanceof List<?>) {
-							@SuppressWarnings("unchecked")
-							List<Resource> oldResources = (List<Resource>) oldValue;
-							for (Resource oldResource : oldResources) {
-								// Has old resource not been added back subsequently?
-								if (oldResource.getResourceSet() == null) {
-									removedResources.add(oldResource);
+						Object notifier = notification.getNotifier();
+						if (notifier instanceof ResourceSet) {
+							if (notification.getEventType() == Notification.ADD || notification.getEventType() == Notification.ADD_MANY) {
+								List<Resource> newResources = new ArrayList<Resource>();
+								Object newValue = notification.getNewValue();
+								if (newValue instanceof List<?>) {
+									@SuppressWarnings("unchecked")
+									List<Resource> newResourcesValue = (List<Resource>) newValue;
+									newResources.addAll(newResourcesValue);
+								} else if (newValue instanceof Resource) {
+									newResources.add((Resource) newValue);
+								}
+
+								for (Resource newResource : newResources) {
+									Resource removedResource = findEquivalentResource(removedResources, newResource);
+									// If the newResource has been removed, then remove the equivalent resource from
+									// removedResource, otherwise add it to addedResources
+									if (removedResource != null) {
+										removedResources.remove(removedResource);
+									} else {
+										addedResources.add(newResource);
+									}
+								}
+							} else if (notification.getEventType() == Notification.REMOVE || notification.getEventType() == Notification.REMOVE_MANY) {
+								List<Resource> oldResources = new ArrayList<Resource>();
+								Object oldValue = notification.getOldValue();
+								if (oldValue instanceof List<?>) {
+									@SuppressWarnings("unchecked")
+									List<Resource> oldResourcesValue = (List<Resource>) oldValue;
+									oldResources.addAll(oldResourcesValue);
+								} else if (oldValue instanceof Resource) {
+									oldResources.add((Resource) oldValue);
+								}
+
+								for (Resource oldResource : oldResources) {
+									Resource oldAddedResource = findEquivalentResource(addedResources, oldResource);
+									// If the oldResource has been added, then remove the equivalent resource from
+									// addedResources, otherwise add it to removedResources
+									if (oldAddedResource != null) {
+										addedResources.remove(oldAddedResource);
+									} else {
+										removedResources.add(oldResource);
+									}
 								}
 							}
 						}
+
 					}
 				}
 
@@ -1433,6 +1464,21 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 						}
 					}
 				}
+			}
+
+			/**
+			 * Returns a resource from the given set of resources that is "equal to" the indicated one. The "equals"
+			 * method detects an URI equivalence relation on non-null resources: if the resource URI equals to the URI
+			 * of the specified resource, then the resource is returned.
+			 */
+			public Resource findEquivalentResource(Set<Resource> resources, Resource resource) {
+				URI uri = resource.getURI();
+				for (Resource equivalentResourceCandidate : resources) {
+					if (equivalentResourceCandidate.getURI().equals(uri)) {
+						return equivalentResourceCandidate;
+					}
+				}
+				return null;
 			}
 
 			@Override

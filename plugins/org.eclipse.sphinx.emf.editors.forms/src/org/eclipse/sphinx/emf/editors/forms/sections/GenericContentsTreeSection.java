@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [393310] Viewer input for GenericContentsTreeSection should be calculated using content provider
  *     itemis - [421585] Form Editor silently closes if model is not loaded via Sphinx
+ *     itemis - [425173] Form editor closes when the input resource are changed externally
  * 
  * </copyright>
  */
@@ -47,6 +48,13 @@ public class GenericContentsTreeSection extends AbstractViewerFormSection {
 	public GenericContentsTreeSection(AbstractFormPage formPage, Object sectionInput, int style) {
 		super(formPage, sectionInput, style);
 		description = Messages.section_genericContentsTree_description;
+	}
+
+	@Override
+	public void setSectionInput(Object sectionInput) {
+		super.setSectionInput(sectionInput);
+		// Refresh section title
+		refreshSectionTitle();
 	}
 
 	protected Object getSectionInputParent() {
@@ -109,11 +117,6 @@ public class GenericContentsTreeSection extends AbstractViewerFormSection {
 		});
 		treeViewer.setInput(getViewerInput());
 		formEditor.createContextMenuFor(treeViewer);
-	}
-
-	@Override
-	public void refreshSection() {
-		refreshSectionTitle();
 	}
 
 	protected void refreshSectionTitle() {
