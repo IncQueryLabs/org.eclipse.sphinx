@@ -235,6 +235,12 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 */
 	protected ISelection editorSelection = StructuredSelection.EMPTY;
 
+	/**
+	 * Indicated if the page creation of this editor needs finished upon activation due to editor input object change
+	 * while editor has been inactive.
+	 */
+	protected boolean finishCreatePagesOnActivation = false;
+
 	protected IFormPage loadingEditorInputPage;
 
 	protected SaveablesProvider modelSaveablesProvider;
@@ -367,12 +373,17 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			}
 		}
 
+		if (finishCreatePagesOnActivation) {
+			finishCreatePages();
+			finishCreatePagesOnActivation = false;
+		}
+
 		// Refresh any actions that may become enabled or disabled
 		setSelection(getSelection());
 	}
 
 	/**
-	 * Handles editor input object added.
+	 * Invoked when editor input object has been added.
 	 */
 	protected void handleEditorInputObjectAdded() {
 		IWorkbenchPartSite site = getSite();
@@ -386,9 +397,6 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 						operationHistory.dispose(undoContext, true, true, true);
 					}
 
-					// Update this editor's dirty state
-					firePropertyChange(IEditorPart.PROP_DIRTY);
-
 					// Update editor part name
 					setPartName(getEditorInputName());
 					setTitleImage(getEditorInputImage());
@@ -401,11 +409,25 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 					 * object of affected JFace viewers and/or the titles of affected form pages and sections.
 					 */
 					firePropertyChange(IWorkbenchPartConstants.PROP_INPUT);
+
+					// Update this editor's dirty state
+					firePropertyChange(IEditorPart.PROP_DIRTY);
+
+					// Finish page creation if editor is currently visible; otherwise mark that as to be done when
+					// editor gets activated the next time
+					if (getSite().getPage().isPartVisible(BasicTransactionalFormEditor.this)) {
+						finishCreatePages();
+					} else {
+						finishCreatePagesOnActivation = true;
+					}
 				}
 			});
 		}
 	}
 
+	/**
+	 * Invoked when editor input object has been removed.
+	 */
 	protected void handleEditorInputObjectRemoved() {
 		// Close editor
 		close(false);
@@ -1367,11 +1389,11 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 								operationHistory.dispose(undoContext, true, true, true);
 							}
 
-							// Update this editor's dirty state
-							firePropertyChange(IEditorPart.PROP_DIRTY);
-
 							// Update editor input
 							updateEditorInput(newResourceURI);
+
+							// Update this editor's dirty state
+							firePropertyChange(IEditorPart.PROP_DIRTY);
 						}
 					});
 				}
@@ -1811,20 +1833,20 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 						NLS.bind(Messages.error_editorInitialization_modelNotLoaded, file.getFullPath().toString()));
 				close(false);
 				return;
-			} else {
-				// Request asynchronous loading of model behind editor input
-				ModelLoadManager.INSTANCE.loadModel(modelDescriptor, true, null);
+			}
 
-				// Create temporary page indicating that editor input is being loaded
-				loadingEditorInputPage = createLoadingEditorInputPage();
-				if (loadingEditorInputPage != null) {
-					try {
-						addPage(loadingEditorInputPage);
-					} catch (PartInitException ex) {
-						PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-					}
-					return;
+			// Request asynchronous loading of model behind editor input
+			ModelLoadManager.INSTANCE.loadModel(modelDescriptor, true, null);
+
+			// Create temporary page indicating that editor input is being loaded
+			loadingEditorInputPage = createLoadingEditorInputPage();
+			if (loadingEditorInputPage != null) {
+				try {
+					addPage(loadingEditorInputPage);
+				} catch (PartInitException ex) {
+					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 				}
+				return;
 			}
 		}
 
@@ -1836,19 +1858,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		return new MessagePage(this, NLS.bind(Messages.msg_waitingForModelObjectToBeLoaded, getEditorInputName()));
 	}
 
-	/**
-	 * This is the method used by the framework to install your own pages.
-	 */
-	@Override
-	protected void addPages() {
-		try {
-			addPage(new GenericContentsTreePage(this));
-		} catch (PartInitException ex) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-		}
-	}
-
-	protected synchronized void refreshActivePage() {
+	protected synchronized void finishCreatePages() {
 		if (!isDisposed()) {
 			// Loading editor input indication page present?
 			if (loadingEditorInputPage != null) {
@@ -1859,10 +1869,23 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				if (getActivePage() == -1) {
 					setActivePage(0);
 				}
-			} else {
-				// Refresh by reselecting previously active page
-				pageChange(getActivePage());
 			}
+		}
+	}
+
+	/**
+	 * This is the method used by the framework to install your own pages.
+	 * <p>
+	 * This implementation add a single {@link GenericContentsTreePage page} that displays the editor input object and
+	 * its contents in a tree viewer.
+	 * </p>
+	 */
+	@Override
+	protected void addPages() {
+		try {
+			addPage(new GenericContentsTreePage(this));
+		} catch (PartInitException ex) {
+			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
 	}
 
