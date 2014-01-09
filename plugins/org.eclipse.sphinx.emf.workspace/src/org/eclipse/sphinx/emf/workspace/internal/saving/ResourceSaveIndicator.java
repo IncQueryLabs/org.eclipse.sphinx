@@ -1,17 +1,18 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [419466] Enable models to be modified programmatically without causing them to become dirty
  *     itemis - [422871] ConcurrentModificationException when trying to retrieve dirty resources
- * 
+ *     itemis - [425172] Sphinx dirty state does not react on Resource isModified flag
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.internal.saving;
@@ -140,15 +141,43 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	 * @return The created <em>object changed {@linkplain ResourceSetListener listener}</em>.
 	 */
 	protected ResourceSetListener createObjectChangedListener() {
-		return new ResourceSetListenerImpl(NotificationFilter.createNotifierTypeFilter(Resource.class).negated()
-				.and(NotificationFilter.createEventTypeFilter(Notification.RESOLVE).negated())) {
+		return new ResourceSetListenerImpl(NotificationFilter
+				.createEventTypeFilter(Notification.RESOLVE)
+				.negated()
+				.and(NotificationFilter.createFeatureFilter(Resource.class, Resource.RESOURCE__IS_MODIFIED).or(
+						NotificationFilter.createNotifierTypeFilter(Resource.class).negated()))) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
-				for (Resource resource : ResourceUndoContextPolicy.INSTANCE.getContextResources(null, event.getNotifications())) {
+				for (Resource resource : getAffectedResources(event)) {
 					setDirty(resource);
 				}
 			}
 		};
+	}
+
+	/**
+	 * Returns the {@link Resource resource}s that are affected by given resource set change <em>event</em>.
+	 * 
+	 * @param event
+	 *            The {@link ResourceSetChangeEvent resource set change event} to be evaluated.
+	 * @return The set of resources that are affected by given resource set change <em>event</em>.
+	 */
+	protected Collection<Resource> getAffectedResources(ResourceSetChangeEvent event) {
+		final Set<Resource> affectedResources = new HashSet<Resource>();
+
+		// Add all resources that are in the undo context of the operation, during which execution the changes
+		// indicated by the given resource set change event have occurred
+		affectedResources.addAll(ResourceUndoContextPolicy.INSTANCE.getContextResources(null, event.getNotifications()));
+
+		// Add all resources whose modified flag has been set to true
+		for (Notification notification : event.getNotifications()) {
+			if (notification.getNotifier() instanceof Resource && notification.getFeatureID(Resource.class) == Resource.RESOURCE__IS_MODIFIED
+					&& ((Resource) notification.getNotifier()).isModified()) {
+				affectedResources.add((Resource) notification.getNotifier());
+			}
+		}
+
+		return affectedResources;
 	}
 
 	/*
@@ -258,4 +287,5 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	private void unsetSaved(Resource resource) {
 		savedURIs.remove(resource.getURI());
 	}
+
 }
