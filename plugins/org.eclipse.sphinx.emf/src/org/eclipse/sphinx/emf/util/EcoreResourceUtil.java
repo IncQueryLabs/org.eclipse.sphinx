@@ -14,9 +14,10 @@
  *     itemis - [357962] Make sure that problems occurring when saving model elements in a new resource are not recorded as errors/warnings on resource
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored
- *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked 
+ *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  *     itemis - [418005] Add support for model files with multiple root elements
+ *	   itemis - [425175] Resources that produce exceptions while being loaded should not get unloaded by Sphinx thereafter
  *
  * </copyright>
  */
@@ -1155,38 +1156,41 @@ public final class EcoreResourceUtil {
 						resource.getErrors().addAll(creationErrors);
 						resource.getWarnings().addAll(creationWarnings);
 					} catch (Exception ex) {
-						// Capture errors and warnings encountered during resource load attempt
-						/*
-						 * !! Important note !! This is necessary because the resource's errors and warnings are
-						 * automatically cleared when it gets unloaded. Therefore, if we didn't retrieve them at this
-						 * point all errors and warnings encountered during loading would be lost (see
-						 * org.eclipse.emf.ecore.resource.impl.ResourceImpl.doUnload() for details)
-						 */
-						List<Resource.Diagnostic> loadErrors = new ArrayList<Resource.Diagnostic>(resource.getErrors());
-						List<Resource.Diagnostic> loadWarnings = new ArrayList<Resource.Diagnostic>(resource.getWarnings());
+						// Make sure that no empty resources are kept in resource set
+						if (resource.getContents().isEmpty()) {
+							// Capture errors and warnings encountered during resource load attempt
+							/*
+							 * !! Important note !! This is necessary because the resource's errors and warnings are
+							 * automatically cleared when it gets unloaded. Therefore, if we didn't retrieve them at
+							 * this point all errors and warnings encountered during loading would be lost (see
+							 * org.eclipse.emf.ecore.resource.impl.ResourceImpl.doUnload() for details)
+							 */
+							List<Resource.Diagnostic> loadErrors = new ArrayList<Resource.Diagnostic>(resource.getErrors());
+							List<Resource.Diagnostic> loadWarnings = new ArrayList<Resource.Diagnostic>(resource.getWarnings());
 
-						// Make sure that resource gets unloaded and removed from resource set again
-						try {
-							unloadResource(resource, true);
-						} catch (Exception e) {
-							// Log unload problem in Error Log but don't let it go along as runtime exception. It is
-							// most likely just a consequence of the load problems encountered before and therefore
-							// should not prevent those from being restored as errors and warnings on resource.
-							PlatformLogUtil.logAsError(Activator.getPlugin(), e);
+							// Make sure that resource gets unloaded and removed from resource set again
+							try {
+								unloadResource(resource, true);
+							} catch (Exception e) {
+								// Log unload problem in Error Log but don't let it go along as runtime exception. It is
+								// most likely just a consequence of the load problems encountered before and therefore
+								// should not prevent those from being restored as errors and warnings on resource.
+								PlatformLogUtil.logAsError(Activator.getPlugin(), e);
+							}
+
+							// Restore load time errors and warnings on resource
+							/*
+							 * !! Important Note !! The main intention behind restoring recorded errors and warnings on
+							 * the already unloaded resource is to enable these errors/warnings to be converted to
+							 * problem markers by the resource problem handler later on (see
+							 * org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler#resourceSetChanged(
+							 * ResourceSetChangeEvent)) for details).
+							 */
+							resource.getErrors().addAll(loadErrors);
+							resource.getWarnings().addAll(loadWarnings);
 						}
 
-						// Restore load time errors and warnings on resource
-						resource.getErrors().addAll(loadErrors);
-						resource.getWarnings().addAll(loadWarnings);
-
 						// Record exception as error on resource
-						/*
-						 * !! Important Note !! The main intention behind restoring recorded errors and warnings and
-						 * adding the exception as additional error on the already unloaded resource is to enable these
-						 * errors/warnings to be converted to problem markers by the resource problem handler later on
-						 * (see org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler#resourceSetChanged(
-						 * ResourceSetChangeEvent)) for details).
-						 */
 						Throwable cause = ex.getCause();
 						Exception exception = cause instanceof Exception ? (Exception) cause : ex;
 						resource.getErrors().add(
