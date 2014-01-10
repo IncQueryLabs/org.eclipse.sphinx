@@ -124,7 +124,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 
 				URIConverter uriConverter = getURIConverter();
 				URI normalizedURI = uriConverter.normalize(uri);
-				map.put(normalizedURI, oldObject);
+				map.remove(normalizedURI);
 			}
 
 			super.didRemove(index, oldObject);
@@ -155,7 +155,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 
 					URIConverter uriConverter = getURIConverter();
 					URI normalizedURI = uriConverter.normalize(uri);
-					map.put(normalizedURI, oldObject);
+					map.remove(normalizedURI);
 				}
 
 				super.didSet(index, newObject, oldObject);
@@ -227,7 +227,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 			URI normalizedURI = uriConverter.normalize(uri);
 			resource = map.get(normalizedURI);
 			if (resource != null) {
-				map.put(normalizedURI, resource);
+				map.put(uri, resource);
 				return resource;
 			}
 		}
