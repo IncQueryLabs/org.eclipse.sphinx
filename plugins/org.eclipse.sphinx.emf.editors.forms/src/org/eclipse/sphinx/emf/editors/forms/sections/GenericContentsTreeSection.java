@@ -1,18 +1,18 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [393310] Viewer input for GenericContentsTreeSection should be calculated using content provider
  *     itemis - [421585] Form Editor silently closes if model is not loaded via Sphinx
  *     itemis - [425173] Form editor closes when the input resource are changed externally
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.editors.forms.sections;
@@ -53,6 +53,7 @@ public class GenericContentsTreeSection extends AbstractViewerFormSection {
 	@Override
 	public void setSectionInput(Object sectionInput) {
 		super.setSectionInput(sectionInput);
+
 		// Refresh section title
 		refreshSectionTitle();
 	}
@@ -117,6 +118,11 @@ public class GenericContentsTreeSection extends AbstractViewerFormSection {
 		});
 		treeViewer.setInput(getViewerInput());
 		formEditor.createContextMenuFor(treeViewer);
+	}
+
+	@Override
+	public void refreshSection() {
+		refreshSectionTitle();
 	}
 
 	protected void refreshSectionTitle() {

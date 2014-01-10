@@ -567,18 +567,37 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	}
 
 	/**
+	 * Returns whether the object behind the {@link IEditorInput editor input} is something that likely represents a
+	 * stale object, e.g., an {@link EObject} that has become a {@link EObject#eIsProxy() proxy object} or a
+	 * {@link Resource} that has been {@link Resource#unload() unloaded}.
+	 */
+	protected boolean isEditorInputObjectStale() {
+		if (editorInputObject instanceof EObject) {
+			EObject editorInputEObject = (EObject) editorInputObject;
+			if (editorInputEObject.eIsProxy() || editorInputEObject.eResource() == null || !editorInputEObject.eResource().isLoaded()) {
+				return true;
+			}
+		}
+		if (editorInputObject instanceof Resource) {
+			Resource editorInputResource = (Resource) editorInputObject;
+			if (!editorInputResource.isLoaded() || editorInputResource.getResourceSet() == null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * @return The object behind the {@link IEditorInput editor input} that is currently being edited in this editor or
 	 *         <code>null</code> if no such is available.
 	 * @see #getOldEditorInputObject()
 	 */
 	public Object getEditorInputObject() {
-		if (editorInputObject == null || editorInputObject instanceof EObject && ((EObject) editorInputObject).eIsProxy()
-				|| editorInputObject instanceof EObject && ((EObject) editorInputObject).eResource() == null || editorInputObject instanceof EObject
-				&& !((EObject) editorInputObject).eResource().isLoaded()) {
-
+		if (editorInputObject == null || isEditorInputObjectStale()) {
 			URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
 			if (editorInputURI != null) {
-				if (oldEditorInputObject == null) {
+				// Don't loose track of old editor input object as long as no new editor input object is available
+				if (editorInputObject != null) {
 					oldEditorInputObject = editorInputObject;
 				}
 
@@ -588,7 +607,9 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 					editorInputObject = EcorePlatformUtil.getResource(editorInputURI);
 				}
 
-				if (editorInputObject != null && oldEditorInputObject != null) {
+				// Discard old editor input object as soon as (but not earlier than) a new editor input object is
+				// available
+				if (editorInputObject != null) {
 					oldEditorInputObject = null;
 				}
 			}
