@@ -92,22 +92,6 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		}
 
 		/*
-		 * @see org.eclipse.emf.common.util.AbstractEList#add(java.lang.Object)
-		 */
-		@Override
-		public boolean add(E object) {
-			return super.add(object);
-		};
-
-		/*
-		 * @see org.eclipse.emf.common.util.AbstractEList#add(int, java.lang.Object)
-		 */
-		@Override
-		public void add(int index, E object) {
-			super.add(index, object);
-		};
-
-		/*
 		 * Overridden to force eager initialization of URI to resource cache as soon as new resources get created and
 		 * added to the resource set.
 		 * @see org.eclipse.emf.common.util.AbstractEList#didAdd(int, java.lang.Object)
@@ -115,7 +99,16 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		@Override
 		protected void didAdd(int index, E newObject) {
 			super.didAdd(index, newObject);
-			getURIResourceMap().put(newObject.getURI(), newObject);
+
+			Map<URI, Resource> map = getURIResourceMap();
+			if (map != null) {
+				URI uri = newObject.getURI();
+				map.put(uri, newObject);
+
+				URIConverter uriConverter = getURIConverter();
+				URI normalizedURI = uriConverter.normalize(uri);
+				map.put(normalizedURI, newObject);
+			}
 		};
 
 		/*
@@ -124,7 +117,16 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		 */
 		@Override
 		protected void didRemove(int index, E oldObject) {
-			getURIResourceMap().remove(oldObject);
+			Map<URI, Resource> map = getURIResourceMap();
+			if (map != null) {
+				URI uri = oldObject.getURI();
+				map.remove(uri);
+
+				URIConverter uriConverter = getURIConverter();
+				URI normalizedURI = uriConverter.normalize(uri);
+				map.put(normalizedURI, oldObject);
+			}
+
 			super.didRemove(index, oldObject);
 		};
 
@@ -133,11 +135,30 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		 */
 		@Override
 		protected void didSet(int index, E newObject, E oldObject) {
+			Map<URI, Resource> map = getURIResourceMap();
 			if (newObject != null) {
-				getURIResourceMap().put(newObject.getURI(), newObject);
+				super.didSet(index, newObject, oldObject);
+
+				if (map != null) {
+					URI uri = newObject.getURI();
+					map.put(uri, newObject);
+
+					URIConverter uriConverter = getURIConverter();
+					URI normalizedURI = uriConverter.normalize(uri);
+					map.put(normalizedURI, newObject);
+				}
 			}
 			if (oldObject != null) {
-				getURIResourceMap().remove(oldObject);
+				if (map != null) {
+					URI uri = oldObject.getURI();
+					map.remove(uri);
+
+					URIConverter uriConverter = getURIConverter();
+					URI normalizedURI = uriConverter.normalize(uri);
+					map.put(normalizedURI, oldObject);
+				}
+
+				super.didSet(index, newObject, oldObject);
 			}
 		};
 
@@ -146,7 +167,12 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		 */
 		@Override
 		protected void didClear(int size, Object[] oldObjects) {
-			getURIResourceMap().clear();
+			Map<URI, Resource> map = getURIResourceMap();
+			if (map != null) {
+				map.clear();
+			}
+
+			super.didClear(size, oldObjects);
 		}
 	}
 
@@ -196,24 +222,16 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 				}
 				return resource;
 			}
-
-			URIConverter uriConverter = getURIConverter();
-			URI normalizedURI = uriConverter.normalize(uri);
-			resource = map.get(normalizedURI);
-			if (resource != null) {
-				if (loadOnDemand && !resource.isLoaded()) {
-					demandLoadHelper(resource);
-				}
-
-				map.put(uri, resource);
-				return resource;
-			}
 		}
 
 		Resource delegatedResource = delegatedGetResource(uri, loadOnDemand);
 		if (delegatedResource != null) {
 			if (map != null) {
 				map.put(uri, delegatedResource);
+
+				URIConverter uriConverter = getURIConverter();
+				URI normalizedURI = uriConverter.normalize(uri);
+				map.put(normalizedURI, delegatedResource);
 			}
 			return delegatedResource;
 		}
@@ -226,9 +244,12 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 
 			demandLoadHelper(resource);
 
-			if (map != null) {
-				map.put(uri, resource);
-			}
+			/*
+			 * !! Important note !! No need to add loaded resource to the URI to resource cache here - thanks to the
+			 * ExtendedResourcesEList implementation, this has already been achieved under the hoods while the resource
+			 * has been demand created and added to the resource set (see ResourceSetImpl.createResource(URI, String)
+			 * and ExtendedResourceSetImpl.ExtendedResourcesEList.didAdd(int, E) for details).
+			 */
 			return resource;
 		}
 
