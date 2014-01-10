@@ -1,17 +1,18 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
- * 
+ *     itemis - [425379] ExtendedResourceSet may contain a resource multiple times (with normalized and non-normalized URI)
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.resource;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.eclipse.core.resources.IContainer;
@@ -38,6 +40,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.Resource.Diagnostic;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMIException;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -180,29 +183,52 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	 */
 	@Override
 	public Resource getResource(URI uri, boolean loadOnDemand) {
-		Resource resource = getURIResourceMap().get(uri);
-		if (resource != null) {
-			if (loadOnDemand && !resource.isLoaded()) {
-				demandLoadHelper(resource);
+		if (resourceLocator != null) {
+			return resourceLocator.getResource(uri, loadOnDemand);
+		}
+
+		Map<URI, Resource> map = getURIResourceMap();
+		if (map != null) {
+			Resource resource = map.get(uri);
+			if (resource != null) {
+				if (loadOnDemand && !resource.isLoaded()) {
+					demandLoadHelper(resource);
+				}
+				return resource;
 			}
-			return resource;
+
+			URIConverter uriConverter = getURIConverter();
+			URI normalizedURI = uriConverter.normalize(uri);
+			resource = map.get(normalizedURI);
+			if (resource != null) {
+				if (loadOnDemand && !resource.isLoaded()) {
+					demandLoadHelper(resource);
+				}
+
+				map.put(uri, resource);
+				return resource;
+			}
 		}
 
 		Resource delegatedResource = delegatedGetResource(uri, loadOnDemand);
 		if (delegatedResource != null) {
-			getURIResourceMap().put(uri, delegatedResource);
+			if (map != null) {
+				map.put(uri, delegatedResource);
+			}
 			return delegatedResource;
 		}
 
 		if (loadOnDemand) {
-			resource = demandCreateResource(uri);
+			Resource resource = demandCreateResource(uri);
 			if (resource == null) {
 				throw new RuntimeException("Cannot create a resource for '" + uri + "'; a registered resource factory is needed"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 
 			demandLoadHelper(resource);
 
-			getURIResourceMap().put(uri, resource);
+			if (map != null) {
+				map.put(uri, resource);
+			}
 			return resource;
 		}
 
