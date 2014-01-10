@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2013 See4sys, itemis and others.
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  *     itemis - [418005] Add support for model files with multiple root elements
  *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *     itemis - [425379] ExtendedResourceSet may contain a resource multiple times (with normalized and non-normalized URI)
  *
  * </copyright>
  */
@@ -1519,19 +1520,20 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		assertEquals(hbResource20_5, EcorePlatformUtil.getResource(URI.createPlatformResourceURI(hbFile20_20D_2StringUri, true)));
 		assertEquals(hbResource20_6, EcorePlatformUtil.getResource(URI.createPlatformResourceURI(hbFile20_20D_3StringUri, true)));
 
-		assertNull(EcorePlatformUtil.getResource(URI.createURI(hbFile20_20A_1StringUri, true)));
-		assertNull(EcorePlatformUtil.getResource(URI.createURI(hbFile20_20A_2StringUri, true)));
-		assertNull(EcorePlatformUtil.getResource(URI.createURI(hbFile20_20A_3StringUri, true)));
-		assertNull(EcorePlatformUtil.getResource(URI.createURI(hbFile20_20D_1StringUri, true)));
-		assertNull(EcorePlatformUtil.getResource(URI.createURI(hbFile20_20D_2StringUri, true)));
-		assertNull(EcorePlatformUtil.getResource(URI.createURI(hbFile20_20D_3StringUri, true)));
+		// Workspace-relative absolute URIs
+		assertEquals(hbResource20_1, EcorePlatformUtil.getResource(URI.createURI(hbFile20_20A_1StringUri, true)));
+		assertEquals(hbResource20_2, EcorePlatformUtil.getResource(URI.createURI(hbFile20_20A_2StringUri, true)));
+		assertEquals(hbResource20_3, EcorePlatformUtil.getResource(URI.createURI(hbFile20_20A_3StringUri, true)));
+		assertEquals(hbResource20_4, EcorePlatformUtil.getResource(URI.createURI(hbFile20_20D_1StringUri, true)));
+		assertEquals(hbResource20_5, EcorePlatformUtil.getResource(URI.createURI(hbFile20_20D_2StringUri, true)));
+		assertEquals(hbResource20_6, EcorePlatformUtil.getResource(URI.createURI(hbFile20_20D_3StringUri, true)));
 
-		assertNull(EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20A_1StringUri)));
-		assertNull(EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20A_2StringUri)));
-		assertNull(EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20A_3StringUri)));
-		assertNull(EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20D_1StringUri)));
-		assertNull(EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20D_2StringUri)));
-		assertNull(EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20D_3StringUri)));
+		assertEquals(hbResource20_1, EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20A_1StringUri)));
+		assertEquals(hbResource20_2, EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20A_2StringUri)));
+		assertEquals(hbResource20_3, EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20A_3StringUri)));
+		assertEquals(hbResource20_4, EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20D_1StringUri)));
+		assertEquals(hbResource20_5, EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20D_2StringUri)));
+		assertEquals(hbResource20_6, EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20D_3StringUri)));
 
 		// --------------------------------------------------------------------
 		// Given URI is unloaded resource's uri
