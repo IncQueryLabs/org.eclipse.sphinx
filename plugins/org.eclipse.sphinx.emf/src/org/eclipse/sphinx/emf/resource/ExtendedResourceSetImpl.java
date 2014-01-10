@@ -222,6 +222,14 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 				}
 				return resource;
 			}
+
+			URIConverter uriConverter = getURIConverter();
+			URI normalizedURI = uriConverter.normalize(uri);
+			resource = map.get(normalizedURI);
+			if (resource != null) {
+				map.put(normalizedURI, resource);
+				return resource;
+			}
 		}
 
 		Resource delegatedResource = delegatedGetResource(uri, loadOnDemand);
