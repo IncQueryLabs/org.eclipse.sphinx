@@ -12,6 +12,7 @@
  *     BMW Car IT - Added/Updated javadoc
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  *     itemis - [425379] ExtendedResourceSet may contain a resource multiple times (with normalized and non-normalized URI)
+ *	   itemis - [425175] Resources that produce exceptions while being loaded should not get unloaded by Sphinx thereafter
  *
  * </copyright>
  */
@@ -615,15 +616,19 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 					// Check if some resource has been created for given URI and added to the resource set
 					/*
 					 * !! Important Note !! Don't rely on resource returned by previous call to
-					 * ResourceSet#getResource() but try to retrieve it again because ResourceSet#getResource() may fail
-					 * and return null but resource for given URI may all the same have been added to resource set.
+					 * ResourceSet#getResource() but try to retrieve it again. This is because ResourceSet#getResource()
+					 * may fail by throwing an exception at a point where the resource for given URI has already been
+					 * created and added to the resource set.
 					 */
 					resource = getResource(uri, false);
 					if (resource != null) {
-						// Make sure that resource gets unloaded and removed from resource set again
-						EcoreResourceUtil.unloadResource(resource, true);
+						// Make sure that no empty resources are kept in resource set
+						if (resource.getContents().isEmpty()) {
+							EcoreResourceUtil.unloadResource(resource, true);
+						}
 
-						// Exception due to something different than that resource does not exist?
+						// Ignore exceptions complaining about that resource does not exist - this actually no exception
+						// but a valid situation during proxy resolution
 						if (EcoreResourceUtil.exists(resource.getURI())) {
 							// Leave an error about what has happened on resource
 							Throwable cause = ex.getCause();
