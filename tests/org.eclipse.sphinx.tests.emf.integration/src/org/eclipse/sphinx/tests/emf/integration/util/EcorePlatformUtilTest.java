@@ -1528,12 +1528,55 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		assertEquals(hbResource20_5, EcorePlatformUtil.getResource(URI.createURI(hbFile20_20D_2StringUri, true)));
 		assertEquals(hbResource20_6, EcorePlatformUtil.getResource(URI.createURI(hbFile20_20D_3StringUri, true)));
 
-		assertEquals(hbResource20_1, EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20A_1StringUri)));
-		assertEquals(hbResource20_2, EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20A_2StringUri)));
-		assertEquals(hbResource20_3, EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20A_3StringUri)));
-		assertEquals(hbResource20_4, EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20D_1StringUri)));
-		assertEquals(hbResource20_5, EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20D_2StringUri)));
-		assertEquals(hbResource20_6, EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20D_3StringUri)));
+		// Absolute file URIs
+		URI hbFile20_20A_1FileUri = URI.createFileURI(hbFile20_20A_1StringUri);
+		// Workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=425631: create file URI manually when running
+		// under Windows
+		if (org.eclipse.core.runtime.Platform.OS_WIN32.equals(org.eclipse.core.runtime.Platform.getOS())) {
+			hbFile20_20A_1FileUri = URI.createURI("file:" + hbFile20_20A_1StringUri);
+		}
+		assertTrue("Unexpected non-file URI: " + hbFile20_20A_1FileUri, hbFile20_20A_1FileUri.isFile());
+		assertNull(EcorePlatformUtil.getResource(hbFile20_20A_1FileUri));
+		URI hbFile20_20A_2FileUri = URI.createFileURI(hbFile20_20A_2StringUri);
+		// Workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=425631: create file URI manually when running
+		// under Windows
+		if (org.eclipse.core.runtime.Platform.OS_WIN32.equals(org.eclipse.core.runtime.Platform.getOS())) {
+			hbFile20_20A_2FileUri = URI.createURI("file:" + hbFile20_20A_2StringUri);
+		}
+		assertTrue("Unexpected non-file URI: " + hbFile20_20A_2FileUri, hbFile20_20A_2FileUri.isFile());
+		assertNull(EcorePlatformUtil.getResource(hbFile20_20A_2FileUri));
+		URI hbFile20_20A_3FileUri = URI.createFileURI(hbFile20_20A_3StringUri);
+		// Workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=425631: create file URI manually when running
+		// under Windows
+		if (org.eclipse.core.runtime.Platform.OS_WIN32.equals(org.eclipse.core.runtime.Platform.getOS())) {
+			hbFile20_20A_3FileUri = URI.createURI("file:" + hbFile20_20A_3StringUri);
+		}
+		assertTrue("Unexpected non-file URI: " + hbFile20_20A_3FileUri, hbFile20_20A_3FileUri.isFile());
+		assertNull(EcorePlatformUtil.getResource(hbFile20_20A_3FileUri));
+		URI hbFile20_20D_1FileUri = URI.createFileURI(hbFile20_20D_1StringUri);
+		// Workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=425631: create file URI manually when running
+		// under Windows
+		if (org.eclipse.core.runtime.Platform.OS_WIN32.equals(org.eclipse.core.runtime.Platform.getOS())) {
+			hbFile20_20D_1FileUri = URI.createURI("file:" + hbFile20_20D_1StringUri);
+		}
+		assertTrue("Unexpected non-file URI: " + hbFile20_20D_1FileUri, hbFile20_20D_1FileUri.isFile());
+		assertNull(EcorePlatformUtil.getResource(hbFile20_20D_1FileUri));
+		URI hbFile20_20D_2FileUri = URI.createFileURI(hbFile20_20D_2StringUri);
+		// Workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=425631: create file URI manually when running
+		// under Windows
+		if (org.eclipse.core.runtime.Platform.OS_WIN32.equals(org.eclipse.core.runtime.Platform.getOS())) {
+			hbFile20_20D_2FileUri = URI.createURI("file:" + hbFile20_20D_2StringUri);
+		}
+		assertTrue("Unexpected non-file URI: " + hbFile20_20D_2FileUri, hbFile20_20D_2FileUri.isFile());
+		assertNull(EcorePlatformUtil.getResource(hbFile20_20D_2FileUri));
+		URI hbFile20_20D_3FileUri = URI.createFileURI(hbFile20_20D_3StringUri);
+		// Workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=425631: create file URI manually when running
+		// under Windows
+		if (org.eclipse.core.runtime.Platform.OS_WIN32.equals(org.eclipse.core.runtime.Platform.getOS())) {
+			hbFile20_20D_3FileUri = URI.createURI("file:" + hbFile20_20D_3StringUri);
+		}
+		assertTrue("Unexpected non-file URI: " + hbFile20_20D_3FileUri, hbFile20_20D_3FileUri.isFile());
+		assertNull(EcorePlatformUtil.getResource(hbFile20_20D_3FileUri));
 
 		// --------------------------------------------------------------------
 		// Given URI is unloaded resource's uri
@@ -1542,7 +1585,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		ModelLoadManager.INSTANCE.unloadFile(fileToUnload, false, new NullProgressMonitor());
 		assertNotNull(hbResource20_1);
 		assertNull(EcorePlatformUtil.getResource(hbResource20_1.getURI()));
-		assertNull(EcorePlatformUtil.getResource(URI.createFileURI(hbFile20_20A_1StringUri)));
+		assertNull(EcorePlatformUtil.getResource(hbFile20_20A_1FileUri));
 		assertNull(EcorePlatformUtil.getResource(URI.createURI(hbFile20_20A_1StringUri, true)));
 		assertNull(EcorePlatformUtil.getResource(URI.createPlatformResourceURI(hbFile20_20A_1StringUri, true)));
 		// --------------------------------------------------------------------
