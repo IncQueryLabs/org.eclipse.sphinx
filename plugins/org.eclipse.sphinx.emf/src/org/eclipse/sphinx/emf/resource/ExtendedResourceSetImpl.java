@@ -229,6 +229,9 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 			resource = map.get(normalizedURI);
 			if (resource != null) {
 				map.put(uri, resource);
+				if (loadOnDemand && !resource.isLoaded()) {
+					demandLoadHelper(resource);
+				}
 				return resource;
 			}
 		}
