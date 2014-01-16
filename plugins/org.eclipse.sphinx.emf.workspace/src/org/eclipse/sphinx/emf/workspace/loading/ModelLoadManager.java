@@ -1,19 +1,20 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2013 BMW Car IT, itemis, See4sys and others.
+ *
+ * Copyright (c) 2008-2014 BMW Car IT, itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  *     itemis - [393021] ClassCastExceptions raised during loading model resources with Sphinx are ignored
  *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
  *     itemis - [418005] Add support for model files with multiple root elements
- * 
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.loading;
@@ -42,6 +43,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.MultiRule;
+import org.eclipse.emf.common.util.BasicEList.UnmodifiableEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
@@ -1582,21 +1584,22 @@ public final class ModelLoadManager {
 									if (reference.isMany()) {
 										@SuppressWarnings("unchecked")
 										EList<EObject> referencedObjects = (EList<EObject>) object.eGet(reference);
-										List<EObject> safeReferencedObjects = new ArrayList<EObject>(referencedObjects);
-										for (EObject referencedObject : safeReferencedObjects) {
-											if (referencedObject != null && !referencedObject.eIsProxy()) {
-
-												// Referenced object no longer part of same model as given object?
-												if (!modelDescriptor.getScope().belongsTo(referencedObject.eResource(), true)) {
-													referencedObjects.remove(referencedObject);
-													referencedObjects.add(EObjectUtil.createProxyFrom(referencedObject, object.eResource()));
+										// Be sure that referenced objects are not contained in an unmodifiable list
+										if (!(referencedObjects instanceof UnmodifiableEList<?>)) {
+											List<EObject> safeReferencedObjects = new ArrayList<EObject>(referencedObjects);
+											for (EObject referencedObject : safeReferencedObjects) {
+												if (referencedObject != null && !referencedObject.eIsProxy()) {
+													// Referenced object no longer part of same model as given object?
+													if (!modelDescriptor.getScope().belongsTo(referencedObject.eResource(), true)) {
+														referencedObjects.remove(referencedObject);
+														referencedObjects.add(EObjectUtil.createProxyFrom(referencedObject, object.eResource()));
+													}
 												}
 											}
 										}
 									} else {
 										EObject referencedObject = (EObject) object.eGet(reference);
 										if (referencedObject != null && !referencedObject.eIsProxy()) {
-
 											// Referenced object no longer part of same model as given object?
 											if (!modelDescriptor.getScope().belongsTo(referencedObject.eResource(), true)) {
 												object.eSet(reference, EObjectUtil.createProxyFrom(referencedObject, object.eResource()));
