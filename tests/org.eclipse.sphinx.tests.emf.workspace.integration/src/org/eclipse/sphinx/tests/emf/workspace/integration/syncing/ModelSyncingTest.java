@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2013 See4sys, itemis and others.
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel impelmentations to subclass EObjectImpl
  *
  * </copyright>
  */
@@ -1421,14 +1422,14 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 
 	}
 
-	// Open referring project, verify that references are proxies
-	// test Proxy Resolution is done when open referred project.
-	// UML reference uri will be resolved regardless the dependencies btw project
-	//
+	// Open referring project hbProject10_C, verify that references are proxies.
+	// Test proxy is unresolved when open referred project hbProject20_B, since no dependencies between the projects.
+	// Add reference from hbProject10_C to hbProject20_B, verify again that proxy resolution is done.
 	public void testProxyResolution_UMLReference1() throws Exception {
 
 		synchronizedOpenProject(refWks.hbProject10_C);
 
+		// verify that no project references exist in hbProject10_C
 		assertEquals(0, refWks.hbProject10_C.getDescription().getReferencedProjects().length);
 
 		Resource resourceUml2_C_1 = refWks.editingDomainUml2.getResourceSet().getResource(
@@ -1452,21 +1453,23 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			}
 		}
 		assertFalse(objectUml2.isEmpty());
-		// Verify that port of component have unresolved reference
+		// Verify that port of component have unresolved reference.
 		// The referred resources in hbProject20_B are not existing, so the references will be resolved as proxies
 		for (Port port : objectUml2) {
 			EObject refObject = port.getType();
 			assertNotNull(refObject);
 			assertTrue(refObject.eIsProxy());
 		}
+
+		// ---------------------------------------------
 		/*
-		 * Open referred project, references are asked to resolved. Now referred resources is existing and loaded, the
-		 * proxies will be resolved regardless the project scope or model scope. It's the expected behavior for UML
-		 * models
+		 * Open referred project hbProject20_B, references are asked to resolved. Now referred resources is existing,
+		 * however there is no project reference dependency from hbProject10_C to hbProject20_B, the proxies are still
+		 * unresolved.
 		 */
 		synchronizedOpenProject(refWks.hbProject20_B);
 
-		// Verify the references are resolved
+		// Verify the references are unresolved
 		List<Port> testObjectUml2 = new ArrayList<Port>();
 		Resource testresourceUml2_C_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_C + "/"
@@ -1487,7 +1490,49 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			}
 		}
 		assertFalse(testObjectUml2.isEmpty());
+		// Verify that port of component have unresolved reference
+		// The referred resources in hbProject20_B are not in the project scope, so the references will be resolved as
+		// proxies
 		for (Port port : testObjectUml2) {
+			EObject refObject = port.getType();
+			assertNotNull(refObject);
+			assertTrue(refObject.eIsProxy());
+		}
+
+		// ---------------------------------------------
+		/*
+		 * Add reference from hbProject10_C to hbProject20_B. Now the referred resource is in the same project scope,
+		 * the proxy resolution is done.
+		 */
+		// add reference from hbProject10_C to hbProject20_B
+		IProjectDescription hbProject10_C_prjDesc = refWks.hbProject10_C.getDescription();
+		hbProject10_C_prjDesc.setReferencedProjects(new IProject[] { refWks.hbProject20_B });
+		refWks.hbProject10_C.setDescription(hbProject10_C_prjDesc, new NullProgressMonitor());
+		waitForModelLoading();
+
+		// Verify the references are resolved
+		List<Port> testObjectUml2B = new ArrayList<Port>();
+		Resource testresourceUml2_C_1B = refWks.editingDomainUml2.getResourceSet().getResource(
+				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_C + "/"
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_10C_1, true), false);
+		assertNotNull(testresourceUml2_C_1B);
+		assertTrue(testresourceUml2_C_1B.getContents().size() > 0);
+		Model testModelB = (Model) testresourceUml2_C_1B.getContents().get(0);
+		assertNotNull(testModelB);
+		assertEquals(2, testModelB.getPackagedElements().size());
+		org.eclipse.uml2.uml.PackageableElement testUml2PackageB = testModel.getPackagedElements().get(1);
+
+		for (Element element : testUml2PackageB.getOwnedElements()) {
+			if (element instanceof Component) {
+				Component comp = (Component) element;
+				assertTrue(comp.getOwnedPorts().size() > 0);
+				Port port = comp.getOwnedPorts().get(0);
+				testObjectUml2B.add(port);
+			}
+		}
+		assertFalse(testObjectUml2B.isEmpty());
+		// Verify that port of component have resolved reference
+		for (Port port : testObjectUml2B) {
 			EObject refObject = port.getType();
 			assertNotNull(refObject);
 			assertFalse(refObject.eIsProxy());
@@ -1496,18 +1541,19 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 		}
 	}
 
-	// Open referred project
-	// Then open referring project
-	// test Proxy Resolution is done
+	// Open referred project hbProject20_B, then open referring project hbProject10_C.
+	// Test that proxy resolution is done only when the project reference (from hbProject10_C to hbProject20_B) is
+	// added.
 	public void testProxyResolution_UMLReference2() throws Exception {
-		// Open referred project
+		// Open referred project hbProject20_B
 		synchronizedOpenProject(refWks.hbProject20_B);
-		// Open referring project
+		// Open referring project hbProject10_C
 		synchronizedOpenProject(refWks.hbProject10_C);
 		// Verify that there is no link btw 2 projects
 		assertEquals(0, refWks.hbProject10_C.getDescription().getReferencedProjects().length);
 
-		// Verify the references are resolved
+		// ------------------------------------------------
+		// Verify the references are unresolved
 		List<Port> testObjectUml2 = new ArrayList<Port>();
 		Resource testresourceUml2_C_1 = refWks.editingDomainUml2.getResourceSet().getResource(
 				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_C + "/"
@@ -1528,7 +1574,52 @@ public class ModelSyncingTest extends DefaultIntegrationTestCase {
 			}
 		}
 		assertFalse(testObjectUml2.isEmpty());
+		// Verify that port of component have unresolved reference.
+		// The referred resources in hbProject20_B are not in the project scope, so the references will be resolved as
+		// proxies
 		for (Port port : testObjectUml2) {
+			EObject refObject = port.getType();
+			assertNotNull(refObject);
+			assertTrue(refObject.eIsProxy());
+			IFile refFile = EcorePlatformUtil.getFile(refObject);
+			assertNull(refFile);
+		}
+
+		// ------------------------------------------------
+		/*
+		 * Add reference from hbProject10_C to hbProject20_B. Now the referred resource is in the same project scope,
+		 * the proxy resolution is done.
+		 */
+		// add reference from hbProject10_C to hbProject20_B
+		IProjectDescription hbProject10_C_prjDesc = refWks.hbProject10_C.getDescription();
+		hbProject10_C_prjDesc.setReferencedProjects(new IProject[] { refWks.hbProject20_B });
+		refWks.hbProject10_C.setDescription(hbProject10_C_prjDesc, new NullProgressMonitor());
+		waitForModelLoading();
+		assertEquals(1, refWks.hbProject10_C.getDescription().getReferencedProjects().length);
+
+		// Verify the references are resolved
+		List<Port> objectUml2 = new ArrayList<Port>();
+		testresourceUml2_C_1 = refWks.editingDomainUml2.getResourceSet().getResource(
+				URI.createPlatformResourceURI(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_10_C + "/"
+						+ DefaultTestReferenceWorkspace.UML2_FILE_NAME_10C_1, true), false);
+		assertNotNull(testresourceUml2_C_1);
+		assertTrue(testresourceUml2_C_1.getContents().size() > 0);
+		testModel = (Model) testresourceUml2_C_1.getContents().get(0);
+		assertNotNull(testModel);
+		assertEquals(2, testModel.getPackagedElements().size());
+		testUml2Package = testModel.getPackagedElements().get(1);
+
+		for (Element element : testUml2Package.getOwnedElements()) {
+			if (element instanceof Component) {
+				Component comp = (Component) element;
+				assertTrue(comp.getOwnedPorts().size() > 0);
+				Port port = comp.getOwnedPorts().get(0);
+				objectUml2.add(port);
+			}
+		}
+		assertFalse(objectUml2.isEmpty());
+		// Verify that port of component have resolved reference
+		for (Port port : objectUml2) {
 			EObject refObject = port.getType();
 			assertNotNull(refObject);
 			assertFalse(refObject.eIsProxy());
