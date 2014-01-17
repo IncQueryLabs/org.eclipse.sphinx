@@ -1,17 +1,18 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
  *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
- * 
+ *     itemis - [425854] The diagram created in the Artop is not saved after being updated to "sphinx-Update-0.8.0M4".
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.scoping;
@@ -159,6 +160,6 @@ public abstract class AbstractResourceScope implements IResourceScope {
 	 */
 	@Override
 	public String toString() {
-		return this.getClass().getName() + "[" + getRoot().getName() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ 
+		return this.getClass().getSimpleName() + "@" + getRoot().getName(); //$NON-NLS-1$
 	}
 }

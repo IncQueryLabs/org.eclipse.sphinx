@@ -12,6 +12,7 @@
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
  *     itemis - [423662] Prevent creation of duplicated model descriptors by design
+ *     itemis - [425854] The diagram created in the Artop is not saved after being updated to "sphinx-Update-0.8.0M4".
  *
  * </copyright>
  */
@@ -111,16 +112,17 @@ public class ModelDescriptorRegistry {
 	}
 
 	private void internalAddModel(IFile file) {
-		IMetaModelDescriptor nativeMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(file);
+		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(file);
 
-		IMetaModelDescriptor effectiveMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getEffectiveDescriptor(file);
-		IResourceScopeProvider resourceScopeProvider = ResourceScopeProviderRegistry.INSTANCE.getResourceScopeProvider(effectiveMMDescriptor);
+		IMetaModelDescriptor targetMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getTargetDescriptor(file);
+		IResourceScopeProvider resourceScopeProvider = ResourceScopeProviderRegistry.INSTANCE
+				.getResourceScopeProvider(targetMMDescriptor != null ? targetMMDescriptor : mmDescriptor);
 		IResourceScope resourceScope = null;
 		if (resourceScopeProvider != null) {
 			resourceScope = resourceScopeProvider.getScope(file);
 		}
 
-		internalAddModel(nativeMMDescriptor, resourceScopeProvider, resourceScope);
+		internalAddModel(mmDescriptor, targetMMDescriptor, resourceScopeProvider, resourceScope);
 	}
 
 	/**
@@ -140,43 +142,48 @@ public class ModelDescriptorRegistry {
 	}
 
 	private void internalAddModel(Resource resource) {
-		IMetaModelDescriptor nativeMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource);
+		IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resource);
 
-		IMetaModelDescriptor effectiveMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getEffectiveDescriptor(resource);
-		IResourceScopeProvider resourceScopeProvider = ResourceScopeProviderRegistry.INSTANCE.getResourceScopeProvider(effectiveMMDescriptor);
+		IMetaModelDescriptor targetMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getTargetDescriptor(resource);
+		IResourceScopeProvider resourceScopeProvider = ResourceScopeProviderRegistry.INSTANCE
+				.getResourceScopeProvider(targetMMDescriptor != null ? targetMMDescriptor : mmDescriptor);
 		IResourceScope resourceScope = null;
 		if (resourceScopeProvider != null) {
 			resourceScope = resourceScopeProvider.getScope(resource);
 		}
 
-		internalAddModel(nativeMMDescriptor, resourceScopeProvider, resourceScope);
+		internalAddModel(mmDescriptor, targetMMDescriptor, resourceScopeProvider, resourceScope);
 	}
 
 	/**
 	 * Adds the {@linkplain IModelDescriptor model descriptor} corresponding to the specified
-	 * {@linkplain IMetaModelDescriptor meta-model descriptor} and {@linkplain IResourceScope resource scope}
-	 * {@link IResource root} to this registry. The model descriptor is also added for the resource scopes referenced by
-	 * the resource scope behind specified <tt>resourceScopeRoot</tt>.
+	 * {@linkplain IMetaModelDescriptor meta-model descriptor}, {@linkplain IMetaModelDescriptor target meta-model
+	 * descriptor} and {@linkplain IResourceScope resource scope} {@link IResource root} to this registry. The model
+	 * descriptor is also added for the resource scopes referenced by the resource scope behind specified
+	 * <tt>resourceScopeRoot</tt>.
 	 * 
 	 * @param mmDescriptor
 	 *            The meta-model descriptor of the model to add.
+	 * @param targetMMDescriptor
+	 *            The target meta-model descriptor of the model to add.
 	 * @param resourceScopeRoot
 	 *            The root of the resource scope of the model to add.
 	 * @since 0.8.0
 	 */
-	public void addModel(IMetaModelDescriptor mmDescriptor, IResource resourceScopeRoot) {
+	public void addModel(IMetaModelDescriptor mmDescriptor, IMetaModelDescriptor targetMMDescriptor, IResource resourceScopeRoot) {
 		IResourceScopeProvider resourceScopeProvider = ResourceScopeProviderRegistry.INSTANCE.getResourceScopeProvider(mmDescriptor);
 		IResourceScope resourceScope = null;
 		if (resourceScopeProvider != null) {
 			resourceScope = resourceScopeProvider.getScope(resourceScopeRoot);
 		}
-		internalAddModel(mmDescriptor, resourceScopeProvider, resourceScope);
+		internalAddModel(mmDescriptor, targetMMDescriptor, resourceScopeProvider, resourceScope);
 	}
 
-	private void internalAddModel(IMetaModelDescriptor mmDescriptor, IResourceScopeProvider resourceScopeProvider, IResourceScope resourceScope) {
+	private void internalAddModel(IMetaModelDescriptor mmDescriptor, IMetaModelDescriptor targetMMDescriptor,
+			IResourceScopeProvider resourceScopeProvider, IResourceScope resourceScope) {
 		if (mmDescriptor != null && resourceScope != null) {
 			// Create and add model descriptor for given root
-			internalAddModel(mmDescriptor, resourceScope);
+			internalAddModel(mmDescriptor, targetMMDescriptor, resourceScope);
 
 			// Create and add corresponding model descriptors that are implied on referencing roots if necessary
 			for (IResource referencingRoot : resourceScope.getReferencingRoots()) {
@@ -184,7 +191,7 @@ public class ModelDescriptorRegistry {
 				if (referencedModelDescriptor == null) {
 					IResourceScope referencingResourceScope = resourceScopeProvider.getScope(referencingRoot);
 					if (referencingResourceScope != null) {
-						internalAddModel(mmDescriptor, referencingResourceScope);
+						internalAddModel(mmDescriptor, targetMMDescriptor, referencingResourceScope);
 					}
 				}
 			}
@@ -193,15 +200,17 @@ public class ModelDescriptorRegistry {
 
 	/**
 	 * Adds the {@linkplain IModelDescriptor model descriptor} corresponding to the specified
-	 * {@linkplain IMetaModelDescriptor meta-model descriptor} and {@link IResourceScope resource scope} to this
-	 * registry.
+	 * {@linkplain IMetaModelDescriptor meta-model descriptor}, {@linkplain IMetaModelDescriptor target meta-model
+	 * descriptor} and {@link IResourceScope resource scope} to this registry.
 	 * 
 	 * @param mmDescriptor
 	 *            The meta-model descriptor of the model to add.
+	 * @param targetMMDescriptor
+	 *            The target meta-model descriptor of the model to add.
 	 * @param resourceScope
 	 *            The {@link IResourceScope resource scope} of the model to add.
 	 */
-	private void internalAddModel(IMetaModelDescriptor mmDescriptor, IResourceScope resourceScope) {
+	private void internalAddModel(IMetaModelDescriptor mmDescriptor, IMetaModelDescriptor targetMMDescriptor, IResourceScope resourceScope) {
 		Assert.isNotNull(mmDescriptor);
 		Assert.isNotNull(resourceScope);
 
@@ -210,7 +219,7 @@ public class ModelDescriptorRegistry {
 			modelDescriptorsForMetaModelDescriptor = Collections.synchronizedSet(new HashSet<IModelDescriptor>(2));
 			modelDescriptors.put(mmDescriptor, modelDescriptorsForMetaModelDescriptor);
 		}
-		ModelDescriptor modelDescriptor = new ModelDescriptor(mmDescriptor, resourceScope);
+		ModelDescriptor modelDescriptor = new ModelDescriptor(mmDescriptor, targetMMDescriptor, resourceScope);
 		if (modelDescriptorsForMetaModelDescriptor.add(modelDescriptor)) {
 			fireModelAdded(modelDescriptor);
 			// TODO Surround with appropriate tracing option
@@ -595,7 +604,7 @@ public class ModelDescriptorRegistry {
 	public void moveModels(IProject oldProject, IProject newProject) {
 		for (IModelDescriptor modelDescriptor : getModels(oldProject)) {
 			internalRemoveModel(modelDescriptor);
-			internalAddModel(modelDescriptor.getMetaModelDescriptor(), modelDescriptor.getScope());
+			internalAddModel(modelDescriptor.getMetaModelDescriptor(), modelDescriptor.getTargetMetaModelDescriptor(), modelDescriptor.getScope());
 		}
 	}
 

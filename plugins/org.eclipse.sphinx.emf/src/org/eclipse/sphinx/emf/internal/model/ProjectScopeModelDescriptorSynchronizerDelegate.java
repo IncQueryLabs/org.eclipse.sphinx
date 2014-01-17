@@ -10,6 +10,7 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [423662] Prevent creation of duplicated model descriptors by design
+ *     itemis - [425854] The diagram created in the Artop is not saved after being updated to "sphinx-Update-0.8.0M4".
  *
  * </copyright>
  */
@@ -61,7 +62,8 @@ public class ProjectScopeModelDescriptorSynchronizerDelegate extends AbstractRes
 					// added
 					for (IProject referencedProject : ExtendedPlatform.getReferencedProjectsSafely(project)) {
 						for (IModelDescriptor referencedModelDescriptor : ModelDescriptorRegistry.INSTANCE.getModels(referencedProject)) {
-							ModelDescriptorRegistry.INSTANCE.addModel(referencedModelDescriptor.getMetaModelDescriptor(), project);
+							ModelDescriptorRegistry.INSTANCE.addModel(referencedModelDescriptor.getMetaModelDescriptor(),
+									referencedModelDescriptor.getTargetMetaModelDescriptor(), project);
 						}
 					}
 					progress.worked(1);

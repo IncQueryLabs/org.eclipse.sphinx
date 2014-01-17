@@ -12,6 +12,7 @@
  *     itemis - [410825] Make sure that EcorePlatformUtil#getResourcesInModel(contextResource, includeReferencedModels) method return resources of the context resource in the same resource set
  *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
  *     itemis - [423662] Prevent creation of duplicated model descriptors by design
+ *     itemis - [425854] The diagram created in the Artop is not saved after being updated to "sphinx-Update-0.8.0M4".
  *
  * </copyright>
  */
@@ -55,6 +56,11 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	protected IMetaModelDescriptor mmDescriptor;
 
 	/**
+	 * The target meta-model descriptor.
+	 */
+	protected IMetaModelDescriptor targetMMDescriptor;
+
+	/**
 	 * The {@link IResourceScope resource scope} of the model described here.
 	 */
 	protected IResourceScope resourceScope;
@@ -72,10 +78,11 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	 * @param rootProject
 	 *            The root project of the described model.
 	 */
-	public ModelDescriptor(IMetaModelDescriptor mmDescriptor, IResourceScope resourceScope) {
+	public ModelDescriptor(IMetaModelDescriptor mmDescriptor, IMetaModelDescriptor targetMMDescriptor, IResourceScope resourceScope) {
 		Assert.isNotNull(mmDescriptor);
 		Assert.isNotNull(resourceScope);
 		this.mmDescriptor = mmDescriptor;
+		this.targetMMDescriptor = targetMMDescriptor;
 		this.resourceScope = resourceScope;
 	}
 
@@ -84,6 +91,21 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	 */
 	@Override
 	public IMetaModelDescriptor getMetaModelDescriptor() {
+		return mmDescriptor;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.model.IModelDescriptor#getTargetMetaModelDescriptor()
+	 */
+	@Override
+	public IMetaModelDescriptor getTargetMetaModelDescriptor() {
+		return targetMMDescriptor;
+	}
+
+	protected IMetaModelDescriptor getEffectiveMetaModelDescriptor() {
+		if (targetMMDescriptor != null) {
+			return targetMMDescriptor;
+		}
 		return mmDescriptor;
 	}
 
@@ -100,7 +122,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 		if (editingDomain == null) {
 			IResource resourceScopeRoot = getRoot();
 			if (resourceScopeRoot instanceof IContainer) {
-				editingDomain = WorkspaceEditingDomainUtil.getEditingDomain((IContainer) resourceScopeRoot, getMetaModelDescriptor());
+				editingDomain = WorkspaceEditingDomainUtil.getEditingDomain((IContainer) resourceScopeRoot, getEffectiveMetaModelDescriptor());
 			} else if (resourceScopeRoot instanceof IFile) {
 				editingDomain = WorkspaceEditingDomainUtil.getEditingDomain((IFile) resourceScopeRoot);
 			} else {
@@ -144,7 +166,14 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 		for (IFile file : resourceScope.getPersistedFiles(includeReferencedScopes)) {
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(file);
 			if (this.mmDescriptor.equals(mmDescriptor)) {
-				persistedFiles.add(file);
+				if (targetMMDescriptor != null) {
+					IMetaModelDescriptor targetMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getTargetDescriptor(file);
+					if (this.targetMMDescriptor.equals(targetMMDescriptor)) {
+						persistedFiles.add(file);
+					}
+				} else {
+					persistedFiles.add(file);
+				}
 			}
 		}
 
@@ -182,7 +211,14 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 		if (file != null) {
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(file);
 			if (this.mmDescriptor.equals(mmDescriptor)) {
-				return resourceScope.belongsTo(file, includeReferencedScopes);
+				if (targetMMDescriptor != null) {
+					IMetaModelDescriptor targetMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getTargetDescriptor(file);
+					if (this.targetMMDescriptor.equals(targetMMDescriptor)) {
+						return resourceScope.belongsTo(file, includeReferencedScopes);
+					}
+				} else {
+					return resourceScope.belongsTo(file, includeReferencedScopes);
+				}
 			}
 		}
 
@@ -261,8 +297,8 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	@Override
 	public boolean didBelongTo(Resource resource, boolean includeReferencedScopes) {
 		if (resource != null) {
-			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getOldDescriptor(resource);
-			if (this.mmDescriptor.equals(mmDescriptor)) {
+			IMetaModelDescriptor oldMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getOldDescriptor(resource);
+			if (mmDescriptor.equals(oldMMDescriptor)) {
 				return resourceScope.didBelongTo(resource, includeReferencedScopes);
 			}
 		}
@@ -317,7 +353,9 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	public boolean equals(Object object) {
 		if (object instanceof ModelDescriptor) {
 			ModelDescriptor otherModelDescriptor = (ModelDescriptor) object;
-			return mmDescriptor.equals(otherModelDescriptor.mmDescriptor) && resourceScope.equals(otherModelDescriptor.getScope());
+			return mmDescriptor.equals(otherModelDescriptor.mmDescriptor)
+					&& (targetMMDescriptor == null && otherModelDescriptor.targetMMDescriptor == null || targetMMDescriptor
+							.equals(otherModelDescriptor.targetMMDescriptor)) && resourceScope.equals(otherModelDescriptor.resourceScope);
 		}
 		return false;
 	}
@@ -327,7 +365,7 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	 */
 	@Override
 	public int hashCode() {
-		return mmDescriptor.hashCode() + resourceScope.getRoot().hashCode();
+		return mmDescriptor.hashCode() + (targetMMDescriptor != null ? targetMMDescriptor.hashCode() : 0) + resourceScope.getRoot().hashCode();
 	}
 
 	/*
@@ -335,6 +373,6 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	 */
 	@Override
 	public String toString() {
-		return mmDescriptor + "@" + resourceScope.getRoot().getName(); //$NON-NLS-1$
+		return mmDescriptor + (targetMMDescriptor != null ? "->" + targetMMDescriptor : "") + "@" + resourceScope.getRoot().getName(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 }
