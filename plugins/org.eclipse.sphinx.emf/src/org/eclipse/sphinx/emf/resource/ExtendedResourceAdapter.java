@@ -212,6 +212,14 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	}
 
 	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getHREF(org.eclipse.emf.ecore.EObject)
+	 */
+	@Override
+	public String getHREF(EObject eObject) {
+		return getURI(eObject).fragment();
+	}
+
+	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#validateURI(java.lang.String)
 	 */
 	@Override

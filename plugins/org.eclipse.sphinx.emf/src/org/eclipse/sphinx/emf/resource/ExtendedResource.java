@@ -254,6 +254,16 @@ public interface ExtendedResource {
 	URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject);
 
 	/**
+	 * Returns an HREF to this object from this resource. Clients may implement/override this method when they require
+	 * HREFs with custom formats to be created.
+	 * 
+	 * @param eObject
+	 *            The {@link EObject} for which the HREF is to be created.
+	 * @return the HREF to this object from this resource.
+	 */
+	String getHREF(EObject eObject);
+
+	/**
 	 * Determines whether or not the given string represents a valid URI.
 	 * 
 	 * @param uri
