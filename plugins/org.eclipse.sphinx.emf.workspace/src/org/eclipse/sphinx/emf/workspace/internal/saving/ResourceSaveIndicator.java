@@ -33,7 +33,6 @@ import org.eclipse.emf.transaction.ResourceSetListener;
 import org.eclipse.emf.transaction.ResourceSetListenerImpl;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.saving.IResourceSaveIndicator;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.internal.ResourceUndoContextPolicy;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 
@@ -224,7 +223,7 @@ public class ResourceSaveIndicator implements IResourceSaveIndicator {
 	 */
 	@Override
 	public void setDirty(Resource resource) {
-		if (resource != null && EcoreResourceUtil.exists(resource.getURI())) {
+		if (resource != null) {
 			if (dirtyResources.add(resource)) {
 				ModelSaveManager.INSTANCE.handleDirtyStateChanged(resource);
 			}

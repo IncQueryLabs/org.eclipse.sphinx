@@ -1473,7 +1473,10 @@ public final class EcorePlatformUtil {
 	public static ISchedulingRule createSaveSchedulingRule(Resource resource) {
 		if (resource != null) {
 			IFile modelFile = getFile(resource);
-			return ExtendedPlatform.createSaveSchedulingRule(modelFile);
+			if (EcoreResourceUtil.exists(resource.getURI())) {
+				return ExtendedPlatform.createSaveSchedulingRule(modelFile);
+			}
+			return ExtendedPlatform.createSaveNewSchedulingRule(modelFile);
 		}
 		return null;
 	}
@@ -1613,9 +1616,12 @@ public final class EcorePlatformUtil {
 							// Convert path to URI
 							URI uri = URI.createPlatformResourceURI(descriptor.getPath().toString(), true);
 
-							// add new resource
-							EcoreResourceUtil.addNewModelResource(editingDomain.getResourceSet(), uri, descriptor.getContentTypeId(),
-									descriptor.getModelRoot());
+							// Add new resource
+							Resource resource = EcoreResourceUtil.addNewModelResource(editingDomain.getResourceSet(), uri,
+									descriptor.getContentTypeId(), descriptor.getModelRoot());
+
+							// Mark new resource as dirty
+							SaveIndicatorUtil.setDirty(editingDomain, resource);
 
 							progress.worked(1);
 						}
