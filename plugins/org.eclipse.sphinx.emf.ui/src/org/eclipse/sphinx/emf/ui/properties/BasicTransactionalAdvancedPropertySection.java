@@ -1,19 +1,21 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2013 itemis, See4sys and others.
+ *
+ * Copyright (c) 2008-2014 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [393441] SWTException occasionally occurring when BasicTransactionalAdvancedPropertySection is updated
  *     itemis - [393477] Provider hook for unwrapping elements before letting BasicTabbedPropertySheetTitleProvider retrieve text or image for them
  *     itemis - [408537] Enable property descriptions of model object features to be displayed in status line of Properties view
  *     itemis - [408540] Provide hook for unwrapping selected model object before letting BasicTransactionalAdvancedPropertySection process it
  *     itemis - [422130] The original element should be returned when unwrapped if the element is instance of FeatureMapEntryWrapperItemProvider
+ *     itemis - [425252] UML property section hangs when accessing reference property of a stereotype application
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.ui.properties;
@@ -21,7 +23,6 @@ package org.eclipse.sphinx.emf.ui.properties;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
@@ -29,7 +30,6 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.ui.celleditor.ExtendedDialogCellEditor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.FeatureMapEntryWrapperItemProvider;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
@@ -384,29 +384,32 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 			Object feature = itemPropertyDescriptor.getFeature(eObject);
 			if (feature instanceof EReference) {
 				final EReference reference = (EReference) feature;
-				InternalEObject internalEObject = (InternalEObject) eObject;
 				if (!reference.isMany()) {
-					EObject value = (EObject) internalEObject.eGet(reference);
-					if (value != null && value.eIsProxy()) {
-						return new ProxyURICellEditor(composite, eObject, reference, value);
+					Collection<?> choiceOfValues = itemPropertyDescriptor.getChoiceOfValues(eObject);
+					if (choiceOfValues != null) {
+						EObject value = (EObject) choiceOfValues.iterator().next();
+						if (value != null && value.eIsProxy()) {
+							return new ProxyURICellEditor(composite, eObject, reference, value);
+						}
 					}
 				} else {
-					@SuppressWarnings("unchecked")
-					List<EObject> values = (List<EObject>) internalEObject.eGet(reference);
-					for (EObject value : values) {
-						if (value.eIsProxy()) {
-							final ILabelProvider editLabelProvider = propertyDescriptor.getLabelProvider();
-							final Collection<?> choiceOfValues = itemPropertyDescriptor.getChoiceOfValues(eObject);
-							return new ExtendedDialogCellEditor(composite, editLabelProvider) {
-								@Override
-								protected Object openDialogBox(Control cellEditorWindow) {
-									ProxyURIFeatureEditorDialog dialog = new ProxyURIFeatureEditorDialog(cellEditorWindow.getShell(),
-											editLabelProvider, eObject, reference, propertyDescriptor.getDisplayName(), new ArrayList<Object>(
-													choiceOfValues), false, itemPropertyDescriptor.isSortChoices(eObject));
-									dialog.open();
-									return dialog.getResult();
-								}
-							};
+					final Collection<?> choiceOfValues = itemPropertyDescriptor.getChoiceOfValues(eObject);
+					if (choiceOfValues != null) {
+						for (Object element : choiceOfValues) {
+							EObject value = (EObject) element;
+							if (value.eIsProxy()) {
+								final ILabelProvider editLabelProvider = propertyDescriptor.getLabelProvider();
+								return new ExtendedDialogCellEditor(composite, editLabelProvider) {
+									@Override
+									protected Object openDialogBox(Control cellEditorWindow) {
+										ProxyURIFeatureEditorDialog dialog = new ProxyURIFeatureEditorDialog(cellEditorWindow.getShell(),
+												editLabelProvider, eObject, reference, propertyDescriptor.getDisplayName(), new ArrayList<Object>(
+														choiceOfValues), false, itemPropertyDescriptor.isSortChoices(eObject));
+										dialog.open();
+										return dialog.getResult();
+									}
+								};
+							}
 						}
 					}
 				}

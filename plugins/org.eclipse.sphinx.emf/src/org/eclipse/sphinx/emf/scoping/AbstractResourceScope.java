@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2013 See4sys, itemis and others.
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
  *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
  *     itemis - [425854] The diagram created in the Artop is not saved after being updated to "sphinx-Update-0.8.0M4".
+ *     itemis - [425252] UML property section hangs when accessing reference property of a stereotype application
  *
  * </copyright>
  */
@@ -29,11 +30,13 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSet;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
@@ -119,7 +122,19 @@ public abstract class AbstractResourceScope implements IResourceScope {
 	@Override
 	public boolean isShared(Resource resource) {
 		if (resource != null) {
-			return isShared(resource.getURI());
+			boolean shared = isShared(resource.getURI());
+			if (shared) {
+				return true;
+			}
+
+			URI uri = resource.getURI();
+			if (!uri.isPlatformResource()) {
+				URIConverter converter = EcoreResourceUtil.getURIConverter(resource.getResourceSet());
+				URI normalizedUri = converter.normalize(uri);
+				if (!uri.equals(normalizedUri)) {
+					return isShared(normalizedUri);
+				}
+			}
 		}
 		return false;
 	}

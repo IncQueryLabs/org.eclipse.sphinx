@@ -15,6 +15,7 @@ Contributors:
     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
     itemis - Moved contribution of ExtendedUMLResourceFactoryImpl to new UML2WorkspaceEditingDomainFactory class to avoid conflict with
              contribution of standard UMLResourceFactoryImpl by Eclipse UML2 project
+    itemis - [425252] UML property section hangs when accessing reference property of a stereotype application
 
 </copyright>
 -->
@@ -36,5 +37,15 @@ Contributors:
                metaModelDescriptorIdPattern="org.eclipse.sphinx.examples.uml2"/>
       </factory>
    </extension>
+     <extension
+           point="org.eclipse.sphinx.emf.resourceScopeProviders">
+        <provider
+              class="org.eclipse.sphinx.examples.uml2.ide.scoping.UML2FileResourceScopeProvider"
+              id="org.eclipse.sphinx.examples.uml2.ide.provider1">
+           <applicableFor
+                 metaModelDescriptorIdPattern="org.eclipse.sphinx.examples.uml2">
+           </applicableFor>
+        </provider>
+     </extension>
 
 </plugin>
