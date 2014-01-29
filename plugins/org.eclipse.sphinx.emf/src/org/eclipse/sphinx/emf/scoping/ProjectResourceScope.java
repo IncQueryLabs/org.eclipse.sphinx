@@ -1,18 +1,19 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2013 See4sys, itemis, BMW Car IT and others.
+ *
+ * Copyright (c) 2008-2014 See4sys, itemis, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [346715] IMetaModelDescriptor methods of MetaModelDescriptorRegistry taking EObject or Resource arguments should not start new EMF transactions
  *     BMW Car IT - [373481] Performance optimizations for model loading. Added referenced projects cache.
  *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
- * 
+ *     itemis - [425252] UML property section hangs when accessing reference property of a stereotype application
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.scoping;
@@ -35,7 +36,7 @@ public class ProjectResourceScope extends AbstractResourceScope {
 
 	protected IProject rootProject;
 
-	// use a non-caching provider by default
+	// Use a non-caching provider by default
 	protected IReferencedProjectsProvider referencedProjectsProvider = new ReferencedProjectsProvider();
 
 	public ProjectResourceScope(IResource resource) {
@@ -88,11 +89,15 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 */
 	@Override
 	public boolean belongsTo(IFile file, boolean includeReferencedScopes) {
+		if (belongsToRootOrReferencedProjects(file, includeReferencedScopes)) {
+			return true;
+		}
+
 		if (isShared(file)) {
 			return true;
 		}
 
-		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
+		return false;
 	}
 
 	/*
@@ -100,12 +105,16 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 */
 	@Override
 	public boolean belongsTo(Resource resource, boolean includeReferencedScopes) {
+		IFile file = EcorePlatformUtil.getFile(resource);
+		if (belongsToRootOrReferencedProjects(file, includeReferencedScopes)) {
+			return true;
+		}
+
 		if (isShared(resource)) {
 			return true;
 		}
 
-		IFile file = EcorePlatformUtil.getFile(resource);
-		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
+		return false;
 	}
 
 	/*
@@ -113,12 +122,16 @@ public class ProjectResourceScope extends AbstractResourceScope {
 	 */
 	@Override
 	public boolean belongsTo(URI uri, boolean includeReferencedScopes) {
+		IFile file = EcorePlatformUtil.getFile(uri);
+		if (belongsToRootOrReferencedProjects(file, includeReferencedScopes)) {
+			return true;
+		}
+
 		if (isShared(uri)) {
 			return true;
 		}
 
-		IFile file = EcorePlatformUtil.getFile(uri);
-		return belongsToRootOrReferencedProjects(file, includeReferencedScopes);
+		return false;
 	}
 
 	/*
