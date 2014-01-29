@@ -1003,7 +1003,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				return;
 			}
 
-			IStatusLineManager statusLineManager = getActionBars().getStatusLineManager();
+			IStatusLineManager statusLineManager = getActionBars() != null ? getActionBars().getStatusLineManager() : null;
 			IProgressMonitor monitor = statusLineManager != null ? statusLineManager.getProgressMonitor() : new NullProgressMonitor();
 			doSave(monitor);
 		}
@@ -1112,7 +1112,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	public void setStatusLineManager(ISelection selection) {
 		IStatusLineManager statusLineManager = currentSelectionProvider != null && currentSelectionProvider == contentOutlineViewer ? contentOutlineStatusLineManager
-				: getActionBars().getStatusLineManager();
+				: getActionBars() != null ? getActionBars().getStatusLineManager() : null;
 		if (statusLineManager != null) {
 			if (selection instanceof IStructuredSelection) {
 				Collection<?> collection = ((IStructuredSelection) selection).toList();
@@ -1167,7 +1167,8 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	}
 
 	public IActionBars getActionBars() {
-		return getActionBarContributor().getActionBars();
+		EditingDomainActionBarContributor actionBarContributor = getActionBarContributor();
+		return actionBarContributor != null ? actionBarContributor.getActionBars() : null;
 	}
 
 	public IOperationHistory getOperationHistory() {
