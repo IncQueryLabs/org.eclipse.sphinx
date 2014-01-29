@@ -45,7 +45,7 @@ public class ParameterValuesXViewerConverter implements XViewerConverter {
 	}
 
 	@Override
-	public void getInput(Control c, CellEditDescriptor ced, Object selObject) {
+	public Object getInput(Control c, CellEditDescriptor ced, Object selObject) {
 		if (c instanceof Text) {
 			Text textField = (Text) c;
 			if (selObject instanceof ParameterValue) {
@@ -60,7 +60,9 @@ public class ParameterValuesXViewerConverter implements XViewerConverter {
 					}
 				}
 			}
+			return selObject;
 		}
+		return null;
 	}
 
 	protected boolean isPropertyValueChanged(Object newValue, Object oldValue) {
@@ -105,5 +107,10 @@ public class ParameterValuesXViewerConverter implements XViewerConverter {
 		} catch (ExecutionException ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
+	}
+
+	@Override
+	public boolean isValid(CellEditDescriptor ced, Object selObject) {
+		return true;
 	}
 }
