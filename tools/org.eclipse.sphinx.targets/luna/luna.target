@@ -14,8 +14,8 @@
 <unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.8.0.201401271716"/>
 <unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.8.0.201401271537"/>
 <unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.8.0.201401272007"/>
-<unit id="org.eclipse.gmf.tooling.feature.group" version="3.1.0.201312181548"/>
-<unit id="org.eclipse.graphiti.sdk.feature.feature.group" version="0.11.0.v20140128-1206"/>
+<unit id="org.eclipse.gmf.tooling.feature.group" version="3.1.0.201401291344"/>
+<unit id="org.eclipse.graphiti.sdk.feature.feature.group" version="0.11.0.v20140129-0818"/>
 <unit id="org.eclipse.uml2.sdk.feature.group" version="5.0.0.v20140127-0906"/>
 <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.6.0.v201309181520-7H7KFkTDxumWu916bjdNfnhvKLbRBmqMnSyTAPL"/>
 <unit id="org.eclipse.xpand.sdk.feature.group" version="2.0.0.v201401280744"/>
