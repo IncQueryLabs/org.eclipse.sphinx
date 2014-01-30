@@ -40,7 +40,7 @@ Contributors:
      <extension
            point="org.eclipse.sphinx.emf.resourceScopeProviders">
         <provider
-              class="org.eclipse.sphinx.examples.uml2.ide.scoping.UML2FileResourceScopeProvider"
+              class="org.eclipse.sphinx.examples.uml2.ide.scoping.UML2ProjectResourceScopeProvider"
               id="org.eclipse.sphinx.examples.uml2.ide.provider1">
            <applicableFor
                  metaModelDescriptorIdPattern="org.eclipse.sphinx.examples.uml2">

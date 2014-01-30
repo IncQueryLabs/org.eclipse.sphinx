@@ -15,17 +15,17 @@
 package org.eclipse.sphinx.examples.uml2.ide.scoping;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.sphinx.emf.scoping.FileResourceScope;
-import org.eclipse.sphinx.emf.scoping.FileResourceScopeProvider;
+import org.eclipse.sphinx.emf.scoping.ProjectResourceScope;
+import org.eclipse.sphinx.emf.scoping.ProjectResourceScopeProvider;
 
-public class UML2FileResourceScopeProvider extends FileResourceScopeProvider {
+public class UML2ProjectResourceScopeProvider extends ProjectResourceScopeProvider {
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.scoping.AbstractResourceScopeProvider#createScope(org.eclipse.core.resources.IResource)
+	 * org.eclipse.sphinx.emf.scoping.ProjectResourceScopeProvider#createScope(org.eclipse.core.resources.IResource)
 	 */
 	@Override
-	protected FileResourceScope createScope(IResource resource) {
-		return new UML2FileResourceScope(resource);
+	protected ProjectResourceScope createScope(IResource resource) {
+		return new UML2ProjectResourceScope(resource);
 	}
 }
