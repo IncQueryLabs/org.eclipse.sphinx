@@ -10,6 +10,7 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
+ *     itemis - [427461] Add progress monitor to resource load options (useful for loading large models)
  *
  * </copyright>
  */
@@ -19,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -190,6 +192,12 @@ public interface ExtendedResource {
 	 * @see ResourceImpl#unloaded()
 	 */
 	String OPTION_UNLOAD_MEMORY_OPTIMIZED = "UNLOAD_MEMORY_OPTIMIZED"; //$NON-NLS-1$
+
+	/**
+	 * Specifies the {@link IProgressMonitor progress monitor} to be used for monitoring the progress and allow for
+	 * cancellation while a {@link Resource resource} is being loaded.
+	 */
+	String OPTION_PROGRESS_MONITOR = "PROGRESS_MONITOR"; //$NON-NLS-1$
 
 	/**
 	 * Returns the map of options that, in addition to the overriding options specified during load, are used to to
