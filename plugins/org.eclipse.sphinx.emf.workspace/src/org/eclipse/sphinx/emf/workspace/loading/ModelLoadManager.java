@@ -14,6 +14,7 @@
  *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
  *     itemis - [418005] Add support for model files with multiple root elements
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
+ *     itemis - [427461] Add progress monitor to resource load options (useful for loading large models)
  *
  * </copyright>
  */
@@ -64,6 +65,7 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
 import org.eclipse.sphinx.emf.scoping.IResourceScopeProvider;
 import org.eclipse.sphinx.emf.scoping.ProjectResourceScope;
@@ -768,7 +770,8 @@ public final class ModelLoadManager {
 									.getFullPath().toString());
 
 							try {
-								EcorePlatformUtil.loadResource(editingDomain, file, null);
+								Map<?, ?> loadOptions = Collections.singletonMap(ExtendedResource.OPTION_PROGRESS_MONITOR, loadProgress.newChild(1));
+								EcorePlatformUtil.loadResource(editingDomain, file, loadOptions);
 								loadedFiles.add(file);
 							} catch (Exception ex) {
 								// Ignore exception
@@ -788,7 +791,6 @@ public final class ModelLoadManager {
 							PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 						}
 
-						loadProgress.worked(1);
 						if (loadProgress.isCanceled()) {
 							throw new OperationCanceledException();
 						}
