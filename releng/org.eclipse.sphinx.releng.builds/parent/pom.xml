@@ -133,7 +133,8 @@
 						<configuration>
 							<includeBinaryFeature>false</includeBinaryFeature>
 							<!-- Non-breakable space, as normal spaces are trimmed. -->
-							<labelSuffix>&nbsp;Source</labelSuffix>
+							<labelSuffix>&nbsp;Source
+							</labelSuffix>
 						</configuration>
 					</execution>
 				</executions>
@@ -144,7 +145,7 @@
 				<version>${tycho.version}</version>
 				<executions>
 					<execution>
-						<!-- Don't attach (default) metadata before the "generate-source-feature" 
+						<!-- Don't attach (default) metadata before the "generate-source-feature"
 							execution. -->
 						<id>default-p2-metadata-default</id>
 						<configuration>
@@ -212,8 +213,10 @@
 				</os>
 			</activation>
 			<properties>
-				<tycho.surefire.extra.vmargs>-Xmx512m -XX:MaxPermSize=256m
-					-XstartOnFirstThread</tycho.surefire.extra.vmargs>
+				<!-- !!! Important Note !!! The following element MUST be written in a single line. Otherwise the build will fail under Max OS X
+				(see https://bugs.eclipse.org/bugs/show_bug.cgi?id=427693). In particular, be careful when auto formatting this file with Ctrl+Shift+F
+				as it tends to break up this line into several pieces. -->
+				<tycho.surefire.extra.vmargs>-Xmx512m -XX:MaxPermSize=256m -XstartOnFirstThread</tycho.surefire.extra.vmargs>
 			</properties>
 		</profile>
 		<profile>
