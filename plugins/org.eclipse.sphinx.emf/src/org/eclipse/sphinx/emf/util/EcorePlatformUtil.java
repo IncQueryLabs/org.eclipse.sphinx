@@ -15,7 +15,8 @@
  *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
  *     itemis - [418005] Add support for model files with multiple root elements
  *     itemis - [423687] Synchronize ExtendedPlatformContentHandlerImpl wrt latest changes in EMF's PlatformContentHandlerImpl
- *     
+ *     itemis - [427461] Add progress monitor to resource load options (useful for loading large models)
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.util;
@@ -77,6 +78,7 @@ import org.eclipse.sphinx.emf.loading.IModelLoadService;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.resource.ModelResourceDescriptor;
 import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
@@ -1748,6 +1750,9 @@ public final class EcorePlatformUtil {
 							// Convert path to URI
 							URI uri = URI.createPlatformResourceURI(descriptor.getPath().toString(), true);
 
+							// Add progress monitor to save options
+							Map<?, ?> optionsWithProgressMonitor = addProgressMonitorToOptions(options, progress.newChild(1));
+
 							try {
 								// Save new resource
 								/*
@@ -1756,7 +1761,7 @@ public final class EcorePlatformUtil {
 								 * saved at all.
 								 */
 								EcoreResourceUtil.saveNewModelResource(editingDomain.getResourceSet(), uri, descriptor.getContentTypeId(),
-										descriptor.getModelRoot(), options);
+										descriptor.getModelRoot(), optionsWithProgressMonitor);
 
 								// Mark resource as freshly saved in order to avoid that it gets automatically reloaded
 								SaveIndicatorUtil.setSaved(editingDomain, descriptor.getModelRoot().eResource());
@@ -1775,8 +1780,6 @@ public final class EcorePlatformUtil {
 								 */
 								PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 							}
-
-							progress.worked(1);
 						}
 					}
 				};
@@ -2020,6 +2023,9 @@ public final class EcorePlatformUtil {
 							for (Resource resource : resourcesToSave.get(editingDomain)) {
 								progress.subTask(NLS.bind(Messages.subtask_savingResource, resource.getURI().toString()));
 
+								// Add progress monitor to save options
+								Map<?, ?> optionsWithProgressMonitor = addProgressMonitorToOptions(options, progress.newChild(1));
+
 								try {
 									// Save resource
 									/*
@@ -2027,7 +2033,8 @@ public final class EcorePlatformUtil {
 									 * because otherwise the resource would loose its dirty state and consequently not
 									 * be saved at all.
 									 */
-									EcoreResourceUtil.saveModelResource(resource, options);
+
+									EcoreResourceUtil.saveModelResource(resource, optionsWithProgressMonitor);
 
 									// Mark resource as freshly saved in order to avoid that it gets automatically
 									// reloaded
@@ -2043,8 +2050,6 @@ public final class EcorePlatformUtil {
 									 * IResourceChangeEvent) for details).
 									 */
 								}
-
-								progress.worked(1);
 							}
 
 							// Refresh command stack state of associated editing domain
@@ -2084,6 +2089,35 @@ public final class EcorePlatformUtil {
 				throw new CoreException(status);
 			}
 		}
+	}
+
+	/**
+	 * Wraps given {@link IProgressMonitor progress monitor} into an {@link ExtendedResource#OPTION_PROGRESS_MONITOR}
+	 * option and adds it to provided <code>options</code> map.
+	 * 
+	 * @param options
+	 *            A resource options map; may be <code>null</code>.
+	 * @param monitor
+	 *            A progress monitor; may be <code>null</code>.
+	 * @return An options map containing provided <code>options</code> plus an extra
+	 *         {@link ExtendedResource#OPTION_PROGRESS_MONITOR} option that holds given <code>monitor</code>. If
+	 *         <code>monitor</code> is <code>null</code>, the <code>options</code> are returned as is. If
+	 *         <code>options</code> is null, a new options map containing only the
+	 *         {@link ExtendedResource#OPTION_PROGRESS_MONITOR} option that holds given <code>monitor</code> is
+	 *         returned.
+	 */
+	private static Map<?, ?> addProgressMonitorToOptions(Map<?, ?> options, IProgressMonitor monitor) {
+		if (monitor == null) {
+			return options;
+		}
+		if (options == null) {
+			return Collections.singletonMap(ExtendedResource.OPTION_PROGRESS_MONITOR, monitor);
+		}
+
+		// Create new options map because it could be that provided options map is a singleton or an unmodifiable map
+		Map<Object, Object> newOptions = new HashMap<Object, Object>(options);
+		newOptions.put(ExtendedResource.OPTION_PROGRESS_MONITOR, monitor);
+		return newOptions;
 	}
 
 	/**
