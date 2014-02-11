@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [418902] ValidationMarkerManager does not distinguish objects with identical URI
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.validation.markers;
@@ -169,6 +170,7 @@ public class ValidationMarkerManager {
 					EObject tgtObject = (EObject) childDiagnostic.getData().get(0);
 
 					attributes.put(EValidator.URI_ATTRIBUTE, EcoreUtil.getURI(tgtObject).toString());
+					attributes.put(IValidationMarker.HASH_ATTRIBUTE, tgtObject.hashCode());
 
 					int severity = childDiagnostic.getSeverity();
 					if (severity < Diagnostic.WARNING) {
@@ -480,10 +482,11 @@ public class ValidationMarkerManager {
 				if (tmp != null && tmp.length == 2) {
 					markerURI = tmp[0];
 					markerEObjType = tmp[1];
+					Object hash = current.getAttribute(IValidationMarker.HASH_ATTRIBUTE);
 
 					switch (depth) {
 					case EObjectUtil.DEPTH_ZERO:
-						if (markerURI.equals(eObjURI) && eObjType.equals(markerEObjType)) {
+						if (markerURI.equals(eObjURI) && eObjType.equals(markerEObjType) && (Integer) hash == eObject.hashCode()) {
 							result.add(current);
 						}
 						break;
