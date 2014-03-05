@@ -18,7 +18,6 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLSave;
@@ -82,7 +81,14 @@ public class Hummingbird20ResourceImpl extends XMIResourceImpl {
 		return new ExtendedXMILoadImpl(createXMLHelper()) {
 			@Override
 			protected DefaultHandler makeDefaultHandler() {
-				return new ExtendedSAXXMIHandler(resource, helper, options);
+				return new ExtendedSAXXMIHandler(resource, helper, options) {
+					@Override
+					protected void handleProxy(InternalEObject proxy, String uriLiteral) {
+						URI proxyURI = ExtendedHummingbirdResourceAdapter.createHummingbirdURI(uriLiteral);
+						proxy.eSetProxyURI(proxyURI);
+						extendedResource.augmentToContextAwareProxy(proxy);
+					}
+				};
 			}
 		};
 	}
@@ -109,13 +115,15 @@ public class Hummingbird20ResourceImpl extends XMIResourceImpl {
 			 * org.eclipse.emf.ecore.EObject)
 			 */
 			@Override
-			protected URI getHREF(Resource otherResource, EObject obj) {
-				ExtendedResource otherExtendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(otherResource);
+			public String getHREF(EObject obj) {
+				ExtendedResource otherExtendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(obj.eResource());
 				if (otherExtendedResource != null) {
-					return otherExtendedResource.getURI(obj);
-				} else {
-					return super.getHREF(otherResource, obj);
+					String href = otherExtendedResource.getHREF(obj);
+					if (href != null) {
+						return href;
+					}
 				}
+				return super.getHREF(obj);
 			}
 		};
 	}

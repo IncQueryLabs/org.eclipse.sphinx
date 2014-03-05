@@ -50,7 +50,7 @@ public class ExtendedHummingbirdResourceAdapter extends ExtendedResourceAdapter 
 	 *            The {@link URI} fragment the URI to handled.
 	 * @return The resulting fragment-based Hummingbird 2.0 {@link URI}.
 	 */
-	protected static URI createHummingbirdURI(String uriFragment) {
+	public static URI createHummingbirdURI(String uriFragment) {
 		if (uriFragment != null && uriFragment.length() > 0) {
 			return URI.createURI(HB_SCHEME + URI_SCHEME_SEPARATOR + URI_SEGMENT_SEPARATOR + URI_FRAGMENT_SEPARATOR + uriFragment, true);
 		}
