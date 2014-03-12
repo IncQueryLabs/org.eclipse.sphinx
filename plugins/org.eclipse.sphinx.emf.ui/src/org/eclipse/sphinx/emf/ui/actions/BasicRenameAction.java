@@ -72,7 +72,7 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 	private boolean saving;
 
 	public BasicRenameAction() {
-		super(Messages.menuItem_rename);
+		super(Messages.action_rename_label);
 	}
 
 	public BasicRenameAction(String text) {
@@ -80,7 +80,7 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 	}
 
 	public BasicRenameAction(TreeViewer viewer) {
-		super(Messages.menuItem_rename);
+		super(Messages.action_rename_label);
 		this.viewer = viewer;
 	}
 
@@ -223,7 +223,7 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 	 * @return
 	 */
 	protected String changeNameDialog(Shell shell, String oldName) {
-		InputDialog dialog = new InputDialog(shell, Messages.label_renameDialogTitle, Messages.label_renameDialogMessage, oldName, null);
+		InputDialog dialog = new InputDialog(shell, Messages.dialog_rename_title, Messages.dialog_rename_message, oldName, null);
 		dialog.setBlockOnOpen(true);
 		int result = dialog.open();
 		if (result == Window.OK) {

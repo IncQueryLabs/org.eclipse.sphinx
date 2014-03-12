@@ -148,7 +148,7 @@ public final class Activator extends EMFPlugin {
 			return null;
 		}
 
-		public ImageDescriptor getImageDescriptor(final URL url) {
+		public ImageDescriptor getImageDescriptor(URL url) {
 			// FIXME File bug to EMF: Impossible to use ExtendedImageRegistry.INSTANCE when Display.getCurrent() returns
 			// null
 			if (Display.getCurrent() != null) {

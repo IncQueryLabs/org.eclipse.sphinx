@@ -67,7 +67,7 @@ public class BasicTabbedPropertySheetTitleProvider extends LabelProvider {
 				Collection<?> collection = ((IStructuredSelection) anElement).toList();
 				switch (collection.size()) {
 				case 0: {
-					return Messages.label_noObjectSelected;
+					return Messages.label_selectedNothing;
 				}
 				case 1: {
 					Object object = collection.iterator().next();
@@ -78,7 +78,7 @@ public class BasicTabbedPropertySheetTitleProvider extends LabelProvider {
 					break;
 				}
 				default: {
-					return NLS.bind(Messages.label_multiObjectSelected, Integer.toString(collection.size()));
+					return NLS.bind(Messages.label_multipleItemsSelected, Integer.toString(collection.size()));
 				}
 				}
 			} else {

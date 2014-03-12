@@ -36,7 +36,7 @@ public class BasicOpenInEditorAction extends BaseSelectionListenerAction {
 	protected Map<String, Set<Object>> editorIdToEditorInputObjectsMap = new HashMap<String, Set<Object>>();
 
 	public BasicOpenInEditorAction() {
-		super(Messages.OpenInEditor_label);
+		super(Messages.action_openInEditor_label);
 	}
 
 	@Override

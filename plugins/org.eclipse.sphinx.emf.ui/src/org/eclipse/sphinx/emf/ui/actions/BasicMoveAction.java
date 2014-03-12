@@ -25,7 +25,7 @@ import org.eclipse.ui.actions.BaseSelectionListenerAction;
 public class BasicMoveAction extends BaseSelectionListenerAction {
 
 	public BasicMoveAction() {
-		super(Messages.menuItem_move);
+		super(Messages.action_move_label);
 	}
 
 	public BasicMoveAction(String text) {
@@ -39,7 +39,7 @@ public class BasicMoveAction extends BaseSelectionListenerAction {
 
 	@Override
 	public void run() {
-		MessageDialog.openInformation(ExtendedPlatformUI.getActiveShell(), Messages.menuItem_move, "Not supported yet..."); //$NON-NLS-1$
+		MessageDialog.openInformation(ExtendedPlatformUI.getActiveShell(), Messages.action_move_label, "Not supported yet..."); //$NON-NLS-1$
 	}
 
 	protected boolean isMoveAvailable(IStructuredSelection selection) {

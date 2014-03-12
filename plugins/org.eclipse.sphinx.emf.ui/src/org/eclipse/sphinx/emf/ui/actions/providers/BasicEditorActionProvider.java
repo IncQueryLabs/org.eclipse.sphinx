@@ -84,7 +84,7 @@ public class BasicEditorActionProvider extends BasicActionProvider {
 			Object selected = selection.getFirstElement();
 			if (selected instanceof EObject) {
 				if (workbenchPart != null) {
-					IMenuManager submenu = new MenuManager(Messages.label_openWithMenu);
+					IMenuManager submenu = new MenuManager(Messages.menu_openWith_label);
 					submenu.add(new OpenWithMenu(workbenchPart.getSite().getPage(), (EObject) selected));
 					menuManager.appendToGroup(ICommonMenuConstants.GROUP_OPEN_WITH, submenu);
 				}
