@@ -21,6 +21,7 @@
  *     itemis - [409367] Add a custom URI scheme to metamodel descriptor allowing mapping URI scheme to metamodel descriptor
  *     itemis - [418005] Add support for model files with multiple root elements
  *     itemis - [422334] Content-type based IMetaModelDescriptor determination for a file gets corrupted if file extension is associated to org.eclipse.emf.compare.ui.contenttype.ModelContentType
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.metamodel;
@@ -80,9 +81,6 @@ import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.ReflectUtil;
 
-/**
- *
- */
 @SuppressWarnings("restriction")
 public class MetaModelDescriptorRegistry implements IAdaptable {
 
@@ -243,7 +241,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 	/**
 	 * Add the specified {@link IMetaModelDescriptor mmDescriptor} to this registry (if not already added).
-	 * 
+	 *
 	 * @param mmDescriptor
 	 *            The meta-model {@linkplain IMetaModelDescriptor descriptor} to add to this registry.
 	 */
@@ -437,7 +435,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 	/**
 	 * Used in UI component to return a list of sorted descriptors.
-	 * 
+	 *
 	 * @param mmDescriptor
 	 * @return
 	 * @since 0.7.0
@@ -515,7 +513,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	/**
 	 * Returns the {@link IMetaModelDescriptor descriptors} of all meta-models that use URIs with given
 	 * <code>customURIScheme</code> in cross-document references and as proxy URIs.
-	 * 
+	 *
 	 * @param scheme
 	 *            The custom URI scheme for which the descriptors of the meta-model using it is to be returned.
 	 * @return The descriptors of the meta-models using specified <code>customURIScheme</code>.
@@ -568,7 +566,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 	/**
 	 * Returns the {@link IMetaModelDescriptor meta-model descriptor} for the given <code>resource</code>.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link Resource resource} whose meta-model descriptor is to be returned.
 	 * @return The meta-model descriptor of the specified <code>resource</code>.
@@ -623,7 +621,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 	/**
 	 * Returns the {@link IMetaModelDescriptor meta-model descriptor} for given {@link IFile file}.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} whose {@link IMetaModelDescriptor meta-model descriptor} is to be returned.
 	 * @return The {@link IMetaModelDescriptor meta-model descriptor} of given {@link IFile}, or <code>null</code> if no
@@ -763,7 +761,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	/**
 	 * Returns content type id for given model namespace and file extension in case that an EMF {@link Describer content
 	 * type describer} has been contributed for this model namespace and matches it.
-	 * 
+	 *
 	 * @param namespace
 	 *            The model namespace for which the corresponding content type id is to be determined.
 	 * @param extension
@@ -836,7 +834,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * handleModelResourceUnloaded(Collection<Resource>).In any other use case the method will behave as if there was no
 	 * old meta-model descriptor available. The reason is that old meta-model descriptor is removed as soon as model
 	 * descriptor has been removed.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link Resource resource} whose old {@link IMetaModelDescriptor meta-model descriptor} is to be
 	 *            returned.
@@ -858,7 +856,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * handleModelResourceUnloaded(Collection<Resource>).In any other use case the method will behave as if there was no
 	 * old meta-model descriptor available. The reason is that old meta-model descriptor is removed as soon as model
 	 * descriptor has been removed.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} whose old {@link IMetaModelDescriptor meta-model descriptor} is to be returned.
 	 * @return The old {@link IMetaModelDescriptor meta-model descriptor} of given {@link IFile}, or <code>null</code>
@@ -1089,7 +1087,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 	/**
 	 * Retrieves {@link IMetaModelDescriptor target meta-model descriptor} behind the given {@link IFile file}.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} to be investigated.
 	 * @return The {@link IFile file}'s {@link IMetaModelDescriptor target meta-model descriptor} or <code>null</code>
@@ -1105,7 +1103,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 	/**
 	 * Retrieves {@link IMetaModelDescriptor target meta-model descriptor} behind the given {@link Resource resource}.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link Resource resource} to be investigated.
 	 * @return The {@link Resource resource}'s {@link IMetaModelDescriptor target meta-model descriptor} or
@@ -1124,7 +1122,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * meta-model descriptor}. Includes both file extensions for which a {@link IMetaModelDescriptor target meta-model
 	 * descriptor} has been specified directly and file extensions supported by content types for which a
 	 * {@link IMetaModelDescriptor target meta-model descriptor} has been defined.
-	 * 
+	 *
 	 * @return A {@link Collection collection} with all file types associated with a {@link IMetaModelDescriptor target
 	 *         meta-model descriptor} or an empty {@link Collection collection} if no such exist.
 	 * @deprecated use {@link MetaModelDescriptorRegistry#isContentTypeOfTargetDescriptorsApplicable(IFile)} instead
@@ -1145,7 +1143,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * for which a {@link IMetaModelDescriptor target meta-model descriptor} has been specified directly and file
 	 * extensions supported by content types for which a {@link IMetaModelDescriptor target meta-model descriptor} has
 	 * been defined.
-	 * 
+	 *
 	 * @return true if the extensions any target descriptor content type match the passed in file's extension. false if
 	 *         the file is null or has no extension.
 	 */
@@ -1206,7 +1204,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * eventually effective or relevant to clients. This is the {@link IFile}'s {@link IMetaModelDescriptor target
 	 * meta-model descriptor} if such one is available or the {@link IFile}'s native {@link IMetaModelDescriptor
 	 * meta-model descriptor} otherwise.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} to be investigated.
 	 * @return The {@link IFile file}'s effective {@link IMetaModelDescriptor meta-model descriptor} or
@@ -1227,7 +1225,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * will be eventually effective or relevant to clients. This is the {@link IFile}'s {@link IMetaModelDescriptor
 	 * target meta-model descriptor} if such one is available or the {@link IFile}'s native {@link IMetaModelDescriptor
 	 * meta-model descriptor} otherwise.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link Resource resource} to be investigated.
 	 * @return The {@link Resource resource}'s effective {@link IMetaModelDescriptor meta-model descriptor} or
@@ -1248,7 +1246,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * This is done by retrieving the resource's {@link EcoreResourceUtil#readModelNamespace(Resource) model namespace}
 	 * and finding a matching {@link IMetaModelDescriptor metamodel descriptor} or
 	 * {@link IMetaModelDescriptor#getCompatibleResourceVersionDescriptors() compatible resource version descriptor}.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link Resource resource} whose version descriptor is to be retrieved.
 	 * @return The resource's {@link IMetaModelDescriptor version descriptor} or <code>null</code> if no such could be

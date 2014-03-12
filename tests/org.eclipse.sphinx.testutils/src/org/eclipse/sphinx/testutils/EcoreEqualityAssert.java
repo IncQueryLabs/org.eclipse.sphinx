@@ -2,7 +2,7 @@
  * <copyright>
  *
  * Copyright (c) 2002-2007 IBM Corporation, See4sys and others.
- * All rights reserved.   This program and the accompanying materials
+ * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
@@ -11,6 +11,7 @@
  *   IBM - Initial API and implementation
  *   See4sys - Copied from org.eclipse.emf.ecore.util.EcoreUtil.EqualityHelper
  *             to provide a set of equality assert methods for {@link EObject}s.
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.testutils;
@@ -43,7 +44,7 @@ import com.google.common.collect.Iterators;
  * for {@link EObject}s. Messages are only displayed when an assert fails and indicate the {@link EObject}s which are
  * unequal and the reason for their inequality. Analyzes aside from that proxy states of given objects as considers them
  * as additional criterion in equality evaluation.
- * 
+ *
  * @see EqualityHelper
  */
 @SuppressWarnings("nls")
@@ -53,7 +54,7 @@ public class EcoreEqualityAssert extends Assert {
 
 	/**
 	 * Asserts that <code>eObject1</code> and <code>eObject2</code> are equal.
-	 * 
+	 *
 	 * @since 0.7.0
 	 */
 	public static void assertEquals(EObject eObject1, EObject eObject2) {
@@ -157,7 +158,7 @@ public class EcoreEqualityAssert extends Assert {
 	/**
 	 * Tests if given {@link EStructuralFeature feature} is dedicated to capturing XML serialization specific things and
 	 * does not represent any information that would be relevant from a domain (meta-model) point of view.
-	 * 
+	 *
 	 * @param feature
 	 * @return <code>true</code> if given feature is XML serialization-specific, <code>false</code> otherwise.
 	 * @since 0.7.0
@@ -176,7 +177,7 @@ public class EcoreEqualityAssert extends Assert {
 	/**
 	 * Asserts that <code>list1</code> and <code>list2</code> contain equal {@link EObject}s at the same index. It is
 	 * assumed that list1 and list2 only contain EObjects.
-	 * 
+	 *
 	 * @since 0.7.0
 	 */
 	public static void assertEquals(List<EObject> list1, List<EObject> list2) {
@@ -209,7 +210,7 @@ public class EcoreEqualityAssert extends Assert {
 	/**
 	 * Asserts that the two objects have equal {@link EObject#eIsSet(EStructuralFeature) isSet} states and
 	 * {@link EObject#eGet(EStructuralFeature) value}s for the feature.
-	 * 
+	 *
 	 * @since 0.7.0
 	 * @see #assertEquals(EObject, EObject)
 	 * @see #assertEquals(List, List)
@@ -230,7 +231,7 @@ public class EcoreEqualityAssert extends Assert {
 
 	/**
 	 * Asserts that the two objects have equal {@link EObject#eGet(EStructuralFeature) value}s for the reference.
-	 * 
+	 *
 	 * @since 0.7.0
 	 * @see #assertEquals(EObject, EObject)
 	 * @see #assertEquals(List, List)
@@ -254,7 +255,7 @@ public class EcoreEqualityAssert extends Assert {
 
 	/**
 	 * Asserts that the two objects have equal {@link EObject#eGet(EStructuralFeature) value}s for the attribute.
-	 * 
+	 *
 	 * @since 0.7.0
 	 * @see #equalFeatureMaps(FeatureMap, FeatureMap)
 	 */
@@ -294,7 +295,7 @@ public class EcoreEqualityAssert extends Assert {
 	/**
 	 * Asserts that the two feature maps are equal ignoring XML features like text, comments, processing instructions or
 	 * CDATA.
-	 * 
+	 *
 	 * @since 0.7.0
 	 */
 	protected static void assertEqualFeatureMaps(FeatureMap featureMap1, FeatureMap featureMap2) {
@@ -344,7 +345,7 @@ public class EcoreEqualityAssert extends Assert {
 
 	/**
 	 * Asserts that the two values of a feature map are equal.
-	 * 
+	 *
 	 * @since 0.7.0
 	 */
 	protected static void assertEqualFeatureMapValues(Object value1, Object value2, EStructuralFeature feature) {

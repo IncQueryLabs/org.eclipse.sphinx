@@ -1,6 +1,8 @@
 /**
+ * <copyright>
+ *
  * Copyright (c) 2009 Ed Merks and others.
- * All rights reserved.   This program and the accompanying materials
+ * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
@@ -8,6 +10,8 @@
  * Contributors:
  *   Ed Merks - Initial API and implementation
  *   itemis - Adding overriding points and make protected field masks
+ *
+ * </copyright>
  */
 package org.eclipse.sphinx.emf.ecore;
 
@@ -230,7 +234,7 @@ public class MinimalEObjectImpl2 extends BasicEObjectImpl implements EObject, ES
 	 * order 16 bits are used to represent the {@link #eContainerFeatureID() container feature ID}, a derived
 	 * implementation wishing to allocate a static container feature ID field should override
 	 * {@link #eContainerFeatureID()} and {@link #eBasicSetContainerFeatureID(int)}.
-	 * 
+	 *
 	 * @see #NO_DELIVER
 	 * @see #CONTAINER
 	 * @see #ADAPTER
