@@ -23,6 +23,10 @@
 <unit id="org.eclipse.xsd.sdk.feature.group" version="2.8.2.v20130125-0826"/>
 <repository location="http://download.eclipse.org/releases/juno"/>
 </location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.xtext.xbase.lib.feature.group" version="2.5.3.v201402240820"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases"/>
+</location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
 <unit id="org.eclipse.nebula.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.nebula.examples.release.feature.feature.group" version="0.0.0"/>

@@ -1,29 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.6"?>
+<?pde version="3.8"?>
+
 <target name="Sphinx Kepler Target" sequenceNumber="0">
 <locations>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="4.3.1.M20130911-1000"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20130807-1835"/>
-<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.0.v20130521-1847"/>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.sdk.ide" version="4.3.2.M20140221-1700"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20140117-1004"/>
+<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.0.v20140117-0610"/>
 <repository location="http://download.eclipse.org/eclipse/updates/4.3"/>
 </location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.3.1.v201309030422"/>
-<unit id="org.eclipse.emf.sdk.feature.group" version="2.9.1.v20130902-0605"/>
+<unit id="org.eclipse.emf.sdk.feature.group" version="2.9.2.v20140203-1126"/>
 <unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.7.0.201306111400"/>
 <unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.7.0.201306111341"/>
 <unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.7.0.201306101425"/>
 <unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.7.0.201306111432"/>
-<unit id="org.eclipse.gmf.tooling.feature.group" version="3.1.0.201306121424"/>
-<unit id="org.eclipse.graphiti.sdk.feature.feature.group" version="0.10.1.v20130918-0838"/>
-<unit id="org.eclipse.uml2.sdk.feature.group" version="4.1.1.v20130902-0826"/>
-<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.5.1.v201307171524-7H7IFiwDxumVt0J7gijShVTqs4BePbKwUtS9PL"/>
+<unit id="org.eclipse.gmf.tooling.feature.group" version="3.1.0.201402192033"/>
+<unit id="org.eclipse.graphiti.sdk.feature.feature.group" version="0.10.2.v20140217-1225"/>
+<unit id="org.eclipse.uml2.sdk.feature.group" version="4.1.2.v20140202-2055"/>
+<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.5.2.v201401062113-7H7IFizDxumVu0K6bjdPjXRkoz0FiUYMnSyT9PL"/>
 <unit id="org.eclipse.xpand.sdk.feature.group" version="1.4.0.v201306110406"/>
-<unit id="org.eclipse.xsd.sdk.feature.group" version="2.9.1.v20130902-0605"/>
+<unit id="org.eclipse.xsd.sdk.feature.group" version="2.9.1.v20140203-1126"/>
 <repository location="http://download.eclipse.org/releases/kepler"/>
 </location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.xtext.xbase.lib.feature.group" version="2.5.3.v201402240820"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.nebula.examples.release.feature.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
