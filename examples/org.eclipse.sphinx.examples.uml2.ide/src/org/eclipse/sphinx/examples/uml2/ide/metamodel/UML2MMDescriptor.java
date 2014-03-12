@@ -1,16 +1,17 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - Added support for UML models stored in OMG XMI and CMOF files and upgraded versions of namespace and content type to 4.0.0 in order to support Eclipse Juno
- * 
+ *     itemis - Upgraded versions of namespace and content type to 5.0.0 in order to support Eclipse Luna
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.uml2.ide.metamodel;
@@ -94,7 +95,7 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 	 * if no UML2 XMI file actually exists, and the initialization of the UML2 metamodel's EPackage in such situations
 	 * would entail useless runtime and memory consumption overhead.
 	 */
-	private static final String NAMESPACE = BASE_NAMESPACE + "/4.0.0/UML"; //$NON-NLS-1$
+	private static final String NAMESPACE = BASE_NAMESPACE + "/5.0.0/UML"; //$NON-NLS-1$
 	private static final String NAME = "UML2"; //$NON-NLS-1$
 
 	/**
@@ -114,6 +115,7 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 			namespaceURIs.add(new URI(BASE_NAMESPACE + "/2.0.0/UML"));//$NON-NLS-1$
 			namespaceURIs.add(new URI(BASE_NAMESPACE + "/2.1.0/UML")); //$NON-NLS-1$
 			namespaceURIs.add(new URI(BASE_NAMESPACE + "/3.0.0/UML")); //$NON-NLS-1$
+			namespaceURIs.add(new URI(BASE_NAMESPACE + "/4.0.0/UML"));//$NON-NLS-1$
 			namespaceURIs.add(new URI(OMG_XMI_BASE_NAMESPACE + "/2.1")); //$NON-NLS-1$
 			namespaceURIs.add(new URI(OMG_XMI_BASE_NAMESPACE + "/2.1.1")); //$NON-NLS-1$
 			namespaceURIs.add(new URI(OMG_XMI_BASE_NAMESPACE + "/2.2")); //$NON-NLS-1$
@@ -141,6 +143,7 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 		contentTypeIds.add(XMI_BASE_CONTENT_TYPE_ID + "_2_0_0"); //$NON-NLS-1$
 		contentTypeIds.add(XMI_BASE_CONTENT_TYPE_ID + "_2_1_0"); //$NON-NLS-1$
 		contentTypeIds.add(XMI_BASE_CONTENT_TYPE_ID + "_3_0_0"); //$NON-NLS-1$
+		contentTypeIds.add(XMI_BASE_CONTENT_TYPE_ID + "_4_0_0"); //$NON-NLS-1$
 		contentTypeIds.add(OMG_XMI_BASE_CONTENT_TYPE_ID + "_2_1"); //$NON-NLS-1$
 		contentTypeIds.add(OMG_XMI_BASE_CONTENT_TYPE_ID + "_2_1_1"); //$NON-NLS-1$
 		contentTypeIds.add(OMG_XMI_BASE_CONTENT_TYPE_ID + "_2_2"); //$NON-NLS-1$
