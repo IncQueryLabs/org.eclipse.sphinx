@@ -17,7 +17,6 @@
 <unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.6.2.201302122140"/>
 <unit id="org.eclipse.gmf.tooling.feature.group" version="3.0.2.201301191623"/>
 <unit id="org.eclipse.graphiti.sdk.feature.feature.group" version="0.9.2.v20130211-0913"/>
-<unit id="org.eclipse.team.svn.feature.group" version="1.0.0.I20130122-1700"/>
 <unit id="org.eclipse.uml2.sdk.feature.group" version="4.0.2.v20130114-0902"/>
 <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.4.2.v201211061806-7H7GFeJDxumUrsn5qkiQgOEhsz0p60HAmPyU6VX"/>
 <unit id="org.eclipse.xpand.sdk.feature.group" version="1.2.1.v201206110941"/>
