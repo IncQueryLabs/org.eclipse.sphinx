@@ -65,7 +65,7 @@ public class UML2MMDescriptor extends AbstractMetaModelDescriptor {
 	/**
 	 * The id of the XMI file content type behind the latest UML2 metamodel implementation.
 	 */
-	public static final String XMI_CONTENT_TYPE_ID = XMI_BASE_CONTENT_TYPE_ID + "_4_0_0"; //$NON-NLS-1$
+	public static final String XMI_CONTENT_TYPE_ID = XMI_BASE_CONTENT_TYPE_ID + "_5_0_0"; //$NON-NLS-1$
 
 	/**
 	 * The prefix for ids of OMG content types.
