@@ -15,6 +15,7 @@
  *     itemis - [421585] Form Editor silently closes if model is not loaded via Sphinx
  *     itemis - [425173] Form editor closes when the input resource are changed externally
  *     itemis - [426798] BasicTransactionalFormsEditor uses wrong drag and drop transfer type
+ *     itemis - [430218] Sphinx-integrated form editors should not prompt user for saving when being closed
  *
  * </copyright>
  */
@@ -142,6 +143,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IPersistableEditor;
+import org.eclipse.ui.ISaveablePart2;
 import org.eclipse.ui.ISaveablesLifecycleListener;
 import org.eclipse.ui.ISaveablesSource;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -171,7 +173,7 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
  * A basic Eclipse Forms-based model editor.
  */
 public class BasicTransactionalFormEditor extends FormEditor implements IEditingDomainProvider, ISelectionProvider, IMenuListener, IViewerProvider,
-		IGotoMarker, IPersistableEditor, ITabbedPropertySheetPageContributor, ISaveablesSource {
+		IGotoMarker, IPersistableEditor, ITabbedPropertySheetPageContributor, ISaveablesSource, ISaveablePart2 {
 
 	private static final String TAG_EDITOR_DIRTY_ON_WORKBENCH_CLOSE = "editorDirtyOnWorkbenchClose"; //$NON-NLS-1$
 
@@ -866,6 +868,14 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		return false;
 	}
 
+	@Override
+	public int promptToSaveOnClose() {
+		// Model-based editors don't need to be saved when being closed even if the model is dirty, because they don't
+		// own the model. The model is loaded, managed, and saved globally, i.e. it is not destroyed but stays there
+		// when editors are being closed.
+		return ISaveablePart2.NO;
+	}
+
 	/**
 	 * This is for implementing {@link IEditorPart} and simply saves the model file.
 	 */
@@ -1229,7 +1239,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * is <code>null</code> or not. When the editor has been disposed, it is an error to invoke any other method using
 	 * the editor.
 	 * </p>
-	 * 
+	 *
 	 * @return <code>true</code> when the editor is disposed and <code>false</code> otherwise.
 	 */
 	protected boolean isDisposed() {
@@ -1310,7 +1320,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	/**
 	 * A {@link CommandStackListener} which is used just in the case when the resource resides outside the workspace.
-	 * 
+	 *
 	 * @return
 	 */
 	protected CommandStackListener createCommandStackListener() {
@@ -1730,7 +1740,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	/**
 	 * Creates an {@linkplain ISaveablesLifecycleListener}
-	 * 
+	 *
 	 * @return
 	 */
 	protected ISaveablesLifecycleListener createModelSaveablesLifecycleListener() {
@@ -1784,7 +1794,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * return any {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter
 	 * factory} will then be returned as result by this method.
 	 * </p>
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain editing domain} whose embedded {@link AdapterFactory adapter
 	 *            factory} is to be returned as default. May be left <code>null</code> if
@@ -1817,7 +1827,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter factory} will
 	 * then be returned as result by {@link #getAdapterFactory(TransactionalEditingDomain)}.
 	 * </p>
-	 * 
+	 *
 	 * @return The custom {@link AdapterFactory adapter factory} that is to be used by this
 	 *         {@link BasicTransactionalFormEditor form editor}. <code>null</code> the default {@link AdapterFactory
 	 *         adapter factory} returned by {@link #getAdapterFactory(TransactionalEditingDomain)} should be used
