@@ -3,6 +3,7 @@
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1356015108021_2" label="Docs" name="Docs">
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.doc.design" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.doc.isv" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="org.eclipse.sphinx.emf.serialization.doc.isv" type="4"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1356015160783_5" label="Examples" name="Examples">
 <item elementID="=org.eclipse.sphinx.examples.actions" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -61,6 +62,7 @@
 <item elementID="=org.eclipse.sphinx.emf.editors.forms.nebula" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.explorer" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.mwe" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.emf.serialization" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.validation" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.validation.bridge" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -83,6 +85,8 @@
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1356016354599_7" label="Tests" name="Tests">
 <item elementID="=org.eclipse.sphinx.tests.emf" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.tests.emf.integration" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.tests.emf.serialization" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.tests.emf.serialization.generators" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.tests.emf.ui.integration" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.tests.emf.workspace" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.tests.emf.workspace.integration" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
