@@ -31,6 +31,9 @@
 		<module>../../plugins/org.eclipse.sphinx.xtend.typesystem.emf.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.xtendxpand</module>
 		<module>../../plugins/org.eclipse.sphinx.xtendxpand.ui</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.serialization</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.serialization.generators</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.serialization.generators.ui</module>
 
 		<!-- Examples -->
 		<module>../../examples/org.eclipse.sphinx.examples.actions</module>
@@ -69,13 +72,17 @@
 		<module>../../tests/org.eclipse.sphinx.testutils.integration</module>
 		<module>../../tests/org.eclipse.sphinx.testutils.integration.referenceworkspace</module>
 		<module>../../tests/org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand</module>
+		<module>../../tests/org.eclipse.sphinx.tests.emf.serialization</module>
+		<module>../../tests/org.eclipse.sphinx.tests.emf.serialization.generators</module>
 
 		<!-- Documentation -->
 		<module>../../docs/org.eclipse.sphinx.doc.isv</module>
-		
+
 		<!-- Features -->
 		<module>../../features/org.eclipse.sphinx.license-feature</module>
 		<module>../../features/org.eclipse.sphinx.core-feature</module>
+		<module>../../features/org.eclipse.sphinx.emf.serialization-feature</module>
+		<module>../../features/org.eclipse.sphinx.emf.serialization.generators-feature</module>
 		<module>../../features/org.eclipse.sphinx.pde-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms.nebula-feature</module>

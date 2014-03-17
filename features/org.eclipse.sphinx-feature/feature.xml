@@ -47,4 +47,12 @@
          id="org.eclipse.sphinx.pde"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.sphinx.emf.serialization"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.sphinx.emf.serialization.generators"
+         version="0.0.0"/>
+
 </feature>
