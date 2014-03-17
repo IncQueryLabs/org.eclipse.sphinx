@@ -71,7 +71,8 @@ public class CreateDefaultXMLPersistenceMappingExtendedMetadataTests {
 		EReference childEReference = getNodeChildEReference();
 		assertEquals("CHILD", EcoreUtil.getAnnotation(childEReference, ExtendedMetaData.ANNOTATION_URI, XMLPersistenceMappingExtendedMetaData.NAME));
 
-		assertEquals("##targetNamespace", EcoreUtil.getAnnotation(childEReference, ExtendedMetaData.ANNOTATION_URI, "namespace"));
+		// assertEquals("##targetNamespace", EcoreUtil.getAnnotation(childEReference, ExtendedMetaData.ANNOTATION_URI,
+		// "namespace"));
 
 		assertEquals("CHILDS", EcoreUtil.getAnnotation(childEReference,
 				XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_ANNOTATION_SOURCE_URI,

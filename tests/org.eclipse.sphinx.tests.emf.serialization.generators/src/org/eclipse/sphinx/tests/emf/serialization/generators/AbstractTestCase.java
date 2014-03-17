@@ -121,7 +121,7 @@ public abstract class AbstractTestCase {
 	}
 
 	protected String getWorkingDirName() {
-		return "file://" + getAbsoluteFileName(WORKING_DIR_NAME + "/" + this.getClass().getName()) + "/";
+		return "file://" + getAbsoluteFileName(WORKING_DIR_NAME + "/" + this.getClass().getName()) + "\\";
 	}
 
 	protected String getRelativeWorkingDirName() {

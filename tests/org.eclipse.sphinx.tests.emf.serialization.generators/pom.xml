@@ -18,9 +18,9 @@ Contributors:
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.eclipse.sphinx.releng</groupId>
-		<artifactId>org.eclipse.sphinx.releng.emf.serialization.builds</artifactId>
+		<artifactId>org.eclipse.sphinx.releng.parent</artifactId>
 		<version>0.8.0-SNAPSHOT</version>
-		<relativePath>../../releng/org.eclipse.sphinx.releng.emf.serialization.builds/parent/pom.xml</relativePath>
+		<relativePath>../../releng/org.eclipse.sphinx.releng.builds/parent/pom.xml</relativePath>
 	</parent>
 	<groupId>org.eclipse.sphinx.tests</groupId>
 	<artifactId>org.eclipse.sphinx.tests.emf.serialization.generators</artifactId>
@@ -29,30 +29,6 @@ Contributors:
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   	</properties>
 	<packaging>eclipse-test-plugin</packaging>
-	<profiles>
-		<profile>
-			<id>macosx</id>
-			<activation>
-				<os>
-					<family>mac</family>
-				</os>
-			</activation>
-			<properties>
-				<test.vmargs>-Xmx512m -XX:MaxPermSize=256m -XstartOnFirstThread -ea</test.vmargs>
-			</properties>
-		</profile>
-		<profile>
-			<id>other-os</id>
-			<activation>
-				<os>
-					<family>!mac</family>
-				</os>
-			</activation>
-			<properties>
-				<test.vmargs>-Xmx512m -XX:MaxPermSize=256m -ea</test.vmargs>
-			</properties>
-		</profile>
-	</profiles>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testOutputDirectory>work</testOutputDirectory>
@@ -60,7 +36,7 @@ Contributors:
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
-				<version>${tycho-version}</version>
+				<version>0.19.0</version>
 				<configuration>
 					<includes>
 						<include>**/*Tests.class</include>
