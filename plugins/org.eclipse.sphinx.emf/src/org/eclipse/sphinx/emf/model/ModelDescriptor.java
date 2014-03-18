@@ -39,8 +39,10 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSet;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
+import org.eclipse.sphinx.emf.scoping.ResourceScopeProviderRegistry;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
+import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
@@ -164,15 +166,33 @@ public class ModelDescriptor extends PlatformObject implements IModelDescriptor 
 	public Collection<IFile> getPersistedFiles(boolean includeReferencedScopes) {
 		Collection<IFile> persistedFiles = new HashSet<IFile>();
 		for (IFile file : resourceScope.getPersistedFiles(includeReferencedScopes)) {
-			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(file);
-			if (this.mmDescriptor.equals(mmDescriptor)) {
-				if (targetMMDescriptor != null) {
-					IMetaModelDescriptor targetMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getTargetDescriptor(file);
-					if (this.targetMMDescriptor.equals(targetMMDescriptor)) {
-						persistedFiles.add(file);
+			/*
+			 * Performance optimization: Check if given file is a potential model file inside an existing scope. This
+			 * helps excluding obvious non-model files and model files that are out of scope right away and avoids
+			 * potentially lengthy but useless processing of the same.
+			 */
+			if (!ResourceScopeProviderRegistry.INSTANCE.isNotInAnyScope(file)) {
+				/*
+				 * Only work with synchronized files to avoid automatic synchronization that will be triggered if the
+				 * file needs to be read for content type detection (see
+				 * org.eclipse.sphinx.platform.util.ExtendedPlatform.getContentTypeId(IFile)). Automatic synchronization
+				 * is triggered by EMF in
+				 * org.eclipse.emf.ecore.resource.impl.PlatformResourceURIHandlerImpl.WorkbenchHelper.
+				 * createPlatformResourceInputStream(String, Map<?, ?>).
+				 */
+				boolean isSynchronized = ExtendedPlatform.isSynchronized(file);
+				if (isSynchronized) {
+					IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(file);
+					if (this.mmDescriptor.equals(mmDescriptor)) {
+						if (targetMMDescriptor != null) {
+							IMetaModelDescriptor targetMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getTargetDescriptor(file);
+							if (this.targetMMDescriptor.equals(targetMMDescriptor)) {
+								persistedFiles.add(file);
+							}
+						} else {
+							persistedFiles.add(file);
+						}
 					}
-				} else {
-					persistedFiles.add(file);
 				}
 			}
 		}
