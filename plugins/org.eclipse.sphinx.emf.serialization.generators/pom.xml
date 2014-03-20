@@ -38,7 +38,7 @@
 						<configuration>
 							<!-- need to prefix by basedir to generate to currently built module -->
 							<outputDirectory>${basedir}/xtend-gen</outputDirectory>
-							<argLine>-Xms512m -Xmx1024m -XX:MaxPermSize=512m</argLine>
+							<argLine>-Xms512m -Xmx1024m -XX:MaxPermSize=1024m</argLine>
 						</configuration>
 					</execution>
 				</executions>
