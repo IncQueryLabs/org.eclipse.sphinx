@@ -15,10 +15,10 @@
 package org.eclipse.sphinx.emf.serialization;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
@@ -94,7 +94,7 @@ public class IdAdapter extends EContentAdapter {
 							break;
 						case Notification.ADD_MANY:
 							@SuppressWarnings("unchecked")
-							EList<EObject> newObjects = (EList<EObject>) n.getNewValue();
+							List<EObject> newObjects = (List<EObject>) n.getNewValue();
 							int size = newObjects.size();
 							for (int i = 0; i < size; i++) {
 								handleNewObjectAndSubObjects(newObjects.get(i));
@@ -106,7 +106,7 @@ public class IdAdapter extends EContentAdapter {
 							break;
 						case Notification.REMOVE_MANY:
 							@SuppressWarnings("unchecked")
-							EList<EObject> removeObjects = (EList<EObject>) n.getOldValue();
+							List<EObject> removeObjects = (List<EObject>) n.getOldValue();
 							size = removeObjects.size();
 							for (int i = 0; i < size; i++) {
 								handleRemoveObjectAndSubObjects(removeObjects.get(i));
@@ -128,7 +128,7 @@ public class IdAdapter extends EContentAdapter {
 						break;
 					case Notification.ADD_MANY:
 						@SuppressWarnings("unchecked")
-						EList<EObject> newObjects = (EList<EObject>) n.getNewValue();
+						List<EObject> newObjects = (List<EObject>) n.getNewValue();
 						int size = newObjects.size();
 						for (int i = 0; i < size; i++) {
 							handleNewObjectAndSubObjects(newObjects.get(i));
@@ -140,7 +140,7 @@ public class IdAdapter extends EContentAdapter {
 						break;
 					case Notification.REMOVE_MANY:
 						@SuppressWarnings("unchecked")
-						EList<EObject> removeObjects = (EList<EObject>) n.getOldValue();
+						List<EObject> removeObjects = (List<EObject>) n.getOldValue();
 						size = removeObjects.size();
 						for (int i = 0; i < size; i++) {
 							handleRemoveObjectAndSubObjects(removeObjects.get(i));
