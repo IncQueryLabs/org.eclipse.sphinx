@@ -20,12 +20,13 @@ import org.junit.Test;
 public abstract class AbstractEReferenceContainedTestCase extends AbstractTestCase {
 
 	@Test
+	// Not yet fully implemented in Schema generator
 	public void testEReferenceContained0100_Single() throws Exception {
 		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__0100__FEATURE_ELEMENT, false);
 	}
 
 	@Test
-	// Not yet implemented in Schema generator
+	// Not yet fully implemented in Schema generator
 	public void testEReferenceContained0100_Many() throws Exception {
 		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__0100__FEATURE_ELEMENT, true);
 	}
@@ -36,13 +37,13 @@ public abstract class AbstractEReferenceContainedTestCase extends AbstractTestCa
 	}
 
 	@Test
-	// Not yet implemented in Schema generator
+	// Not yet fully implemented in Schema generator
 	public void testEReferenceContained0101_Many() throws Exception {
 		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__0101__FEATURE_ELEMENT__CLASSIFIER_ELEMENT, true);
 	}
 
 	@Test
-	// Not yet implemented in Schema generator
+	// Not yet fully implemented in Schema generator
 	public void testEReferenceContained1001_Single() throws Exception {
 		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__1001__FEATURE_WRAPPER_ELEMENT__CLASSIFIER_ELEMENT, false);
 	}
@@ -53,12 +54,13 @@ public abstract class AbstractEReferenceContainedTestCase extends AbstractTestCa
 	}
 
 	@Test
-	// Not yet implemented in Schema generator
+	// Not yet fully implemented in Schema generator
 	public void testEReferenceContained1100_Single() throws Exception {
 		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__1100__FEATURE_WRAPPER_ELEMENT__FEATURE_ELEMENT, false);
 	}
 
 	@Test
+	// Not yet fully implemented in Schema generator
 	public void testEReferenceContained1100_Many() throws Exception {
 		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__1100__FEATURE_WRAPPER_ELEMENT__FEATURE_ELEMENT, true);
 	}
