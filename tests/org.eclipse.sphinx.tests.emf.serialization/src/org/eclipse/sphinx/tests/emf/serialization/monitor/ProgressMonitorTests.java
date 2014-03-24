@@ -23,7 +23,6 @@ import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sphinx.emf.serialization.XMLPersistenceMappingResource;
 import org.eclipse.sphinx.emf.serialization.XMLPersistenceMappingResourceFactoryImpl;
 import org.eclipse.sphinx.tests.emf.serialization.model.nodes.NodesPackage;
@@ -75,8 +74,7 @@ public class ProgressMonitorTests {
 			};
 			Map<String, Object> options = new HashMap<String, Object>();
 			options.put(XMLPersistenceMappingResource.OPTION_PROGRESS_MONITOR, monitor);
-			Resource resource = LoadSaveUtil
-					.loadResource("resources/input/" + inputFileName, new XMLPersistenceMappingResourceFactoryImpl(), options);
+			LoadSaveUtil.loadResource("resources/input/" + inputFileName, new XMLPersistenceMappingResourceFactoryImpl(), options);
 
 			assertSame(1, beginTaskCount);
 			assertSame(4, myTotalWork);

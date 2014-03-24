@@ -14,8 +14,6 @@
  */
 package org.eclipse.sphinx.tests.emf.serialization.generators;
 
-import static org.junit.Assert.assertSame;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -32,23 +31,27 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Plugin;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.sphinx.emf.serialization.XMLPersistenceMappingResourceFactoryImpl;
 import org.eclipse.sphinx.emf.serialization.XMLPersistenceMappingResourceSetImpl;
 import org.eclipse.sphinx.emf.serialization.generators.xsd.Ecore2XSDGenerator;
+import org.eclipse.sphinx.tests.emf.serialization.generators.internal.Activator;
 import org.eclipse.sphinx.tests.emf.serialization.generators.model.ModelBuilder;
 import org.eclipse.sphinx.testutils.EcoreEqualityAssert;
+import org.eclipse.sphinx.testutils.TestFileAccessor;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 
 @SuppressWarnings("nls")
-public abstract class AbstractTestCase {
+public abstract class AbstractTestCase extends org.eclipse.sphinx.testutils.AbstractTestCase {
 	public static final String WORKING_DIR_NAME = "working-dir";
 	public static final String ADDITIONAL_SCHEMA_FOLDER_NAME = "resources/schema/";
 	public static final String MODEL_FILE_EXTESNION = "nodes";
@@ -56,12 +59,15 @@ public abstract class AbstractTestCase {
 	public static final boolean SKIP_SCHEMA_VALIDATION = true;
 
 	protected void validate(List<EPackage> metamodel, EObject model, String modelName, boolean skipSchemaValidation) throws Exception {
+		TestFileAccessor testFileAccessor = getTestFileAccessor();
 
 		// write metamodel
 		ResourceSet metamodelResourceSet = new ResourceSetImpl();
 		Resource metamodelResource;
 		for (int i = 0; i < metamodel.size(); i++) {
-			metamodelResource = new EcoreResourceFactoryImpl().createResource(URI.createURI(getMetaModelFileName(modelName + (i + 1))));
+			java.net.URI workingFileURI = testFileAccessor.getWorkingFileURI(getMetaModelFileName(modelName + (i + 1)));
+			URI emfURI = testFileAccessor.convertToEMFURI(workingFileURI);
+			metamodelResource = new EcoreResourceFactoryImpl().createResource(emfURI);
 			metamodelResource.getContents().add(metamodel.get(i));
 			metamodelResourceSet.getResources().add(metamodelResource);
 		}
@@ -71,66 +77,70 @@ public abstract class AbstractTestCase {
 		}
 
 		// save instance
-		Resource modelSaveResource = new XMLPersistenceMappingResourceFactoryImpl().createResource(URI.createURI(getModelFileName(modelName)));
-		modelSaveResource.getContents().add(model);
-		modelSaveResource.save(null);
+		saveWorkingFile(getModelFileName(modelName), model, new XMLPersistenceMappingResourceFactoryImpl(), null);
 
 		// load instance
+		// register dynamic packages and file name extension with local resource set
 		ResourceSet resourceSet = new XMLPersistenceMappingResourceSetImpl();
 		for (int i = 0; i < metamodel.size(); i++) {
 			EPackage ePackage = metamodel.get(i);
 			resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
 		}
 		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(MODEL_FILE_EXTESNION, new XMLPersistenceMappingResourceFactoryImpl());
-		Resource modelLoadResource = resourceSet.getResource(URI.createURI(getModelFileName(modelName)), true);
-		EObject loadedModel = modelLoadResource.getContents().get(0);
+		// load the resource
+		EObject loadedModel = loadWorkingFile(getModelFileName(modelName), resourceSet, null);
 
 		// compare
 		EcoreEqualityAssert.assertEquals(model, loadedModel);
 
 		// check load problems
-		assertSame(0, modelLoadResource.getErrors().size());
-		assertSame(0, modelLoadResource.getWarnings().size());
 
 		// generate schema
 		for (int i = 0; i < metamodel.size(); i++) {
-			URI xsdFileURI = URI.createURI(getSchemaFileName(metamodel.get(i).getName()));
-			File schemaFile = new File(getSchemaFileName(metamodel.get(i).getName()));
-			final Ecore2XSDGenerator ecore2XSDGenerator = new Ecore2XSDGenerator(xsdFileURI, schemaFile, metamodel.get(i));
+			java.net.URI xsdFileURI = getTestFileAccessor().getWorkingFileURI(getSchemaFileName(metamodel.get(i).getName()));
+			URI emfXsdFileURI = getTestFileAccessor().convertToEMFURI(xsdFileURI);
+			File schemaFile = new File(xsdFileURI.getPath());
+			final Ecore2XSDGenerator ecore2XSDGenerator = new Ecore2XSDGenerator(emfXsdFileURI, schemaFile, metamodel.get(i));
 			ecore2XSDGenerator.run(new NullProgressMonitor());
 		}
 
 		if (!skipSchemaValidation) {
 			// validate instance
-			validateAgainstSchema(getModelFileName(modelName), getSchemaFileName(metamodel.get(0).getName()));
+			validateAgainstSchema(getTestFileAccessor().getWorkingFileURI(getModelFileName(modelName)),
+					getTestFileAccessor().getWorkingFileURI(getSchemaFileName(metamodel.get(0).getName())));
 		} else {
-			System.out.println("Skipping schema validation since feature is not yet implemented in XSD generator: " + modelName);
+			System.err.println("[WARNING] Skipping schema validation since feature is not yet implemented in XSD generator: " + modelName);
 		}
 	}
 
+	protected EObject loadWorkingFile(String workingFileName, ResourceSet resourceSet, Map<?, ?> options) throws Exception {
+		return loadFile(getTestFileAccessor().getWorkingFileURI(workingFileName), resourceSet, options);
+	}
+
+	private EObject loadFile(java.net.URI fileURI, ResourceSet resourceSet, Map<?, ?> options) throws Exception {
+		URI emfURI = getTestFileAccessor().convertToEMFURI(fileURI);
+		XMLResource resource = (XMLResource) resourceSet.getResource(emfURI, true);
+		resource.load(options);
+
+		assertHasNoLoadProblems(resource);
+
+		return resource.getContents().get(0);
+	}
+
 	protected String getModelFileName(String modelName) {
-		return getWorkingDirName() + modelName + "." + MODEL_FILE_EXTESNION;
+		return getTestCaseFolderName() + modelName + "." + MODEL_FILE_EXTESNION;
 	}
 
 	protected String getMetaModelFileName(String modelName) {
-		return getWorkingDirName() + modelName + ".ecore";
+		return getTestCaseFolderName() + modelName + ".ecore";
 	}
 
 	protected String getSchemaFileName(String modelName) {
-		return getWorkingDirName() + modelName + ".xsd";
+		return getTestCaseFolderName() + modelName + ".xsd";
 	}
 
-	protected String getWorkingDirName() {
-		return "file://" + getAbsoluteFileName(WORKING_DIR_NAME + "/" + this.getClass().getName()) + "/";
-	}
-
-	protected String getRelativeWorkingDirName() {
-		return WORKING_DIR_NAME + "/" + this.getClass().getName() + "/";
-	}
-
-	protected String getAbsoluteFileName(String fileName) {
-		File file = new File(fileName);
-		return file.getAbsolutePath();
+	protected String getTestCaseFolderName() {
+		return this.getClass().getName() + "/";
 	}
 
 	public class Input implements LSInput {
@@ -241,10 +251,10 @@ public abstract class AbstractTestCase {
 		}
 	}
 
-	protected void validateAgainstSchema(String filename, final String schemaFilePath) throws Exception {
+	protected void validateAgainstSchema(java.net.URI fileURI, final java.net.URI schemaFileURI) throws Exception {
 
-		StreamSource[] schemaDocuments = new StreamSource[] { new StreamSource(schemaFilePath) };
-		Source instanceDocument = new StreamSource(filename);
+		StreamSource[] schemaDocuments = new StreamSource[] { new StreamSource(schemaFileURI.toString()) };
+		Source instanceDocument = new StreamSource(fileURI.toString());
 
 		// the resolver is required in order find imported schema files
 		LSResourceResolver resolver = new LSResourceResolver() {
@@ -262,7 +272,7 @@ public abstract class AbstractTestCase {
 					}
 
 					try {
-						String path = getRelativeWorkingDirName() + schemaFileName;
+						String path = getTestFileAccessor().getWorkingFileURI(getTestCaseFolderName() + schemaFileName).getPath();
 						InputStream inputStream = new FileInputStream(path);
 						input = new Input(publicId, systemId, inputStream);
 					} catch (FileNotFoundException e) {
@@ -270,7 +280,7 @@ public abstract class AbstractTestCase {
 							InputStream inputStream = new FileInputStream(ADDITIONAL_SCHEMA_FOLDER_NAME + schemaFileName);
 							input = new Input(publicId, systemId, inputStream);
 						} catch (FileNotFoundException ex) {
-							ex.printStackTrace();
+							throw new RuntimeException(ex);
 						}
 					}
 				}
@@ -332,4 +342,8 @@ public abstract class AbstractTestCase {
 
 	abstract protected ModelBuilder getModelBuilder(String name, int persistenceMappingStrategy);
 
+	@Override
+	protected Plugin getTestPlugin() {
+		return Activator.getPlugin();
+	}
 }

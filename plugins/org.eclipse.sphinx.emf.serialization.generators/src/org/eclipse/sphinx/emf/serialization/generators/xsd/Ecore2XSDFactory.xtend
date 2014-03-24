@@ -69,6 +69,7 @@ import org.eclipse.xsd.util.XSDConstants
 import java.util.HashMap
 import org.eclipse.sphinx.emf.serialization.generators.util.JavaXSDPrimitiveTypeMapping
 import java.util.Collections
+import org.eclipse.emf.ecore.xml.type.XMLTypePackage
 
 class Ecore2XSDFactory extends NameMangler {
 
@@ -257,7 +258,9 @@ class Ecore2XSDFactory extends NameMangler {
 	// To be overriden by custom
 	def protected void loadImportReferencedXSD(EPackage referencedRootPackage, XSDSchema xsdSchema, ResourceSet resourceSet){
 		// get the XSD namespace of the referenced root package
+		
 		val String namespace = getGlobalXSDSchemaNamespace(referencedRootPackage);
+
 		var String schemaLocation = xsdExtendedMetaData.getXMLSchemaLocation(referencedRootPackage);
 		if (null == schemaLocation) {
 			// if Ecore.xsd
@@ -278,7 +281,8 @@ class Ecore2XSDFactory extends NameMangler {
 			
 		// import
 		val XSDImport xsdImport = createXSDImport(namespace, schemaLocation);
-		xsdSchema.getContents.add(xsdImport);					
+		xsdSchema.getContents.add(xsdImport);	
+					
 	}
 	
 	
@@ -294,7 +298,7 @@ class Ecore2XSDFactory extends NameMangler {
   
   /**
    * Get referenced ecore root packages.
-   * If references to simple Ecore data types, such as EString, then the referenced Ecore package is not taken into account
+   * If references to simple Ecore data types or XSD Types, such as EString, then the referenced Ecore package is not taken into account
    */
 	def protected Set<EPackage> getReferencedEcoreRootPackages(IProgressMonitor monitor){		
 		val SubMonitor progress = SubMonitor.convert(monitor, 100);
@@ -310,7 +314,7 @@ class Ecore2XSDFactory extends NameMangler {
 					val EPackage rootEPackage =  (EcoreUtil.getRootContainer(it)) as EPackage;
 					val String uri = rootEPackage.getNsURI();
 					if(uri != targetNamespace){
-						referencedEcores.add(rootEPackage);
+						referencedEcores.add(rootEPackage)
 					}
 				]
 			}
@@ -321,10 +325,12 @@ class Ecore2XSDFactory extends NameMangler {
 					val EPackage rootEPackage = container as EPackage;
 					val String uri = rootEPackage.getNsURI();
 					if(uri != targetNamespace){
-						// if Ecore datatype, then do not add to the referencedEcores
-						if(uri.equals(IGeneratorConstants.DEFAULT_ECORE_NAMESPACE) &&(eType instanceof EDataType)){							
+						// if Ecore or XMLType Classifier, then do not add to the referencedEcores
+						if (uri.equals(IGeneratorConstants.DEFAULT_ECORE_NAMESPACE) || XMLTypePackage.eNS_URI.equals(uri)){	
+							// intentionally ignored	  			
+						} else {
+							referencedEcores.add(rootEPackage)
 						}
-						else{referencedEcores.add(rootEPackage)}
 					}				
 					
 				}
