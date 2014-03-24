@@ -30,27 +30,29 @@ public class EReferenceContainedWithSubtypesTests extends AbstractEReferenceCont
 	@Test
 	// Not yet fully implemented in Schema generator
 	public void testEReferenceContained0100_Single() throws Exception {
-		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__0100__FEATURE_ELEMENT, false, true);
+		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__0100__FEATURE_ELEMENT, false, SKIP_SCHEMA_VALIDATION);
 	}
 
 	@Override
 	@Test
 	// Not yet fully implemented in Schema generator
 	public void testEReferenceContained0100_Many() throws Exception {
-		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__0100__FEATURE_ELEMENT, true, true);
+		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__0100__FEATURE_ELEMENT, true, SKIP_SCHEMA_VALIDATION);
 	}
 
 	@Override
 	@Test
 	// Not yet fully implemented in Schema generator
 	public void testEReferenceContained1100_Single() throws Exception {
-		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__1100__FEATURE_WRAPPER_ELEMENT__FEATURE_ELEMENT, false, true);
+		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__1100__FEATURE_WRAPPER_ELEMENT__FEATURE_ELEMENT, false,
+				SKIP_SCHEMA_VALIDATION);
 	}
 
 	@Override
 	@Test
 	// Not yet fully implemented in Schema generator
 	public void testEReferenceContained1100_Many() throws Exception {
-		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__1100__FEATURE_WRAPPER_ELEMENT__FEATURE_ELEMENT, true, true);
+		runTest(XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_STRATEGY__1100__FEATURE_WRAPPER_ELEMENT__FEATURE_ELEMENT, true,
+				SKIP_SCHEMA_VALIDATION);
 	}
 }

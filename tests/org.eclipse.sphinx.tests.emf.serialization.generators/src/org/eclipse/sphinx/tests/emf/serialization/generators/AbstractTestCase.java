@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -46,27 +47,23 @@ import org.eclipse.sphinx.emf.serialization.generators.xsd.Ecore2XSDGenerator;
 import org.eclipse.sphinx.tests.emf.serialization.generators.internal.Activator;
 import org.eclipse.sphinx.tests.emf.serialization.generators.model.ModelBuilder;
 import org.eclipse.sphinx.testutils.EcoreEqualityAssert;
-import org.eclipse.sphinx.testutils.TestFileAccessor;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 
 @SuppressWarnings("nls")
 public abstract class AbstractTestCase extends org.eclipse.sphinx.testutils.AbstractTestCase {
-	public static final String WORKING_DIR_NAME = "working-dir";
-	public static final String ADDITIONAL_SCHEMA_FOLDER_NAME = "resources/schema/";
+	public static final String ADDITIONAL_SCHEMA_FOLDER_NAME = "/schema/";
 	public static final String MODEL_FILE_EXTESNION = "nodes";
-
 	public static final boolean SKIP_SCHEMA_VALIDATION = true;
 
 	protected void validate(List<EPackage> metamodel, EObject model, String modelName, boolean skipSchemaValidation) throws Exception {
-		TestFileAccessor testFileAccessor = getTestFileAccessor();
 
 		// write metamodel
 		ResourceSet metamodelResourceSet = new ResourceSetImpl();
 		Resource metamodelResource;
 		for (int i = 0; i < metamodel.size(); i++) {
-			java.net.URI workingFileURI = testFileAccessor.getWorkingFileURI(getMetaModelFileName(modelName + (i + 1)));
-			URI emfURI = testFileAccessor.convertToEMFURI(workingFileURI);
+			java.net.URI workingFileURI = getTestFileAccessor().getWorkingFileURI(getMetaModelFileName(modelName + (i + 1)));
+			URI emfURI = getTestFileAccessor().convertToEMFURI(workingFileURI);
 			metamodelResource = new EcoreResourceFactoryImpl().createResource(emfURI);
 			metamodelResource.getContents().add(metamodel.get(i));
 			metamodelResourceSet.getResources().add(metamodelResource);
@@ -277,9 +274,14 @@ public abstract class AbstractTestCase extends org.eclipse.sphinx.testutils.Abst
 						input = new Input(publicId, systemId, inputStream);
 					} catch (FileNotFoundException e) {
 						try {
-							InputStream inputStream = new FileInputStream(ADDITIONAL_SCHEMA_FOLDER_NAME + schemaFileName);
-							input = new Input(publicId, systemId, inputStream);
+							String path2 = getTestFileAccessor().getInputFileURI(ADDITIONAL_SCHEMA_FOLDER_NAME + schemaFileName, true).getPath();
+							InputStream inputStream2 = new FileInputStream(path2);
+							input = new Input(publicId, systemId, inputStream2);
 						} catch (FileNotFoundException ex) {
+							throw new RuntimeException(ex);
+						} catch (URISyntaxException ex) {
+							throw new RuntimeException(ex);
+						} catch (IOException ex) {
 							throw new RuntimeException(ex);
 						}
 					}
