@@ -38,7 +38,7 @@ public class CreateDefaultXMLPersistenceMappingExtendedMetadataTests {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		EPackage ePackage = LoadSaveUtil.loadEcorePackage("resources/model/Nodes.ecore");
+		EPackage ePackage = LoadSaveUtil.loadEcorePackage("resources/input/model/Nodes.ecore");
 		CreateDefaultXSDExtendedMetaData defaultXmlPersistenceExtendedMetadataGenerator = new CreateDefaultXSDExtendedMetaData(ePackage, "Nodes");
 		annotatedEPackage = defaultXmlPersistenceExtendedMetadataGenerator.execute(new NullProgressMonitor());
 	}
