@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.sphinx.license"
-      label="%featureName"
+      label="Sphinx License"
       version="0.8.0.qualifier"
-      provider-name="%providerName">
+      provider-name="Eclipse Sphinx">
 
    <description>
-      %description
+      License for Sphinx.
    </description>
 
    <license url="%licenseURL">
       %license
    </license>
+
 </feature>
