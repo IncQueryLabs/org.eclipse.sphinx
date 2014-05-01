@@ -8,7 +8,6 @@
 /features/*/target
 /plugins/*/bin
 /plugins/*/target
-/plugins/*/xtend-gen
 /releng/*/target
 /releng/*/product/target
 /releng/*/repository/target
