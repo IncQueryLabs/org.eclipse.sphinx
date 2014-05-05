@@ -44,6 +44,7 @@ if [ "$SITE" = y ];
   selectedUpdateSiteRelativePath="$projectUpdateSitesBasePath/$selectedUpdateSiteName"
   selectedUpdateSiteAbsolutePath="$eclipseDownloadsPath/$selectedUpdateSiteRelativePath"
   echo "Publishing to remote update-site: $selectedUpdateSiteAbsolutePath"
+fi
 
 # Prepare a temp directory
 tmpDir="$BUILD_JOB_NAME-publish-tmp"
