@@ -7,165 +7,81 @@
 # $4: Whether to promote to an update-site: (y)es, (n)o
 # $5: Whether to merge the site with an existing one: (y)es, (n)o
 # $6: Release stream: <major>.<minor>.x, e.g., 0.7.x (only required if build type is release, ignored otherwise)
-#
 
 # Global settings
-buildJobsPath=/shared/jobs
-eclipseDownloadsPath=/home/data/httpd/download.eclipse.org
 projectUpdateSitesBasePath=sphinx/updates
+eclipseDownloadsPath=/home/data/httpd/download.eclipse.org
+eclipsePackage=eclipse-SDK-4.2.2-linux-gtk-x86_64.tar.gz
+eclipsePackagePath=$eclipseDownloadsPath/eclipse/downloads/drops4/R-4.2.2-201302041200
 
-if [ $# -eq 5 -o $# -eq 6 ];
-        then
-                jobName=$1
-                buildId=$2
-                buildType=$3
-                site=$4
-                merge=$5
-                if [ "$3"=r -o "$3"=R];
-                then
-                       releaseStream=$6
-                fi
-        else
-                if [ $# -ne 0 ];
-                then
-                        exit 1
-                fi
-fi
+localUpdateSite=${WORKSPACE}/artifacts
+echo "Local update-site: $localUpdateSite"
 
-if [ -z "$jobName" ];
-then
-        echo -n "Please enter the name of the Hudson job you want to promote:"
-        read jobName
-fi
-
-if [ -z "$buildId" ];
-then
-        for i in $( find $buildJobsPath/$jobName/builds -type l | sed 's!.*/!!' | sort)
-        do
-                echo -n "$i, "
-        done
-        echo "lastStable, lastSuccessful"
-        echo -n "Please enter the id/label of the Hudson build you want to promote:"
-        read buildId
-fi
-if [ -z "$buildId" ];
-        then
-                exit 0
-fi
-
-# Determine the build we want to publish
-if [ "$buildId" = "lastStable" -o "$buildId" = "lastSuccessful" ];
-        then
-                jobDir=$(readlink -f $buildJobsPath/$jobName/$buildId)
-        else
-                jobDir=$(readlink -f $buildJobsPath/$jobName/builds/$buildId)
-fi
-localUpdateSite=$jobDir/archive/update-site
-echo "Using local update-site: $localUpdateSite"
-
-# Reverse lookup the build id (in case lastSuccessful or lastStable was used)
-for i in $(find $buildJobsPath/$jobName/builds/ -type l)
-do
-        if [ "$(readlink -f $i)" =  "$jobDir" ];
-                then
-                        buildId=${i##*/}
-        fi
-done
-echo "Reverse lookup of build id yielded: $buildId"
-
-# Select the build type
-if [ -z "$buildType" ];
-then
-        echo -n "Please select which type of build you want to publish to [i(ntegration), m(aintenance), s(table), r(elease), t(est)]: "
-        read buildType
-fi
-echo "Publishing as $buildType build"
+rm -rf $localUpdateSite
+wget --mirror --execute robots=off --directory-prefix=$localUpdateSites --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $TARGET_BUILD_RUN/artifact/releng/org.eclipse.sphinx.releng.builds/repository/target/repository/
 
 # check if we are going to promote to an update-site
-if [ -z "$site" ];
-        then
-                echo -n "Do you want to promote to an remote update site? [(y)es, (n)o]:"
-                read site
-fi
-if [ "$site" != y -a "$site" != n ];
-        then
-                exit 0
-fi
-echo "Promoting to remote update site: $site"
+echo "Promoting to remote update site: $SITE"
+echo "Merging with existing site: $MERGE"
 
 # Select the Release stream
-if [ -z "$releaseStream" ];
-        then
-        	if ["$buildType"=r -o "$buildType"=R];
-                then
-                	echo -n "Please enter a release stream you want to publish, <major>.<minor>.x, e.g., 0.7.x:"
-                	read releaseStream
-            fi
+if [ "$BUILD_TYPE" = R ];
+     then
+          releaseStream=0.8.x
+          echo "Release Stream: 0.8.x"
 fi
 
-if [ "$site" = y ];
+if [ "$SITE" = y ];
         then
 
   # Determine remote update site we want to promote to (integration and stable builds are published on interim update site, release builds on applicable release stream update site)
-  case $buildType in
-        i|I|s|S) selectedUpdateSiteName=interim;;
-        r|R) selectedUpdateSiteName=$releaseStream/releases;;
-        t|T) selectedUpdateSiteName=test;;
+  case $BUILD_TYPE in
+        I|S) selectedUpdateSiteName=interim;;
+        R) selectedUpdateSiteName=$releaseStream/releases;;
+        T) selectedUpdateSiteName=test;;
         *) exit 0 ;;
   esac
   selectedUpdateSiteRelativePath="$projectUpdateSitesBasePath/$selectedUpdateSiteName"
   selectedUpdateSiteAbsolutePath="$eclipseDownloadsPath/$selectedUpdateSiteRelativePath"
   echo "Publishing to remote update-site: $selectedUpdateSiteAbsolutePath"
 
-  if [ -d "$selectedUpdateSiteAbsolutePath" ];
-        then
-                if [ -z "$merge" ];
-                then
-                        echo -n "Do you want to merge with the existing update-site? [(y)es, (n)o]:"
-                        read merge
-                fi
-                if [ "$merge" != y -a "$merge" != n ];
-                        then
-                        exit 0
-                fi
-        else
-                merge=n
-  fi
-  echo "Merging with existing site: $merge"
-fi
-
 # Prepare a temp directory
-tmpDir="$jobName-publish-tmp"
+tmpDir="$BUILD_JOB_NAME-publish-tmp"
 rm -fr $tmpDir
 mkdir -p $tmpDir/update-site
 cd $tmpDir
 
 # Download and prepare Eclipse SDK, which is needed to merge update site and postprocess repository
-echo "Downloading eclipse to $PWD"
-cp /home/data/httpd/download.eclipse.org/eclipse/downloads/drops4/R-4.2.2-201302041200/eclipse-SDK-4.2.2-linux-gtk-x86_64.tar.gz .
-tar -xvzf eclipse-SDK-4.2.2-linux-gtk-x86_64.tar.gz
-cd eclipse
-chmod 700 eclipse
-cd ..
 if [ ! -d "eclipse" ];
-        then
+	then
+		echo "Downloading eclipse to $PWD"
+		cp $eclipsePackagePath/$eclipsePackage .
+		tar -xvzf $eclipsePackage
+		cd eclipse
+		chmod 700 eclipse
+		cd ..
+		if [ ! -d "eclipse" ];
+        	then
                 echo "Failed to download an Eclipse SDK, being needed for provisioning."
                 exit
+		fi
 fi
+
 # Prepare Eclipse SDK to provide WTP releng tools (used to postprocess repository, i.e set p2.mirrorsURL property)
 echo "Installing WTP Releng tools"
 ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.director -repository http://download.eclipse.org/webtools/releng/repository/ -installIUs org.eclipse.wtp.releng.tools.feature.feature.group
 # Clean up
 echo "Cleaning up"
-rm eclipse-SDK-4.2.2-linux-gtk-x86_64.tar.gz
+rm $eclipsePackage
+
 
 # Prepare local update site (merging is performed later, if required)
 cp -R $localUpdateSite/* update-site/
 echo "Copied $localUpdateSite to local directory update-site."
 
-if [ "$site" = y ];
+if [ "$SITE" = y ];
         then
-  if [ "$merge" = y ];
+  if [ "$MERGE" = y ];
         then
         echo "Merging existing site into local one."
         ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$selectedUpdateSiteAbsolutePath -destination file:update-site
