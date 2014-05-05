@@ -82,7 +82,7 @@ echo "Copied $localUpdateSite to local directory update-site."
 
 if [ $SITE ];
         then
-  if [ $MERGE];
+  if [ $MERGE ];
         then
         echo "Merging existing site into local one."
         ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$selectedUpdateSiteAbsolutePath -destination file:update-site
