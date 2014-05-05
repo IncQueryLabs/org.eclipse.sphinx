@@ -4,8 +4,8 @@
 # $1: Hudson job name: <name>
 # $2: Hudson build id: <id>
 # $3: Build type: i(ntegration), s(table), r(elease), t(est)
-# $4: Whether to promote to an update-site: (y)es, (n)o
-# $5: Whether to merge the site with an existing one: (y)es, (n)o
+# $4: Whether to promote to an update-site: (t)rue, (f)alse
+# $5: Whether to merge the site with an existing one: (t)rue, (f)alse
 # $6: Release stream: <major>.<minor>.x, e.g., 0.7.x (only required if build type is release, ignored otherwise)
 
 # Global settings
@@ -14,15 +14,15 @@ eclipseDownloadsPath=/home/data/httpd/download.eclipse.org
 eclipsePackage=eclipse-SDK-4.2.2-linux-gtk-x86_64.tar.gz
 eclipsePackagePath=$eclipseDownloadsPath/eclipse/downloads/drops4/R-4.2.2-201302041200
 
+# check if we are going to promote to an update-site
+echo "Promoting to remote update site: $SITE"
+echo "Merging with existing site: $MERGE"
+
 localUpdateSite=${WORKSPACE}/artifacts
 echo "Local update-site: $localUpdateSite"
 
 rm -rf $localUpdateSite
 wget --mirror --execute robots=off --directory-prefix=$localUpdateSite --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $TARGET_BUILD_RUN/artifact/releng/org.eclipse.sphinx.releng.builds/repository/target/repository/
-
-# check if we are going to promote to an update-site
-echo "Promoting to remote update site: $SITE"
-echo "Merging with existing site: $MERGE"
 
 # Select the Release stream
 if [ "$BUILD_TYPE" = R ];
@@ -31,7 +31,7 @@ if [ "$BUILD_TYPE" = R ];
           echo "Release Stream: 0.8.x"
 fi
 
-if [ "$SITE" = y ];
+if [ "$SITE" ];
         then
 
   # Determine remote update site we want to promote to (integration and stable builds are published on interim update site, release builds on applicable release stream update site)
@@ -80,9 +80,9 @@ rm $eclipsePackage
 cp -R $localUpdateSite/* update-site/
 echo "Copied $localUpdateSite to local directory update-site."
 
-if [ "$SITE" = y ];
+if [ "$SITE" ];
         then
-  if [ "$MERGE" = y ];
+  if [ "$MERGE"];
         then
         echo "Merging existing site into local one."
         ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$selectedUpdateSiteAbsolutePath -destination file:update-site
