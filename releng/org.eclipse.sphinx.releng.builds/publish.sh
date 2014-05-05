@@ -18,7 +18,7 @@ localUpdateSite=${WORKSPACE}/artifacts
 echo "Local update-site: $localUpdateSite"
 
 rm -rf $localUpdateSite
-wget --mirror --execute robots=off --directory-prefix=$localUpdateSites --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $TARGET_BUILD_RUN/artifact/releng/org.eclipse.sphinx.releng.builds/repository/target/repository/
+wget --mirror --execute robots=off --directory-prefix=$localUpdateSite --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $TARGET_BUILD_RUN/artifact/releng/org.eclipse.sphinx.releng.builds/repository/target/repository/
 
 # check if we are going to promote to an update-site
 echo "Promoting to remote update site: $SITE"
