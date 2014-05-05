@@ -31,7 +31,7 @@ if [ "$BUILD_TYPE" = R ];
           echo "Release Stream: 0.8.x"
 fi
 
-if [ "$SITE" ];
+if [ $SITE ];
         then
 
   # Determine remote update site we want to promote to (integration and stable builds are published on interim update site, release builds on applicable release stream update site)
@@ -80,9 +80,9 @@ rm $eclipsePackage
 cp -R $localUpdateSite/* update-site/
 echo "Copied $localUpdateSite to local directory update-site."
 
-if [ "$SITE" ];
+if [ $SITE ];
         then
-  if [ "$MERGE"];
+  if [ $MERGE];
         then
         echo "Merging existing site into local one."
         ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$selectedUpdateSiteAbsolutePath -destination file:update-site
