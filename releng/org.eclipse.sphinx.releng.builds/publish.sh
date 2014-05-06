@@ -10,6 +10,7 @@
 
 # Global settings
 projectUpdateSitesBasePath=sphinx/updates
+projectDownloadsBasePath=sphinx/downloads
 eclipseDownloadsPath=/home/data/httpd/download.eclipse.org
 eclipsePackageVersion=4.2.2
 eclipsePackageTimestamp=201302041200
@@ -19,11 +20,24 @@ relengProjectRelativePath=releng/org.eclipse.sphinx.releng.builds
 relengProjectPath=${WORKSPACE}/$relengProjectRelativePath
 localUpdateSitePath=$relengProjectPath/artifacts
 buildEclipsePath=$relengProjectPath/eclipse
+updateZipFileNamePrefix=sphinx-Update-0.8.0.
+# TODO: the BUILD_ID should be the target job BUILD_ID
+updateZipFileTimestamp=${BUILD_ID}
+
+case $BUILD_TYPE in
+        I|S) updateZipType=I;;
+        S) updateZipType=M;;
+        R) updateZipType=R;;
+        T) updateZipType=T;;
+        *) exit 0 ;;
+esac
+updateZipFileName=$updateZipFileNamePrefix$updateZipType$updateZipFileTimestamp
 
 # check if we are going to promote to an update-site
 echo "Promoting to remote update site: $SITE"
 echo "Merging with existing site: $MERGE"
 echo "Local update-site: $localUpdateSitePath"
+echo "Local update-site zip file name: $updateZipFileName"
 
 rm -rf $localUpdateSitePath
 wget --mirror --execute robots=off --directory-prefix=$localUpdateSitePath --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $TARGET_BUILD_RUN/artifact/releng/org.eclipse.sphinx.releng.builds/repository/target/repository/
@@ -40,18 +54,32 @@ if [ $SITE ];
 
   # Determine remote update site we want to promote to (integration and stable builds are published on interim update site, release builds on applicable release stream update site)
   case $BUILD_TYPE in
-        I|S) selectedUpdateSiteName=interim;;
-        R) selectedUpdateSiteName=$releaseStream/releases;;
-        T) selectedUpdateSiteName=test;;
+        I|S) selectedUpdateSiteName=interim
+        	 selectedDownloadPath=interim
+        	 ;;
+        R) selectedUpdateSiteName=releases/$releaseStream
+           selectedDownloadPath=releases/$releaseStream
+           ;;
+        T) selectedUpdateSiteName=test
+           selectedDownloadPath=test
+           ;;
         *) exit 0 ;;
   esac
   selectedUpdateSiteRelativePath="$projectUpdateSitesBasePath/$selectedUpdateSiteName"
   selectedUpdateSiteAbsolutePath="$eclipseDownloadsPath/$selectedUpdateSiteRelativePath"
   echo "Publishing to remote update-site: $selectedUpdateSiteAbsolutePath"
+  selectedDownloadRelativePath="$projectDownloadsBasePath/$selectedDownloadPath"
+  selectedDownloadAbsolutePath="$eclipseDownloadsPath/$selectedDownloadRelativePath"
 fi
 
-# Download and prepare Eclipse SDK, which is needed to merge update site and postprocess repository
+# zip the local update site, and copy to downloads
+echo "Zip and copy the local update site to downloads"
 cd $relengProjectRelativePath
+cd artifacts
+zip -r $updateZipFileName .
+cp $updateZipFileName $selectedDownloadAbsolutePath/
+
+# Download and prepare Eclipse SDK, which is needed to merge update site and postprocess repository
 if [ ! -d "eclipse" ];
 	then
 		echo "Downloading eclipse to $PWD"
@@ -74,11 +102,6 @@ echo "Installing WTP Releng tools"
 # Clean up
 echo "Cleaning up"
 rm $eclipsePackageFileName
-
-
-# Prepare local update site (merging is performed later, if required)
-#cp -R $localUpdateSitePath/* update-site/
-#echo "Copied $localUpdateSitePath to local directory update-site."
 
 if [ $SITE ];
         then
