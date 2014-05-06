@@ -139,12 +139,14 @@ if [ $SITE ];
                                 rm -fr BACKUP
                 fi
                 mkdir BACKUP
+                echo "copy $selectedUpdateSiteAbsolutePath/* to BACKUP"
                 cp -R $selectedUpdateSiteAbsolutePath/* BACKUP/
                 rm -fr $selectedUpdateSiteAbsolutePath
   fi
 
   echo "Publishing contents of local update-site directory to remote update site $selectedUpdateSiteAbsolutePath"
   mkdir -p $selectedUpdateSiteAbsolutePath
+  echo "copy artifacts/* to $selectedUpdateSiteAbsolutePath/* "
   cp -R artifacts/* $selectedUpdateSiteAbsolutePath/
   rm -f artifacts/*.zip
   #rsync -rv --exclude=sphinx-Updated-*.zip artifacts/* $selectedUpdateSiteAbsolutePath/
