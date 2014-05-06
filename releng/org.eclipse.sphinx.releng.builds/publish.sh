@@ -79,7 +79,7 @@ if [ $SITE ];
   cd artifacts
   zip -r $updateZipFileName .
   echo "cp $updateZipFileName $selectedDownloadAbsolutePath"
-  cp $updateZipFileName $selectedDownloadAbsolutePath
+  mv -f $updateZipFileName $selectedDownloadAbsolutePath
   cd ..
 fi
 
@@ -148,7 +148,6 @@ if [ $SITE ];
   mkdir -p $selectedUpdateSiteAbsolutePath
   echo "copy artifacts/* to $selectedUpdateSiteAbsolutePath/* "
   cp -R artifacts/* $selectedUpdateSiteAbsolutePath/
-  rm -f artifacts/*.zip
   #rsync -rv --exclude=sphinx-Updated-*.zip artifacts/* $selectedUpdateSiteAbsolutePath/
   #cd artifacts
   #find ./ ! -name "sphinx-Updated-*.zip" | xargs -i cp --parents {} $selectedUpdateSiteAbsolutePath/
