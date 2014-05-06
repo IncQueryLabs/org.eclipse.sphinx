@@ -149,6 +149,6 @@ if [ $SITE ];
   #rsync -rv --exclude=sphinx-Updated-*.zip artifacts/* $selectedUpdateSiteAbsolutePath/
   cd artifacts
   shopt -s etglob
-  cp -r !(sphinx-Updated-*.zip) $selectedUpdateSiteAbsolutePath/
+  cp -r !(sphinx-Updated-*.zip) $selectedUpdateSiteAbsolutePath
 fi
 
