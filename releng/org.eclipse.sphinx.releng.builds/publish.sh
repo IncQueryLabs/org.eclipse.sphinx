@@ -79,6 +79,7 @@ if [ $SITE ];
   cd artifacts
   zip -r $updateZipFileName .
   echo "cp $updateZipFileName $selectedDownloadAbsolutePath"
+  chmod 775 $selectedDownloadAbsolutePath
   cp $updateZipFileName $selectedDownloadAbsolutePath
   cd ..
 fi
