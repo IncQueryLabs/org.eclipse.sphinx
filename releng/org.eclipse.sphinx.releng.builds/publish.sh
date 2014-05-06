@@ -148,6 +148,6 @@ if [ $SITE ];
   #cp -R artifacts/* $selectedUpdateSiteAbsolutePath/
   #rsync -rv --exclude=sphinx-Updated-*.zip artifacts/* $selectedUpdateSiteAbsolutePath/
   cd artifacts
-  find ./ ! -name 'sphinx-Updated-*.zip' | xargs -i cp {} $selectedUpdateSiteAbsolutePath/
+  find ./ ! -name 'sphinx-Updated-*.zip' | xargs -i cp --parents {} $selectedUpdateSiteAbsolutePath/
 fi
 
