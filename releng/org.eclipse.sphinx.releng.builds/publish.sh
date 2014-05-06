@@ -60,8 +60,8 @@ if [ ! -d "eclipse" ];
 	then
 		echo "Downloading eclipse to $PWD"
 		cp $eclipsePackagePath/$eclipsePackageFileName $relengProjectPath
-		tar -xvzf $relengProjectPath/$eclipsePackageFileName
-		cd $relengProjectPath/eclipse
+		tar -xvzf $eclipsePackageFileName
+		cd eclipse
 		chmod 700 eclipse
 		cd ..
 		if [ ! -d "eclipse" ];
