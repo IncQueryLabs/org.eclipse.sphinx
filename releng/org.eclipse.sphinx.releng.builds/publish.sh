@@ -146,7 +146,7 @@ if [ $SITE ];
   echo "Publishing contents of local update-site directory to remote update site $selectedUpdateSiteAbsolutePath"
   mkdir -p $selectedUpdateSiteAbsolutePath
   cp -R artifacts/* $selectedUpdateSiteAbsolutePath/
-  rm artifacts/sphinx-Updated-*.zip
+  rm -f artifacts/*.zip
   #rsync -rv --exclude=sphinx-Updated-*.zip artifacts/* $selectedUpdateSiteAbsolutePath/
   #cd artifacts
   #find ./ ! -name "sphinx-Updated-*.zip" | xargs -i cp --parents {} $selectedUpdateSiteAbsolutePath/
