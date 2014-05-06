@@ -11,18 +11,21 @@
 # Global settings
 projectUpdateSitesBasePath=sphinx/updates
 eclipseDownloadsPath=/home/data/httpd/download.eclipse.org
-eclipsePackage=eclipse-SDK-4.2.2-linux-gtk-x86_64.tar.gz
-eclipsePackagePath=$eclipseDownloadsPath/eclipse/downloads/drops4/R-4.2.2-201302041200
+eclipsePackageVersion=4.2.2
+eclipsePackageTimestamp=201302041200
+eclipsePackagePath=$eclipseDownloadsPath/eclipse/downloads/drops4/R-$eclipsePackageVersion-$eclipsePackageTimestamp
+eclipsePackageFileName=eclipse-SDK-$eclipsePackageVersion-linux-gtk-x86_64.tar.gz
+relengProjectPath=${WORKSPACE}/releng/org.eclipse.sphinx.releng.builds
+localUpdateSitePath=$relengProjectPath/artifacts
+buildEclipsePath=$relengProjectPath/eclipse
 
 # check if we are going to promote to an update-site
 echo "Promoting to remote update site: $SITE"
 echo "Merging with existing site: $MERGE"
+echo "Local update-site: $localUpdateSitePath"
 
-localUpdateSite=${WORKSPACE}/artifacts
-echo "Local update-site: $localUpdateSite"
-
-rm -rf $localUpdateSite
-wget --mirror --execute robots=off --directory-prefix=$localUpdateSite --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $TARGET_BUILD_RUN/artifact/releng/org.eclipse.sphinx.releng.builds/repository/target/repository/
+rm -rf $localUpdateSitePath
+wget --mirror --execute robots=off --directory-prefix=$localUpdateSitePath --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $TARGET_BUILD_RUN/artifact/releng/org.eclipse.sphinx.releng.builds/repository/target/repository/
 
 # Select the Release stream
 if [ "$BUILD_TYPE" = R ];
@@ -47,18 +50,18 @@ if [ $SITE ];
 fi
 
 # Prepare a temp directory
-tmpDir="$BUILD_JOB_NAME-publish-tmp"
-rm -fr $tmpDir
-mkdir -p $tmpDir/update-site
-cd $tmpDir
+#tmpDir="$BUILD_JOB_NAME-publish-tmp"
+#rm -fr $tmpDir
+#mkdir -p $tmpDir/update-site
+#cd $tmpDir
 
 # Download and prepare Eclipse SDK, which is needed to merge update site and postprocess repository
 if [ ! -d "eclipse" ];
 	then
 		echo "Downloading eclipse to $PWD"
-		cp $eclipsePackagePath/$eclipsePackage .
-		tar -xvzf $eclipsePackage
-		cd eclipse
+		cp $eclipsePackagePath/$eclipsePackageFileName $relengProjectPath
+		tar -xvzf $relengProjectPath/$eclipsePackageFileName
+		cd $relengProjectPath/eclipse
 		chmod 700 eclipse
 		cd ..
 		if [ ! -d "eclipse" ];
@@ -71,36 +74,37 @@ fi
 # Prepare Eclipse SDK to provide WTP releng tools (used to postprocess repository, i.e set p2.mirrorsURL property)
 echo "Installing WTP Releng tools"
 ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.director -repository http://download.eclipse.org/webtools/releng/repository/ -installIUs org.eclipse.wtp.releng.tools.feature.feature.group
+
 # Clean up
 echo "Cleaning up"
-rm $eclipsePackage
+rm $eclipsePackageFileName
 
 
 # Prepare local update site (merging is performed later, if required)
-cp -R $localUpdateSite/* update-site/
-echo "Copied $localUpdateSite to local directory update-site."
+#cp -R $localUpdateSitePath/* update-site/
+#echo "Copied $localUpdateSitePath to local directory update-site."
 
 if [ $SITE ];
         then
   if [ $MERGE ];
         then
         echo "Merging existing site into local one."
-        ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$selectedUpdateSiteAbsolutePath -destination file:update-site
-        ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$selectedUpdateSiteAbsolutePath -destination file:update-site
-        echo "Merged $selectedUpdateSiteAbsolutePath into local directory update-site."
+        ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$selectedUpdateSiteAbsolutePath -destination file:artifacts
+        ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$selectedUpdateSiteAbsolutePath -destination file:artifacts
+        echo "Merged $selectedUpdateSiteAbsolutePath into local update site directory : artifacts."
   fi
 
   # Ensure p2.mirrorURLs property is used in update site
-  echo "Setting p2.mirrorsURL to http://www.eclipse.org/downloads/download.php?format=xml&file=/$selectedUpdateSiteRelativePath"
-./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$PWD/update-site -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$selectedUpdateSiteRelativePath"
+  echo "Setting p2.mirrorsURL to http://www.eclipse.org/downloads/download.php?format=xml&file=/$selectedUpdateSiteRelativePath (see https://wiki.eclipse.org/WTP/Releng/Tools/addRepoProperties for details)"
+./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$PWD/artifacts -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$selectedUpdateSiteRelativePath"
 
   # Create p2.index file
-  if [ ! -e "update-site/p2.index" ];
+  if [ ! -e "artifacts/p2.index" ];
         then
                 echo "Creating p2.index file."
-                echo "version = 1" > update-site/p2.index
-                echo "metadata.repository.factory.order = content.xml,\!" >> update-site/p2.index
-                echo "artifact.repository.factory.order = artifacts.xml,\!" >> update-site/p2.index
+                echo "version = 1" > artifacts/p2.index
+                echo "metadata.repository.factory.order = content.xml,\!" >> artifacts/p2.index
+                echo "artifact.repository.factory.order = artifacts.xml,\!" >> artifacts/p2.index
   fi
 
   # Backup then clean remote update site
@@ -118,11 +122,6 @@ if [ $SITE ];
 
   echo "Publishing contents of local update-site directory to remote update site $selectedUpdateSiteAbsolutePath"
   mkdir -p $selectedUpdateSiteAbsolutePath
-  cp -R update-site/* $selectedUpdateSiteAbsolutePath/
+  cp -R artifacts/* $selectedUpdateSiteAbsolutePath/
 fi
 
-
-# Clean up
-echo "Cleaning up"
-rm -fr eclipse
-rm -fr update-site
