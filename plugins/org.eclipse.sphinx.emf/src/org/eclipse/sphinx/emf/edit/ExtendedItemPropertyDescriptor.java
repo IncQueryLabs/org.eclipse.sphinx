@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2013 See4sys, itemis and others.
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [346945] Label decoration for proxyfied EObjects does not work correctly for multiplicity-many features
  *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
+ *     itemis - [434239] Sphinx-enhanced property descriptors prevent values of unset derived EAttributes to be shown in properties view
  *
  * </copyright>
  */
@@ -159,14 +160,14 @@ public class ExtendedItemPropertyDescriptor extends ItemPropertyDescriptor {
 	}
 
 	/*
-	 * Overridden to avoid that default values for unsettable single-valued attributes are displayed unless they have
-	 * been explicitly set.
+	 * Overridden to avoid that default values for unsettable single-valued non-derived attributes are displayed unless
+	 * they have been explicitly set.
 	 * @see org.eclipse.emf.edit.provider.ItemPropertyDescriptor#getValue(org.eclipse.emf.ecore.EObject,
 	 * org.eclipse.emf.ecore.EStructuralFeature)
 	 */
 	@Override
 	protected Object getValue(EObject object, EStructuralFeature feature) {
-		if (feature instanceof EAttribute && !feature.isMany() && feature.isUnsettable() && !object.eIsSet(feature)) {
+		if (feature instanceof EAttribute && !feature.isMany() && !feature.isDerived() && feature.isUnsettable() && !object.eIsSet(feature)) {
 			return null;
 		}
 		return super.getValue(object, feature);
