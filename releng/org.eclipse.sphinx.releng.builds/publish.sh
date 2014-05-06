@@ -21,8 +21,8 @@ relengProjectPath=${WORKSPACE}/$relengProjectRelativePath
 localUpdateSitePath=$relengProjectPath/artifacts
 buildEclipsePath=$relengProjectPath/eclipse
 updateZipFileNamePrefix=sphinx-Update-0.8.0.
-# TODO: the BUILD_ID should be the target job BUILD_ID
-updateZipFileTimestamp=${BUILD_ID}
+# The time stamp of the target build: yyyymmdd-hhmm
+updateZipFileTimestamp=$TARGET_BUILD_TIME_STAMP
 
 case $BUILD_TYPE in
         I|S) updateZipType=I;;
@@ -68,16 +68,18 @@ if [ $SITE ];
   selectedUpdateSiteRelativePath="$projectUpdateSitesBasePath/$selectedUpdateSiteName"
   selectedUpdateSiteAbsolutePath="$eclipseDownloadsPath/$selectedUpdateSiteRelativePath"
   echo "Publishing to remote update-site: $selectedUpdateSiteAbsolutePath"
+
   selectedDownloadRelativePath="$projectDownloadsBasePath/$selectedDownloadPath"
   selectedDownloadAbsolutePath="$eclipseDownloadsPath/$selectedDownloadRelativePath"
-fi
+  echo "Publishing to remote downloads: $selectedDownloadAbsolutePath"
 
-# zip the local update site, and copy to downloads
-echo "Zip and copy the local update site to downloads"
-cd $relengProjectRelativePath
-cd artifacts
-zip -r $updateZipFileName .
-cp $updateZipFileName $selectedDownloadAbsolutePath/
+  # zip the local update site, and copy to downloads
+  echo "Zip and copy the local update site to downloads"
+  cd $relengProjectRelativePath
+  cd artifacts
+  zip -r $updateZipFileName .
+  cp $updateZipFileName $selectedDownloadAbsolutePath/
+fi
 
 # Download and prepare Eclipse SDK, which is needed to merge update site and postprocess repository
 if [ ! -d "eclipse" ];
