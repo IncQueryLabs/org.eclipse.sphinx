@@ -78,7 +78,8 @@ if [ $SITE ];
   cd $relengProjectRelativePath
   cd artifacts
   zip -r $updateZipFileName .
-  cp $updateZipFileName $selectedDownloadAbsolutePath/
+  echo "cp $updateZipFileName $selectedDownloadAbsolutePath"
+  cp $updateZipFileName $selectedDownloadAbsolutePath
 fi
 
 # Download and prepare Eclipse SDK, which is needed to merge update site and postprocess repository
