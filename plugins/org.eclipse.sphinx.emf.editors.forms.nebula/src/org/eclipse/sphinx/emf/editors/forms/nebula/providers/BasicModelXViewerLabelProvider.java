@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2012 itemis and others.
+ * Copyright (c) 2012-2014 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,20 +9,17 @@
  * 
  * Contributors: 
  *     itemis - Initial API and implementation
+ *     itemis - [434230] ParseException when trying to sort BasicXViewerSection for columns displaying Date-typed EAttributes
  * 
  * </copyright>
  */
 package org.eclipse.sphinx.emf.editors.forms.nebula.providers;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.edit.provider.AdapterFactoryItemDelegator;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
-import org.eclipse.emf.edit.provider.ItemPropertyDescriptor.PropertyValueWrapper;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.nebula.widgets.xviewer.XViewer;
@@ -71,21 +68,11 @@ public class BasicModelXViewerLabelProvider extends XViewerLabelProvider impleme
 		return null;
 	}
 
-	// TODO Enable display formats to be customized on a per feature basis
 	@Override
 	public String getColumnText(Object element, XViewerColumn xCol, int columnIndex) throws Exception {
 		IItemPropertyDescriptor propertyDescriptor = findPropertyDescriptorFor(element, xCol.getId());
 		if (propertyDescriptor != null) {
 			Object propertyValue = propertyDescriptor.getPropertyValue(element);
-			if (propertyValue instanceof PropertyValueWrapper) {
-				Object editableValue = ((PropertyValueWrapper) propertyValue).getEditableValue(element);
-				if (editableValue instanceof Double) {
-					return new DecimalFormat("0.00").format(editableValue); //$NON-NLS-1$
-				}
-				if (editableValue instanceof Date) {
-					return DateFormat.getDateInstance().format((Date) editableValue);
-				}
-			}
 			return propertyDescriptor.getLabelProvider(element).getText(propertyValue);
 		}
 		return ""; //$NON-NLS-1$
@@ -104,7 +91,6 @@ public class BasicModelXViewerLabelProvider extends XViewerLabelProvider impleme
 				}
 			}
 		}
-
 		return null;
 	}
 

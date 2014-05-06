@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2012 itemis and others.
+ * Copyright (c) 2012-2014 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,12 +9,18 @@
  * 
  * Contributors: 
  *     itemis - Initial API and implementation
- * 
+ *     itemis - [434230] ParseException when trying to sort BasicXViewerSection for columns displaying Date-typed EAttributes
+ *     
  * </copyright>
  */
 package org.eclipse.sphinx.emf.editors.forms.nebula.sections;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EAttribute;
@@ -29,13 +35,16 @@ import org.eclipse.nebula.widgets.xviewer.XViewer;
 import org.eclipse.nebula.widgets.xviewer.XViewerColumn;
 import org.eclipse.nebula.widgets.xviewer.XViewerColumn.SortDataType;
 import org.eclipse.nebula.widgets.xviewer.XViewerFactory;
+import org.eclipse.nebula.widgets.xviewer.XViewerSorter;
 import org.eclipse.nebula.widgets.xviewer.XViewerTextFilter;
 import org.eclipse.nebula.widgets.xviewer.edit.XViewerEditAdapter;
 import org.eclipse.sphinx.emf.editors.forms.BasicTransactionalFormEditor;
+import org.eclipse.sphinx.emf.editors.forms.nebula.internal.Activator;
 import org.eclipse.sphinx.emf.editors.forms.nebula.providers.BasicModelXViewerLabelProvider;
 import org.eclipse.sphinx.emf.editors.forms.pages.AbstractFormPage;
 import org.eclipse.sphinx.emf.editors.forms.sections.AbstractViewerFormSection;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -106,6 +115,66 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 		xViewer.setInput(sectionInput);
 	}
 
+	protected XViewerFactory createXViewerFactory() {
+		XViewerFactory xViewerFactory = new XViewerFactory(exampleValue.eClass().getName()) {
+			@Override
+			public boolean isAdmin() {
+				return true;
+			}
+
+			@Override
+			public XViewerSorter createNewXSorter(XViewer xViewer) {
+				return new XViewerSorter(xViewer) {
+					@Override
+					public int getCompareForDate(String date1, Object obj1, String date2, Object obj2) {
+						if (date1 != null && obj1 == null && date2 != null && obj2 == null) {
+							Date date1Date = null;
+							try {
+								date1Date = getDateFormat().parse(date1);
+							} catch (ParseException ex) {
+								PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+								return 0;
+							}
+
+							Date date2Date = null;
+							try {
+								date2Date = getDateFormat().parse(date2);
+							} catch (ParseException ex) {
+								PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+								return 0;
+							}
+							return getCompareForDate(date1Date, date2Date);
+						} else {
+							return super.getCompareForDate(date1, obj1, date2, obj2);
+						}
+					}
+				};
+			}
+		};
+
+		return xViewerFactory;
+	}
+
+	/**
+	 * Returns the {@link DateFormat date format} to be used by this viewer's {@link XViewerSorter sorter} to sort
+	 * {@link Date}-typed values. Must be the same date format as that being used by this viewer's
+	 * {@link #createLabelProvider() label provider} to render Date-typed values.
+	 * <p>
+	 * This implementation returns an <code>new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.US)</code>
+	 * instance by default. It matches the format used by EMF Edit to render Date-typed {@link EAttribute attribute}
+	 * values (see {@link PropertyValueWrapper#getText(Object), AdapterFactoryItemDelegator#getText(Object) and
+	 * Date#toString() for details}. Clients may override and return {@link DateFormat} .getXxxInstance() or new
+	 * {@link SimpleDateFormat} ("xxx") as appropriate.
+	 * </p>
+	 * 
+	 * @return The date format to be used for sorting Date-typed values displayed by this viewer.
+	 * @see DateFormat
+	 * @see SimpleDateFormat
+	 */
+	protected DateFormat getDateFormat() {
+		return new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.US); //$NON-NLS-1$
+	}
+
 	protected XViewer createXViewer(Composite sectionClient, XViewerFactory xViewerFactory) {
 		final BasicTransactionalFormEditor formEditor = formPage.getTransactionalFormEditor();
 		XViewer xViewer = new XViewer(sectionClient, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER, xViewerFactory) {
@@ -131,28 +200,17 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 	}
 
 	/**
-	 * Returns null by default. Sub classes can provide a concrete implementation to handle editing support.
-	 */
-	protected XViewerEditAdapter createXViewerEditAdapter() {
-		return null;
-	}
-
-	/**
 	 * Override to provide extended filter capabilities.
 	 */
 	protected XViewerTextFilter createXViewerTextFilter(XViewer xViewer) {
 		return new XViewerTextFilter(xViewer);
 	}
 
-	protected XViewerFactory createXViewerFactory() {
-		XViewerFactory xViewerFactory = new XViewerFactory(exampleValue.eClass().getName()) {
-			@Override
-			public boolean isAdmin() {
-				return true;
-			}
-		};
-
-		return xViewerFactory;
+	/**
+	 * Returns null by default. Sub classes can provide a concrete implementation to handle editing support.
+	 */
+	protected XViewerEditAdapter createXViewerEditAdapter() {
+		return null;
 	}
 
 	protected void registerColumns(XViewerFactory xViewerFactory) {
