@@ -15,7 +15,8 @@ eclipsePackageVersion=4.2.2
 eclipsePackageTimestamp=201302041200
 eclipsePackagePath=$eclipseDownloadsPath/eclipse/downloads/drops4/R-$eclipsePackageVersion-$eclipsePackageTimestamp
 eclipsePackageFileName=eclipse-SDK-$eclipsePackageVersion-linux-gtk-x86_64.tar.gz
-relengProjectPath=${WORKSPACE}/releng/org.eclipse.sphinx.releng.builds
+relengProjectRelativePath=releng/org.eclipse.sphinx.releng.builds
+relengProjectPath=${WORKSPACE}/$relengProjectRelativePath
 localUpdateSitePath=$relengProjectPath/artifacts
 buildEclipsePath=$relengProjectPath/eclipse
 
@@ -49,13 +50,8 @@ if [ $SITE ];
   echo "Publishing to remote update-site: $selectedUpdateSiteAbsolutePath"
 fi
 
-# Prepare a temp directory
-#tmpDir="$BUILD_JOB_NAME-publish-tmp"
-#rm -fr $tmpDir
-#mkdir -p $tmpDir/update-site
-#cd $tmpDir
-
 # Download and prepare Eclipse SDK, which is needed to merge update site and postprocess repository
+cd $relengProjectRelativePath
 if [ ! -d "eclipse" ];
 	then
 		echo "Downloading eclipse to $PWD"
