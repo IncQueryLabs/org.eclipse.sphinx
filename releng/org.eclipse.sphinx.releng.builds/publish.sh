@@ -80,6 +80,7 @@ if [ $SITE ];
   zip -r $updateZipFileName .
   echo "cp $updateZipFileName $selectedDownloadAbsolutePath"
   cp $updateZipFileName $selectedDownloadAbsolutePath
+  cd ..
 fi
 
 # Download and prepare Eclipse SDK, which is needed to merge update site and postprocess repository
