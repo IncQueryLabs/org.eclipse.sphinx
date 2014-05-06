@@ -31,7 +31,7 @@ case $BUILD_TYPE in
         T) updateZipType=T;;
         *) exit 0 ;;
 esac
-updateZipFileName=$updateZipFileNamePrefix$updateZipType$updateZipFileTimestamp
+updateZipFileName=$updateZipFileNamePrefix$updateZipType$updateZipFileTimestamp.zip
 
 # check if we are going to promote to an update-site
 echo "Promoting to remote update site: $SITE"
