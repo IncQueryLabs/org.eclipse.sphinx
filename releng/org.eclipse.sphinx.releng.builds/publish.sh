@@ -146,9 +146,9 @@ if [ $SITE ];
   echo "Publishing contents of local update-site directory to remote update site $selectedUpdateSiteAbsolutePath"
   mkdir -p $selectedUpdateSiteAbsolutePath
   #cp -R artifacts/* $selectedUpdateSiteAbsolutePath/
-  rsync -rv --exclude=sphinx-Updated-*.zip artifacts/* $selectedUpdateSiteAbsolutePath/
-  #cd artifacts
-  #shopt -s etglob
-  #cp -r !(sphinx-Updated-*.zip) $selectedUpdateSiteAbsolutePath/
+  #rsync -rv --exclude=sphinx-Updated-*.zip artifacts/* $selectedUpdateSiteAbsolutePath/
+  cd artifacts
+  shopt -s etglob
+  cp -r !(sphinx-Updated-*.zip) $selectedUpdateSiteAbsolutePath/
 fi
 
