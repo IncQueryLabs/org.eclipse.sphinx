@@ -1,10 +1,8 @@
 #!/bin/sh
 
-# $1: Hudson job name: <name>
-# $2: Hudson build id: <id>
-# $3: Build type:  I(ntegration), M(ilestone), R(elease)C(andidate) R(elease), T(est)
-# $4: Whether to merge the site with an existing one: (t)rue, (f)alse
-# $5: Release stream: <major>.<minor>.x, e.g., 0.7.x (only required if build type is release, ignored otherwise)
+# $1: Build type:  I(ntegration), M(ilestone), R(elease)C(andidate) R(elease), T(est)
+# $2: Whether to merge the site with an existing one: (t)rue, (f)alse
+# $3: Release stream: <major>.<minor>.x, e.g., 0.8.x (only required if build type is release, ignored otherwise)
 
 # Global settings
 projectUpdateSitesBasePath=sphinx/updates
