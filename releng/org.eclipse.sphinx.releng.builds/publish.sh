@@ -90,18 +90,18 @@ if [ ! -d "eclipse" ];
                 echo "Failed to download an Eclipse SDK, being needed for provisioning."
                 exit
 		fi
+
+		# Prepare Eclipse SDK to provide WTP releng tools (used to postprocess repository, i.e set p2.mirrorsURL property)
+		echo "Installing WTP Releng tools"
+		./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.director -repository http://download.eclipse.org/webtools/releng/repository/ -installIUs org.eclipse.wtp.releng.tools.feature.feature.group
+
+		# Clean up
+		echo "Cleaning up"
+		rm $eclipsePackageFileName
 fi
 
-# Prepare Eclipse SDK to provide WTP releng tools (used to postprocess repository, i.e set p2.mirrorsURL property)
-echo "Installing WTP Releng tools"
-./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.director -repository http://download.eclipse.org/webtools/releng/repository/ -installIUs org.eclipse.wtp.releng.tools.feature.feature.group
-
-# Clean up
-echo "Cleaning up"
-rm $eclipsePackageFileName
-
 if [ $MERGE_UPDATE_SITE ];
-        then
+	then
         echo "Merging existing site into local one."
         ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$selectedUpdateSiteAbsolutePath -destination file:$localArtifactsPath
         ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$selectedUpdateSiteAbsolutePath -destination file:$localArtifactsPath
