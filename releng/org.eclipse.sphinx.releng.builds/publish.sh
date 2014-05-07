@@ -33,11 +33,11 @@ case $TARGET_BUILD_TYPE in
         I) selectedUpdateSiteName=interim
            selectedDownloadPath=integration
            updateZipFileName=$updateZipFileNamePrefix.$TARGET_BUILD_TYPE$PUBLISH_ID.zip
-        	    ;;
+           ;;
         M|RC) selectedUpdateSiteName=interim
         	  selectedDownloadPath=stable
         	  updateZipFileName=$updateZipFileNamePrefix$TARGET_BUILD_TYPE$PUBLISH_ID.zip
-        	    ;;
+        	  ;;
         R) selectedUpdateSiteName=releases/$releaseStreamPrefix.x
            selectedDownloadPath=releases/$releaseStreamPrefix.0
            updateZipFileName=$updateZipFileNamePrefix.zip
@@ -63,7 +63,7 @@ echo "Zip and copy the local update site to downloads"
 cd $relengProjectRelativePath
 cd artifacts
 zip -r $updateZipFileName .
-echo "cp $updateZipFileName $selectedDownloadAbsolutePath"
+echo "move $updateZipFileName to $selectedDownloadAbsolutePath"
 mv -f $updateZipFileName $selectedDownloadAbsolutePath
 cd ..
 
