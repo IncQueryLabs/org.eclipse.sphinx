@@ -14,10 +14,12 @@ eclipsePackageTimestamp=201302041200
 eclipsePackagePath=$eclipseDownloadsPath/eclipse/downloads/drops4/R-$eclipsePackageVersion-$eclipsePackageTimestamp
 eclipsePackageFileName=eclipse-SDK-$eclipsePackageVersion-linux-gtk-x86_64.tar.gz
 
-targetBuildRelativePath=$(echo "$TARGET_BUILD_RUN" | grep -o '/[^/]\+/[0-9]\+/$')
+# TODO Find a way to insert missing "builds" path segment in targetBuildRelativePath, e.g., sphinx-0.8-luna/95 => sphinx-0.8-luna/builds/95
+targetBuildRelativePath=$(echo "$TARGET_BUILD_RUN" | grep -o '[^/]\+/[0-9]\+')
 relengProjectRelativePath=releng/org.eclipse.sphinx.releng.builds
-originalArtifactsRelativePath=artifact/$relengProjectRelativePath/repository/target/repository/
-originalArtifactsPath=${WORKSPACE}/../../$targetBuildRelativePath/$originalArtifactsRelativePath
+originalArtifactsRelativePath=$relengProjectRelativePath/repository/target/repository
+originalArtifactsPath=${WORKSPACE}/../../$targetBuildRelativePath/archive/$originalArtifactsRelativePath
+originalArtifactsURL=$TARGET_BUILD_RUN/artifact/$originalArtifactsRelativePath
 localRelengProjectPath=${WORKSPACE}/$relengProjectRelativePath
 localArtifactsDirectoryName=artifacts
 localArtifactsPath=$localRelengProjectPath/$localArtifactsDirectoryName
@@ -26,13 +28,14 @@ buildEclipsePath=$localRelengProjectPath/eclipse
 releaseStreamPrefix=0.8
 updateZipFileNamePrefix=sphinx-Update-$releaseStreamPrefix.0
 
-echo "Copying $originalArtifactsPath/* to $localArtifactsPath/*"
+echo "Downloading $originalArtifactsURL/* to $localArtifactsPath/*"
 rm -rf $localArtifactsPath
-cp -R $originalArtifactsPath/* $localArtifactsPath/
+wget --mirror --execute robots=off --directory-prefix=$localArtifactsPath --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $originalArtifactsURL/
 
-# Alternative approach: download build artifacts rather than copying them
+# Alternative approach: copy build artifacts rather than downloading them
+# echo "Copying $originalArtifactsPath/* to $localArtifactsPath/*"
 # rm -rf $localArtifactsPath
-# wget --mirror --execute robots=off --directory-prefix=$localArtifactsPath --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $TARGET_BUILD_RUN/artifact/releng/org.eclipse.sphinx.releng.builds/repository/target/repository/
+# cp -R $originalArtifactsPath/* $localArtifactsPath/
 
 # Determine remote update site we want to promote to (integration and stable builds are published on interim update site, release builds on applicable release stream update site)
 case $TARGET_BUILD_TYPE in
