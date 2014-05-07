@@ -14,9 +14,10 @@ eclipsePackageTimestamp=201302041200
 eclipsePackagePath=$eclipseDownloadsPath/eclipse/downloads/drops4/R-$eclipsePackageVersion-$eclipsePackageTimestamp
 eclipsePackageFileName=eclipse-SDK-$eclipsePackageVersion-linux-gtk-x86_64.tar.gz
 
+targetBuildRelativePath=$(echo "$TARGET_BUILD_RUN" | grep -o '/[^/]\+/[0-9]\+/$')
 relengProjectRelativePath=releng/org.eclipse.sphinx.releng.builds
 originalArtifactsRelativePath=artifact/$relengProjectRelativePath/repository/target/repository/
-originalArtifactsPath=$(echo "$TARGET_BUILD_RUN" | grep -o '/[^/]\+/[0-9]\+/$')/$originalArtifactsRelativePath
+originalArtifactsPath=${WORKSPACE}/../../$targetBuildRelativePath/$originalArtifactsRelativePath
 localRelengProjectPath=${WORKSPACE}/$relengProjectRelativePath
 localArtifactsDirectoryName=artifacts
 localArtifactsPath=$localRelengProjectPath/$localArtifactsDirectoryName
