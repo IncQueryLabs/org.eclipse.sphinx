@@ -100,7 +100,7 @@ if [ ! -d "$eclipseInstallLocation/eclipse" ];
 		echo "Copying $eclipsePackageLocation to $localRelengProjectLocation"
 		cp $eclipsePackageLocation $localRelengProjectLocation
 		echo "Unpacking $localRelengProjectLocation/$eclipsePackageFileName" 
-		tar -xzf $localRelengProjectLocation/$eclipsePackageFileName
+		tar -xzf $localRelengProjectLocation/$eclipsePackageFileName -C $localRelengProjectLocation 
 		chmod 700 $eclipseInstallLocation/eclipse
 		if [ -d "$eclipseInstallLocation/eclipse" ];
         	then
