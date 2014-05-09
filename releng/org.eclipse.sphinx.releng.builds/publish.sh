@@ -55,7 +55,7 @@ projectUpdateSiteBackupPath=$localRelengProjectPath/backup
 eclipseDownloadsPath=/home/data/httpd/download.eclipse.org
 eclipsePackageFileName=eclipse-platform-$eclipsePackageVersion-linux-gtk-x86_64.tar.gz
 eclipsePackageDownloadPath=$eclipseDownloadsPath/eclipse/downloads/drops4/R-$eclipsePackageVersion-$eclipsePackageBuildId/$eclipsePackageFileName
-eclipseInstallPath=$localRelengProjectPath
+eclipseInstallPath=$localRelengProjectPath/eclipse
 
 ##################
 # Runtime settings
@@ -99,7 +99,8 @@ if [ ! -d "$eclipseInstallPath/eclipse" ];
 		echo "Copying $eclipsePackageDownloadPath to $localRelengProjectPath"
 		cp $eclipsePackageDownloadPath $localRelengProjectPath
 		tar -xzf $localRelengProjectPath/$eclipsePackageFileName -C $eclipseInstallPath
-		chmod 700 $eclipseInstallPath/eclipse/eclipse
+		mv $eclipseInstallPath/eclipse/* $eclipseInstallPath 
+		chmod 700 $eclipseInstallPath/eclipse
 		if [ ! -d "$eclipseInstallPath/eclipse" ];
         	then
                 echo "Failed to install Eclipse package required for publishing."
