@@ -1,12 +1,14 @@
 #!/bin/sh
 
-# $1: BUILD_RUN:
-# $1: BUILD_TYPE:  I(ntegration), M(ilestone), R(elease)C(andidate) R(elease), T(est)
-# $3: Release stream: <major>.<minor>.x, e.g., 0.8.x (only required if build type is release, ignored otherwise)
-# $2: Whether to merge the site with an existing one: (t)rue, (f)alse
+######################
+# Command line options
+######################
 
-# TODO
-# * Update parameter documentation
+# $1: BUILD_RUN: The build to be published (<strong>Be sure to select only successful builds with all tests passed!</strong>)
+# $2: BUILD_TYPE: The type as which the selected build is going to be published, must be one of: I(ntegration), M(ilestone), R(elease)C(andidate) R(elease), T(est)
+# $3: BUILD_ID: The id under which the selected build is going to be published, use following convention: I: yyyymmdd-hhmm, M: n RC: n, R: none
+# $4: SERVICE_RELEASE_NUMBER: The service release number of the build to be published (will be used to complement the major and minor version number in the name of the build to be published)
+# $5: MERGE_UPDATE_SITE: Whether to keep all previously published builds in project update site and merge the build to be published into it (project update site will be wiped out and replaced by the update site of the build to be published otherwise), must be one of: true, false
 
 #####################
 # Adjustable settings
@@ -80,6 +82,10 @@ applicableLocalUpdateSiteArchivePath=$localDownloadSitePath/$applicableUpdateSit
 
 if [ ! -d "$eclipseInstallPath/eclipse" ];
 	then
+		echo "------------------------------------------------------------------------"
+		echo "Installing Eclipse"
+		echo "------------------------------------------------------------------------"
+
 		echo "Copying $eclipsePackageDownloadPath to $localRelengProjectPath"
 		cp $eclipsePackageDownloadPath $localRelengProjectPath
 		tar -xzf $localRelengProjectPath/$eclipsePackageFileName -C $eclipseInstallPath
@@ -101,6 +107,10 @@ fi
 # Publishing process
 ####################
 
+echo "------------------------------------------------------------------------"
+echo "Retrieving build update site"
+echo "------------------------------------------------------------------------"
+
 echo "Copying $buildUpdateSitePath/* to $localUpdateSitePath"
 rm -rf $localUpdateSitePath
 mkdir $localUpdateSitePath
@@ -113,8 +123,16 @@ find $applicableProjectDownloadSitePath -type f -name "*.html" -delete
 # rm -rf $localUpdateSitePath
 # wget --mirror --execute robots=off --directory-prefix=$localUpdateSitePath --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $buildUpdateSiteURL/
 
+echo "------------------------------------------------------------------------"
+echo "Creating archived update site"
+echo "------------------------------------------------------------------------"
+
 echo "Archiving $localUpdateSitePath/* into $applicableLocalUpdateSiteArchivePath"
 zip -r $applicableLocalUpdateSiteArchivePath $localUpdateSitePath/*
+
+echo "------------------------------------------------------------------------"
+echo "Publishing archived update site"
+echo "------------------------------------------------------------------------"
 
 echo "Copying $applicableLocalUpdateSiteArchivePath to $applicableProjectDownloadSitePath"
 mkdir -p $applicableProjectDownloadSitePath
@@ -122,32 +140,52 @@ cp $applicableLocalUpdateSiteArchivePath $applicableProjectDownloadSitePath
 
 if [ $MERGE_UPDATE_SITE ];
 	then
+		echo "------------------------------------------------------------------------"
+		echo "Merging project update site into build update site"
+		echo "------------------------------------------------------------------------"
+
         echo "Merging $applicableProjectUpdateSitePath into $localUpdateSitePath"
         $eclipseInstallPath/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$applicableProjectUpdateSitePath -destination file:$localUpdateSitePath
         $eclipseInstallPath/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$applicableProjectUpdateSitePath -destination file:$localUpdateSitePath
 fi
+
+echo "------------------------------------------------------------------------"
+echo "Setting p2.mirrorsURL property"
+echo "------------------------------------------------------------------------"
 
 echo "Setting p2.mirrorsURL property of $localUpdateSitePath to http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSiteRelativePath (see https://wiki.eclipse.org/WTP/Releng/Tools/addRepoProperties for details)"
 $eclipseInstallPath/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$localUpdateSitePath -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSiteRelativePath"
 
 if [ ! -e "$localUpdateSitePath/p2.index" ];
     then
-            echo "Creating p2.index file for $localUpdateSitePath"
-            echo "version = 1" > $localUpdateSitePath/p2.index
-            echo "metadata.repository.factory.order = content.xml,\!" >> $localUpdateSitePath/p2.index
-            echo "artifact.repository.factory.order = artifacts.xml,\!" >> $localUpdateSitePath/p2.index
+		echo "------------------------------------------------------------------------"
+		echo "Creating p2.index file"
+		echo "------------------------------------------------------------------------"
+
+        echo "Creating p2.index file for $localUpdateSitePath"
+        echo "version = 1" > $localUpdateSitePath/p2.index
+        echo "metadata.repository.factory.order = content.xml,\!" >> $localUpdateSitePath/p2.index
+        echo "artifact.repository.factory.order = artifacts.xml,\!" >> $localUpdateSitePath/p2.index
 fi
 
 if [ -d "$applicableProjectUpdateSitePath" ];
     then
-			echo "Copying $applicableProjectUpdateSitePath/* to $projectUpdateSiteBackupPath"
-            rm -rf $projectUpdateSiteBackupPath
-            mkdir $projectUpdateSiteBackupPath
-            cp -R $applicableProjectUpdateSitePath/* $projectUpdateSiteBackupPath/
+		echo "------------------------------------------------------------------------"
+		echo "Creating backup of project update site"
+		echo "------------------------------------------------------------------------"
 
-            echo "Removing $applicableProjectUpdateSitePath"
-            rm -rf $applicableProjectUpdateSitePath
+		echo "Copying $applicableProjectUpdateSitePath/* to $projectUpdateSiteBackupPath"
+        rm -rf $projectUpdateSiteBackupPath
+        mkdir $projectUpdateSiteBackupPath
+        cp -R $applicableProjectUpdateSitePath/* $projectUpdateSiteBackupPath/
+
+        echo "Removing $applicableProjectUpdateSitePath"
+        rm -rf $applicableProjectUpdateSitePath
 fi
+
+echo "------------------------------------------------------------------------"
+echo "Publishing update site"
+echo "------------------------------------------------------------------------"
 
 echo "Copying $localUpdateSitePath/* to $applicableProjectUpdateSitePath"
 mkdir -p $applicableProjectUpdateSitePath
