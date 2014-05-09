@@ -49,6 +49,7 @@ release=$releaseStream.$SERVICE_RELEASE_NUMBER
 localRelengProjectPath=${WORKSPACE}/$relengProjectRelativePath
 localUpdateSitePath=$localRelengProjectPath/updates
 localDownloadSitePath=$localRelengProjectPath/downloads
+localTempPath=$localRelengProjectPath/temp
 
 projectUpdateSiteBackupPath=$localRelengProjectPath/backup
 
@@ -96,19 +97,19 @@ if [ ! -d "$eclipseInstallPath/eclipse" ];
 		echo "Installing Eclipse"
 		echo "------------------------------------------------------------------------"
 
-		echo "Copying $eclipsePackageDownloadPath to $localRelengProjectPath/temp"
-		cp $eclipsePackageDownloadPath $localRelengProjectPath/temp
-		echo "Unpacking $localRelengProjectPath/temp/$eclipsePackageFileName to $localRelengProjectPath/temp 
-		tar -xzf $localRelengProjectPath/temp/$eclipsePackageFileName -C $localRelengProjectPath/temp
-		echo "Moving $eclipseInstallPath/temp/eclipse/* to $eclipseInstallPath 
+		echo "Copying $eclipsePackageDownloadPath to $localTempPath"
+		cp $eclipsePackageDownloadPath $localTempPath
+		echo "Unpacking $localTempPath/$eclipsePackageFileName" 
+		tar -xzf $localTempPath/$eclipsePackageFileName -C $localTempPath
+		echo "Moving $eclipseInstallPath/temp/eclipse/* to $eclipseInstallPath" 
 		mv $eclipseInstallPath/temp/eclipse/* $eclipseInstallPath 
 		chmod 700 $eclipseInstallPath/eclipse
 		if [ -d "$eclipseInstallPath/eclipse" ];
         	then
-				echo "Removing $localRelengProjectPath/temp"
-        		rm -r $localRelengProjectPath/temp
+				echo "Removing $localTempPath"
+        		rm -r $localTempPath
         	else 
-                echo "Failed to install Eclipse package required for publishing."
+                echo "ERROR: Failed to install Eclipse package required for publishing."
                 exit
 		fi
 
