@@ -99,20 +99,20 @@ if [ ! -f "$eclipseInstallLocation/eclipse" ];
 
 		echo "Copying $eclipsePackageLocation to $localRelengProjectLocation"
 		cp $eclipsePackageLocation $localRelengProjectLocation
-		echo "Unpacking $localRelengProjectLocation/$eclipsePackageFileName" 
-		tar -xzf $localRelengProjectLocation/$eclipsePackageFileName -C $localRelengProjectLocation 
+		echo "Unpacking $localRelengProjectLocation/$eclipsePackageFileName"
+		tar -xzf $localRelengProjectLocation/$eclipsePackageFileName -C $localRelengProjectLocation
 		chmod 700 $eclipseInstallLocation/eclipse
 		if [ -f "$eclipseInstallLocation/eclipse" ];
         	then
 				echo "Removing $localRelengProjectLocation/$eclipsePackageFileName"
         		rm $localRelengProjectLocation/$eclipsePackageFileName
-        	else 
+        	else
                 echo "ERROR: Failed to install Eclipse package required for publishing."
                 exit
 		fi
 
 		echo "Installing WTP Releng tools"
-		$eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.director -repository http://download.eclipse.org/webtools/releng/repository/ -installIUs org.eclipse.wtp.releng.tools.feature.feature.group
+		$eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.director -repository http://download.eclipse.org/webtools/releng/repository/ -installIUs org.eclipse.wtp.releng.tools.feature.feature.group
 fi
 
 ####################
@@ -159,8 +159,8 @@ if [ $MERGE_UPDATE_SITE ];
 		echo "------------------------------------------------------------------------"
 
         echo "Merging $applicableProjectUpdateSiteLocation into $localUpdateSiteLocation"
-        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$applicableProjectUpdateSiteLocation -destination file:$localUpdateSiteLocation
-        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$applicableProjectUpdateSiteLocation -destination file:$localUpdateSiteLocation
+        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$applicableProjectUpdateSiteLocation -destination file:$localUpdateSiteLocation
+        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$applicableProjectUpdateSiteLocation -destination file:$localUpdateSiteLocation
 fi
 
 echo "------------------------------------------------------------------------"
@@ -168,7 +168,7 @@ echo "Setting p2.mirrorsURL property"
 echo "------------------------------------------------------------------------"
 
 echo "Setting p2.mirrorsURL property of $localUpdateSiteLocation to http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSitePath (see https://wiki.eclipse.org/WTP/Releng/Tools/addRepoProperties for details)"
-$eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$localUpdateSiteLocation -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSitePath"
+$eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$localUpdateSiteLocation -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSitePath"
 
 if [ ! -e "$localUpdateSiteLocation/p2.index" ];
     then
