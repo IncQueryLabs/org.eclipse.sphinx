@@ -49,7 +49,6 @@ release=$releaseStream.$SERVICE_RELEASE_NUMBER
 localRelengProjectLocation=${WORKSPACE}/$relengProjectPath
 localUpdateSiteLocation=$localRelengProjectLocation/updates
 localDownloadSiteLocation=$localRelengProjectLocation/downloads
-localTempLocation=$localRelengProjectLocation/temp
 
 projectUpdateSiteBackupLocation=$localRelengProjectLocation/backup
 
@@ -79,7 +78,8 @@ case $BUILD_TYPE in
        applicableProjectDownloadSiteName=test
        applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release.$BUILD_TYPE$BUILD_ID.zip
        ;;
-    *) exit 0 ;;
+    *) exit 0
+       ;;
 esac
 applicableProjectUpdateSitePath="$projectUpdateSitesBasePath/$applicableProjectUpdateSiteName"
 applicableProjectUpdateSiteLocation="$eclipseDownloadsLocation/$applicableProjectUpdateSitePath"
@@ -97,19 +97,15 @@ if [ ! -d "$eclipseInstallLocation/eclipse" ];
 		echo "Installing Eclipse"
 		echo "------------------------------------------------------------------------"
 
-		echo "Copying $eclipsePackageLocation to $localTempLocation"
-		mkdir $localTempLocation
-		cp $eclipsePackageLocation $localTempLocation
-		echo "Unpacking $localTempLocation/$eclipsePackageFileName" 
-		tar -xzf $localTempLocation/$eclipsePackageFileName -C $localTempLocation
-		echo "Copying $localTempLocation/eclipse/* to $eclipseInstallLocation"
-		mkdir $eclipseInstallLocation 
-		cp -r $localTempLocation/eclipse/* $eclipseInstallLocation 
+		echo "Copying $eclipsePackageLocation to $localRelengProjectLocation"
+		cp $eclipsePackageLocation $localRelengProjectLocation
+		echo "Unpacking $localRelengProjectLocation/$eclipsePackageFileName" 
+		tar -xzf $localRelengProjectLocation/$eclipsePackageFileName
 		chmod 700 $eclipseInstallLocation/eclipse
 		if [ -d "$eclipseInstallLocation/eclipse" ];
         	then
-				echo "Removing $localTempLocation"
-        		rm -r $localTempLocation
+				echo "Removing $localRelengProjectLocation/$eclipsePackageFileName"
+        		rm $localRelengProjectLocation/$eclipsePackageFileName
         	else 
                 echo "ERROR: Failed to install Eclipse package required for publishing."
                 exit
