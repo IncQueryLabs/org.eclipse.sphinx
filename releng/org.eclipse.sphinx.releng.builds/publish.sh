@@ -102,9 +102,9 @@ if [ ! -d "$eclipseInstallPath/eclipse" ];
 		cp $eclipsePackageDownloadPath $localTempPath
 		echo "Unpacking $localTempPath/$eclipsePackageFileName" 
 		tar -xzf $localTempPath/$eclipsePackageFileName -C $localTempPath
-		echo "Moving $localTempPath/eclipse/* to $eclipseInstallPath"
+		echo "Copying $localTempPath/eclipse/* to $eclipseInstallPath"
 		mkdir $eclipseInstallPath 
-		mv $localTempPath/eclipse/* $eclipseInstallPath 
+		cp $localTempPath/eclipse/* $eclipseInstallPath 
 		chmod 700 $eclipseInstallPath/eclipse
 		if [ -d "$eclipseInstallPath/eclipse" ];
         	then
@@ -130,7 +130,7 @@ echo "------------------------------------------------------------------------"
 echo "Copying $buildUpdateSitePath/* to $localUpdateSitePath"
 rm -rf $localUpdateSitePath
 mkdir $localUpdateSitePath
-cp -R $buildUpdateSitePath/* $localUpdateSitePath
+cp -r $buildUpdateSitePath/* $localUpdateSitePath
 find $applicableProjectDownloadSitePath -type f -name "*.html" -delete
 #find $applicableProjectDownloadSitePath -type d -name "*zip*" -delete
 
@@ -193,7 +193,7 @@ if [ -d "$applicableProjectUpdateSitePath" ];
 		echo "Copying $applicableProjectUpdateSitePath/* to $projectUpdateSiteBackupPath"
         rm -rf $projectUpdateSiteBackupPath
         mkdir $projectUpdateSiteBackupPath
-        cp -R $applicableProjectUpdateSitePath/* $projectUpdateSiteBackupPath/
+        cp -r $applicableProjectUpdateSitePath/* $projectUpdateSiteBackupPath/
 
         echo "Removing $applicableProjectUpdateSitePath"
         rm -rf $applicableProjectUpdateSitePath
@@ -205,4 +205,4 @@ echo "------------------------------------------------------------------------"
 
 echo "Copying $localUpdateSitePath/* to $applicableProjectUpdateSitePath"
 mkdir -p $applicableProjectUpdateSitePath
-cp -R $localUpdateSitePath/* $applicableProjectUpdateSitePath
+cp -r $localUpdateSitePath/* $applicableProjectUpdateSitePath
