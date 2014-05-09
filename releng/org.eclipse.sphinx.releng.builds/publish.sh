@@ -102,7 +102,8 @@ if [ ! -d "$eclipseInstallPath/eclipse" ];
 		cp $eclipsePackageDownloadPath $localTempPath
 		echo "Unpacking $localTempPath/$eclipsePackageFileName" 
 		tar -xzf $localTempPath/$eclipsePackageFileName -C $localTempPath
-		echo "Moving $localTempPath/eclipse/* to $eclipseInstallPath" 
+		echo "Moving $localTempPath/eclipse/* to $eclipseInstallPath"
+		mkdir $eclipseInstallPath 
 		mv $localTempPath/eclipse/* $eclipseInstallPath 
 		chmod 700 $eclipseInstallPath/eclipse
 		if [ -d "$eclipseInstallPath/eclipse" ];
