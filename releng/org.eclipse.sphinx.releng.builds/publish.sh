@@ -115,8 +115,6 @@ echo "Copying $buildUpdateSitePath/* to $localUpdateSitePath"
 rm -rf $localUpdateSitePath
 mkdir $localUpdateSitePath
 cp -R $buildUpdateSitePath/* $localUpdateSitePath
-find $applicableProjectDownloadSitePath -type f -name "*.html" -delete
-#find $applicableProjectDownloadSitePath -type d -name "*zip*" -delete
 
 # Alternative approach:
 # echo "Downloading $buildUpdateSiteURL/* to $localUpdateSitePath"
