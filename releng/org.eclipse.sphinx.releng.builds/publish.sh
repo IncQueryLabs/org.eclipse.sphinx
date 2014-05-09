@@ -10,6 +10,10 @@
 # $4: SERVICE_RELEASE_NUMBER: The service release number of the build to be published (will be used to complement the major and minor version number in the name of the build to be published)
 # $5: MERGE_UPDATE_SITE: Whether to keep all previously published builds in project update site and merge the build to be published into it (project update site will be wiped out and replaced by the update site of the build to be published otherwise), must be one of: true, false
 
+echo "------------------------------------------------------------------------"
+echo "Echoing command line options"
+echo "------------------------------------------------------------------------"
+
 echo BUILD_RUN=$BUILD_RUN
 echo BUILD_TYPE=$BUILD_TYPE
 echo BUILD_ID=$BUILD_ID
@@ -22,7 +26,7 @@ echo MERGE_UPDATE_SITE=$MERGE_UPDATE_SITE
 
 relengProjectRelativePath=releng/org.eclipse.sphinx.releng.builds
 buildUpdateSiteRelativePath=$relengProjectRelativePath/repository/target/repository
-releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+/\d+/$#\1#; print;'
+releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+/\d+/$#\1#; print;')
 
 projectUpdateSitesBasePath=sphinx/updates
 projectDownloadSitesBasePath=sphinx/downloads
@@ -35,7 +39,7 @@ eclipsePackageBuildId=201302041200
 # Derived settings
 ##################
 
-buildPath=${WORKSPACE}/../../$(echo "$BUILD_RUN" | perl -ne 's#.+/([^/])/(\d+)/$#\1/builds/\2#; print;'
+buildPath=${WORKSPACE}/../../$(echo "$BUILD_RUN" | perl -ne 's#.+/([^/])/(\d+)/$#\1/builds/\2#; print;')
 buildUpdateSitePath=$buildPath/archive/$buildUpdateSiteRelativePath
 buildUpdateSiteURL=$BUILD_RUN/artifact/$buildUpdateSiteRelativePath
 
