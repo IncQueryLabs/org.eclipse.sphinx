@@ -15,3 +15,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.sphinx.emf.serialization.generators.ui,
  org.eclipse.sphinx.emf.serialization.generators.ui.internal;x-internal:=true
 Bundle-Vendor: %providerName
+Bundle-Localization: plugin
