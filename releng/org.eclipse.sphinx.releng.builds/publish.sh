@@ -24,8 +24,8 @@ echo MERGE_UPDATE_SITE=$MERGE_UPDATE_SITE
 # Adjustable settings
 #####################
 
-relengProjectRelativePath=releng/org.eclipse.sphinx.releng.builds
-buildUpdateSiteRelativePath=$relengProjectRelativePath/repository/target/repository
+relengProjectPath=releng/org.eclipse.sphinx.releng.builds
+buildUpdateSitePath=$relengProjectPath/repository/target/repository
 releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+/\d+/$#\1#; print;')
 
 projectUpdateSitesBasePath=sphinx/updates
@@ -39,24 +39,24 @@ eclipsePackageBuildId=201302041200
 # Derived settings
 ##################
 
-buildPath=${WORKSPACE}/../../$(echo "$BUILD_RUN" | perl -ne 's#.+/([^/])/(\d+)/$#\1/builds/\2#; print;')
-buildUpdateSitePath=$buildPath/archive/$buildUpdateSiteRelativePath
-buildUpdateSiteURL=$BUILD_RUN/artifact/$buildUpdateSiteRelativePath
+buildLocation=${WORKSPACE}/../../$(echo "$BUILD_RUN" | perl -ne 's#.+/([^/])/(\d+)/$#\1/builds/\2#; print;')
+buildUpdateSiteLocation=$buildLocation/archive/$buildUpdateSitePath
+buildUpdateSiteURL=$BUILD_RUN/artifact/$buildUpdateSitePath
 
 releaseStreamName=$releaseStream.x
 release=$releaseStream.$SERVICE_RELEASE_NUMBER
 
-localRelengProjectPath=${WORKSPACE}/$relengProjectRelativePath
-localUpdateSitePath=$localRelengProjectPath/updates
-localDownloadSitePath=$localRelengProjectPath/downloads
-localTempPath=$localRelengProjectPath/temp
+localRelengProjectLocation=${WORKSPACE}/$relengProjectPath
+localUpdateSiteLocation=$localRelengProjectLocation/updates
+localDownloadSiteLocation=$localRelengProjectLocation/downloads
+localTempLocation=$localRelengProjectLocation/temp
 
-projectUpdateSiteBackupPath=$localRelengProjectPath/backup
+projectUpdateSiteBackupLocation=$localRelengProjectLocation/backup
 
-eclipseDownloadsPath=/home/data/httpd/download.eclipse.org
+eclipseDownloadsLocation=/home/data/httpd/download.eclipse.org
 eclipsePackageFileName=eclipse-platform-$eclipsePackageVersion-linux-gtk-x86_64.tar.gz
-eclipsePackageDownloadPath=$eclipseDownloadsPath/eclipse/downloads/drops4/R-$eclipsePackageVersion-$eclipsePackageBuildId/$eclipsePackageFileName
-eclipseInstallPath=$localRelengProjectPath/eclipse
+eclipsePackageLocation=$eclipseDownloadsLocation/eclipse/downloads/drops4/R-$eclipsePackageVersion-$eclipsePackageBuildId/$eclipsePackageFileName
+eclipseInstallLocation=$localRelengProjectLocation/eclipse
 
 ##################
 # Runtime settings
@@ -81,42 +81,42 @@ case $BUILD_TYPE in
        ;;
     *) exit 0 ;;
 esac
-applicableProjectUpdateSiteRelativePath="$projectUpdateSitesBasePath/$applicableProjectUpdateSiteName"
-applicableProjectUpdateSitePath="$eclipseDownloadsPath/$applicableProjectUpdateSiteRelativePath"
-applicableProjectDownloadSiteRelativePath="$projectDownloadSitesBasePath/$applicableProjectDownloadSiteName"
-applicableProjectDownloadSitePath="$eclipseDownloadsPath/$applicableProjectDownloadSiteRelativePath"
-applicableLocalUpdateSiteArchivePath=$localDownloadSitePath/$applicableUpdateSiteArchiveFileName
+applicableProjectUpdateSitePath="$projectUpdateSitesBasePath/$applicableProjectUpdateSiteName"
+applicableProjectUpdateSiteLocation="$eclipseDownloadsLocation/$applicableProjectUpdateSitePath"
+applicableProjectDownloadSitePath="$projectDownloadSitesBasePath/$applicableProjectDownloadSiteName"
+applicableProjectDownloadSiteLocation="$eclipseDownloadsLocation/$applicableProjectDownloadSitePath"
+applicableLocalUpdateSiteArchiveLocation=$localDownloadSiteLocation/$applicableUpdateSiteArchiveFileName
 
 #############################################################################################
 # Eclipse installation (required to create merged update site and set p2.mirrorsURL property)
 #############################################################################################
 
-if [ ! -d "$eclipseInstallPath/eclipse" ];
+if [ ! -d "$eclipseInstallLocation/eclipse" ];
 	then
 		echo "------------------------------------------------------------------------"
 		echo "Installing Eclipse"
 		echo "------------------------------------------------------------------------"
 
-		echo "Copying $eclipsePackageDownloadPath to $localTempPath"
-		mkdir $localTempPath
-		cp $eclipsePackageDownloadPath $localTempPath
-		echo "Unpacking $localTempPath/$eclipsePackageFileName" 
-		tar -xzf $localTempPath/$eclipsePackageFileName -C $localTempPath
-		echo "Copying $localTempPath/eclipse/* to $eclipseInstallPath"
-		mkdir $eclipseInstallPath 
-		cp $localTempPath/eclipse/* $eclipseInstallPath 
-		chmod 700 $eclipseInstallPath/eclipse
-		if [ -d "$eclipseInstallPath/eclipse" ];
+		echo "Copying $eclipsePackageLocation to $localTempLocation"
+		mkdir $localTempLocation
+		cp $eclipsePackageLocation $localTempLocation
+		echo "Unpacking $localTempLocation/$eclipsePackageFileName" 
+		tar -xzf $localTempLocation/$eclipsePackageFileName -C $localTempLocation
+		echo "Copying $localTempLocation/eclipse/* to $eclipseInstallLocation"
+		mkdir $eclipseInstallLocation 
+		cp -r $localTempLocation/eclipse/* $eclipseInstallLocation 
+		chmod 700 $eclipseInstallLocation/eclipse
+		if [ -d "$eclipseInstallLocation/eclipse" ];
         	then
-				echo "Removing $localTempPath"
-        		rm -r $localTempPath
+				echo "Removing $localTempLocation"
+        		rm -r $localTempLocation
         	else 
                 echo "ERROR: Failed to install Eclipse package required for publishing."
                 exit
 		fi
 
 		echo "Installing WTP Releng tools"
-		$eclipseInstallPath/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.director -repository http://download.eclipse.org/webtools/releng/repository/ -installIUs org.eclipse.wtp.releng.tools.feature.feature.group
+		$eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.director -repository http://download.eclipse.org/webtools/releng/repository/ -installIUs org.eclipse.wtp.releng.tools.feature.feature.group
 fi
 
 ####################
@@ -127,32 +127,32 @@ echo "------------------------------------------------------------------------"
 echo "Retrieving build update site"
 echo "------------------------------------------------------------------------"
 
-echo "Copying $buildUpdateSitePath/* to $localUpdateSitePath"
-rm -rf $localUpdateSitePath
-mkdir $localUpdateSitePath
-cp -r $buildUpdateSitePath/* $localUpdateSitePath
-find $applicableProjectDownloadSitePath -type f -name "*.html" -delete
-#find $applicableProjectDownloadSitePath -type d -name "*zip*" -delete
+echo "Copying $buildUpdateSiteLocation/* to $localUpdateSiteLocation"
+rm -rf $localUpdateSiteLocation
+mkdir $localUpdateSiteLocation
+cp -r $buildUpdateSiteLocation/* $localUpdateSiteLocation
+find $applicableProjectDownloadSiteLocation -type f -name "*.html" -delete
+#find $applicableProjectDownloadSiteLocation -type d -name "*zip*" -delete
 
 # Alternative approach:
-# echo "Downloading $buildUpdateSiteURL/* to $localUpdateSitePath"
-# rm -rf $localUpdateSitePath
-# wget --mirror --execute robots=off --directory-prefix=$localUpdateSitePath --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $buildUpdateSiteURL/
+# echo "Downloading $buildUpdateSiteURL/* to $localUpdateSiteLocation"
+# rm -rf $localUpdateSiteLocation
+# wget --mirror --execute robots=off --directory-prefix=$localUpdateSiteLocation --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $buildUpdateSiteURL/
 
 echo "------------------------------------------------------------------------"
 echo "Creating archived update site"
 echo "------------------------------------------------------------------------"
 
-echo "Archiving $localUpdateSitePath/* into $applicableLocalUpdateSiteArchivePath"
-zip -r $applicableLocalUpdateSiteArchivePath $localUpdateSitePath/*
+echo "Archiving $localUpdateSiteLocation/* into $applicableLocalUpdateSiteArchiveLocation"
+zip -r $applicableLocalUpdateSiteArchiveLocation $localUpdateSiteLocation/*
 
 echo "------------------------------------------------------------------------"
 echo "Publishing archived update site"
 echo "------------------------------------------------------------------------"
 
-echo "Copying $applicableLocalUpdateSiteArchivePath to $applicableProjectDownloadSitePath"
-mkdir -p $applicableProjectDownloadSitePath
-cp $applicableLocalUpdateSiteArchivePath $applicableProjectDownloadSitePath
+echo "Copying $applicableLocalUpdateSiteArchiveLocation to $applicableProjectDownloadSiteLocation"
+mkdir -p $applicableProjectDownloadSiteLocation
+cp $applicableLocalUpdateSiteArchiveLocation $applicableProjectDownloadSiteLocation
 
 if [ $MERGE_UPDATE_SITE ];
 	then
@@ -160,49 +160,49 @@ if [ $MERGE_UPDATE_SITE ];
 		echo "Merging project update site into build update site"
 		echo "------------------------------------------------------------------------"
 
-        echo "Merging $applicableProjectUpdateSitePath into $localUpdateSitePath"
-        $eclipseInstallPath/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$applicableProjectUpdateSitePath -destination file:$localUpdateSitePath
-        $eclipseInstallPath/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$applicableProjectUpdateSitePath -destination file:$localUpdateSitePath
+        echo "Merging $applicableProjectUpdateSiteLocation into $localUpdateSiteLocation"
+        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$applicableProjectUpdateSiteLocation -destination file:$localUpdateSiteLocation
+        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$applicableProjectUpdateSiteLocation -destination file:$localUpdateSiteLocation
 fi
 
 echo "------------------------------------------------------------------------"
 echo "Setting p2.mirrorsURL property"
 echo "------------------------------------------------------------------------"
 
-echo "Setting p2.mirrorsURL property of $localUpdateSitePath to http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSiteRelativePath (see https://wiki.eclipse.org/WTP/Releng/Tools/addRepoProperties for details)"
-$eclipseInstallPath/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$localUpdateSitePath -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSiteRelativePath"
+echo "Setting p2.mirrorsURL property of $localUpdateSiteLocation to http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSitePath (see https://wiki.eclipse.org/WTP/Releng/Tools/addRepoProperties for details)"
+$eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$localUpdateSiteLocation -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSitePath"
 
-if [ ! -e "$localUpdateSitePath/p2.index" ];
+if [ ! -e "$localUpdateSiteLocation/p2.index" ];
     then
 		echo "------------------------------------------------------------------------"
 		echo "Creating p2.index file"
 		echo "------------------------------------------------------------------------"
 
-        echo "Creating p2.index file for $localUpdateSitePath"
-        echo "version = 1" > $localUpdateSitePath/p2.index
-        echo "metadata.repository.factory.order = content.xml,\!" >> $localUpdateSitePath/p2.index
-        echo "artifact.repository.factory.order = artifacts.xml,\!" >> $localUpdateSitePath/p2.index
+        echo "Creating p2.index file for $localUpdateSiteLocation"
+        echo "version = 1" > $localUpdateSiteLocation/p2.index
+        echo "metadata.repository.factory.order = content.xml,\!" >> $localUpdateSiteLocation/p2.index
+        echo "artifact.repository.factory.order = artifacts.xml,\!" >> $localUpdateSiteLocation/p2.index
 fi
 
-if [ -d "$applicableProjectUpdateSitePath" ];
+if [ -d "$applicableProjectUpdateSiteLocation" ];
     then
 		echo "------------------------------------------------------------------------"
 		echo "Creating backup of project update site"
 		echo "------------------------------------------------------------------------"
 
-		echo "Copying $applicableProjectUpdateSitePath/* to $projectUpdateSiteBackupPath"
-        rm -rf $projectUpdateSiteBackupPath
-        mkdir $projectUpdateSiteBackupPath
-        cp -r $applicableProjectUpdateSitePath/* $projectUpdateSiteBackupPath/
+		echo "Copying $applicableProjectUpdateSiteLocation/* to $projectUpdateSiteBackupLocation"
+        rm -rf $projectUpdateSiteBackupLocation
+        mkdir $projectUpdateSiteBackupLocation
+        cp -r $applicableProjectUpdateSiteLocation/* $projectUpdateSiteBackupLocation/
 
-        echo "Removing $applicableProjectUpdateSitePath"
-        rm -rf $applicableProjectUpdateSitePath
+        echo "Removing $applicableProjectUpdateSiteLocation"
+        rm -rf $applicableProjectUpdateSiteLocation
 fi
 
 echo "------------------------------------------------------------------------"
 echo "Publishing update site"
 echo "------------------------------------------------------------------------"
 
-echo "Copying $localUpdateSitePath/* to $applicableProjectUpdateSitePath"
-mkdir -p $applicableProjectUpdateSitePath
-cp -r $localUpdateSitePath/* $applicableProjectUpdateSitePath
+echo "Copying $localUpdateSiteLocation/* to $applicableProjectUpdateSiteLocation"
+mkdir -p $applicableProjectUpdateSiteLocation
+cp -r $localUpdateSiteLocation/* $applicableProjectUpdateSiteLocation
