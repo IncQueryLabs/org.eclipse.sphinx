@@ -1,142 +1,154 @@
 #!/bin/sh
 
-# $1: Build type:  I(ntegration), M(ilestone), R(elease)C(andidate) R(elease), T(est)
-# $2: Whether to merge the site with an existing one: (t)rue, (f)alse
+# $1: BUILD_RUN:
+# $1: BUILD_TYPE:  I(ntegration), M(ilestone), R(elease)C(andidate) R(elease), T(est)
 # $3: Release stream: <major>.<minor>.x, e.g., 0.8.x (only required if build type is release, ignored otherwise)
+# $2: Whether to merge the site with an existing one: (t)rue, (f)alse
 
-# Global settings
+# TODO
+# * Update parameter documentation
+
+#####################
+# Adjustable settings
+#####################
+
+relengProjectRelativePath=releng/org.eclipse.sphinx.releng.builds
+buildUpdateSiteRelativePath=$relengProjectRelativePath/repository/target/repository
+releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+)/\d+/$#\1#; print;'
+
 projectUpdateSitesBasePath=sphinx/updates
-projectDownloadsBasePath=sphinx/downloads
+projectDownloadSitesBasePath=sphinx/downloads
+updateSiteArchiveFileNamePrefix=sphinx-Update
+
+eclipsePackageVersion=4.2.2
+eclipsePackageBuildId=201302041200
+
+##################
+# Derived settings
+##################
+
+buildPath=${WORKSPACE}/../../$(echo "$BUILD_RUN" | perl -ne 's#.+/([^/])/(\d+)/$#\1/builds/\2#; print;'
+buildUpdateSitePath=$buildPath/archive/$buildUpdateSiteRelativePath
+buildUpdateSiteURL=$BUILD_RUN/artifact/$buildUpdateSiteRelativePath
+
+releaseStreamName=$releaseStream.x
+release=$releaseStream.$SERVICE_RELEASE_NUMBER
+
+localRelengProjectPath=${WORKSPACE}/$relengProjectRelativePath
+localUpdateSitePath=$localRelengProjectPath/updates
+localDownloadSitePath=$localRelengProjectPath/downloads
+
+projectUpdateSiteBackupPath=$localRelengProjectPath/backup
 
 eclipseDownloadsPath=/home/data/httpd/download.eclipse.org
-eclipsePackageVersion=4.2.2
-eclipsePackageTimestamp=201302041200
-eclipsePackagePath=$eclipseDownloadsPath/eclipse/downloads/drops4/R-$eclipsePackageVersion-$eclipsePackageTimestamp
-eclipsePackageFileName=eclipse-SDK-$eclipsePackageVersion-linux-gtk-x86_64.tar.gz
+eclipsePackageFileName=eclipse-platform-$eclipsePackageVersion-linux-gtk-x86_64.tar.gz
+eclipsePackageDownloadPath=$eclipseDownloadsPath/eclipse/downloads/drops4/R-$eclipsePackageVersion-$eclipsePackageBuildId/$eclipsePackageFileName
+eclipseInstallPath=$localRelengProjectPath
 
-# TODO Find a way to insert missing "builds" path segment in targetBuildRelativePath, e.g., sphinx-0.8-luna/95 => sphinx-0.8-luna/builds/95
-targetBuildRelativePath=$(echo "$TARGET_BUILD_RUN" | grep -o '[^/]\+/[0-9]\+')
-relengProjectRelativePath=releng/org.eclipse.sphinx.releng.builds
-originalArtifactsRelativePath=$relengProjectRelativePath/repository/target/repository
-originalArtifactsPath=${WORKSPACE}/../../$targetBuildRelativePath/archive/$originalArtifactsRelativePath
-originalArtifactsURL=$TARGET_BUILD_RUN/artifact/$originalArtifactsRelativePath
-localRelengProjectPath=${WORKSPACE}/$relengProjectRelativePath
-localArtifactsDirectoryName=artifacts
-localArtifactsPath=$localRelengProjectPath/$localArtifactsDirectoryName
+##################
+# Runtime settings
+##################
 
-buildEclipsePath=$localRelengProjectPath/eclipse
-releaseStreamPrefix=0.8
-updateZipFileNamePrefix=sphinx-Update-$releaseStreamPrefix.0
-
-echo "Downloading $originalArtifactsURL/* to $localArtifactsPath/*"
-rm -rf $localArtifactsPath
-wget --mirror --execute robots=off --directory-prefix=$localArtifactsPath --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $originalArtifactsURL/
-
-# Alternative approach: copy build artifacts rather than downloading them
-# echo "Copying $originalArtifactsPath/* to $localArtifactsPath/*"
-# rm -rf $localArtifactsPath
-# cp -R $originalArtifactsPath/* $localArtifactsPath/
-
-# Determine remote update site we want to promote to (integration and stable builds are published on interim update site, release builds on applicable release stream update site)
-case $TARGET_BUILD_TYPE in
-        I) selectedUpdateSiteName=interim
-           selectedDownloadPath=integration
-           updateZipFileName=$updateZipFileNamePrefix.$TARGET_BUILD_TYPE$PUBLISH_ID.zip
+case $BUILD_TYPE in
+        I) applicableProjectUpdateSiteName=interim
+           applicableProjectDownloadSiteName=integration
+           applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release.$BUILD_TYPE$BUILD_ID.zip
            ;;
-        M|RC) selectedUpdateSiteName=interim
-        	  selectedDownloadPath=stable
-        	  updateZipFileName=$updateZipFileNamePrefix$TARGET_BUILD_TYPE$PUBLISH_ID.zip
+        M|RC) applicableProjectUpdateSiteName=interim
+        	  applicableProjectDownloadSiteName=stable
+        	  applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release$BUILD_TYPE$BUILD_ID.zip
         	  ;;
-        R) selectedUpdateSiteName=releases/$releaseStreamPrefix.x
-           selectedDownloadPath=releases/$releaseStreamPrefix.0
-           updateZipFileName=$updateZipFileNamePrefix.zip
+        R) applicableProjectUpdateSiteName=releases/$releaseStreamName
+           applicableProjectDownloadSiteName=releases/$releaseStreamName
+           applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release.zip
            ;;
-        T) selectedUpdateSiteName=test
-           selectedDownloadPath=test
-           updateZipFileName=$updateZipFileNamePrefix.$TARGET_BUILD_TYPE$PUBLISH_ID.zip
+        T) applicableProjectUpdateSiteName=test
+           applicableProjectDownloadSiteName=test
+           applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release.$BUILD_TYPE$BUILD_ID.zip
            ;;
         *) exit 0 ;;
 esac
+applicableProjectUpdateSiteRelativePath="$projectUpdateSitesBasePath/$applicableProjectUpdateSiteName"
+applicableProjectUpdateSitePath="$eclipseDownloadsPath/$applicableProjectUpdateSiteRelativePath"
+applicableProjectDownloadSiteRelativePath="$projectDownloadSitesBasePath/$applicableProjectDownloadSiteName"
+applicableProjectDownloadSitePath="$eclipseDownloadsPath/$applicableProjectDownloadSiteRelativePath"
+applicableLocalUpdateSiteArchivePath=$localDownloadSitePath/$applicableUpdateSiteArchiveFileName
 
-echo "Local update-site zip file name: $updateZipFileName"
-selectedUpdateSiteRelativePath="$projectUpdateSitesBasePath/$selectedUpdateSiteName"
-selectedUpdateSiteAbsolutePath="$eclipseDownloadsPath/$selectedUpdateSiteRelativePath"
-echo "Publishing to remote update-site: $selectedUpdateSiteAbsolutePath"
+#############################################################################################
+# Eclipse installation (required to create merged update site and set p2.mirrorsURL property)
+#############################################################################################
 
-selectedDownloadRelativePath="$projectDownloadsBasePath/$selectedDownloadPath"
-selectedDownloadAbsolutePath="$eclipseDownloadsPath/$selectedDownloadRelativePath"
-echo "Publishing to remote downloads: $selectedDownloadAbsolutePath"
-
-# zip the local update site, and copy to downloads
-echo "Zip and copy the local update site to downloads"
-cd $relengProjectRelativePath
-cd $localArtifactsDirectoryName
-zip -r $updateZipFileName .
-echo "move $updateZipFileName to $selectedDownloadAbsolutePath"
-mv -f $updateZipFileName $selectedDownloadAbsolutePath
-cd ..
-
-# Download and prepare Eclipse SDK, which is needed to merge update site and postprocess repository
-if [ ! -d "eclipse" ];
+if [ ! -d "$eclipseInstallPath/eclipse" ];
 	then
-		echo "Downloading eclipse to $PWD"
-		cp $eclipsePackagePath/$eclipsePackageFileName $localRelengProjectPath
-		tar -xvzf $eclipsePackageFileName
-		cd eclipse
-		chmod 700 eclipse
-		cd ..
-		if [ ! -d "eclipse" ];
+		echo "Copying $eclipsePackageDownloadPath to $localRelengProjectPath"
+		cp $eclipsePackageDownloadPath $localRelengProjectPath
+		tar -xzf $localRelengProjectPath/$eclipsePackageFileName -C $eclipseInstallPath
+		chmod 700 $eclipseInstallPath/eclipse/eclipse
+		if [ ! -d "$eclipseInstallPath/eclipse" ];
         	then
-                echo "Failed to download an Eclipse SDK, being needed for provisioning."
+                echo "Failed to install Eclipse package required for publishing."
                 exit
 		fi
 
-		# Prepare Eclipse SDK to provide WTP releng tools (used to postprocess repository, i.e set p2.mirrorsURL property)
 		echo "Installing WTP Releng tools"
-		./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.director -repository http://download.eclipse.org/webtools/releng/repository/ -installIUs org.eclipse.wtp.releng.tools.feature.feature.group
+		$eclipseInstallPath/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.director -repository http://download.eclipse.org/webtools/releng/repository/ -installIUs org.eclipse.wtp.releng.tools.feature.feature.group
 
-		# Clean up
-		echo "Cleaning up"
-		rm $eclipsePackageFileName
+		echo "Removing $localRelengProjectPath/$eclipsePackageFileName"
+		rm $localRelengProjectPath/$eclipsePackageFileName
 fi
+
+####################
+# Publishing process
+####################
+
+echo "Copying $buildUpdateSitePath/* to $localUpdateSitePath"
+rm -rf $localUpdateSitePath
+mkdir $localUpdateSitePath
+cp -R $buildUpdateSitePath/* $localUpdateSitePath
+find $applicableProjectDownloadSitePath -type f -name "*.html" -delete
+#find $applicableProjectDownloadSitePath -type d -name "*zip*" -delete
+
+# Alternative approach:
+# echo "Downloading $buildUpdateSiteURL/* to $localUpdateSitePath"
+# rm -rf $localUpdateSitePath
+# wget --mirror --execute robots=off --directory-prefix=$localUpdateSitePath --no-host-directories --cut-dirs=11 --no-parent --reject="index.html*,*zip*" --timestamping $buildUpdateSiteURL/
+
+echo "Archiving $localUpdateSitePath/* into $applicableLocalUpdateSiteArchivePath"
+zip -r $applicableLocalUpdateSiteArchivePath $localUpdateSitePath/*
+
+echo "Copying $applicableLocalUpdateSiteArchivePath to $applicableProjectDownloadSitePath"
+mkdir -p $applicableProjectDownloadSitePath
+cp $applicableLocalUpdateSiteArchivePath $applicableProjectDownloadSitePath
 
 if [ $MERGE_UPDATE_SITE ];
 	then
-        echo "Merging existing site into local one."
-        ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$selectedUpdateSiteAbsolutePath -destination file:$localArtifactsPath
-        ./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$selectedUpdateSiteAbsolutePath -destination file:$localArtifactsPath
-        echo "Merged $selectedUpdateSiteAbsolutePath into local update site directory : $localArtifactsPath."
+        echo "Merging $applicableProjectUpdateSitePath into $localUpdateSitePath"
+        $eclipseInstallPath/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$applicableProjectUpdateSitePath -destination file:$localUpdateSitePath
+        $eclipseInstallPath/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$applicableProjectUpdateSitePath -destination file:$localUpdateSitePath
 fi
 
-# Ensure p2.mirrorURLs property is used in update site
-echo "Setting p2.mirrorsURL to http://www.eclipse.org/downloads/download.php?format=xml&file=/$selectedUpdateSiteRelativePath (see https://wiki.eclipse.org/WTP/Releng/Tools/addRepoProperties for details)"
-./eclipse/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$localArtifactsPath -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$selectedUpdateSiteRelativePath"
+echo "Setting p2.mirrorsURL property of $localUpdateSitePath to http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSiteRelativePath (see https://wiki.eclipse.org/WTP/Releng/Tools/addRepoProperties for details)"
+$eclipseInstallPath/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$localUpdateSitePath -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSiteRelativePath"
 
-# Create p2.index file
-if [ ! -e "$localArtifactsPath/p2.index" ];
-        then
-                echo "Creating p2.index file."
-                echo "version = 1" > $localArtifactsPath/p2.index
-                echo "metadata.repository.factory.order = content.xml,\!" >> $localArtifactsPath/p2.index
-                echo "artifact.repository.factory.order = artifacts.xml,\!" >> $localArtifactsPath/p2.index
+if [ ! -e "$localUpdateSitePath/p2.index" ];
+    then
+            echo "Creating p2.index file for $localUpdateSitePath"
+            echo "version = 1" > $localUpdateSitePath/p2.index
+            echo "metadata.repository.factory.order = content.xml,\!" >> $localUpdateSitePath/p2.index
+            echo "artifact.repository.factory.order = artifacts.xml,\!" >> $localUpdateSitePath/p2.index
 fi
 
-# Backup then clean remote update site
-echo "Creating backup of remote update site."
-if [ -d "$selectedUpdateSiteAbsolutePath" ];
-        then
-                if [ -d BACKUP ];
-                        then
-                                rm -fr BACKUP
-                fi
-                mkdir BACKUP
-                echo "copy $selectedUpdateSiteAbsolutePath/* to BACKUP"
-                cp -R $selectedUpdateSiteAbsolutePath/* BACKUP/
-                rm -fr $selectedUpdateSiteAbsolutePath
+if [ -d "$applicableProjectUpdateSitePath" ];
+    then
+			echo "Copying $applicableProjectUpdateSitePath/* to $projectUpdateSiteBackupPath"
+            rm -rf $projectUpdateSiteBackupPath
+            mkdir $projectUpdateSiteBackupPath
+            cp -R $applicableProjectUpdateSitePath/* $projectUpdateSiteBackupPath/
+
+            echo "Removing $applicableProjectUpdateSitePath"
+            rm -rf $applicableProjectUpdateSitePath
 fi
 
-echo "Publishing contents of local update-site directory to remote update site $selectedUpdateSiteAbsolutePath"
-mkdir -p $selectedUpdateSiteAbsolutePath
-echo "Copying $localArtifactsPath/* to $selectedUpdateSiteAbsolutePath/*"
-cp -R $localArtifactsPath/* $selectedUpdateSiteAbsolutePath/
-
+echo "Copying $localUpdateSitePath/* to $applicableProjectUpdateSitePath"
+mkdir -p $applicableProjectUpdateSitePath
+cp -R $localUpdateSitePath/* $applicableProjectUpdateSitePath
