@@ -91,7 +91,7 @@ applicableLocalUpdateSiteArchiveLocation=$localDownloadSiteLocation/$applicableU
 # Eclipse installation (required to create merged update site and set p2.mirrorsURL property)
 #############################################################################################
 
-if [ ! -d "$eclipseInstallLocation/eclipse" ];
+if [ ! -f "$eclipseInstallLocation/eclipse" ];
 	then
 		echo "------------------------------------------------------------------------"
 		echo "Installing Eclipse"
@@ -140,6 +140,8 @@ echo "Creating archived update site"
 echo "------------------------------------------------------------------------"
 
 echo "Archiving $localUpdateSiteLocation/* into $applicableLocalUpdateSiteArchiveLocation"
+rm -rf $localDownloadSiteLocation
+mkdir $localDownloadSiteLocation
 zip -r $applicableLocalUpdateSiteArchiveLocation $localUpdateSiteLocation/*
 
 echo "------------------------------------------------------------------------"
