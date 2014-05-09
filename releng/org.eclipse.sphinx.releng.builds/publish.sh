@@ -4,7 +4,7 @@
 # Command line options
 ######################
 
-# $1: BUILD_RUN: The build to be published (<strong>Be sure to select only successful builds with all tests passed!</strong>)
+# $1: BUILD_RUN: The build to be published (<strong>Be sure to select only successful builds with all tests passed!</strong>), must be an URL formated like this one: https://hudson.eclipse.org/sphinx/job/sphinx-0.8-luna/99/
 # $2: BUILD_TYPE: The type as which the selected build is going to be published, must be one of: I(ntegration), M(ilestone), R(elease)C(andidate) R(elease), T(est)
 # $3: BUILD_ID: The id under which the selected build is going to be published, use following convention: I: yyyymmdd-hhmm, M: n RC: n, R: none
 # $4: SERVICE_RELEASE_NUMBER: The service release number of the build to be published (will be used to complement the major and minor version number in the name of the build to be published)
@@ -16,7 +16,7 @@
 
 relengProjectRelativePath=releng/org.eclipse.sphinx.releng.builds
 buildUpdateSiteRelativePath=$relengProjectRelativePath/repository/target/repository
-releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+)/\d+/$#\1#; print;'
+releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+/\d+/$#\1#; print;'
 
 projectUpdateSitesBasePath=sphinx/updates
 projectDownloadSitesBasePath=sphinx/downloads
