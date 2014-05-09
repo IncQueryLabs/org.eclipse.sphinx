@@ -192,15 +192,14 @@ if [ -d "$applicableProjectUpdateSiteLocation" ];
         rm -rf $projectUpdateSiteBackupLocation
         mkdir $projectUpdateSiteBackupLocation
         cp -r $applicableProjectUpdateSiteLocation/* $projectUpdateSiteBackupLocation/
-
-        echo "Removing $applicableProjectUpdateSiteLocation"
-        rm -rf $applicableProjectUpdateSiteLocation
 fi
 
 echo "------------------------------------------------------------------------"
 echo "Publishing update site"
 echo "------------------------------------------------------------------------"
 
+echo "Removing $applicableProjectUpdateSiteLocation"
+rm -rf $applicableProjectUpdateSiteLocation
 echo "Copying $localUpdateSiteLocation/* to $applicableProjectUpdateSiteLocation"
 mkdir -p $applicableProjectUpdateSiteLocation
 cp -r $localUpdateSiteLocation/* $applicableProjectUpdateSiteLocation
