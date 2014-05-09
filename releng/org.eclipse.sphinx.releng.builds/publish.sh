@@ -142,7 +142,7 @@ echo "------------------------------------------------------------------------"
 echo "Archiving $localUpdateSiteLocation/* into $applicableLocalUpdateSiteArchiveLocation"
 rm -rf $localDownloadSiteLocation
 mkdir $localDownloadSiteLocation
-zip -r $applicableLocalUpdateSiteArchiveLocation $localUpdateSiteLocation/*
+zip -rq $applicableLocalUpdateSiteArchiveLocation $localUpdateSiteLocation/*
 
 echo "------------------------------------------------------------------------"
 echo "Publishing archived update site"
