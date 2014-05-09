@@ -102,7 +102,7 @@ if [ ! -d "$eclipseInstallLocation/eclipse" ];
 		echo "Unpacking $localRelengProjectLocation/$eclipsePackageFileName" 
 		tar -xzf $localRelengProjectLocation/$eclipsePackageFileName -C $localRelengProjectLocation 
 		chmod 700 $eclipseInstallLocation/eclipse
-		if [ -d "$eclipseInstallLocation/eclipse" ];
+		if [ -f "$eclipseInstallLocation/eclipse" ];
         	then
 				echo "Removing $localRelengProjectLocation/$eclipsePackageFileName"
         		rm $localRelengProjectLocation/$eclipsePackageFileName
