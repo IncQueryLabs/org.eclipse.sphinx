@@ -96,22 +96,24 @@ if [ ! -d "$eclipseInstallPath/eclipse" ];
 		echo "Installing Eclipse"
 		echo "------------------------------------------------------------------------"
 
-		echo "Copying $eclipsePackageDownloadPath to $localRelengProjectPath"
-		cp $eclipsePackageDownloadPath $localRelengProjectPath
-		tar -xzf $localRelengProjectPath/$eclipsePackageFileName -C $eclipseInstallPath
-		mv $eclipseInstallPath/eclipse/* $eclipseInstallPath 
+		echo "Copying $eclipsePackageDownloadPath to $localRelengProjectPath/temp"
+		cp $eclipsePackageDownloadPath $localRelengProjectPath/temp
+		echo "Unpacking $localRelengProjectPath/temp/$eclipsePackageFileName to $localRelengProjectPath/temp 
+		tar -xzf $localRelengProjectPath/temp/$eclipsePackageFileName -C $localRelengProjectPath/temp
+		echo "Moving $eclipseInstallPath/temp/eclipse/* to $eclipseInstallPath 
+		mv $eclipseInstallPath/temp/eclipse/* $eclipseInstallPath 
 		chmod 700 $eclipseInstallPath/eclipse
-		if [ ! -d "$eclipseInstallPath/eclipse" ];
+		if [ -d "$eclipseInstallPath/eclipse" ];
         	then
+				echo "Removing $localRelengProjectPath/temp"
+        		rm -r $localRelengProjectPath/temp
+        	else 
                 echo "Failed to install Eclipse package required for publishing."
                 exit
 		fi
 
 		echo "Installing WTP Releng tools"
 		$eclipseInstallPath/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.director -repository http://download.eclipse.org/webtools/releng/repository/ -installIUs org.eclipse.wtp.releng.tools.feature.feature.group
-
-		echo "Removing $localRelengProjectPath/$eclipsePackageFileName"
-		rm $localRelengProjectPath/$eclipsePackageFileName
 fi
 
 ####################
