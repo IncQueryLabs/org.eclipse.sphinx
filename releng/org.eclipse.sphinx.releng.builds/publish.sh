@@ -39,7 +39,7 @@ eclipsePackageBuildId=201302041200
 # Derived settings
 ##################
 
-buildLocation=${WORKSPACE}/../../$(echo "$BUILD_RUN" | perl -ne 's#.+/([^/])/(\d+)/$#\1/builds/\2#; print;')
+buildLocation=${WORKSPACE}/../../$(echo "$BUILD_RUN" | perl -ne 's#.+/([^/]+)/(\d+)/$#\1/builds/\2#; print;')
 buildUpdateSiteLocation=$buildLocation/archive/$buildUpdateSitePath
 buildUpdateSiteURL=$BUILD_RUN/artifact/$buildUpdateSitePath
 
@@ -127,8 +127,8 @@ echo "Copying $buildUpdateSiteLocation/* to $localUpdateSiteLocation"
 rm -rf $localUpdateSiteLocation
 mkdir $localUpdateSiteLocation
 cp -r $buildUpdateSiteLocation/* $localUpdateSiteLocation
-find $applicableProjectDownloadSiteLocation -type f -name "*.html" -delete
-#find $applicableProjectDownloadSiteLocation -type d -name "*zip*" -delete
+find $localUpdateSiteLocation -type f -name "*.html" -delete
+#find $localUpdateSiteLocation -type d -name "*zip*" -delete
 
 # Alternative approach:
 # echo "Downloading $buildUpdateSiteURL/* to $localUpdateSiteLocation"
