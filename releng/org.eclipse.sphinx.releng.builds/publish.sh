@@ -51,27 +51,8 @@ eclipseInstallPath=$localRelengProjectPath
 # Runtime settings
 ##################
 
-case $BUILD_TYPE in
-        I) applicableProjectUpdateSiteName=interim
-           applicableProjectDownloadSiteName=integration
-           applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release.$BUILD_TYPE$BUILD_ID.zip
-           ;;
-        M|RC) applicableProjectUpdateSiteName=interim
-        	  applicableProjectDownloadSiteName=stable
-        	  applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release$BUILD_TYPE$BUILD_ID.zip
-        	  ;;
-        R) applicableProjectUpdateSiteName=releases/$releaseStreamName
-           applicableProjectDownloadSiteName=releases/$releaseStreamName
-           applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release.zip
-           ;;
-        T) applicableProjectUpdateSiteName=test
-           applicableProjectDownloadSiteName=test
-           applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release.$BUILD_TYPE$BUILD_ID.zip
-           ;;
-        *) exit 0 ;;
-esac
-applicableProjectUpdateSiteRelativePath="$projectUpdateSitesBasePath/$applicableProjectUpdateSiteName"
-applicableProjectUpdateSitePath="$eclipseDownloadsPath/$applicableProjectUpdateSiteRelativePath"
-applicableProjectDownloadSiteRelativePath="$projectDownloadSitesBasePath/$applicableProjectDownloadSiteName"
-applicableProjectDownloadSitePath="$eclipseDownloadsPath/$applicableProjectDownloadSiteRelativePath"
-applicableLocalUpdateSiteArchivePath=$localDownloadSitePath/$applicableUpdateSiteArchiveFileName
+echo $BUILD_RUN
+echo $BUILD_TYPE
+echo $BUILD_ID
+echo $SERVICE_RELEASE_NUMBER
+echo $MERGE_UPDATE_SITE
