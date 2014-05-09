@@ -14,45 +14,12 @@
 # Adjustable settings
 #####################
 
-relengProjectRelativePath=releng/org.eclipse.sphinx.releng.builds
-buildUpdateSiteRelativePath=$relengProjectRelativePath/repository/target/repository
-releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+/\d+/$#\1#; print;'
-
-projectUpdateSitesBasePath=sphinx/updates
-projectDownloadSitesBasePath=sphinx/downloads
-updateSiteArchiveFileNamePrefix=sphinx-Update
-
-eclipsePackageVersion=4.2.2
-eclipsePackageBuildId=201302041200
-
-##################
-# Derived settings
-##################
-
-buildPath=${WORKSPACE}/../../$(echo "$BUILD_RUN" | perl -ne 's#.+/([^/])/(\d+)/$#\1/builds/\2#; print;'
-buildUpdateSitePath=$buildPath/archive/$buildUpdateSiteRelativePath
-buildUpdateSiteURL=$BUILD_RUN/artifact/$buildUpdateSiteRelativePath
-
-releaseStreamName=$releaseStream.x
-release=$releaseStream.$SERVICE_RELEASE_NUMBER
-
-localRelengProjectPath=${WORKSPACE}/$relengProjectRelativePath
-localUpdateSitePath=$localRelengProjectPath/updates
-localDownloadSitePath=$localRelengProjectPath/downloads
-
-projectUpdateSiteBackupPath=$localRelengProjectPath/backup
-
-eclipseDownloadsPath=/home/data/httpd/download.eclipse.org
-eclipsePackageFileName=eclipse-platform-$eclipsePackageVersion-linux-gtk-x86_64.tar.gz
-eclipsePackageDownloadPath=$eclipseDownloadsPath/eclipse/downloads/drops4/R-$eclipsePackageVersion-$eclipsePackageBuildId/$eclipsePackageFileName
-eclipseInstallPath=$localRelengProjectPath
-
-##################
-# Runtime settings
-##################
-
 echo $BUILD_RUN
 echo $BUILD_TYPE
 echo $BUILD_ID
 echo $SERVICE_RELEASE_NUMBER
 echo $MERGE_UPDATE_SITE
+
+relengProjectRelativePath=releng/org.eclipse.sphinx.releng.builds
+buildUpdateSiteRelativePath=$relengProjectRelativePath/repository/target/repository
+releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+/\d+/$#\1#; print;'
