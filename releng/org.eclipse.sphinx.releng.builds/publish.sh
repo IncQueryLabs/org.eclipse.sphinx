@@ -150,7 +150,7 @@ echo "Copying $applicableLocalUpdateSiteArchiveLocation to $applicableProjectDow
 mkdir -p $applicableProjectDownloadSiteLocation
 cp $applicableLocalUpdateSiteArchiveLocation $applicableProjectDownloadSiteLocation
 
-if [ $MERGE_UPDATE_SITE ] && [ -d $applicableProjectUpdateSiteLocation ];
+if [ $MERGE_UPDATE_SITE ] && [ -f $applicableProjectUpdateSiteLocation/content.* ];
 	then
 		echo "------------------------------------------------------------------------"
 		echo "Merging project update site into build update site"
@@ -180,7 +180,7 @@ if [ ! -f "$localUpdateSiteLocation/p2.index" ];
         echo "artifact.repository.factory.order = artifacts.xml,\!" >> $localUpdateSiteLocation/p2.index
 fi
 
-if [ -d "$applicableProjectUpdateSiteLocation" ];
+if [ -f "$applicableProjectUpdateSiteLocation/content.*" ];
     then
 		echo "------------------------------------------------------------------------"
 		echo "Creating backup of project update site"
