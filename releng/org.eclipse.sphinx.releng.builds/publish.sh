@@ -112,7 +112,7 @@ if [ ! -f "$eclipseInstallLocation/eclipse" ];
 		fi
 
 		echo "Installing WTP Releng tools"
-		$eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.director -repository http://download.eclipse.org/webtools/releng/repository/ -installIUs org.eclipse.wtp.releng.tools.feature.feature.group
+		$eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.director -repository http://download.eclipse.org/webtools/releng/repository/ -installIUs org.eclipse.wtp.releng.tools.feature.feature.group
 fi
 
 ####################
@@ -128,7 +128,6 @@ rm -rf $localUpdateSiteLocation
 mkdir $localUpdateSiteLocation
 cp -r $buildUpdateSiteLocation/* $localUpdateSiteLocation
 find $localUpdateSiteLocation -type f -name "*.html" -delete
-#find $localUpdateSiteLocation -type d -name "*zip*" -delete
 
 # Alternative approach:
 # echo "Downloading $buildUpdateSiteURL/* to $localUpdateSiteLocation"
@@ -159,8 +158,8 @@ if [ $MERGE_UPDATE_SITE ];
 		echo "------------------------------------------------------------------------"
 
         echo "Merging $applicableProjectUpdateSiteLocation into $localUpdateSiteLocation"
-        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$applicableProjectUpdateSiteLocation -destination file:$localUpdateSiteLocation
-        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$applicableProjectUpdateSiteLocation -destination file:$localUpdateSiteLocation
+        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$applicableProjectUpdateSiteLocation -destination file:$localUpdateSiteLocation
+        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$applicableProjectUpdateSiteLocation -destination file:$localUpdateSiteLocation
 fi
 
 echo "------------------------------------------------------------------------"
@@ -168,7 +167,7 @@ echo "Setting p2.mirrorsURL property"
 echo "------------------------------------------------------------------------"
 
 echo "Setting p2.mirrorsURL property of $localUpdateSiteLocation to http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSitePath (see https://wiki.eclipse.org/WTP/Releng/Tools/addRepoProperties for details)"
-$eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -debug -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$localUpdateSiteLocation -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSitePath"
+$eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$localUpdateSiteLocation -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSitePath"
 
 if [ ! -e "$localUpdateSiteLocation/p2.index" ];
     then
