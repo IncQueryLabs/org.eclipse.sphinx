@@ -14,12 +14,14 @@
 # Adjustable settings
 #####################
 
-echo $BUILD_RUN
-echo $BUILD_TYPE
-echo $BUILD_ID
-echo $SERVICE_RELEASE_NUMBER
-echo $MERGE_UPDATE_SITE
+echo BUILD_RUN=$BUILD_RUN
+echo BUILD_TYPE=$BUILD_TYPE
+echo BUILD_ID=$BUILD_ID
+echo SERVICE_RELEASE_NUMBER=$SERVICE_RELEASE_NUMBER
+echo MERGE_UPDATE_SITE=$MERGE_UPDATE_SITE
 
 relengProjectRelativePath=releng/org.eclipse.sphinx.releng.builds
 buildUpdateSiteRelativePath=$relengProjectRelativePath/repository/target/repository
-releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+/\d+/$#\1#; print;'
+releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+/\d+/$#\1#; print;')
+
+echo $releaseStream
