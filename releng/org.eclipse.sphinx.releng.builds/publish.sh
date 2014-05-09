@@ -127,7 +127,6 @@ echo "Copying $buildUpdateSiteLocation/* to $localUpdateSiteLocation"
 rm -rf $localUpdateSiteLocation
 mkdir $localUpdateSiteLocation
 cp -r $buildUpdateSiteLocation/* $localUpdateSiteLocation
-find $localUpdateSiteLocation -type f -name "*.html" -delete
 
 # Alternative approach:
 # echo "Downloading $buildUpdateSiteURL/* to $localUpdateSiteLocation"
@@ -151,7 +150,7 @@ echo "Copying $applicableLocalUpdateSiteArchiveLocation to $applicableProjectDow
 mkdir -p $applicableProjectDownloadSiteLocation
 cp $applicableLocalUpdateSiteArchiveLocation $applicableProjectDownloadSiteLocation
 
-if [ $MERGE_UPDATE_SITE ];
+if [ $MERGE_UPDATE_SITE ] && [ -d $applicableProjectUpdateSiteLocation ];
 	then
 		echo "------------------------------------------------------------------------"
 		echo "Merging project update site into build update site"
@@ -169,7 +168,7 @@ echo "------------------------------------------------------------------------"
 echo "Setting p2.mirrorsURL property of $localUpdateSiteLocation to http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSitePath (see https://wiki.eclipse.org/WTP/Releng/Tools/addRepoProperties for details)"
 $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$localUpdateSiteLocation -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSitePath"
 
-if [ ! -e "$localUpdateSiteLocation/p2.index" ];
+if [ ! -f "$localUpdateSiteLocation/p2.index" ];
     then
 		echo "------------------------------------------------------------------------"
 		echo "Creating p2.index file"
@@ -200,5 +199,5 @@ echo "------------------------------------------------------------------------"
 echo "Removing $applicableProjectUpdateSiteLocation"
 rm -rf $applicableProjectUpdateSiteLocation
 echo "Copying $localUpdateSiteLocation/* to $applicableProjectUpdateSiteLocation"
-mkdir -p $applicableProjectUpdateSiteLocation
+mkdir $applicableProjectUpdateSiteLocation
 cp -r $localUpdateSiteLocation/* $applicableProjectUpdateSiteLocation
