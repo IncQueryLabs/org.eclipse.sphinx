@@ -19,14 +19,6 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.sphinx.emf.serialization"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.sphinx.core"
-         version="0.0.0"/>
-
    <plugin
          id="org.eclipse.sphinx.emf.serialization.generators"
          download-size="0"
