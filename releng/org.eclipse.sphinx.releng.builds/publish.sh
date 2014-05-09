@@ -98,6 +98,7 @@ if [ ! -d "$eclipseInstallPath/eclipse" ];
 		echo "------------------------------------------------------------------------"
 
 		echo "Copying $eclipsePackageDownloadPath to $localTempPath"
+		mkdir $localTempPath
 		cp $eclipsePackageDownloadPath $localTempPath
 		echo "Unpacking $localTempPath/$eclipsePackageFileName" 
 		tar -xzf $localTempPath/$eclipsePackageFileName -C $localTempPath
