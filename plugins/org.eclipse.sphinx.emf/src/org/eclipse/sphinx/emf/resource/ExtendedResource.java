@@ -127,9 +127,21 @@ public interface ExtendedResource {
 	String OPTION_ENABLE_SCHEMA_VALIDATION = "ENABLE_SCHEMA_VALIDATION"; //$NON-NLS-1$
 
 	/**
-	 * Specifies the maximum number of errors and warnings that are to be converted to problem markers on underlying
-	 * {@link IFile} after this resource has been loaded or saved. May be an arbitrary positive integer value or
-	 * {@link #OPTION_MAX_PROBLEM_MARKER_COUNT_UNLIMITED}. The default is
+	 * Specifies a {@link IResourceProblemMarkerFactory resource problem marker factory} that is used to convert the
+	 * {@link Resource#getErrors() errors} and {@link Resource#getWarnings() warnings} on this resource to problem
+	 * markers on underlying {@link IFile} after this resource has been loaded or saved.
+	 * 
+	 * @see IResourceProblemMarkerFactory
+	 * @see Resource#getErrors()
+	 * @see Resource#getWarnings()
+	 */
+	String OPTION_PROBLEM_MARKER_FACTORY = "PROBLEM_MARKER_FACTORY"; //$NON-NLS-1$
+
+	/**
+	 * Specifies the maximum number of {@link Resource#getErrors() errors} and {@link Resource#getWarnings() warnings}
+	 * on this resource that are to be converted to problem markers on underlying {@link IFile} after this resource has
+	 * been loaded or saved. May be an arbitrary positive integer value or
+	 * {@link #OPTION_MAX_PROBLEM_MARKER_COUNT_UNLIMITED} . The default is
 	 * <code>{@link #OPTION_MAX_PROBLEM_MARKER_COUNT_DEFAULT}</code>.
 	 * <p>
 	 * Note that a high number of problem markers being generated for many files may have a negative impact on overall
