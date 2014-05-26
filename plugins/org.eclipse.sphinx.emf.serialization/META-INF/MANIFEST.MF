@@ -5,7 +5,8 @@ Bundle-Version: 0.8.0.qualifier
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore.xmi,
- org.apache.xerces
+ org.apache.xerces,
+ org.eclipse.sphinx.platform
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.sphinx.emf.serialization,

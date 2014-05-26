@@ -19,12 +19,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -36,15 +38,21 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
+import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.eclipse.emf.ecore.xml.type.AnyType;
+import org.eclipse.emf.ecore.xml.type.ProcessingInstruction;
+import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.sphinx.emf.serialization.XMLPersistenceMappingExtendedMetaData;
 import org.eclipse.sphinx.emf.serialization.XMLPersistenceMappingExtendedMetaDataImpl;
 import org.eclipse.sphinx.emf.serialization.XMLPersistenceMappingResource;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.w3c.dom.Node;
 
 // TODO: add javadoc with images
 // TODO: deactivate or implement dom support
@@ -58,6 +66,11 @@ public class XMLPersistenceMappingSaveImpl extends XMLSaveImpl {
 	protected XMLPersistenceMappingExtendedMetaData xmlPersistenceMappingExtendedMetaData = null;
 	static final String TRUE = "true"; //$NON-NLS-1$
 	Map<String, String> redefinedNamespaceUriToPrefixMap = null;
+	/**
+	 * Associates Boolean.TRUE to any StructuralFeature which is a roleWrapper element as defined in SAFE ecore.
+	 */
+	protected Map<EStructuralFeature, Boolean> roleWrapperStructuralFeatures = new HashMap<EStructuralFeature, Boolean>();
+	protected List<EStructuralFeature> savedFormulaExpressionFeatures = new ArrayList<EStructuralFeature>();
 
 	final StringBuffer buffer = new StringBuffer();
 
@@ -104,7 +117,8 @@ public class XMLPersistenceMappingSaveImpl extends XMLSaveImpl {
 
 		// Process XML attributes
 		if (SerializationType.elementsOnly == serializationType) {
-			LOOP: for (int i = 0; i < features.length; i++) {
+			LOOP:
+			for (int i = 0; i < features.length; i++) {
 				int kind = featureKinds[i];
 				EStructuralFeature f = features[i];
 
@@ -251,7 +265,8 @@ public class XMLPersistenceMappingSaveImpl extends XMLSaveImpl {
 			} // end for
 		} else {
 
-			LOOP: for (int i = 0; i < features.length; i++) {
+			LOOP:
+			for (int i = 0; i < features.length; i++) {
 				int kind = featureKinds[i];
 				EStructuralFeature f = features[i];
 
@@ -664,28 +679,36 @@ public class XMLPersistenceMappingSaveImpl extends XMLSaveImpl {
 	}
 
 	protected void saveEReferenceReferenced0100Single(EObject remote, EStructuralFeature f) {
-		String qname = getFeatureQName(f);
-		saveReferencedHREF(f, remote, qname, true);
+		if (!savedFormulaExpressionFeatures.contains(f)) {
+			String qname = getFeatureQName(f);
+			saveReferencedHREF(f, remote, qname, true);
+		}
 	}
 
 	protected void saveEReferenceReferenced0101Single(EObject remote, EStructuralFeature f) {
-		doc.startElement(getFeatureQName(f));
-		String qname = getClassifierQName(remote.eClass(), f);
-		saveReferencedHREF(f, remote, qname, false);
-		doc.endElement();
+		if (!savedFormulaExpressionFeatures.contains(f)) {
+			doc.startElement(getFeatureQName(f));
+			String qname = getClassifierQName(remote.eClass(), f);
+			saveReferencedHREF(f, remote, qname, false);
+			doc.endElement();
+		}
 	}
 
 	protected void saveEReferenceReferenced1001Single(EObject remote, EStructuralFeature f) {
-		doc.startElement(getFeatureWrapperQName(f));
-		String qname = getClassifierQName(remote.eClass(), f);
-		saveReferencedHREF(f, remote, qname, false);
-		doc.endElement();
+		if (!savedFormulaExpressionFeatures.contains(f)) {
+			doc.startElement(getFeatureWrapperQName(f));
+			String qname = getClassifierQName(remote.eClass(), f);
+			saveReferencedHREF(f, remote, qname, false);
+			doc.endElement();
+		}
 	}
 
 	protected void saveEReferenceReferenced1100Single(EObject remote, EStructuralFeature f) {
-		doc.startElement(getFeatureWrapperQName(f));
-		saveEReferenceReferenced0100Single(remote, f);
-		doc.endElement();
+		if (!savedFormulaExpressionFeatures.contains(f)) {
+			doc.startElement(getFeatureWrapperQName(f));
+			saveEReferenceReferenced0100Single(remote, f);
+			doc.endElement();
+		}
 	}
 
 	@Override
@@ -724,44 +747,51 @@ public class XMLPersistenceMappingSaveImpl extends XMLSaveImpl {
 	}
 
 	protected void saveEReferenceReferenced0100Many(InternalEList<? extends EObject> values, EStructuralFeature f) {
-		int size = values.size();
-		String qname = getFeatureQName(f);
-		for (int i = 0; i < size; i++) {
-			saveReferencedHREF(f, values.basicGet(i), qname, true);
+		if (!savedFormulaExpressionFeatures.contains(f)) {
+			int size = values.size();
+			String qname = getFeatureQName(f);
+			for (int i = 0; i < size; i++) {
+				saveReferencedHREF(f, values.basicGet(i), qname, true);
+			}
 		}
 	}
 
 	protected void saveEReferenceReferenced0101Many(InternalEList<? extends EObject> values, EStructuralFeature f) {
-		int size = values.size();
-		String qname;
-		EObject value;
-		for (int i = 0; i < size; i++) {
-			doc.startElement(getFeatureQName(f));
-			value = values.basicGet(i);
-			qname = getClassifierQName(value.eClass(), f);
-			saveReferencedHREF(f, value, qname, false);
-			doc.endElement();
+		if (!savedFormulaExpressionFeatures.contains(f)) {
+			int size = values.size();
+			String qname;
+			EObject value;
+			for (int i = 0; i < size; i++) {
+				doc.startElement(getFeatureQName(f));
+				value = values.basicGet(i);
+				qname = getClassifierQName(value.eClass(), f);
+				saveReferencedHREF(f, value, qname, false);
+				doc.endElement();
+			}
 		}
-
 	}
 
 	protected void saveEReferenceReferenced1001Many(InternalEList<? extends EObject> values, EStructuralFeature f) {
-		int size = values.size();
-		String qname;
-		EObject value;
-		doc.startElement(getFeatureWrapperQName(f));
-		for (int i = 0; i < size; i++) {
-			value = values.basicGet(i);
-			qname = getClassifierQName(value.eClass(), f);
-			saveReferencedHREF(f, value, qname, false);
+		if (!savedFormulaExpressionFeatures.contains(f)) {
+			int size = values.size();
+			String qname;
+			EObject value;
+			doc.startElement(getFeatureWrapperQName(f));
+			for (int i = 0; i < size; i++) {
+				value = values.basicGet(i);
+				qname = getClassifierQName(value.eClass(), f);
+				saveReferencedHREF(f, value, qname, false);
+			}
+			doc.endElement();
 		}
-		doc.endElement();
 	}
 
 	protected void saveEReferenceReferenced1100Many(InternalEList<? extends EObject> values, EStructuralFeature f) {
-		doc.startElement(getFeatureWrapperQName(f));
-		saveEReferenceReferenced0100Many(values, f);
-		doc.endElement();
+		if (!savedFormulaExpressionFeatures.contains(f)) {
+			doc.startElement(getFeatureWrapperQName(f));
+			saveEReferenceReferenced0100Many(values, f);
+			doc.endElement();
+		}
 	}
 
 	@Override
@@ -1840,6 +1870,213 @@ public class XMLPersistenceMappingSaveImpl extends XMLSaveImpl {
 		} else {
 			super.saveElement(o, f);
 		}
+	}
+
+	// == The followings are for saving mixed feature
+	/**
+	 * Does the same as {@link ExtendedXMLSaveImpl#saveElementFeatureMap(EObject, EStructuralFeature)}, except that it
+	 * pass the owner object to the #saveFeatureMapElementReference
+	 * 
+	 * @param object
+	 *            The {@link EObject root object} whose comments are to be saved.
+	 * @see org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl#saveElementFeatureMap(org.eclipse.emf.ecore.EObject,
+	 *      org.eclipse.emf.ecore.EStructuralFeature)
+	 * @see #saveTopCommentsAndProcessingInstructions(EObject)
+	 */
+	@Override
+	protected boolean saveElementFeatureMap(EObject object, EStructuralFeature feature) {
+		@SuppressWarnings("unchecked")
+		List<? extends FeatureMap.Entry> values = (List<? extends FeatureMap.Entry>) helper.getValue(object, feature);
+		int size = values.size();
+
+		// initial indentation for root element
+
+		if (object == root && !toDOM) {
+			// If root doesn't contain any text (i.e. indentation) or other XML feature enable indentation by overriding
+			// the mixed flag to ensure that initially created files have proper indentation.
+
+			boolean overrideMixed = true;
+
+			for (int i = 0; i < size; i++) {
+				FeatureMap.Entry entry = values.get(i);
+				EStructuralFeature entryFeature = entry.getEStructuralFeature();
+				if (entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION
+						|| entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT
+						|| entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA
+						|| entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT) {
+					overrideMixed = false;
+					break;
+				}
+			}
+
+			if (overrideMixed) {
+				doc.setMixed(false);
+			}
+		}
+
+		// used to keep track of role wrappers which have been saved already
+		Set<EStructuralFeature> savedRoleWrappedFeature = new HashSet<EStructuralFeature>();
+
+		for (int i = 0; i < size; i++) {
+			FeatureMap.Entry entry = values.get(i);
+			EStructuralFeature entryFeature = entry.getEStructuralFeature();
+			Object value = entry.getValue();
+			if (entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION) {
+				ProcessingInstruction pi = (ProcessingInstruction) value;
+				String target = pi.getTarget();
+				String data = pi.getData();
+				if (escape != null && data != null) {
+					data = escape.convertLines(data);
+				}
+				if (!toDOM) {
+					doc.addProcessingInstruction(target, data);
+				} else {
+					currentNode.appendChild(document.createProcessingInstruction(target, data));
+				}
+			} else if (entryFeature instanceof EReference) {
+				if (savedRoleWrappedFeature.contains(entryFeature)) {
+					// skip saving features with a role wrapper were all values have already been saved
+					continue;
+				}
+
+				if (isFeatureWrapperElement(entryFeature)) {
+					// save all values for feature at once
+					FeatureMap featureMap = (FeatureMap) values;
+					EList<Object> wrappedValues = featureMap.list(entryFeature);
+					int wsize = wrappedValues.size();
+					String featureName = helper.getName(entryFeature);
+					doc.startElement(featureName);
+					for (int wi = 0; wi < wsize; wi++) {
+						InternalEObject wvalue = (InternalEObject) wrappedValues.get(wi);
+						if (wvalue != null) {
+							saveElement(wvalue, entryFeature);
+						}
+					}
+					doc.endElement();
+
+					// record the fact that all values have already been saved so that they maybe skipped later on
+					savedRoleWrappedFeature.add(entryFeature);
+				} else {
+					if (value == null) {
+						saveNil(object, entryFeature);
+					} else {
+						EReference referenceEntryFeature = (EReference) entryFeature;
+						if (referenceEntryFeature.isContainment()) {
+							saveElement((InternalEObject) value, entryFeature);
+						} else if (referenceEntryFeature.isResolveProxies()) {
+							saveFeatureMapElementReference(object, referenceEntryFeature, (EObject) value);
+						} else {
+							saveElementIDRef(object, (EObject) value, entryFeature);
+						}
+					}
+				}
+			} else {
+				if (entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT) {
+					String svalue = value.toString();
+					if (escape != null) {
+						svalue = escape.convertText(svalue);
+					}
+					if (!toDOM) {
+						doc.addText(svalue);
+					} else {
+						Node text = document.createTextNode(svalue);
+						currentNode.appendChild(text);
+						handler.recordValues(text, object, feature, entry);
+					}
+				} else if (entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA) {
+					String stringValue = value.toString();
+					if (escape != null) {
+						stringValue = escape.convertLines(stringValue);
+					}
+					if (!toDOM) {
+						doc.addCDATA(stringValue);
+					} else {
+						Node cdata = document.createCDATASection(stringValue);
+						currentNode.appendChild(cdata);
+						handler.recordValues(cdata, object, feature, entry);
+					}
+				} else if (entryFeature == XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT) {
+					String stringValue = value.toString();
+					if (escape != null) {
+						stringValue = escape.convertLines(stringValue);
+					}
+					if (!toDOM) {
+						doc.addComment(stringValue);
+					} else {
+						currentNode.appendChild(document.createComment(stringValue));
+					}
+				} else {
+					saveElement(object, value, entryFeature);
+				}
+			}
+		}
+		return size > 0;
+	}
+
+	protected boolean isFeatureWrapperElement(EStructuralFeature feature) {
+		String roleWrapperElement = EcoreUtil.getAnnotation(feature,
+				XMLPersistenceMappingExtendedMetaData.XML_PERSISTENCE_MAPPING_ANNOTATION_SOURCE_URI,
+				XMLPersistenceMappingExtendedMetaData.FEATURE_WRAPPER_ELEMENT);
+		if ("true".equals(roleWrapperElement)) { //$NON-NLS-1$
+			roleWrapperStructuralFeatures.put(feature, Boolean.TRUE);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	protected void saveFeatureMapElementReference(EObject owner, EReference feature, EObject object) {
+		if (extendedMetaData == null || extendedMetaData.getFeatureKind(feature) != ExtendedMetaData.ELEMENT_FEATURE) {
+			saveHref(object, feature);
+		} else {
+			saveElementReference(owner, feature, object);
+		}
+	}
+
+	// To be customized by users
+	protected void saveElementReference(EObject owner, EStructuralFeature structuralFeature, EObject remote) {
+		if (structuralFeature instanceof EReference) {
+			EReference reference = (EReference) structuralFeature;
+			String href = helper.getHREF(remote);
+			if (href.length() > 0) {
+				doc.startElement(getReferenceName(reference));
+				EClass eClass = remote.eClass();
+				if (XMLPersistenceMappingExtendedMetaData.TYPE_DECLARATION_ALWAYS == xmlPersistenceMappingExtendedMetaData
+						.getXMLTypeDeclarationStrategy(structuralFeature)) {
+					saveTypeAttribute(structuralFeature, eClass);
+					savedFormulaExpressionFeatures.add(structuralFeature);
+				} else {
+					EClass expectedType = (EClass) structuralFeature.getEType();
+					boolean shouldSaveType = saveTypeInfo ? xmlTypeInfo.shouldSaveType(eClass, expectedType, structuralFeature)
+							: eClass != expectedType;
+					if (shouldSaveType) {
+						saveTypeAttribute(structuralFeature, eClass);
+						savedFormulaExpressionFeatures.add(structuralFeature);
+					}
+				}
+
+				doc.endContentElement(href);
+
+			} else {
+				PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException("Cannot calculate absolute qualified name for element '" //$NON-NLS-1$
+						+ remote.toString() + "'. This happens most probably when this element is deleted and others objects still referencing it.")); //$NON-NLS-1$
+			}
+
+		}
+	}
+
+	/**
+	 * Builds a name for given reference.
+	 * 
+	 * @param reference
+	 *            The reference for which name will be returned.
+	 */
+	public String getReferenceName(EReference reference) {
+		String referenceName = ""; //$NON-NLS-1$
+		if (reference != null) {
+			referenceName = XMLPersistenceMappingExtendedMetaData.INSTANCE.getXMLName(reference);
+		}
+		return referenceName;
 	}
 
 }

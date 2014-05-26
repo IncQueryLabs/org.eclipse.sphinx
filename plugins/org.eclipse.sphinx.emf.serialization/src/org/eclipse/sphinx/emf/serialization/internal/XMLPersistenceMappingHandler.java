@@ -822,9 +822,11 @@ public class XMLPersistenceMappingHandler extends SAXXMLHandler {
 				if (null != proxy) {
 					handleProxy(proxy, resourceURI.toString() + "#" + text.toString()); //$NON-NLS-1$
 					objects.pop();
+					mixedTargets.pop();
 				} else {
 					// NOP: error already handled during startElement()
 				}
+
 				text = null;
 				currentState = STATE_HAS_SEEN_END_FEATURE_ELEMENT;
 				break;
@@ -915,6 +917,7 @@ public class XMLPersistenceMappingHandler extends SAXXMLHandler {
 				if (null != proxy) {
 					handleProxy(proxy, resourceURI.toString() + "#" + text.toString()); //$NON-NLS-1$
 					objects.pop();
+					mixedTargets.pop();
 				} else {
 					// NOP: error already handled during startElement
 				}
@@ -1018,6 +1021,7 @@ public class XMLPersistenceMappingHandler extends SAXXMLHandler {
 			case STATE_HAS_SEEN_START_CLASSIFIER_ELEMENT:
 				if (null != proxy) {
 					objects.pop();
+					mixedTargets.pop();
 					handleProxy(proxy, resourceURI.toString() + "#" + text.toString()); //$NON-NLS-1$
 				}
 
@@ -1119,6 +1123,7 @@ public class XMLPersistenceMappingHandler extends SAXXMLHandler {
 				if (null != proxy) {
 					handleProxy((InternalEObject) objects.peekEObject(), resourceURI.toString() + "#" + text.toString()); //$NON-NLS-1$
 					objects.pop();
+					mixedTargets.pop();
 				}
 				text = null;
 				currentState = STATE_HAS_SEEN_END_FEATURE_ELEMENT;
