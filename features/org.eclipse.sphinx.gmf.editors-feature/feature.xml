@@ -4,8 +4,8 @@
       label="%featureName"
       version="0.8.0.qualifier"
       provider-name="%providerName"
-      license-feature="org.eclipse.sphinx.license"
-      license-feature-version="0.0.0">
+      license-feature="org.eclipse.license"
+      license-feature-version="1.0.1.v20140414-1359">
 
    <description>
       %description
