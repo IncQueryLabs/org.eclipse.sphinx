@@ -51,7 +51,6 @@ import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.sphinx.emf.serialization.XMLPersistenceMappingExtendedMetaData;
 import org.eclipse.sphinx.emf.serialization.XMLPersistenceMappingExtendedMetaDataImpl;
 import org.eclipse.sphinx.emf.serialization.XMLPersistenceMappingResource;
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.w3c.dom.Node;
 
 // TODO: add javadoc with images
@@ -1876,7 +1875,7 @@ public class XMLPersistenceMappingSaveImpl extends XMLSaveImpl {
 	/**
 	 * Does the same as {@link ExtendedXMLSaveImpl#saveElementFeatureMap(EObject, EStructuralFeature)}, except that it
 	 * pass the owner object to the #saveFeatureMapElementReference
-	 * 
+	 *
 	 * @param object
 	 *            The {@link EObject root object} whose comments are to be saved.
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl#saveElementFeatureMap(org.eclipse.emf.ecore.EObject,
@@ -2058,16 +2057,15 @@ public class XMLPersistenceMappingSaveImpl extends XMLSaveImpl {
 				doc.endContentElement(href);
 
 			} else {
-				PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException("Cannot calculate absolute qualified name for element '" //$NON-NLS-1$
+				Activator.getPlugin().log(new RuntimeException("Cannot calculate absolute qualified name for element '" //$NON-NLS-1$
 						+ remote.toString() + "'. This happens most probably when this element is deleted and others objects still referencing it.")); //$NON-NLS-1$
 			}
-
 		}
 	}
 
 	/**
 	 * Builds a name for given reference.
-	 * 
+	 *
 	 * @param reference
 	 *            The reference for which name will be returned.
 	 */
