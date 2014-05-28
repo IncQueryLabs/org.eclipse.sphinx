@@ -9,10 +9,9 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
- *    
+ *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.resource;
 
 import org.eclipse.emf.ecore.EObject;
@@ -24,7 +23,7 @@ public interface ExtendedResourceSet extends ResourceSet {
 	 * Retrieves the {@linkplain EObject object} for specified {@link EObject proxy}. Allows to use provided
 	 * <code>contextObject</code> - i.e., the object referencing the proxy - to customize or optimize the way how the
 	 * resolution of the proxy is done.
-	 * 
+	 *
 	 * @param proxy
 	 *            The {@EObject proxy} to be resolved.
 	 * @param contextObject

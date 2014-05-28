@@ -13,7 +13,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.examples.hummingbird.ide.ui.wizards;
 
 import org.eclipse.core.resources.IFile;

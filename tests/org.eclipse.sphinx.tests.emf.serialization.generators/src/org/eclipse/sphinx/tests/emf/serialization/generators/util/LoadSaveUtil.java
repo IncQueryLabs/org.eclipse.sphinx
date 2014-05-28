@@ -8,7 +8,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   itemis - initial API and implementation
+ *     itemis - Initial API and implementation
+ *
+ * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.serialization.generators.util;
 

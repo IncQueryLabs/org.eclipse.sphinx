@@ -9,10 +9,9 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
- *    
+ *
  * </copyright>
  */
-
 package org.eclipse.sphinx.examples.uml2.ide.internal;
 
 import org.eclipse.emf.common.util.URI;
