@@ -55,4 +55,8 @@
          id="org.eclipse.sphinx.emf.serialization.generators"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.sphinx.emf.metamodelgen"
+         version="0.0.0"/>
+
 </feature>

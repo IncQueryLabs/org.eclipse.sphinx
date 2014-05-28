@@ -11,41 +11,43 @@
 		<module>../../tools/org.eclipse.sphinx.targets/${platform.version.name}</module>
 
 		<!-- Plug-ins -->
-		<module>../../plugins/org.eclipse.sphinx.emf</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.editors.forms</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.editors.forms.nebula</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.editors.forms</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.explorer</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.metamodelgen.ui</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.metamodelgen</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.mwe</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.serialization.generators</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.serialization</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.ui</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.validation</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.validation.bridge</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.validation.ui</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.workspace</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.validation</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.workspace.ui</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.workspace</module>
+		<module>../../plugins/org.eclipse.sphinx.emf</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.runtime.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.workspace</module>
-		<module>../../plugins/org.eclipse.sphinx.platform</module>
-		<module>../../plugins/org.eclipse.sphinx.platform.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.pde</module>
-		<module>../../plugins/org.eclipse.sphinx.xtend.typesystem.emf</module>
+		<module>../../plugins/org.eclipse.sphinx.platform.ui</module>
+		<module>../../plugins/org.eclipse.sphinx.platform</module>
 		<module>../../plugins/org.eclipse.sphinx.xtend.typesystem.emf.ui</module>
-		<module>../../plugins/org.eclipse.sphinx.xtendxpand</module>
+		<module>../../plugins/org.eclipse.sphinx.xtend.typesystem.emf</module>
 		<module>../../plugins/org.eclipse.sphinx.xtendxpand.ui</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.serialization</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.serialization.generators</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.serialization.generators.ui</module>
+		<module>../../plugins/org.eclipse.sphinx.xtendxpand</module>
 
 		<!-- Examples -->
 		<module>../../examples/org.eclipse.sphinx.examples.actions</module>
 		<module>../../examples/org.eclipse.sphinx.examples.codegen.xpand.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.common.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.explorer</module>
-		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.ide</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.ide.ui</module>
-		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10</module>
+		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.ide</module>
+		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.metamodelgen.ui</module>
+		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.metamodelgen</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10.edit</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10.ide.ui</module>
-		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20</module>
+		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.codegen.xpand</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.diagram.gmf</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.edit</module>
@@ -53,10 +55,11 @@
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.ide.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.transform.xtend</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.validation</module>
+		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20</module>
 		<module>../../examples/org.eclipse.sphinx.examples.tests.perf</module>
 		<module>../../examples/org.eclipse.sphinx.examples.transform.xtend.ui</module>
-		<module>../../examples/org.eclipse.sphinx.examples.uml2.ide</module>
 		<module>../../examples/org.eclipse.sphinx.examples.uml2.ide.ui</module>
+		<module>../../examples/org.eclipse.sphinx.examples.uml2.ide</module>
 		<module>../../examples/org.eclipse.sphinx.examples.validation.ui</module>
 
 		<!-- Tests -->
@@ -80,14 +83,15 @@
 
 		<!-- Features -->
 		<module>../../features/org.eclipse.sphinx.core-feature</module>
-		<module>../../features/org.eclipse.sphinx.emf.serialization-feature</module>
-		<module>../../features/org.eclipse.sphinx.emf.serialization.generators-feature</module>
-		<module>../../features/org.eclipse.sphinx.pde-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms.nebula-feature</module>
+		<module>../../features/org.eclipse.sphinx.emf.metamodelgen-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.navigators-feature</module>
+		<module>../../features/org.eclipse.sphinx.emf.serialization-feature</module>
+		<module>../../features/org.eclipse.sphinx.emf.serialization.generators-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.validation-feature</module>
 		<module>../../features/org.eclipse.sphinx.gmf.editors-feature</module>
+		<module>../../features/org.eclipse.sphinx.pde-feature</module>
 		<module>../../features/org.eclipse.sphinx.xtendxpand-feature</module>
 
 		<module>../../features/org.eclipse.sphinx.examples.core-feature</module>
@@ -99,10 +103,10 @@
 
 		<module>../../features/org.eclipse.sphinx-feature</module>
 		<module>../../features/org.eclipse.sphinx.doc-feature</module>
-		<module>../../features/org.eclipse.sphinx.sdk-feature</module>
+		<module>../../features/org.eclipse.sphinx.examples-feature</module>
 		<module>../../features/org.eclipse.sphinx.nebula-feature</module>
 		<module>../../features/org.eclipse.sphinx.nebula.sdk-feature</module>
-		<module>../../features/org.eclipse.sphinx.examples-feature</module>
+		<module>../../features/org.eclipse.sphinx.sdk-feature</module>
 		<module>../../features/org.eclipse.sphinx.testutils-feature</module>
 		<module>../../features/org.eclipse.sphinx.thirdparty-feature</module>
 

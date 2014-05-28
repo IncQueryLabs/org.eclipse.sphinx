@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [436112] Rework XML Persistence Mapping & XSD generation menu items to make them less prominent in the Eclipse UI
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.actions.providers;
@@ -19,11 +20,12 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.sphinx.examples.actions.ProjectStatisticsAction;
+import org.eclipse.sphinx.examples.common.ui.actions.providers.AbstractSphinxExampleActionProvider;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 
 /**
  * {@link AbstractSphinxExampleActionProvider Provider} for Sphinx example actions.
- * 
+ *
  * @since 0.7.0
  */
 public class SphinxExampleActionProvider extends AbstractSphinxExampleActionProvider {

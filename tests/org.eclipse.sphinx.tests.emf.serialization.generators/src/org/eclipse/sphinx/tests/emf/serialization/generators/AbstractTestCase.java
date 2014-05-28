@@ -9,13 +9,13 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [436112] Rework XML Persistence Mapping & XSD generation menu items to make them less prominent in the Eclipse UI
  *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.serialization.generators;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -96,8 +96,7 @@ public abstract class AbstractTestCase extends org.eclipse.sphinx.testutils.Abst
 		for (int i = 0; i < metamodel.size(); i++) {
 			java.net.URI xsdFileURI = getTestFileAccessor().getWorkingFileURI(getSchemaFileName(metamodel.get(i).getName()));
 			URI emfXsdFileURI = getTestFileAccessor().convertToEMFURI(xsdFileURI);
-			File schemaFile = new File(xsdFileURI.getPath());
-			final Ecore2XSDGenerator ecore2XSDGenerator = new Ecore2XSDGenerator(emfXsdFileURI, schemaFile, metamodel.get(i));
+			final Ecore2XSDGenerator ecore2XSDGenerator = new Ecore2XSDGenerator(emfXsdFileURI, metamodel.get(i));
 			ecore2XSDGenerator.run(new NullProgressMonitor());
 		}
 
