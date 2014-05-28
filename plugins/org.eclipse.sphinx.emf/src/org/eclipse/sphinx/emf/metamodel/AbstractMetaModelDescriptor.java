@@ -41,7 +41,7 @@ import org.eclipse.sphinx.platform.util.ReflectUtil;
  * <code>IMetaModelDescriptor</code> interface.
  * <p>
  * Extends {@linkplain PlatformObject} in order to be adaptable by Eclipse adapters mechanism.
- * 
+ *
  * @see IMetaModelDescriptor
  * @since 0.7.0
  */
@@ -80,7 +80,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	 * abstract meta-model family (without an implementation backing it) or a meta-model (backed by an implementation)
 	 * which exists only in one version and consists of only one {@link EPackage}, i.e., a
 	 * {@link AbstractMetaModelDescriptor#getRootEPackage() root EPackage} without sub-packages.
-	 * 
+	 *
 	 * @param identifier
 	 *            The identifier of the described meta-model. A unique identifier used for referencing the meta-model
 	 *            from within an extension point.
@@ -98,7 +98,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	 * Creates a descriptor for a meta-model. This constructor is to be used if the descriptor shall describe a
 	 * meta-model (backed by an implementation) which exists in only one version and consists of multiple
 	 * {@link EPackage}s.
-	 * 
+	 *
 	 * @param identifier
 	 *            The identifier of the described meta-model. A unique identifier used for referencing the meta-model
 	 *            from within an extension point.
@@ -129,7 +129,7 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	/**
 	 * Creates a descriptor for a concrete version of a meta-model. The constructor is to be used if the descriptor
 	 * shall describe a concrete version of a meta-model (backed by an implementation).
-	 * 
+	 *
 	 * @param identifier
 	 *            The identifier of the described meta-model. A unique identifier used for referencing the meta-model
 	 *            from within an extension point.
@@ -411,9 +411,20 @@ public abstract class AbstractMetaModelDescriptor extends PlatformObject impleme
 	@Override
 	public abstract String getDefaultContentTypeId();
 
+	/*
+	 * @see org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor#addAssociatedContentTypeId(java.lang.String)
+	 */
+	@Override
+	public void addAssociatedContentTypeId(String contentTypeId) {
+		if (fContentTypeIds == null) {
+			initContentTypeIds();
+		}
+		fContentTypeIds.add(contentTypeId);
+	}
+
 	/**
 	 * Returns the content type identifier exposed on the metamodel's {@link #getRootEPackage() root EPackage}, if any.
-	 * 
+	 *
 	 * @return The content type identifier of the metamodel's {@link #getRootEPackage() root EPackage}, or and empty
 	 *         string if no such is available.
 	 * @deprecated This method could be used to implement {@link #getDefaultContentTypeId()}. It is however not

@@ -104,6 +104,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 */
 	private static final String EXTP_META_MODEL_DESCRIPTORS = "org.eclipse.sphinx.emf.metaModelDescriptors"; //$NON-NLS-1$
 	private static final String NODE_DESCRIPTOR = "descriptor"; //$NON-NLS-1$
+	private static final String NODE_CONTENT_TYPE_ASSOCIATION = "contentTypeAssociation"; //$NON-NLS-1$
 	private static final String NODE_TARGET_DESCRIPTOR = "targetDescriptorProvider";//$NON-NLS-1$
 	private static final String NODE_CONTENT_TYPE = "contentType";//$NON-NLS-1$
 	private static final String NODE_FILE_TYPE = "fileType";//$NON-NLS-1$
@@ -111,6 +112,8 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	private static final String ATTR_EXTENSION = "extension";//$NON-NLS-1$
 	private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
 	private static final String ATTR_OVERRIDE = "override";//$NON-NLS-1$
+	private static final String ATTR_METAMODEL_DESCRIPTOR_ID = "metaModelDescriptorId"; //$NON-NLS-1$
+	private static final String ATTR_CONTENT_TYPE_ID = "contentTypeId"; //$NON-NLS-1$
 
 	/**
 	 * The namespace pattern for OMG-defined XMI formats.
@@ -218,6 +221,31 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 								throw new RuntimeException(NLS.bind(Messages.error_mmDescriptorIdentifierNotEqual, id, mmDescriptor.getIdentifier()));
 							}
 							addDescriptor(mmDescriptor);
+						}
+					} catch (Exception ex) {
+						PlatformLogUtil.logAsError(Activator.getDefault(), ex);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Reads contributions to <em>Associated Content Type</em> of <em>Meta-Model Descriptor</em> extension point.
+	 */
+	private void readAssociatedContentTypeIds() {
+		IExtensionRegistry extensionRegistry = getExtensionRegistry();
+		if (extensionRegistry != null) {
+			IExtension[] extensions = extensionRegistry.getExtensionPoint(EXTP_META_MODEL_DESCRIPTORS).getExtensions();
+			for (IExtension extension : extensions) {
+				IConfigurationElement[] configElements = extension.getConfigurationElements();
+				for (IConfigurationElement configElement : configElements) {
+					try {
+						if (NODE_CONTENT_TYPE_ASSOCIATION.equals(configElement.getName())) {
+							String mmDescriptorId = configElement.getAttribute(ATTR_METAMODEL_DESCRIPTOR_ID);
+							String contentTypeId = configElement.getAttribute(ATTR_CONTENT_TYPE_ID);
+							IMetaModelDescriptor mmDescriptor = getDescriptor(mmDescriptorId);
+							mmDescriptor.addAssociatedContentTypeId(contentTypeId);
 						}
 					} catch (Exception ex) {
 						PlatformLogUtil.logAsError(Activator.getDefault(), ex);
@@ -1290,6 +1318,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 			// already set isInitialized to true before actual initializaton to avoid infinite recursion
 			isInitialized = true;
 			readContributedDescriptors();
+			readAssociatedContentTypeIds();
 			readContributedTargetMetaModelDescriptorProviders();
 		}
 	}

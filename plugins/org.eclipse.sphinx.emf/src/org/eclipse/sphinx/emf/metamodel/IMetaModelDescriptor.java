@@ -34,14 +34,14 @@ import org.eclipse.emf.ecore.EPackage;
  * {@linkplain IMetaModelDescriptor} implementation describing the meta-model family.
  * <p>
  * Implementations of this interface shall be immutable.
- * 
+ *
  * @since 0.7.0
  */
 public interface IMetaModelDescriptor {
 
 	/**
 	 * The string pattern used to create the label of this meta-model descriptor.
-	 * 
+	 *
 	 * @since 0.7.0
 	 */
 	String LABEL_PATTERN = "%1s (%2s)"; //$NON-NLS-1$
@@ -58,7 +58,7 @@ public interface IMetaModelDescriptor {
 	 * Namespace URI is revision dependent since when the minor version of a release changes, the namespace URI changes.
 	 * As a consequence, it is more safe to refer a meta-model descriptor with its identifier (e.g. in a project's
 	 * preferences).
-	 * 
+	 *
 	 * @return The identifier of the described meta-model.
 	 * @since 0.7.0
 	 */
@@ -68,7 +68,7 @@ public interface IMetaModelDescriptor {
 	 * Returns the namespace {@link URI} of the described meta-model. The namespace {@link URI} is a unique identifier
 	 * used to link the meta-model description to registered EMF artifacts like the root
 	 * {@link org.eclipse.emf.ecore.EPackage} and the {@link EFactory}.
-	 * 
+	 *
 	 * @return The namespace {@link URI} of the described meta-model.
 	 * @since 0.7.0
 	 */
@@ -78,7 +78,7 @@ public interface IMetaModelDescriptor {
 	 * Returns the namespace (as a string) of the described meta-model. The namespace is a unique identifier used to
 	 * link the meta-model description to registered EMF artifacts like the root {@link org.eclipse.emf.ecore.EPackage}
 	 * and the {@link EFactory}.
-	 * 
+	 *
 	 * @return The namespace of the described meta-model under a string format.
 	 * @since 0.7.0
 	 */
@@ -87,7 +87,7 @@ public interface IMetaModelDescriptor {
 	/**
 	 * Returns the name of the described meta-model. The name of the meta-model is a human readable identifier which can
 	 * be used for user interaction.
-	 * 
+	 *
 	 * @return The name of the described meta-model.
 	 * @since 0.7.0
 	 */
@@ -98,7 +98,7 @@ public interface IMetaModelDescriptor {
 	 * multiple implementations of different versions of the same meta-model exist each of them is described by a
 	 * version-specific meta-model descriptor. In this case, the base meta-model encompasses the common aspects of all
 	 * meta-model versions and the descriptor of it, if there is any, is what is returned by this method.
-	 * 
+	 *
 	 * @return The descriptor of base meta-model behind the described meta-model or <code>null</code> if the described
 	 *         meta-model has no base meta-model.
 	 */
@@ -107,7 +107,7 @@ public interface IMetaModelDescriptor {
 	/**
 	 * Returns the scheme of the custom URIs that the described meta-model uses in cross-document references and as
 	 * proxy URIs.
-	 * 
+	 *
 	 * @return The scheme of the custom URIs used by the described meta-model or <code>null</code> if it uses standard
 	 *         URIs (e.g., platform:/resource, file:, etc.) instead.
 	 */
@@ -118,7 +118,7 @@ public interface IMetaModelDescriptor {
 	 * meta-model versions. If the IMetaModelDescriptor does not describe a concrete version of a meta-model or no
 	 * MetaModelVersionData has been provided as there is only one version of the meta-model <code>null</code> is
 	 * returned.
-	 * 
+	 *
 	 * @return The ordinal of the described meta-model or <code>null</code> if the described meta-model is not a
 	 *         concrete meta-model version.
 	 * @since 0.7.0
@@ -131,7 +131,7 @@ public interface IMetaModelDescriptor {
 	 * Returns the namespace pattern for the EPackages associated of with the described meta-model. The pattern is used
 	 * to resolve the EPackages which are associated with the meta-model described. Any registered EPackage with a
 	 * namespace matching the pattern is considered to be associated with the described meta-model.
-	 * 
+	 *
 	 * @return The pattern describing all EPackages associated with the meta-model described.
 	 * @since 0.7.0
 	 * @deprecated use {@link IMetaModelDescriptor#matchesEPackageNsURIPattern(String)} instead
@@ -144,7 +144,7 @@ public interface IMetaModelDescriptor {
 	 * described meta-model. The pattern is used to resolve the EPackages which are associated with the meta-model
 	 * described. Any registered EPackage with a namespace matching the pattern is considered to be associated with the
 	 * described meta-model.
-	 * 
+	 *
 	 * @return true if the passed in URI matches the namespace pattern for the EPackages associated of with the
 	 *         described meta-model.
 	 * @since 0.7.0
@@ -154,7 +154,7 @@ public interface IMetaModelDescriptor {
 	/**
 	 * Returns the set of {@link org.eclipse.emf.ecore.EPackage}s which are associated with the described
 	 * {@link IMetaModelDescriptor meta-model}.
-	 * 
+	 *
 	 * @return The EPackages associated with the described meta-model.
 	 */
 	Collection<EPackage> getEPackages();
@@ -163,7 +163,7 @@ public interface IMetaModelDescriptor {
 	 * Returns the root {@link org.eclipse.emf.ecore.EPackage} which is associated with the described
 	 * {@link IMetaModelDescriptor meta-model}. An EPackage is considered to be a meta-model's root EPackage if it has
 	 * the same namespace as the latter.
-	 * 
+	 *
 	 * @return The root EPackage associated with the described meta-model.
 	 * @since 0.7.0
 	 */
@@ -180,7 +180,7 @@ public interface IMetaModelDescriptor {
 	 * Determines if the top-level {@link org.eclipse.emf.ecore.EPackage} associated with the described meta-model is
 	 * registered. The {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} is to be consolidated if the
 	 * top-level package is actually registered (see also {@link IMetaModelDescriptor#getRootEPackage()}).
-	 * 
+	 *
 	 * @return <code>true</true> if the associated top-level EPackage is registered else <code>false</code>;
 	 * @since 0.7.0
 	 * @deprecated Use #getERootPackage() and test if result is not <code>null</code> instead. Rationale: the added
@@ -196,7 +196,7 @@ public interface IMetaModelDescriptor {
 	 * {@link IMetaModelDescriptor meta-model}. An EFactory is considered to be a meta-model's root EFactory if the
 	 * {@link org.eclipse.emf.ecore.EPackage} it belongs to is the meta-model's {@link #getRootEPackage() root EPackage}
 	 * .
-	 * 
+	 *
 	 * @return The root EFactory associated with the described meta-model.
 	 * @since 0.7.0
 	 * @see #getRootEPackage()
@@ -213,7 +213,7 @@ public interface IMetaModelDescriptor {
 	/**
 	 * Returns the identifiers of all {@link org.eclipse.core.runtime.content.IContentType content type}s which are
 	 * associated with the described meta-model.
-	 * 
+	 *
 	 * @return The identifiers of the content types associated with the described meta-model.
 	 * @since 0.7.0
 	 */
@@ -227,7 +227,7 @@ public interface IMetaModelDescriptor {
 	 * generator model options for the {@link #getERootPackage root package} of the described meta-model and is
 	 * available on the {@link #getERootPackage root package}'s static #eCONTENT_TYPE field.
 	 * </p>
-	 * 
+	 *
 	 * @return The identifier of the default content type for the described meta-model, or an empty string if no such is
 	 *         available.
 	 * @since 0.7.0
@@ -238,7 +238,7 @@ public interface IMetaModelDescriptor {
 	/**
 	 * Returns a collection of namespace {@link URI}s which refer to older but all the same compatible versions of the
 	 * meta-model described by this {@link IMetaModelDescriptor meta-model descriptor}.
-	 * 
+	 *
 	 * @return A list of compatible namespace {@link URI}s.
 	 * @see #getNamespaceURI()
 	 * @since 0.7.0
@@ -248,7 +248,7 @@ public interface IMetaModelDescriptor {
 	/**
 	 * Returns a collection of content type ids which are supported by older but all the same compatible versions of the
 	 * meta-model described by this {@link IMetaModelDescriptor meta-model descriptor}.
-	 * 
+	 *
 	 * @return A list of compatible content type ids.
 	 * @see #getContentTypeIds()
 	 * @since 0.7.0
@@ -256,10 +256,18 @@ public interface IMetaModelDescriptor {
 	List<String> getCompatibleContentTypeIds();
 
 	/**
+	 * Adds associated content type to the meta-model described by this {@link IMetaModelDescriptor meta-model
+	 * descriptor}.
+	 * 
+	 * @param contentTypeId
+	 */
+	void addAssociatedContentTypeId(String contentTypeId);
+
+	/**
 	 * Returns a collection of {@link IMetaModelDescriptor meta-model descriptor}s identifying resource versions which
 	 * are older but all the same compatible with the meta-model described by this {@link IMetaModelDescriptor
 	 * meta-model descriptor}.
-	 * 
+	 *
 	 * @return A list of compatible resource version {@link IMetaModelDescriptor descriptor}s.
 	 * @since 0.7.0
 	 */

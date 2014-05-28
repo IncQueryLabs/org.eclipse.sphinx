@@ -20,6 +20,7 @@
          <sequence>
             <choice minOccurs="1" maxOccurs="unbounded">
                <element ref="descriptor"/>
+               <element ref="contentTypeAssociation"/>
                <element ref="targetDescriptorProvider"/>
             </choice>
          </sequence>
@@ -67,6 +68,25 @@
                <appInfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.sphinx.emf.metamodel.AbstractMetaModelDescriptor:org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor"/>
                </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="contentTypeAssociation">
+      <complexType>
+         <attribute name="metaModelDescriptorId" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="contentTypeId" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
             </annotation>
          </attribute>
       </complexType>
