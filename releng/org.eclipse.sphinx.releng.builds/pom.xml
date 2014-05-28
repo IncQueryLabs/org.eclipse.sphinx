@@ -79,7 +79,6 @@
 		<module>../../docs/org.eclipse.sphinx.doc.isv</module>
 
 		<!-- Features -->
-		<module>../../features/org.eclipse.sphinx.license-feature</module>
 		<module>../../features/org.eclipse.sphinx.core-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.serialization-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.serialization.generators-feature</module>
