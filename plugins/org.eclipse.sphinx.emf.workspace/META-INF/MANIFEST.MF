@@ -22,4 +22,5 @@ Export-Package: org.eclipse.sphinx.emf.workspace,
  org.eclipse.sphinx.emf.workspace.loading,
  org.eclipse.sphinx.emf.workspace.referentialintegrity,
  org.eclipse.sphinx.emf.workspace.saving,
- org.eclipse.sphinx.emf.workspace.syncing
+ org.eclipse.sphinx.emf.workspace.syncing,
+ org.eclipse.sphinx.emf.workspace.util
