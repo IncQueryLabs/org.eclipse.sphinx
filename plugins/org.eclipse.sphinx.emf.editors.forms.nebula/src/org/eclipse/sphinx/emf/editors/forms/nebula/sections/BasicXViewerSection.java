@@ -1,16 +1,17 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2012-2014 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [434230] ParseException when trying to sort BasicXViewerSection for columns displaying Date-typed EAttributes
- *     
+ *     itemis - [436313] Enable BasicXViewerSection also to be used for EReference-based properties
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.editors.forms.nebula.sections;
@@ -166,7 +167,7 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 	 * Date#toString() for details}. Clients may override and return {@link DateFormat} .getXxxInstance() or new
 	 * {@link SimpleDateFormat} ("xxx") as appropriate.
 	 * </p>
-	 * 
+	 *
 	 * @return The date format to be used for sorting Date-typed values displayed by this viewer.
 	 * @see DateFormat
 	 * @see SimpleDateFormat
@@ -190,7 +191,7 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 			}
 		};
 
-		// Adds editing support
+		// Add editing support
 		XViewerEditAdapter xViewerEditAdapter = createXViewerEditAdapter();
 		if (xViewerEditAdapter != null) {
 			xViewer.setXViewerEditAdapter(xViewerEditAdapter);
@@ -216,11 +217,9 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 	protected void registerColumns(XViewerFactory xViewerFactory) {
 		List<IItemPropertyDescriptor> propertyDescriptors = formPage.getItemDelegator().getPropertyDescriptors(exampleValue);
 		for (IItemPropertyDescriptor propertyDescriptor : propertyDescriptors) {
-			if (propertyDescriptor.getFeature(exampleValue) instanceof EAttribute) {
-				xViewerFactory.registerColumns(new XViewerColumn(propertyDescriptor.getId(exampleValue).toString(), propertyDescriptor
-						.getDisplayName(exampleValue), 50, SWT.LEFT, true, getSortDataType(propertyDescriptor, exampleValue), false,
-						propertyDescriptor.getDescription(exampleValue)));
-			}
+			xViewerFactory.registerColumns(new XViewerColumn(propertyDescriptor.getId(exampleValue).toString(), propertyDescriptor
+					.getDisplayName(exampleValue), 100, SWT.LEFT, true, getSortDataType(propertyDescriptor, exampleValue), false, propertyDescriptor
+					.getDescription(exampleValue)));
 		}
 	}
 
