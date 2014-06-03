@@ -11,6 +11,7 @@
  *     itemis - Initial API and implementation
  *     itemis - [434230] ParseException when trying to sort BasicXViewerSection for columns displaying Date-typed EAttributes
  *     itemis - [436313] Enable BasicXViewerSection also to be used for EReference-based properties
+ *     itemis - [436429] Enable custom layout data to be passed to BasicXViewerSection
  *
  * </copyright>
  */
@@ -58,8 +59,8 @@ import org.eclipse.ui.forms.widgets.Section;
 public class BasicXViewerSection extends AbstractViewerFormSection {
 
 	protected EObject exampleValue;
-
 	protected XViewerFactory xViewerFactory;
+	protected GridData layoutData;
 
 	public BasicXViewerSection(AbstractFormPage formPage, Object sectionInput, EObject exampleValue) {
 		this(formPage, sectionInput, exampleValue, Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
@@ -85,6 +86,17 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 		this.xViewerFactory = xViewerFactory;
 	}
 
+	public GridData getLayoutData() {
+		if (layoutData == null) {
+			layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		}
+		return layoutData;
+	}
+
+	public void setLayoutData(GridData layoutData) {
+		this.layoutData = layoutData;
+	}
+
 	@Override
 	protected int getNumberOfColumns() {
 		return 1;
@@ -105,9 +117,7 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 		// Create table viewer
 		XViewer xViewer = createXViewer(sectionClient, xViewerFactory);
 		viewer = xViewer;
-		GridData layoutData = new GridData(GridData.FILL_BOTH);
-		layoutData.minimumWidth = 640;
-		xViewer.getTree().setLayoutData(layoutData);
+		xViewer.getTree().setLayoutData(getLayoutData());
 
 		// Provide table content
 		xViewer.setContentProvider(createContentProvider());
