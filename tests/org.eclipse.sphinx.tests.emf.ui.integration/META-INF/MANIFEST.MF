@@ -8,7 +8,8 @@ Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.sphinx.emf.ui,
  org.eclipse.sphinx.emf.editors.forms,
- org.eclipse.sphinx.testutils.integration.referenceworkspace
+ org.eclipse.sphinx.testutils.integration.referenceworkspace,
+ org.eclipse.equinox.event
 Export-Package: org.eclipse.sphinx.tests.emf.ui.integration.internal;x-internal:=true,
  org.eclipse.sphinx.tests.emf.ui.integration.util,
  org.eclipse.sphinx.tests.emf.ui.integration.util.editors
