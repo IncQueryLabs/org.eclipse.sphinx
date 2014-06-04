@@ -11,5 +11,6 @@
 	<groupId>org.eclipse.sphinx.targets</groupId>
 	<artifactId>juno</artifactId>
 	<version>0.8.0-SNAPSHOT</version>
+	<name>org.eclipse.sphinx.targets.juno</name>
 	<packaging>eclipse-target-definition</packaging>
 </project>

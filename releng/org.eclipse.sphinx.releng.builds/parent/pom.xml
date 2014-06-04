@@ -9,7 +9,6 @@
 	<artifactId>org.eclipse.sphinx.releng.parent</artifactId>
 	<version>0.8.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>Sphinx Parent</name>
 	<url>http://www.eclipse.org/sphinx</url>
 	<description>Integrated modeling tool platform that eases the development of IDE-like tool support for modeling languages used in software and systems development</description>
 	<licenses>
