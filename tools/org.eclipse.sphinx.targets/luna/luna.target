@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
 
-<target name="Sphinx Luna Target" sequenceNumber="3">
+<target name="Sphinx Luna Target" sequenceNumber="8">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="4.4.0.I20140528-2000"/>
@@ -19,7 +19,7 @@
 <unit id="org.eclipse.gmf.tooling.feature.group" version="3.2.0.201405070759"/>
 <unit id="org.eclipse.uml2.sdk.feature.group" version="5.0.0.v20140602-0749"/>
 <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.6.0.v201405062148-7H7NFm0DxumWv9-7bhgNooiVMQ_TBruLpRz012TF"/>
-<unit id="org.eclipse.xpand.sdk.feature.group" version="2.0.0.v201405200738"/>
+<unit id="org.eclipse.xpand.sdk.feature.group" version="2.0.0.v201406030414"/>
 <unit id="org.eclipse.xsd.sdk.feature.group" version="2.10.0.v20140519-0339"/>
 <unit id="org.eclipse.xtext.xbase.lib.feature.group" version="2.6.0.v201405210727"/>
 <repository location="http://download.eclipse.org/releases/staging"/>
