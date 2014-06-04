@@ -36,7 +36,6 @@ Contributors:
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
-				<version>0.19.0</version>
 				<configuration>
 					<includes>
 						<include>**/*Tests.class</include>
