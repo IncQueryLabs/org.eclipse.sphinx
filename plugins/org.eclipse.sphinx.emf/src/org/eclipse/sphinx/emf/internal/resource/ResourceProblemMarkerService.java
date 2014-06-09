@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2008-2012 See4sys, BMW Car IT and others.
+ * Copyright (c) 2008-2014 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors: 
  *     See4sys - Initial API and implementation
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
+ *     itemis - [434954] Hook for overwriting conversion of EMF Diagnostics to IMarkers
  * 
  * </copyright>
  */
@@ -34,11 +35,10 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.Resource.Diagnostic;
 import org.eclipse.emf.ecore.xmi.XMIException;
+import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.Activator;
-import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.resource.IXMLMarker;
@@ -49,7 +49,6 @@ import org.eclipse.sphinx.emf.resource.XMLWellformednessException;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.resources.MarkerJob;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
-import org.xml.sax.SAXParseException;
 
 /**
  * Provides methods for analyzing {@link Resource#getErrors() errors} and {@link Resource#getWarnings() warnings} of
@@ -137,10 +136,6 @@ public class ResourceProblemMarkerService {
 	 * @param monitor
 	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
 	 *            desired.
-	 * @see IXMLMarker#XML_WELLFORMEDNESS_PROBLEM
-	 * @see IXMLMarker#XML_VALIDITY_PROBLEM
-	 * @see IXMLMarker#XML_INTEGRITY_PROBLEM
-	 * @see #PROXY_URI_INTEGRITY_PROBLEM
 	 * @see IMarker#PROBLEM
 	 */
 	public void updateProblemMarkers(final Map<IFile, Exception> filesWithErrors, final IProgressMonitor monitor) {
@@ -157,15 +152,12 @@ public class ResourceProblemMarkerService {
 				try {
 					// Remove old problem makers
 					if (file.isAccessible()) {
-						MarkerJob.INSTANCE.addDeleteMarkerTask(file, IMarker.PROBLEM);
-						MarkerJob.INSTANCE.addDeleteMarkerTask(file, IXMLMarker.XML_WELLFORMEDNESS_PROBLEM);
-						MarkerJob.INSTANCE.addDeleteMarkerTask(file, IXMLMarker.XML_VALIDITY_PROBLEM);
-						MarkerJob.INSTANCE.addDeleteMarkerTask(file, IXMLMarker.XML_INTEGRITY_PROBLEM);
+						getResourceProblemMarkerFactory(file).deleteMarkers(file);
 					}
 
 					Exception error = filesWithErrors.get(file);
-					if (error instanceof XMIException) {
-						createProblemMarkerForDiagnostic(file, null, (XMIException) error, IMarker.SEVERITY_ERROR);
+					if (error instanceof Resource.Diagnostic) {
+						createProblemMarkerForDiagnostic(file, null, (Resource.Diagnostic) error, IMarker.SEVERITY_ERROR);
 					} else {
 						createProblemMarkerForException(file, error, IMarker.SEVERITY_ERROR);
 					}
@@ -353,10 +345,7 @@ public class ResourceProblemMarkerService {
 					if (file != null) {
 						// Remove old problem makers related to resource loading and saving
 						if (file.isAccessible()) {
-							MarkerJob.INSTANCE.addDeleteMarkerTask(file, IMarker.PROBLEM);
-							MarkerJob.INSTANCE.addDeleteMarkerTask(file, IXMLMarker.XML_WELLFORMEDNESS_PROBLEM);
-							MarkerJob.INSTANCE.addDeleteMarkerTask(file, IXMLMarker.XML_VALIDITY_PROBLEM);
-							MarkerJob.INSTANCE.addDeleteMarkerTask(file, IXMLMarker.XML_INTEGRITY_PROBLEM);
+							getResourceProblemMarkerFactory(file).deleteMarkers(file);
 						}
 
 						ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
@@ -409,150 +398,47 @@ public class ResourceProblemMarkerService {
 		Assert.isNotNull(file);
 		Assert.isNotNull(diagnostic);
 
-		// Create marker attributes which are common for all problem types
-		Map<String, Object> attributes = new HashMap<String, Object>();
-		attributes.put(IMarker.TRANSIENT, Boolean.TRUE);
-		// Make sure that problem marker line is always 1 or greater because otherwise it would not be visible when
-		// underlying resource is opened in a text editor
-		int line = diagnostic.getLine();
-		attributes.put(IMarker.LINE_NUMBER, line > 0 ? line : 1);
-		attributes.put(IMarker.LOCATION, NLS.bind(Messages.attribute_line, line));
-		attributes.put(IMarker.SEVERITY, severity);
+		IResourceProblemMarkerFactory resourceProblemMarkerFactory = getResourceProblemMarkerFactory(file);
 
-		String type = IMarker.PROBLEM;
-
-		// Handle XMI exceptions
-		if (diagnostic instanceof XMIException) {
-			XMIException xmiException = (XMIException) diagnostic;
-
-			// Handle XML well-formedness exceptions
-			if (xmiException.getCause() instanceof XMLWellformednessException) {
-				String format = extendedResource != null ? (String) extendedResource.getProblemHandlingOptions().get(
-						ExtendedResource.OPTION_XML_WELLFORMEDNESS_PROBLEM_FORMAT_STRING) : null;
-				attributes.put(IMarker.MESSAGE, createProblemMarkerMessage(format, xmiException));
-
-				type = IXMLMarker.XML_WELLFORMEDNESS_PROBLEM;
-			}
-
-			// Handle schema validation exceptions
-			else if (xmiException.getCause() instanceof XMLValidityException || xmiException.getCause() instanceof SAXParseException
-					&& xmiException.getMessage().contains("cvc-")) { //$NON-NLS-1$
-				Integer resourceDefinedSeverity = extendedResource != null ? (Integer) extendedResource.getProblemHandlingOptions().get(
-						ExtendedResource.OPTION_XML_VALIDITY_PROBLEM_SEVERITY) : null;
-				if (resourceDefinedSeverity != null) {
-					attributes.put(IMarker.SEVERITY, resourceDefinedSeverity);
-				}
-
-				String format = extendedResource != null ? (String) extendedResource.getProblemHandlingOptions().get(
-						ExtendedResource.OPTION_XML_VALIDITY_PROBLEM_FORMAT_STRING) : null;
-				attributes.put(IMarker.MESSAGE, createProblemMarkerMessage(format, xmiException));
-
-				type = IXMLMarker.XML_VALIDITY_PROBLEM;
-			}
-
-			// Handle XML integrity exceptions
-			else if (xmiException instanceof XMLIntegrityException) {
-				attributes.put(IMarker.MESSAGE, createProblemMarkerMessage(xmiException));
-
-				type = IXMLMarker.XML_INTEGRITY_PROBLEM;
-			}
-
-			// Handle proxy URI integrity exceptions
-			else if (xmiException instanceof ProxyURIIntegrityException) {
-				attributes.put(IMarker.MESSAGE, createProblemMarkerMessage(xmiException));
-
-				type = PROXY_URI_INTEGRITY_PROBLEM;
-			}
-
-			// Handle other XMI exceptions
-			else {
-				attributes.put(IMarker.MESSAGE, createProblemMarkerMessage(xmiException));
-			}
-		} else {
-			// Handle ordinary diagnostics
-			attributes.put(IMarker.MESSAGE, diagnostic.getMessage());
-		}
-
-		// Does file exist?
-		if (file.isAccessible()) {
-			// Create new problem marker with previously calculated type and attributes
-			MarkerJob.INSTANCE.addCreateMarkerTask(file, type, attributes);
-		} else {
-			// Use error log for errors of non-existing files or in-memory resources
-			Integer effectiveSeverity = (Integer) attributes.get(IMarker.SEVERITY);
-			String effectiveMessage = (String) attributes.get(IMarker.MESSAGE);
-			if (effectiveSeverity == IMarker.SEVERITY_ERROR) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), effectiveMessage);
-			} else if (effectiveSeverity == IMarker.SEVERITY_WARNING) {
-				PlatformLogUtil.logAsWarning(Activator.getPlugin(), effectiveMessage);
-			} else if (effectiveSeverity == IMarker.SEVERITY_INFO) {
-				PlatformLogUtil.logAsInfo(Activator.getPlugin(), effectiveMessage);
-			}
-		}
+		resourceProblemMarkerFactory.createProblemMarker(file, diagnostic, severity, getProblemHandlingOptions(file));
 	}
 
 	protected void createProblemMarkerForException(IFile file, Exception exception, int severity) throws CoreException {
 		Assert.isNotNull(file);
 		Assert.isNotNull(exception);
 
-		Map<String, Object> attributes = new HashMap<String, Object>();
-		attributes.put(IMarker.TRANSIENT, Boolean.TRUE);
-		attributes.put(IMarker.LINE_NUMBER, 1);
-		attributes.put(IMarker.LOCATION, NLS.bind(Messages.attribute_line, 1));
-		attributes.put(IMarker.SEVERITY, severity);
-		attributes.put(IMarker.MESSAGE, createProblemMarkerMessage(exception));
+		IResourceProblemMarkerFactory resourceProblemMarkerFactory = getResourceProblemMarkerFactory(file);
 
-		String type = IMarker.PROBLEM;
-
-		// Does file exist?
-		if (file.isAccessible()) {
-			// Create new problem marker with previously calculated type and attributes
-			MarkerJob.INSTANCE.addCreateMarkerTask(file, type, attributes);
-		} else {
-			// Use error log for errors of non-existing files or in-memory resources
-			Integer effectiveSeverity = (Integer) attributes.get(IMarker.SEVERITY);
-			String effectiveMessage = (String) attributes.get(IMarker.MESSAGE);
-			if (effectiveSeverity == IMarker.SEVERITY_ERROR) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), effectiveMessage);
-			} else if (effectiveSeverity == IMarker.SEVERITY_WARNING) {
-				PlatformLogUtil.logAsWarning(Activator.getPlugin(), effectiveMessage);
-			} else if (effectiveSeverity == IMarker.SEVERITY_INFO) {
-				PlatformLogUtil.logAsInfo(Activator.getPlugin(), effectiveMessage);
-			}
-		}
+		resourceProblemMarkerFactory.createProblemMarker(file, exception, severity);
 	}
 
-	protected String createProblemMarkerMessage(Exception exception) {
-		Assert.isNotNull(exception);
-
-		StringBuilder msg = new StringBuilder();
-		msg.append(exception.getLocalizedMessage());
-		Throwable cause = exception.getCause();
-		if (cause != null) {
-			String causeMsg = cause.getLocalizedMessage();
-			if (causeMsg != null && causeMsg.length() > 0 && !msg.toString().contains(causeMsg)) {
-				msg.append(": "); //$NON-NLS-1$
-				msg.append(causeMsg);
+	private IResourceProblemMarkerFactory getResourceProblemMarkerFactory(IFile file) {
+		Map<Object, Object> problemHandlingOptions = getProblemHandlingOptions(file);
+		if (problemHandlingOptions != null) {
+			IResourceProblemMarkerFactory markerFactory = (IResourceProblemMarkerFactory) problemHandlingOptions
+					.get(ExtendedResource.OPTION_PROBLEM_MARKER_FACTORY);
+			if (markerFactory != null) {
+				return markerFactory;
 			}
 		}
-		return msg.toString();
+		return createResourceProblemMarkerFactory(file);
 	}
 
-	protected String createProblemMarkerMessage(String format, Exception exception) {
-		Assert.isNotNull(exception);
-
-		String msg = createProblemMarkerMessage(exception);
-		if (format == null) {
-			return msg;
+	private IResourceProblemMarkerFactory createResourceProblemMarkerFactory(IFile file) {
+		if (EcorePlatformUtil.getResource(file) instanceof XMLResource) {
+			return new XMLResourceProblemMarkerFactory();
 		}
+		return new BasicResourceProblemMarkerFactory();
+	}
 
-		if (format.contains("{0}")) { //$NON-NLS-1$
-			return NLS.bind(format, msg);
-		} else {
-			if (!format.endsWith(" ")) { //$NON-NLS-1$
-				format.concat(" "); //$NON-NLS-1$
+	private Map<Object, Object> getProblemHandlingOptions(IFile file) {
+		Resource resource = EcorePlatformUtil.getResource(file);
+		if (resource != null) {
+			ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
+			if (extendedResource != null) {
+				return extendedResource.getProblemHandlingOptions();
 			}
-			return format.concat(msg);
 		}
+		return null;
 	}
 }

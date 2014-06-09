@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * 
- * Copyright (c) 2012 BMW Car IT and others.
+ * Copyright (c) 2012-2014 BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  * 
  * Contributors: 
  *     BMW Car IT - Initial API and implementation
+ *     itemis - [434954] Hook for overwriting conversion of EMF Diagnostics to IMarkers
  * 
  * </copyright>
  */
@@ -42,33 +43,50 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
  */
 public class MarkerJob extends WorkspaceJob {
 
-	protected static abstract class MarkerTask {
-		IResource resource;
-		String type;
+	protected static abstract class MarkerTask extends MarkerDescriptor {
+		protected IResource resource;
+
+		public MarkerTask(IResource resource, String type) {
+			super(type);
+			this.resource = resource;
+		}
+
+		public MarkerTask(IResource resource, String type, Map<String, Object> attributes) {
+			super(type, attributes);
+			this.resource = resource;
+		}
 
 		abstract void execute() throws CoreException;
 	}
 
 	protected static class CreateMarkerTask extends MarkerTask {
-		int severity;
-		String message;
-		Map<String, Object> attributes;
+
+		public CreateMarkerTask(IResource resource, String type, Map<String, Object> attributes) {
+			super(resource, type, attributes);
+		}
+
+		public CreateMarkerTask(IResource resource, String type, int severity, String message) {
+			super(resource, type);
+			getAttributes().put(IMarker.SEVERITY, severity);
+			getAttributes().put(IMarker.MESSAGE, message);
+		}
 
 		@Override
 		void execute() throws CoreException {
-			IMarker m = resource.createMarker(type);
-			m.setAttribute(IMarker.SEVERITY, severity);
-			m.setAttribute(IMarker.MESSAGE, message);
-			if (attributes != null) {
-				m.setAttributes(attributes);
-			}
+			IMarker marker = resource.createMarker(getType());
+			marker.setAttributes(getAttributes());
 		}
 	}
 
 	protected static class DeleteMarkerTask extends MarkerTask {
+
+		public DeleteMarkerTask(IResource resource, String type) {
+			super(resource, type);
+		}
+
 		@Override
 		void execute() throws CoreException {
-			resource.deleteMarkers(type, false, IResource.DEPTH_ZERO);
+			resource.deleteMarkers(getType(), false, IResource.DEPTH_ZERO);
 		}
 	}
 
@@ -128,11 +146,7 @@ public class MarkerJob extends WorkspaceJob {
 	 * @see IResource#createMarker(String)
 	 */
 	public void addCreateMarkerTask(IResource resource, String type, int severity, String message) {
-		CreateMarkerTask cmt = new CreateMarkerTask();
-		cmt.resource = resource;
-		cmt.type = type;
-		cmt.severity = severity;
-		cmt.message = message;
+		CreateMarkerTask cmt = new CreateMarkerTask(resource, type, severity, message);
 		synchronized (taskQueue) {
 			taskQueue.add(cmt);
 		}
@@ -151,13 +165,24 @@ public class MarkerJob extends WorkspaceJob {
 	 * @see IResource#createMarker(String)
 	 */
 	public void addCreateMarkerTask(IResource resource, String type, Map<String, Object> attributes) {
-		CreateMarkerTask cmt = new CreateMarkerTask();
-		cmt.resource = resource;
-		cmt.type = type;
-		cmt.attributes = attributes;
+		CreateMarkerTask cmt = new CreateMarkerTask(resource, type, attributes);
 		synchronized (taskQueue) {
 			taskQueue.add(cmt);
 		}
+	}
+
+	/**
+	 * Adds a create marker task to the internal queue.
+	 * 
+	 * @param resource
+	 *            the resource for which the marker will be created
+	 * @param markerDescriptor
+	 *            the marker descriptor which holds the marker type and the marker attributes that will be passed to the
+	 *            newly created marker using {@link IMarker#setAttributes(Map)}.
+	 * @see IResource#createMarker(String)
+	 */
+	public void addCreateMarkerTask(IResource resource, MarkerDescriptor markerDescriptor) {
+		addCreateMarkerTask(resource, markerDescriptor.getType(), markerDescriptor.getAttributes());
 	}
 
 	/**
@@ -170,9 +195,7 @@ public class MarkerJob extends WorkspaceJob {
 	 * @see IResource#deleteMarkers(String, boolean, int)
 	 */
 	public void addDeleteMarkerTask(IResource resource, String type) {
-		DeleteMarkerTask dmt = new DeleteMarkerTask();
-		dmt.resource = resource;
-		dmt.type = type;
+		DeleteMarkerTask dmt = new DeleteMarkerTask(resource, type);
 		synchronized (taskQueue) {
 			taskQueue.add(dmt);
 		}

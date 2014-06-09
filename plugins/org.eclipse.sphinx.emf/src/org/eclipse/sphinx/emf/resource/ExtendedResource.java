@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2013 See4sys, itemis and others.
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  *     itemis - [427461] Add progress monitor to resource load options (useful for loading large models)
+ *     itemis - [434954] Hook for overwriting conversion of EMF Diagnostics to IMarkers
  *
  * </copyright>
  */
@@ -31,6 +32,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
+import org.eclipse.sphinx.emf.internal.resource.IResourceProblemMarkerFactory;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 
 /**
@@ -224,7 +226,7 @@ public interface ExtendedResource {
 	Map<Object, Object> getDefaultSaveOptions();
 
 	/**
-	 * Returns the map of options that are used to to control the handling of problems encountered while the
+	 * Returns the map of options that are used to control the handling of problems encountered while the
 	 * {@link Resource resource} has been loaded or saved.
 	 */
 	Map<Object, Object> getProblemHandlingOptions();
