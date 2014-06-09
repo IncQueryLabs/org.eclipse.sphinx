@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?>
-
-<target name="Sphinx Luna Target" sequenceNumber="8">
+<?pde version="3.8"?><target name="Sphinx Luna Target" sequenceNumber="9">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="4.4.0.I20140528-2000"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.100.v20140521-1744"/>
-<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.1.v20140528-1053"/>
+<unit id="org.eclipse.sdk.ide" version="4.4.0.I20140606-1215"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.100.v20140603-1326"/>
+<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.1.v20140603-1608"/>
 <repository location="http://download.eclipse.org/eclipse/updates/4.4milestones"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
@@ -15,8 +13,8 @@
 <unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.8.0.201405281451"/>
 <unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.8.0.201405281429"/>
 <unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.8.0.201405281433"/>
-<unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.8.0.201406031640"/>
-<unit id="org.eclipse.gmf.tooling.feature.group" version="3.2.0.201405070759"/>
+<unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.8.0.201406061639"/>
+<unit id="org.eclipse.gmf.tooling.feature.group" version="3.2.0.201406041235"/>
 <unit id="org.eclipse.uml2.sdk.feature.group" version="5.0.0.v20140602-0749"/>
 <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.6.0.v201405062148-7H7NFm0DxumWv9-7bhgNooiVMQ_TBruLpRz012TF"/>
 <unit id="org.eclipse.xpand.sdk.feature.group" version="2.0.0.v201406030414"/>
