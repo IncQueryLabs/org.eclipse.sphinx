@@ -415,10 +415,9 @@ public class ResourceProblemMarkerService {
 	private IResourceProblemMarkerFactory getResourceProblemMarkerFactory(IFile file) {
 		Map<Object, Object> problemHandlingOptions = getProblemHandlingOptions(file);
 		if (problemHandlingOptions != null) {
-			IResourceProblemMarkerFactory markerFactory = (IResourceProblemMarkerFactory) problemHandlingOptions
-					.get(ExtendedResource.OPTION_PROBLEM_MARKER_FACTORY);
-			if (markerFactory != null) {
-				return markerFactory;
+			Object markerFactory = problemHandlingOptions.get(ExtendedResource.OPTION_PROBLEM_MARKER_FACTORY);
+			if (markerFactory instanceof IResourceProblemMarkerFactory) {
+				return (IResourceProblemMarkerFactory) markerFactory;
 			}
 		}
 		return createResourceProblemMarkerFactory(file);
