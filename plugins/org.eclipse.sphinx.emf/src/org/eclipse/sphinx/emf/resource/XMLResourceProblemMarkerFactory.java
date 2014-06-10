@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.emf.internal.resource;
+package org.eclipse.sphinx.emf.resource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,12 +23,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.resource.Resource.Diagnostic;
 import org.eclipse.emf.ecore.xmi.XMIException;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.sphinx.emf.resource.ExtendedResource;
-import org.eclipse.sphinx.emf.resource.IXMLMarker;
-import org.eclipse.sphinx.emf.resource.ProxyURIIntegrityException;
-import org.eclipse.sphinx.emf.resource.XMLIntegrityException;
-import org.eclipse.sphinx.emf.resource.XMLValidityException;
-import org.eclipse.sphinx.emf.resource.XMLWellformednessException;
+import org.eclipse.sphinx.emf.internal.resource.ResourceProblemMarkerService;
 import org.eclipse.sphinx.platform.resources.MarkerDescriptor;
 import org.xml.sax.SAXParseException;
 

@@ -39,11 +39,14 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.sphinx.emf.Activator;
+import org.eclipse.sphinx.emf.resource.BasicResourceProblemMarkerFactory;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
+import org.eclipse.sphinx.emf.resource.IResourceProblemMarkerFactory;
 import org.eclipse.sphinx.emf.resource.IXMLMarker;
 import org.eclipse.sphinx.emf.resource.ProxyURIIntegrityException;
 import org.eclipse.sphinx.emf.resource.XMLIntegrityException;
+import org.eclipse.sphinx.emf.resource.XMLResourceProblemMarkerFactory;
 import org.eclipse.sphinx.emf.resource.XMLValidityException;
 import org.eclipse.sphinx.emf.resource.XMLWellformednessException;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
@@ -399,7 +402,6 @@ public class ResourceProblemMarkerService {
 		Assert.isNotNull(diagnostic);
 
 		IResourceProblemMarkerFactory resourceProblemMarkerFactory = getResourceProblemMarkerFactory(file);
-
 		resourceProblemMarkerFactory.createProblemMarker(file, diagnostic, severity, getProblemHandlingOptions(file));
 	}
 
@@ -408,7 +410,6 @@ public class ResourceProblemMarkerService {
 		Assert.isNotNull(exception);
 
 		IResourceProblemMarkerFactory resourceProblemMarkerFactory = getResourceProblemMarkerFactory(file);
-
 		resourceProblemMarkerFactory.createProblemMarker(file, exception, severity);
 	}
 
