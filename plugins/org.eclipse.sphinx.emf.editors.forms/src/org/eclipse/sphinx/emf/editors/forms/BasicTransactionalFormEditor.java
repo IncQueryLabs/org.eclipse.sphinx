@@ -1239,7 +1239,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * is <code>null</code> or not. When the editor has been disposed, it is an error to invoke any other method using
 	 * the editor.
 	 * </p>
-	 *
+	 * 
 	 * @return <code>true</code> when the editor is disposed and <code>false</code> otherwise.
 	 */
 	protected boolean isDisposed() {
@@ -1320,7 +1320,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	/**
 	 * A {@link CommandStackListener} which is used just in the case when the resource resides outside the workspace.
-	 *
+	 * 
 	 * @return
 	 */
 	protected CommandStackListener createCommandStackListener() {
@@ -1740,7 +1740,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	/**
 	 * Creates an {@linkplain ISaveablesLifecycleListener}
-	 *
+	 * 
 	 * @return
 	 */
 	protected ISaveablesLifecycleListener createModelSaveablesLifecycleListener() {
@@ -1794,7 +1794,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * return any {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter
 	 * factory} will then be returned as result by this method.
 	 * </p>
-	 *
+	 * 
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain editing domain} whose embedded {@link AdapterFactory adapter
 	 *            factory} is to be returned as default. May be left <code>null</code> if
@@ -1827,7 +1827,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter factory} will
 	 * then be returned as result by {@link #getAdapterFactory(TransactionalEditingDomain)}.
 	 * </p>
-	 *
+	 * 
 	 * @return The custom {@link AdapterFactory adapter factory} that is to be used by this
 	 *         {@link BasicTransactionalFormEditor form editor}. <code>null</code> the default {@link AdapterFactory
 	 *         adapter factory} returned by {@link #getAdapterFactory(TransactionalEditingDomain)} should be used
@@ -1866,6 +1866,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			if (modelDescriptor == null) {
 				MessageDialog.openError(getSite().getShell(), Messages.error_editorInitialization_title,
 						NLS.bind(Messages.error_editorInitialization_modelNotLoaded, file.getFullPath().toString()));
+				showProblemsView();
 				close(false);
 				return;
 			}
@@ -1885,8 +1886,22 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			}
 		}
 
+		// Show Problems view in case that underlying resource has errors or warnings
+		Resource editorInputResource = getEditorInputResource();
+		if (editorInputResource != null && (!editorInputResource.getErrors().isEmpty() || !editorInputResource.getWarnings().isEmpty())) {
+			showProblemsView();
+		}
+
 		// Create editor pages normally
 		super.createPages();
+	}
+
+	protected void showProblemsView() {
+		try {
+			getEditorSite().getPage().showView("org.eclipse.ui.views.ProblemView"); //$NON-NLS-1$
+		} catch (PartInitException exception) {
+			PlatformLogUtil.logAsError(Activator.getPlugin(), exception);
+		}
 	}
 
 	protected IFormPage createLoadingEditorInputPage() {
