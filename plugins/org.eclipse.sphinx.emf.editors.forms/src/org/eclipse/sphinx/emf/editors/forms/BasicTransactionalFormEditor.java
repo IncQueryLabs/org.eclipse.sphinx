@@ -16,6 +16,8 @@
  *     itemis - [425173] Form editor closes when the input resource are changed externally
  *     itemis - [426798] BasicTransactionalFormsEditor uses wrong drag and drop transfer type
  *     itemis - [430218] Sphinx-integrated form editors should not prompt user for saving when being closed
+ *     itemis - [434809] The BasicTransactionalFormEditor does not report resource errors & warnings
+ *     itemis- [434842] BasicTransactionalFormEditor does not close loadingEditorInputPage for empty resources 
  *
  * </copyright>
  */
@@ -127,6 +129,7 @@ import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.FileTransfer;
@@ -246,7 +249,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 */
 	protected boolean finishCreatePagesOnActivation = false;
 
-	protected IFormPage loadingEditorInputPage;
+	protected IFormPage messagePage;
 
 	protected SaveablesProvider modelSaveablesProvider;
 
@@ -396,27 +399,8 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			site.getShell().getDisplay().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					// Discard undo context and reset dirty state
-					IOperationHistory operationHistory = getOperationHistory();
-					if (operationHistory != null) {
-						operationHistory.dispose(undoContext, true, true, true);
-					}
-
-					// Update editor part name
-					setPartName(getEditorInputName());
-					setTitleImage(getEditorInputImage());
-
-					// Update this editor's input state.
-					/*
-					 * !! Important Note !! Doing so will trigger IPropertyListener implementations that listen for
-					 * IWorkbenchPartConstants.PROP_INPUT events (such as e.g., the
-					 * AbstractFormPage#inputChangeListener). This kind or listeners are useful to update the input
-					 * object of affected JFace viewers and/or the titles of affected form pages and sections.
-					 */
-					firePropertyChange(IWorkbenchPartConstants.PROP_INPUT);
-
-					// Update this editor's dirty state
-					firePropertyChange(IEditorPart.PROP_DIRTY);
+					// Reset the editor state
+					reset();
 
 					// Finish page creation if editor is currently visible; otherwise mark that as to be done when
 					// editor gets activated the next time
@@ -1065,14 +1049,45 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		modelSaveablesProvider.init(createModelSaveablesLifecycleListener());
 	}
 
+	protected void reset() {
+		if (!isDisposed()) {
+			// Discard undo context and reset dirty state
+			IOperationHistory operationHistory = getOperationHistory();
+			if (operationHistory != null) {
+				operationHistory.dispose(undoContext, true, true, true);
+			}
+
+			// Update editor part name
+			setPartName(getEditorInputName());
+			setTitleImage(getEditorInputImage());
+
+			// Update this editor's input state.
+			/*
+			 * !! Important Note !! Doing so will trigger IPropertyListener implementations that listen for
+			 * IWorkbenchPartConstants.PROP_INPUT events (such as e.g., the AbstractFormPage#inputChangeListener). This
+			 * kind or listeners are useful to update the input object of affected JFace viewers and/or the titles of
+			 * affected form pages and sections.
+			 */
+			firePropertyChange(IWorkbenchPartConstants.PROP_INPUT);
+
+			// Update this editor's dirty state
+			firePropertyChange(IEditorPart.PROP_DIRTY);
+		}
+	}
+
 	@Override
 	public void setFocus() {
-		int pageIndex = getActivePage();
-		if (pageIndex != -1) {
-			Control control = getControl(pageIndex);
-			if (control != null) {
-				control.setFocus();
+		// FIXME Bug 434842 Added try/catch
+		try {
+			int pageIndex = getActivePage();
+			if (pageIndex != -1) {
+				Control control = getControl(pageIndex);
+				if (control != null && !control.isDisposed()) {
+					control.setFocus();
+				}
 			}
+		} catch (SWTException ex) {
+
 		}
 	}
 
@@ -1365,14 +1380,16 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 						Notification notification = (Notification) object;
 						if (notification.getNewBooleanValue()) {
 							Resource loadedResource = (Resource) notification.getNotifier();
-							// Has loaded resource not been unloaded again subsequently?
-							if (loadedResource.isLoaded()) {
-
-								// Is loaded resource equal to editor input resource?
-								URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
-								if (editorInputURI != null && loadedResource.getURI().equals(editorInputURI.trimFragment())) {
+							URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
+							// Is loaded resource equal to editor input resource?
+							if (editorInputURI != null && loadedResource.getURI().equals(editorInputURI.trimFragment())) {
+								// Has loaded resource not been unloaded again subsequently?
+								if (loadedResource.isLoaded()) {
 									// Handle loaded editor input resource
 									handleEditorInputObjectAdded();
+									break;
+								} else {
+									handleResourceLoadedThenUnloaded();
 									break;
 								}
 							}
@@ -1722,6 +1739,22 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		};
 	}
 
+	protected void handleResourceLoadedThenUnloaded() {
+		IWorkbenchPartSite site = getSite();
+		if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
+			site.getShell().getDisplay().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					// Reset the editor state
+					reset();
+
+					// Add message page indicating that no editor input is present (even if the editor is not visible)
+					setMessagePage(createNoEditorInputPage());
+				}
+			});
+		}
+	}
+
 	protected boolean isActivePart() {
 		return this == getSite().getWorkbenchWindow().getPartService().getActivePart();
 	}
@@ -1875,15 +1908,8 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 			ModelLoadManager.INSTANCE.loadModel(modelDescriptor, true, null);
 
 			// Create temporary page indicating that editor input is being loaded
-			loadingEditorInputPage = createLoadingEditorInputPage();
-			if (loadingEditorInputPage != null) {
-				try {
-					addPage(loadingEditorInputPage);
-				} catch (PartInitException ex) {
-					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-				}
-				return;
-			}
+			setMessagePage(createLoadingEditorInputPage());
+			return;
 		}
 
 		// Show Problems view in case that underlying resource has errors or warnings
@@ -1894,6 +1920,29 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 		// Create editor pages normally
 		super.createPages();
+	}
+
+	protected void setMessagePage(IFormPage messagePage) {
+		if (!isDisposed()) {
+			// Remove old message page if present
+			if (this.messagePage != null) {
+				removePage(this.messagePage.getIndex());
+				setActivePage(-1);
+			}
+
+			// Add new message page if not null
+			if (messagePage != null) {
+				try {
+					addPage(messagePage);
+					if (getActivePage() == -1) {
+						setActivePage(0);
+					}
+				} catch (PartInitException ex) {
+					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+				}
+			}
+		}
+		this.messagePage = messagePage;
 	}
 
 	protected void showProblemsView() {
@@ -1908,19 +1957,26 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		return new MessagePage(this, NLS.bind(Messages.msg_waitingForModelObjectToBeLoaded, getEditorInputName()));
 	}
 
+	protected IFormPage createNoEditorInputPage() {
+		URI editorInputURI = EcoreUIUtil.getURIFromEditorInput(getEditorInput());
+		if (editorInputURI != null) {
+			String msg = editorInputURI.hasFragment() ? Messages.msg_modelObjectNotFound : Messages.msg_modelResourceIsEmpty;
+			return new MessagePage(this, NLS.bind(msg, getEditorInputName()));
+		}
+		return new MessagePage(this, ""); //$NON-NLS-1$
+	}
+
 	protected synchronized void finishCreatePages() {
 		if (!isDisposed()) {
-			// Loading editor input indication page present?
-			if (loadingEditorInputPage != null) {
-				// Remove loading editor input indication page and try to create actual pages
-				removePage(loadingEditorInputPage.getIndex());
-				loadingEditorInputPage = null;
-				createPages();
-				if (getActivePage() == -1) {
-					setActivePage(0);
-				}
+			// Remove previously displayed message page
+			setMessagePage(null);
+			// Try to create actual pages
+			createPages();
+			if (getActivePage() == -1) {
+				setActivePage(0);
 			}
 		}
+
 	}
 
 	/**
