@@ -13,8 +13,8 @@
 <unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.8.0.201405281451"/>
 <unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.8.0.201405281429"/>
 <unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.8.0.201405281433"/>
-<unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.8.0.201406101639"/>
-<unit id="org.eclipse.gmf.tooling.feature.group" version="3.2.0.201406111337"/>
+<unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.8.0.201406111639"/>
+<unit id="org.eclipse.gmf.tooling.feature.group" version="3.2.0.201406111907"/>
 <unit id="org.eclipse.uml2.sdk.feature.group" version="5.0.0.v20140602-0749"/>
 <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.6.0.v201405062148-7H7NFm0DxumWv9-7bhgNooiVMQ_TBruLpRz012TF"/>
 <unit id="org.eclipse.xpand.sdk.feature.group" version="2.0.0.v201406030414"/>
