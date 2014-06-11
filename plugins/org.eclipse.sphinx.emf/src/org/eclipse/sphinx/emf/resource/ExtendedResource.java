@@ -32,7 +32,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
-import org.eclipse.sphinx.emf.internal.resource.IResourceProblemMarkerFactory;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 
 /**

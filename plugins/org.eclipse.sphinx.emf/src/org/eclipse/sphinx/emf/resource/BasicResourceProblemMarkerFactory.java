@@ -12,7 +12,7 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.emf.internal.resource;
+package org.eclipse.sphinx.emf.resource;
 
 import java.util.Collections;
 import java.util.List;

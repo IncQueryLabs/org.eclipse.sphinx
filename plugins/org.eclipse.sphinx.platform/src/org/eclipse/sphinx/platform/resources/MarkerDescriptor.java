@@ -30,13 +30,12 @@ public class MarkerDescriptor {
 	}
 
 	public MarkerDescriptor(String type) {
-		Assert.isNotNull(type);
 		this.type = type;
 	}
 
 	public MarkerDescriptor(String type, Map<String, Object> attributes) {
-		Assert.isNotNull(type);
 		Assert.isNotNull(attributes);
+
 		this.type = type;
 		this.attributes = attributes;
 	}
