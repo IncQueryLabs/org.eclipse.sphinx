@@ -129,8 +129,8 @@ import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -1077,17 +1077,12 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	@Override
 	public void setFocus() {
-		// FIXME Bug 434842 Added try/catch
-		try {
-			int pageIndex = getActivePage();
-			if (pageIndex != -1) {
-				Control control = getControl(pageIndex);
-				if (control != null && !control.isDisposed()) {
-					control.setFocus();
-				}
+		int pageIndex = getActivePage();
+		if (pageIndex != -1) {
+			Control control = getControl(pageIndex);
+			if (control != null && !control.isDisposed()) {
+				control.setFocus();
 			}
-		} catch (SWTException ex) {
-
 		}
 	}
 
@@ -1926,8 +1921,19 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 		if (!isDisposed()) {
 			// Remove old message page if present
 			if (this.messagePage != null) {
-				removePage(this.messagePage.getIndex());
-				setActivePage(-1);
+				int pageIndex = this.messagePage.getIndex();
+				/*
+				 * !! Important Note !! Before removing the page, get it's selectable user interface and set page
+				 * control to null. The page control will not be disposed in MultiPageEditorPart#removePage(int).
+				 */
+				if (pageIndex >= 0 && pageIndex < pages.size()) {
+					CTabItem item = ((CTabFolder) getContainer()).getItem(pageIndex);
+					if (item != null) {
+						item.setControl(null);
+					}
+				}
+				// Call remove page
+				removePage(pageIndex);
 			}
 
 			// Add new message page if not null
