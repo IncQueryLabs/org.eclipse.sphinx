@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.sphinx_0.8.0.qualifier.jar" id="org.eclipse.sphinx" version="0.8.0.qualifier">
+   <feature url="features/org.eclipse.sphinx_0.9.0.qualifier.jar" id="org.eclipse.sphinx" version="0.9.0.qualifier">
       <category name="org.eclipse.sphinx.category"/>
    </feature>
-   <feature url="features/org.eclipse.sphinx.sdk_0.8.0.qualifier.jar" id="org.eclipse.sphinx.sdk" version="0.8.0.qualifier">
+   <feature url="features/org.eclipse.sphinx.sdk_0.9.0.qualifier.jar" id="org.eclipse.sphinx.sdk" version="0.9.0.qualifier">
       <category name="org.eclipse.sphinx.category"/>
    </feature>
-   <feature url="features/org.eclipse.sphinx.examples_0.8.0.qualifier.jar" id="org.eclipse.sphinx.examples" version="0.8.0.qualifier">
+   <feature url="features/org.eclipse.sphinx.examples_0.9.0.qualifier.jar" id="org.eclipse.sphinx.examples" version="0.9.0.qualifier">
       <category name="org.eclipse.sphinx.category"/>
    </feature>
-   <feature url="features/org.eclipse.sphinx.testutils_0.8.0.qualifier.jar" id="org.eclipse.sphinx.testutils" version="0.8.0.qualifier">
+   <feature url="features/org.eclipse.sphinx.testutils_0.9.0.qualifier.jar" id="org.eclipse.sphinx.testutils" version="0.9.0.qualifier">
       <category name="org.eclipse.sphinx.auxiliaries.category"/>
    </feature>
-   <feature url="features/org.eclipse.sphinx.thirdparty_0.8.0.qualifier.jar" id="org.eclipse.sphinx.thirdparty" version="0.8.0.qualifier">
+   <feature url="features/org.eclipse.sphinx.thirdparty_0.9.0.qualifier.jar" id="org.eclipse.sphinx.thirdparty" version="0.9.0.qualifier">
       <category name="org.eclipse.sphinx.auxiliaries.category"/>
    </feature>
-   <feature url="features/org.eclipse.sphinx.nebula_0.8.0.qualifier.jar" id="org.eclipse.sphinx.nebula" version="0.8.0.qualifier">
+   <feature url="features/org.eclipse.sphinx.nebula_0.9.0.qualifier.jar" id="org.eclipse.sphinx.nebula" version="0.9.0.qualifier">
       <category name="org.eclipse.sphinx.category"/>
    </feature>
-   <feature url="features/org.eclipse.sphinx.nebula.sdk_0.8.0.qualifier.jar" id="org.eclipse.sphinx.nebula.sdk" version="0.8.0.qualifier">
+   <feature url="features/org.eclipse.sphinx.nebula.sdk_0.9.0.qualifier.jar" id="org.eclipse.sphinx.nebula.sdk" version="0.9.0.qualifier">
       <category name="org.eclipse.sphinx.category"/>
    </feature>
    <category-def name="org.eclipse.sphinx.category" label="Sphinx (Incubation)">
