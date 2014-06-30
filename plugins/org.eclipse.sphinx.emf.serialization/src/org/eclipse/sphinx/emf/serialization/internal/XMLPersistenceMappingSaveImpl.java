@@ -1875,7 +1875,7 @@ public class XMLPersistenceMappingSaveImpl extends XMLSaveImpl {
 	/**
 	 * Does the same as {@link ExtendedXMLSaveImpl#saveElementFeatureMap(EObject, EStructuralFeature)}, except that it
 	 * pass the owner object to the #saveFeatureMapElementReference
-	 *
+	 * 
 	 * @param object
 	 *            The {@link EObject root object} whose comments are to be saved.
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl#saveElementFeatureMap(org.eclipse.emf.ecore.EObject,
@@ -2043,16 +2043,17 @@ public class XMLPersistenceMappingSaveImpl extends XMLSaveImpl {
 				if (XMLPersistenceMappingExtendedMetaData.TYPE_DECLARATION_ALWAYS == xmlPersistenceMappingExtendedMetaData
 						.getXMLTypeDeclarationStrategy(structuralFeature)) {
 					saveTypeAttribute(structuralFeature, eClass);
-					savedFormulaExpressionFeatures.add(structuralFeature);
 				} else {
 					EClass expectedType = (EClass) structuralFeature.getEType();
 					boolean shouldSaveType = saveTypeInfo ? xmlTypeInfo.shouldSaveType(eClass, expectedType, structuralFeature)
 							: eClass != expectedType;
 					if (shouldSaveType) {
 						saveTypeAttribute(structuralFeature, eClass);
-						savedFormulaExpressionFeatures.add(structuralFeature);
 					}
 				}
+				// Add the feature into savedFormulaExpressionFeatures, so that the feature will not be saved twice if
+				// it is in the list
+				savedFormulaExpressionFeatures.add(structuralFeature);
 
 				doc.endContentElement(href);
 
@@ -2065,7 +2066,7 @@ public class XMLPersistenceMappingSaveImpl extends XMLSaveImpl {
 
 	/**
 	 * Builds a name for given reference.
-	 *
+	 * 
 	 * @param reference
 	 *            The reference for which name will be returned.
 	 */
