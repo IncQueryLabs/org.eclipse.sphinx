@@ -205,6 +205,12 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>platform-mars</id>
+			<properties>
+				<platform.version.name>mars</platform.version.name>
+			</properties>
+		</profile>
+		<profile>
 			<id>os-macosx</id>
 			<activation>
 				<os>

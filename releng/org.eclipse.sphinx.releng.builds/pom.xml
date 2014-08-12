@@ -131,5 +131,11 @@
 				<platform.version.name>luna</platform.version.name>
 			</properties>
 		</profile>
+		<profile>
+			<id>platform-mars</id>
+			<properties>
+				<platform.version.name>mars</platform.version.name>
+			</properties>
+		</profile>
 	</profiles>
 </project>
