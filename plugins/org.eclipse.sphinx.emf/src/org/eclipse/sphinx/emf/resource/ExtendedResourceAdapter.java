@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2013 See4sys, itemis and others.
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,8 @@
  *
  * Contributors:
  *     See4sys - Initial API and implementation
- *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked 
+ *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked
+ *     itemis - [441970] Result returned by ExtendedResourceAdapter#getHREF(EObject) must default to complete object URI (edit)
  *
  * </copyright>
  */
@@ -216,7 +217,8 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	 */
 	@Override
 	public String getHREF(EObject eObject) {
-		return getURI(eObject).fragment();
+		// Return complete URI of given object as default HREF literal
+		return getURI(eObject).toString();
 	}
 
 	/*

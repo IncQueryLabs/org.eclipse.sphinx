@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [441970] Result returned by ExtendedResourceAdapter#getHREF(EObject) must default to complete object URI (edit)
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird20.util;
@@ -45,7 +46,7 @@ public class ExtendedHummingbirdResourceAdapter extends ExtendedResourceAdapter 
 
 	/**
 	 * Creates a fragment-based Hummingbird 2.0 {@link URI} from given {@link URI} fragment.
-	 * 
+	 *
 	 * @param uriFragment
 	 *            The {@link URI} fragment the URI to handled.
 	 * @return The resulting fragment-based Hummingbird 2.0 {@link URI}.
@@ -55,5 +56,14 @@ public class ExtendedHummingbirdResourceAdapter extends ExtendedResourceAdapter 
 			return URI.createURI(HB_SCHEME + URI_SCHEME_SEPARATOR + URI_SEGMENT_SEPARATOR + URI_FRAGMENT_SEPARATOR + uriFragment, true);
 		}
 		return null;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResourceAdapter#getHREF(org.eclipse.emf.ecore.EObject)
+	 */
+	@Override
+	public String getHREF(EObject eObject) {
+		// Return only fragment of URI of given object as HREF literal
+		return getURI(eObject).toString();
 	}
 }
