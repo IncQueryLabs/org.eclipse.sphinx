@@ -36,8 +36,9 @@ public class GenerateXSDAction extends AbstractGenerateFromEcoreAction {
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.serialization.generators.ui.actions.AbstractGenerateFromEcoreAction#
-	 * createGenerateFromEcoreOperation(org.eclipse.core.resources.IFile)
+	 * @see
+	 * org.eclipse.sphinx.emf.metamodelgen.ui.actions.AbstractGenerateFromEcoreAction#createGenerateFromEcoreOperation
+	 * (org.eclipse.core.resources.IFile)
 	 */
 	@Override
 	protected IWorkspaceOperation createGenerateFromEcoreOperation(IFile ecoreFile) {

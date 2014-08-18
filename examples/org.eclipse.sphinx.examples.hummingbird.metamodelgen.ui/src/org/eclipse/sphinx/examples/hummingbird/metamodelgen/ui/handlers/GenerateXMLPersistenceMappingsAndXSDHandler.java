@@ -27,8 +27,9 @@ import org.eclipse.sphinx.platform.operations.IWorkspaceOperation;
 public class GenerateXMLPersistenceMappingsAndXSDHandler extends AbstractGenerateFromEcoreHandler {
 
 	/*
-	 * @see org.eclipse.sphinx.emf.serialization.generators.ui.handlers.AbstractGenerateFromEcoreHandler#
-	 * createGenerateFromEcoreOperation(org.eclipse.core.resources.IFile)
+	 * @see
+	 * org.eclipse.sphinx.emf.metamodelgen.ui.handlers.AbstractGenerateFromEcoreHandler#createGenerateFromEcoreOperation
+	 * (org.eclipse.core.resources.IFile)
 	 */
 	@Override
 	protected IWorkspaceOperation createGenerateFromEcoreOperation(IFile ecoreFile) {

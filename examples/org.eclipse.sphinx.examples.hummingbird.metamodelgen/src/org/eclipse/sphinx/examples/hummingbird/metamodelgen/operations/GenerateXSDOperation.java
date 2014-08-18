@@ -63,8 +63,8 @@ public class GenerateXSDOperation extends AbstractGenerateFromEcoreOperation {
 
 	/*
 	 * @see
-	 * org.eclipse.sphinx.emf.serialization.generators.ui.operations.AbstractGenerateFromEcoreOperation#generate(org
-	 * .eclipse.emf.ecore.EPackage, org.eclipse.core.runtime.IProgressMonitor)
+	 * org.eclipse.sphinx.emf.metamodelgen.operations.AbstractGenerateFromEcoreOperation#generate(org.eclipse.emf.ecore
+	 * .EPackage, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
 	public void generate(EPackage ecoreModel, IProgressMonitor monitor) throws CoreException, OperationCanceledException {
