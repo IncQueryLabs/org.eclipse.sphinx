@@ -64,6 +64,6 @@ public class ExtendedHummingbirdResourceAdapter extends ExtendedResourceAdapter 
 	@Override
 	public String getHREF(EObject eObject) {
 		// Return only fragment of URI of given object as HREF literal
-		return getURI(eObject).toString();
+		return getURI(eObject).fragment();
 	}
 }
