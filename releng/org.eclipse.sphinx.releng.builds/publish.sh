@@ -150,7 +150,7 @@ echo "Copying $applicableLocalUpdateSiteArchiveLocation to $applicableProjectDow
 mkdir -p $applicableProjectDownloadSiteLocation
 cp $applicableLocalUpdateSiteArchiveLocation $applicableProjectDownloadSiteLocation
 
-if [ $MERGE_UPDATE_SITE ] && [ -f $applicableProjectUpdateSiteLocation/content.* ];
+if [ $MERGE_UPDATE_SITE != "false" ] && [ -f $applicableProjectUpdateSiteLocation/content.* ];
 	then
 		echo "------------------------------------------------------------------------"
 		echo "Merging project update site into build update site"
