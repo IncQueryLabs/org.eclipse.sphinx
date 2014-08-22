@@ -13,6 +13,7 @@
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  *     itemis - [425379] ExtendedResourceSet may contain a resource multiple times (with normalized and non-normalized URI)
  *	   itemis - [425175] Resources that produce exceptions while being loaded should not get unloaded by Sphinx thereafter
+ *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *
  * </copyright>
  */
@@ -81,7 +82,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	 * An enhanced {@link ResourcesEList} implementation that exposes a {@link #getModCount()} method through which
 	 * clients figure out the number of times this list has been <i>structurally modified</i> and updates
 	 * {@link ResourceSetImpl#getURIResourceMap()} when {@link Resource}s are added of removed.
-	 * 
+	 *
 	 * @see AbstractList#modCount
 	 */
 	protected class ExtendedResourcesEList<E extends Object & Resource> extends ResourcesEList<E> {
@@ -210,6 +211,15 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	 */
 	@Override
 	public Resource getResource(URI uri, boolean loadOnDemand) {
+		Assert.isNotNull(uri);
+
+		// Be sure that given URI is a pure resource URI but not a object or proxy URI
+		/*
+		 * !! Important Note !! This is required to avoid the same resource to be loaded multiple times with different
+		 * URIs.
+		 */
+		uri = trimProxyContextInfo(uri.trimFragment());
+
 		if (resourceLocator != null) {
 			return resourceLocator.getResource(uri, loadOnDemand);
 		}
@@ -319,13 +329,22 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		return ((ExtendedResourcesEList<Resource>) getResources()).getModCount();
 	}
 
-	/**
-	 * Augments given {@link InternalEObject proxy} to a context-aware proxy by adding key/value pairs that contain the
-	 * target {@link IMetaModelDescriptor metamodel descriptor} and a context {@link URI} to the {@link URI#query()
-	 * query string} of the proxy URI.
+	/*
+	 * @see
+	 * org.eclipse.sphinx.emf.resource.ExtendedResourceSet#augmentToContextAwareProxy(org.eclipse.emf.ecore.EObject,
+	 * org.eclipse.emf.ecore.resource.Resource)
 	 */
+	@Override
 	public void augmentToContextAwareProxy(EObject proxy, Resource contextResource) {
 		contextAwareProxyURIHelper.augmentToContextAwareProxy(proxy, contextResource);
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResourceSet#trimProxyContextInfo(org.eclipse.emf.common.util.URI)
+	 */
+	@Override
+	public URI trimProxyContextInfo(URI proxyURI) {
+		return contextAwareProxyURIHelper.trimProxyContextInfo(proxyURI);
 	}
 
 	/*
@@ -463,7 +482,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	 * Retrieves the {@linkplain EObject object} from specified target {@link IMetaModelDescriptor metamodel} that
 	 * corresponds to given {@linkplain URI}. Uses provided {@linkResource context resource} to limit the search scope
 	 * to the subset of {@link Resource resource}s that are in the same {@link IResourceScope scope} as the resource.
-	 * 
+	 *
 	 * @param uri
 	 *            The {@linkplain URI} to be resolved.
 	 * @param targetMetaModelDescriptor
@@ -481,11 +500,11 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		// Fragment-based URI not knowing its target resource?
 		if (uri.segmentCount() == 0) {
 			// Search for object behind given URI within relevant set of potential target resources
-			List<Resource> resources = getResourcesToSearchIn(getResources(), uri.trimFragment().trimQuery(), targetMetaModelDescriptor);
+			List<Resource> resources = getResourcesToSearchIn(getResources(), uri, targetMetaModelDescriptor);
 			return safeFindEObjectInResources(resources, uri, loadOnDemand);
 		} else {
 			// Target resource is known, so search for object behind given URI only in that resource
-			Resource resource = safeGetResource(uri.trimFragment().trimQuery(), loadOnDemand);
+			Resource resource = safeGetResource(uri, loadOnDemand);
 			if (resource != null) {
 				return safeGetEObjectFromResource(resource, uri.fragment());
 			}
@@ -501,7 +520,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	 * This implementation applies a {@link ResourceFilter resource filter} to the provided set of {@link Resource
 	 * resource}s retaining only those {@link Resource resource}s that match specified target
 	 * {@link IMetaModelDescriptor metamodel descriptor} behind given {@link URI}.
-	 * 
+	 *
 	 * @param allResources
 	 *            The set of {@link Resource resource}s from which the resources to be considered for resolving given
 	 *            fragment-based {@link URI} are to be extracted.
@@ -535,7 +554,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	/**
 	 * Returns the subset of given set of {@link Resource resource}s that make through provided {@link ResourceFilter
 	 * resource filter}.
-	 * 
+	 *
 	 * @param allResources
 	 *            The set of {@link Resource resource}s to be filtered.
 	 * @param filter
@@ -559,7 +578,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	/**
 	 * Resolves given {@link URI} against given set of {@link Resource resource}s.Only called when given URI is
 	 * fragment-based (i.e., has no segments and doesn't reference any explicit target resource).
-	 * 
+	 *
 	 * @param resources
 	 *            The set of {@link Resource resource}s to resolve given fragment-based {@link URI} against.
 	 * @param uri
@@ -597,9 +616,9 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 
 	/**
 	 * Get {@link Resource resource} of given {@link URI}.
-	 * 
+	 *
 	 * @param uri
-	 *            The fragment-based {@link URI} to resolve.
+	 *            The {@link URI} to resolve.
 	 * @param loadOnDemand
 	 *            Whether to create and load the {@link Resource target resource}, if it isn't already present in this
 	 *            {@link ExtendedResourceSetImpl resource set}.
@@ -607,7 +626,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 	protected Resource safeGetResource(URI uri, boolean loadOnDemand) {
 		Assert.isNotNull(uri);
 
-		// Just get resource behind URI segments if it is already loaded
+		// Just get resource behind URI if it is already loaded
 		Resource resource = getResource(uri, false);
 
 		// Load it if not done so yet and a demand load has been requested
@@ -640,8 +659,8 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 							} else {
 								Exception causeEx = cause instanceof Exception ? (Exception) cause : null;
 								resource.getErrors().add(
-										new XMIException(NLS.bind(Messages.error_problemOccurredWhenLoadingResource, uri.toString()), causeEx, uri
-												.toString(), 1, 1));
+										new XMIException(NLS.bind(Messages.error_problemOccurredWhenLoadingResource, resource.getURI().toString()),
+												causeEx, resource.getURI().toString(), 1, 1));
 							}
 						}
 					} else {
@@ -660,7 +679,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 
 	/**
 	 * Resolves given {@link URI} against given {@link Resource resource}.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link Resource resource} to resolve given fragment-based {@link URI} against.
 	 * @param uriFragment
@@ -703,7 +722,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 
 	/**
 	 * Loads all models of given {@link IMetaModelDescriptor metamodel} within provided {@link Object context}.
-	 * 
+	 *
 	 * @param metaModelDescriptor
 	 *            The {@link IMetaModelDescriptor metamodel descriptor} of the models to be loaded.
 	 * @param contextObject

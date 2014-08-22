@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2014 BMW Car IT, itemis, See4sys and others.
+ * Copyright (c) 2008-2014 BMW Car IT, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,7 @@
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  *     itemis - [418005] Add support for model files with multiple root elements
  *	   itemis - [425175] Resources that produce exceptions while being loaded should not get unloaded by Sphinx thereafter
+ *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *
  * </copyright>
  */
@@ -89,7 +90,7 @@ public final class EcoreResourceUtil {
 	 * Returns an instance of {@link ExtensibleURIConverterImpl} where the URI mappings are initialized in such a way
 	 * that normalization of non-platform:/resource {@link URI}s which reference resources inside the workspace yields
 	 * the corresponding platform:/resource {@link URI}s.
-	 * 
+	 *
 	 * @return An instance of {@link ExtensibleURIConverterImpl} containing URI mappings for normalizing
 	 *         non-platform:/resource {@link URI}s referencing workspace resources to corresponding platform:/resource
 	 *         {@link URI}s.
@@ -104,7 +105,7 @@ public final class EcoreResourceUtil {
 	 * instead. In both cases, the {@link URIConverter URI converter}'s URI mappings are initialized in such a way that
 	 * normalization of non-platform:/resource {@link URI}s which reference resources inside the workspace yields the
 	 * corresponding platform:/resource {@link URI}s.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The {@link ResourceSet resource set} whose {@link URIConverter URI converter} is to be retrieved.
 	 * @return The {@link URIConverter URI converter} of given {@link ResourceSet resource set}, or an instance of
@@ -137,7 +138,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Converts given {@link URI} into an absolute file {@link URI}.
-	 * 
+	 *
 	 * @param uri
 	 *            The {@link URI} to be converted.
 	 * @return Absolute file {@link URI} for the given {@link URI} or given {@link URI} if no conversion is possible.
@@ -166,7 +167,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Converts given URI into a platform resource URI.
-	 * 
+	 *
 	 * @param uri
 	 *            The {@link URI} to be converted.
 	 * @return platform resource URI for the given URI or given URI if it references a location outside the workspace or
@@ -196,7 +197,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Proves if resource specified by an URI exists.
-	 * 
+	 *
 	 * @param uri
 	 *            The URI to prove Returns <b>true</b> only if the URI represents a file and if this file exists.
 	 */
@@ -209,7 +210,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Returns the id of the content type of the file behind given {@link URI}.
-	 * 
+	 *
 	 * @param uri
 	 *            The {@link URI} whose content type id is to be established.
 	 * @return The id of the content type of the file behind given {@link URI}, or <code>null</code> if given
@@ -231,7 +232,7 @@ public final class EcoreResourceUtil {
 	/**
 	 * Determines if {@link Resource resource} behind specified {@link URI} is read-only. Returns <code>false</code> if
 	 * this resource does not exist.
-	 * 
+	 *
 	 * @param uri
 	 *            The {@link URI} identifying the {@link Resource resource} to be investigated.
 	 * @return <code>true</code> if {@link Resource resource} behind specified {@link URI} is read-only, and
@@ -274,7 +275,7 @@ public final class EcoreResourceUtil {
 	/**
 	 * Reads the model namespace (i.e. XML namespace) of given {@link Resource resource}. Returns a meaningful result
 	 * only if given {@link Resource resource} is an XML document.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link Resource resource} to investigate.
 	 * @return The model namespace denoted in given {@link Resource resource} or <code>null</code> if the
@@ -291,7 +292,7 @@ public final class EcoreResourceUtil {
 	/**
 	 * Reads the model namespace (i.e. XML namespace) of resource behind given {@link URI}. Returns a meaningful result
 	 * only if the resource in question is an XML document.
-	 * 
+	 *
 	 * @param uriConverter
 	 *            The {@link URIConverter uriConverter} used to create {@link InputStream inputstream} . May be
 	 *            <code>null</code>.
@@ -308,7 +309,7 @@ public final class EcoreResourceUtil {
 	/**
 	 * Reads the target namespace of given {@link Resource resource}. Returns a meaningful result only if given
 	 * {@link Resource resource} is an XML document.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link Resource resource} to investigate.
 	 * @return The target namespace denoted in given {@link Resource resource} or <code>null</code> if the
@@ -329,7 +330,7 @@ public final class EcoreResourceUtil {
 	/**
 	 * Reads the target namespace of the resource behind given {@link URI}. Returns a meaningful result only if the
 	 * resource in question is an XML document.
-	 * 
+	 *
 	 * @param uriConverter
 	 *            The {@link URIConverter uriConverter} used to create {@link InputStream input stream} . May be
 	 *            <code>null</code>.
@@ -354,7 +355,7 @@ public final class EcoreResourceUtil {
 	/**
 	 * Retrieves the XML comments located above the root element in given {@link Resource resource}. Returns a
 	 * meaningful result only if given {@link Resource resource} is an XML document.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link Resource resource} to investigate.
 	 * @return Collection of strings representing the retrieved XML comments or empty collection if no such could be
@@ -370,7 +371,7 @@ public final class EcoreResourceUtil {
 	/**
 	 * Retrieves the XML comments located above the root element in resource behind given {@link URI}. Returns a
 	 * meaningful result only if the resource in question is an XML document.
-	 * 
+	 *
 	 * @param uriConverter
 	 *            The {@link URIConverter uriConverter} used to create {@link InputStream input stream} . May be
 	 *            <code>null</code>.
@@ -388,7 +389,7 @@ public final class EcoreResourceUtil {
 	 * Reads the XSI schema location of given {@link Resource resource} and extracts pairs of namespace and schema URIs
 	 * from it (see http://www.w3.org/TR/xmlschema-0/#schemaLocation for details). Returns a meaningful result only if
 	 * given {@link Resource resource} is an XML document.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link Resource resource} to investigate.
 	 * @return Pairs of namespace and schema URIs in given {@link Resource resource} or an empty map if the
@@ -406,7 +407,7 @@ public final class EcoreResourceUtil {
 	 * Reads the XSI schema location of the resource behind given {@link URI} and extracts pairs of namespace and schema
 	 * URIs from it (see http://www.w3.org/TR/xmlschema-0/#schemaLocation for details). Returns a meaningful result only
 	 * if the resource in question is an XML document.
-	 * 
+	 *
 	 * @param uriConverter
 	 *            The {@link URIConverter uriConverter} used to create {@link InputStream input stream} . May be
 	 *            <code>null</code>.
@@ -431,7 +432,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Returns a set of default options which can be used for loading a Resource.
-	 * 
+	 *
 	 * @return A set of default options for loading a Resource.
 	 */
 	public static Map<?, ?> getDefaultLoadOptions() {
@@ -445,7 +446,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Returns a map with the default options for resource saving.
-	 * 
+	 *
 	 * @return This method will return an empty map.
 	 */
 	public static Map<?, ?> getDefaultSaveOptions() {
@@ -454,7 +455,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Retrieves the root {@link EObject object} contained by given resource.
-	 * 
+	 *
 	 * @param resource
 	 *            Some model resource
 	 * @return The root object contained by given resource or <code>null</code> if the resource has not been loaded yet
@@ -475,7 +476,7 @@ public final class EcoreResourceUtil {
 	/**
 	 * Returns the root element of the model owned by the resource specified by the given URI. Does not explicitly ask
 	 * the loading of the resource if it has not already been loaded in resource set.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The resource set into which model resource must be loaded.
 	 * @param uri
@@ -491,7 +492,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Returns the root element of the model owned by the resource specified by the given URI.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The resource set into which model resource must be loaded.
 	 * @param uri
@@ -511,7 +512,7 @@ public final class EcoreResourceUtil {
 	/**
 	 * Returns the root element of the model owned by the resource specified by the given URI. Asks the loading of the
 	 * resource if it has not already been loaded in resource set.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The resource set into which model resource must be loaded.
 	 * @param uri
@@ -532,7 +533,7 @@ public final class EcoreResourceUtil {
 	 * <p>
 	 * This will return the first root of the loaded model, other roots can be accessed via the resource's content.
 	 * </p>
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The {@link ResourceSet} to load the model in.
 	 * @param file
@@ -561,7 +562,7 @@ public final class EcoreResourceUtil {
 	/**
 	 * Returns the element of the model owned by the resource specified by the given URI and pointed by the given
 	 * fragment.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The resource set into which model resource must be loaded.
 	 * @param uri
@@ -591,7 +592,7 @@ public final class EcoreResourceUtil {
 	 * Retrieves the model {@link EObject object} referenced by provided {@link URI} from given {@link ResourceSet
 	 * resource set}. Returns <code>null</code> if the {@link Resource resource} containing the model object referenced
 	 * by the URI has not yet been loaded into the resource set.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The resource set from which the model object is to be retrieved.
 	 * @param uri
@@ -608,7 +609,7 @@ public final class EcoreResourceUtil {
 	 * Retrieves the model {@link EObject object} referenced by provided {@link URI} from given {@link ResourceSet
 	 * resource set}. Loads the {@link Resource resource} containing the model object referenced by the URI into the
 	 * resource set if this has not yet been done.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The resource set from which the model object is to be retrieved.
 	 * @param uri
@@ -659,7 +660,7 @@ public final class EcoreResourceUtil {
 	 * <p>
 	 * If the type of the specified object does not belongs to that list of supported types, <code>null</code> is
 	 * returned.
-	 * 
+	 *
 	 * @param object
 	 *            The object from which a resource must be returned.
 	 * @return The underlying resource from the given object.
@@ -681,7 +682,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Retrieves the {@linkplain Resource resource} corresponding to the given {@link EObject object}.
-	 * 
+	 *
 	 * @param eObject
 	 *            The {@linkplain EObject object} whose {@link Resource resource} is to be returned.
 	 * @return The resource corresponding to the specified {@link EObject object}.
@@ -698,7 +699,7 @@ public final class EcoreResourceUtil {
 	 * <p>
 	 * First retrieves the owner of the {@link IWrapperItemProvider provider}; then, if owner is an {@linkplain EObject}
 	 * returns its resource, else delegates to {@linkplain #getResource(Object)}.
-	 * 
+	 *
 	 * @param provider
 	 *            The {@linkplain IWrapperItemProvider} whose resource must be returned.
 	 * @return The resource containing the specified {@link IWrapperItemProvider provider}; <code>null</code> if that
@@ -721,7 +722,7 @@ public final class EcoreResourceUtil {
 	 * Retrieves the {@linkplain Resource resource} matching the given {@link FeatureMap.Entry entry}.
 	 * <p>
 	 * First unwraps the {@link FeatureMap.Entry entry}; then, delegates to {@linkplain #getResource(Object)}.
-	 * 
+	 *
 	 * @param entry
 	 *            The {@linkplain FeatureMap.Entry} whose underlying resource must be returned.
 	 * @return The resource under the specified {@link FeatureMap.Entry entry}.
@@ -736,7 +737,7 @@ public final class EcoreResourceUtil {
 	 * <p>
 	 * First retrieves the owner of the {@link TransientItemProvider provider}; then, if owner is an
 	 * {@linkplain EObject} returns its resource, else delegates to {@linkplain #getResource(Object)}.
-	 * 
+	 *
 	 * @param provider
 	 *            The {@linkplain TransientItemProvider} whose resource must be returned.
 	 * @return The resource containing the specified {@link IWrapperItemProvider provider}; <code>null</code> if that
@@ -755,7 +756,7 @@ public final class EcoreResourceUtil {
 	/**
 	 * Returns the contents of given Resource. If the provided Resource is
 	 * <tt>null<tt> the method will return an empty list.
-	 * 
+	 *
 	 * @param resource
 	 * @return The content of the given <code>resource</code> or an empty list if no Resource is provided.
 	 */
@@ -768,7 +769,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Loads the {@link Resource resource} referred to by given {@link URI}.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The {@link ResourceSet resource set} that will contain the resource when it has been loaded.
 	 * @param uri
@@ -786,7 +787,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Loads the {@link Resource resource} referred to by given {@link java.io.File file}.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The {@link ResourceSet resource set} that will contain the resource when it has been loaded.
 	 * @param file
@@ -804,7 +805,7 @@ public final class EcoreResourceUtil {
 	/**
 	 * Proves if the model with the specified {@link URI uri} is already loaded into the given {@link ResourceSet
 	 * resourceSet}.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The resource set to search resource in.
 	 * @param uri
@@ -824,7 +825,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Returns the name of the model behind provided model object.
-	 * 
+	 *
 	 * @param notifier
 	 *            Can either be an EObject or a Resource.
 	 * @return The name of the model specified by the given <code>modelRoot</code>.
@@ -847,7 +848,7 @@ public final class EcoreResourceUtil {
 	/**
 	 * Create the new model given by the {@link EObject modelRoot} parameter. The method will create a new Resource
 	 * specified by a given URI and content type id. The new created resource will be added to a given ResourceSet.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The ResourceSet to which the new Resource is added.
 	 * @param uri
@@ -891,7 +892,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * The {@link Resource} provided as argument will be added to the given ResourceSet if it is not already inside.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The resourceSet where to add resources
 	 * @param resource
@@ -916,7 +917,7 @@ public final class EcoreResourceUtil {
 	 * Saves the new model given by the {@link EObject modelRoot} parameter. The method will create a new Resource
 	 * specified by a given URI and content type id. The new created resource will be added to a given ResourceSet and
 	 * saved.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The ResourceSet to which the new Resource is added.
 	 * @param uri
@@ -939,7 +940,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Saves the specified <code>resource</code>.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link Resource resource} to be saved.
 	 * @param options
@@ -973,7 +974,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Unloads given {@link Resource resource} and removes it from underlying {@link ResourceSet resourceSet}.
-	 * 
+	 *
 	 * @param resource
 	 *            The resource to be unloaded.
 	 */
@@ -983,7 +984,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Unloads given {@link Resource resource} and removes it from underlying {@link ResourceSet resourceSet}.
-	 * 
+	 *
 	 * @param resource
 	 *            The resource to be unloaded.
 	 * @param memoryOptimized
@@ -1019,7 +1020,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Unloads the resource with the specified URI from the given resource set.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            A resource set from which the model's resource should be unloaded.
 	 * @param uri
@@ -1034,7 +1035,7 @@ public final class EcoreResourceUtil {
 	 * <p>
 	 * It is recommended to call this method inside a write-transaction (see
 	 * {@link EcorePlatformUtil#unloadFile(ResourceSet, IPath)}).
-	 * 
+	 *
 	 * @param resourceSet
 	 *            A resource set from which the model's resource should be unloaded.
 	 * @param uri
@@ -1055,7 +1056,7 @@ public final class EcoreResourceUtil {
 	 * Parses {@link Resource resource} with given {@link URI uri} and validates it against XSD schema with specified
 	 * {@link URL url}. Raises an exception if the {@link Resource resource}'s content is not compliant with respect to
 	 * XSD schema.
-	 * 
+	 *
 	 * @param uri
 	 *            The {@link URI uri} of the {@link Resource resource} to be validated.
 	 * @param schemaURL
@@ -1086,7 +1087,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Loads from resource set the resource specified by the given URI, or try to load the URI if not in resource set.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The resource set into which model resource must be loaded.
 	 * @param uri
@@ -1123,7 +1124,7 @@ public final class EcoreResourceUtil {
 		}
 
 		// Just get model resource if it is already loaded
-		Resource resource = resourceSet.getResource(uri.trimFragment().trimQuery(), false);
+		Resource resource = resourceSet.getResource(uri, false);
 
 		// Load it using specified options if not done so yet and a demand load has been requested
 		if ((resource == null || !resource.isLoaded()) && loadOnDemand) {
@@ -1208,7 +1209,7 @@ public final class EcoreResourceUtil {
 
 	/**
 	 * Loads the model from the resource specified by the given URI and returns its root element.
-	 * 
+	 *
 	 * @param resourceSet
 	 *            The resource set into which model resource must be loaded.
 	 * @param uri

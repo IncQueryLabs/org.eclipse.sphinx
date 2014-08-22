@@ -1,16 +1,17 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2013 See4sys, itemis and others.
+ *
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
- * 
+ *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.resource;
@@ -48,12 +49,12 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 	public ExtendedSAXXMIHandler(XMLResource xmiResource, XMLHelper helper, Map<?, ?> options) {
 		super(xmiResource, helper, options);
 
+		extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(xmlResource);
+
 		Object value = options.get(ExtendedResource.OPTION_RESOURCE_VERSION_DESCRIPTOR);
 		if (value instanceof IMetaModelDescriptor) {
 			resourceVersion = (IMetaModelDescriptor) value;
 		}
-
-		extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(xmlResource);
 
 		// Workaround for potential bug in org.apache.xerces.impl.xs.XMLSchemaValidator.addDefaultAttributes(QName,
 		// XMLAttributes, XSAttributeGroupDecl) (line 3027) which attempts to add xmi:version as default attribute if
@@ -186,15 +187,45 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 	}
 
 	/*
-	 * Overridden to enrich proxy URIs being created with context information required to honor their {@link
-	 * IResourceScope resource scope}s when they are being resolved and to support the resolution of proxified
-	 * references between objects from different metamodels.
+	 * Overridden to enable delegation of actual proxy URI creation to {@link ExtendedResourceAdapter extended resource
+	 * adapter} and to augment proxy URIs to context-aware proxy URIs required to honor their {@link IResourceScope
+	 * resource scope}s when they are being resolved and to support the resolution of proxified references between
+	 * objects from different metamodels.
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLHandler#handleProxy(org.eclipse.emf.ecore.InternalEObject,
 	 * java.lang.String)
 	 */
 	@Override
 	protected void handleProxy(InternalEObject proxy, String uriLiteral) {
-		super.handleProxy(proxy, uriLiteral);
+		URI proxyURI;
+		if (oldStyleProxyURIs) {
+			uriLiteral = uriLiteral.startsWith(ExtendedResource.URI_SEGMENT_SEPARATOR) ? uriLiteral : ExtendedResource.URI_SEGMENT_SEPARATOR
+					+ uriLiteral;
+			proxyURI = URI.createURI(uriLiteral);
+			proxy.eSetProxyURI(proxyURI);
+		} else {
+			if (extendedResource != null) {
+				proxyURI = extendedResource.createURI(uriLiteral);
+			} else {
+				proxyURI = URI.createURI(uriLiteral);
+			}
+
+			if (uriHandler != null) {
+				proxyURI = uriHandler.resolve(proxyURI);
+			} else if (resolve
+					&& proxyURI.isRelative()
+					&& proxyURI.hasRelativePath()
+					&& (extendedMetaData == null ? !packageRegistry.containsKey(proxyURI.trimFragment().toString()) : extendedMetaData
+							.getPackage(proxyURI.trimFragment().toString()) == null)) {
+				proxyURI = helper.resolve(proxyURI, resourceURI);
+			}
+
+			proxy.eSetProxyURI(proxyURI);
+		}
+
+		// Test for a same document reference that would usually be handled as an IDREF
+		if (proxyURI.trimFragment().equals(resourceURI)) {
+			sameDocumentProxies.add(proxy);
+		}
 
 		if (extendedResource != null) {
 			extendedResource.augmentToContextAwareProxy(proxy);

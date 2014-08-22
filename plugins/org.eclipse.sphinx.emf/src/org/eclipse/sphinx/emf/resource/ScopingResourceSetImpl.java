@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2013 See4sys, BMW Car IT, itemis and others.
+ * Copyright (c) 2008-2014 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,8 @@
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  *     itemis - [420792] Sphinx is not able to load resources that are registered in the EMF package registry
  *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
- *     
+ *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.resource;
@@ -64,7 +65,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	/**
 	 * Returns the {@link IResourceScope resource scope} used to encompass all resources that are located outside of the
 	 * workspace.
-	 * 
+	 *
 	 * @return The scope used to encompass all resources that are located outside of the workspace.
 	 */
 	protected IResourceScope getOutsideWorkspaceScope() {
@@ -77,7 +78,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	/**
 	 * Creates the {@link IResourceScope resource scope} used to encompass all resources that are located outside of the
 	 * workspace.
-	 * 
+	 *
 	 * @return The scope used to encompass all resources that are located outside of the workspace.
 	 */
 	protected IResourceScope createOutsideWorkspaceScope() {
@@ -128,7 +129,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	/**
 	 * Retrieves the {@link Resource resource}s contained by this {@link ResourceSet resource set} that belong to the
 	 * {@link IResourceScope resource scope}(s) behind provided <code>contextObject</code>.
-	 * 
+	 *
 	 * @param contextObject
 	 *            The context object the resource scope to refer to.
 	 * @param includeReferencedScopes
@@ -172,7 +173,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	/**
 	 * Tests if given {@link Resource resource} belongs to the {@link IResourceScope resource scope}(s) behind provided
 	 * <code>contextObject</code>.
-	 * 
+	 *
 	 * @param resource
 	 *            The resource to be investigated.
 	 * @param contextObject
@@ -209,7 +210,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	/**
 	 * Retrieves a map that is keyed by the {@link IResourceScope resource scopes} behind given context object and
 	 * yields the {@link IMetaModelDescriptor descriptors of the metamodel}s using them.
-	 * 
+	 *
 	 * @param contextObject
 	 *            The context object to retrieve the resource scopes for.
 	 * @return A map containing the resource scopes behind given context object along with the descriptor of the
@@ -235,7 +236,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 			URI contextURI = (URI) contextObject;
 
 			// Try to resolve context URI to resource contained by this resource set
-			resource = getResource(contextURI.trimFragment().trimQuery(), false);
+			resource = getResource(contextURI, false);
 			if (resource != null) {
 				contextObject = resource;
 			} else {
@@ -322,7 +323,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 			return safeFindEObjectInResources(resources, uri, loadOnDemand);
 		} else {
 			// Target resource is known, so search for object behind given URI only in that resource
-			Resource resource = safeGetResource(uri.trimFragment().trimQuery(), loadOnDemand);
+			Resource resource = safeGetResource(uri, loadOnDemand);
 			if (resource != null) {
 				// Do we have any context information?
 				if (contextObject != null) {
@@ -349,7 +350,7 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 	 * this {@link ScopingResourceSetImpl resource set} otherwise. Clients may override this method in order to tweak
 	 * the set of {@link Resource resource}s used for resolving fragment-based {@link URI}s.
 	 * </p>
-	 * 
+	 *
 	 * @param uri
 	 *            The fragment-based {@link URI} to resolve.
 	 * @param loadOnDemand

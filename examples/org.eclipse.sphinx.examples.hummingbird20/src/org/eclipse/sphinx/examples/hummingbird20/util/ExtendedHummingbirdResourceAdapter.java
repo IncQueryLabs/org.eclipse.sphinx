@@ -10,6 +10,7 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [441970] Result returned by ExtendedResourceAdapter#getHREF(EObject) must default to complete object URI (edit)
+ *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *
  * </copyright>
  */
@@ -33,37 +34,66 @@ public class ExtendedHummingbirdResourceAdapter extends ExtendedResourceAdapter 
 	 */
 	public static final String HB_SCHEME = "hb"; //$NON-NLS-1$
 
+	/**
+	 * Creates a fragment-based Hummingbird 2.0 {@link URI} from given original {@link URI}.
+	 *
+	 * @param uri
+	 *            The original {@link URI} to be handled.
+	 * @return The resulting fragment-based Hummingbird 2.0 {@link URI}.
+	 */
+	protected URI createHummingbirdURI(URI uri) {
+		if (uri != null && !HB_SCHEME.equals(uri.scheme())) {
+			return URI.createURI(HB_SCHEME + URI_SCHEME_SEPARATOR + URI_SEGMENT_SEPARATOR + URI_FRAGMENT_SEPARATOR + uri.fragment(), true);
+		}
+		return uri;
+	}
+
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResourceAdapter#getURI(org.eclipse.emf.ecore.EObject,
 	 * org.eclipse.emf.ecore.EStructuralFeature, org.eclipse.emf.ecore.EObject)
 	 */
 	@Override
 	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
+		// Get full URI
 		URI uri = super.getURI(oldOwner, oldFeature, eObject);
-		// Make sure that cross-document references to Hummingbird 2.0 resources are fragment-based
-		return createHummingbirdURI(uri.fragment());
+
+		// Convert full URI into a fragment-based Hummingbird 2.0 URI
+		return createHummingbirdURI(uri);
 	}
 
-	/**
-	 * Creates a fragment-based Hummingbird 2.0 {@link URI} from given {@link URI} fragment.
-	 *
-	 * @param uriFragment
-	 *            The {@link URI} fragment the URI to handled.
-	 * @return The resulting fragment-based Hummingbird 2.0 {@link URI}.
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResourceAdapter#createURI(java.lang.String)
 	 */
-	public static URI createHummingbirdURI(String uriFragment) {
-		if (uriFragment != null && uriFragment.length() > 0) {
-			return URI.createURI(HB_SCHEME + URI_SCHEME_SEPARATOR + URI_SEGMENT_SEPARATOR + URI_FRAGMENT_SEPARATOR + uriFragment, true);
+	@Override
+	public URI createURI(String uriLiteral) {
+		// Is given URI literal a fragment-only URI string?
+		if (uriLiteral.startsWith(URI_FRAGMENT_SEPARATOR)) {
+			// Create corresponding fragment-only URI object
+			URI uri = URI.createURI(uriLiteral);
+
+			// Create and return corresponding fragment-based Hummingbird 2.0 URI
+			return createHummingbirdURI(uri);
 		}
-		return null;
+
+		// Backward compatibility: Is given URI literal a fragment-only URI string without leading fragment separator?
+		if (!uriLiteral.contains(URI_FRAGMENT_SEPARATOR)) {
+			// Create corresponding fragment-only URI object
+			URI uri = URI.createURI(URI_FRAGMENT_SEPARATOR + uriLiteral);
+
+			// Create and return corresponding fragment-based Hummingbird 2.0 URI
+			return createHummingbirdURI(uri);
+		}
+
+		return super.createURI(uriLiteral);
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResourceAdapter#getHREF(org.eclipse.emf.ecore.EObject)
 	 */
 	@Override
-	public String getHREF(EObject eObject) {
-		// Return only fragment of URI of given object as HREF literal
-		return getURI(eObject).fragment();
+	public URI getHREF(EObject eObject) {
+		// Return a fragment-only URI of given object as HREF
+		URI uri = getURI(eObject);
+		return URI.createURI(URI_FRAGMENT_SEPARATOR + uri.fragment());
 	}
 }

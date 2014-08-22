@@ -12,12 +12,14 @@
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  *     itemis - [427461] Add progress monitor to resource load options (useful for loading large models)
  *     itemis - [434954] Hook for overwriting conversion of EMF Diagnostics to IMarkers
+ *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.resource;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -33,6 +35,7 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.scoping.IResourceScope;
 
 /**
  * A set of additional services for EMF {@link Resource resources} including memory-optimized unloading, proxy creation
@@ -58,17 +61,23 @@ public interface ExtendedResource {
 	/**
 	 * Special character separating a keys/value pairs within the query of an URI.
 	 */
-	String URI_KEY_VALUE_PAIR_SEPARATOR = "&"; //$NON-NLS-1$
+	String URI_QUERY_FIELD_SEPARATOR = "&"; //$NON-NLS-1$
 
 	/**
 	 * Special character separating keys from values within keys/value pairs in the query of an URI.
 	 */
-	String URI_KEY_VALUE_SEPARATOR = "="; //$NON-NLS-1$
+	String URI_QUERY_KEY_VALUE_SEPARATOR = "="; //$NON-NLS-1$
 
 	/**
 	 * Special character signaling the start of the fragment of an URI.
 	 */
 	String URI_FRAGMENT_SEPARATOR = "#"; //$NON-NLS-1$
+
+	// Regular expression in clear text: ([^&^=]+)=?([^&^=]*)
+	Pattern URI_QUERY_FIELD_PATTERN = Pattern.compile("([^" + URI_QUERY_FIELD_SEPARATOR + "^" + URI_QUERY_KEY_VALUE_SEPARATOR + "]+)=?([^" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			+ URI_QUERY_FIELD_SEPARATOR + "^" + URI_QUERY_KEY_VALUE_SEPARATOR + "]*)"); //$NON-NLS-1$ //$NON-NLS-2$
+	int URI_QUERY_FIELD_PATTERN_KEY_GROUP_IDX = 1;
+	int URI_QUERY_FIELD_PATTERN_VALUE_GROUP_IDX = 2;
 
 	/**
 	 * Used for indicating the {@link IMetaModelDescriptor version} of specified {@link Resource resource}. Can be
@@ -95,7 +104,7 @@ public interface ExtendedResource {
 	 * {@link XMLResource#OPTION_SCHEMA_LOCATION} is enabled and requires that {@link ExtendedXMLSaveImpl} or
 	 * {@link ExtendedXMISaveImpl}, or a subtype of them, is used as {@link XMLResourceImpl#createXMLSave() serializer}
 	 * for this resource.
-	 * 
+	 *
 	 * @see XMLResource#OPTION_SCHEMA_LOCATION
 	 * @see XMLResourceImpl#createXMLSave()
 	 * @see ExtendedXMLSaveImpl#addNamespaceDeclarations()
@@ -118,7 +127,7 @@ public interface ExtendedResource {
 	 * identifiers by falling back to a known system identifier corresponding to the resource's
 	 * {@link IMetaModelDescriptor#getNamespace() namespace}.
 	 * </p>
-	 * 
+	 *
 	 * @see XMLResource#OPTION_URI_HANDLER
 	 * @see SchemaLocationURIHandler
 	 * @see XMLResourceImpl#createXMLLoad()
@@ -131,7 +140,7 @@ public interface ExtendedResource {
 	 * Specifies a {@link IResourceProblemMarkerFactory resource problem marker factory} that is used to convert the
 	 * {@link Resource#getErrors() errors} and {@link Resource#getWarnings() warnings} on this resource to problem
 	 * markers on underlying {@link IFile} after this resource has been loaded or saved.
-	 * 
+	 *
 	 * @see IResourceProblemMarkerFactory
 	 * @see Resource#getErrors()
 	 * @see Resource#getWarnings()
@@ -148,7 +157,7 @@ public interface ExtendedResource {
 	 * Note that a high number of problem markers being generated for many files may have a negative impact on overall
 	 * load and save performance.
 	 * <p>
-	 * 
+	 *
 	 * @see Resource#getErrors()
 	 * @see Resource#getWarnings()
 	 */
@@ -201,7 +210,7 @@ public interface ExtendedResource {
 	 * when a project or the entire workbench is closed), proxies are not needed and not creating them can reduce memory
 	 * consumption quite dramatically.
 	 * <p>
-	 * 
+	 *
 	 * @see ResourceImpl#unloaded()
 	 */
 	String OPTION_UNLOAD_MEMORY_OPTIMIZED = "UNLOAD_MEMORY_OPTIMIZED"; //$NON-NLS-1$
@@ -234,7 +243,7 @@ public interface ExtendedResource {
 	 * Improved implementation of org.eclipse.emf.ecore.resource.impl.ResourceImpl#unloaded(InternalEObject) enabling
 	 * memory-optimized unloading of {@link Resource resource}s and proxy creation with custom {@link URI} formats
 	 * during regular unload.
-	 * 
+	 *
 	 * @param internalEObject
 	 *            The {@link InternalEObject} that has just been removed from the resource and is to be further
 	 *            processed by this method.
@@ -246,7 +255,7 @@ public interface ExtendedResource {
 	/**
 	 * Returns a {@link URI} representing given {@link InternalEObject}. Clients may implement/override this method when
 	 * they require URIs with custom formats to be created.
-	 * 
+	 *
 	 * @param InternalEObject
 	 *            The {@link InternalEObject} for which the URI is to be created.
 	 * @return The URI for given {@link InternalEObject}, or <code>null</code> if no such could be created.
@@ -258,9 +267,11 @@ public interface ExtendedResource {
 	 * {@link EStructuralFeature feature}.If the {@link EObject eObject} is stand-alone (i.e freshly removed and without
 	 * attached resource) the {@link URI} is determine using the {@link EObject owner} and the
 	 * {@link EStructuralFeature feature}, if the {@link EObject eObject} is still attached to a {@link Resource} the
-	 * {@link URI} is calculated using same implementation as in {@link ResourceImpl#unload()} . Clients may
-	 * implement/override this method when they require URIs with custom formats to be created.
-	 * 
+	 * {@link URI} is calculated using same implementation as in {@link ResourceImpl#unload()}.
+	 * <p>
+	 * Clients may implement/override this method when they require URIs with custom formats to be created.
+	 * </p>
+	 *
 	 * @param oldOwner
 	 *            The {@link EObject} owning the {@link EObject} before it was deleted.
 	 * @param oldFeature
@@ -275,29 +286,65 @@ public interface ExtendedResource {
 	URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject);
 
 	/**
-	 * Returns an HREF to this object from this resource. Clients may implement/override this method when they require
-	 * HREFs with custom formats to be created.
-	 * 
-	 * @param eObject
-	 *            The {@link EObject} for which the HREF is to be created.
-	 * @return the HREF to this object from this resource.
+	 * Creates a {@link URI} from given <code>uriLiteral</code>. This method is typically called during deserialization
+	 * of resources when it comes to creating proxy URIs from serialized representations of cross-document references to
+	 * objects in other resources.
+	 * <p>
+	 * Clients may implement/override this method when they require URIs with custom formats to be created
+	 * </p>
+	 *
+	 * @param uriLiteral
+	 *            The string representation of the URI to be created.
+	 * @return The URI corresponding to given <code>uriLiteral</code>.
 	 */
-	String getHREF(EObject eObject);
+	URI createURI(String uriLiteral);
 
 	/**
-	 * Determines whether or not the given string represents a valid URI.
-	 * 
+	 * Returns a {@link URI} representing an HREF to given {@link EObject} stored in underlying {@link Resource}. This
+	 * method is typically called during serialization of resources when it comes to creating serializable
+	 * representations of cross-document references for objects being referenced from other resources.
+	 * <p>
+	 * Clients may implement/override this method when they require HREFs with custom formats to be created.
+	 * </p>
+	 *
+	 * @param eObject
+	 *            The object for which the HREF URI is to be created.
+	 * @return The HREF URI to this object from this resource.
+	 */
+	URI getHREF(EObject eObject);
+
+	/**
+	 * Determines whether or not the given URI string represents a valid URI.
+	 *
 	 * @param uri
-	 *            The string to be validated.
-	 * @return {@link Diagnostic#OK_INSTANCE} if given string is a valid URI or a {@link Diagnostic} with complementary
-	 *         information on error otherwise.
+	 *            The URI string to be validated.
+	 * @return {@link Diagnostic#OK_INSTANCE} if given URI string is a valid URI or a {@link Diagnostic} with
+	 *         complementary information on error otherwise.
 	 */
 	Diagnostic validateURI(String uri);
 
 	/**
 	 * Augments given {@link InternalEObject proxy} to a context-aware proxy by adding key/value pairs that contain the
 	 * target {@link IMetaModelDescriptor metamodel descriptor} and a context {@link URI} to the {@link URI#query()
-	 * query string} of the proxy URI.
+	 * query string} of the proxy URI. Those are required to support the resolution of proxified references between
+	 * objects from different metamodels and to honor the {@link IResourceScope resource scope} of the proxy URI when it
+	 * is being resolved.
+	 *
+	 * @param proxy
+	 *            The proxy to be handled.
+	 * @see #trimProxyContextInfo(URI)
 	 */
 	void augmentToContextAwareProxy(EObject proxy);
+
+	/**
+	 * If given {@link URI proxy URI} contains proxy context-related key/value pairs on its {@link URI#query() query
+	 * string}, returns the URI formed by removing those key/value pairs or removing the query string entirely in case
+	 * that no other key/value pairs exist; returns given proxy URI unchanged, otherwise.
+	 *
+	 * @param proxyURI
+	 *            The context-aware proxy URI to be handled.
+	 * @return The trimmed proxy URI.
+	 * @see #augmentToContextAwareProxy(EObject)
+	 */
+	URI trimProxyContextInfo(URI proxyURI);
 }

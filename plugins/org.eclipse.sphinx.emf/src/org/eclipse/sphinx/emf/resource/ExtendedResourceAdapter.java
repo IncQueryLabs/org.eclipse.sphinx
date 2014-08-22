@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked
  *     itemis - [441970] Result returned by ExtendedResourceAdapter#getHREF(EObject) must default to complete object URI (edit)
+ *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *
  * </copyright>
  */
@@ -161,64 +162,79 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	 */
 	@Override
 	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
-		Resource resource = (Resource) getTarget();
+		if (!eObject.eIsProxy()) {
+			Resource resource = (Resource) getTarget();
 
-		// Has given eObject been removed or is it directly or indirectly contained by some other eObject that has been
-		// removed?
-		if (eObject.eResource() == null && oldOwner != null && oldFeature != null) {
-			// Has given eObject an ID?
-			String id = EcoreUtil.getID(eObject);
-			if (id != null) {
-				// Proceed as in EcoreUtil#getURI()/ResourceImpl#getURIFragment() and return a URI with object ID as
-				// fragment
-				return resource.getURI().appendFragment(id);
-			} else {
-				// Use provided oldOwner and oldFeature to calculate given eObject's old URI that it had prior to the
-				// removal
+			// Has given eObject been removed or is it directly or indirectly contained by some other eObject that has
+			// been removed?
+			if (eObject.eResource() == null && oldOwner != null && oldFeature != null) {
+				// Has given eObject an ID?
+				String id = EcoreUtil.getID(eObject);
+				if (id != null) {
+					// Proceed as in EcoreUtil#getURI()/ResourceImpl#getURIFragment() and return a URI with object ID as
+					// fragment
+					return resource.getURI().appendFragment(id);
+				} else {
+					// Use provided oldOwner and oldFeature to calculate given eObject's old URI that it had prior to
+					// the removal
 
-				// Retrieve the oldOwner's URI fragment
-				URI oldOwnerURI = EcoreUtil.getURI(oldOwner);
-				String oldOwnerURIFragment = oldOwnerURI.fragment();
+					// Retrieve the oldOwner's URI fragment
+					URI oldOwnerURI = EcoreUtil.getURI(oldOwner);
+					String oldOwnerURIFragment = oldOwnerURI.fragment();
 
-				// Restore URI fragment segment that pointed from oldOwner to removed eObject (which may be the given
-				// eObject itself or some other eObject that directly or indirectly contains given eObject
-				EObject eObjectRootContainer = EcoreUtil.getRootContainer(eObject);
-				String eObjectRootContainerURIFragmentSegment = ((InternalEObject) oldOwner).eURIFragmentSegment(oldFeature, eObjectRootContainer);
+					// Restore URI fragment segment that pointed from oldOwner to removed eObject (which may be the
+					// given eObject itself or some other eObject that directly or indirectly contains given eObject
+					EObject eObjectRootContainer = EcoreUtil.getRootContainer(eObject);
+					String eObjectRootContainerURIFragmentSegment = ((InternalEObject) oldOwner)
+							.eURIFragmentSegment(oldFeature, eObjectRootContainer);
 
-				// Calculate URI fragment segments for given eObject in case that it is an eObject that is directly or
-				// indirectly contained by the removed eObject
-				List<String> eObjectURIFragmentSegments = new ArrayList<String>();
-				InternalEObject internalEObject = (InternalEObject) eObject;
-				for (InternalEObject container = internalEObject.eInternalContainer(); container != null; container = internalEObject
-						.eInternalContainer()) {
-					eObjectURIFragmentSegments.add(container.eURIFragmentSegment(internalEObject.eContainingFeature(), internalEObject));
-					internalEObject = container;
-				}
+					// Calculate URI fragment segments for given eObject in case that it is an eObject that is directly
+					// or indirectly contained by the removed eObject
+					List<String> eObjectURIFragmentSegments = new ArrayList<String>();
+					InternalEObject internalEObject = (InternalEObject) eObject;
+					for (InternalEObject container = internalEObject.eInternalContainer(); container != null; container = internalEObject
+							.eInternalContainer()) {
+						eObjectURIFragmentSegments.add(container.eURIFragmentSegment(internalEObject.eContainingFeature(), internalEObject));
+						internalEObject = container;
+					}
 
-				// Compose and return the eObject' old URI
-				StringBuilder oldEObjectURIFragment = new StringBuilder();
-				oldEObjectURIFragment.append(oldOwnerURIFragment);
-				oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
-				oldEObjectURIFragment.append(eObjectRootContainerURIFragmentSegment);
-				for (int i = eObjectURIFragmentSegments.size() - 1; i >= 0; --i) {
+					// Compose and return the eObject' old URI
+					StringBuilder oldEObjectURIFragment = new StringBuilder();
+					oldEObjectURIFragment.append(oldOwnerURIFragment);
 					oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
-					oldEObjectURIFragment.append(eObjectURIFragmentSegments.get(i));
+					oldEObjectURIFragment.append(eObjectRootContainerURIFragmentSegment);
+					for (int i = eObjectURIFragmentSegments.size() - 1; i >= 0; --i) {
+						oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
+						oldEObjectURIFragment.append(eObjectURIFragmentSegments.get(i));
+					}
+					return oldOwnerURI.trimFragment().appendFragment(oldEObjectURIFragment.toString());
 				}
-				return oldOwnerURI.trimFragment().appendFragment(oldEObjectURIFragment.toString());
 			}
-		}
 
-		// Calculate and return normal URI, i.e., same as EcoreUtil#getURI() would
-		return resource.getURI().appendFragment(resource.getURIFragment(eObject));
+			// Calculate and return normal URI, i.e., same as EcoreUtil#getURI() would
+			return resource.getURI().appendFragment(resource.getURIFragment(eObject));
+		} else {
+			// Return the proxy URI as is
+			return ((InternalEObject) eObject).eProxyURI();
+		}
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#createURI(java.lang.String)
+	 */
+	@Override
+	public URI createURI(String uriLiteral) {
+		// Return URI object corresponding to given URI literal as is
+		return URI.createURI(uriLiteral);
 	}
 
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getHREF(org.eclipse.emf.ecore.EObject)
 	 */
 	@Override
-	public String getHREF(EObject eObject) {
-		// Return complete URI of given object as default HREF literal
-		return getURI(eObject).toString();
+	public URI getHREF(EObject eObject) {
+		// Let HREF default to URI of given object
+		return getURI(eObject);
 	}
 
 	/*
@@ -246,10 +262,29 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 			ResourceSet resourceSet = contextResource.getResourceSet();
 
 			// Augment the proxy's URI to a context-aware proxy URI
-			if (resourceSet instanceof ExtendedResourceSetImpl) {
-				((ExtendedResourceSetImpl) resourceSet).augmentToContextAwareProxy(proxy, contextResource);
+			if (resourceSet instanceof ExtendedResourceSet) {
+				((ExtendedResourceSet) resourceSet).augmentToContextAwareProxy(proxy, contextResource);
 			}
 		}
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#trimProxyContextInfo(org.eclipse.emf.common.util.URI)
+	 */
+	@Override
+	public URI trimProxyContextInfo(URI proxyURI) {
+		// Context-aware proxy URIs being used?
+		if (isUseContextAwareProxyURIs()) {
+			Resource contextResource = (Resource) getTarget();
+			ResourceSet resourceSet = contextResource.getResourceSet();
+
+			// Trim all proxy context information
+			if (resourceSet instanceof ExtendedResourceSet) {
+				return ((ExtendedResourceSet) resourceSet).trimProxyContextInfo(proxyURI);
+			}
+		}
+
+		return proxyURI;
 	}
 
 	/*

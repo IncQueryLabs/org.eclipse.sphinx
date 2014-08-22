@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2013 itemis and others.
+ * Copyright (c) 2008-2014 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,8 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
- *    
+ *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.uml2.ide.internal;
@@ -35,9 +36,9 @@ public class ExtendedUMLHandler extends UMLHandler {
 	}
 
 	/*
-	 * Overridden to enrich proxy URIs being created with context information required to honor their {@link
-	 * IResourceScope resource scope}s when they are being resolved and to support the resolution of proxified
-	 * references between objects from different metamodels.
+	 * Overridden to augment proxy URIs to context-aware proxy URIs required to honor their {@link IResourceScope
+	 * resource scope}s when they are being resolved and to support the resolution of proxified references between
+	 * objects from different metamodels.
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLHandler#handleProxy(org.eclipse.emf.ecore.InternalEObject,
 	 * java.lang.String)
 	 */

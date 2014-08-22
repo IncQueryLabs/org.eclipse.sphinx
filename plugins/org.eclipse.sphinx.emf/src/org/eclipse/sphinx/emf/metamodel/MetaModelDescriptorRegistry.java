@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2013 BMW Car IT, See4sys, itemis and others.
+ * Copyright (c) 2008-2014 BMW Car IT, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,6 +21,7 @@
  *     itemis - [409367] Add a custom URI scheme to metamodel descriptor allowing mapping URI scheme to metamodel descriptor
  *     itemis - [418005] Add support for model files with multiple root elements
  *     itemis - [422334] Content-type based IMetaModelDescriptor determination for a file gets corrupted if file extension is associated to org.eclipse.emf.compare.ui.contenttype.ModelContentType
+ *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *
  * </copyright>
  */
@@ -62,6 +63,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.FeatureMap;
@@ -901,6 +903,17 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 */
 	public IMetaModelDescriptor getDescriptor(EObject eObject) {
 		if (eObject != null) {
+			// Special handling for proxies representing EObjects of meta-models that extend Ecore (e.g., UML2); instead
+			// of being instances of the respective meta-model classes they may be instances of EClass and have proxy
+			// URIs starting with the namespace URI of the applicable meta-model package
+			if (eObject.eIsProxy() && eObject instanceof EClass) {
+				org.eclipse.emf.common.util.URI proxyURI = ((InternalEObject) eObject).eProxyURI();
+				EPackage ePackage = EPackage.Registry.INSTANCE.getEPackage(proxyURI.trimFragment().toString());
+				if (ePackage != null) {
+					return getDescriptor(ePackage);
+				}
+			}
+
 			// Retrieve and return meta-model descriptor from EClass behind given EObject unless it turns out that it is
 			// outdated
 			/*

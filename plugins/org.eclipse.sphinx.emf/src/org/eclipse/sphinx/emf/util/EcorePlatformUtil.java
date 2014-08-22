@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2013 itemis, See4sys and others.
+ * Copyright (c) 2008-2014 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@
  *     itemis - [418005] Add support for model files with multiple root elements
  *     itemis - [423687] Synchronize ExtendedPlatformContentHandlerImpl wrt latest changes in EMF's PlatformContentHandlerImpl
  *     itemis - [427461] Add progress monitor to resource load options (useful for loading large models)
+ *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *
  * </copyright>
  */
@@ -103,7 +104,7 @@ public final class EcorePlatformUtil {
 	 * Converts given {@link IPath path} into a workspace-relative platform resource {@link URI} if possible or an
 	 * absolute file {@link URI} otherwise. Returns given {@link IPath} as indeterminate (scheme-less) {@link URI} if
 	 * none of both is possible.
-	 * 
+	 *
 	 * @param path
 	 *            The {@link IPath path} for which to create the {@link URI}; must not be <code>null</code>.
 	 * @return Workspace-relative platform resource {@link URI} or absolute file {@link URI} for given {@link IPath
@@ -134,7 +135,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Converts the given {@link IPath path} into an absolute file {@linkplain URI}.
-	 * 
+	 *
 	 * @param path
 	 *            The {@link Path path} for which an {@linkplain URI} is to be created.
 	 * @return The absolute file {@linkplain URI} for the given {@link IPath path} or an {@link URI} corresponding to
@@ -147,7 +148,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Converts the given {@link URI uri} into an absolute file location, <em>i.e.</em> into a {@linkplain IPath path}.
-	 * 
+	 *
 	 * @param uri
 	 *            The file {@linkplain URI} for which an absolute file {@linkplain IPath location} must be created.
 	 * @return The absolute file {@linkplain IPath location} for the given file {@link URI uri}.
@@ -165,7 +166,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Converts the given {@link IPath path} into an absolute file {@linkplain IPath location}.
-	 * 
+	 *
 	 * @param path
 	 *            The file path for which an absolute file {@linkplain IPath location} must be created.
 	 * @return The absolute file {@linkplain IPath location} for the given file {@link IPath path}.
@@ -184,7 +185,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Reads the model namespace (i.e. XML namespace) of given {@link IFile file}. Returns a meaningful result only if
 	 * the {@link IFile file} is an XML document.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} to investigate.
 	 * @return The model namespace denoted in the specified {@link IFile file} or <code>null</code> if the file is
@@ -201,7 +202,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Reads the target namespace of given {@link IFile file}. Returns a meaningful result only if given {@link IFile
 	 * file} is an XML document.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} to investigate.
 	 * @return The target namespace denoted in given {@link IFile file} or <code>null</code> if the {@link IFile file}
@@ -227,7 +228,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Retrieves the XML comments located above the root element in given {@link IFile file}. Returns a meaningful
 	 * result only if given {@link IFile file} is an XML document.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} to investigate.
 	 * @return Collection of strings representing the retrieved XML comments or empty collection if no such could be
@@ -244,7 +245,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Retrieves the {@link EObject root object} of the model contained in given {@link IFile file}. Returns
 	 * <code>null</code> if the {@link IFile file} has not been loaded yet or contains no or multiple root objects.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} containing the model.
 	 * @return The {@link EObject root object} of the model in given {@link IFile file} or <code>null</code> if the
@@ -265,7 +266,7 @@ public final class EcorePlatformUtil {
 	 * Retrieves the {@link EObject root object} of the model contained in given {@link IFile file} using given
 	 * {@link TransactionalEditingDomain editing domain}. Returns <code>null</code> if the {@link IFile file} has not
 	 * been loaded yet or contains no or multiple root objects.
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The {@linkplain TransactionalEditingDomain editing domain} the specified {@link IFile file} belongs
 	 *            to; must not be <code>null</code>.
@@ -304,7 +305,7 @@ public final class EcorePlatformUtil {
 	 * operation is somewhat costly in terms of runtime performance. Therefore, when the
 	 * {@link TransactionalEditingDomain editing domain} is already available prior to calling this method it is
 	 * recommended to use {@link #loadModelRoot(TransactionalEditingDomain, IFile)} instead.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} containing the model.
 	 * @return The {@link EObject root object} of the model in given {@link IFile file} or <code>null</code> if the
@@ -328,7 +329,7 @@ public final class EcorePlatformUtil {
 	 * operation is somewhat costly in terms of runtime performance. Therefore, when the
 	 * {@link TransactionalEditingDomain editing domain} is already available prior to calling this method it is
 	 * recommended to use {@link #loadModelRoot(TransactionalEditingDomain, IFile, Map)} instead.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} containing the model.
 	 * @param options
@@ -352,7 +353,7 @@ public final class EcorePlatformUtil {
 	 * domain} using {@link EcoreResourceUtil#getDefaultLoadOptions() default load options} and returns its
 	 * {@link EObject root object}. Returns <code>null</code> if the {@link IFile file} contains no or multiple root
 	 * objects.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} containing the model.
 	 * @param editingDomain
@@ -373,7 +374,7 @@ public final class EcorePlatformUtil {
 	 * Loads the model contained in given {@link IFile file} into given {@link TransactionalEditingDomain editing
 	 * domain} using given load options and returns its {@link EObject root object}. Returns <code>null</code> if the
 	 * {@link IFile file} contains no or multiple root objects.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} containing the model; must not be <code>null</code>.
 	 * @param editingDomain
@@ -409,7 +410,7 @@ public final class EcorePlatformUtil {
 	 * resource set} of the {@link TransactionalEditingDomain editing domain} the URI is mapped to. Returns
 	 * <code>null</code> if the {@link Resource resource} containing the model object referenced by the URI has not yet
 	 * been loaded into the editing domain's resource set.
-	 * 
+	 *
 	 * @param uri
 	 *            The URI that identifies the model object to be retrieved.
 	 * @return The model object referenced by provided URI or <code>null</code> if referenced model object does not
@@ -429,7 +430,7 @@ public final class EcorePlatformUtil {
 	 * resource set} of given {@link TransactionalEditingDomain editing domain}. Returns <code>null</code> if the
 	 * {@link Resource resource} containing the model object referenced by the URI has not yet been loaded into the
 	 * editing domain's resource set.
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The editing domain from the resource set of which the model object is to be retrieved.
 	 * @param uri
@@ -459,7 +460,7 @@ public final class EcorePlatformUtil {
 	 * resource set} of the {@link TransactionalEditingDomain editing domain} the URI is mapped to. Loads the
 	 * {@link Resource resource} containing the model object referenced by the URI into the editing domain's resource
 	 * set if this has not yet been done.
-	 * 
+	 *
 	 * @param uri
 	 *            The URI that identifies the model object to be retrieved.
 	 * @return The model object referenced by provided URI or <code>null</code> if referenced model object does not
@@ -478,7 +479,7 @@ public final class EcorePlatformUtil {
 	 * resource set} of given {@link TransactionalEditingDomain editing domain}. Loads the {@link Resource resource}
 	 * containing the model object referenced by the URI into the editing domain's resource set if this has not yet been
 	 * done.
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The editing domain from the resource set of which the model object is to be retrieved.
 	 * @param uri
@@ -517,7 +518,7 @@ public final class EcorePlatformUtil {
 	 * <p>
 	 * If the type of the specified object does not belongs to that list of supported types, <code>null</code> is
 	 * returned.
-	 * 
+	 *
 	 * @param object
 	 *            The object from which a resource must be returned.
 	 * @return The underlying resource from the given object.
@@ -543,7 +544,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Retrieves the {@linkplain Resource resource} corresponding to the given {@link IFile file}.
-	 * 
+	 *
 	 * @param file
 	 *            The {@linkplain IFile file} whose {@link Resource resource} is to be returned.
 	 * @return The resource corresponding to the specified {@link IFile file}.
@@ -568,7 +569,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Returns the {@linkplain Resource resource} corresponding to the specified {@link URI uri}.
-	 * 
+	 *
 	 * @param uri
 	 *            The {@linkplain URI} of the resource to return.
 	 * @return The resource corresponding to the specified {@link URI uri}.
@@ -581,7 +582,8 @@ public final class EcorePlatformUtil {
 				return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Resource>() {
 					@Override
 					public void run() {
-						setResult(editingDomain.getResourceSet().getResource(uri.trimFragment().trimQuery(), false));
+						ResourceSet resourceSet = editingDomain.getResourceSet();
+						setResult(resourceSet.getResource(uri, false));
 					}
 				});
 			} catch (InterruptedException ex) {
@@ -593,7 +595,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Retrieves the {@linkplain Resource resource} corresponding to the given {@link EObject object}.
-	 * 
+	 *
 	 * @param eObject
 	 *            The {@linkplain EObject object} whose {@link Resource resource} is to be returned.
 	 * @return The resource corresponding to the specified {@link EObject object}.
@@ -607,7 +609,7 @@ public final class EcorePlatformUtil {
 	 * <p>
 	 * First retrieves the owner of the {@link IWrapperItemProvider provider}; then, if owner is an {@linkplain EObject}
 	 * returns its resource, else delegates to {@linkplain #getResource(Object)}.
-	 * 
+	 *
 	 * @param provider
 	 *            The {@linkplain IWrapperItemProvider} whose resource must be returned.
 	 * @return The resource containing the specified {@link IWrapperItemProvider provider}; <code>null</code> if that
@@ -621,7 +623,7 @@ public final class EcorePlatformUtil {
 	 * Retrieves the {@linkplain Resource resource} matching the given {@link FeatureMap.Entry entry}.
 	 * <p>
 	 * First unwraps the {@link FeatureMap.Entry entry}; then, delegates to {@linkplain #getResource(Object)}.
-	 * 
+	 *
 	 * @param entry
 	 *            The {@linkplain FeatureMap.Entry} whose underlying resource must be returned.
 	 * @return The resource under the specified {@link FeatureMap.Entry entry}.
@@ -635,7 +637,7 @@ public final class EcorePlatformUtil {
 	 * <p>
 	 * First retrieves the owner of the {@link TransientItemProvider provider}; then, if owner is an
 	 * {@linkplain EObject} returns its resource.
-	 * 
+	 *
 	 * @param provider
 	 *            The {@linkplain TransientItemProvider} whose resource must be returned.
 	 * @return The resource containing the specified {@link TransientItemProvider provider}; <code>null</code> if that
@@ -647,7 +649,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Loads the {@link Resource resource} referred to by given {@link IFile file}.
-	 * 
+	 *
 	 * @param file
 	 *            The file from which the resource is to be loaded.
 	 * @param options
@@ -667,7 +669,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Loads the {@link Resource resource} referred to by given {@link IFile file} into the {@link ResourceSet resource
 	 * set} of given {@link TransactionalEditingDomain editing domain}.
-	 * 
+	 *
 	 * @param file
 	 *            The file from which the resource is to be loaded.
 	 * @param editingDomain
@@ -698,7 +700,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Tests if the given {@link Resource resource} is loaded in the {@link ResourceSet resource set} of given
 	 * {@link TransactionalEditingDomain editingDomain}.
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain editing domain} with the {@link ResourceSet resource set} to be
 	 *            investigated.
@@ -725,7 +727,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Loads all persisted resources that belong to the model specified by given <code>modelDescriptor</code>.
-	 * 
+	 *
 	 * @param modelDescriptors
 	 *            The {@link IModelDescriptor model} whose resources are to be loaded.
 	 * @param async
@@ -741,7 +743,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Loads all persisted resources that belong to the models specified by given <code>modelDescriptors</code>.
-	 * 
+	 *
 	 * @param modelDescriptors
 	 *            The collection of {@link IModelDescriptor model}s whose resources are to be loaded.
 	 * @param async
@@ -777,7 +779,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Tests if the persisted files of the given {@link IModelDescriptor model Descriptor} are loaded completely.
-	 * 
+	 *
 	 * @param modelDescriptor
 	 *            The {@link IModelDescriptor model Descriptor} that may or not be loaded.
 	 * @return <code>true</code> if the persisted files of the specified {@link IModelDescriptor model Descriptor} are
@@ -795,7 +797,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Tests if the persisted files of the given collection of {@link IModelDescriptor model Descriptor}s are loaded
 	 * completely.
-	 * 
+	 *
 	 * @param modelDescriptors
 	 *            The collection of {@link IModelDescriptor model Descriptor}s that may or not be loaded.
 	 * @return <code>true</code> if the persisted files of the specified collection of {@link IModelDescriptor model
@@ -822,7 +824,7 @@ public final class EcorePlatformUtil {
 	 * <li>{@linkplain org.eclipse.emf.edit.provider.IWrapperItemProvider}</li>
 	 * <li>{@linkplain org.eclipse.emf.ecore.util.FeatureMap.Entry}</li>
 	 * </ul>
-	 * 
+	 *
 	 * @param object
 	 *            The object from which a file must be returned.
 	 * @return The underlying file from the given object.
@@ -848,7 +850,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Retrieves the {@linkplain IFile file} corresponding to the given {@linkplain org.eclipse.emf.common.util.URI}.
-	 * 
+	 *
 	 * @param uri
 	 *            The {@linkplain URI} of the file to return.
 	 * @return The file corresponding to the specified {@link URI uri}.
@@ -871,7 +873,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Retrieves the {@link IFile file} corresponding to the given <code>resource</code>.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link Resource resource} for which the file is to be returned.
 	 * @return The file corresponding to the specified <code>resource</code>.
@@ -885,7 +887,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Retrieves the {@linkplain IFile file} owning to the given {@linkplain org.eclipse.emf.ecore.EObject}.
-	 * 
+	 *
 	 * @param eObject
 	 *            The {@linkplain EObject} whose file must be returned.
 	 * @return The file containing the specified {@link EObject eObject}.
@@ -903,7 +905,7 @@ public final class EcorePlatformUtil {
 	 * <p>
 	 * First retrieves the owner of the {@link IWrapperItemProvider provider}; then, if owner is an {@linkplain EObject}
 	 * delegates to {@linkplain #getFile(EObject)} else delegates to {@linkplain #getFile(Object)}.
-	 * 
+	 *
 	 * @param provider
 	 *            The {@linkplain IWrapperItemProvider} whose file must be returned.
 	 * @return The file containing the specified {@link IWrapperItemProvider provider}; <code>null</code> if that
@@ -926,7 +928,7 @@ public final class EcorePlatformUtil {
 	 * Retrieves the {@linkplain IFile file} matching the given {@link FeatureMap.Entry entry}.
 	 * <p>
 	 * First unwraps the {@link FeatureMap.Entry entry}; then, delegates to {@linkplain #getFile(Object)}.
-	 * 
+	 *
 	 * @param entry
 	 *            The {@linkplain FeatureMap.Entry} whose underlying file must be returned.
 	 * @return The file under the specified {@link FeatureMap.Entry entry}.
@@ -941,7 +943,7 @@ public final class EcorePlatformUtil {
 	 * <p>
 	 * First retrieves the owner of the {@link TransientItemProvider provider}; then, if owner is an
 	 * {@linkplain EObject} delegates to {@linkplain #getFile(EObject)} else delegates to {@linkplain #getFile(Object)}.
-	 * 
+	 *
 	 * @param provider
 	 *            The {@linkplain TransientItemProvider} whose file must be returned.
 	 * @return The file containing the specified {@link TransientItemProvider provider}; <code>null</code> if that
@@ -960,7 +962,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Tests if the given {@link IFile file} is loaded in the {@link ResourceSet resource set} of some
 	 * {@link TransactionalEditingDomain editingDomain}.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} that may or not be loaded.
 	 * @return <code>true</code> if specified {@link IFile file} is loaded in {@link ResourceSet resource set} of some
@@ -973,7 +975,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Tests if the given {@link IFile file} is loaded in the {@link ResourceSet resource set} of the given
 	 * {@link TransactionalEditingDomain editingDomain}.
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain editing domain} with the {@link ResourceSet resource set} to be
 	 *            investigated.
@@ -1001,7 +1003,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Returns all resources owned by the {@link IModelDescriptor model descriptor} of the contextObject.
-	 * 
+	 *
 	 * @param contextObject
 	 *            The Object used to research resources in the model.
 	 * @param includeReferencedModels
@@ -1033,7 +1035,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Returns all resources owned by the {@link IModelDescriptor model descriptor} provided in argument .
-	 * 
+	 *
 	 * @param modelDescriptor
 	 *            The {@link IModelDescriptor model descriptor} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1053,7 +1055,7 @@ public final class EcorePlatformUtil {
 	 * Returns all resources owned by the {@link IModelDescriptor model descriptor} of the context {@link IFile file}.
 	 * If the given {@link IFile file} doesn't belong to any {@link IModelDescriptor model descriptor}, resources in
 	 * context{@link ResourceSet} will be returned
-	 * 
+	 *
 	 * @param contextFile
 	 *            The {@link IFile file} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1072,7 +1074,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Returns all resources owned by the {@link IModelDescriptor model descriptor} of the context {@link URI uri}.
-	 * 
+	 *
 	 * @param contextURI
 	 *            The {@link URI uri} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1090,7 +1092,7 @@ public final class EcorePlatformUtil {
 	 * Returns all resources owned by the {@link IModelDescriptor model descriptor} of the context {@link Resource
 	 * resource}.If the given {@link Resource contextResource} doesn't belong to any {@link IModelDescriptor model
 	 * descriptor}, resources in context{@link ResourceSet} will be returned
-	 * 
+	 *
 	 * @param contextResource
 	 *            The {@link Resource resource} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1111,7 +1113,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Returns all resources owned by the {@link IModelDescriptor model descriptor} of the context {@link EObject
 	 * eobject}.
-	 * 
+	 *
 	 * @param contextEObject
 	 *            The {@link EObject eobject} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1128,7 +1130,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Returns all resources owned by the {@link IModelDescriptor model descriptor} of the context
 	 * {@link IWrapperItemProvider provider}.
-	 * 
+	 *
 	 * @param contextProvider
 	 *            The {@link IWrapperItemProvider provider} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1146,7 +1148,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Returns all resources owned by the {@link IModelDescriptor model descriptor} of the context
 	 * {@link FeatureMap.Entry feature map entry}.
-	 * 
+	 *
 	 * @param contextEntry
 	 *            The {@link FeatureMap.Entry feature map entry} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1164,7 +1166,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Returns all resources owned by the {@link IModelDescriptor model descriptor} of the context
 	 * {@link TransientItemProvider provider}.
-	 * 
+	 *
 	 * @param contextProvider
 	 *            The {@link TransientItemProvider provider} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1182,7 +1184,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Returns all resources owned by the {@link IModelDescriptor model}s of given {@link IMetaModelDescriptor
 	 * metamodel} in the context {@link IContainer container}.
-	 * 
+	 *
 	 * @param contextContainer
 	 *            The {@link IContainer container} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1206,7 +1208,7 @@ public final class EcorePlatformUtil {
 	 * Returns all resources owned by the {@link IModelDescriptor model descriptor}s which are filtered by the
 	 * {@link IMetaModelDescriptor other meta model descriptor}. These resources reside in the models other than the
 	 * model of the context resource resides.
-	 * 
+	 *
 	 * @param contextResource
 	 *            The {@link Resource resource} used as context object for investigation.
 	 * @param otherMMDescriptor
@@ -1233,7 +1235,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Returns all resources owned by the {@link IResourceScope model resource scope} of the contextObject.
-	 * 
+	 *
 	 * @param contextObject
 	 *            The Object used to research resources in the model.
 	 * @param includeReferencedScopes
@@ -1266,7 +1268,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Returns all resources owned by the {@link IResourceScope model resource scope} of the {@link IModelDescriptor
 	 * model descriptor} provided in argument .
-	 * 
+	 *
 	 * @param modelDescriptor
 	 *            The {@link IModelDescriptor model descriptor} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1287,7 +1289,7 @@ public final class EcorePlatformUtil {
 	 * Returns all resources owned by the {@link IResourceScope model resource scope} of the {@link IModelDescriptor
 	 * model descriptor} of the context {@link IFile file}. If the given {@link IFile file} does not belong to any
 	 * {@link IModelDescriptor model descriptor}, resources in context {@link ResourceSet} will be returned.
-	 * 
+	 *
 	 * @param contextFile
 	 *            The {@link IFile file} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1307,7 +1309,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Returns all resources owned by the {@link IResourceScope model resource scope} of the {@link IModelDescriptor
 	 * model descriptor} of the context {@link URI uri}.
-	 * 
+	 *
 	 * @param contextURI
 	 *            The {@link URI uri} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1326,7 +1328,7 @@ public final class EcorePlatformUtil {
 	 * model descriptor} of the context {@link Resource resource}.If the given {@link Resource contextResource} does not
 	 * belong to any {@link IModelDescriptor model descriptor}, resources in context {@link ResourceSet} will be
 	 * returned.
-	 * 
+	 *
 	 * @param contextResource
 	 *            The {@link Resource resource} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1347,7 +1349,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Returns all resources owned by the {@link IResourceScope model resource scope} of the {@link IModelDescriptor
 	 * model descriptor} of the context {@link EObject eObject}.
-	 * 
+	 *
 	 * @param contextEObject
 	 *            The {@link EObject eObject} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1365,7 +1367,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Returns all resources owned by the {@link IResourceScope model resource scope} of the {@link IModelDescriptor
 	 * model descriptor} of the context {@link IWrapperItemProvider provider}.
-	 * 
+	 *
 	 * @param contextProvider
 	 *            The {@link IWrapperItemProvider provider} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1384,7 +1386,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Returns all resources owned by the {@link IResourceScope model resource scope} of the {@link IModelDescriptor
 	 * model descriptor} of the context {@link FeatureMap.Entry feature map entry}.
-	 * 
+	 *
 	 * @param contextEntry
 	 *            The {@link FeatureMap.Entry feature map entry} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1403,7 +1405,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Returns all resources owned by the {@link IResourceScope model resource scope} of the {@link IModelDescriptor
 	 * model descriptor} of the context {@link TransientItemProvider provider}.
-	 * 
+	 *
 	 * @param contextProvider
 	 *            The {@link TransientItemProvider provider} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1422,7 +1424,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Returns all resources owned by the {@link IResourceScope model resource scope}s of the {@link IModelDescriptor
 	 * model descriptor}s of the context {@link IContainer container}.
-	 * 
+	 *
 	 * @param contextContainer
 	 *            The {@link IContainer container} used as context object for investigation.
 	 * @param includeReferencedModels
@@ -1467,7 +1469,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Creates the {@linkplain ISchedulingRule scheduling rule} that is required for saving the specified
 	 * {@link Resource resource}.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@linkplain Resource resource} to be saved.
 	 * @return The {@linkplain ISchedulingRule scheduling rule} required for saving the given {@link Resource resource}.
@@ -1486,7 +1488,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Creates the {@linkplain ISchedulingRule scheduling rule} that are required for saving the specified
 	 * {@link Resource resource}s.
-	 * 
+	 *
 	 * @param resources
 	 *            The {@linkplain Resource resource}s to be saved (for which scheduling rules must be created.
 	 * @return The scheduling {@linkplain MultiRule rule}s required for saving the given {@link Resource resources}.
@@ -1528,7 +1530,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Add a new model {@link Resource} to the provided {@link TransactionalEditingDomain} , created by using
 	 * {@link EObject} modelRoot as based for the containing model.
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain} where to add new resource.
 	 * @param path
@@ -1550,7 +1552,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * * Add a new {@link Resource resource}s described by modelResourceDescriptors to the provided
 	 * {@link TransactionalEditingDomain editingDomain} .
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain} where to add new resource.
 	 * @param modelResourceDescriptors
@@ -1819,7 +1821,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Saves all modified resources of the model behind the specified object (<em>i.e.</em> all resources in the context
 	 * of the given object).
-	 * 
+	 *
 	 * @param contextResource
 	 *            The object resource identifying the model to save.
 	 * @param async
@@ -1833,7 +1835,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Saves all modified, writable models from a given context object.
-	 * 
+	 *
 	 * @param contextObject
 	 *            The object context identifying the models to save.
 	 * @param options
@@ -1892,7 +1894,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Saves all modified {@link Resource resource}s of all models behind the specified {@link IProject project}
 	 * including all referenced projects ( <em>i.e.</em> all resources in the context of the given project).
-	 * 
+	 *
 	 * @param project
 	 *            The {@link IProject project} identifying the models to save.
 	 * @param async
@@ -1907,7 +1909,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Saves all modified {@link Resource}s of all models behind the specified project including all referenced
 	 * {@link IProject}s ( <em>i.e.</em> all resources in the context of the given project).
-	 * 
+	 *
 	 * @param project
 	 *            The {@link IProject project} identifying the models to save.
 	 * @param options
@@ -1984,7 +1986,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Saves model {@link Resource resource}s.
-	 * 
+	 *
 	 * @param resourcesToSave
 	 *            The {@link TransactionalEditingDomain editing domain}s with the corresponding resources to save; must
 	 *            not be <code>null</code>.
@@ -2094,7 +2096,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Wraps given {@link IProgressMonitor progress monitor} into an {@link ExtendedResource#OPTION_PROGRESS_MONITOR}
 	 * option and adds it to provided <code>options</code> map.
-	 * 
+	 *
 	 * @param options
 	 *            A resource options map; may be <code>null</code>.
 	 * @param monitor
@@ -2122,7 +2124,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Unloads the model contained in given {@link IFile file}.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} containing the model.
 	 * @see #unloadFile(TransactionalEditingDomain, IFile)
@@ -2147,7 +2149,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Unloads the model contained in given {@linkplain IFile file} from given {@linkplain TransactionalEditingDomain
 	 * editing domain}.
-	 * 
+	 *
 	 * @param file
 	 *            The {@linkplain IFile file} containing the model.
 	 * @param editingDomain
@@ -2176,7 +2178,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Unloads the models contained in given {@linkplain IFile file}s from given {@linkplain TransactionalEditingDomain
 	 * editing domain} inside a read-only transaction.
-	 * 
+	 *
 	 * @param files
 	 *            The {@link IFile file}s containing the models.
 	 * @param editingDomain
@@ -2222,7 +2224,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Unloads the specified {@linkplain Resource resource}s from given {@linkplain TransactionalEditingDomain editing
 	 * domain} inside a read-only transaction.
-	 * 
+	 *
 	 * @param memoryOptimized
 	 * @param resources
 	 *            The resources to unload.
@@ -2271,7 +2273,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Unloads all {@linkplain Resource resource}s from given {@linkplain TransactionalEditingDomain editing domain}
 	 * inside a read-only transaction.
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The editing domain owning {@link Resource resource}s.
 	 */
@@ -2314,7 +2316,7 @@ public final class EcorePlatformUtil {
 	/**
 	 * Parses given {@link IFile file} and validates it against XSD schema with specified {@link URL url}. Raises an
 	 * exception if the {@link IFile file}'s content is not compliant with respect to XSD schema.
-	 * 
+	 *
 	 * @param file
 	 *            The {@link IFile file} to be validated.
 	 * @param schemaURL

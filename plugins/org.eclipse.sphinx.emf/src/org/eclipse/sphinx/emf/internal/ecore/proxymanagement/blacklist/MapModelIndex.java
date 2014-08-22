@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     See4sys - Initial API and implementation
+ *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *
  * </copyright>
  */
@@ -34,7 +35,9 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.sphinx.emf.Activator;
+import org.eclipse.sphinx.emf.resource.ExtendedResourceSet;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
@@ -123,7 +126,12 @@ public class MapModelIndex implements IResourceChangeListener {
 				try {
 					// If proxy URI is not fragment-based, i.e. includes segments pointing at the target resource, we
 					// have to make sure that it matches URI of loaded resource
-					if (proxyURI.segmentCount() == 0 || resource.getURI().equals(proxyURI.trimFragment().trimQuery())) {
+					URI targetResourceURI = proxyURI.trimFragment();
+					ResourceSet resourceSet = resource.getResourceSet();
+					if (resourceSet instanceof ExtendedResourceSet) {
+						targetResourceURI = ((ExtendedResourceSet) resourceSet).trimProxyContextInfo(targetResourceURI);
+					}
+					if (proxyURI.segmentCount() == 0 || resource.getURI().equals(targetResourceURI)) {
 						// See if loaded resource contains an object matching proxy URI fragment
 						if (resource.getEObject(proxyURI.fragment()) != null) {
 							removeProxyURI(proxyURI);
