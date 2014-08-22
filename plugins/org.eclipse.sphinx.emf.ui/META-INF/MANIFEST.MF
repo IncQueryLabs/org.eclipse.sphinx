@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.ui.navigator;visibility:=reexport,
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.emf.ui.internal.Activator$Implementation
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipse.sphinx.emf.ui.actions,
+Export-Package: org.eclipse.sphinx.emf.ui,
+ org.eclipse.sphinx.emf.ui.actions,
  org.eclipse.sphinx.emf.ui.actions.providers,
  org.eclipse.sphinx.emf.ui.forms.messages,
  org.eclipse.sphinx.emf.ui.internal;x-internal:=true,
@@ -26,4 +27,5 @@ Export-Package: org.eclipse.sphinx.emf.ui.actions,
  org.eclipse.sphinx.emf.ui.properties.descriptors,
  org.eclipse.sphinx.emf.ui.properties.filters,
  org.eclipse.sphinx.emf.ui.util,
- org.eclipse.sphinx.emf.ui.viewers.filters
+ org.eclipse.sphinx.emf.ui.viewers.filters,
+ org.eclipse.sphinx.emf.ui.views
