@@ -1,20 +1,20 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2014 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     itemis - Initial API and implementation
- * 
+ *     itemis - [443648] Proxy resolution error markers don't get removed when underlying resource is reloaded
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.resource;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -105,7 +105,12 @@ public class XMLResourceProblemMarkerFactory extends BasicResourceProblemMarkerF
 	 */
 	@Override
 	protected List<String> getProblemMarkerTypesToDelete() {
-		return Arrays.asList(new String[] { IMarker.PROBLEM, IXMLMarker.XML_WELLFORMEDNESS_PROBLEM, IXMLMarker.XML_VALIDITY_PROBLEM,
-				IXMLMarker.XML_INTEGRITY_PROBLEM });
+		List<String> problemMarkerTypes = super.getProblemMarkerTypesToDelete();
+
+		problemMarkerTypes.add(IXMLMarker.XML_WELLFORMEDNESS_PROBLEM);
+		problemMarkerTypes.add(IXMLMarker.XML_VALIDITY_PROBLEM);
+		problemMarkerTypes.add(IXMLMarker.XML_INTEGRITY_PROBLEM);
+
+		return problemMarkerTypes;
 	}
 }
