@@ -12,6 +12,7 @@
  *     itemis - [400897] ExtendedResourceAdapter's approach of reflectively clearing all EObject fields when performing memory-optimized unloads bears the risk of leaving some EObjects leaked
  *     itemis - [441970] Result returned by ExtendedResourceAdapter#getHREF(EObject) must default to complete object URI (edit)
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
+ *     itemis - [443647] Enable HREF representing serialized cross-document references to be customized through ExtendedResource of resource being serialized
  *
  * </copyright>
  */
@@ -162,61 +163,60 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	 */
 	@Override
 	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
-		if (!eObject.eIsProxy()) {
-			Resource resource = (Resource) getTarget();
+		Assert.isNotNull(eObject);
 
-			// Has given eObject been removed or is it directly or indirectly contained by some other eObject that has
-			// been removed?
-			if (eObject.eResource() == null && oldOwner != null && oldFeature != null) {
-				// Has given eObject an ID?
+		// Non-proxy object that has been removed, i.e., is no longer directly or indirectly contained in any resource?
+		if (!eObject.eIsProxy() && eObject.eResource() == null) {
+			// oldOwner and oldFeature provided enabling restoration of the given eObject's old URI that it had before
+			// it was removed?
+			if (oldOwner != null && oldFeature != null) {
+				// Retrieve the oldOwner's URI fragment
+				URI oldOwnerURI = EcoreUtil.getURI(oldOwner);
+				String oldOwnerURIFragment = oldOwnerURI.fragment();
+
+				// Restore URI fragment segment that pointed from oldOwner to removed eObject (which may be the given
+				// eObject itself or some other eObject that directly or indirectly contains given eObject
+				EObject eObjectRootContainer = EcoreUtil.getRootContainer(eObject);
+				String eObjectRootContainerURIFragmentSegment = ((InternalEObject) oldOwner).eURIFragmentSegment(oldFeature, eObjectRootContainer);
+
+				// Calculate URI fragment segments for given eObject in case that it is an eObject that is directly or
+				// indirectly contained by the removed eObject
+				List<String> eObjectURIFragmentSegments = new ArrayList<String>();
+				InternalEObject internalEObject = (InternalEObject) eObject;
+				for (InternalEObject container = internalEObject.eInternalContainer(); container != null; container = internalEObject
+						.eInternalContainer()) {
+					eObjectURIFragmentSegments.add(container.eURIFragmentSegment(internalEObject.eContainingFeature(), internalEObject));
+					internalEObject = container;
+				}
+
+				// Compose and return the eObject' old URI
+				StringBuilder oldEObjectURIFragment = new StringBuilder();
+				oldEObjectURIFragment.append(oldOwnerURIFragment);
+				oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
+				oldEObjectURIFragment.append(eObjectRootContainerURIFragmentSegment);
+				for (int i = eObjectURIFragmentSegments.size() - 1; i >= 0; --i) {
+					oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
+					oldEObjectURIFragment.append(eObjectURIFragmentSegments.get(i));
+				}
+				return oldOwnerURI.trimFragment().appendFragment(oldEObjectURIFragment.toString());
+			} else {
+				// Try to calculate the given eObject's URI in the same way as
+				// EcoreUtil#getURI()/ResourceImpl#getURIFragment() would, but use target resource rather than object
+				// resource for that purpose
+				Resource targetResource = (Resource) getTarget();
+
 				String id = EcoreUtil.getID(eObject);
 				if (id != null) {
-					// Proceed as in EcoreUtil#getURI()/ResourceImpl#getURIFragment() and return a URI with object ID as
-					// fragment
-					return resource.getURI().appendFragment(id);
+					return targetResource.getURI().appendFragment(id);
 				} else {
-					// Use provided oldOwner and oldFeature to calculate given eObject's old URI that it had prior to
-					// the removal
-
-					// Retrieve the oldOwner's URI fragment
-					URI oldOwnerURI = EcoreUtil.getURI(oldOwner);
-					String oldOwnerURIFragment = oldOwnerURI.fragment();
-
-					// Restore URI fragment segment that pointed from oldOwner to removed eObject (which may be the
-					// given eObject itself or some other eObject that directly or indirectly contains given eObject
-					EObject eObjectRootContainer = EcoreUtil.getRootContainer(eObject);
-					String eObjectRootContainerURIFragmentSegment = ((InternalEObject) oldOwner)
-							.eURIFragmentSegment(oldFeature, eObjectRootContainer);
-
-					// Calculate URI fragment segments for given eObject in case that it is an eObject that is directly
-					// or indirectly contained by the removed eObject
-					List<String> eObjectURIFragmentSegments = new ArrayList<String>();
-					InternalEObject internalEObject = (InternalEObject) eObject;
-					for (InternalEObject container = internalEObject.eInternalContainer(); container != null; container = internalEObject
-							.eInternalContainer()) {
-						eObjectURIFragmentSegments.add(container.eURIFragmentSegment(internalEObject.eContainingFeature(), internalEObject));
-						internalEObject = container;
-					}
-
-					// Compose and return the eObject' old URI
-					StringBuilder oldEObjectURIFragment = new StringBuilder();
-					oldEObjectURIFragment.append(oldOwnerURIFragment);
-					oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
-					oldEObjectURIFragment.append(eObjectRootContainerURIFragmentSegment);
-					for (int i = eObjectURIFragmentSegments.size() - 1; i >= 0; --i) {
-						oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
-						oldEObjectURIFragment.append(eObjectURIFragmentSegments.get(i));
-					}
-					return oldOwnerURI.trimFragment().appendFragment(oldEObjectURIFragment.toString());
+					URI uri = targetResource.getURI();
+					String uriFragment = targetResource.getURIFragment(eObject);
+					return uri == null ? URI.createURI(URI_FRAGMENT_SEPARATOR + uriFragment) : uri.appendFragment(uriFragment);
 				}
 			}
-
-			// Calculate and return normal URI, i.e., same as EcoreUtil#getURI() would
-			return resource.getURI().appendFragment(resource.getURIFragment(eObject));
-		} else {
-			// Return the proxy URI as is
-			return ((InternalEObject) eObject).eProxyURI();
 		}
+
+		return EcoreUtil.getURI(eObject);
 	}
 
 	/*

@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [443647] Enable HREF representing serialized cross-document references to be customized through ExtendedResource of resource being serialized
  *
  * </copyright>
  */
@@ -60,9 +61,8 @@ public class ExtendedXMIHelperImpl extends XMIHelperImpl {
 					}
 				}
 			} else {
-				ExtendedResource otherExtendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(otherResource);
-				if (otherExtendedResource != null) {
-					objectURI = otherExtendedResource.getHREF(obj);
+				if (extendedResource != null) {
+					objectURI = extendedResource.getHREF(obj);
 				} else {
 					objectURI = getHREF(otherResource, obj);
 				}
