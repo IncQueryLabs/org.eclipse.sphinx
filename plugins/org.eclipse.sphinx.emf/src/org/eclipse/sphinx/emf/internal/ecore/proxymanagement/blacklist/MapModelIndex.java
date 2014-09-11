@@ -116,7 +116,7 @@ public class MapModelIndex implements IResourceChangeListener {
 	}
 
 	/**
-	 * Try to resolve proxy objects against this resource.
+	 * Removes the proxyURI from the black list on certain conditions.
 	 */
 	public void updateIndexOnResourceLoaded(Resource resource) {
 		if (resource != null && !resource.getContents().isEmpty()) {
@@ -132,10 +132,9 @@ public class MapModelIndex implements IResourceChangeListener {
 						targetResourceURI = ((ExtendedResourceSet) resourceSet).trimProxyContextInfo(targetResourceURI);
 					}
 					if (proxyURI.segmentCount() == 0 || resource.getURI().equals(targetResourceURI)) {
-						// See if loaded resource contains an object matching proxy URI fragment
-						if (resource.getEObject(proxyURI.fragment()) != null) {
-							removeProxyURI(proxyURI);
-						}
+						// Remove the proxyURI from the list and do not try to resolve it to avoid costly resolution in
+						// case of a large number of unresolved proxies
+						removeProxyURI(proxyURI);
 					}
 				} catch (Exception ex) {
 					// Ignore exception
