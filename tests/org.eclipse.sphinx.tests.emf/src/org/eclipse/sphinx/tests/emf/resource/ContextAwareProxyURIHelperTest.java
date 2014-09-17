@@ -18,8 +18,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.io.IOException;
-
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.xmi.XMIResource;
@@ -33,7 +31,7 @@ import org.junit.Test;
 public class ContextAwareProxyURIHelperTest {
 
 	@Test
-	public void testAugmentToContextAwareProxy() throws IOException {
+	public void testAugmentToContextAwareProxy() {
 		ContextAwareProxyURIHelper helper = new ContextAwareProxyURIHelper();
 
 		// Set resource
