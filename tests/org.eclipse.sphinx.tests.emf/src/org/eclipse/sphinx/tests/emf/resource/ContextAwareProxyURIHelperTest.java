@@ -35,81 +35,48 @@ public class ContextAwareProxyURIHelperTest {
 		ContextAwareProxyURIHelper helper = new ContextAwareProxyURIHelper();
 
 		// Set resource
-		URI emfURI = URI.createURI("working-dir/hb20test.typemodel", true);
-		XMIResource resource = new XMIResourceImpl(emfURI);
+		URI uri = URI.createURI("file:/my.model", true);
+		XMIResource resource = new XMIResourceImpl(uri);
 
 		// Expected proxy
 		Port expectedProxy = TypeModel20Factory.eINSTANCE.createPort();
-		URI uri = URI.createURI("working-dir/hb20test.typemodel#//@componentTypes.0/@ports.0");
+		uri = URI.createURI("file:/hb20test.typemodel#//@componentTypes.0/@ports.0");
 		((InternalEObject) expectedProxy).eSetProxyURI(uri);
 
 		helper.augmentToContextAwareProxy(expectedProxy, resource);
-		assertEquals("working-dir/hb20test.typemodel?ctxURI=working-dir/hb20test.typemodel#//@componentTypes.0/@ports.0",
+		assertEquals("file:/hb20test.typemodel?tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=file:/my.model#//@componentTypes.0/@ports.0",
 				((InternalEObject) expectedProxy).eProxyURI().toString());
 
 		// One other key/value query field
-		uri = URI.createURI("file:/?key1=value1&tgtMMD=org.eclipse.sphinx.examples.hummingbird20");
+		uri = URI.createURI("file:/?key1=value1");
 		((InternalEObject) expectedProxy).eSetProxyURI(uri);
 		helper.augmentToContextAwareProxy(expectedProxy, resource);
-		assertEquals("file:/?key1=value1&tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=working-dir/hb20test.typemodel",
-				((InternalEObject) expectedProxy).eProxyURI().toString());
-
-		uri = URI.createURI("file:/?tgtMMD=org.eclipse.sphinx.examples.hummingbird20&key1=value1");
-		((InternalEObject) expectedProxy).eSetProxyURI(uri);
-		helper.augmentToContextAwareProxy(expectedProxy, resource);
-		assertEquals("file:/?tgtMMD=org.eclipse.sphinx.examples.hummingbird20&key1=value1&ctxURI=working-dir/hb20test.typemodel",
-				((InternalEObject) expectedProxy).eProxyURI().toString());
+		assertEquals("file:/?key1=value1&tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=file:/my.model", ((InternalEObject) expectedProxy)
+				.eProxyURI().toString());
 
 		// Two other key/value query fields
-		uri = URI.createURI("file:/?key1=value1&key2=value2&tgtMMD=org.eclipse.sphinx.examples.hummingbird20");
+		uri = URI.createURI("file:/?key1=value1&key2=value2");
 		((InternalEObject) expectedProxy).eSetProxyURI(uri);
 		helper.augmentToContextAwareProxy(expectedProxy, resource);
-		assertEquals("file:/?key1=value1&key2=value2&tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=working-dir/hb20test.typemodel",
-				((InternalEObject) expectedProxy).eProxyURI().toString());
-
-		uri = URI.createURI("file:/?key1=value1&tgtMMD=org.eclipse.sphinx.examples.hummingbird20");
-		((InternalEObject) expectedProxy).eSetProxyURI(uri);
-		helper.augmentToContextAwareProxy(expectedProxy, resource);
-		assertEquals("file:/?key1=value1&tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=working-dir/hb20test.typemodel",
-				((InternalEObject) expectedProxy).eProxyURI().toString());
-
-		uri = URI.createURI("file:/tgtMMD=org.eclipse.sphinx.examples.hummingbird20&?key1=value1&key2=value2");
-		((InternalEObject) expectedProxy).eSetProxyURI(uri);
-		helper.augmentToContextAwareProxy(expectedProxy, resource);
-		assertEquals("file:/tgtMMD=org.eclipse.sphinx.examples.hummingbird20&?key1=value1&key2=value2&ctxURI=working-dir/hb20test.typemodel",
+		assertEquals("file:/?key1=value1&key2=value2&tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=file:/my.model",
 				((InternalEObject) expectedProxy).eProxyURI().toString());
 
 		// One other key-only query field
-		uri = URI.createURI("file:/?key1&tgtMMD=org.eclipse.sphinx.examples.hummingbird20");
+		uri = URI.createURI("file:/?key1");
 		((InternalEObject) expectedProxy).eSetProxyURI(uri);
 		helper.augmentToContextAwareProxy(expectedProxy, resource);
-		assertEquals("file:/?key1&tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=working-dir/hb20test.typemodel",
-				((InternalEObject) expectedProxy).eProxyURI().toString());
-
-		uri = URI.createURI("file:/?tgtMMD=org.eclipse.sphinx.examples.hummingbird20");
-		((InternalEObject) expectedProxy).eSetProxyURI(uri);
-		helper.augmentToContextAwareProxy(expectedProxy, resource);
-		assertEquals("file:/?tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=working-dir/hb20test.typemodel",
-				((InternalEObject) expectedProxy).eProxyURI().toString());
+		assertEquals("file:/?key1&tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=file:/my.model", ((InternalEObject) expectedProxy)
+				.eProxyURI().toString());
 
 		// Two other key-only query fields
-		uri = URI.createURI("file:/?key1&key2&tgtMMD=org.eclipse.sphinx.examples.hummingbird20");
+		uri = URI.createURI("file:/?key1&key2");
 		((InternalEObject) expectedProxy).eSetProxyURI(uri);
 		helper.augmentToContextAwareProxy(expectedProxy, resource);
-		assertEquals("file:/?key1&key2&tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=working-dir/hb20test.typemodel",
-				((InternalEObject) expectedProxy).eProxyURI().toString());
+		assertEquals("file:/?key1&key2&tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=file:/my.model", ((InternalEObject) expectedProxy)
+				.eProxyURI().toString());
 
-		uri = URI.createURI("file:/?key1&tgtMMD=org.eclipse.sphinx.examples.hummingbird20");
-		((InternalEObject) expectedProxy).eSetProxyURI(uri);
-		helper.augmentToContextAwareProxy(expectedProxy, resource);
-		assertEquals("file:/?key1&tgtMMD=org.eclipse.sphinx.examples.hummingbird20&ctxURI=working-dir/hb20test.typemodel",
-				((InternalEObject) expectedProxy).eProxyURI().toString());
-
-		uri = URI.createURI("file:/tgtMMD=org.eclipse.sphinx.examples.hummingbird20&?key1&key2");
-		((InternalEObject) expectedProxy).eSetProxyURI(uri);
-		helper.augmentToContextAwareProxy(expectedProxy, resource);
-		assertEquals("file:/tgtMMD=org.eclipse.sphinx.examples.hummingbird20&?key1&key2&ctxURI=working-dir/hb20test.typemodel",
-				((InternalEObject) expectedProxy).eProxyURI().toString());
+		// TODO Add tests for references from Hummingbird 2.0 resource to Hummingbird 2.0 object and make sure that only
+		// ctxURI but no tgtMMD query field is added to URI
 	}
 
 	@Test
