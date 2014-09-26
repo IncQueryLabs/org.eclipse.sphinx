@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
@@ -286,18 +287,20 @@ public interface ExtendedResource {
 	URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject);
 
 	/**
-	 * Creates a {@link URI} from given <code>uriLiteral</code>. This method is typically called during deserialization
-	 * of resources when it comes to creating proxy URIs from serialized representations of cross-document references to
-	 * objects in other resources.
+	 * Creates a {@link URI} from given <code>uriLiteral</code> that refers to an instance of given {@link EClass object
+	 * type}. This method is typically called during deserialization of resources when it comes to creating proxy URIs
+	 * from serialized representations of cross-document references to objects in other resources.
 	 * <p>
 	 * Clients may implement/override this method when they require URIs with custom formats to be created
 	 * </p>
 	 *
 	 * @param uriLiteral
 	 *            The string representation of the URI to be created.
+	 * @param eClass
+	 *            The type of object that the URI to be created is supposed to refer to.
 	 * @return The URI corresponding to given <code>uriLiteral</code>.
 	 */
-	URI createURI(String uriLiteral);
+	URI createURI(String uriLiteral, EClass eClass);
 
 	/**
 	 * Returns a {@link URI} representing an HREF to given {@link EObject} stored in underlying {@link Resource}. This

@@ -18,6 +18,7 @@ package org.eclipse.sphinx.examples.hummingbird20.util;
 
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
@@ -62,10 +63,11 @@ public class ExtendedHummingbirdResourceAdapter extends ExtendedResourceAdapter 
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.resource.ExtendedResourceAdapter#createURI(java.lang.String)
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResourceAdapter#createURI(java.lang.String,
+	 * org.eclipse.emf.ecore.EClass)
 	 */
 	@Override
-	public URI createURI(String uriLiteral) {
+	public URI createURI(String uriLiteral, EClass eClass) {
 		// Is given URI literal a fragment-only URI string?
 		if (uriLiteral.startsWith(URI_FRAGMENT_SEPARATOR)) {
 			// Create corresponding fragment-only URI object
@@ -84,7 +86,7 @@ public class ExtendedHummingbirdResourceAdapter extends ExtendedResourceAdapter 
 			return createHummingbirdURI(uri);
 		}
 
-		return super.createURI(uriLiteral);
+		return super.createURI(uriLiteral, eClass);
 	}
 
 	/*

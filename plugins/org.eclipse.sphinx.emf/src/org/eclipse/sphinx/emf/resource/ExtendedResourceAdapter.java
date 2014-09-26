@@ -30,6 +30,7 @@ import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
@@ -220,10 +221,10 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#createURI(java.lang.String)
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#createURI(java.lang.String, org.eclipse.emf.ecore.EClass)
 	 */
 	@Override
-	public URI createURI(String uriLiteral) {
+	public URI createURI(String uriLiteral, EClass eClass) {
 		// Return URI object corresponding to given URI literal as is
 		return URI.createURI(uriLiteral);
 	}
