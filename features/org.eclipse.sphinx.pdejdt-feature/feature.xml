@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.sphinx.pde"
+      id="org.eclipse.sphinx.pdejdt"
       label="%featureName"
       version="0.9.0.qualifier"
       provider-name="%providerName"
@@ -25,5 +25,11 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <plugin
+         id="org.eclipse.sphinx.jdt"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
 </feature>

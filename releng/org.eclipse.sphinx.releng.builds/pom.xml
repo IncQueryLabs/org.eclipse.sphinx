@@ -29,6 +29,7 @@
 		<module>../../plugins/org.eclipse.sphinx.gmf.runtime.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.workspace</module>
 		<module>../../plugins/org.eclipse.sphinx.pde</module>
+		<module>../../plugins/org.eclipse.sphinx.jdt</module>
 		<module>../../plugins/org.eclipse.sphinx.platform.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.platform</module>
 		<module>../../plugins/org.eclipse.sphinx.xtend.typesystem.emf.ui</module>
@@ -91,7 +92,7 @@
 		<module>../../features/org.eclipse.sphinx.emf.serialization.generators-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.validation-feature</module>
 		<module>../../features/org.eclipse.sphinx.gmf.editors-feature</module>
-		<module>../../features/org.eclipse.sphinx.pde-feature</module>
+		<module>../../features/org.eclipse.sphinx.pdejdt-feature</module>
 		<module>../../features/org.eclipse.sphinx.xtendxpand-feature</module>
 
 		<module>../../features/org.eclipse.sphinx.examples.core-feature</module>
