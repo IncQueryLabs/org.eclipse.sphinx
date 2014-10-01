@@ -44,7 +44,7 @@
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.sphinx.pdejdt"
+         id="org.eclipse.sphinx.jdtpde"
          version="0.0.0"/>
 
    <includes

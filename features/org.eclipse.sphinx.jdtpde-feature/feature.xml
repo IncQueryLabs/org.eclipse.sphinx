@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.sphinx.pdejdt"
+      id="org.eclipse.sphinx.jdtpde"
       label="%featureName"
       version="0.9.0.qualifier"
       provider-name="%providerName"

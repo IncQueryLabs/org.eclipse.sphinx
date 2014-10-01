@@ -8,7 +8,7 @@
 		<relativePath>../../releng/org.eclipse.sphinx.releng.builds/parent/pom.xml</relativePath>
 	</parent>
 	<groupId>org.eclipse.sphinx.features</groupId>
-	<artifactId>org.eclipse.sphinx.pdejdt</artifactId>
+	<artifactId>org.eclipse.sphinx.jdtpde</artifactId>
 	<version>0.9.0-SNAPSHOT</version>
 	<packaging>eclipse-feature</packaging>
 </project>
