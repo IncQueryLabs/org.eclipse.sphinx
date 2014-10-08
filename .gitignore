@@ -6,6 +6,8 @@
 /experimental/*/bin
 /experimental/*/target
 /features/*/target
+/plugins/*/src-gen
+/plugins/*/xtend-gen
 /plugins/*/bin
 /plugins/*/target
 /releng/*/target
