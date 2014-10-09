@@ -63,4 +63,8 @@
          id="org.eclipse.sphinx.examples.workflows"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.sphinx.emf.mwe.dynamic"
+         version="0.0.0"/>
+
 </feature>
