@@ -25,6 +25,7 @@
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.ide.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.transform.xtend" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.validation" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.examples.hummingbird20.workflows" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.library.ide" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.library.ide.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.tests.perf" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -32,6 +33,8 @@
 <item elementID="=org.eclipse.sphinx.examples.uml2.ide" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.uml2.ide.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.validation.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.examples.workflows.lib" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.examples.workflows.simple" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.examples.sampleworkspace" type="4"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1356015152759_4" label="Features" name="Features">
@@ -41,6 +44,7 @@
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.emf.editors.forms-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.emf.editors.forms.nebula-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.emf.metamodelgen-feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.emf.mwe.dynamic-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.emf.navigators-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.emf.serialization-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.emf.serialization.generators-feature" type="4"/>
@@ -51,11 +55,12 @@
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.examples.metamodels.uml2-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.examples.navigators-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.examples.validation-feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.examples.workflows-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.examples.xtendxpand-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.gmf.editors-feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.jdtpde-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.nebula-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.nebula.sdk-feature" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.jdtpde-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.sdk-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.testutils-feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.sphinx.thirdparty-feature" type="4"/>
@@ -69,6 +74,9 @@
 <item elementID="=org.eclipse.sphinx.emf.metamodelgen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.metamodelgen.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.mwe" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.emf.mwe.dynamic" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.emf.mwe.dynamic.headless" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.emf.mwe.dynamic.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.serialization" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.serialization.generators" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -79,8 +87,8 @@
 <item elementID="=org.eclipse.sphinx.emf.workspace.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.gmf.runtime.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.gmf.workspace" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.sphinx.pde" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.jdt" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.pde" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.platform" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.platform.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.xtend.typesystem.emf" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>

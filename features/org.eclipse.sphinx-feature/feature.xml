@@ -59,4 +59,8 @@
          id="org.eclipse.sphinx.emf.metamodelgen"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.sphinx.examples.workflows"
+         version="0.0.0"/>
+
 </feature>

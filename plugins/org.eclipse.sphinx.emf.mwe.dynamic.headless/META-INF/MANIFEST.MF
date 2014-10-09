@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-Vendor: %providerName
+Bundle-Version: 0.9.0.qualifier
+Bundle-SymbolicName: org.eclipse.sphinx.emf.mwe.dynamic.headless;singleton:=true
+Bundle-Localization: plugin
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.sphinx.platform,
+ org.eclipse.sphinx.emf.mwe.dynamic
+Export-Package: org.eclipse.sphinx.emf.mwe.dynamic.headless,
+ org.eclipse.sphinx.emf.mwe.dynamic.headless.internal;x-internal:=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Activator: org.eclipse.sphinx.emf.mwe.dynamic.headless.internal.Activator$Implementation
+

@@ -16,6 +16,9 @@
 		<module>../../plugins/org.eclipse.sphinx.emf.explorer</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.metamodelgen.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.metamodelgen</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.mwe.dynamic.headless</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.mwe.dynamic.ui</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.mwe.dynamic</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.mwe</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.serialization.generators</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.serialization</module>
@@ -28,8 +31,8 @@
 		<module>../../plugins/org.eclipse.sphinx.emf</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.runtime.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.workspace</module>
-		<module>../../plugins/org.eclipse.sphinx.pde</module>
 		<module>../../plugins/org.eclipse.sphinx.jdt</module>
+		<module>../../plugins/org.eclipse.sphinx.pde</module>
 		<module>../../plugins/org.eclipse.sphinx.platform.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.platform</module>
 		<module>../../plugins/org.eclipse.sphinx.xtend.typesystem.emf.ui</module>
@@ -56,12 +59,15 @@
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.ide.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.transform.xtend</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.validation</module>
+		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.workflows</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20</module>
 		<module>../../examples/org.eclipse.sphinx.examples.tests.perf</module>
 		<module>../../examples/org.eclipse.sphinx.examples.transform.xtend.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.uml2.ide.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.uml2.ide</module>
 		<module>../../examples/org.eclipse.sphinx.examples.validation.ui</module>
+		<module>../../examples/org.eclipse.sphinx.examples.workflows.lib</module>
+		<module>../../examples/org.eclipse.sphinx.examples.workflows.simple</module>
 
 		<!-- Tests -->
 		<module>../../tests/org.eclipse.sphinx.tests.emf</module>
@@ -87,6 +93,7 @@
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms.nebula-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.metamodelgen-feature</module>
+		<module>../../features/org.eclipse.sphinx.emf.mwe.dynamic-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.navigators-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.serialization-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.serialization.generators-feature</module>
@@ -100,6 +107,7 @@
 		<module>../../features/org.eclipse.sphinx.examples.metamodels.uml2-feature</module>
 		<module>../../features/org.eclipse.sphinx.examples.navigators-feature</module>
 		<module>../../features/org.eclipse.sphinx.examples.validation-feature</module>
+		<module>../../features/org.eclipse.sphinx.examples.workflows-feature</module>
 		<module>../../features/org.eclipse.sphinx.examples.xtendxpand-feature</module>
 
 		<module>../../features/org.eclipse.sphinx-feature</module>
