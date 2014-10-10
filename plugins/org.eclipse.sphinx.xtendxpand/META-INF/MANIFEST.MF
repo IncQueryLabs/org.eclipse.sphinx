@@ -12,7 +12,8 @@ Require-Bundle: org.eclipse.core.variables,
  org.eclipse.xtend.typesystem.emf;visibility:=reexport,
  org.eclipse.sphinx.emf;visibility:=reexport,
  org.eclipse.sphinx.emf.mwe;visibility:=reexport,
- org.eclipse.sphinx.pde;visibility:=reexport
+ org.eclipse.sphinx.pde;visibility:=reexport,
+ org.eclipse.sphinx.jdt;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.sphinx.xtendxpand,

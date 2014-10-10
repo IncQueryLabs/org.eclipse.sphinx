@@ -1,21 +1,23 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [445125] Rework the org.eclipse.sphinx.xtendxpand.jobs.ConvertToXtendXpandEnabledPluginProjectJob job
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.pde.jobs;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -25,7 +27,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -47,101 +51,128 @@ import org.eclipse.pde.internal.core.util.CoreUtility;
 import org.eclipse.pde.internal.core.util.IdUtil;
 import org.eclipse.sphinx.pde.internal.Activator;
 import org.eclipse.sphinx.pde.internal.messages.Messages;
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.osgi.framework.Constants;
 
 @SuppressWarnings("restriction")
 public class ConvertProjectToPluginProjectJob extends WorkspaceJob {
 
-	private IProject[] projectsToConvert;
+	private Collection<IProject> projectsToConvert;
 
 	private String fLibraryName;
 	private String[] fSrcEntries;
 	private String[] fLibEntries;
 
+	private List<String> requiredBundleIds;
+	private String requiredExecutionEnvironment;
+
 	/**
 	 * Workspace operation to convert the specified project into a plug-in project.
-	 * 
-	 * @param theProjectsToConvert
+	 *
+	 * @param projectsToConvert
 	 *            The project to be converted.
 	 */
-	public ConvertProjectToPluginProjectJob(IProject[] theProjectsToConvert) {
-		super(Messages.job_convertProjectToPlugin);
-		projectsToConvert = theProjectsToConvert;
+	public ConvertProjectToPluginProjectJob(Collection<IProject> projectsToConvert) {
+		this(projectsToConvert, new ArrayList<String>(), null);
 	}
 
 	/**
-	 * Convert a normal java project into a plug-in project.
-	 * 
-	 * @param monitor
-	 *            Progress monitor
+	 * Workspace operation to convert the specified project into a plug-in project.
+	 *
+	 * @param projectsToConvert
+	 *            The project to be converted.
+	 * @param requiredBundleIds
+	 *            the required bundle IDs.
+	 * @param requiredExecutionEnvironment
+	 *            the required execution environment.
 	 */
-	protected void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {
+	public ConvertProjectToPluginProjectJob(Collection<IProject> projectsToConvert, List<String> requiredBundleIds,
+			String requiredExecutionEnvironment) {
+		super(Messages.job_convertProjectToPlugin);
 
-		try {
-			monitor.beginTask(Messages.converting, projectsToConvert.length);
-
-			for (IProject projectToConvert : projectsToConvert) {
-				convertProject(projectToConvert, monitor);
-				monitor.worked(1);
-			}
-
-		} catch (CoreException ex) {
-			PlatformLogUtil.logAsError(Activator.getDefault(), ex);
-		} finally {
-			monitor.done();
-		}
+		this.projectsToConvert = projectsToConvert;
+		this.requiredBundleIds = requiredBundleIds;
+		this.requiredExecutionEnvironment = requiredExecutionEnvironment;
 	}
 
-	private void convertProject(IProject projectToConvert, IProgressMonitor monitor) throws CoreException {
+	public List<String> getRequiredBundleIds() {
+		return requiredBundleIds;
+	}
+
+	public void setRequiredBundleIds(List<String> requiredBundleIds) {
+		this.requiredBundleIds = requiredBundleIds;
+	}
+
+	public String getRequiredExecutionEnvironment() {
+		return requiredExecutionEnvironment;
+	}
+
+	public void setRequiredExecutionEnvironment(String requiredExecutionEnvironment) {
+		this.requiredExecutionEnvironment = requiredExecutionEnvironment;
+	}
+
+	@Override
+	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+		SubMonitor progress = SubMonitor.convert(monitor, Messages.job_convertProjectsToPlugin, projectsToConvert.size());
+		if (progress.isCanceled()) {
+			throw new OperationCanceledException();
+		}
+
+		try {
+			for (IProject project : projectsToConvert) {
+				convertProjectToPlugin(project, progress.newChild(1));
+			}
+		} catch (OperationCanceledException ex) {
+			return Status.CANCEL_STATUS;
+		} catch (Exception ex) {
+			return StatusUtil.createErrorStatus(Activator.getDefault(), ex);
+		}
+
+		return Status.OK_STATUS;
+	}
+
+	protected void convertProjectToPlugin(IProject project, IProgressMonitor monitor) throws CoreException {
+		SubMonitor progress = SubMonitor.convert(monitor, Messages.job_convertProjectToPlugin, 100);
+		if (progress.isCanceled()) {
+			throw new OperationCanceledException();
+		}
 
 		// Do early checks to make sure we can get out fast if we're not setup
 		// properly
-		if (projectToConvert == null || !projectToConvert.exists()) {
+		if (project == null || !project.exists()) {
 			return;
 		}
 
 		// Nature check - do we need to do anything at all?
-		if (projectToConvert.hasNature(PDE.PLUGIN_NATURE)) {
+		if (project.hasNature(PDE.PLUGIN_NATURE)) {
 			return;
 		}
 
-		CoreUtility.addNatureToProject(projectToConvert, PDE.PLUGIN_NATURE, monitor);
+		// Add the PDE plug-in nature
+		CoreUtility.addNatureToProject(project, PDE.PLUGIN_NATURE, progress.newChild(10));
 
-		loadClasspathEntries(projectToConvert, monitor);
-		loadLibraryName(projectToConvert);
+		// Load the classpath entries and libraries
+		loadClasspathEntries(project, progress.newChild(50));
+		loadLibraryName(project);
 
-		createManifestFile(PDEProject.getManifest(projectToConvert), monitor);
+		// Create the Manifest file
+		createManifestFile(PDEProject.getManifest(project), progress.newChild(40));
 
-		IFile buildFile = PDEProject.getBuildProperties(projectToConvert);
-		if (!buildFile.exists()) {
-			WorkspaceBuildModel model = new WorkspaceBuildModel(buildFile);
-			IBuild build = model.getBuild(true);
-			IBuildEntry entry = model.getFactory().createEntry(IBuildEntry.BIN_INCLUDES);
-			if (PDEProject.getPluginXml(projectToConvert).exists()) {
-				entry.addToken(ICoreConstants.PLUGIN_FILENAME_DESCRIPTOR);
-			}
-			if (PDEProject.getManifest(projectToConvert).exists()) {
-				entry.addToken(ICoreConstants.MANIFEST_FOLDER_NAME);
-			}
-			for (String fLibEntrie : fLibEntries) {
-				entry.addToken(fLibEntrie);
-			}
+		// Configure the build property file
+		configureBuildProperties(project);
 
-			if (fSrcEntries.length > 0) {
-				entry.addToken(fLibraryName);
-				IBuildEntry source = model.getFactory().createEntry(IBuildEntry.JAR_PREFIX + fLibraryName);
-				for (String fSrcEntrie : fSrcEntries) {
-					source.addToken(fSrcEntrie);
-				}
-				build.add(source);
-			}
-			if (entry.getTokens().length > 0) {
-				build.add(entry);
-			}
+		WorkspaceBundlePluginModel model = new WorkspaceBundlePluginModel(PDEProject.getManifest(project), null);
+		model.load();
+		IBundle pluginBundle = model.getBundleModel().getBundle();
+		if (pluginBundle != null) {
+			// Add required bundles
+			addRequiredBundleIds(pluginBundle);
 
-			model.save();
+			// Add required execution environment
+			addRequiredExecutionEnvironment(pluginBundle);
 		}
+
+		model.save();
 	}
 
 	private void loadClasspathEntries(IProject project, IProgressMonitor monitor) {
@@ -266,26 +297,68 @@ public class ConvertProjectToPluginProjectJob extends WorkspaceJob {
 		monitor.done();
 	}
 
-	private boolean isOldTarget() {
-		return TargetPlatformHelper.getTargetVersion() < 3.1;
-	}
-
-	@Override
-	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-
-		try {
-			monitor.beginTask(Messages.converting, projectsToConvert.length);
-
-			for (IProject projectToConvert : projectsToConvert) {
-				convertProject(projectToConvert, monitor);
-				monitor.worked(1);
+	private void configureBuildProperties(IProject project) throws CoreException {
+		IFile buildFile = PDEProject.getBuildProperties(project);
+		if (!buildFile.exists()) {
+			WorkspaceBuildModel model = new WorkspaceBuildModel(buildFile);
+			IBuild build = model.getBuild(true);
+			IBuildEntry entry = model.getFactory().createEntry(IBuildEntry.BIN_INCLUDES);
+			if (PDEProject.getPluginXml(project).exists()) {
+				entry.addToken(ICoreConstants.PLUGIN_FILENAME_DESCRIPTOR);
+			}
+			if (PDEProject.getManifest(project).exists()) {
+				entry.addToken(ICoreConstants.MANIFEST_FOLDER_NAME);
+			}
+			for (String fLibEntrie : fLibEntries) {
+				entry.addToken(fLibEntrie);
 			}
 
-		} catch (CoreException ex) {
-			PlatformLogUtil.logAsError(Activator.getDefault(), ex);
-		} finally {
-			monitor.done();
+			if (fSrcEntries.length > 0) {
+				entry.addToken(fLibraryName);
+				IBuildEntry source = model.getFactory().createEntry(IBuildEntry.JAR_PREFIX + fLibraryName);
+				for (String fSrcEntrie : fSrcEntries) {
+					source.addToken(fSrcEntrie);
+				}
+				build.add(source);
+			}
+			if (entry.getTokens().length > 0) {
+				build.add(entry);
+			}
+
+			model.save();
 		}
-		return Status.OK_STATUS;
+	}
+
+	private void addRequiredBundleIds(IBundle pluginBundle) {
+		if (pluginBundle != null) {
+			StringBuilder requiredBundleIdsStr = new StringBuilder();
+			if (requiredBundleIds != null) {
+				for (Iterator<String> iter = requiredBundleIds.iterator(); iter.hasNext();) {
+					String id = iter.next();
+					requiredBundleIdsStr.append(id);
+					if (iter.hasNext()) {
+						requiredBundleIdsStr.append(","); //$NON-NLS-1$
+					}
+				}
+			}
+			pluginBundle.setHeader(org.osgi.framework.Constants.REQUIRE_BUNDLE, requiredBundleIdsStr.toString());
+		}
+	}
+
+	private void addRequiredExecutionEnvironment(IBundle pluginBundle) {
+		if (pluginBundle != null && requiredExecutionEnvironment != null) {
+			/*
+			 * Ignore deprecation warning - Eclipse Platform still uses same constant (see
+			 * org.eclipse.pde.internal.ui.editor.plugin.ExecutionEnvironmentSection#addExecutionEnvironments() for
+			 * details)
+			 */
+			@SuppressWarnings("deprecation")
+			String BUNDLE_REQUIREDEXECUTIONENVIRONMENT = org.osgi.framework.Constants.BUNDLE_REQUIREDEXECUTIONENVIRONMENT;
+			pluginBundle.setHeader(BUNDLE_REQUIREDEXECUTIONENVIRONMENT, requiredExecutionEnvironment);
+		}
+	}
+
+	private boolean isOldTarget() {
+		return TargetPlatformHelper.getTargetVersion() < 3.1;
 	}
 }
