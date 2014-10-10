@@ -41,7 +41,7 @@
 	</ciManagement>
 	<properties>
 		<tycho.version>0.20.0</tycho.version>
-		<xtend.maven.plugin.version>2.7.1</xtend.maven.plugin.version>
+		<xtend.maven.plugin.version>2.7.2</xtend.maven.plugin.version>
 	</properties>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
