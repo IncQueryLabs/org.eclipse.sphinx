@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [446576] Add support for providing labels with different fonts and styles for model elements through BasicExplorerLabelProvider
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.explorer;
@@ -31,12 +32,17 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.ui.internal.Tracing;
 import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryLabelProvider;
 import org.eclipse.emf.transaction.util.TransactionUtil;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
+import org.eclipse.jface.viewers.IFontProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.explorer.internal.messages.Messages;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
@@ -44,7 +50,7 @@ import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
 
 @SuppressWarnings("restriction")
-public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICommonLabelProvider {
+public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICommonLabelProvider, IFontProvider, IStyledLabelProvider {
 
 	protected Map<TransactionalEditingDomain, AdapterFactoryLabelProvider> modelLabelProviders = new WeakHashMap<TransactionalEditingDomain, AdapterFactoryLabelProvider>();
 
@@ -90,7 +96,7 @@ public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICo
 	protected AdapterFactoryLabelProvider createModelLabelProvider(final TransactionalEditingDomain editingDomain) {
 		Assert.isNotNull(editingDomain);
 		AdapterFactory adapterFactory = getAdapterFactory(editingDomain);
-		return new TransactionalAdapterFactoryLabelProvider(editingDomain, adapterFactory) {
+		AdapterFactoryLabelProvider labelProvider = new TransactionalAdapterFactoryLabelProvider(editingDomain, adapterFactory) {
 			@Override
 			// Overridden to avoid the somewhat annoying logging of Eclipse exceptions resulting from event queue
 			// dispatching that is done before transaction is acquired and actually starts to run
@@ -107,6 +113,12 @@ public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICo
 				}
 			}
 		};
+
+		// Set default font to enable the customized getFont()
+		Font defaultFont = JFaceResources.getDefaultFont();
+		labelProvider.setDefaultFont(defaultFont);
+
+		return labelProvider;
 	}
 
 	/**
@@ -122,7 +134,7 @@ public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICo
 	 * return any {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter
 	 * factory} will then be returned as result by this method.
 	 * </p>
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain editing domain} whose embedded {@link AdapterFactory adapter
 	 *            factory} is to be returned as default. May be left <code>null</code> if
@@ -154,7 +166,7 @@ public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICo
 	 * {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter factory} will
 	 * then be returned as result by {@link #getAdapterFactory(TransactionalEditingDomain)}.
 	 * </p>
-	 * 
+	 *
 	 * @return The custom {@link AdapterFactory adapter factory} that is to be used by this
 	 *         {@link BasicExplorerLabelProvider label provider}. <code>null</code> the default {@link AdapterFactory
 	 *         adapter factory} returned by {@link #getAdapterFactory(TransactionalEditingDomain)} should be used
@@ -256,5 +268,34 @@ public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICo
 				fireLabelProviderChanged(event);
 			}
 		};
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider#getStyledText(java.lang.Object)
+	 */
+	@Override
+	public StyledString getStyledText(Object element) {
+		if (!(element instanceof IFile)) {
+			AdapterFactoryLabelProvider labelProvider = getModelLabelProvider(element);
+			if (labelProvider != null) {
+				return labelProvider.getStyledText(element);
+			}
+		}
+		return null;
+	}
+
+	/*
+	 * @see org.eclipse.jface.viewers.IFontProvider#getFont(java.lang.Object)
+	 */
+	@Override
+	public Font getFont(Object element) {
+		if (!(element instanceof IFile)) {
+			AdapterFactoryLabelProvider labelProvider = getModelLabelProvider(element);
+			if (labelProvider != null) {
+				return labelProvider.getFont(element);
+			}
+		}
+		return null;
 	}
 }
