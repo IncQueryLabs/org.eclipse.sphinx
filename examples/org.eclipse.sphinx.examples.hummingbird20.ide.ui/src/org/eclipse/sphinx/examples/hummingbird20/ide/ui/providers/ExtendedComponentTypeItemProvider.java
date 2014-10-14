@@ -1,19 +1,20 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2011-2012 itemis, See4sys and others.
+ *
+ * Copyright (c) 2011-2014 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [393312] Make sure that transient item providers created by extended item providers can be used before the getChildren() method of the latter has been called
- * 
+ *     itemis - [447193] Enable transient item providers to be created through adapter factories
+ *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.extended;
+package org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,18 +27,10 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
-import org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.ParametersItemProvider;
-import org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.PortsItemProvider;
-import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
-import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.edit.ComponentTypeItemProvider;
 
 public class ExtendedComponentTypeItemProvider extends ComponentTypeItemProvider {
-
-	private ParametersItemProvider parametersItemProvider;
-	private PortsItemProvider portsItemProvider;
 
 	public ExtendedComponentTypeItemProvider(AdapterFactory adapterFactory) {
 		super(adapterFactory);
@@ -45,10 +38,8 @@ public class ExtendedComponentTypeItemProvider extends ComponentTypeItemProvider
 
 	@Override
 	public Object getParent(Object object) {
-		Platform platform = (Platform) super.getParent(object);
-		ExtendedPlatformItemProvider platformItemProvider = (ExtendedPlatformItemProvider) adapterFactory.adapt(platform,
-				ITreeItemContentProvider.class);
-		return platformItemProvider != null ? platformItemProvider.getComponentTypes(platform) : null;
+		Object parent = super.getParent(object);
+		return adapterFactory.adapt(parent, ComponentTypesItemProvider.class);
 	}
 
 	@Override
@@ -62,23 +53,9 @@ public class ExtendedComponentTypeItemProvider extends ComponentTypeItemProvider
 	@Override
 	public Collection<?> getChildren(Object object) {
 		List<Object> children = new ArrayList<Object>(super.getChildren(object));
-		children.add(getParameters((ComponentType) object));
-		children.add(getPorts((ComponentType) object));
+		children.add(adapterFactory.adapt(object, ParametersItemProvider.class));
+		children.add(adapterFactory.adapt(object, PortsItemProvider.class));
 		return children;
-	}
-
-	public ParametersItemProvider getParameters(ComponentType componentType) {
-		if (parametersItemProvider == null) {
-			parametersItemProvider = new ParametersItemProvider(adapterFactory, componentType);
-		}
-		return parametersItemProvider;
-	}
-
-	public PortsItemProvider getPorts(ComponentType componentType) {
-		if (portsItemProvider == null) {
-			portsItemProvider = new PortsItemProvider(adapterFactory, componentType);
-		}
-		return portsItemProvider;
 	}
 
 	@Override
@@ -98,25 +75,13 @@ public class ExtendedComponentTypeItemProvider extends ComponentTypeItemProvider
 				public Collection<?> getAffectedObjects() {
 					Collection<?> affected = super.getAffectedObjects();
 					if (affected.contains(owner)) {
-						affected = Collections
-								.singleton(feature == TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS ? getParameters((ComponentType) owner)
-										: getPorts((ComponentType) owner));
+						affected = Collections.singleton(feature == TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS ? adapterFactory.adapt(
+								owner, ParametersItemProvider.class) : adapterFactory.adapt(owner, PortsItemProvider.class));
 					}
 					return affected;
 				}
 			};
 		}
 		return command;
-	}
-
-	@Override
-	public void dispose() {
-		if (parametersItemProvider != null) {
-			parametersItemProvider.dispose();
-		}
-		if (portsItemProvider != null) {
-			portsItemProvider.dispose();
-		}
-		super.dispose();
 	}
 }

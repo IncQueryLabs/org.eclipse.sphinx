@@ -1,16 +1,17 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2011 See4sys, BMW Car IT and others.
+ *
+ * Copyright (c) 2008-2014 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
- * 
+ *     itemis - [446573] BasicExplorerContent/LabelProvider don't get refreshed upon changes on provided referenced elements
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.edit;
@@ -64,12 +65,33 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 	/**
 	 * An instance is created from an adapter factory. The factory is used as a key so that we always know which factory
 	 * created this adapter.
-	 * 
+	 *
 	 * @param adapterFactory
 	 *            The factory which created the Adapter.
 	 */
 	public ExtendedItemProviderAdapter(AdapterFactory adapterFactory) {
 		super(adapterFactory);
+	}
+
+	/*
+	 * Overridden to enable wrapping of cross-referenced model objects by default. This is required to make sure that
+	 * the latter get represented by instances of org.eclipse.emf.edit.provider.DelegatingWrapperItemProvider and may
+	 * have a parent element that is different from object containing them.
+	 * @see org.eclipse.emf.edit.provider.ItemProviderAdapter#isWrappingNeeded(java.lang.Object)
+	 */
+	@Override
+	protected boolean isWrappingNeeded(Object object) {
+		if (wrappingNeeded == null) {
+			wrappingNeeded = Boolean.FALSE;
+
+			for (EStructuralFeature feature : getChildrenFeatures(object)) {
+				if (feature instanceof EAttribute || feature instanceof EReference && !((EReference) feature).isContainment()) {
+					wrappingNeeded = Boolean.TRUE;
+					break;
+				}
+			}
+		}
+		return wrappingNeeded;
 	}
 
 	@Override
@@ -125,7 +147,7 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 
 	/**
 	 * Returns the right traversal helper this item provider must use.
-	 * 
+	 *
 	 * @since 0.7.0
 	 * @return The {@linkplain EcoreTraversalHelper traversal helper}
 	 */
@@ -547,7 +569,7 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 	 * which the command is displayed in any location outside the creation menus or submenus (e.g., undo and redo
 	 * menus).
 	 * </p>
-	 * 
+	 *
 	 * @param owner
 	 *            The <code>owner</code> object to which the new <code>child</code> object will be added.
 	 * @param feature
@@ -585,7 +607,7 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 			// extra _UI_CreateChild_text1 key
 			try {
 				// Use combination of feature name and target type name as action text
-				return getResourceLocator().getString("_UI_CreateChild_text1", //$NON-NLS-1$ 
+				return getResourceLocator().getString("_UI_CreateChild_text1", //$NON-NLS-1$
 						new Object[] { childTypeText, featureText });
 			} catch (MissingResourceException e) {
 				return getResourceLocator().getString("_UI_CreateChild_text", //$NON-NLS-1$
@@ -596,7 +618,7 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 		// Reference feature whose name is equal to target type
 		else {
 			// Use only target type name as action text
-			return getResourceLocator().getString("_UI_CreateChild_text", //$NON-NLS-1$ 
+			return getResourceLocator().getString("_UI_CreateChild_text", //$NON-NLS-1$
 					new Object[] { childTypeText, featureText });
 		}
 	}

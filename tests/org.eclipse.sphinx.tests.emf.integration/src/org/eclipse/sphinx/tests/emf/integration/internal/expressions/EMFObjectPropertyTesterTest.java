@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2013 See4sys, itemis and others.
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [423676] AbstractIntegrationTestCase unable to remove project references that are no longer needed
+ *     itemis - [447193] Enable transient item providers to be created through adapter factories
  *
  * </copyright>
  */
@@ -65,7 +66,7 @@ public class EMFObjectPropertyTesterTest extends DefaultIntegrationTestCase {
 				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory());
 
 		TransientItemProvider transientItemProvider = new TransientItemProvider(
-				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory(), component);
+				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory());
 
 		EMFObjectPropertyTester emfObjectProTester = new EMFObjectPropertyTester();
 		String property = PARENT_CLASS_NAME_MATCHES;
@@ -109,7 +110,7 @@ public class EMFObjectPropertyTesterTest extends DefaultIntegrationTestCase {
 				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory());
 
 		TransientItemProvider transientItemProvider = new TransientItemProvider(
-				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory(), component);
+				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory());
 
 		IWrapperItemProvider wrapperItemProvider3 = new WrapperItemProvider(param, transientItemProvider,
 				InstanceModel20Package.eINSTANCE.getComponent_ParameterValues(), 1,

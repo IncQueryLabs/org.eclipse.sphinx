@@ -1,19 +1,20 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2011-2012 itemis, See4sys and others.
+ *
+ * Copyright (c) 2011-2014 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [393312] Make sure that transient item providers created by extended item providers can be used before the getChildren() method of the latter has been called
- * 
+ *     itemis - [447193] Enable transient item providers to be created through adapter factories
+ *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.extended;
+package org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +26,6 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
-import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptorDecorator;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 import org.eclipse.sphinx.emf.edit.ExtendedItemPropertyDescriptor;
@@ -46,18 +46,18 @@ public class ExtendedConnectionItemProvider extends ConnectionItemProvider {
 
 	@Override
 	public Object getParent(Object object) {
-		Component component = (Component) super.getParent(object);
-		ExtendedComponentItemProvider componentItemProvider = (ExtendedComponentItemProvider) adapterFactory.adapt(component,
-				ITreeItemContentProvider.class);
-		return componentItemProvider != null ? componentItemProvider.getOutgoingConnections(component) : null;
+		Object parent = super.getParent(object);
+		return adapterFactory.adapt(parent, ComponentsItemProvider.class);
 	}
 
 	@Override
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
 		super.getChildrenFeatures(object);
-		// Remove Description object as child of connection
+
+		// Suppress description containment reference from children
 		childrenFeatures.remove(Common20Package.Literals.IDENTIFIABLE__DESCRIPTION);
-		// Display source port and target component references as children
+
+		// Display source port and target component cross references as children
 		childrenFeatures.add(InstanceModel20Package.Literals.CONNECTION__SOURCE_PORT);
 		childrenFeatures.add(InstanceModel20Package.Literals.CONNECTION__TARGET_COMPONENT);
 
@@ -68,14 +68,16 @@ public class ExtendedConnectionItemProvider extends ConnectionItemProvider {
 	public void notifyChanged(Notification notification) {
 		updateChildren(notification);
 
-		// for refreshing the view if source port and/or target component references are updated
+		// Refresh underlying view when source port and/or target component cross references are updated
 		switch (notification.getFeatureID(Connection.class)) {
 		case InstanceModel20Package.CONNECTION__SOURCE_PORT:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
+			return;
 		case InstanceModel20Package.CONNECTION__TARGET_COMPONENT:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
 			return;
 		}
+
 		super.notifyChanged(notification);
 
 	}
@@ -87,7 +89,7 @@ public class ExtendedConnectionItemProvider extends ConnectionItemProvider {
 
 			Port sourcePort = ((Connection) object).getSourcePort();
 			if (sourcePort != null) {
-				addRequiredInterface(sourcePort.getRequiredInterface(), getString("_UI_Port_requiredInterface_feature")); //$NON-NLS-1$				
+				addRequiredInterface(sourcePort.getRequiredInterface(), getString("_UI_Port_requiredInterface_feature")); //$NON-NLS-1$
 			}
 		}
 		return itemPropertyDescriptors;

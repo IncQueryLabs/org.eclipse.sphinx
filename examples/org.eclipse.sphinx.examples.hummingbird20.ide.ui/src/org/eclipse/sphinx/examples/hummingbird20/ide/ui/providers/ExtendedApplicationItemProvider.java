@@ -1,19 +1,20 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2011-2012 itemis, See4sys and others.
+ *
+ * Copyright (c) 2011-2014 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [393312] Make sure that transient item providers created by extended item providers can be used before the getChildren() method of the latter has been called
- * 
+ *     itemis - [447193] Enable transient item providers to be created through adapter factories
+ *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.extended;
+package org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,14 +27,10 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.ComponentsItemProvider;
-import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.edit.ApplicationItemProvider;
 
 public class ExtendedApplicationItemProvider extends ApplicationItemProvider {
-
-	private ComponentsItemProvider componentsItemProvider;
 
 	public ExtendedApplicationItemProvider(AdapterFactory adapterFactory) {
 		super(adapterFactory);
@@ -49,15 +46,8 @@ public class ExtendedApplicationItemProvider extends ApplicationItemProvider {
 	@Override
 	public Collection<?> getChildren(Object object) {
 		List<Object> children = new ArrayList<Object>(super.getChildren(object));
-		children.add(getComponents((Application) object));
+		children.add(adapterFactory.adapt(object, ComponentsItemProvider.class));
 		return children;
-	}
-
-	public ComponentsItemProvider getComponents(Application application) {
-		if (componentsItemProvider == null) {
-			componentsItemProvider = new ComponentsItemProvider(adapterFactory, application);
-		}
-		return componentsItemProvider;
 	}
 
 	@Override
@@ -77,20 +67,12 @@ public class ExtendedApplicationItemProvider extends ApplicationItemProvider {
 				public Collection<?> getAffectedObjects() {
 					Collection<?> affected = super.getAffectedObjects();
 					if (affected.contains(owner)) {
-						affected = Collections.singleton(getComponents((Application) owner));
+						affected = Collections.singleton(adapterFactory.adapt(owner, ComponentsItemProvider.class));
 					}
 					return affected;
 				}
 			};
 		}
 		return command;
-	}
-
-	@Override
-	public void dispose() {
-		if (componentsItemProvider != null) {
-			componentsItemProvider.dispose();
-		}
-		super.dispose();
 	}
 }

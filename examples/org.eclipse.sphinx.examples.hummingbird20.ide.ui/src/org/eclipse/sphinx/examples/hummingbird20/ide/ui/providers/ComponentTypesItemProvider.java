@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2011 See4sys and others.
+ *
+ * Copyright (c) 2011-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [447193] Enable transient item providers to be created through adapter factories
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers;
@@ -27,14 +28,13 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.edit.Activator;
 import org.eclipse.sphinx.examples.hummingbird20.ide.ui.internal.messages.Messages;
-import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
 
 public class ComponentTypesItemProvider extends TransientItemProvider {
 
-	public ComponentTypesItemProvider(AdapterFactory adapterFactory, Platform platform) {
-		super(adapterFactory, platform);
+	public ComponentTypesItemProvider(AdapterFactory adapterFactory) {
+		super(adapterFactory);
 	}
 
 	@Override

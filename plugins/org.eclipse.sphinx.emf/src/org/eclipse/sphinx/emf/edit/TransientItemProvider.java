@@ -1,15 +1,17 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [446573] BasicExplorerContent/LabelProvider don't get refreshed upon changes on provided referenced elements
+ *     itemis - [447193] Enable transient item providers to be created through adapter factories
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.edit;
@@ -17,23 +19,30 @@ package org.eclipse.sphinx.emf.edit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandWrapper;
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.FeatureMap;
+import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.edit.command.CommandParameter;
 import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.provider.AttributeValueWrapperItemProvider;
 import org.eclipse.emf.edit.provider.DelegatingWrapperItemProvider;
 import org.eclipse.emf.edit.provider.Disposable;
+import org.eclipse.emf.edit.provider.FeatureMapEntryWrapperItemProvider;
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
@@ -42,194 +51,82 @@ import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.sphinx.emf.Activator;
 
 /**
- * This class provides transient item provider adapter that allows introducing non-model view objects between an object
- * and its children.
+ * A base class for transient item provider {@link Adapter adapter}s that can be used to insert non-model view objects
+ * between an object and its children.
+ * <p>
+ * Transient item providers must be instantiated statefully wrt their target object, i.e., the same transient item
+ * provider instance must not be used for multiple target objects.
+ * </p>
  */
 public class TransientItemProvider extends ExtendedItemProviderAdapter implements IEditingDomainItemProvider, IStructuredItemContentProvider,
 		ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
 
-	/**
-	 * A constructor allowing to create transient item providers. Transient item providers are not created in the usual
-	 * way (i.e., by calling {@link org.eclipse.emf.common.notify.impl.AdapterFactoryImpl#adapt(Notifier, Object))} for
-	 * the object that content non-model elements), their constructors explicitly add them to the eAdapters.
-	 * 
-	 * @param adapterFactory
-	 *            an adapter factory.
-	 * @param parent
-	 *            the parent of the element.
-	 */
-	public TransientItemProvider(AdapterFactory adapterFactory, Notifier parent) {
-		super(adapterFactory);
-		parent.eAdapters().add(this);
+	public static class AdapterFactoryHelper {
+
+		public static Adapter adapt(Object target, Object type, AdapterFactory adapterFactory) {
+			if (target instanceof Notifier && type instanceof Class) {
+				if (TransientItemProvider.class.isAssignableFrom((Class<?>) type)) {
+					Adapter adapter = EcoreUtil.getExistingAdapter((Notifier) target, type);
+					if (adapter != null) {
+						return adapter;
+					}
+					return adapterFactory.adaptNew((Notifier) target, type);
+				}
+			}
+			return null;
+		}
 	}
 
 	/**
-	 * Returns whether this item provider may need to use wrappers for some or all of the values it returns as
-	 * {@link #getChildren children}. This is used to determine whether to use a store to keep track of children and
-	 * whether to use command wrappers that re-wrap results and affected objects. The default implementation of
-	 * {@link #createWrapper createWrapper} also tests this method and will not create any wrappers if it returns
-	 * <code>false</code>.
-	 * <p>
-	 * This implementation consults {@link #getChildrenFeatures getChildrenFeatures}, returning true if any feature map
-	 * or simple attributes contribute children.
+	 * Standard constructor for creation of transient item provider instances through an {@link AdapterFactory adapter
+	 * factory}.
+	 *
+	 * @param adapterFactory
+	 *            The adapter factory which created this transient item provider instance.
+	 */
+	public TransientItemProvider(AdapterFactory adapterFactory) {
+		super(adapterFactory);
+	}
+
+	/**
+	 * Alternative constructor for direct creation of transient item provider instances without going through
+	 * {@link org.eclipse.emf.common.notify.impl.AdapterFactoryImpl#adapt(Notifier, Object))}. Explicitly adds the
+	 * freshly created transient item provider to the {@link Notifier#eAdapters() adapters} of specified
+	 * <code>target</code> object.
+	 *
+	 * @param adapterFactory
+	 *            The adapter factory for the target object of the transient item provider to be created.
+	 * @param target
+	 *            The target {@link EObject object} of the transient item provider to be created.
+	 * @deprecated Use {@link #TransientItemProvider(AdapterFactory)} instead.
+	 */
+	@Deprecated
+	public TransientItemProvider(AdapterFactory adapterFactory, Notifier target) {
+		super(adapterFactory);
+		target.eAdapters().add(this);
+	}
+
+	/**
+	 * Handles model change notifications by calling {@link #updateChildren} to update any cached children and by
+	 * creating a viewer notification, which it passes to {@link #fireNotifyChanged} to trigger a full or partial
+	 * refresh of the underlying viewer.
 	 */
 	@Override
-	protected boolean isWrappingNeeded(Object object) {
-		if (wrappingNeeded == null) {
-			wrappingNeeded = Boolean.FALSE;
-
-			for (EStructuralFeature feature : getChildrenFeatures(object)) {
-				if (feature instanceof EAttribute || feature instanceof EReference && !((EReference) feature).isContainment()) {
-					wrappingNeeded = Boolean.TRUE;
-					break;
-				}
-			}
-		}
-		return wrappingNeeded;
+	public void notifyChanged(Notification notification) {
+		updateChildren(notification);
+		super.notifyChanged(notification);
 	}
 
-	/**
-	 * Updates any cached children based on the given notification. If a {@link ChildrenStore} exists for the given
-	 * transient item provider, then the children of the specified feature are updated.
-	 * 
-	 * @param notification
-	 *            a description of a feature change that has occurred for some notifier.
-	 * @param transientItemProvider
-	 *            a transient item provider for which cached children were updated
-	 */
-	protected void updateTransientItemProviderChildren(Notification notification, TransientItemProvider transientItemProvider) {
-		EObject object = (EObject) notification.getNotifier();
-		ChildrenStore childrenStore = getChildrenStore(transientItemProvider);
-
-		if (childrenStore != null) {
-			EStructuralFeature feature = (EStructuralFeature) notification.getFeature();
-			EList<Object> children = childrenStore.getList(feature);
-			if (children != null) {
-				int index = notification.getPosition();
-
-				switch (notification.getEventType()) {
-				case Notification.UNSET: {
-					// Ignore the unset notification for an isMany feature; the value is boolean in this case.
-					//
-					if (feature.isMany()) {
-						break;
-					}
-
-					// continue to next case
-				}
-				case Notification.SET: {
-					Object oldChild = childrenStore.get(feature, index);
-					Object newValue = notification.getNewValue();
-
-					if (unwrap(oldChild) != newValue) {
-						if (feature.isMany() && index == Notification.NO_INDEX) {
-							disposeWrappers((List<?>) oldChild);
-						} else {
-							disposeWrapper(oldChild);
-						}
-						Object newChild = newValue == null && index == Notification.NO_INDEX ? null : wrap(transientItemProvider, feature, newValue,
-								index);
-						childrenStore.set(feature, index, newChild);
-					}
-					break;
-				}
-				case Notification.ADD: {
-					EList<?> values = (EList<?>) object.eGet(feature);
-
-					if (children.size() != values.size()) {
-						Object newValue = notification.getNewValue();
-						adjustWrapperIndices(children, index, 1);
-						children.add(index, wrap(transientItemProvider, feature, newValue, index));
-					}
-					break;
-				}
-				case Notification.REMOVE: {
-					EList<?> values = (EList<?>) object.eGet(feature);
-
-					if (children.size() != values.size()) {
-						disposeWrapper(children.remove(index));
-						adjustWrapperIndices(children, index, -1);
-					}
-					break;
-				}
-				case Notification.ADD_MANY: {
-					EList<?> values = (EList<?>) object.eGet(feature);
-
-					if (children.size() != values.size()) {
-						if (notification.getOldValue() != null) {
-							throw new IllegalArgumentException("No old value expected"); //$NON-NLS-1$
-						}
-						List<?> newValues = (List<?>) notification.getNewValue();
-						List<Object> newChildren = new ArrayList<Object>(newValues.size());
-						int offset = 0;
-						for (Object newValue : newValues) {
-							newChildren.add(wrap(transientItemProvider, feature, newValue, index + offset++));
-						}
-						adjustWrapperIndices(children, index, offset);
-						children.addAll(index, newChildren);
-					}
-					break;
-				}
-				case Notification.REMOVE_MANY: {
-					// No index specified when removing all elements.
-					//
-					if (index == Notification.NO_INDEX) {
-						index = 0;
-					}
-					EList<?> values = (EList<?>) object.eGet(feature);
-
-					if (children.size() != values.size()) {
-						if (notification.getNewValue() instanceof int[]) {
-							int[] indices = (int[]) notification.getNewValue();
-							for (int i = indices.length - 1; i >= 0; i--) {
-								disposeWrapper(children.remove(indices[i]));
-								adjustWrapperIndices(children, indices[i], -1);
-							}
-						} else {
-							int len = ((List<?>) notification.getOldValue()).size();
-							List<?> sl = children.subList(index, index + len);
-							disposeWrappers(sl);
-							sl.clear();
-							adjustWrapperIndices(children, index, -len);
-						}
-					}
-					break;
-				}
-				case Notification.MOVE: {
-					int oldIndex = (Integer) notification.getOldValue();
-					EList<?> values = (EList<?>) object.eGet(feature);
-					boolean didMove = true;
-
-					for (int i = Math.min(oldIndex, index), end = Math.max(oldIndex, index); didMove && i <= end; i++) {
-						didMove = unwrap(children.get(i)) == values.get(i);
-					}
-
-					if (!didMove) {
-						int delta = index - oldIndex;
-						if (delta < 0) {
-							adjustWrapperIndices(children, index, oldIndex, 1);
-						}
-						children.move(index, oldIndex);
-						adjustWrapperIndex(children.get(index), delta);
-						if (delta > 0) {
-							adjustWrapperIndices(children, oldIndex, index, -1);
-						}
-					}
-					break;
-				}
-				}
-			}
-		}
-	}
-
-	/**
-	 * This returns the children of its parent i.e. a transient item provider. This implementation use
-	 * <code>target</code> for obtaining children of the corresponding features. The target instance variable comes from
-	 * the adapter base class {@link org.eclipse.emf.common.notify.impl.AdapterImpl}.
+	/*
+	 * Overridden to use the target object behind this transient item provider rather than given object (which would be
+	 * the transient item provider itself) in order to (1) retrieve the store for the children of the given object (and
+	 * thereby retrieve it in the same way as in #updateChildren(Notification)) and (2) obtain the values of the
+	 * children features.
+	 * @see org.eclipse.emf.edit.provider.ItemProviderAdapter#getChildren(java.lang.Object)
 	 */
 	@Override
 	public Collection<?> getChildren(Object object) {
-		ChildrenStore store = getChildrenStore(object);
+		ChildrenStore store = getChildrenStore(target);
 		if (store != null) {
 			return store.getChildren();
 		}
@@ -266,12 +163,36 @@ public class TransientItemProvider extends ExtendedItemProviderAdapter implement
 		return store != null ? store.getChildren() : result;
 	}
 
+	/*
+	 * Overridden to use the target object behind this transient item provider rather than given object (which would be
+	 * the transient item provider itself) as key for the store for the children of the given object (and thereby match
+	 * the way it is retrieved in #updateChildren(Notification)).
+	 * @see org.eclipse.emf.edit.provider.ItemProviderAdapter#createChildrenStore(java.lang.Object)
+	 */
+	@Override
+	protected ChildrenStore createChildrenStore(Object object) {
+		ChildrenStore store = null;
+
+		if (isWrappingNeeded(object)) {
+			if (childrenStoreMap == null) {
+				childrenStoreMap = new HashMap<Object, ChildrenStore>();
+			}
+			store = new ChildrenStore(getChildrenFeatures(object));
+			childrenStoreMap.put(target, store);
+		}
+		return store;
+	}
+
 	/**
 	 * Wraps a value, if needed, and keeps the wrapper for disposal along with the item provider. This method actually
 	 * calls {@link #createWrapper createWrapper} to determine if the given value, at the given index in the given
 	 * feature of the given object, should be wrapped and to obtain the wrapper. If a wrapper is obtained, it is
 	 * recorded and returned. Otherwise, the original value is returned. Subclasses may override {@link #createWrapper
 	 * createWrapper} to specify when and with what to wrap values.
+	 * <p>
+	 * This method is very similar to {@link #wrap(EObject, EStructuralFeature, Object, int)} but accepts and handles
+	 * {@link Object} rather than just {@link EObject} <code>object</code> arguments.
+	 * </p>
 	 */
 	protected Object wrap(Object object, EStructuralFeature feature, Object value, int index) {
 		if (!feature.isMany() && index != CommandParameter.NO_INDEX) {
@@ -295,12 +216,32 @@ public class TransientItemProvider extends ExtendedItemProviderAdapter implement
 		return wrapper;
 	}
 
+	/**
+	 * Creates and returns a wrapper for the given value, at the given index in the given feature of the given object if
+	 * such a wrapper is needed; otherwise, returns the original value.
+	 * <p>
+	 * This method is very similar to {@link #createWrapper(EObject, EStructuralFeature, Object, int)} but accepts and
+	 * handles {@link Object} rather than just {@link EObject} <code>object</code> arguments.
+	 * </p>
+	 *
+	 * @see #createWrapper(EObject, EStructuralFeature, Object, int)
+	 */
 	protected Object createWrapper(Object object, EStructuralFeature feature, Object value, int index) {
 		if (!isWrappingNeeded(object)) {
 			return value;
 		}
-		if (!((EReference) feature).isContainment()) {
-			value = new DelegatingWrapperItemProvider(value, object, feature, index, adapterFactory);
+		if (object instanceof EObject) {
+			if (FeatureMapUtil.isFeatureMap(feature)) {
+				value = new FeatureMapEntryWrapperItemProvider((FeatureMap.Entry) value, (EObject) object, (EAttribute) feature, index,
+						adapterFactory, getResourceLocator());
+			} else if (feature instanceof EAttribute) {
+				value = new AttributeValueWrapperItemProvider(value, (EObject) object, (EAttribute) feature, index, adapterFactory,
+						getResourceLocator());
+			}
+		} else {
+			if (!((EReference) feature).isContainment()) {
+				value = new DelegatingWrapperItemProvider(value, object, feature, index, adapterFactory);
+			}
 		}
 		return value;
 	}
@@ -333,8 +274,8 @@ public class TransientItemProvider extends ExtendedItemProviderAdapter implement
 	/**
 	 * This allows creating a command and overriding the {@link
 	 * org.eclipse.emf.common.command.CommandWrapper.getAffectedObjects()#getAffectedObjects()} method to return the
-	 * appropriate transient item provider whenever the “real” affected object is the owner.
-	 * 
+	 * appropriate transient item provider whenever the ï¿½realï¿½ affected object is the owner.
+	 *
 	 * @param command
 	 *            an command.
 	 * @param owner
@@ -378,7 +319,7 @@ public class TransientItemProvider extends ExtendedItemProviderAdapter implement
 	}
 
 	/**
-	 * This returns the image for non-model view objects.
+	 * Returns a folder kind of icon as default image for non-model view objects between an object and its children.
 	 */
 	@Override
 	public Object getImage(Object object) {
@@ -388,4 +329,14 @@ public class TransientItemProvider extends ExtendedItemProviderAdapter implement
 		return null;
 	}
 
+	/*
+	 * Overridden to ensure statefulness of transient item provider adapters wrt their target object, i.e., to avoid
+	 * that the same transient item provider instance is used for multiple target objects.
+	 * @see org.eclipse.emf.edit.provider.ItemProviderAdapter#setTarget(org.eclipse.emf.common.notify.Notifier)
+	 */
+	@Override
+	public void setTarget(Notifier target) {
+		Assert.isLegal(this.target == null || this.target == target);
+		super.setTarget(target);
+	}
 }

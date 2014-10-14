@@ -1,19 +1,20 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2011-2012 itemis, See4sys and others.
+ *
+ * Copyright (c) 2011-2014 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [393312] Make sure that transient item providers created by extended item providers can be used before the getChildren() method of the latter has been called
- * 
+ *     itemis - [447193] Enable transient item providers to be created through adapter factories
+ *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.extended;
+package org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,16 +27,10 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.OutgoingConnectionsItemProvider;
-import org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.ParameterValuesItemProvider;
-import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.edit.ComponentItemProvider;
 
 public class ExtendedComponentItemProvider extends ComponentItemProvider {
-
-	private ParameterValuesItemProvider parameterValuesItemProvider;
-	private OutgoingConnectionsItemProvider outgoingConnectionsItemProvider;
 
 	public ExtendedComponentItemProvider(AdapterFactory adapterFactory) {
 		super(adapterFactory);
@@ -52,23 +47,9 @@ public class ExtendedComponentItemProvider extends ComponentItemProvider {
 	@Override
 	public Collection<?> getChildren(Object object) {
 		List<Object> children = new ArrayList<Object>(super.getChildren(object));
-		children.add(getParameterValues((Component) object));
-		children.add(getOutgoingConnections((Component) object));
+		children.add(adapterFactory.adapt(object, ParameterValuesItemProvider.class));
+		children.add(adapterFactory.adapt(object, OutgoingConnectionsItemProvider.class));
 		return children;
-	}
-
-	public ParameterValuesItemProvider getParameterValues(Component component) {
-		if (parameterValuesItemProvider == null) {
-			parameterValuesItemProvider = new ParameterValuesItemProvider(adapterFactory, component);
-		}
-		return parameterValuesItemProvider;
-	}
-
-	public OutgoingConnectionsItemProvider getOutgoingConnections(Component component) {
-		if (outgoingConnectionsItemProvider == null) {
-			outgoingConnectionsItemProvider = new OutgoingConnectionsItemProvider(adapterFactory, component);
-		}
-		return outgoingConnectionsItemProvider;
 	}
 
 	@Override
@@ -90,24 +71,13 @@ public class ExtendedComponentItemProvider extends ComponentItemProvider {
 					Collection<?> affected = super.getAffectedObjects();
 					if (affected.contains(owner)) {
 						affected = Collections
-								.singleton(feature == InstanceModel20Package.Literals.COMPONENT__PARAMETER_VALUES ? getParameterValues((Component) owner)
-										: getOutgoingConnections((Component) owner));
+								.singleton(feature == InstanceModel20Package.Literals.COMPONENT__PARAMETER_VALUES ? adapterFactory.adapt(owner,
+										ParameterValuesItemProvider.class) : adapterFactory.adapt(owner, OutgoingConnectionsItemProvider.class));
 					}
 					return affected;
 				}
 			};
 		}
 		return command;
-	}
-
-	@Override
-	public void dispose() {
-		if (parameterValuesItemProvider != null) {
-			parameterValuesItemProvider.dispose();
-		}
-		if (outgoingConnectionsItemProvider != null) {
-			outgoingConnectionsItemProvider.dispose();
-		}
-		super.dispose();
 	}
 }
