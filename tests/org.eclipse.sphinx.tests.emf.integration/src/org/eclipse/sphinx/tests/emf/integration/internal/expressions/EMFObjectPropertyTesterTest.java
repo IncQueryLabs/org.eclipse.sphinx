@@ -67,6 +67,7 @@ public class EMFObjectPropertyTesterTest extends DefaultIntegrationTestCase {
 
 		TransientItemProvider transientItemProvider = new TransientItemProvider(
 				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory());
+		transientItemProvider.setTarget(component);
 
 		EMFObjectPropertyTester emfObjectProTester = new EMFObjectPropertyTester();
 		String property = PARENT_CLASS_NAME_MATCHES;
@@ -111,6 +112,7 @@ public class EMFObjectPropertyTesterTest extends DefaultIntegrationTestCase {
 
 		TransientItemProvider transientItemProvider = new TransientItemProvider(
 				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory());
+		transientItemProvider.setTarget(component);
 
 		IWrapperItemProvider wrapperItemProvider3 = new WrapperItemProvider(param, transientItemProvider,
 				InstanceModel20Package.eINSTANCE.getComponent_ParameterValues(), 1,
