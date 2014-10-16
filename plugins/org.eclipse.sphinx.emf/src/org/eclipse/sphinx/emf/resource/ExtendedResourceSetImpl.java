@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.eclipse.core.resources.IContainer;
@@ -594,6 +596,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 			return null;
 		}
 
+		Set<Resource> resourcesWithProblems = new HashSet<Resource>();
 		// Target element may be in any of the specified resources
 		EObject resolvedEObject = null;
 		for (Resource resource : resources) {
@@ -605,11 +608,12 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 				}
 			} catch (Exception ex) {
 				resource.getErrors().add(new ProxyURIIntegrityException(NLS.bind(Messages.error_problemOccurredWhenResolvingProxyURI, uri), ex));
+				resourcesWithProblems.add(resource);
 			}
 		}
 
 		// Handle problems that may have been encountered during proxy resolution
-		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resources, null);
+		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resourcesWithProblems, null);
 
 		return resolvedEObject;
 	}

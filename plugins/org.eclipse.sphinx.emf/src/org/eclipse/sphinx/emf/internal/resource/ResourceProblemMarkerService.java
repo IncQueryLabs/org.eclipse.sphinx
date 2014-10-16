@@ -1,17 +1,17 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2014 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
  *     itemis - [434954] Hook for overwriting conversion of EMF Diagnostics to IMarkers
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.internal.resource;
@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -56,7 +57,7 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 /**
  * Provides methods for analyzing {@link Resource#getErrors() errors} and {@link Resource#getWarnings() warnings} of
  * {@link Resource} resources and creating corresponding problem markers on underlying {@link IFile file}s.
- * 
+ *
  * @see IXMLMarker#XML_WELLFORMEDNESS_PROBLEM
  * @see IXMLMarker#XML_VALIDITY_PROBLEM
  * @see IXMLMarker#XML_INTEGRITY_PROBLEM
@@ -71,10 +72,10 @@ public class ResourceProblemMarkerService {
 	 * !! Important Note !! Don't use Activator.getPlugin().getSymbolicName() instead of hard-coded plug-in name because
 	 * this would prevent this class from being loaded in Java standalone applications.
 	 * </p>
-	 * 
+	 *
 	 * @see IMarker#getType()
 	 */
-	public static final String PROXY_URI_INTEGRITY_PROBLEM = "org.eclipse.sphinx.emf.proxyuriintegrityproblemmarker"; //$NON-NLS-1$ 
+	public static final String PROXY_URI_INTEGRITY_PROBLEM = "org.eclipse.sphinx.emf.proxyuriintegrityproblemmarker"; //$NON-NLS-1$
 
 	/**
 	 * Singleton instance.
@@ -129,7 +130,7 @@ public class ResourceProblemMarkerService {
 	 * <td>{@link IMarker#PROBLEM}</td>
 	 * </tr>
 	 * </table>
-	 * 
+	 *
 	 * @param filesWithErrors
 	 *            Map of {@link IFile file}s to create problem markers for and {@link Exception exceptions} to be used
 	 *            as basis for that.
@@ -220,7 +221,7 @@ public class ResourceProblemMarkerService {
 	 * <td>{@link IMarker#PROBLEM}</td>
 	 * </tr>
 	 * </table>
-	 * 
+	 *
 	 * @param resource
 	 *            {@link Resource} whose {@link Resource#getErrors() errors} and {@link Resource#getWarnings() warnings}
 	 *            are to be analyzed and converted into corresponding problem markers on underlying {@link IFile file}.
@@ -281,7 +282,7 @@ public class ResourceProblemMarkerService {
 	 * <td>{@link IMarker#PROBLEM}</td>
 	 * </tr>
 	 * </table>
-	 * 
+	 *
 	 * @param resources
 	 *            Collection of {@link Resource}s whose {@link Resource#getErrors() errors} and
 	 *            {@link Resource#getWarnings() warnings} are to be analyzed and converted into corresponding problem
@@ -301,12 +302,20 @@ public class ResourceProblemMarkerService {
 	public void updateProblemMarkers(final Collection<Resource> resources, final IProgressMonitor monitor) {
 		Assert.isNotNull(resources);
 
-		if (!resources.isEmpty() && Platform.isRunning()) {
+		// Retrieve resources with problems (errors + warnings)
+		Set<Resource> resourcesWithProblems = new HashSet<Resource>();
+		for (Resource resource : resources) {
+			if (!resource.getErrors().isEmpty() || !resource.getWarnings().isEmpty()) {
+				resourcesWithProblems.add(resource);
+			}
+		}
+
+		if (!resourcesWithProblems.isEmpty() && Platform.isRunning()) {
 			// Collect resources to update problem markers for in sets of resources per editing domain; tolerate
 			// resources
 			// that aren't in any editing domain
 			final Map<TransactionalEditingDomain, Collection<Resource>> resourcesToUpdate = new HashMap<TransactionalEditingDomain, Collection<Resource>>();
-			for (Resource resource : resources) {
+			for (Resource resource : resourcesWithProblems) {
 				TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resource);
 				Collection<Resource> resourcesToUpdateInEditingDomain = resourcesToUpdate.get(editingDomain);
 				if (resourcesToUpdateInEditingDomain == null) {
