@@ -33,8 +33,8 @@ public class StyledExtendedItemProviderAdapter extends ExtendedItemProviderAdapt
 	}
 
 	/*
-	 * Override to create StyledDelegatingWrapperItemProvider instead of the default DelegatingWrapperItemProvider, so
-	 * that the styledString will be used instead of the text string
+	 * Overridden to create StyledDelegatingWrapperItemProvider instead of the default DelegatingWrapperItemProvider, so
+	 * that StyledString-typed strings can be used as labels instead of ordinary text strings.
 	 * @see org.eclipse.emf.edit.provider.ItemProviderAdapter#createWrapper(org.eclipse.emf.ecore.EObject,
 	 * org.eclipse.emf.ecore.EStructuralFeature, java.lang.Object, int)
 	 */
@@ -55,5 +55,4 @@ public class StyledExtendedItemProviderAdapter extends ExtendedItemProviderAdapt
 
 		return value;
 	}
-
 }

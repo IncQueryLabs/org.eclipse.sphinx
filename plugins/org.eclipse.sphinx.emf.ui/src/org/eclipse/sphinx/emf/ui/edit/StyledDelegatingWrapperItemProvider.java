@@ -76,7 +76,7 @@ public class StyledDelegatingWrapperItemProvider extends DelegatingWrapperItemPr
 			org.eclipse.emf.edit.provider.StyledString.Style style = fragment.getStyle();
 			String string = fragment.getString();
 			if (string == null) {
-				result.append("");
+				result.append(""); //$NON-NLS-1$
 			} else if (style == org.eclipse.emf.edit.provider.StyledString.Style.NO_STYLE) {
 				result.append(string);
 			} else if (style == org.eclipse.emf.edit.provider.StyledString.Style.COUNTER_STYLER) {
