@@ -312,8 +312,7 @@ public class ResourceProblemMarkerService {
 
 		if (!resourcesWithProblems.isEmpty() && Platform.isRunning()) {
 			// Collect resources to update problem markers for in sets of resources per editing domain; tolerate
-			// resources
-			// that aren't in any editing domain
+			// resources that aren't in any editing domain
 			final Map<TransactionalEditingDomain, Collection<Resource>> resourcesToUpdate = new HashMap<TransactionalEditingDomain, Collection<Resource>>();
 			for (Resource resource : resourcesWithProblems) {
 				TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resource);
