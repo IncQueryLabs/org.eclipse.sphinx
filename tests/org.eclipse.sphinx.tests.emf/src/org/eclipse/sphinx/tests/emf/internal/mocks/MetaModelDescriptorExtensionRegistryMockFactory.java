@@ -35,7 +35,7 @@ import org.osgi.framework.Bundle;
 public class MetaModelDescriptorExtensionRegistryMockFactory {
 
 	@SuppressWarnings("nls")
-	public IExtensionRegistry createExtensionFactoryMock(Plugin contributorPlugin, IMetaModelDescriptor... mmDescriptors) {
+	public IExtensionRegistry createExtensionRegistryMock(Plugin contributorPlugin, IMetaModelDescriptor... mmDescriptors) {
 		List<IConfigurationElement> configurationElements = new ArrayList<IConfigurationElement>(mmDescriptors.length);
 
 		for (IMetaModelDescriptor mmDescriptor : mmDescriptors) {

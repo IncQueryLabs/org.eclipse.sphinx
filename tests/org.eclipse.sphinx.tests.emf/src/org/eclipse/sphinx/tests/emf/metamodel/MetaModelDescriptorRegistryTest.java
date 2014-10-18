@@ -54,7 +54,7 @@ public class MetaModelDescriptorRegistryTest {
 	}
 
 	private void initMetaModelDescriptorRegistryWith(IMetaModelDescriptor... mmDescriptors) {
-		IExtensionRegistry extensionRegistry = mockFactory.createExtensionFactoryMock(Activator.getPlugin(), mmDescriptors);
+		IExtensionRegistry extensionRegistry = mockFactory.createExtensionRegistryMock(Activator.getPlugin(), mmDescriptors);
 		MetaModelDescriptorRegistry.INSTANCE.setExtensionRegistry(extensionRegistry);
 	}
 
