@@ -15,10 +15,9 @@
 package org.eclipse.sphinx.emf.mwe.dynamic.headless;
 
 import org.eclipse.sphinx.emf.mwe.dynamic.headless.internal.Activator;
+import org.eclipse.sphinx.emf.mwe.dynamic.headless.internal.messages.Messages;
 
 public interface IWorkflowRunnerCLIConstants {
-
-	// TODO Externalize descriptions
 
 	/*
 	 * Application name.
@@ -26,21 +25,16 @@ public interface IWorkflowRunnerCLIConstants {
 	String APPLICATION_NAME = Activator.getPlugin().getSymbolicName() + ".WorkflowRunner"; //$NON-NLS-1$
 
 	/*
-	 * Command line syntax.
-	 */
-	String COMMAND_LINE_SYNTAX = "eclipse -noSplash -data <workspace location> -application " + APPLICATION_NAME + " [options]"; //$NON-NLS-1$ //$NON-NLS-2$
-
-	/*
 	 * Workflow option.
 	 */
 	String OPTION_WORKFLOW = "workflow"; //$NON-NLS-1$
-	String OPTION_WORKFLOW_ARG_NAME = "path or name";
-	String OPTION_WORKFLOW_DESCRIPTION = "workspace-relative <path> of the workflow file or fully qualified <name> of the workflow class to be run";
+	String OPTION_WORKFLOW_ARG_NAME = Messages.cliOption_workflow_argName;
+	String OPTION_WORKFLOW_DESCRIPTION = Messages.cliOption_workflow_description;
 
 	/*
 	 * Model option.
 	 */
 	String OPTION_MODEL = "model"; //$NON-NLS-1$
-	String OPTION_MODEL_ARG_NAME = "path or uri";
-	String OPTION_MODEL_DESCRIPTION = "workspace-relative <path> or absolute <uri> of the model resource or model element to be processed by the workflow";
+	String OPTION_MODEL_ARG_NAME = Messages.cliOption_model_argName;
+	String OPTION_MODEL_DESCRIPTION = Messages.cliOption_model_description;
 }

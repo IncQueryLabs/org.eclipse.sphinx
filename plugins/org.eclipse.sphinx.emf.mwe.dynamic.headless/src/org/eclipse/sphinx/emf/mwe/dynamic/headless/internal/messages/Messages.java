@@ -18,7 +18,22 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.emf.mwe.dynamic.headless.internal.messages.messages"; //$NON-NLS-1$
+
 	public static String BasicWorkflowRunnerApplication_ApplicationName;
+
+	public static String cliOption_workflow_argName;
+	public static String cliOption_workflow_description;
+
+	public static String cliOption_model_argName;
+	public static String cliOption_model_description;
+
+	public static String cliError_workflowClassNotFound;
+	public static String cliError_workflowFileDoesNotExist;
+	public static String cliError_modelResourceDoesNotExist;
+	public static String cliError_modelResourceContainsNoMatchingElement;
+	public static String cliError_modelResourceCouldNotBeLoaded;
+	public static String cliError_modelResourceHasNoContent;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

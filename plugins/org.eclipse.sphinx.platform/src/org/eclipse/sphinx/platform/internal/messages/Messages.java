@@ -20,7 +20,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 
-	private static final String BUNDLE_NAME = "org.eclipse.sphinx.platform.internal.messages.Messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.eclipse.sphinx.platform.internal.messages.messages"; //$NON-NLS-1$
 
 	public static String job_persistingContentTypeIdProperties;
 	public static String task_persistingContentTypeIdPropertiesFor;
@@ -38,6 +38,14 @@ public class Messages extends NLS {
 	public static String warning_resourceIsOutOfSync;
 
 	public static String operation_unnamed_label;
+
+	public static String cliHelp_useHelpOptionForMoreInformation;
+	public static String cliHelp_usagePrefix;
+	public static String cliHelp_optionsHeader;
+	public static String cliHelp_options;
+
+	public static String cliOption_help;
+	public static String cliOption_workspaceLocation_argName;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

@@ -18,11 +18,11 @@ import org.eclipse.sphinx.platform.operations.IWorkspaceOperation;
 
 public interface IWorkflowRunnerOperation extends IWorkspaceOperation {
 
-	Object getModel();
-
-	void setModel(Object object);
-
 	Object getWorkflow();
 
 	void setWorkflow(Object workflow);
+
+	Object getModel();
+
+	void setModel(Object object);
 }

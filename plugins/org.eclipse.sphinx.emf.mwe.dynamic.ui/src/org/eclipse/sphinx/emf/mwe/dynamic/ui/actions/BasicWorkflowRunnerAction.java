@@ -54,6 +54,7 @@ public class BasicWorkflowRunnerAction extends BaseSelectionListenerAction {
 		this.runInBackground = runInBackground;
 	}
 
+	// TODO Add support for multi selection
 	protected Object getSelectedObject() {
 		return getStructuredSelection().getFirstElement();
 	}

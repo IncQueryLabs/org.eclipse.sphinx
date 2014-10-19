@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.workflows.dump
 
+import java.util.List
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.mwe.core.WorkflowContext
 import org.eclipse.emf.mwe.core.issues.Issues
@@ -26,17 +27,19 @@ class DumpHummingbird20WorkflowComponent extends AbstractModelWorkflowComponent 
 
 	override protected invokeInternal(WorkflowContext ctx, ProgressMonitor monitor, Issues issues) {
 		println("Executing Dump Hummingbird 2.0 workflow component")
-		val model = ctx.get(IWorkflowSlots.MODEL_SLOT_NAME) as EObject
-		if (model == null) {
+		val modelObjects = ctx.get(IWorkflowSlots.MODEL_SLOT_NAME) as List<EObject>
+		if (modelObjects == null || modelObjects.empty) {
 			println("Model slot is empty, nothing to do!")
 			return
 		}
 
-		val eAllContents = model.eAllContents
-		while(eAllContents.hasNext) {
-			val element = eAllContents.next
-			if (element instanceof Identifiable) {
-				println("=> " + element.name)
+		for (modelObject : modelObjects) {
+			val eAllContents = modelObject.eAllContents
+			while (eAllContents.hasNext) {
+				val element = eAllContents.next
+				if (element instanceof Identifiable) {
+					println("=> " + element.name)
+				}
 			}
 		}
 

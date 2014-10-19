@@ -14,13 +14,23 @@
  */
 package org.eclipse.sphinx.platform.cli;
 
+import org.eclipse.sphinx.platform.internal.messages.Messages;
+
 public interface ICommonCLIConstants {
 
-	// TODO Externalize descriptions
+	/*
+	 * Command line syntax without workspace (-data) option.
+	 */
+	String COMMAND_LINE_SYNTAX_FORMAT_BASIC = "eclipse -noSplash -application %s [options]"; //$NON-NLS-1$
+
+	/*
+	 * Command line syntax with workspace (-data) option.
+	 */
+	String COMMAND_LINE_SYNTAX_FORMAT_WITH_WORKSPACE = "eclipse -noSplash -data <" + Messages.cliOption_workspaceLocation_argName + "> -application %s [" + Messages.cliHelp_options + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	/*
 	 * Help option.
 	 */
 	String OPTION_HELP = "help"; //$NON-NLS-1$
-	String OPTION_HELP_DESCRIPTION = "print help documentation";
+	String OPTION_HELP_DESCRIPTION = Messages.cliOption_help;
 }

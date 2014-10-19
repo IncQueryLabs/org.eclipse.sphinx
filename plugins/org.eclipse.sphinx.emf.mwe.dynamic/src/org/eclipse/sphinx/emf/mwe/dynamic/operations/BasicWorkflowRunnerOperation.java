@@ -23,6 +23,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.mwe2.runtime.workflow.IWorkflowComponent;
 import org.eclipse.emf.mwe2.runtime.workflow.Workflow;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -54,6 +56,22 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 	}
 
 	/*
+	 * @see org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation#getWorkflow()
+	 */
+	@Override
+	public Object getWorkflow() {
+		return workflow;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation#setWorkflow(java.lang.Object)
+	 */
+	@Override
+	public void setWorkflow(Object workflow) {
+		this.workflow = workflow;
+	}
+
+	/*
 	 * @see org.eclipse.sphinx.platform.operations.IWorkspaceOperation#getRule()
 	 */
 	@Override
@@ -78,20 +96,17 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 		return model;
 	}
 
-	/*
-	 * @see org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation#getWorkflow()
-	 */
-	@Override
-	public Object getWorkflow() {
-		return workflow;
-	}
-
-	/*
-	 * @see org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation#setWorkflow(java.lang.Object)
-	 */
-	@Override
-	public void setWorkflow(Object workflow) {
-		this.workflow = workflow;
+	protected TransactionalEditingDomain getEditingDomain() {
+		if (model instanceof EObject || model instanceof Resource) {
+			return WorkspaceEditingDomainUtil.getEditingDomain(model);
+		}
+		if (model instanceof List) {
+			List<?> modelObjects = (List<?>) model;
+			if (modelObjects.size() > 0) {
+				return WorkspaceEditingDomainUtil.getEditingDomain(modelObjects.get(0));
+			}
+		}
+		return null;
 	}
 
 	protected ClassLoader getParentClassLoader(Object model) {
@@ -232,7 +247,7 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 			};
 
 			// Workflow dealing with some model?
-			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(model);
+			TransactionalEditingDomain editingDomain = getEditingDomain();
 			if (editingDomain != null && hasModelWorkflowComponents(workflow)) {
 				// Workflow intending to modify the model?
 				if (isModifyingModel(workflow)) {

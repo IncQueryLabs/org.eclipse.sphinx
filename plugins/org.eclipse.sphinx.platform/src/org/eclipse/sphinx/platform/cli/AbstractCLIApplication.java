@@ -17,6 +17,7 @@
 package org.eclipse.sphinx.platform.cli;
 
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Map;
 
 import org.apache.commons.cli.BasicParser;
@@ -24,6 +25,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -31,6 +33,7 @@ import org.apache.commons.cli.PosixParser;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.sphinx.platform.internal.messages.Messages;
 
 public abstract class AbstractCLIApplication implements IApplication {
 
@@ -48,6 +51,13 @@ public abstract class AbstractCLIApplication implements IApplication {
 	 * </p>
 	 */
 	public static final Object ERROR_UNSPECIFIED = 1;
+
+	/**
+	 * Default with used when printing command line usage help.
+	 *
+	 * @see #printHelp()
+	 */
+	protected static final int DEFAULT_HELP_WIDTH = 160;
 
 	private String[] applicationArgs;
 	private Options options = new Options();
@@ -284,7 +294,16 @@ public abstract class AbstractCLIApplication implements IApplication {
 	 * @see http://commons.apache.org/cli/usage.html
 	 */
 	protected CommandLineParser createParser() {
-		return new PosixParser();
+		return new PosixParser() {
+			@Override
+			protected void checkRequiredOptions() throws MissingOptionException {
+				// Don't complain about missing required options when command line usage help needs to be printed
+				if (isHelpNeeded(cmd)) {
+					return;
+				}
+				super.checkRequiredOptions();
+			}
+		};
 	}
 
 	/**
@@ -300,8 +319,7 @@ public abstract class AbstractCLIApplication implements IApplication {
 	 * @see http://commons.apache.org/cli/usage.html
 	 */
 	protected Object interrogate() throws Throwable {
-		CommandLine commandLine = getCommandLine();
-		if (commandLine.getOptions().length == 0 || commandLine.hasOption(ICommonCLIConstants.OPTION_HELP)) {
+		if (isHelpNeeded(getCommandLine())) {
 			printHelp();
 			throw new OperationCanceledException();
 		}
@@ -309,17 +327,32 @@ public abstract class AbstractCLIApplication implements IApplication {
 	}
 
 	/**
+	 * Determines if command line usage help needs to be printed.
+	 *
+	 * @return <code>true</code> if command line usage help needs to be printed, <code>false</code> otherwise.
+	 */
+	protected boolean isHelpNeeded(CommandLine commandLine) {
+		return commandLine.getOptions().length == 0 || commandLine.hasOption(ICommonCLIConstants.OPTION_HELP);
+	}
+
+	/**
 	 * Prints the command line usage help.
 	 */
 	protected void printHelp() {
+		// Print optional application description
 		String description = getApplicationDescription();
 		if (description != null && description.length() > 0) {
 			out.println(description);
 			out.println();
 		}
 
+		// Print help including usage with command line syntax and description of supported options
 		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp(getCommandLineSyntax(), getOptions());
+		formatter.setSyntaxPrefix(Messages.cliHelp_usagePrefix);
+		PrintWriter pw = new PrintWriter(out);
+		formatter.printHelp(pw, DEFAULT_HELP_WIDTH, getCommandLineSyntax(), "\n" + Messages.cliHelp_optionsHeader, getOptions(), //$NON-NLS-1$
+				HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, null);
+		pw.flush();
 	}
 
 	/**
@@ -332,9 +365,12 @@ public abstract class AbstractCLIApplication implements IApplication {
 	protected Object handleError(Throwable throwable) {
 		if (throwable instanceof OperationCanceledException) {
 			return ERROR_NO;
+		} else if (throwable instanceof ParseException) {
+			err.println(throwable.getMessage());
+			err.println(Messages.cliHelp_useHelpOptionForMoreInformation);
+		} else {
+			err.println(throwable.getMessage());
 		}
-
-		err.println(throwable.getMessage());
 		return ERROR_UNSPECIFIED;
 	}
 }

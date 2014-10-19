@@ -56,6 +56,7 @@ public class BasicWorkflowRunnerHandler extends AbstractHandler {
 		return selection;
 	}
 
+	// TODO Add support for multi selection
 	protected Object getSelectedObject() {
 		return getStructuredSelection().getFirstElement();
 	}

@@ -14,6 +14,8 @@
  */
 package org.eclipse.sphinx.emf.mwe.dynamic.ui.util;
 
+import java.util.Collections;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.ecore.EObject;
@@ -77,13 +79,13 @@ public class WorkflowRunnerActionHandlerHelper {
 	public Object getModel(Object selectedObject) {
 		// Model object
 		if (selectedObject instanceof EObject) {
-			return selectedObject;
+			return Collections.singletonList(selectedObject);
 		}
 
 		// Model resource
 		Resource resource = EcorePlatformUtil.getResource(selectedObject);
-		if (resource != null && !resource.getContents().isEmpty()) {
-			return resource.getContents().get(0);
+		if (resource != null) {
+			return resource.getContents();
 		}
 
 		return null;
