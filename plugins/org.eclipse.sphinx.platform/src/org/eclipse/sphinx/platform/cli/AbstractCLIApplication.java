@@ -16,6 +16,7 @@
  */
 package org.eclipse.sphinx.platform.cli;
 
+import java.io.PrintStream;
 import java.util.Map;
 
 import org.apache.commons.cli.BasicParser;
@@ -52,6 +53,9 @@ public abstract class AbstractCLIApplication implements IApplication {
 	private Options options = new Options();
 	private CommandLineParser parser;
 	private CommandLine commandLine = null;
+
+	protected PrintStream out = System.out;
+	protected PrintStream err = System.err;
 
 	/**
 	 * Returns the name of this {@link AbstractCLIApplication application}.
@@ -126,6 +130,30 @@ public abstract class AbstractCLIApplication implements IApplication {
 	 */
 	protected CommandLine getCommandLine() {
 		return commandLine;
+	}
+
+	/**
+	 * Uses given {@link PrintStream print stream} as substitution for {@link System#out} and uses it for all subsequent
+	 * writes to the "standard" output stream.
+	 *
+	 * @param out
+	 *            The print stream to be used instead of {@link System#out}.
+	 * @see System#out
+	 */
+	public void setOutputStream(PrintStream out) {
+		this.out = out;
+	}
+
+	/**
+	 * Uses given {@link PrintStream print stream} as substitution for {@link System#err} and uses it for all subsequent
+	 * writes to the "standard" error output stream.
+	 *
+	 * @param err
+	 *            The print stream to be used instead of {@link System#err}.
+	 * @see System#err
+	 */
+	public void setErrorStream(PrintStream err) {
+		this.err = err;
 	}
 
 	/*
@@ -286,8 +314,8 @@ public abstract class AbstractCLIApplication implements IApplication {
 	protected void printHelp() {
 		String description = getApplicationDescription();
 		if (description != null && description.length() > 0) {
-			System.out.println(description);
-			System.out.println();
+			out.println(description);
+			out.println();
 		}
 
 		HelpFormatter formatter = new HelpFormatter();
@@ -306,7 +334,7 @@ public abstract class AbstractCLIApplication implements IApplication {
 			return ERROR_NO;
 		}
 
-		System.err.println(throwable.getMessage());
+		err.println(throwable.getMessage());
 		return ERROR_UNSPECIFIED;
 	}
 }
