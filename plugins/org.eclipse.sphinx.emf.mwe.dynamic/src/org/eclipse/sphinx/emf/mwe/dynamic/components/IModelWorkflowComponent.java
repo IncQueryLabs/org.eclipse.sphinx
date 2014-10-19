@@ -12,17 +12,11 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.mwe.dynamic.operations;
+package org.eclipse.sphinx.emf.mwe.dynamic.components;
 
-import org.eclipse.sphinx.platform.operations.IWorkspaceOperation;
+import org.eclipse.emf.mwe2.runtime.workflow.IWorkflowComponent;
 
-public interface IWorkflowRunnerOperation extends IWorkspaceOperation {
+public interface IModelWorkflowComponent extends IWorkflowComponent {
 
-	Object getModel();
-
-	void setModel(Object object);
-
-	Object getWorkflow();
-
-	void setWorkflow(Object workflow);
+	boolean isModifyingModel();
 }

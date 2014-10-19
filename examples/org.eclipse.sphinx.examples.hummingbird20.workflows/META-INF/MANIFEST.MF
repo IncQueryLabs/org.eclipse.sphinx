@@ -9,3 +9,6 @@ Require-Bundle: org.eclipse.xtend.lib,
  org.eclipse.sphinx.examples.hummingbird20
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
+Export-Package: org.eclipse.sphinx.examples.hummingbird20.workflows.dump,
+ org.eclipse.sphinx.examples.hummingbird20.workflows.hello,
+ org.eclipse.sphinx.examples.hummingbird20.workflows.naming

@@ -26,6 +26,7 @@ public interface IWorkflowSlots {
 	 * {@link WorkflowComponentWithModelSlot workflow component}s.
 	 */
 	String MODEL_SLOT_NAME = "model"; //$NON-NLS-1$
+
 	/**
 	 * Name of slot for passing a {@link IProgressMonitor progress monitor} to {@link Workflow workflow}s and
 	 * {@link WorkflowComponentWithModelSlot workflow component}s.

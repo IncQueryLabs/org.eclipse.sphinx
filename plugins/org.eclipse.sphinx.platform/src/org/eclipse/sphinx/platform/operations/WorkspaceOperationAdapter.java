@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 /**
- * An {@link IWorkspaceOperation} adapter that can be used to wrap existing {@link IWorkspaceRunnable} s and use them as
+ * An {@link IWorkspaceOperation} adapter that can be used to wrap existing {@link IWorkspaceRunnable}s and use them as
  * {@link IWorkspaceOperation}s.
  *
  * @see IWorkspaceOperation

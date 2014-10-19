@@ -12,17 +12,13 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.workflows.simple
+package org.eclipse.sphinx.examples.hummingbird20.workflows.dump
 
-import org.eclipse.emf.mwe2.runtime.workflow.Workflow
+import org.eclipse.sphinx.emf.mwe.dynamic.WorkspaceWorkflow
 
-class SimpleXtendWorkflow extends Workflow {
-	
-	new() {
-		println("Creating simple Xtend-based workflow")
-		
-		// Add workflow components to be executed
-		children += new SimpleJavaWorkflowComponent
-		children += new SimpleXtendWorkflowComponent
-	} 
+class DumpHummingbird20Workflow extends WorkspaceWorkflow {
+
+	new(){
+		children += new DumpHummingbird20WorkflowComponent
+	}
 }

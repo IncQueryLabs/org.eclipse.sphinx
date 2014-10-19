@@ -20,11 +20,21 @@ public class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.emf.mwe.dynamic.ui.internal.messages.messages"; //$NON-NLS-1$
 
-	public static String operation_runningWorkflow;
-	public static String menu_runWorkflow;
-	public static String unknownFileType;
-	public static String workflowInputWizardPage_SelectionGroupTitle;
-	public static String workflowInputWizardPage_fileSelectionDialogTitle;
+	public static String menu_runWorkflow_label;
+	public static String operation_runWorkflow_label;
+	public static String action_runWorkflow_label;
+
+	public static String workflowSelectionWizard_Title;
+
+	public static String workflowSelectionWizardPage_description;
+	public static String workflowSelectionWizardPage_workflowGroupTitle;
+	public static String workflowSelectionWizardPage_title;
+	public static String workflowSelectionWizardPage_browseWorkspaceButtonLabel;
+	public static String workflowSelectionWizardPage_fileSelectionDialogTitle;
+	public static String workflowSelectionWizardPage_workflowClassErrorMessage;
+	public static String workflowSelectionWizardPage_workflowClassLabel;
+	public static String workflowSelectionWizardPage_workflowFileErrorMessage;
+	public static String workflowSelectionWizardPage_workflowPathLabel;
 
 	static {
 		// Initialize resource bundle

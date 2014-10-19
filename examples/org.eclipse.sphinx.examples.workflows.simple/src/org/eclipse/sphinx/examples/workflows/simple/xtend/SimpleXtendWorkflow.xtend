@@ -12,18 +12,18 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.workflows.simple;
+package org.eclipse.sphinx.examples.workflows.simple.xtend
 
-import org.eclipse.emf.mwe2.runtime.workflow.Workflow;
-import org.eclipse.sphinx.examples.workflows.simple.SimpleXtendWorkflowComponent;
+import org.eclipse.emf.mwe2.runtime.workflow.Workflow
+import org.eclipse.sphinx.examples.workflows.simple.java.SimpleJavaWorkflowComponent
 
-public class SimpleJavaWorkflow extends Workflow {
+class SimpleXtendWorkflow extends Workflow {
 
-	public SimpleJavaWorkflow() {
-		System.out.println("Creating simple Java-based workflow");
+	new() {
+		println("Creating simple Xtend-based workflow")
 
 		// Add workflow components to be executed
-		getChildren().add(new SimpleJavaWorkflowComponent());
-		getChildren().add(new SimpleXtendWorkflowComponent());
+		children += new SimpleJavaWorkflowComponent
+		children += new SimpleXtendWorkflowComponent
 	}
 }

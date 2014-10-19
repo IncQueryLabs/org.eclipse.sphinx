@@ -12,9 +12,10 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.mwe.dynamic;
+package org.eclipse.sphinx.emf.mwe.dynamic.components;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.emf.mwe.core.WorkflowComponentWithID;
 import org.eclipse.emf.mwe.core.WorkflowContext;
 import org.eclipse.emf.mwe.core.issues.IssuesImpl;
@@ -25,10 +26,31 @@ import org.eclipse.emf.mwe.core.monitor.NullProgressMonitor;
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitor;
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitorAdapter;
 import org.eclipse.emf.mwe2.runtime.workflow.IWorkflowContext;
+import org.eclipse.sphinx.emf.mwe.dynamic.IWorkflowSlots;
 import org.eclipse.sphinx.emf.mwe.dynamic.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
-public abstract class AbstractWorkspaceWorkflowComponent extends AbstractWorkflowComponent2 {
+public abstract class AbstractWorkspaceWorkflowComponent extends AbstractWorkflowComponent2 implements IWorkspaceWorkflowComponent {
+
+	private final ISchedulingRule rule;
+
+	private Mwe2Bridge bridge;
+
+	public AbstractWorkspaceWorkflowComponent() {
+		this(null);
+	}
+
+	public AbstractWorkspaceWorkflowComponent(ISchedulingRule rule) {
+		this.rule = rule;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.mwe.dynamic.components.IWorkspaceWorkflowComponent#getRule()
+	 */
+	@Override
+	public ISchedulingRule getRule() {
+		return rule;
+	}
 
 	protected static class WorkspaceMwe2Bridge extends Mwe2Bridge {
 
@@ -82,8 +104,9 @@ public abstract class AbstractWorkspaceWorkflowComponent extends AbstractWorkflo
 		}
 	};
 
-	private Mwe2Bridge bridge;
-
+	/*
+	 * @see org.eclipse.emf.mwe.core.lib.AbstractWorkflowComponent#getBridge()
+	 */
 	@Override
 	protected Mwe2Bridge getBridge() {
 		if (bridge == null) {

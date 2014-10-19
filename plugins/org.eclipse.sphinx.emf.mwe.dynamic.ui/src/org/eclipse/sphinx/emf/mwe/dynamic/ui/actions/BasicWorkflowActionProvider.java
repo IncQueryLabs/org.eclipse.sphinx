@@ -14,25 +14,26 @@
  */
 package org.eclipse.sphinx.emf.mwe.dynamic.ui.actions;
 
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.sphinx.emf.mwe.dynamic.ui.IWorkflowRunnerUIConstants;
+import org.eclipse.sphinx.emf.mwe.dynamic.ui.IWorkflowRunnerMenuConstants;
 import org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.ui.navigator.ICommonMenuConstants;
 
-public class BasicWorkflowRunnerActionProvider extends BasicActionProvider {
+public class BasicWorkflowActionProvider extends BasicActionProvider {
 
 	protected BasicWorkflowRunnerAction runWorkflowAction;
 
 	@Override
 	protected void doInit() {
 		runWorkflowAction = createWorkflowRunnerAction();
+
 		if (selectionProvider != null) {
 			selectionProvider.addSelectionChangedListener(runWorkflowAction);
+
 			ISelection selection = selectionProvider.getSelection();
 			IStructuredSelection structuredSelection = SelectionUtil.getStructuredSelection(selection);
 			runWorkflowAction.selectionChanged(structuredSelection);
@@ -40,14 +41,14 @@ public class BasicWorkflowRunnerActionProvider extends BasicActionProvider {
 	}
 
 	protected BasicWorkflowRunnerAction createWorkflowRunnerAction() {
-		return new BasicWorkflowRunnerAction("Running Xtend workflow");
+		return new BasicWorkflowRunnerAction();
 	}
 
 	@Override
 	protected IMenuManager addSubMenu(IMenuManager contextMenuManager) {
-		IMenuManager subMenuManager = contextMenuManager.findMenuUsingPath(IWorkflowRunnerUIConstants.MENU_RUN_ID);
+		IMenuManager subMenuManager = contextMenuManager.findMenuUsingPath(IWorkflowRunnerMenuConstants.MENU_RUN_WORKFLOW_ID);
 		if (subMenuManager == null) {
-			subMenuManager = new MenuManager(IWorkflowRunnerUIConstants.MENU_RUN_LABEL, IWorkflowRunnerUIConstants.MENU_RUN_ID);
+			subMenuManager = new MenuManager(IWorkflowRunnerMenuConstants.MENU_RUN_WORKFLOW_LABEL, IWorkflowRunnerMenuConstants.MENU_RUN_WORKFLOW_ID);
 			contextMenuManager.appendToGroup(ICommonMenuConstants.GROUP_ADDITIONS, subMenuManager);
 		}
 		return subMenuManager;
@@ -55,7 +56,7 @@ public class BasicWorkflowRunnerActionProvider extends BasicActionProvider {
 
 	@Override
 	protected void fillSubMenu(IMenuManager subMenuManager) {
-		subMenuManager.add(new ActionContributionItem(runWorkflowAction));
+		subMenuManager.add(runWorkflowAction);
 	}
 
 	@Override

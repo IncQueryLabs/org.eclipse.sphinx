@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.workflows.simple;
+package org.eclipse.sphinx.examples.workflows.simple.java;
 
 import org.eclipse.emf.mwe.core.WorkflowContext;
 import org.eclipse.emf.mwe.core.issues.Issues;
@@ -26,9 +26,11 @@ public class SimpleJavaWorkflowComponent extends AbstractWorkflowComponent2 {
 	protected void invokeInternal(WorkflowContext ctx, ProgressMonitor monitor,
 			Issues issues) {
 		System.out.println("Executing simple Java-based workflow component");
-		
+
 		System.out.println("Using some class from another project: " + Example.class);
 		Example example = new Example();
 		example.doSomething();
+
+		System.out.println("Done!");
 	}
 }

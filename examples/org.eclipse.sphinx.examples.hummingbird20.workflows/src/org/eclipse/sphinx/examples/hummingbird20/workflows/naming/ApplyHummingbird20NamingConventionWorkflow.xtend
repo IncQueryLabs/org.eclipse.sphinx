@@ -12,21 +12,13 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.mwe.dynamic;
+package org.eclipse.sphinx.examples.hummingbird20.workflows.naming
 
-public interface IXtendConstants {
+import org.eclipse.sphinx.emf.mwe.dynamic.WorkspaceWorkflow
 
-	/**
-	 * Xtend file extension
-	 */
-	String XTEND_FILE_EXTENSION = "xtend"; //$NON-NLS-1$
+class ApplyHummingbird20NamingConventionWorkflow extends WorkspaceWorkflow {
 
-	/**
-	 * Java file extension
-	 */
-	String JAVA_FILE_EXTENSION = "java"; //$NON-NLS-1$
-
-	String XTEND_GEN_FOLDER_NAME = "xtend-gen"; //$NON-NLS-1$
-
-	String JAVA_SRC_FOLDER_NAME = "src"; //$NON-NLS-1$
+	new(){
+		children += new ApplyHummingbird20NamingConventionWorkflowComponent
+	}
 }

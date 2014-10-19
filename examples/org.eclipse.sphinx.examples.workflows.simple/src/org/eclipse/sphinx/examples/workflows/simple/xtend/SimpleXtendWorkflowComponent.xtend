@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.workflows.simple
+package org.eclipse.sphinx.examples.workflows.simple.xtend
 
 import org.eclipse.emf.mwe.core.WorkflowContext
 import org.eclipse.emf.mwe.core.issues.Issues
@@ -20,13 +20,15 @@ import org.eclipse.emf.mwe.core.lib.AbstractWorkflowComponent2
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitor
 import org.eclipse.sphinx.examples.workflows.lib.Example
 
-class SimpleXtendWorkflowComponent extends AbstractWorkflowComponent2 { 
-	
+class SimpleXtendWorkflowComponent extends AbstractWorkflowComponent2 {
+
 	override protected invokeInternal(WorkflowContext ctx, ProgressMonitor monitor, Issues issues) {
 		println("Executing simple Xtend-based workflow component")
-		
+
 		println("Using some class from another project: " + Example)
 		val example = new Example();
 		example.doSomething();
+
+		println("Done!")
 	}
 }

@@ -12,6 +12,7 @@
  *
  * </copyright>
  */
+
 package org.eclipse.sphinx.emf.mwe.dynamic;
 
 import org.eclipse.core.runtime.IProgressMonitor;

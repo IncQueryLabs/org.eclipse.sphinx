@@ -12,13 +12,13 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.workflows.simple
+package org.eclipse.sphinx.examples.workflows.simple.longrunning
 
 import org.eclipse.core.runtime.OperationCanceledException
 import org.eclipse.emf.mwe.core.WorkflowContext
 import org.eclipse.emf.mwe.core.issues.Issues
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitor
-import org.eclipse.sphinx.emf.mwe.dynamic.AbstractWorkspaceWorkflowComponent
+import org.eclipse.sphinx.emf.mwe.dynamic.components.AbstractWorkspaceWorkflowComponent
 
 class LongRunningWorkflowComponent extends AbstractWorkspaceWorkflowComponent {
 

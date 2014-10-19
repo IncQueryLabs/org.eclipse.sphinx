@@ -10,3 +10,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sphinx.examples.workflows.lib
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
+Export-Package: org.eclipse.sphinx.examples.workflows.simple.empty,
+ org.eclipse.sphinx.examples.workflows.simple.java,
+ org.eclipse.sphinx.examples.workflows.simple.longrunning,
+ org.eclipse.sphinx.examples.workflows.simple.xtend

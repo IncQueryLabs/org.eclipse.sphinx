@@ -20,34 +20,36 @@ Contributors:
    <extension point="org.eclipse.ui.navigator.viewer">
       <viewerActionBinding viewerId="org.eclipse.ui.navigator.ProjectExplorer">
          <includes>
-            <actionExtension pattern="org.eclipse.sphinx.xtend.workflow.ui.runWorkflow" />
+            <actionExtension pattern="org.eclipse.sphinx.xtend.workflow.ui.basicWorkflowActions" />
          </includes>
       </viewerActionBinding>
       <viewerActionBinding
             viewerId="org.eclipse.sphinx.examples.explorer.views.modelExplorer">
          <includes>
-            <actionExtension
-                  pattern="org.eclipse.sphinx.xtend.workflow.ui.runWorkflow">
-            </actionExtension>
+            <actionExtension pattern="org.eclipse.sphinx.xtend.workflow.ui.basicWorkflowActions" />
          </includes>
       </viewerActionBinding>
    </extension>
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
       <actionProvider
-            class="org.eclipse.sphinx.emf.mwe.dynamic.ui.actions.BasicWorkflowRunnerActionProvider"
-            id="org.eclipse.sphinx.xtend.workflow.ui.runWorkflow">
+            class="org.eclipse.sphinx.emf.mwe.dynamic.ui.actions.BasicWorkflowActionProvider"
+            id="org.eclipse.sphinx.xtend.workflow.ui.basicWorkflowActions">
          <enablement>
             <or>
                <instanceof
                      value="org.eclipse.emf.ecore.EObject">
                </instanceof>
                <instanceof
-                     value="org.eclipse.core.resources.IResource">
+                     value="org.eclipse.core.resources.IFile">
                </instanceof>
                <instanceof
-                     value="org.eclipse.jdt.core.IJavaElement">
-               </instanceof></or>
+                     value="org.eclipse.jdt.core.ICompilationUnit">
+               </instanceof>
+               <instanceof
+                     value="org.eclipse.jdt.core.IType">
+               </instanceof>
+            </or>
          </enablement>
       </actionProvider>
    </extension>

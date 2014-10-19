@@ -14,88 +14,176 @@
  */
 package org.eclipse.sphinx.emf.mwe.dynamic.headless;
 
+import java.io.FileNotFoundException;
+import java.util.NoSuchElementException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.mwe.dynamic.operations.BasicWorkflowRunnerOperation;
 import org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
+import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.platform.cli.AbstractCLIApplication;
 
+/**
+ * Usage examples:
+ * <ul>
+ * <li>eclipse<br/>
+ * -noSplash<br/>
+ * -data /my/workspace/location<br/>
+ * -application org.eclipse.sphinx.emf.mwe.dynamic.headless.WorkflowRunner<br/>
+ * -workflow org.example/src/org/example/MyWorkflowFile.xtend<br/>
+ * -model org.example/model/MyModelFile.hummingbird</li>
+ * <li>eclipse<br/>
+ * -noSplash<br/>
+ * -data /my/workspace/location<br/>
+ * -application org.eclipse.sphinx.emf.mwe.dynamic.headless.WorkflowRunner<br/>
+ * -workflow /org.example/src/org/example/MyWorkflowFile.java<br/>
+ * -model /org.example/model/MyModelFile.hummingbird</li>
+ * <li>eclipse<br/>
+ * -noSplash<br/>
+ * -data /my/workspace/location<br/>
+ * -application org.eclipse.sphinx.emf.mwe.dynamic.headless.WorkflowRunner<br/>
+ * -workflow org.example/src/org/example/MyWorkflowFile.xtend<br/>
+ * -model platform:/resource/org.example/model/MyModelFile.hummingbird</li>
+ * <li>eclipse<br/>
+ * -noSplash<br/>
+ * -data /my/workspace/location<br/>
+ * -application org.eclipse.sphinx.emf.mwe.dynamic.headless.WorkflowRunner<br/>
+ * -workflow org.example/src/org/example/MyWorkflowFile.xtend<br/>
+ * -model platform:/resource/org.example/model/MyModelFile.hummingbird#//@components.0</li>
+ * </ul>
+ */
 public class BasicWorkflowRunnerApplication extends AbstractCLIApplication {
 
-	private static final String WORKFLOW_FILE_OPTION = "file"; //$NON-NLS-1$
-	private static final String WORKFLOW_INPUT = "input"; //$NON-NLS-1$
+	private static final Pattern JAVA_CLASS_NAME_PATTERN = Pattern.compile("((?:\\w|\\.)+)(\\.)([A-Z](?:\\w)+)"); //$NON-NLS-1$
 
+	/*
+	 * @see org.eclipse.sphinx.platform.cli.AbstractCLIApplication#getCommandLineSyntax()
+	 */
 	@Override
-	protected String getApplicationName() {
-		return "BasicWorkflowRunner"; //$NON-NLS-1$
+	protected String getCommandLineSyntax() {
+		return IWorkflowRunnerCLIConstants.COMMAND_LINE_SYNTAX;
 	}
 
+	// TODO Externalize exceptions
+
+	/*
+	 * @see org.eclipse.sphinx.platform.cli.AbstractCLIApplication#defineOptions()
+	 */
 	@Override
 	protected void defineOptions() {
 		super.defineOptions();
 
-		OptionBuilder.isRequired();
-		OptionBuilder.withArgName("workflowFile");//$NON-NLS-1$
-		OptionBuilder.hasArgs(1);
-		OptionBuilder.withValueSeparator();
-		OptionBuilder.withDescription("Path of the workflow file"); //$NON-NLS-1$
-		addOption(OptionBuilder.create(WORKFLOW_FILE_OPTION));
+		OptionBuilder.hasArg();
+		OptionBuilder.withArgName(IWorkflowRunnerCLIConstants.OPTION_WORKFLOW_ARG_NAME);
+		OptionBuilder.withDescription(IWorkflowRunnerCLIConstants.OPTION_WORKFLOW_DESCRIPTION);
+		addOption(OptionBuilder.create(IWorkflowRunnerCLIConstants.OPTION_WORKFLOW));
 
-		OptionBuilder.isRequired(false);
-		OptionBuilder.withArgName("workflowInput");//$NON-NLS-1$
-		OptionBuilder.hasArgs(1);
-		OptionBuilder.withValueSeparator();
-		OptionBuilder.withDescription("Path of the workflow model input"); //$NON-NLS-1$
-		addOption(OptionBuilder.create(WORKFLOW_INPUT));
+		OptionBuilder.hasArg();
+		OptionBuilder.withArgName(IWorkflowRunnerCLIConstants.OPTION_MODEL_ARG_NAME);
+		OptionBuilder.withDescription(IWorkflowRunnerCLIConstants.OPTION_MODEL_DESCRIPTION);
+		addOption(OptionBuilder.create(IWorkflowRunnerCLIConstants.OPTION_MODEL));
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.platform.cli.AbstractCLIApplication#interrogate()
+	 */
 	@Override
 	protected Object interrogate() throws Throwable {
 		super.interrogate();
 
 		// Retrieve options
 		CommandLine commandLine = getCommandLine();
-		String workflowFilePath = commandLine.getOptionValue(WORKFLOW_FILE_OPTION);
-		String workflowInputPath = commandLine.getOptionValue(WORKFLOW_INPUT);
+		String workflow = commandLine.getOptionValue(IWorkflowRunnerCLIConstants.OPTION_WORKFLOW);
+		String model = commandLine.getOptionValue(IWorkflowRunnerCLIConstants.OPTION_MODEL);
 
-		// create the workflow operation
+		// Create the workflow operation
 		IWorkflowRunnerOperation operation = createWorkflowRunnerOperation();
-		operation.setWorkflow(getWorkflowFile(workflowFilePath));
-		operation.setInput(getWorkflowInput(workflowInputPath));
+		operation.setWorkflow(getWorkflow(workflow));
+		operation.setModel(loadModel(model));
 
 		// Run the operation
 		operation.run(new NullProgressMonitor());
+
+		// TODO Save model if workflow has model modifying components
 
 		return ERROR_NO;
 	}
 
 	protected BasicWorkflowRunnerOperation createWorkflowRunnerOperation() {
-		return new BasicWorkflowRunnerOperation(getApplicationName());
+		return new BasicWorkflowRunnerOperation(IWorkflowRunnerCLIConstants.APPLICATION_NAME);
 	}
 
-	private Object getWorkflowFile(String filePath) {
-		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-		IPath path = new Path(filePath);
-		IFile fileForLocation = workspaceRoot.getFileForLocation(path);
-		if (fileForLocation.exists()) {
-			return fileForLocation;
+	protected Object getWorkflow(String workflow) throws ClassNotFoundException, FileNotFoundException {
+		// FIXME Make workflow a required at CLI option
+		Assert.isNotNull(workflow);
+
+		Matcher matcher = JAVA_CLASS_NAME_PATTERN.matcher(workflow);
+		if (matcher.find()) {
+			// Workflow is a fully qualified Java class name
+			try {
+				return Class.forName(workflow);
+			} catch (ClassNotFoundException ex) {
+				throw new ClassNotFoundException("Workflow class '" + workflow + "' could not be found");
+			}
+		} else {
+			// Workflow is assumed to be a workspace-relative path
+			Path workflowPath = new Path(workflow);
+			IFile workflowFile = ResourcesPlugin.getWorkspace().getRoot().getFile(workflowPath);
+			if (!workflowFile.exists()) {
+				IPath workflowLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation().append(workflowPath);
+				throw new FileNotFoundException("Workflow file '" + workflowLocation.toOSString() + "' does not exist");
+			}
+			return workflowFile;
 		}
-		throw new UnsupportedOperationException("Could not find workflow file at the specified location " + filePath); //$NON-NLS-1$
 	}
 
-	private Object getWorkflowInput(String modelPath) {
-		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-		IPath path = new Path(modelPath);
-		IFile fileForLocation = workspaceRoot.getFileForLocation(path);
-		if (fileForLocation.exists()) {
-			return fileForLocation;
+	protected Object loadModel(String model) throws FileNotFoundException, NoSuchElementException {
+		// FIXME Support launching workflows without providing any model
+		Assert.isNotNull(model);
+
+		URI uri = EcorePlatformUtil.createURI(new Path(model).makeAbsolute()).trimFragment();
+		if (!EcoreResourceUtil.exists(uri)) {
+			throw new FileNotFoundException("Model resource '" + uri.toPlatformString(true) + "' does not exist");
 		}
-		throw new UnsupportedOperationException("Could not find workflow input at the specified location " + modelPath); //$NON-NLS-1$
+
+		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
+		ResourceSet resourceSet = editingDomain != null ? editingDomain.getResourceSet() : null;
+
+		String fragment = URI.createURI(model).fragment();
+		if (fragment != null) {
+			// URI refers to a model object
+			EObject eObject = EcoreResourceUtil.loadEObject(resourceSet, uri.appendFragment(fragment));
+			if (eObject == null) {
+				throw new NoSuchElementException("Model resource '" + uri.toPlatformString(true) + "' contains no '" + fragment + "' element");
+			}
+			return eObject;
+		} else {
+			// URI refers to a model resource
+			Resource resource = EcoreResourceUtil.loadResource(resourceSet, uri, null);
+			if (resource == null) {
+				throw new NoSuchElementException("Model resource '" + uri.toPlatformString(true) + "' could not be loaded");
+			}
+			if (resource.getContents().isEmpty()) {
+				throw new NoSuchElementException("Model resource '" + uri.toPlatformString(true) + "' has no content");
+			}
+
+			return resource.getContents().get(0);
+		}
 	}
 }

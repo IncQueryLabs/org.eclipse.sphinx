@@ -12,17 +12,13 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.mwe.dynamic.operations;
+package org.eclipse.sphinx.examples.hummingbird20.workflows.hello
 
-import org.eclipse.sphinx.platform.operations.IWorkspaceOperation;
+import org.eclipse.sphinx.emf.mwe.dynamic.WorkspaceWorkflow
 
-public interface IWorkflowRunnerOperation extends IWorkspaceOperation {
+class HelloHummingbird20Workflow extends WorkspaceWorkflow {
 
-	Object getModel();
-
-	void setModel(Object object);
-
-	Object getWorkflow();
-
-	void setWorkflow(Object workflow);
+	new(){
+		children += new HelloHummingbird20WorkflowComponent
+	}
 }

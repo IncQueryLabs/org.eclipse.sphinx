@@ -12,13 +12,15 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.workflows.simple
+package org.eclipse.sphinx.examples.workflows.simple.longrunning
 
 import org.eclipse.sphinx.emf.mwe.dynamic.WorkspaceWorkflow
 
 class LongRunningWorkflow extends WorkspaceWorkflow {
-	
+
 	new(){
-		children += new LongRunningWorkflowComponent 
+		System.out.println("Creating long running workflow")
+
+		children += new LongRunningWorkflowComponent
 	}
 }

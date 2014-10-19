@@ -12,13 +12,13 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.hummingbird20.workflows
+package org.eclipse.sphinx.examples.workflows.simple.empty
 
 import org.eclipse.sphinx.emf.mwe.dynamic.WorkspaceWorkflow
 
-class HelloHummingbird20Workflow extends WorkspaceWorkflow {
-	
-	new(){
-		children += new HelloHummingbird20WorkflowComponent 
+class EmptyWorkflow extends WorkspaceWorkflow {
+
+	new() {
+		System.out.println("Creating empty workflow")
 	}
 }

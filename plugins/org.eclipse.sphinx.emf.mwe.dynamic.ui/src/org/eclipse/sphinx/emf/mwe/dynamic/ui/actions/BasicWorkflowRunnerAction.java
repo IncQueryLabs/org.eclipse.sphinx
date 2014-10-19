@@ -12,51 +12,102 @@
  *
  * </copyright>
  */
+
 package org.eclipse.sphinx.emf.mwe.dynamic.ui.actions;
 
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.sphinx.emf.mwe.dynamic.operations.BasicWorkflowRunnerOperation;
 import org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation;
 import org.eclipse.sphinx.emf.mwe.dynamic.ui.internal.Activator;
+import org.eclipse.sphinx.emf.mwe.dynamic.ui.internal.messages.Messages;
+import org.eclipse.sphinx.emf.mwe.dynamic.ui.util.WorkflowRunnerActionHandlerHelper;
+import org.eclipse.sphinx.platform.jobs.WorkspaceOperationWorkspaceJob;
 import org.eclipse.sphinx.platform.ui.operations.RunnableWithProgressAdapter;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.actions.BaseSelectionListenerAction;
 
-public class BasicWorkflowRunnerAction extends AbstractWorkflowRunnerAction {
+public class BasicWorkflowRunnerAction extends BaseSelectionListenerAction {
+
+	private boolean runInBackground;
+
+	protected WorkflowRunnerActionHandlerHelper helper;
 
 	public BasicWorkflowRunnerAction() {
-		this("Default title");
+		this(Messages.action_runWorkflow_label);
 	}
 
-	protected BasicWorkflowRunnerAction(String text) {
+	public BasicWorkflowRunnerAction(String text) {
 		super(text);
+		setRunInBackground(false);
+		helper = new WorkflowRunnerActionHandlerHelper();
+	}
+
+	public boolean isRunInBackground() {
+		return runInBackground;
+	}
+
+	public void setRunInBackground(boolean runInBackground) {
+		this.runInBackground = runInBackground;
+	}
+
+	protected Object getSelectedObject() {
+		return getStructuredSelection().getFirstElement();
 	}
 
 	@Override
+	protected boolean updateSelection(IStructuredSelection selection) {
+		String label = Messages.action_runWorkflow_label;
+		if (!helper.isWorkflow(getSelectedObject())) {
+			label += "..."; //$NON-NLS-1$
+		}
+		setText(label);
+
+		return getStructuredSelection().size() == 1 && getSelectedObject() != null;
+	}
+
+	public String getOperationName() {
+		return Messages.operation_runWorkflow_label;
+	}
+
 	protected IWorkflowRunnerOperation createWorkflowRunnerOperation() {
 		IWorkflowRunnerOperation operation = new BasicWorkflowRunnerOperation(getOperationName());
-		operation.setInput(getWorkflowInput());
-		operation.setWorkflow(getWorkflowFile());
+		operation.setWorkflow(helper.getWorkflow(getSelectedObject()));
+		operation.setModel(helper.getModel(getSelectedObject()));
 		return operation;
 	}
 
+	protected WorkspaceOperationWorkspaceJob createWorkspaceOperationJob(IWorkflowRunnerOperation operation) {
+		return new WorkspaceOperationWorkspaceJob(operation);
+	}
+
+	/*
+	 * @see org.eclipse.jface.action.Action#run()
+	 */
 	@Override
 	public void run() {
 		ExtendedPlatformUI.showSystemConsole();
-		// create the workflow operation
+
+		// Create the workflow operation
 		IWorkflowRunnerOperation operation = createWorkflowRunnerOperation();
-		// Run the operation in a progress monitor dialog
-		try {
-			Shell shell = ExtendedPlatformUI.getActiveShell();
-			ProgressMonitorDialog dialog = new ProgressMonitorDialog(shell);
-			dialog.run(true, true, new RunnableWithProgressAdapter(operation));
-		} catch (InterruptedException ex) {
-			// Operation has been canceled by user, do nothing
-		} catch (InvocationTargetException ex) {
-			PlatformLogUtil.logAsError(Activator.getDefault(), ex);
+
+		if (isRunInBackground()) {
+			// Run the workflow operation in a workspace job
+			WorkspaceOperationWorkspaceJob job = createWorkspaceOperationJob(operation);
+			job.schedule();
+		} else {
+			// Run the workflow operation in a progress monitor dialog
+			try {
+				ProgressMonitorDialog dialog = new ProgressMonitorDialog(ExtendedPlatformUI.getActiveShell());
+				dialog.run(true, true, new RunnableWithProgressAdapter(operation));
+			} catch (InterruptedException ex) {
+				// Operation has been canceled by user, do nothing
+			} catch (InvocationTargetException ex) {
+				PlatformLogUtil.logAsError(Activator.getDefault(), ex);
+			}
 		}
 	}
 }

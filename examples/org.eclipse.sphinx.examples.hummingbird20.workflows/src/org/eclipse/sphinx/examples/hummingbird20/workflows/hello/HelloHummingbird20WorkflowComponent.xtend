@@ -12,13 +12,13 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.hummingbird20.workflows
+package org.eclipse.sphinx.examples.hummingbird20.workflows.hello
 
 import org.eclipse.emf.mwe.core.WorkflowContext
 import org.eclipse.emf.mwe.core.issues.Issues
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitor
-import org.eclipse.sphinx.emf.mwe.dynamic.AbstractWorkspaceWorkflowComponent
 import org.eclipse.sphinx.emf.mwe.dynamic.IWorkflowSlots
+import org.eclipse.sphinx.emf.mwe.dynamic.components.AbstractWorkspaceWorkflowComponent
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable
 
 class HelloHummingbird20WorkflowComponent extends AbstractWorkspaceWorkflowComponent {
@@ -26,17 +26,19 @@ class HelloHummingbird20WorkflowComponent extends AbstractWorkspaceWorkflowCompo
 	override protected invokeInternal(WorkflowContext ctx, ProgressMonitor monitor, Issues issues) {
 		println("Executing Hello Hummingbird 2.0 workflow component")
 		val model = ctx.get(IWorkflowSlots.MODEL_SLOT_NAME)
+		if (model == null) {
+			println("Model slot is empty, nothing to do!")
+			return
+		}
 
 		var msg = "Model slot contains : "
 		if (model instanceof Identifiable) {
-
-			//msg += if(model.name != null && model.name.length > 0) model.name else "Unnamed " + model.eClass.name
-			msg +=
-				if(model.name != null && model.name.length > 0) model.name else "Error: '" + model.eClass.name +
-					"' has no name!"
+			msg += if(model.name != null && !model.name.empty) model.name else "Unnamed " + model.eClass.name
 		} else {
 			msg += model.toString
 		}
 		println(msg)
+
+		println("Done!")
 	}
 }

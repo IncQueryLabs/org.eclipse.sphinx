@@ -14,6 +14,8 @@
  */
 package org.eclipse.sphinx.emf.mwe.dynamic;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -47,5 +49,14 @@ public class WorkspaceWorkflow extends Workflow {
 				throw new OperationCanceledException();
 			}
 		}
+	}
+
+	/*
+	 * Overridden to make this method public.
+	 * @see org.eclipse.emf.mwe2.runtime.workflow.AbstractCompositeWorkflowComponent#getChildren()
+	 */
+	@Override
+	public List<IWorkflowComponent> getChildren() {
+		return super.getChildren();
 	}
 }

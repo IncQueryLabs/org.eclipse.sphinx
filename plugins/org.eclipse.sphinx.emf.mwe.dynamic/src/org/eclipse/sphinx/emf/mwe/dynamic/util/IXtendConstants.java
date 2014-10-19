@@ -12,17 +12,21 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.mwe.dynamic.operations;
+package org.eclipse.sphinx.emf.mwe.dynamic.util;
 
-import org.eclipse.sphinx.platform.operations.IWorkspaceOperation;
+public interface IXtendConstants {
 
-public interface IWorkflowRunnerOperation extends IWorkspaceOperation {
+	/**
+	 * Xtend file extension
+	 */
+	String XTEND_FILE_EXTENSION = "xtend"; //$NON-NLS-1$
 
-	Object getModel();
+	/**
+	 * Java file extension
+	 */
+	String JAVA_FILE_EXTENSION = "java"; //$NON-NLS-1$
 
-	void setModel(Object object);
+	String XTEND_GEN_FOLDER_NAME = "xtend-gen"; //$NON-NLS-1$
 
-	Object getWorkflow();
-
-	void setWorkflow(Object workflow);
+	String JAVA_SRC_FOLDER_NAME = "src"; //$NON-NLS-1$
 }

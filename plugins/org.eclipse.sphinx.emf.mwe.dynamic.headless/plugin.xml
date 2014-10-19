@@ -19,15 +19,13 @@ Contributors:
 <plugin>
 
    <extension
-         id="workflowRunner"
+         id="WorkflowRunner"
          point="org.eclipse.core.runtime.applications">
       <application
             cardinality="singleton-global"
             thread="main"
             visible="true">
-         <run
-               class="org.eclipse.sphinx.emf.mwe.dynamic.headless.BasicWorkflowRunnerApplication">
-         </run>
+         <run class="org.eclipse.sphinx.emf.mwe.dynamic.headless.BasicWorkflowRunnerApplication" />
       </application>
    </extension>
    <extension
@@ -44,5 +42,5 @@ Contributors:
          </property>
       </product>
    </extension>
-   
+
 </plugin>

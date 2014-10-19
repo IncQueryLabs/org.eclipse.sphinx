@@ -12,20 +12,21 @@
  *
  * </copyright>
  */
+
 package org.eclipse.sphinx.emf.mwe.dynamic.ui;
 
 import org.eclipse.sphinx.emf.mwe.dynamic.ui.internal.Activator;
 import org.eclipse.sphinx.emf.mwe.dynamic.ui.internal.messages.Messages;
 
-public interface IWorkflowRunnerUIConstants {
+public interface IWorkflowRunnerMenuConstants {
 
 	/**
 	 * Identifier of the Run sub menu.
 	 */
-	public static final String MENU_RUN_ID = Activator.getPlugin().getSymbolicName() + ".menus.run"; //$NON-NLS-1$
+	public static final String MENU_RUN_WORKFLOW_ID = Activator.getPlugin().getSymbolicName() + ".menus.run"; //$NON-NLS-1$
 
 	/**
 	 * Label of the Run sub menu.
 	 */
-	public static final String MENU_RUN_LABEL = Messages.menu_runWorkflow;
+	public static final String MENU_RUN_WORKFLOW_LABEL = Messages.menu_runWorkflow_label;
 }
