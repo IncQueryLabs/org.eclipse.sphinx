@@ -181,11 +181,14 @@ public final class EcoreResourceUtil {
 			return uri;
 		}
 
-		if (uri.isFile() && Platform.isRunning()) {
-			// Try to convert given URI to platform resource URI
-			// Use getFileForLocation instead of a simple match against the workspace root location so that also
-			// cases are covered where resources are part of the workspace but not physically (filesystem level)
-			// located below the workspace root.
+		// Try to convert absolute file URIs to platform resource URIs
+		if (uri.isFile() && !uri.isRelative() && Platform.isRunning()) {
+			/*
+			 * !! Important Note !! Use IWorkspaceRoot#getFileForLocation(IPath) rather than trying to match the given
+			 * URI against the workspace root location. This enables cases to be covered where the given URI references
+			 * a resource that is part of the workspace but physically (i.e., at file system level) not located under
+			 * the workspace root.
+			 */
 			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(uri.toFileString()));
 			if (file != null) {
 				return URI.createPlatformResourceURI(file.getFullPath().toString(), true);
