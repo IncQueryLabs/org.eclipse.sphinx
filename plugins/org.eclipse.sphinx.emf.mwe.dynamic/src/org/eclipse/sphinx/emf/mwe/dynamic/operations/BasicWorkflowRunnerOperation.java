@@ -28,6 +28,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.mwe2.runtime.workflow.IWorkflowComponent;
 import org.eclipse.emf.mwe2.runtime.workflow.Workflow;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
@@ -36,7 +37,6 @@ import org.eclipse.sphinx.emf.mwe.dynamic.WorkspaceWorkflow;
 import org.eclipse.sphinx.emf.mwe.dynamic.components.IModelWorkflowComponent;
 import org.eclipse.sphinx.emf.mwe.dynamic.internal.Activator;
 import org.eclipse.sphinx.emf.mwe.dynamic.util.XtendUtil;
-import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.jdt.loaders.DelegatingClassLoader;
 import org.eclipse.sphinx.jdt.loaders.ProjectClassLoader;
@@ -96,14 +96,14 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 		return model;
 	}
 
-	protected TransactionalEditingDomain getEditingDomain() {
+	protected TransactionalEditingDomain getEditingDomain(Object model) {
 		if (model instanceof EObject || model instanceof Resource) {
-			return WorkspaceEditingDomainUtil.getEditingDomain(model);
+			return TransactionUtil.getEditingDomain(model);
 		}
 		if (model instanceof List) {
-			List<?> modelObjects = (List<?>) model;
-			if (modelObjects.size() > 0) {
-				return WorkspaceEditingDomainUtil.getEditingDomain(modelObjects.get(0));
+			List<?> models = (List<?>) model;
+			if (!models.isEmpty()) {
+				return getEditingDomain(models.get(0));
 			}
 		}
 		return null;
@@ -112,9 +112,31 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 	protected ClassLoader getParentClassLoader(Object model) {
 		ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
 		if (model != null) {
-			parentClassLoader = new DelegatingClassLoader(parentClassLoader, model.getClass().getClassLoader());
+			ClassLoader modelClassLoader = getModelClassLoader(model);
+			if (modelClassLoader != null) {
+				parentClassLoader = new DelegatingClassLoader(parentClassLoader, modelClassLoader);
+			}
 		}
 		return parentClassLoader;
+	}
+
+	protected ClassLoader getModelClassLoader(Object model) {
+		if (model instanceof EObject) {
+			return model.getClass().getClassLoader();
+		}
+		if (model instanceof Resource) {
+			Resource resource = (Resource) model;
+			if (!resource.getContents().isEmpty()) {
+				return getModelClassLoader(resource.getContents().get(0));
+			}
+		}
+		if (model instanceof List) {
+			List<?> models = (List<?>) model;
+			if (!models.isEmpty()) {
+				return getModelClassLoader(models.get(0));
+			}
+		}
+		return null;
 	}
 
 	protected IType getWorkflowType() throws CoreException {
@@ -247,7 +269,7 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 			};
 
 			// Workflow dealing with some model?
-			TransactionalEditingDomain editingDomain = getEditingDomain();
+			TransactionalEditingDomain editingDomain = getEditingDomain(model);
 			if (editingDomain != null && hasModelWorkflowComponents(workflow)) {
 				// Workflow intending to modify the model?
 				if (isModifyingModel(workflow)) {
