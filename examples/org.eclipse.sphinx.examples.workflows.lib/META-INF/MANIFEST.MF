@@ -7,3 +7,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.sphinx.examples.workflows.lib
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
+Require-Bundle: com.google.guava

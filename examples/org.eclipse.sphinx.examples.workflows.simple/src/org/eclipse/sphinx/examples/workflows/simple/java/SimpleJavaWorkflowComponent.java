@@ -20,16 +20,17 @@ import org.eclipse.emf.mwe.core.lib.AbstractWorkflowComponent2;
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitor;
 import org.eclipse.sphinx.examples.workflows.lib.Example;
 
+@SuppressWarnings("nls")
 public class SimpleJavaWorkflowComponent extends AbstractWorkflowComponent2 {
 
 	@Override
-	protected void invokeInternal(WorkflowContext ctx, ProgressMonitor monitor,
-			Issues issues) {
+	protected void invokeInternal(WorkflowContext ctx, ProgressMonitor monitor, Issues issues) {
 		System.out.println("Executing simple Java-based workflow component");
 
 		System.out.println("Using some class from another project: " + Example.class);
 		Example example = new Example();
 		example.doSomething();
+		example.doSomethingUsingAnonymousClass();
 
 		System.out.println("Done!");
 	}

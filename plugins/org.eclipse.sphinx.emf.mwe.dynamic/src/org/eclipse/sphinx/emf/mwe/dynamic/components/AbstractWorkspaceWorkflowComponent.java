@@ -69,6 +69,9 @@ public abstract class AbstractWorkspaceWorkflowComponent extends AbstractWorkflo
 			ProgressMonitor monitor = monitorAsObject instanceof IProgressMonitor ? new ProgressMonitorAdapter((IProgressMonitor) monitorAsObject)
 					: new NullProgressMonitor();
 
+			// TODO Think of introducing a AbstractWorkspaceWorkflowComponent#doInvoke() throws CoreException,
+			// OperationCanceledException method and using AbstractWorkspaceWorkflowComponent#invoke() to transform
+			// exceptions into error issues as appropriate
 			delegate.invoke(new WorkflowContext() {
 
 				@Override
@@ -92,6 +95,7 @@ public abstract class AbstractWorkspaceWorkflowComponent extends AbstractWorkflo
 
 		@Override
 		protected void handleIssues(IssuesImpl issues) {
+			// TODO Make sure that transaction gets aborted and rolled back in case of error issues
 			for (MWEDiagnostic diag : issues.getErrors()) {
 				PlatformLogUtil.logAsError(Activator.getPlugin(), diag.toString());
 			}

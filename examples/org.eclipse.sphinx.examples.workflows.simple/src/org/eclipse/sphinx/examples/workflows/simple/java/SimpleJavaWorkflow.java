@@ -17,6 +17,7 @@ package org.eclipse.sphinx.examples.workflows.simple.java;
 import org.eclipse.emf.mwe2.runtime.workflow.Workflow;
 import org.eclipse.sphinx.examples.workflows.simple.xtend.SimpleXtendWorkflowComponent;
 
+@SuppressWarnings("nls")
 public class SimpleJavaWorkflow extends Workflow {
 
 	public SimpleJavaWorkflow() {

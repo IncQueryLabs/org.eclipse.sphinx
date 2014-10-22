@@ -26,8 +26,9 @@ class SimpleXtendWorkflowComponent extends AbstractWorkflowComponent2 {
 		println("Executing simple Xtend-based workflow component")
 
 		println("Using some class from another project: " + Example)
-		val example = new Example();
-		example.doSomething();
+		val example = new Example()
+		example.doSomething
+		example.doSomethingUsingAnonymousClass
 
 		println("Done!")
 	}
