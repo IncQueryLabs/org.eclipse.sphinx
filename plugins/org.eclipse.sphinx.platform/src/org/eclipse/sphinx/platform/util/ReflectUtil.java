@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.platform.util;
@@ -30,7 +30,7 @@ import org.eclipse.core.runtime.Assert;
 public final class ReflectUtil {
 	/**
 	 * Check if the given Class name is assignable from a real Class
-	 * 
+	 *
 	 * @param clazz
 	 *            the real class
 	 * @param className
@@ -69,7 +69,7 @@ public final class ReflectUtil {
 
 	/**
 	 * Get declared field of the given class by name
-	 * 
+	 *
 	 * @param clazz
 	 *            the owning of the field
 	 * @param fieldName
@@ -91,7 +91,7 @@ public final class ReflectUtil {
 
 	/**
 	 * Get the field of the given Class by name.
-	 * 
+	 *
 	 * @param clazz
 	 *            the class owning the field to find
 	 * @param fieldName
@@ -135,7 +135,7 @@ public final class ReflectUtil {
 	/**
 	 * Returns the value of the visible (i.e. public) field with given name on given object. Supports declared and
 	 * inherited, non-static and static fields.
-	 * 
+	 *
 	 * @param object
 	 *            the owning of the field
 	 * @param fieldName
@@ -160,7 +160,7 @@ public final class ReflectUtil {
 	/**
 	 * Returns the value of the invisible (i.e. private or protected) field with given name on given object. Supports
 	 * declared and inherited, non-static and static fields.
-	 * 
+	 *
 	 * @param object
 	 *            the object owning the field
 	 * @param fieldName
@@ -191,8 +191,40 @@ public final class ReflectUtil {
 	}
 
 	/**
+	 * Sets the value of the invisible (i.e. private or protected) field with given name on given object. Supports
+	 * declared and inherited, non-static and static fields.
+	 *
+	 * @param object
+	 *            the object owning the field
+	 * @param fieldName
+	 *            the name of the field to be accessed
+	 * @param value
+	 *            the value to be set on the field
+	 * @throws NoSuchFieldException
+	 * @throws IllegalAccessException
+	 */
+	public static void setInvisibleFieldValue(Object object, String fieldName, Object value) throws NoSuchFieldException, IllegalArgumentException,
+			IllegalAccessException {
+		Assert.isNotNull(object);
+
+		Class<? extends Object> clazz = object instanceof Class<?> ? (Class<?>) object : object.getClass();
+		Field field = ReflectUtil.findField(clazz, fieldName);
+		if (field == null) {
+			throw new NoSuchFieldException(clazz.getName() + "#" + fieldName); //$NON-NLS-1$
+		}
+
+		boolean oldAccessible = field.isAccessible();
+		field.setAccessible(true);
+		try {
+			field.set(object, value);
+		} finally {
+			field.setAccessible(oldAccessible);
+		}
+	}
+
+	/**
 	 * Get declared method of the given class by Name and input parameter types
-	 * 
+	 *
 	 * @param clazz
 	 *            the owning of the method
 	 * @param methodName
@@ -215,7 +247,7 @@ public final class ReflectUtil {
 
 	/**
 	 * Find method of the given class by name and parameter types
-	 * 
+	 *
 	 * @param clazz
 	 *            the owning of the method to find
 	 * @param methodName
@@ -261,7 +293,7 @@ public final class ReflectUtil {
 	/**
 	 * Invokes the visible (i.e. public) method with given name and arguments on given object. Supports declared and
 	 * inherited, non-static and static methods.
-	 * 
+	 *
 	 * @param object
 	 *            the object owning the method
 	 * @param methodName
@@ -296,7 +328,7 @@ public final class ReflectUtil {
 	/**
 	 * Invokes the invisible (i.e. private or protected) method with given name and arguments on given object. Supports
 	 * declared and inherited, non-static and static methods.
-	 * 
+	 *
 	 * @param object
 	 *            the object owning the method
 	 * @param fieldName
@@ -336,7 +368,7 @@ public final class ReflectUtil {
 
 	/**
 	 * Compare 2 given ParamameterTypes arrays.
-	 * 
+	 *
 	 * @param parameterTypes1
 	 * @param parameterTypes2
 	 * @return <code>TRUE</code> if 2 arrays are the same, else return <code>FALSE</code>.
@@ -367,7 +399,7 @@ public final class ReflectUtil {
 
 	/**
 	 * Convert Parameter Types to String, e.g. "parameterTypeName1, parameterTypeName2"
-	 * 
+	 *
 	 * @param parameterTypes
 	 *            given parameter types
 	 * @return String of the Parameter Types
@@ -388,7 +420,7 @@ public final class ReflectUtil {
 
 	/**
 	 * Get simple package name of the given package
-	 * 
+	 *
 	 * @param qualifiedPackageName
 	 *            the given package name
 	 * @return simple name of the packge
@@ -409,7 +441,7 @@ public final class ReflectUtil {
 
 	/**
 	 * Get super Package name of the given package
-	 * 
+	 *
 	 * @param qualifiedPackageName
 	 *            the given package name
 	 * @return name of the super package
@@ -428,7 +460,7 @@ public final class ReflectUtil {
 	 * Clears, i.e. sets to null, all fields of the given object which are available on the class of the object. This
 	 * includes public, protected, default (package) access, and private fields of the given class or interface, and
 	 * does include inherited fields.
-	 * 
+	 *
 	 * @param object
 	 *            the object whose fields are to be cleared
 	 * @throws IllegalAccessException
@@ -441,7 +473,7 @@ public final class ReflectUtil {
 	 * Clears, i.e. sets to null, all fields of the given object which are available on the class of the object except
 	 * for specified excluded fields. This includes public, protected, default (package) access, and private fields of
 	 * the given class or interface, and does include inherited fields.
-	 * 
+	 *
 	 * @param object
 	 *            the object whose fields are to be cleared
 	 * @param excludedFieldNames
@@ -458,7 +490,7 @@ public final class ReflectUtil {
 	 * Clears, i.e. sets to null, all fields of the given object which are available on the given class or interface
 	 * except for specified excluded fields. This includes public, protected, default (package) access, and private
 	 * fields of the given class or interface, and does include inherited fields.
-	 * 
+	 *
 	 * @param object
 	 *            the object whose fields are to be cleared
 	 * @param clazz
@@ -494,7 +526,7 @@ public final class ReflectUtil {
 	 * Clears, i.e. sets to null, all fields of the given object which are declared by the given class or interface
 	 * except for specified excluded fields. This includes public, protected, default (package) access, and private
 	 * fields of the given class or interface, but excludes inherited fields. Z
-	 * 
+	 *
 	 * @param object
 	 *            the object whose fields are to be cleared
 	 * @param clazz
