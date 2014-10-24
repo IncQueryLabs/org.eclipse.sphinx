@@ -26,8 +26,10 @@ import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.IDisposable;
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
+import org.eclipse.emf.edit.provider.IItemFontProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
+import org.eclipse.emf.edit.provider.IItemStyledLabelProvider;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
 import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
@@ -44,17 +46,17 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.util.TypeModel20Adapt
 public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFactory implements ComposeableAdapterFactory, IChangeNotifier,
 		IDisposable {
 	/**
-	 * This keeps track of the root adapter factory that delegates to this adapter factory. <!-- begin-user-doc --> <!--
+	 * This keeps track of the root adapter factory that delegates to this adapter factory.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected ComposedAdapterFactory parentAdapterFactory;
 
 	/**
-	 * This is used to implement {@link org.eclipse.emf.edit.provider.IChangeNotifier}. <!-- begin-user-doc --> <!--
+	 * This is used to implement {@link org.eclipse.emf.edit.provider.IChangeNotifier}.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected IChangeNotifier changeNotifier = new ChangeNotifier();
@@ -68,8 +70,8 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	protected Collection<Object> supportedTypes = new ArrayList<Object>();
 
 	/**
-	 * This constructs an instance. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This constructs an instance.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public TypeModel20ItemProviderAdapterFactory() {
@@ -78,13 +80,14 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 		supportedTypes.add(ITreeItemContentProvider.class);
 		supportedTypes.add(IItemLabelProvider.class);
 		supportedTypes.add(IItemPropertySource.class);
+		supportedTypes.add(IItemFontProvider.class);
+		supportedTypes.add(IItemStyledLabelProvider.class);
 	}
 
 	/**
-	 * This keeps track of the one adapter used for all
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform} instances. <!-- begin-user-doc --> <!--
+	 * This keeps track of the one adapter used for all {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform} instances.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected PlatformItemProvider platformItemProvider;
@@ -105,10 +108,9 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	}
 
 	/**
-	 * This keeps track of the one adapter used for all
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType} instances. <!-- begin-user-doc --> <!--
+	 * This keeps track of the one adapter used for all {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType} instances.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected ComponentTypeItemProvider componentTypeItemProvider;
@@ -129,9 +131,8 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	}
 
 	/**
-	 * This keeps track of the one adapter used for all {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port}
-	 * instances. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This keeps track of the one adapter used for all {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port} instances.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	protected PortItemProvider portItemProvider;
@@ -152,10 +153,9 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	}
 
 	/**
-	 * This keeps track of the one adapter used for all
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface} instances. <!-- begin-user-doc --> <!--
+	 * This keeps track of the one adapter used for all {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface} instances.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected InterfaceItemProvider interfaceItemProvider;
@@ -176,10 +176,9 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	}
 
 	/**
-	 * This keeps track of the one adapter used for all
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter} instances. <!-- begin-user-doc --> <!--
+	 * This keeps track of the one adapter used for all {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter} instances.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected ParameterItemProvider parameterItemProvider;
@@ -200,8 +199,8 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	}
 
 	/**
-	 * This returns the root adapter factory that contains this factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This returns the root adapter factory that contains this factory.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -210,8 +209,8 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	}
 
 	/**
-	 * This sets the composed adapter factory that contains this factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This sets the composed adapter factory that contains this factory.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -221,7 +220,6 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -230,9 +228,9 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	}
 
 	/**
-	 * This implementation substitutes the factory itself as the key for the adapter. <!-- begin-user-doc --> <!--
+	 * This implementation substitutes the factory itself as the key for the adapter.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -242,14 +240,13 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object adapt(Object object, Object type) {
 		if (isFactoryForType(type)) {
 			Object adapter = super.adapt(object, type);
-			if (!(type instanceof Class<?>) || ((Class<?>) type).isInstance(adapter)) {
+			if (!(type instanceof Class<?>) || (((Class<?>)type).isInstance(adapter))) {
 				return adapter;
 			}
 		}
@@ -258,8 +255,8 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	}
 
 	/**
-	 * This adds a listener. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This adds a listener.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -268,8 +265,8 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	}
 
 	/**
-	 * This removes a listener. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This removes a listener.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -278,9 +275,9 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	}
 
 	/**
-	 * This delegates to {@link #changeNotifier} and to {@link #parentAdapterFactory}. <!-- begin-user-doc --> <!--
+	 * This delegates to {@link #changeNotifier} and to {@link #parentAdapterFactory}.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -293,27 +290,17 @@ public class TypeModel20ItemProviderAdapterFactory extends TypeModel20AdapterFac
 	}
 
 	/**
-	 * This disposes all of the item providers created by this factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This disposes all of the item providers created by this factory. 
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void dispose() {
-		if (platformItemProvider != null) {
-			platformItemProvider.dispose();
-		}
-		if (componentTypeItemProvider != null) {
-			componentTypeItemProvider.dispose();
-		}
-		if (portItemProvider != null) {
-			portItemProvider.dispose();
-		}
-		if (interfaceItemProvider != null) {
-			interfaceItemProvider.dispose();
-		}
-		if (parameterItemProvider != null) {
-			parameterItemProvider.dispose();
-		}
+		if (platformItemProvider != null) platformItemProvider.dispose();
+		if (componentTypeItemProvider != null) componentTypeItemProvider.dispose();
+		if (portItemProvider != null) portItemProvider.dispose();
+		if (interfaceItemProvider != null) interfaceItemProvider.dispose();
+		if (parameterItemProvider != null) parameterItemProvider.dispose();
 	}
 
 }

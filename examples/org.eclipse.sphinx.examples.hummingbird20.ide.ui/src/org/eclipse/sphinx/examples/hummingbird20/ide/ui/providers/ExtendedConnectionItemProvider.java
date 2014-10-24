@@ -24,6 +24,7 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
+import org.eclipse.emf.edit.provider.IItemFontProvider;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptorDecorator;
@@ -42,6 +43,11 @@ public class ExtendedConnectionItemProvider extends ConnectionItemProvider {
 
 	public ExtendedConnectionItemProvider(AdapterFactory adapterFactory) {
 		super(adapterFactory);
+	}
+
+	@Override
+	public Object getFont(Object object) {
+		return IItemFontProvider.ITALIC_FONT;
 	}
 
 	@Override

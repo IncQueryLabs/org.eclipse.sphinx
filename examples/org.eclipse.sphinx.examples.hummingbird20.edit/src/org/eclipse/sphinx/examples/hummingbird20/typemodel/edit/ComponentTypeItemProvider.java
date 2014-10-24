@@ -22,12 +22,8 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.ResourceLocator;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
-import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
-import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
-import org.eclipse.emf.edit.provider.IItemPropertySource;
-import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
-import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
+import org.eclipse.emf.edit.provider.StyledString;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 import org.eclipse.sphinx.examples.hummingbird20.common.edit.IdentifiableItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.edit.Activator;
@@ -36,16 +32,14 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
 
 /**
- * This is the item provider adapter for a {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType}
- * object. <!-- begin-user-doc --> <!-- end-user-doc -->
- * 
+ * This is the item provider adapter for a {@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType} object.
+ * <!-- begin-user-doc --> <!-- end-user-doc -->
  * @generated
  */
-public class ComponentTypeItemProvider extends IdentifiableItemProvider implements IEditingDomainItemProvider, IStructuredItemContentProvider,
-		ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
+public class ComponentTypeItemProvider extends IdentifiableItemProvider {
 	/**
-	 * This constructs an instance from a factory and a notifier. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This constructs an instance from a factory and a notifier.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public ComponentTypeItemProvider(AdapterFactory adapterFactory) {
@@ -53,8 +47,8 @@ public class ComponentTypeItemProvider extends IdentifiableItemProvider implemen
 	}
 
 	/**
-	 * This returns the property descriptors for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This returns the property descriptors for the adapted class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -74,18 +68,27 @@ public class ComponentTypeItemProvider extends IdentifiableItemProvider implemen
 	 * @generated
 	 */
 	protected void addProvidedInterfacesPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-				getResourceLocator(), getString("_UI_ComponentType_providedInterfaces_feature"), //$NON-NLS-1$
-				getString("_UI_PropertyDescriptor_description", "_UI_ComponentType_providedInterfaces_feature", "_UI_ComponentType_type"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				TypeModel20Package.Literals.COMPONENT_TYPE__PROVIDED_INTERFACES, true, false, true, null, null, null));
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_ComponentType_providedInterfaces_feature"), //$NON-NLS-1$
+				 getString("_UI_PropertyDescriptor_description", "_UI_ComponentType_providedInterfaces_feature", "_UI_ComponentType_type"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				 TypeModel20Package.Literals.COMPONENT_TYPE__PROVIDED_INTERFACES,
+				 true,
+				 false,
+				 true,
+				 null,
+				 null,
+				 null));
 	}
 
 	/**
 	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
 	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
-	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}. <!-- begin-user-doc --> <!--
+	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -100,7 +103,6 @@ public class ComponentTypeItemProvider extends IdentifiableItemProvider implemen
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -112,8 +114,8 @@ public class ComponentTypeItemProvider extends IdentifiableItemProvider implemen
 	}
 
 	/**
-	 * This returns ComponentType.gif. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This returns ComponentType.gif.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -122,15 +124,31 @@ public class ComponentTypeItemProvider extends IdentifiableItemProvider implemen
 	}
 
 	/**
-	 * This returns the label text for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This returns the label text for the adapted class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public String getText(Object object) {
-		String label = ((ComponentType) object).getName();
-		return label == null || label.length() == 0 ? getString("_UI_ComponentType_type") : //$NON-NLS-1$
-				getString("_UI_ComponentType_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
+		return ((StyledString)getStyledText(object)).getString();
+	}
+
+	/**
+	 * This returns the label styled text for the adapted class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Object getStyledText(Object object) {
+		String label = ((ComponentType)object).getName();
+    	StyledString styledLabel = new StyledString();
+		if (label == null || label.length() == 0) {
+			styledLabel.append(getString("_UI_ComponentType_type"), StyledString.Style.QUALIFIER_STYLER);  //$NON-NLS-1$
+		} else {
+			styledLabel.append(getString("_UI_ComponentType_type"), StyledString.Style.QUALIFIER_STYLER).append(" " + label); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		return styledLabel;
 	}
 
 	/**
@@ -145,33 +163,38 @@ public class ComponentTypeItemProvider extends IdentifiableItemProvider implemen
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(ComponentType.class)) {
-		case TypeModel20Package.COMPONENT_TYPE__PORTS:
-		case TypeModel20Package.COMPONENT_TYPE__PARAMETERS:
-			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
-			return;
+			case TypeModel20Package.COMPONENT_TYPE__PORTS:
+			case TypeModel20Package.COMPONENT_TYPE__PARAMETERS:
+				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
+				return;
 		}
 		super.notifyChanged(notification);
 	}
 
 	/**
-	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children that can be created
-	 * under this object. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children
+	 * that can be created under this object.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
 
-		newChildDescriptors.add(createChildParameter(TypeModel20Package.Literals.COMPONENT_TYPE__PORTS, TypeModel20Factory.eINSTANCE.createPort()));
+		newChildDescriptors.add
+			(createChildParameter
+				(TypeModel20Package.Literals.COMPONENT_TYPE__PORTS,
+				 TypeModel20Factory.eINSTANCE.createPort()));
 
-		newChildDescriptors.add(createChildParameter(TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS,
-				TypeModel20Factory.eINSTANCE.createParameter()));
+		newChildDescriptors.add
+			(createChildParameter
+				(TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS,
+				 TypeModel20Factory.eINSTANCE.createParameter()));
 	}
 
 	/**
-	 * Return the resource locator for this item provider's resources. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Return the resource locator for this item provider's resources.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

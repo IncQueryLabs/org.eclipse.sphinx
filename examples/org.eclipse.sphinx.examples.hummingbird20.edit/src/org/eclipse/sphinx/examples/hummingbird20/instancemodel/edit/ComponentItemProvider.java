@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird20.instancemodel.edit;
@@ -22,12 +22,8 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.ResourceLocator;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
-import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
-import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
-import org.eclipse.emf.edit.provider.IItemPropertySource;
-import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
-import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
+import org.eclipse.emf.edit.provider.StyledString;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 import org.eclipse.sphinx.examples.hummingbird20.common.edit.IdentifiableItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.edit.Activator;
@@ -41,8 +37,7 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Pa
  * 
  * @generated
  */
-public class ComponentItemProvider extends IdentifiableItemProvider implements IEditingDomainItemProvider, IStructuredItemContentProvider,
-		ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
+public class ComponentItemProvider extends IdentifiableItemProvider {
 	/**
 	 * This constructs an instance from a factory and a notifier. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -83,7 +78,7 @@ public class ComponentItemProvider extends IdentifiableItemProvider implements I
 	/**
 	 * This adds a property descriptor for the Incoming Connections feature. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
-	 * 
+	 *
 	 * @generated
 	 */
 	protected void addIncomingConnectionsPropertyDescriptor(Object object) {
@@ -142,16 +137,31 @@ public class ComponentItemProvider extends IdentifiableItemProvider implements I
 	 */
 	@Override
 	public String getText(Object object) {
+		return ((StyledString) getStyledText(object)).getString();
+	}
+
+	/**
+	 * This returns the label styled text for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public Object getStyledText(Object object) {
 		String label = ((Component) object).getName();
-		return label == null || label.length() == 0 ? getString("_UI_Component_type") : //$NON-NLS-1$
-				getString("_UI_Component_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
+		StyledString styledLabel = new StyledString();
+		if (label == null || label.length() == 0) {
+			styledLabel.append(getString("_UI_Component_type"), StyledString.Style.QUALIFIER_STYLER); //$NON-NLS-1$
+		} else {
+			styledLabel.append(getString("_UI_Component_type"), StyledString.Style.QUALIFIER_STYLER).append(" " + label); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		return styledLabel;
 	}
 
 	/**
 	 * This handles model notifications by calling {@link #updateChildren} to update any cached children and by creating
 	 * a viewer notification, which it passes to {@link #fireNotifyChanged}. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override

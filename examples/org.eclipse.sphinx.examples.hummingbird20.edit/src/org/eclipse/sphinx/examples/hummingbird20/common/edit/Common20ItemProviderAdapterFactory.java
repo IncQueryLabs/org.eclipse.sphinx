@@ -26,8 +26,10 @@ import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.IDisposable;
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
+import org.eclipse.emf.edit.provider.IItemFontProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
+import org.eclipse.emf.edit.provider.IItemStyledLabelProvider;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
 import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
@@ -43,17 +45,17 @@ import org.eclipse.sphinx.examples.hummingbird20.common.util.Common20AdapterFact
  */
 public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory implements ComposeableAdapterFactory, IChangeNotifier, IDisposable {
 	/**
-	 * This keeps track of the root adapter factory that delegates to this adapter factory. <!-- begin-user-doc --> <!--
+	 * This keeps track of the root adapter factory that delegates to this adapter factory.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected ComposedAdapterFactory parentAdapterFactory;
 
 	/**
-	 * This is used to implement {@link org.eclipse.emf.edit.provider.IChangeNotifier}. <!-- begin-user-doc --> <!--
+	 * This is used to implement {@link org.eclipse.emf.edit.provider.IChangeNotifier}.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected IChangeNotifier changeNotifier = new ChangeNotifier();
@@ -67,8 +69,8 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 	protected Collection<Object> supportedTypes = new ArrayList<Object>();
 
 	/**
-	 * This constructs an instance. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This constructs an instance.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Common20ItemProviderAdapterFactory() {
@@ -77,13 +79,14 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 		supportedTypes.add(ITreeItemContentProvider.class);
 		supportedTypes.add(IItemLabelProvider.class);
 		supportedTypes.add(IItemPropertySource.class);
+		supportedTypes.add(IItemFontProvider.class);
+		supportedTypes.add(IItemStyledLabelProvider.class);
 	}
 
 	/**
-	 * This keeps track of the one adapter used for all
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.common.Description} instances. <!-- begin-user-doc --> <!--
+	 * This keeps track of the one adapter used for all {@link org.eclipse.sphinx.examples.hummingbird20.common.Description} instances.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected DescriptionItemProvider descriptionItemProvider;
@@ -104,8 +107,8 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 	}
 
 	/**
-	 * This returns the root adapter factory that contains this factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This returns the root adapter factory that contains this factory.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -114,8 +117,8 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 	}
 
 	/**
-	 * This sets the composed adapter factory that contains this factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This sets the composed adapter factory that contains this factory.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -125,7 +128,6 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -134,9 +136,9 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 	}
 
 	/**
-	 * This implementation substitutes the factory itself as the key for the adapter. <!-- begin-user-doc --> <!--
+	 * This implementation substitutes the factory itself as the key for the adapter.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -146,14 +148,13 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object adapt(Object object, Object type) {
 		if (isFactoryForType(type)) {
 			Object adapter = super.adapt(object, type);
-			if (!(type instanceof Class<?>) || ((Class<?>) type).isInstance(adapter)) {
+			if (!(type instanceof Class<?>) || (((Class<?>)type).isInstance(adapter))) {
 				return adapter;
 			}
 		}
@@ -162,8 +163,8 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 	}
 
 	/**
-	 * This adds a listener. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This adds a listener.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -172,8 +173,8 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 	}
 
 	/**
-	 * This removes a listener. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This removes a listener.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -182,9 +183,9 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 	}
 
 	/**
-	 * This delegates to {@link #changeNotifier} and to {@link #parentAdapterFactory}. <!-- begin-user-doc --> <!--
+	 * This delegates to {@link #changeNotifier} and to {@link #parentAdapterFactory}.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -197,15 +198,13 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 	}
 
 	/**
-	 * This disposes all of the item providers created by this factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This disposes all of the item providers created by this factory. 
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void dispose() {
-		if (descriptionItemProvider != null) {
-			descriptionItemProvider.dispose();
-		}
+		if (descriptionItemProvider != null) descriptionItemProvider.dispose();
 	}
 
 }

@@ -50,7 +50,11 @@ import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.provider.AttributeValueWrapperItemProvider;
 import org.eclipse.emf.edit.provider.ComposedImage;
+import org.eclipse.emf.edit.provider.FeatureMapEntryWrapperItemProvider;
+import org.eclipse.emf.edit.provider.IItemFontProvider;
+import org.eclipse.emf.edit.provider.IItemStyledLabelProvider;
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.sphinx.emf.Activator;
@@ -60,7 +64,7 @@ import org.eclipse.sphinx.emf.ecore.EcoreTraversalHelper;
 /**
  * Extension of the default {@linkplain ItemProviderAdapter item provider adapter} implementation provided by EMF Edit.
  */
-public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
+public class ExtendedItemProviderAdapter extends ItemProviderAdapter implements IItemFontProvider, IItemStyledLabelProvider {
 
 	/**
 	 * An instance is created from an adapter factory. The factory is used as a key so that we always know which factory
@@ -92,6 +96,30 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 			}
 		}
 		return wrappingNeeded;
+	}
+
+	/*
+	 * Overridden to create StyledDelegatingWrapperItemProvider instead of the default DelegatingWrapperItemProvider, so
+	 * that StyledString-typed strings can be used as labels instead of ordinary text strings.
+	 * @see org.eclipse.emf.edit.provider.ItemProviderAdapter#createWrapper(org.eclipse.emf.ecore.EObject,
+	 * org.eclipse.emf.ecore.EStructuralFeature, java.lang.Object, int)
+	 */
+	@Override
+	protected Object createWrapper(EObject object, EStructuralFeature feature, Object value, int index) {
+		if (!isWrappingNeeded(object)) {
+			return value;
+		}
+
+		if (FeatureMapUtil.isFeatureMap(feature)) {
+			value = new FeatureMapEntryWrapperItemProvider((FeatureMap.Entry) value, object, (EAttribute) feature, index, adapterFactory,
+					getResourceLocator());
+		} else if (feature instanceof EAttribute) {
+			value = new AttributeValueWrapperItemProvider(value, object, (EAttribute) feature, index, adapterFactory, getResourceLocator());
+		} else if (!((EReference) feature).isContainment()) {
+			value = new StyledDelegatingWrapperItemProvider(value, object, feature, index, adapterFactory);
+		}
+
+		return value;
 	}
 
 	@Override

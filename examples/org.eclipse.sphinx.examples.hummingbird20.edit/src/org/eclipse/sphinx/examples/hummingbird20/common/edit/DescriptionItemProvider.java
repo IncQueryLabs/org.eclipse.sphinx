@@ -25,11 +25,14 @@ import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
+import org.eclipse.emf.edit.provider.IItemFontProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
+import org.eclipse.emf.edit.provider.IItemStyledLabelProvider;
 import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
 import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
+import org.eclipse.emf.edit.provider.StyledString;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 import org.eclipse.sphinx.emf.edit.ExtendedItemProviderAdapter;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
@@ -39,14 +42,12 @@ import org.eclipse.sphinx.examples.hummingbird20.edit.Activator;
 /**
  * This is the item provider adapter for a {@link org.eclipse.sphinx.examples.hummingbird20.common.Description} object.
  * <!-- begin-user-doc --> <!-- end-user-doc -->
- * 
  * @generated
  */
-public class DescriptionItemProvider extends ExtendedItemProviderAdapter implements IEditingDomainItemProvider, IStructuredItemContentProvider,
-		ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
+public class DescriptionItemProvider extends ExtendedItemProviderAdapter implements IEditingDomainItemProvider, IStructuredItemContentProvider, ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource, IItemFontProvider, IItemStyledLabelProvider {
 	/**
-	 * This constructs an instance from a factory and a notifier. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This constructs an instance from a factory and a notifier.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public DescriptionItemProvider(AdapterFactory adapterFactory) {
@@ -54,8 +55,8 @@ public class DescriptionItemProvider extends ExtendedItemProviderAdapter impleme
 	}
 
 	/**
-	 * This returns the property descriptors for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This returns the property descriptors for the adapted class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -70,9 +71,9 @@ public class DescriptionItemProvider extends ExtendedItemProviderAdapter impleme
 	/**
 	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
 	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
-	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}. <!-- begin-user-doc --> <!--
+	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -86,7 +87,6 @@ public class DescriptionItemProvider extends ExtendedItemProviderAdapter impleme
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -98,8 +98,8 @@ public class DescriptionItemProvider extends ExtendedItemProviderAdapter impleme
 	}
 
 	/**
-	 * This returns Description.gif. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This returns Description.gif.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -108,13 +108,24 @@ public class DescriptionItemProvider extends ExtendedItemProviderAdapter impleme
 	}
 
 	/**
-	 * This returns the label text for the adapted class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This returns the label text for the adapted class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public String getText(Object object) {
-		return getString("_UI_Description_type"); //$NON-NLS-1$
+		return ((StyledString)getStyledText(object)).getString();
+	}
+
+	/**
+	 * This returns the label styled text for the adapted class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Object getStyledText(Object object) {
+		return new StyledString(getString("_UI_Description_type")); //$NON-NLS-1$
 	}
 
 	/**
@@ -129,41 +140,55 @@ public class DescriptionItemProvider extends ExtendedItemProviderAdapter impleme
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(Description.class)) {
-		case Common20Package.DESCRIPTION__MIXED:
-			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
-			return;
+			case Common20Package.DESCRIPTION__MIXED:
+				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
+				return;
 		}
 		super.notifyChanged(notification);
 	}
 
 	/**
-	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children that can be created
-	 * under this object. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children
+	 * that can be created under this object.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
 
-		newChildDescriptors.add(createChildParameter(Common20Package.Literals.DESCRIPTION__MIXED,
-				FeatureMapUtil.createEntry(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT, ""))); //$NON-NLS-1$
+		newChildDescriptors.add
+			(createChildParameter
+				(Common20Package.Literals.DESCRIPTION__MIXED,
+				 FeatureMapUtil.createEntry
+					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT,
+					 ""))); //$NON-NLS-1$
 
-		newChildDescriptors.add(createChildParameter(Common20Package.Literals.DESCRIPTION__MIXED,
-				FeatureMapUtil.createEntry(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT, ""))); //$NON-NLS-1$
+		newChildDescriptors.add
+			(createChildParameter
+				(Common20Package.Literals.DESCRIPTION__MIXED,
+				 FeatureMapUtil.createEntry
+					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT,
+					 ""))); //$NON-NLS-1$
 
-		newChildDescriptors.add(createChildParameter(
-				Common20Package.Literals.DESCRIPTION__MIXED,
-				FeatureMapUtil.createEntry(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION,
-						XMLTypeFactory.eINSTANCE.createProcessingInstruction())));
+		newChildDescriptors.add
+			(createChildParameter
+				(Common20Package.Literals.DESCRIPTION__MIXED,
+				 FeatureMapUtil.createEntry
+					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__PROCESSING_INSTRUCTION,
+					 XMLTypeFactory.eINSTANCE.createProcessingInstruction())));
 
-		newChildDescriptors.add(createChildParameter(Common20Package.Literals.DESCRIPTION__MIXED,
-				FeatureMapUtil.createEntry(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA, ""))); //$NON-NLS-1$
+		newChildDescriptors.add
+			(createChildParameter
+				(Common20Package.Literals.DESCRIPTION__MIXED,
+				 FeatureMapUtil.createEntry
+					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA,
+					 ""))); //$NON-NLS-1$
 	}
 
 	/**
-	 * Return the resource locator for this item provider's resources. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Return the resource locator for this item provider's resources.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

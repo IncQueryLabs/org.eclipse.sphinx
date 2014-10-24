@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.provider.StyledString;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.edit.Activator;
 import org.eclipse.sphinx.examples.hummingbird20.ide.ui.internal.messages.Messages;
@@ -38,17 +39,22 @@ public class ParametersItemProvider extends TransientItemProvider {
 	}
 
 	@Override
+	public String getText(Object object) {
+		return Messages.label_Parameters_TransientNode;
+	}
+
+	@Override
+	public Object getStyledText(Object object) {
+		return new StyledString(getText(object), IHummingbird20Styles.SUB_GROUP_STYLE);
+	}
+
+	@Override
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
 			childrenFeatures.add(TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS);
 		}
 		return childrenFeatures;
-	}
-
-	@Override
-	public String getText(Object object) {
-		return Messages.label_Parameters_TransientNode;
 	}
 
 	@Override

@@ -27,6 +27,8 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.provider.StyledString;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.edit.ComponentItemProvider;
 
@@ -34,6 +36,19 @@ public class ExtendedComponentItemProvider extends ComponentItemProvider {
 
 	public ExtendedComponentItemProvider(AdapterFactory adapterFactory) {
 		super(adapterFactory);
+	}
+
+	@Override
+	public Object getStyledText(Object object) {
+		String label = ((Component) object).getName();
+		StyledString styledLabel = new StyledString();
+		if (label == null || label.length() == 0) {
+			styledLabel.append(getString("_UI_Component_type"), StyledString.Style.QUALIFIER_STYLER); //$NON-NLS-1$
+		} else {
+			styledLabel
+					.append(getString("_UI_Component_type"), StyledString.Style.QUALIFIER_STYLER).append(" ").append(label, IHummingbird20Styles.INSTANCE_STYLE); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		return styledLabel;
 	}
 
 	@Override
