@@ -15,6 +15,7 @@
 package org.eclipse.sphinx.emf.mwe.dynamic.ui.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -106,7 +107,21 @@ public class WorkflowRunnerActionHandlerHelper {
 	}
 
 	protected List<EObject> getModelObjects(Object object) {
-		List<EObject> modelObjects = new ArrayList<EObject>();
+		// Wrapped model object or model object
+		object = AdapterFactoryEditingDomain.unwrap(object);
+		if (object instanceof EObject) {
+			return Collections.singletonList((EObject) object);
+		}
+
+		// Group of model objects
+		if (object instanceof TransientItemProvider) {
+			TransientItemProvider provider = (TransientItemProvider) object;
+			List<EObject> modelObjects = new ArrayList<EObject>();
+			for (Object child : provider.getChildren(object)) {
+				modelObjects.addAll(getModelObjects(child));
+			}
+			return modelObjects;
+		}
 
 		// Model file or model resource
 		Resource resource = null;
@@ -117,24 +132,9 @@ public class WorkflowRunnerActionHandlerHelper {
 			resource = (Resource) object;
 		}
 		if (resource != null) {
-			modelObjects.addAll(resource.getContents());
+			return resource.getContents();
 		}
 
-		// Group of model objects
-		if (object instanceof TransientItemProvider) {
-			TransientItemProvider provider = (TransientItemProvider) object;
-			for (Object child : provider.getChildren(object)) {
-				modelObjects.addAll(getModelObjects(child));
-			}
-		}
-
-		// Wrapped model object or model object
-		object = AdapterFactoryEditingDomain.unwrap(object);
-		if (object instanceof EObject) {
-			modelObjects.add((EObject) object);
-
-		}
-
-		return modelObjects;
+		return Collections.emptyList();
 	}
 }
