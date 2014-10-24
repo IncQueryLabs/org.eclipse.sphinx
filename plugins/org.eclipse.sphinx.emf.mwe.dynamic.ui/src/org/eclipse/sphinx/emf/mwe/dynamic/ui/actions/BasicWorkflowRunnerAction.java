@@ -54,20 +54,17 @@ public class BasicWorkflowRunnerAction extends BaseSelectionListenerAction {
 		this.runInBackground = runInBackground;
 	}
 
-	// TODO Add support for multi selection
-	protected Object getSelectedObject() {
-		return getStructuredSelection().getFirstElement();
-	}
-
 	@Override
 	protected boolean updateSelection(IStructuredSelection selection) {
-		String label = Messages.action_runWorkflow_label;
-		if (!helper.isWorkflow(getSelectedObject())) {
-			label += "..."; //$NON-NLS-1$
+		if (helper.isWorkflow(getStructuredSelection())) {
+			setText(Messages.action_runWorkflow_label);
+			return true;
 		}
-		setText(label);
-
-		return getStructuredSelection().size() == 1 && getSelectedObject() != null;
+		if (helper.isModel(getStructuredSelection())) {
+			setText(Messages.action_runWorkflow_label + "..."); //$NON-NLS-1$
+			return true;
+		}
+		return false;
 	}
 
 	public String getOperationName() {
@@ -76,8 +73,15 @@ public class BasicWorkflowRunnerAction extends BaseSelectionListenerAction {
 
 	protected IWorkflowRunnerOperation createWorkflowRunnerOperation() {
 		IWorkflowRunnerOperation operation = new BasicWorkflowRunnerOperation(getOperationName());
-		operation.setWorkflow(helper.getWorkflow(getSelectedObject()));
-		operation.setModel(helper.getModel(getSelectedObject()));
+
+		Object workflow = helper.getWorkflow(getStructuredSelection());
+		if (workflow == null) {
+			workflow = helper.promptForWorkflow(getStructuredSelection());
+		}
+		operation.setWorkflow(workflow);
+
+		operation.setModel(helper.getModel(getStructuredSelection()));
+
 		return operation;
 	}
 

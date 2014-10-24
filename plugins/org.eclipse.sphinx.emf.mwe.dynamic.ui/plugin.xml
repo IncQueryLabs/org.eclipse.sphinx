@@ -38,17 +38,19 @@ Contributors:
          <enablement>
             <or>
                <instanceof
-                     value="org.eclipse.emf.ecore.EObject">
-               </instanceof>
+                     value="org.eclipse.emf.ecore.EObject" />
                <instanceof
-                     value="org.eclipse.core.resources.IFile">
-               </instanceof>
+                     value="org.eclipse.emf.edit.provider.IWrapperItemProvider" />
                <instanceof
-                     value="org.eclipse.jdt.core.ICompilationUnit">
-               </instanceof>
+                     value="org.eclipse.emf.ecore.util.FeatureMap.Entry" />
                <instanceof
-                     value="org.eclipse.jdt.core.IType">
-               </instanceof>
+                     value="org.eclipse.sphinx.emf.edit.TransientItemProvider" />
+               <instanceof
+                     value="org.eclipse.core.resources.IFile" />
+               <instanceof
+                     value="org.eclipse.jdt.core.ICompilationUnit" />
+               <instanceof
+                     value="org.eclipse.jdt.core.IType" />
             </or>
          </enablement>
       </actionProvider>

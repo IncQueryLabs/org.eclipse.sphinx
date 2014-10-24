@@ -14,15 +14,19 @@
  */
 package org.eclipse.sphinx.emf.mwe.dynamic.ui.util;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.mwe.dynamic.ui.wizards.WorkflowSelectionWizard;
 import org.eclipse.sphinx.emf.mwe.dynamic.util.XtendUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
@@ -30,42 +34,50 @@ import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 
 public class WorkflowRunnerActionHandlerHelper {
 
-	public boolean isWorkflow(Object selectedObject) {
+	public boolean isWorkflow(IStructuredSelection structuredSelection) {
+		return getWorkflow(structuredSelection) != null;
+	}
+
+	public Object getWorkflow(IStructuredSelection structuredSelection) {
+		if (structuredSelection == null || structuredSelection.isEmpty() && structuredSelection.size() > 1) {
+			return null;
+		}
+		Object selected = structuredSelection.getFirstElement();
+
 		// Java class
-		if (selectedObject instanceof IType) {
-			return true;
+		if (selected instanceof IType) {
+			return selected;
 		}
 
 		// Java file
-		if (selectedObject instanceof ICompilationUnit) {
-			return true;
+		if (selected instanceof ICompilationUnit) {
+			return selected;
 		}
 
 		// Xtend file
-		if (selectedObject instanceof IFile && XtendUtil.isXtendFile((IFile) selectedObject)) {
-			return true;
+		if (selected instanceof IFile && XtendUtil.isXtendFile((IFile) selected)) {
+			return selected;
 		}
 
-		return false;
+		return null;
 	}
 
-	public Object getWorkflow(Object selectedObject) {
-		// Try to get workflow file from selection
-		if (isWorkflow(selectedObject)) {
-			return selectedObject;
-		}
-
+	public Object promptForWorkflow(IStructuredSelection structuredSelection) {
 		// Try to retrieve file behind selection and query workflow in enclosing project
 		IFile selectedFile = null;
-		if (selectedObject instanceof IFile) {
-			selectedFile = (IFile) selectedObject;
-		} else {
-			selectedFile = EcorePlatformUtil.getFile(selectedObject);
+		if (structuredSelection != null) {
+			Object selected = structuredSelection.getFirstElement();
+			if (selected instanceof IFile) {
+				selectedFile = (IFile) selected;
+			} else {
+				selectedFile = EcorePlatformUtil.getFile(selected);
+			}
 		}
-		return queryWorkflowFile(selectedFile != null ? selectedFile.getProject() : null);
+
+		return promptForWorkflowFile(selectedFile != null ? selectedFile.getProject() : null);
 	}
 
-	public IFile queryWorkflowFile(IProject contextProject) {
+	protected IFile promptForWorkflowFile(IProject contextProject) {
 		WorkflowSelectionWizard wizard = new WorkflowSelectionWizard(contextProject);
 		WizardDialog wizardDialog = new WizardDialog(ExtendedPlatformUI.getActiveShell(), wizard);
 		wizardDialog.create();
@@ -76,18 +88,53 @@ public class WorkflowRunnerActionHandlerHelper {
 		return XtendUtil.getJavaFile(workflowFile, workflowClassName);
 	}
 
-	public Object getModel(Object selectedObject) {
-		// Model object
-		if (selectedObject instanceof EObject) {
-			return Collections.singletonList(selectedObject);
+	public boolean isModel(IStructuredSelection structuredSelection) {
+		return getModel(structuredSelection) != null;
+	}
+
+	public Object getModel(IStructuredSelection structuredSelection) {
+		if (structuredSelection == null) {
+			return null;
 		}
 
-		// Model resource
-		Resource resource = EcorePlatformUtil.getResource(selectedObject);
+		List<EObject> modelObjects = new ArrayList<EObject>();
+		for (Object selected : structuredSelection.toList()) {
+			modelObjects.addAll(getModelObjects(selected));
+		}
+
+		return !modelObjects.isEmpty() ? modelObjects : null;
+	}
+
+	protected List<EObject> getModelObjects(Object object) {
+		List<EObject> modelObjects = new ArrayList<EObject>();
+
+		// Model file or model resource
+		Resource resource = null;
+		if (object instanceof IFile) {
+			resource = EcorePlatformUtil.getResource((IFile) object);
+		}
+		if (object instanceof Resource) {
+			resource = (Resource) object;
+		}
 		if (resource != null) {
-			return resource.getContents();
+			modelObjects.addAll(resource.getContents());
 		}
 
-		return null;
+		// Group of model objects
+		if (object instanceof TransientItemProvider) {
+			TransientItemProvider provider = (TransientItemProvider) object;
+			for (Object child : provider.getChildren(object)) {
+				modelObjects.addAll(getModelObjects(child));
+			}
+		}
+
+		// Wrapped model object or model object
+		object = AdapterFactoryEditingDomain.unwrap(object);
+		if (object instanceof EObject) {
+			modelObjects.add((EObject) object);
+
+		}
+
+		return modelObjects;
 	}
 }

@@ -14,32 +14,26 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.workflows.naming
 
-import java.util.List
-import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.mwe.core.WorkflowContext
 import org.eclipse.emf.mwe.core.issues.Issues
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitor
-import org.eclipse.sphinx.emf.mwe.dynamic.IWorkflowSlots
 import org.eclipse.sphinx.emf.mwe.dynamic.components.AbstractModelWorkflowComponent
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface
 
+import static extension org.eclipse.sphinx.examples.hummingbird20.workflows.util.ModelWorkflowExtensions.*
+
 class ApplyHummingbird20NamingConventionWorkflowComponent extends AbstractModelWorkflowComponent {
 
 	new() {
-
 		// Will modify the model in the slot
 		super(true)
 	}
 
 	override protected invokeInternal(WorkflowContext ctx, ProgressMonitor monitor, Issues issues) {
 		println("Executing Apply Hummingbird 2.0 Naming Convention workflow component")
-		val modelObjects = ctx.get(IWorkflowSlots.MODEL_SLOT_NAME) as List<EObject>
-		if (modelObjects == null || modelObjects.empty) {
-			println("Model slot is empty, nothing to do!")
-			return
-		}
+		val modelObjects = ctx.modelSlot
 
 		for (modelObject : modelObjects) {
 			val eAllContents = modelObject.eAllContents

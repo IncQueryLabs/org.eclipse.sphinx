@@ -39,7 +39,7 @@ public class BasicWorkflowRunnerHandler extends AbstractHandler {
 
 	protected WorkflowRunnerActionHandlerHelper helper;
 
-	protected BasicWorkflowRunnerHandler() {
+	public BasicWorkflowRunnerHandler() {
 		setRunInBackground(false);
 		helper = new WorkflowRunnerActionHandlerHelper();
 	}
@@ -56,19 +56,21 @@ public class BasicWorkflowRunnerHandler extends AbstractHandler {
 		return selection;
 	}
 
-	// TODO Add support for multi selection
-	protected Object getSelectedObject() {
-		return getStructuredSelection().getFirstElement();
-	}
-
 	protected String getOperationName() {
 		return Messages.operation_runWorkflow_label;
 	}
 
 	protected IWorkflowRunnerOperation createWorkflowRunnerOperation() {
 		IWorkflowRunnerOperation operation = new BasicWorkflowRunnerOperation(getOperationName());
-		operation.setWorkflow(helper.getWorkflow(getSelectedObject()));
-		operation.setModel(helper.getModel(getSelectedObject()));
+
+		Object workflow = helper.getWorkflow(getStructuredSelection());
+		if (workflow == null) {
+			workflow = helper.promptForWorkflow(getStructuredSelection());
+		}
+		operation.setWorkflow(workflow);
+
+		operation.setModel(helper.getModel(getStructuredSelection()));
+
 		return operation;
 	}
 
