@@ -16,9 +16,11 @@ package org.eclipse.sphinx.emf.edit;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.edit.command.CommandParameter;
 import org.eclipse.emf.edit.provider.DelegatingWrapperItemProvider;
 import org.eclipse.emf.edit.provider.IItemFontProvider;
 import org.eclipse.emf.edit.provider.IItemStyledLabelProvider;
+import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.emf.edit.provider.StyledString;
 
 public class StyledDelegatingWrapperItemProvider extends DelegatingWrapperItemProvider implements IItemFontProvider, IItemStyledLabelProvider {
@@ -31,5 +33,10 @@ public class StyledDelegatingWrapperItemProvider extends DelegatingWrapperItemPr
 	public Object getStyledText(Object object) {
 		return delegateItemProvider instanceof IItemStyledLabelProvider ? ((IItemStyledLabelProvider) delegateItemProvider)
 				.getStyledText(getDelegateValue()) : new StyledString(getText(object));
+	}
+
+	@Override
+	protected IWrapperItemProvider createWrapper(Object value, Object owner, AdapterFactory adapterFactory) {
+		return new StyledDelegatingWrapperItemProvider(value, owner, null, CommandParameter.NO_INDEX, adapterFactory);
 	}
 }
