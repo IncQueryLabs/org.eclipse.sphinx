@@ -182,7 +182,9 @@ public class WorkflowSelectionWizardPage extends WizardPage {
 
 		} else {
 			workflowClassCombo.setEnabled(false);
-			workflowClassCombo.add(workflowFile.getFullPath().removeFileExtension().lastSegment());
+			if (workflowFile != null) {
+				workflowClassCombo.add(workflowFile.getFullPath().removeFileExtension().lastSegment());
+			}
 		}
 
 		// If only one class is available, select it by default
