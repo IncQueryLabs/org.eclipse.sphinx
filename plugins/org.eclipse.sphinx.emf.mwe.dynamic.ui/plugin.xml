@@ -33,7 +33,7 @@ Contributors:
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
       <actionProvider
-            class="org.eclipse.sphinx.emf.mwe.dynamic.ui.actions.BasicWorkflowActionProvider"
+            class="org.eclipse.sphinx.emf.mwe.dynamic.ui.actions.providers.BasicWorkflowActionProvider"
             id="org.eclipse.sphinx.xtend.workflow.ui.basicWorkflowActions">
          <enablement>
             <or>

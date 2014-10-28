@@ -12,13 +12,14 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.mwe.dynamic.ui.actions;
+package org.eclipse.sphinx.emf.mwe.dynamic.ui.actions.providers;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.sphinx.emf.mwe.dynamic.ui.IWorkflowRunnerMenuConstants;
+import org.eclipse.sphinx.emf.mwe.dynamic.ui.actions.BasicWorkflowRunnerAction;
 import org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.ui.navigator.ICommonMenuConstants;
