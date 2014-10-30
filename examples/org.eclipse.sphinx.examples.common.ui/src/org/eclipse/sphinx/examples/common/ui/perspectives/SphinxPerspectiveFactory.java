@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.common.ui.perspectives;
@@ -25,7 +25,7 @@ public class SphinxPerspectiveFactory implements IPerspectiveFactory {
 
 	/**
 	 * Creates the initial layout for the Sphinx perspective. Add views and shortcuts to compose the perspective.
-	 * 
+	 *
 	 * @see org.eclipse.ui.IPerspectiveFactory#createInitialLayout(org.eclipse.ui.IPageLayout)
 	 */
 	@Override
@@ -35,6 +35,7 @@ public class SphinxPerspectiveFactory implements IPerspectiveFactory {
 		addShowViewShortcuts(layout);
 		addOpenPerspectiveShortcuts(layout);
 		addActionSets(layout);
+		addShowInParts(layout);
 	}
 
 	/**
@@ -42,7 +43,7 @@ public class SphinxPerspectiveFactory implements IPerspectiveFactory {
 	 */
 	private void createLayout(IPageLayout layout) {
 
-		// Editors are placed for free.
+		// Editors are placed for free
 		String editorArea = layout.getEditorArea();
 
 		int relativePos = IPageLayout.LEFT;
@@ -62,7 +63,7 @@ public class SphinxPerspectiveFactory implements IPerspectiveFactory {
 	}
 
 	/**
-	 * Adds new shortcuts to wizards for the Sphinx perspective. These wizards appear in the File > New menu.
+	 * Adds new shortcuts to wizards. These wizards appear in the File > New menu when the Sphinx perspective is active.
 	 */
 	private void addNewWizardShortcuts(IPageLayout layout) {
 		layout.addNewWizardShortcut(ISphinxPerspectiveConstants.ID_NEW_LINKED_FILE);
@@ -95,14 +96,28 @@ public class SphinxPerspectiveFactory implements IPerspectiveFactory {
 	}
 
 	/**
-	 * Adds actions sets to the Sphinx perspective. These action sets appear in the tool bar of the perspective.
+	 * Adds actions sets to the Sphinx perspective. These action sets appear in the tool bar of the Sphinx perspective.
 	 */
 	private void addActionSets(IPageLayout layout) {
 
-		// Launch action set, with Debug and Run menus.
+		// Launch action set, with Debug and Run menus
 		layout.addActionSet(ISphinxPerspectiveConstants.ID_LAUNCH_ACTIONSET);
 
-		// Team action set, with Synchronize... menu.
+		// Team action set, with Synchronize... menu
 		layout.addActionSet(ISphinxPerspectiveConstants.ID_TEAM_ACTIONSET);
+	}
+
+	/**
+	 * Adds views to the Show In prompters. These views appear in the Navigate > Show In menu as well as in the Show In
+	 * context submenus of all views that are "Show In..." sources (e.g., the Problems view) when the Sphinx perspective
+	 * is active.
+	 */
+	private void addShowInParts(IPageLayout layout) {
+
+		// Sphinx Model Explorer view
+		layout.addShowInPart(ISphinxPerspectiveConstants.ID_MODEL_EXPLORER);
+
+		// Eclipse Project Explorer view
+		layout.addShowInPart(IPageLayout.ID_PROJECT_EXPLORER);
 	}
 }
