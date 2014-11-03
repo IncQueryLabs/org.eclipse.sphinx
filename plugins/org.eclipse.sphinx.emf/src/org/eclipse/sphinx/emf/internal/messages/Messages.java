@@ -101,6 +101,15 @@ public class Messages extends NLS {
 	public static String error_problemOccurredWhenResolvingProxyURI;
 	public static String error_problemOccurredWhenSavingResource;
 
+	public static String metamodelservice_ServiceAlreadySet;
+	public static String metamodelservice_UnknownMM;
+	public static String metamodelservice_MissingMMDescriptor;
+	public static String metamodelservice_UnknownDescriptor;
+	public static String metamodelservice_ServiceNotImplemented;
+	public static String metamodelservice_InvalidServiceClass;
+	public static String metamodelservice_MissingServiceName;
+	public static String metamodelservice_MissingServiceClass;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

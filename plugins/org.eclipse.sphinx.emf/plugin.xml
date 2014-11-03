@@ -25,7 +25,8 @@ Contributors:
    <extension-point id="resourceHandlers" name="%resourceHandlers.name" schema="schema/resourceHandlers.exsd"/>
    <extension-point id="resourceLocators" name="%resourceLocators.name" schema="schema/resourceLocators.exsd"/>
    <extension-point id="resourceScopeProviders" name="%resourceScopeProviders.name" schema="schema/resourceScopeProviders.exsd"/>
- <extension point="org.eclipse.core.expressions.propertyTesters">
+   <extension-point id="metaModelServices" name="%metaModelServices.name" schema="schema/metaModelServices.exsd"/>
+   <extension point="org.eclipse.core.expressions.propertyTesters">
     <propertyTester class="org.eclipse.sphinx.emf.internal.expressions.EMFObjectPropertyTester"
                     id="org.eclipse.sphinx.emf.expressions.eObjectPropertyTester"
                     namespace="org.eclipse.sphinx.emf"

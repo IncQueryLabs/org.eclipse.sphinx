@@ -22,7 +22,6 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.sphinx.emf.resource.ExtendedResourceSet;
 
 public class ProxyResolutionBehavior {
 
@@ -55,9 +54,9 @@ public class ProxyResolutionBehavior {
 		Assert.isNotNull(proxy);
 
 		EObject resolvedEObject = null;
-		if (resourceSet instanceof ExtendedResourceSet) {
-			ExtendedResourceSet extendedResourceSet = (ExtendedResourceSet) resourceSet;
-			resolvedEObject = extendedResourceSet.getEObject(proxy, contextObject, true);
+		if (resourceSet instanceof IProxyResolver) {
+			IProxyResolver eObjectResolver = (IProxyResolver) resourceSet;
+			resolvedEObject = eObjectResolver.getEObject(proxy, contextObject, true);
 		} else {
 			resolvedEObject = resourceSet.getEObject(((InternalEObject) proxy).eProxyURI(), true);
 		}
