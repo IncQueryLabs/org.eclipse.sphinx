@@ -6,9 +6,8 @@ Bundle-Version: 0.9.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.xtend.lib,
  org.eclipse.sphinx.emf.mwe.dynamic,
- org.eclipse.sphinx.examples.hummingbird20
+ org.eclipse.sphinx.examples.hummingbird20,
+ org.eclipse.sphinx.examples.workflows.lib
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Export-Package: org.eclipse.sphinx.examples.hummingbird20.workflows.dump,
- org.eclipse.sphinx.examples.hummingbird20.workflows.hello,
- org.eclipse.sphinx.examples.hummingbird20.workflows.naming
+Export-Package: org.eclipse.sphinx.examples.hummingbird20.workflows.naming

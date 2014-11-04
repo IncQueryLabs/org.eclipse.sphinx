@@ -66,8 +66,8 @@
 		<module>../../examples/org.eclipse.sphinx.examples.uml2.ide.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.uml2.ide</module>
 		<module>../../examples/org.eclipse.sphinx.examples.validation.ui</module>
+		<module>../../examples/org.eclipse.sphinx.examples.workflows</module>
 		<module>../../examples/org.eclipse.sphinx.examples.workflows.lib</module>
-		<module>../../examples/org.eclipse.sphinx.examples.workflows.simple</module>
 
 		<!-- Tests -->
 		<module>../../tests/org.eclipse.sphinx.tests.emf</module>
