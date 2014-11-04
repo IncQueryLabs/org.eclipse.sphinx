@@ -1,8 +1,12 @@
 .DS_Store
 /.metadata
 /docs/*/target
+/examples/*/src-gen
+/examples/*/xtend-gen
 /examples/*/bin
 /examples/*/target
+/experimental/*/src-gen
+/experimental/*/xtend-gen
 /experimental/*/bin
 /experimental/*/target
 /features/*/target
