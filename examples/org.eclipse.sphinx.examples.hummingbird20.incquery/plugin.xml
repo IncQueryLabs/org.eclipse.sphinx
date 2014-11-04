@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+<copyright>
+
+Copyright (c) 2014 itemis and others.
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+which accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html
+
+Contributors:
+    itemis - Initial API and implementation
+
+</copyright>
+-->
+<plugin>
+  <extension point="org.eclipse.sphinx.emf.metaModelServices">
+    <descriptor descriptorID="org.eclipse.sphinx.examples.hummingbird20">
+      <service class="org.eclipse.sphinx.examples.hummingbird20.incquery.service.Hummindbird20QueryService" type="org.eclipse.sphinx.emf.query.IModelQueryService"/>
+    </descriptor>
+  </extension>
+  <extension id="org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common" point="org.eclipse.incquery.runtime.queryspecification">
+    <group group="org.eclipse.incquery.runtime.extensibility.SingletonExtensionFactory:org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common" id="org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common"/>
+  </extension>
+  <extension id="org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.Instancemodel" point="org.eclipse.incquery.runtime.queryspecification">
+    <group group="org.eclipse.incquery.runtime.extensibility.SingletonExtensionFactory:org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.Instancemodel" id="org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.Instancemodel"/>
+  </extension>
+  <extension id="org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.Typemodel" point="org.eclipse.incquery.runtime.queryspecification">
+    <group group="org.eclipse.incquery.runtime.extensibility.SingletonExtensionFactory:org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.Typemodel" id="org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.Typemodel"/>
+  </extension>
+</plugin>

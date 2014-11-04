@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.sphinx.tests.emf.incquery;singleton:=true
+Bundle-Version: 0.9.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Require-Bundle: org.junit,
+ org.eclipse.sphinx.testutils,
+ org.eclipse.sphinx.emf.incquery,
+ org.eclipse.sphinx.examples.hummingbird20
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.eclipse.sphinx.tests.emf.incquery.internal.Activator$Implementation
+Export-Package: org.eclipse.sphinx.tests.emf.incquery,
+ org.eclipse.sphinx.tests.emf.incquery.internal;x-internal:=true

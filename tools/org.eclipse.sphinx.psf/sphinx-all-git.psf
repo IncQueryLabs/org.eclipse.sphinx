@@ -21,6 +21,7 @@
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.edit"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.editors.nebula"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.ide.ui"/>
+<project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.incquery"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.transform.xtend"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.validation"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.workflows"/>
@@ -65,6 +66,7 @@
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.emf.editors.forms"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.emf.editors.forms.nebula"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.emf.explorer"/>
+<project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.emf.incquery"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.emf.metamodelgen"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.emf.metamodelgen.ui"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.emf.mwe"/>
@@ -78,6 +80,7 @@
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.emf.validation.bridge"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.emf.validation.ui"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.emf.workspace"/>
+<project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.emf.workspace.incquery"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.emf.workspace.ui"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.gmf.runtime.ui"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.gmf.workspace"/>
@@ -91,6 +94,7 @@
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,plugins/org.eclipse.sphinx.xtendxpand.ui"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,releng/org.eclipse.sphinx.releng.builds"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,tests/org.eclipse.sphinx.tests.emf"/>
+<project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,tests/org.eclipse.sphinx.tests.emf.incquery"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,tests/org.eclipse.sphinx.tests.emf.integration"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,tests/org.eclipse.sphinx.tests.emf.serialization"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/mdt/org.eclipse.sphinx.git,master,tests/org.eclipse.sphinx.tests.emf.serialization.generators"/>
@@ -133,6 +137,7 @@
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.edit" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.editors.nebula" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.ide.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.examples.hummingbird20.incquery" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.transform.xtend" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.validation" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.workflows" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -181,6 +186,7 @@
 <item elementID="=org.eclipse.sphinx.emf.editors.forms" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.editors.forms.nebula" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.explorer" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.emf.incquery" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.metamodelgen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.metamodelgen.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.mwe" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -194,6 +200,7 @@
 <item elementID="=org.eclipse.sphinx.emf.validation.bridge" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.validation.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.workspace" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.emf.workspace.incquery" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.emf.workspace.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.gmf.runtime.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.gmf.workspace" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -211,6 +218,7 @@
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1356016354599_7" label="Tests" name="Tests">
 <item elementID="=org.eclipse.sphinx.tests.emf" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.tests.emf.incquery" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.tests.emf.integration" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.tests.emf.serialization" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.tests.emf.serialization.generators" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
