@@ -339,4 +339,20 @@ public class TransientItemProvider extends ExtendedItemProviderAdapter implement
 		Assert.isLegal(this.target == null || this.target == target);
 		super.setTarget(target);
 	}
+
+	/*
+	 * Overridden to ensure that an already existing instance of some transient item provider on a given target object
+	 * to be retrieved by using the class of the transient item provider in question as type to adapt to (rather than
+	 * the item provider adapter factory as intended by ItemProviderAdapter). In combination with
+	 * TransientItemProvider.AdapterFactoryHelper#adapt(Object, Object, AdapterFactory), this behavior enables the
+	 * implementation of item provider adapter factories that support the creation and retrieval transient item provider
+	 * instances by calling AdapterFactory#adapt(object, TransientItemProviderSubClass.class)
+	 * @see org.eclipse.emf.edit.provider.ItemProviderAdapter#isAdapterForType(java.lang.Object)
+	 * @see org.eclipse.emf.ecore.util.EcoreUtil#getExistingAdapter(Notifier, Object)
+	 * @see org.eclipse.sphinx.emf.edit.TransientItemProvider.AdapterFactoryHelper.adapt(Object, Object, AdapterFactory)
+	 */
+	@Override
+	public boolean isAdapterForType(Object type) {
+		return type == this.getClass();
+	}
 }
