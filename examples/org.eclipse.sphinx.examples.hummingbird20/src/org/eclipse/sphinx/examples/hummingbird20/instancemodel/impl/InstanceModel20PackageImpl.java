@@ -36,48 +36,41 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20Packa
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
- * 
  * @generated
  */
 public class InstanceModel20PackageImpl extends EPackageImpl implements InstanceModel20Package {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private EClass applicationEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private EClass componentEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private EClass connectionEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private EClass parameterValueEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private EClass parameterExpresssionEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private EClass formulaEClass = null;
@@ -101,7 +94,6 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private static boolean isInited = false;
@@ -119,13 +111,10 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	 * @generated
 	 */
 	public static InstanceModel20Package init() {
-		if (isInited) {
-			return (InstanceModel20Package) EPackage.Registry.INSTANCE.getEPackage(InstanceModel20Package.eNS_URI);
-		}
+		if (isInited) return (InstanceModel20Package)EPackage.Registry.INSTANCE.getEPackage(InstanceModel20Package.eNS_URI);
 
 		// Obtain or create and register package
-		InstanceModel20PackageImpl theInstanceModel20Package = (InstanceModel20PackageImpl) (EPackage.Registry.INSTANCE.get(eNS_URI) instanceof InstanceModel20PackageImpl ? EPackage.Registry.INSTANCE
-				.get(eNS_URI) : new InstanceModel20PackageImpl());
+		InstanceModel20PackageImpl theInstanceModel20Package = (InstanceModel20PackageImpl)(EPackage.Registry.INSTANCE.get(eNS_URI) instanceof InstanceModel20PackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI) : new InstanceModel20PackageImpl());
 
 		isInited = true;
 
@@ -134,10 +123,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 		XMLTypePackage.eINSTANCE.eClass();
 
 		// Obtain or create and register interdependencies
-		Common20PackageImpl theCommon20Package = (Common20PackageImpl) (EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI) instanceof Common20PackageImpl ? EPackage.Registry.INSTANCE
-				.getEPackage(Common20Package.eNS_URI) : Common20Package.eINSTANCE);
-		TypeModel20PackageImpl theTypeModel20Package = (TypeModel20PackageImpl) (EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI) instanceof TypeModel20PackageImpl ? EPackage.Registry.INSTANCE
-				.getEPackage(TypeModel20Package.eNS_URI) : TypeModel20Package.eINSTANCE);
+		Common20PackageImpl theCommon20Package = (Common20PackageImpl)(EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI) instanceof Common20PackageImpl ? EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI) : Common20Package.eINSTANCE);
+		TypeModel20PackageImpl theTypeModel20Package = (TypeModel20PackageImpl)(EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI) instanceof TypeModel20PackageImpl ? EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI) : TypeModel20Package.eINSTANCE);
 
 		// Create package meta-data objects
 		theInstanceModel20Package.createPackageContents();
@@ -152,6 +139,7 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 		// Mark meta-data to indicate it can't be changed
 		theInstanceModel20Package.freeze();
 
+  
 		// Update the registry and return the package
 		EPackage.Registry.INSTANCE.put(InstanceModel20Package.eNS_URI, theInstanceModel20Package);
 		return theInstanceModel20Package;
@@ -159,7 +147,6 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -169,47 +156,42 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getApplication_Components() {
-		return (EReference) applicationEClass.getEStructuralFeatures().get(0);
+		return (EReference)applicationEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getApplication_Mixed() {
-		return (EAttribute) applicationEClass.getEStructuralFeatures().get(1);
+		return (EAttribute)applicationEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getApplication_XSISchemaLocation() {
-		return (EReference) applicationEClass.getEStructuralFeatures().get(2);
+		return (EReference)applicationEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getApplication_MixedOuterContent() {
-		return (EAttribute) applicationEClass.getEStructuralFeatures().get(3);
+		return (EAttribute)applicationEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -219,57 +201,51 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getComponent_Type() {
-		return (EReference) componentEClass.getEStructuralFeatures().get(0);
+		return (EReference)componentEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getComponent_OutgoingConnections() {
-		return (EReference) componentEClass.getEStructuralFeatures().get(1);
+		return (EReference)componentEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getComponent_IncomingConnections() {
-		return (EReference) componentEClass.getEStructuralFeatures().get(2);
+		return (EReference)componentEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getComponent_ParameterValues() {
-		return (EReference) componentEClass.getEStructuralFeatures().get(3);
+		return (EReference)componentEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getComponent_ParameterExpressions() {
-		return (EReference) componentEClass.getEStructuralFeatures().get(4);
+		return (EReference)componentEClass.getEStructuralFeatures().get(4);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -279,37 +255,33 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getConnection_SourceComponent() {
-		return (EReference) connectionEClass.getEStructuralFeatures().get(0);
+		return (EReference)connectionEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getConnection_SourcePort() {
-		return (EReference) connectionEClass.getEStructuralFeatures().get(1);
+		return (EReference)connectionEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getConnection_TargetComponent() {
-		return (EReference) connectionEClass.getEStructuralFeatures().get(2);
+		return (EReference)connectionEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -319,27 +291,24 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getParameterValue_Type() {
-		return (EReference) parameterValueEClass.getEStructuralFeatures().get(0);
+		return (EReference)parameterValueEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getParameterValue_Value() {
-		return (EAttribute) parameterValueEClass.getEStructuralFeatures().get(1);
+		return (EAttribute)parameterValueEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -349,27 +318,24 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getParameterExpresssion_Mixed() {
-		return (EAttribute) parameterExpresssionEClass.getEStructuralFeatures().get(0);
+		return (EAttribute)parameterExpresssionEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getParameterExpresssion_Expressions() {
-		return (EReference) parameterExpresssionEClass.getEStructuralFeatures().get(1);
+		return (EReference)parameterExpresssionEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -379,41 +345,36 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getFormula_Value() {
-		return (EAttribute) formulaEClass.getEStructuralFeatures().get(0);
+		return (EAttribute)formulaEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public InstanceModel20Factory getInstanceModel20Factory() {
-		return (InstanceModel20Factory) getEFactoryInstance();
+		return (InstanceModel20Factory)getEFactoryInstance();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private boolean isCreated = false;
 
 	/**
-	 * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but
-	 * its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Creates the meta-model objects for the package.  This method is
+	 * guarded to have no affect on any invocation but its first.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void createPackageContents() {
-		if (isCreated) {
-			return;
-		}
+		if (isCreated) return;
 		isCreated = true;
 
 		// Create classes and their features
@@ -449,21 +410,18 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private boolean isInitialized = false;
 
 	/**
-	 * Complete the initialization of the package and its meta-model. This method is guarded to have no affect on any
-	 * invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Complete the initialization of the package and its meta-model.  This
+	 * method is guarded to have no affect on any invocation but its first.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void initializePackageContents() {
-		if (isInitialized) {
-			return;
-		}
+		if (isInitialized) return;
 		isInitialized = true;
 
 		// Initialize package
@@ -472,9 +430,9 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 		setNsURI(eNS_URI);
 
 		// Obtain other dependent packages
-		Common20Package theCommon20Package = (Common20Package) EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI);
-		EcorePackage theEcorePackage = (EcorePackage) EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
-		TypeModel20Package theTypeModel20Package = (TypeModel20Package) EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI);
+		Common20Package theCommon20Package = (Common20Package)EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI);
+		EcorePackage theEcorePackage = (EcorePackage)EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
+		TypeModel20Package theTypeModel20Package = (TypeModel20Package)EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI);
 
 		// Create type parameters
 
@@ -488,97 +446,33 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(applicationEClass, Application.class, "Application", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEReference(
-				getApplication_Components(),
-				getComponent(),
-				null,
-				"components", null, 1, -1, Application.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEAttribute(
-				getApplication_Mixed(),
-				ecorePackage.getEFeatureMapEntry(),
-				"mixed", null, 0, -1, Application.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getApplication_XSISchemaLocation(),
-				theEcorePackage.getEStringToStringMapEntry(),
-				null,
-				"xSISchemaLocation", null, 0, -1, Application.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEAttribute(
-				getApplication_MixedOuterContent(),
-				ecorePackage.getEFeatureMapEntry(),
-				"mixedOuterContent", null, 0, -1, Application.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getApplication_Components(), this.getComponent(), null, "components", null, 1, -1, Application.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getApplication_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, Application.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getApplication_XSISchemaLocation(), theEcorePackage.getEStringToStringMapEntry(), null, "xSISchemaLocation", null, 0, -1, Application.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getApplication_MixedOuterContent(), ecorePackage.getEFeatureMapEntry(), "mixedOuterContent", null, 0, -1, Application.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(componentEClass, Component.class, "Component", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEReference(
-				getComponent_Type(),
-				theTypeModel20Package.getComponentType(),
-				null,
-				"type", null, 0, 1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getComponent_OutgoingConnections(),
-				getConnection(),
-				getConnection_SourceComponent(),
-				"outgoingConnections", null, 0, -1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getComponent_IncomingConnections(),
-				getConnection(),
-				getConnection_TargetComponent(),
-				"incomingConnections", null, 0, 1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getComponent_ParameterValues(),
-				getParameterValue(),
-				null,
-				"parameterValues", null, 0, -1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getComponent_ParameterExpressions(),
-				getParameterExpresssion(),
-				null,
-				"parameterExpressions", null, 0, -1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getComponent_Type(), theTypeModel20Package.getComponentType(), null, "type", null, 0, 1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getComponent_OutgoingConnections(), this.getConnection(), this.getConnection_SourceComponent(), "outgoingConnections", null, 0, -1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getComponent_IncomingConnections(), this.getConnection(), this.getConnection_TargetComponent(), "incomingConnections", null, 0, -1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getComponent_ParameterValues(), this.getParameterValue(), null, "parameterValues", null, 0, -1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getComponent_ParameterExpressions(), this.getParameterExpresssion(), null, "parameterExpressions", null, 0, -1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(connectionEClass, Connection.class, "Connection", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEReference(
-				getConnection_SourceComponent(),
-				getComponent(),
-				getComponent_OutgoingConnections(),
-				"sourceComponent", null, 1, 1, Connection.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getConnection_SourcePort(),
-				theTypeModel20Package.getPort(),
-				null,
-				"sourcePort", null, 1, 1, Connection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getConnection_TargetComponent(),
-				getComponent(),
-				getComponent_IncomingConnections(),
-				"targetComponent", null, 1, 1, Connection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getConnection_SourceComponent(), this.getComponent(), this.getComponent_OutgoingConnections(), "sourceComponent", null, 1, 1, Connection.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getConnection_SourcePort(), theTypeModel20Package.getPort(), null, "sourcePort", null, 1, 1, Connection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getConnection_TargetComponent(), this.getComponent(), this.getComponent_IncomingConnections(), "targetComponent", null, 1, 1, Connection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(parameterValueEClass, ParameterValue.class, "ParameterValue", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEReference(
-				getParameterValue_Type(),
-				theTypeModel20Package.getParameter(),
-				null,
-				"type", null, 1, 1, ParameterValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEAttribute(
-				getParameterValue_Value(),
-				ecorePackage.getEString(),
-				"value", null, 0, 1, ParameterValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getParameterValue_Type(), theTypeModel20Package.getParameter(), null, "type", null, 1, 1, ParameterValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getParameterValue_Value(), ecorePackage.getEString(), "value", null, 0, 1, ParameterValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
-		initEClass(parameterExpresssionEClass, ParameterExpresssion.class,
-				"ParameterExpresssion", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEAttribute(
-				getParameterExpresssion_Mixed(),
-				ecorePackage.getEFeatureMapEntry(),
-				"mixed", null, 0, -1, ParameterExpresssion.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getParameterExpresssion_Expressions(),
-				getFormula(),
-				null,
-				"expressions", null, 1, -1, ParameterExpresssion.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEClass(parameterExpresssionEClass, ParameterExpresssion.class, "ParameterExpresssion", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+		initEAttribute(getParameterExpresssion_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, ParameterExpresssion.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getParameterExpresssion_Expressions(), this.getFormula(), null, "expressions", null, 1, -1, ParameterExpresssion.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(formulaEClass, Formula.class, "Formula", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEAttribute(
-				getFormula_Value(),
-				theEcorePackage.getEString(),
-				"value", null, 0, 1, Formula.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getFormula_Value(), theEcorePackage.getEString(), "value", null, 0, 1, Formula.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		// Create resource
 		createResource(eNS_URI);
@@ -589,31 +483,59 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 	}
 
 	/**
-	 * Initializes the annotations for <b>http:///org/eclipse/emf/ecore/util/ExtendedMetaData</b>. <!-- begin-user-doc
+	 * Initializes the annotations for <b>http:///org/eclipse/emf/ecore/util/ExtendedMetaData</b>.
+	 * <!-- begin-user-doc
 	 * --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected void createExtendedMetaDataAnnotations() {
-		String source = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData"; //$NON-NLS-1$		
-		addAnnotation(applicationEClass, source, new String[] { "kind", "mixed" //$NON-NLS-1$ //$NON-NLS-2$
-		});
-		addAnnotation(getApplication_Mixed(), source, new String[] { "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
-				"kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
-		});
-		addAnnotation(getApplication_XSISchemaLocation(), source, new String[] { "name", "xsi:schemaLocation", //$NON-NLS-1$ //$NON-NLS-2$
-				"kind", "element" //$NON-NLS-1$ //$NON-NLS-2$
-		});
-		addAnnotation(getApplication_MixedOuterContent(), source, new String[] { "kind", "elementWildcard", //$NON-NLS-1$ //$NON-NLS-2$
-				"wildcards", "http://www.eclipse.org/emf/2003/XMLType" //$NON-NLS-1$ //$NON-NLS-2$
-		});
-		addAnnotation(parameterExpresssionEClass, source, new String[] { "kind", "mixed" //$NON-NLS-1$ //$NON-NLS-2$
-		});
-		addAnnotation(getParameterExpresssion_Mixed(), source, new String[] { "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
-				"kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
-		});
-		addAnnotation(getParameterExpresssion_Expressions(), source, new String[] { "kind", "element" //$NON-NLS-1$ //$NON-NLS-2$
-		});
+		String source = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData"; //$NON-NLS-1$	
+		addAnnotation
+		  (applicationEClass, 
+		   source, 
+		   new String[] {
+			 "kind", "mixed" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getApplication_Mixed(), 
+		   source, 
+		   new String[] {
+			 "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
+			 "kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getApplication_XSISchemaLocation(), 
+		   source, 
+		   new String[] {
+			 "name", "xsi:schemaLocation", //$NON-NLS-1$ //$NON-NLS-2$
+			 "kind", "element" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getApplication_MixedOuterContent(), 
+		   source, 
+		   new String[] {
+			 "kind", "elementWildcard", //$NON-NLS-1$ //$NON-NLS-2$
+			 "wildcards", "http://www.eclipse.org/emf/2003/XMLType" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (parameterExpresssionEClass, 
+		   source, 
+		   new String[] {
+			 "kind", "mixed" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getParameterExpresssion_Mixed(), 
+		   source, 
+		   new String[] {
+			 "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
+			 "kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getParameterExpresssion_Expressions(), 
+		   source, 
+		   new String[] {
+			 "kind", "element" //$NON-NLS-1$ //$NON-NLS-2$
+		   });
 	}
 
 } // InstanceModel20PackageImpl

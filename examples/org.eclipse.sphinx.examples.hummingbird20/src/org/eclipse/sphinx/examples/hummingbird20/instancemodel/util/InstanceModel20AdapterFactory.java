@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird20.instancemodel.util;
@@ -137,7 +137,7 @@ public class InstanceModel20AdapterFactory extends AdapterFactoryImpl {
 	 * {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application <em>Application</em>}'. <!--
 	 * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to
 	 * ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the new adapter.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application
 	 * @generated
@@ -151,7 +151,7 @@ public class InstanceModel20AdapterFactory extends AdapterFactoryImpl {
 	 * {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component <em>Component</em>}'. <!--
 	 * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to
 	 * ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the new adapter.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component
 	 * @generated
@@ -165,7 +165,7 @@ public class InstanceModel20AdapterFactory extends AdapterFactoryImpl {
 	 * {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection <em>Connection</em>}'. <!--
 	 * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to
 	 * ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the new adapter.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection
 	 * @generated
@@ -179,7 +179,7 @@ public class InstanceModel20AdapterFactory extends AdapterFactoryImpl {
 	 * {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue <em>Parameter Value</em>}'. <!--
 	 * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to
 	 * ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the new adapter.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue
 	 * @generated

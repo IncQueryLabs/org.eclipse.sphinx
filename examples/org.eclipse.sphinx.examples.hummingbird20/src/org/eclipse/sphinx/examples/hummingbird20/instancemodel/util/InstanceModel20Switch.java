@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird20.instancemodel.util;
@@ -202,7 +202,7 @@ public class InstanceModel20Switch<T> {
 	 * Returns the result of interpreting the object as an instance of '<em>Parameter Value</em>'. <!-- begin-user-doc
 	 * --> This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc
 	 * -->
-	 * 
+	 *
 	 * @param object
 	 *            the target of the switch.
 	 * @return the result of interpreting the object as an instance of '<em>Parameter Value</em>'.
@@ -217,7 +217,7 @@ public class InstanceModel20Switch<T> {
 	 * Returns the result of interpreting the object as an instance of '<em>Parameter Expresssion</em>'. <!--
 	 * begin-user-doc --> This implementation returns null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
+	 *
 	 * @param object
 	 *            the target of the switch.
 	 * @return the result of interpreting the object as an instance of '<em>Parameter Expresssion</em>'.

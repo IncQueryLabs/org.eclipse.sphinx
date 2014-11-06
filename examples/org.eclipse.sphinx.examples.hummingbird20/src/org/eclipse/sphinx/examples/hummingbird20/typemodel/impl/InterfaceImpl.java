@@ -33,20 +33,17 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.InterfaceImpl#getProvidingComponentTypes <em>
- * Providing Component Types</em>}</li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.InterfaceImpl#getRequiringPorts <em>Requiring
- * Ports</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.InterfaceImpl#getProvidingComponentTypes <em>Providing Component Types</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.InterfaceImpl#getRequiringPorts <em>Requiring Ports</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class InterfaceImpl extends IdentifiableImpl implements Interface {
 	/**
-	 * The cached value of the '{@link #getProvidingComponentTypes() <em>Providing Component Types</em>}' reference
-	 * list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getProvidingComponentTypes() <em>Providing Component Types</em>}' reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getProvidingComponentTypes()
 	 * @generated
 	 * @ordered
@@ -65,7 +62,6 @@ public class InterfaceImpl extends IdentifiableImpl implements Interface {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected InterfaceImpl() {
@@ -74,7 +70,6 @@ public class InterfaceImpl extends IdentifiableImpl implements Interface {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -84,132 +79,122 @@ public class InterfaceImpl extends IdentifiableImpl implements Interface {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EList<ComponentType> getProvidingComponentTypes() {
 		if (providingComponentTypes == null) {
-			providingComponentTypes = new EObjectWithInverseResolvingEList.ManyInverse<ComponentType>(ComponentType.class, this,
-					TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES, TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES);
+			providingComponentTypes = new EObjectWithInverseResolvingEList.ManyInverse<ComponentType>(ComponentType.class, this, TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES, TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES);
 		}
 		return providingComponentTypes;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EList<Port> getRequiringPorts() {
 		if (requiringPorts == null) {
-			requiringPorts = new EObjectWithInverseResolvingEList<Port>(Port.class, this, TypeModel20Package.INTERFACE__REQUIRING_PORTS,
-					TypeModel20Package.PORT__REQUIRED_INTERFACE);
+			requiringPorts = new EObjectWithInverseResolvingEList<Port>(Port.class, this, TypeModel20Package.INTERFACE__REQUIRING_PORTS, TypeModel20Package.PORT__REQUIRED_INTERFACE);
 		}
 		return requiringPorts;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getProvidingComponentTypes()).basicAdd(otherEnd, msgs);
-		case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getRequiringPorts()).basicAdd(otherEnd, msgs);
+			case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
+				return ((InternalEList<InternalEObject>)(InternalEList<?>)getProvidingComponentTypes()).basicAdd(otherEnd, msgs);
+			case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
+				return ((InternalEList<InternalEObject>)(InternalEList<?>)getRequiringPorts()).basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
-			return ((InternalEList<?>) getProvidingComponentTypes()).basicRemove(otherEnd, msgs);
-		case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
-			return ((InternalEList<?>) getRequiringPorts()).basicRemove(otherEnd, msgs);
+			case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
+				return ((InternalEList<?>)getProvidingComponentTypes()).basicRemove(otherEnd, msgs);
+			case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
+				return ((InternalEList<?>)getRequiringPorts()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
-			return getProvidingComponentTypes();
-		case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
-			return getRequiringPorts();
+			case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
+				return getProvidingComponentTypes();
+			case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
+				return getRequiringPorts();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
-			getProvidingComponentTypes().clear();
-			getProvidingComponentTypes().addAll((Collection<? extends ComponentType>) newValue);
-			return;
-		case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
-			getRequiringPorts().clear();
-			getRequiringPorts().addAll((Collection<? extends Port>) newValue);
-			return;
+			case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
+				getProvidingComponentTypes().clear();
+				getProvidingComponentTypes().addAll((Collection<? extends ComponentType>)newValue);
+				return;
+			case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
+				getRequiringPorts().clear();
+				getRequiringPorts().addAll((Collection<? extends Port>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
-			getProvidingComponentTypes().clear();
-			return;
-		case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
-			getRequiringPorts().clear();
-			return;
+			case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
+				getProvidingComponentTypes().clear();
+				return;
+			case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
+				getRequiringPorts().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
-			return providingComponentTypes != null && !providingComponentTypes.isEmpty();
-		case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
-			return requiringPorts != null && !requiringPorts.isEmpty();
+			case TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES:
+				return providingComponentTypes != null && !providingComponentTypes.isEmpty();
+			case TypeModel20Package.INTERFACE__REQUIRING_PORTS:
+				return requiringPorts != null && !requiringPorts.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

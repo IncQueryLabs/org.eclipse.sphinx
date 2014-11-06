@@ -21,37 +21,37 @@ import org.eclipse.sphinx.emf.validation.evalidator.adapter.EValidatorRegisterin
 import org.osgi.framework.BundleContext;
 
 /**
- * This is the central singleton for the Hummingbird20 model plugin. <!-- begin-user-doc --> <!-- end-user-doc -->
- * 
+ * This is the central singleton for the Hummingbird20 model plugin.
+ * <!-- begin-user-doc --> <!-- end-user-doc -->
  * @generated
  */
 public final class Activator extends EMFPlugin {
 	/**
-	 * Keep track of the singleton. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Keep track of the singleton.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public static final Activator INSTANCE = new Activator();
 
 	/**
-	 * Keep track of the singleton. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Keep track of the singleton.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	private static Implementation plugin;
 
 	/**
-	 * Create the instance. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Create the instance.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Activator() {
-		super(new ResourceLocator[] {});
+		super(new ResourceLocator [] {});
 	}
 
 	/**
-	 * Returns the singleton instance of the Eclipse plugin. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the singleton instance of the Eclipse plugin.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the singleton instance.
 	 * @generated
 	 */
@@ -61,8 +61,8 @@ public final class Activator extends EMFPlugin {
 	}
 
 	/**
-	 * Returns the singleton instance of the Eclipse plugin. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the singleton instance of the Eclipse plugin.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the singleton instance.
 	 * @generated
 	 */
@@ -77,8 +77,8 @@ public final class Activator extends EMFPlugin {
 	 */
 	public static class Implementation extends EclipsePlugin {
 		/**
-		 * Creates an instance. <!-- begin-user-doc --> <!-- end-user-doc -->
-		 * 
+		 * Creates an instance.
+		 * <!-- begin-user-doc --> <!-- end-user-doc -->
 		 * @generated
 		 */
 		public Implementation() {

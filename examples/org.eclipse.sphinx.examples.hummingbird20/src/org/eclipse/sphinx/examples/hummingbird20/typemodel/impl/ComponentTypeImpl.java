@@ -36,14 +36,12 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ComponentTypeImpl#getProvidedInterfaces <em>
- * Provided Interfaces</em>}</li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ComponentTypeImpl#getPorts <em>Ports</em>}</li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ComponentTypeImpl#getParameters <em>Parameters
- * </em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ComponentTypeImpl#getProvidedInterfaces <em>Provided Interfaces</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ComponentTypeImpl#getPorts <em>Ports</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ComponentTypeImpl#getParameters <em>Parameters</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType {
@@ -58,9 +56,9 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 	protected EList<Interface> providedInterfaces;
 
 	/**
-	 * The cached value of the '{@link #getPorts() <em>Ports</em>}' containment reference list. <!-- begin-user-doc -->
+	 * The cached value of the '{@link #getPorts() <em>Ports</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #getPorts()
 	 * @generated
 	 * @ordered
@@ -79,7 +77,6 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected ComponentTypeImpl() {
@@ -88,7 +85,6 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -98,57 +94,48 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EList<Interface> getProvidedInterfaces() {
 		if (providedInterfaces == null) {
-			providedInterfaces = new EObjectWithInverseResolvingEList.Unsettable.ManyInverse<Interface>(Interface.class, this,
-					TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES, TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES);
+			providedInterfaces = new EObjectWithInverseResolvingEList.Unsettable.ManyInverse<Interface>(Interface.class, this, TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES, TypeModel20Package.INTERFACE__PROVIDING_COMPONENT_TYPES);
 		}
 		return providedInterfaces;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void unsetProvidedInterfaces() {
-		if (providedInterfaces != null) {
-			((InternalEList.Unsettable<?>) providedInterfaces).unset();
-		}
+		if (providedInterfaces != null) ((InternalEList.Unsettable<?>)providedInterfaces).unset();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean isSetProvidedInterfaces() {
-		return providedInterfaces != null && ((InternalEList.Unsettable<?>) providedInterfaces).isSet();
+		return providedInterfaces != null && ((InternalEList.Unsettable<?>)providedInterfaces).isSet();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EList<Port> getPorts() {
 		if (ports == null) {
-			ports = new EObjectContainmentWithInverseEList<Port>(Port.class, this, TypeModel20Package.COMPONENT_TYPE__PORTS,
-					TypeModel20Package.PORT__OWNER);
+			ports = new EObjectContainmentWithInverseEList<Port>(Port.class, this, TypeModel20Package.COMPONENT_TYPE__PORTS, TypeModel20Package.PORT__OWNER);
 		}
 		return ports;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -161,117 +148,111 @@ public class ComponentTypeImpl extends IdentifiableImpl implements ComponentType
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getProvidedInterfaces()).basicAdd(otherEnd, msgs);
-		case TypeModel20Package.COMPONENT_TYPE__PORTS:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getPorts()).basicAdd(otherEnd, msgs);
+			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
+				return ((InternalEList<InternalEObject>)(InternalEList<?>)getProvidedInterfaces()).basicAdd(otherEnd, msgs);
+			case TypeModel20Package.COMPONENT_TYPE__PORTS:
+				return ((InternalEList<InternalEObject>)(InternalEList<?>)getPorts()).basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
-			return ((InternalEList<?>) getProvidedInterfaces()).basicRemove(otherEnd, msgs);
-		case TypeModel20Package.COMPONENT_TYPE__PORTS:
-			return ((InternalEList<?>) getPorts()).basicRemove(otherEnd, msgs);
-		case TypeModel20Package.COMPONENT_TYPE__PARAMETERS:
-			return ((InternalEList<?>) getParameters()).basicRemove(otherEnd, msgs);
+			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
+				return ((InternalEList<?>)getProvidedInterfaces()).basicRemove(otherEnd, msgs);
+			case TypeModel20Package.COMPONENT_TYPE__PORTS:
+				return ((InternalEList<?>)getPorts()).basicRemove(otherEnd, msgs);
+			case TypeModel20Package.COMPONENT_TYPE__PARAMETERS:
+				return ((InternalEList<?>)getParameters()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
-			return getProvidedInterfaces();
-		case TypeModel20Package.COMPONENT_TYPE__PORTS:
-			return getPorts();
-		case TypeModel20Package.COMPONENT_TYPE__PARAMETERS:
-			return getParameters();
+			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
+				return getProvidedInterfaces();
+			case TypeModel20Package.COMPONENT_TYPE__PORTS:
+				return getPorts();
+			case TypeModel20Package.COMPONENT_TYPE__PARAMETERS:
+				return getParameters();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
-			getProvidedInterfaces().clear();
-			getProvidedInterfaces().addAll((Collection<? extends Interface>) newValue);
-			return;
-		case TypeModel20Package.COMPONENT_TYPE__PORTS:
-			getPorts().clear();
-			getPorts().addAll((Collection<? extends Port>) newValue);
-			return;
-		case TypeModel20Package.COMPONENT_TYPE__PARAMETERS:
-			getParameters().clear();
-			getParameters().addAll((Collection<? extends Parameter>) newValue);
-			return;
+			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
+				getProvidedInterfaces().clear();
+				getProvidedInterfaces().addAll((Collection<? extends Interface>)newValue);
+				return;
+			case TypeModel20Package.COMPONENT_TYPE__PORTS:
+				getPorts().clear();
+				getPorts().addAll((Collection<? extends Port>)newValue);
+				return;
+			case TypeModel20Package.COMPONENT_TYPE__PARAMETERS:
+				getParameters().clear();
+				getParameters().addAll((Collection<? extends Parameter>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
-			unsetProvidedInterfaces();
-			return;
-		case TypeModel20Package.COMPONENT_TYPE__PORTS:
-			getPorts().clear();
-			return;
-		case TypeModel20Package.COMPONENT_TYPE__PARAMETERS:
-			getParameters().clear();
-			return;
+			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
+				unsetProvidedInterfaces();
+				return;
+			case TypeModel20Package.COMPONENT_TYPE__PORTS:
+				getPorts().clear();
+				return;
+			case TypeModel20Package.COMPONENT_TYPE__PARAMETERS:
+				getParameters().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
-			return isSetProvidedInterfaces();
-		case TypeModel20Package.COMPONENT_TYPE__PORTS:
-			return ports != null && !ports.isEmpty();
-		case TypeModel20Package.COMPONENT_TYPE__PARAMETERS:
-			return parameters != null && !parameters.isEmpty();
+			case TypeModel20Package.COMPONENT_TYPE__PROVIDED_INTERFACES:
+				return isSetProvidedInterfaces();
+			case TypeModel20Package.COMPONENT_TYPE__PORTS:
+				return ports != null && !ports.isEmpty();
+			case TypeModel20Package.COMPONENT_TYPE__PARAMETERS:
+				return parameters != null && !parameters.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

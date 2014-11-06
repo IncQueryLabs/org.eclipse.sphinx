@@ -1,224 +1,132 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xsd:schema xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.eclipse.org/emf/2002/Ecore">
-  <xsd:import namespace="http://www.omg.org/XMI" schemaLocation="XMI.xsd"/>
-  <xsd:complexType name="EAttribute">
-    <xsd:complexContent>
-      <xsd:extension base="ecore:EStructuralFeature">
-        <xsd:attribute name="iD" type="xsd:boolean"/>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-  <xsd:element name="EAttribute" type="ecore:EAttribute"/>
-  <xsd:complexType name="EAnnotation">
-    <xsd:complexContent>
-      <xsd:extension base="ecore:EModelElement">
-        <xsd:choice maxOccurs="unbounded" minOccurs="0">
-          <xsd:element name="details" type="ecore:EStringToStringMapEntry"/>
-          <xsd:element name="contents" type="ecore:EObject"/>
-          <xsd:element name="references" type="ecore:EObject"/>
-        </xsd:choice>
-        <xsd:attribute name="source" type="xsd:string"/>
-        <xsd:attribute name="references" type="xsd:string"/>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-  <xsd:element name="EAnnotation" type="ecore:EAnnotation"/>
-  <xsd:complexType name="EClass">
-    <xsd:complexContent>
-      <xsd:extension base="ecore:EClassifier">
-        <xsd:choice maxOccurs="unbounded" minOccurs="0">
-          <xsd:element name="eSuperTypes" type="ecore:EClass"/>
-          <xsd:element name="eOperations" type="ecore:EOperation"/>
-          <xsd:element name="eStructuralFeatures" type="ecore:EStructuralFeature"/>
-          <xsd:element name="eGenericSuperTypes" type="ecore:EGenericType"/>
-        </xsd:choice>
-        <xsd:attribute name="abstract" type="xsd:boolean"/>
-        <xsd:attribute name="interface" type="xsd:boolean"/>
-        <xsd:attribute name="eSuperTypes" type="xsd:string"/>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-  <xsd:element name="EClass" type="ecore:EClass"/>
-  <xsd:complexType abstract="true" name="EClassifier">
-    <xsd:complexContent>
-      <xsd:extension base="ecore:ENamedElement">
-        <xsd:choice maxOccurs="unbounded" minOccurs="0">
-          <xsd:element name="eTypeParameters" type="ecore:ETypeParameter"/>
-        </xsd:choice>
-        <xsd:attribute name="instanceClassName" type="xsd:string"/>
-        <xsd:attribute name="instanceTypeName" type="xsd:string"/>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-  <xsd:element name="EClassifier" type="ecore:EClassifier"/>
-  <xsd:complexType name="EDataType">
-    <xsd:complexContent>
-      <xsd:extension base="ecore:EClassifier">
-        <xsd:attribute name="serializable" type="xsd:boolean"/>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-  <xsd:element name="EDataType" type="ecore:EDataType"/>
-  <xsd:complexType name="EEnum">
-    <xsd:complexContent>
-      <xsd:extension base="ecore:EDataType">
-        <xsd:choice maxOccurs="unbounded" minOccurs="0">
-          <xsd:element name="eLiterals" type="ecore:EEnumLiteral"/>
-        </xsd:choice>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-  <xsd:element name="EEnum" type="ecore:EEnum"/>
-  <xsd:complexType name="EEnumLiteral">
-    <xsd:complexContent>
-      <xsd:extension base="ecore:ENamedElement">
-        <xsd:attribute name="value" type="xsd:int"/>
-        <xsd:attribute name="literal" type="xsd:string"/>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-  <xsd:element name="EEnumLiteral" type="ecore:EEnumLiteral"/>
-  <xsd:complexType name="EFactory">
-    <xsd:complexContent>
-      <xsd:extension base="ecore:EModelElement"/>
-    </xsd:complexContent>
-  </xsd:complexType>
-  <xsd:element name="EFactory" type="ecore:EFactory"/>
-  <xsd:complexType abstract="true" name="EModelElement">
+<xsd:schema xmlns:xmi="http://www.omg.org/XMI" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/XMI">
+  <xsd:attribute name="id" type="xsd:ID"/>
+  <xsd:attributeGroup name="IdentityAttribs">
+    <xsd:attribute form="qualified" name="label" type="xsd:string" use="optional"/>
+    <xsd:attribute form="qualified" name="uuid" type="xsd:string" use="optional"/>
+  </xsd:attributeGroup>
+  <xsd:attributeGroup name="LinkAttribs">
+    <xsd:attribute name="href" type="xsd:string" use="optional"/>
+    <xsd:attribute form="qualified" name="idref" type="xsd:IDREF" use="optional"/>
+  </xsd:attributeGroup>
+  <xsd:attributeGroup name="ObjectAttribs">
+    <xsd:attributeGroup ref="xmi:IdentityAttribs"/>
+    <xsd:attributeGroup ref="xmi:LinkAttribs"/>
+    <xsd:attribute fixed="2.0" form="qualified" name="version" type="xsd:string" use="optional"/>
+    <xsd:attribute form="qualified" name="type" type="xsd:QName" use="optional"/>
+  </xsd:attributeGroup>
+  <xsd:complexType name="XMI">
     <xsd:choice maxOccurs="unbounded" minOccurs="0">
-      <xsd:element name="eAnnotations" type="ecore:EAnnotation"/>
-      <xsd:element ref="xmi:Extension"/>
+      <xsd:any processContents="strict"/>
     </xsd:choice>
-    <xsd:attribute ref="xmi:id"/>
-    <xsd:attributeGroup ref="xmi:ObjectAttribs"/>
+    <xsd:attributeGroup ref="xmi:IdentityAttribs"/>
+    <xsd:attributeGroup ref="xmi:LinkAttribs"/>
+    <xsd:attribute form="qualified" name="type" type="xsd:QName" use="optional"/>
+    <xsd:attribute fixed="2.0" form="qualified" name="version" type="xsd:string" use="required"/>
   </xsd:complexType>
-  <xsd:element name="EModelElement" type="ecore:EModelElement"/>
-  <xsd:complexType abstract="true" name="ENamedElement">
-    <xsd:complexContent>
-      <xsd:extension base="ecore:EModelElement">
-        <xsd:attribute name="name" type="xsd:string"/>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-  <xsd:element name="ENamedElement" type="ecore:ENamedElement"/>
-  <xsd:complexType name="EObject">
+  <xsd:element name="XMI" type="xmi:XMI"/>
+  <xsd:complexType name="PackageReference">
     <xsd:choice maxOccurs="unbounded" minOccurs="0">
-      <xsd:element ref="xmi:Extension"/>
+      <xsd:element name="name" type="xsd:string"/>
+      <xsd:element name="version" type="xsd:string"/>
     </xsd:choice>
-    <xsd:attribute ref="xmi:id"/>
     <xsd:attributeGroup ref="xmi:ObjectAttribs"/>
+    <xsd:attribute name="name" type="xsd:string" use="optional"/>
   </xsd:complexType>
-  <xsd:element name="EObject" type="ecore:EObject"/>
-  <xsd:complexType name="EOperation">
+  <xsd:element name="PackageReference" type="xmi:PackageReference"/>
+  <xsd:complexType name="Model">
     <xsd:complexContent>
-      <xsd:extension base="ecore:ETypedElement">
-        <xsd:choice maxOccurs="unbounded" minOccurs="0">
-          <xsd:element name="eTypeParameters" type="ecore:ETypeParameter"/>
-          <xsd:element name="eParameters" type="ecore:EParameter"/>
-          <xsd:element name="eExceptions" type="ecore:EClassifier"/>
-          <xsd:element name="eGenericExceptions" type="ecore:EGenericType"/>
-        </xsd:choice>
-        <xsd:attribute name="eExceptions" type="xsd:string"/>
-      </xsd:extension>
+      <xsd:extension base="xmi:PackageReference"/>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="EOperation" type="ecore:EOperation"/>
-  <xsd:complexType name="EPackage">
+  <xsd:element name="Model" type="xmi:Model"/>
+  <xsd:complexType name="Import">
     <xsd:complexContent>
-      <xsd:extension base="ecore:ENamedElement">
-        <xsd:choice maxOccurs="unbounded" minOccurs="0">
-          <xsd:element name="eClassifiers" type="ecore:EClassifier"/>
-          <xsd:element name="eSubpackages" type="ecore:EPackage"/>
-        </xsd:choice>
-        <xsd:attribute name="nsURI" type="xsd:string"/>
-        <xsd:attribute name="nsPrefix" type="xsd:string"/>
-      </xsd:extension>
+      <xsd:extension base="xmi:PackageReference"/>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="EPackage" type="ecore:EPackage"/>
-  <xsd:complexType name="EParameter">
+  <xsd:element name="Import" type="xmi:Import"/>
+  <xsd:complexType name="MetaModel">
     <xsd:complexContent>
-      <xsd:extension base="ecore:ETypedElement"/>
+      <xsd:extension base="xmi:PackageReference"/>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="EParameter" type="ecore:EParameter"/>
-  <xsd:complexType name="EReference">
-    <xsd:complexContent>
-      <xsd:extension base="ecore:EStructuralFeature">
-        <xsd:choice maxOccurs="unbounded" minOccurs="0">
-          <xsd:element name="eOpposite" type="ecore:EReference"/>
-          <xsd:element name="eKeys" type="ecore:EAttribute"/>
-        </xsd:choice>
-        <xsd:attribute name="containment" type="xsd:boolean"/>
-        <xsd:attribute name="resolveProxies" type="xsd:boolean"/>
-        <xsd:attribute name="eOpposite" type="xsd:string"/>
-        <xsd:attribute name="eKeys" type="xsd:string"/>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-  <xsd:element name="EReference" type="ecore:EReference"/>
-  <xsd:complexType abstract="true" name="EStructuralFeature">
-    <xsd:complexContent>
-      <xsd:extension base="ecore:ETypedElement">
-        <xsd:attribute name="changeable" type="xsd:boolean"/>
-        <xsd:attribute name="volatile" type="xsd:boolean"/>
-        <xsd:attribute name="transient" type="xsd:boolean"/>
-        <xsd:attribute name="defaultValueLiteral" type="xsd:string"/>
-        <xsd:attribute name="unsettable" type="xsd:boolean"/>
-        <xsd:attribute name="derived" type="xsd:boolean"/>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-  <xsd:element name="EStructuralFeature" type="ecore:EStructuralFeature"/>
-  <xsd:complexType abstract="true" name="ETypedElement">
-    <xsd:complexContent>
-      <xsd:extension base="ecore:ENamedElement">
-        <xsd:choice maxOccurs="unbounded" minOccurs="0">
-          <xsd:element name="eType" nillable="true" type="ecore:EClassifier"/>
-          <xsd:element name="eGenericType" nillable="true" type="ecore:EGenericType"/>
-        </xsd:choice>
-        <xsd:attribute name="ordered" type="xsd:boolean"/>
-        <xsd:attribute name="unique" type="xsd:boolean"/>
-        <xsd:attribute name="lowerBound" type="xsd:int"/>
-        <xsd:attribute name="upperBound" type="xsd:int"/>
-        <xsd:attribute name="eType" type="xsd:string"/>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-  <xsd:element name="ETypedElement" type="ecore:ETypedElement"/>
-  <xsd:complexType name="EStringToStringMapEntry">
+  <xsd:element name="MetaModel" type="xmi:MetaModel"/>
+  <xsd:complexType name="Documentation">
     <xsd:choice maxOccurs="unbounded" minOccurs="0">
-      <xsd:element ref="xmi:Extension"/>
+      <xsd:element name="contact" type="xsd:string"/>
+      <xsd:element name="exporter" type="xsd:string"/>
+      <xsd:element name="exporterVersion" type="xsd:string"/>
+      <xsd:element name="longDescription" type="xsd:string"/>
+      <xsd:element name="shortDescription" type="xsd:string"/>
+      <xsd:element name="notice" type="xsd:string"/>
+      <xsd:element name="owner" type="xsd:string"/>
     </xsd:choice>
-    <xsd:attribute ref="xmi:id"/>
     <xsd:attributeGroup ref="xmi:ObjectAttribs"/>
-    <xsd:attribute name="key" type="xsd:string"/>
-    <xsd:attribute name="value" type="xsd:string"/>
+    <xsd:attribute name="contact" type="xsd:string" use="optional"/>
+    <xsd:attribute name="exporter" type="xsd:string" use="optional"/>
+    <xsd:attribute name="exporterVersion" type="xsd:string" use="optional"/>
+    <xsd:attribute name="longDescription" type="xsd:string" use="optional"/>
+    <xsd:attribute name="shortDescription" type="xsd:string" use="optional"/>
+    <xsd:attribute name="notice" type="xsd:string" use="optional"/>
+    <xsd:attribute name="owner" type="xsd:string" use="optional"/>
   </xsd:complexType>
-  <xsd:element name="EStringToStringMapEntry" type="ecore:EStringToStringMapEntry"/>
-  <xsd:complexType name="EGenericType">
+  <xsd:element name="Documentation" type="xmi:Documentation"/>
+  <xsd:complexType name="Extension">
     <xsd:choice maxOccurs="unbounded" minOccurs="0">
-      <xsd:element name="eUpperBound" type="ecore:EGenericType"/>
-      <xsd:element name="eTypeArguments" type="ecore:EGenericType"/>
-      <xsd:element name="eLowerBound" type="ecore:EGenericType"/>
-      <xsd:element name="eTypeParameter" type="ecore:ETypeParameter"/>
-      <xsd:element name="eClassifier" type="ecore:EClassifier"/>
-      <xsd:element ref="xmi:Extension"/>
+      <xsd:any processContents="lax"/>
     </xsd:choice>
-    <xsd:attribute ref="xmi:id"/>
     <xsd:attributeGroup ref="xmi:ObjectAttribs"/>
-    <xsd:attribute name="eTypeParameter" type="xsd:string"/>
-    <xsd:attribute name="eClassifier" type="xsd:string"/>
+    <xsd:attribute name="extender" type="xsd:string" use="optional"/>
+    <xsd:attribute name="extenderID" type="xsd:string" use="optional"/>
   </xsd:complexType>
-  <xsd:element name="EGenericType" type="ecore:EGenericType"/>
-  <xsd:complexType name="ETypeParameter">
+  <xsd:element name="Extension" type="xmi:Extension"/>
+  <xsd:complexType name="Difference">
+    <xsd:choice maxOccurs="unbounded" minOccurs="0">
+      <xsd:element name="target">
+        <xsd:complexType>
+          <xsd:choice maxOccurs="unbounded" minOccurs="0">
+            <xsd:any processContents="skip"/>
+          </xsd:choice>
+          <xsd:anyAttribute processContents="skip"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="difference" type="xmi:Difference"/>
+      <xsd:element name="container" type="xmi:Difference"/>
+    </xsd:choice>
+    <xsd:attributeGroup ref="xmi:ObjectAttribs"/>
+    <xsd:attribute name="target" type="xsd:IDREFS" use="optional"/>
+    <xsd:attribute name="container" type="xsd:IDREFS" use="optional"/>
+  </xsd:complexType>
+  <xsd:element name="Difference" type="xmi:Difference"/>
+  <xsd:complexType name="Add">
     <xsd:complexContent>
-      <xsd:extension base="ecore:ENamedElement">
-        <xsd:choice maxOccurs="unbounded" minOccurs="0">
-          <xsd:element name="eBounds" type="ecore:EGenericType"/>
-        </xsd:choice>
+      <xsd:extension base="xmi:Difference">
+        <xsd:attribute name="position" type="xsd:string" use="optional"/>
+        <xsd:attribute name="addition" type="xsd:IDREFS" use="optional"/>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="ETypeParameter" type="ecore:ETypeParameter"/>
+  <xsd:element name="Add" type="xmi:Add"/>
+  <xsd:complexType name="Replace">
+    <xsd:complexContent>
+      <xsd:extension base="xmi:Difference">
+        <xsd:attribute name="position" type="xsd:string" use="optional"/>
+        <xsd:attribute name="replacement" type="xsd:IDREFS" use="optional"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="Replace" type="xmi:Replace"/>
+  <xsd:complexType name="Delete">
+    <xsd:complexContent>
+      <xsd:extension base="xmi:Difference"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="Delete" type="xmi:Delete"/>
+  <xsd:complexType name="Any">
+    <xsd:choice maxOccurs="unbounded" minOccurs="0">
+      <xsd:any processContents="skip"/>
+    </xsd:choice>
+    <xsd:anyAttribute processContents="skip"/>
+  </xsd:complexType>
 </xsd:schema>

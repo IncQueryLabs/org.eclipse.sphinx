@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2011 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl;
@@ -42,7 +42,7 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 	public static InstanceModel20Factory init() {
 		try {
 			InstanceModel20Factory theInstanceModel20Factory = (InstanceModel20Factory) EPackage.Registry.INSTANCE
-					.getEFactory("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel"); //$NON-NLS-1$ 
+					.getEFactory(InstanceModel20Package.eNS_URI);
 			if (theInstanceModel20Factory != null) {
 				return theInstanceModel20Factory;
 			}

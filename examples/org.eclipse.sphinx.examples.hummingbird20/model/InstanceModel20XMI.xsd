@@ -3,7 +3,7 @@
   <xsd:import namespace="http://www.omg.org/XMI" schemaLocation="platform:/plugin/org.eclipse.emf.ecore/model/XMI.xsd"/>
   <xsd:import namespace="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel" schemaLocation="TypeModel20XMI.xsd"/>
   <xsd:import namespace="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common" schemaLocation="Common20XMI.xsd"/>
-  <xsd:complexType name="Application">
+  <xsd:complexType name="Application" mixed="true">
     <xsd:complexContent>
       <xsd:extension base="cn:Identifiable">
         <xsd:choice maxOccurs="unbounded" minOccurs="0">
@@ -54,9 +54,9 @@
     </xsd:complexContent>
   </xsd:complexType>
   <xsd:element name="ParameterValue" type="im:ParameterValue"/>
-  <xsd:complexType name="ParameterExpresssion">
+  <xsd:complexType name="ParameterExpresssion" mixed="true">
     <xsd:choice maxOccurs="unbounded" minOccurs="0">
-       <xsd:element name="expressions" type="im:Formula"/>
+      <xsd:element ref="xmi:Extension"/>
     </xsd:choice>
     <xsd:attribute ref="xmi:id"/>
     <xsd:attributeGroup ref="xmi:ObjectAttribs"/>

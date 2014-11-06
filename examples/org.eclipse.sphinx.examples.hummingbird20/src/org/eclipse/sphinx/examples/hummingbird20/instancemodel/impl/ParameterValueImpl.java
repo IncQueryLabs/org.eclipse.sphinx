@@ -48,9 +48,9 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 	protected Parameter type;
 
 	/**
-	 * The default value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * The default value of the '{@link #getValue() <em>Value</em>}' attribute.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @see #getValue()
 	 * @generated
 	 * @ordered
@@ -69,7 +69,6 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected ParameterValueImpl() {
@@ -78,7 +77,6 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -88,18 +86,16 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Parameter getType() {
 		if (type != null && type.eIsProxy()) {
-			InternalEObject oldType = (InternalEObject) type;
-			type = (Parameter) eResolveProxy(oldType);
+			InternalEObject oldType = (InternalEObject)type;
+			type = (Parameter)eResolveProxy(oldType);
 			if (type != oldType) {
-				if (eNotificationRequired()) {
+				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE, InstanceModel20Package.PARAMETER_VALUE__TYPE, oldType, type));
-				}
 			}
 		}
 		return type;
@@ -107,7 +103,6 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Parameter basicGetType() {
@@ -116,21 +111,18 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void setType(Parameter newType) {
 		Parameter oldType = type;
 		type = newType;
-		if (eNotificationRequired()) {
+		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, InstanceModel20Package.PARAMETER_VALUE__TYPE, oldType, type));
-		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -140,99 +132,88 @@ public class ParameterValueImpl extends IdentifiableImpl implements ParameterVal
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void setValue(String newValue) {
 		String oldValue = value;
 		value = newValue;
-		if (eNotificationRequired()) {
+		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, InstanceModel20Package.PARAMETER_VALUE__VALUE, oldValue, value));
-		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case InstanceModel20Package.PARAMETER_VALUE__TYPE:
-			if (resolve) {
-				return getType();
-			}
-			return basicGetType();
-		case InstanceModel20Package.PARAMETER_VALUE__VALUE:
-			return getValue();
+			case InstanceModel20Package.PARAMETER_VALUE__TYPE:
+				if (resolve) return getType();
+				return basicGetType();
+			case InstanceModel20Package.PARAMETER_VALUE__VALUE:
+				return getValue();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case InstanceModel20Package.PARAMETER_VALUE__TYPE:
-			setType((Parameter) newValue);
-			return;
-		case InstanceModel20Package.PARAMETER_VALUE__VALUE:
-			setValue((String) newValue);
-			return;
+			case InstanceModel20Package.PARAMETER_VALUE__TYPE:
+				setType((Parameter)newValue);
+				return;
+			case InstanceModel20Package.PARAMETER_VALUE__VALUE:
+				setValue((String)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case InstanceModel20Package.PARAMETER_VALUE__TYPE:
-			setType((Parameter) null);
-			return;
-		case InstanceModel20Package.PARAMETER_VALUE__VALUE:
-			setValue(VALUE_EDEFAULT);
-			return;
+			case InstanceModel20Package.PARAMETER_VALUE__TYPE:
+				setType((Parameter)null);
+				return;
+			case InstanceModel20Package.PARAMETER_VALUE__VALUE:
+				setValue(VALUE_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case InstanceModel20Package.PARAMETER_VALUE__TYPE:
-			return type != null;
-		case InstanceModel20Package.PARAMETER_VALUE__VALUE:
-			return VALUE_EDEFAULT == null ? value != null : !VALUE_EDEFAULT.equals(value);
+			case InstanceModel20Package.PARAMETER_VALUE__TYPE:
+				return type != null;
+			case InstanceModel20Package.PARAMETER_VALUE__VALUE:
+				return VALUE_EDEFAULT == null ? value != null : !VALUE_EDEFAULT.equals(value);
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy()) {
-			return super.toString();
-		}
+		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (value: "); //$NON-NLS-1$
