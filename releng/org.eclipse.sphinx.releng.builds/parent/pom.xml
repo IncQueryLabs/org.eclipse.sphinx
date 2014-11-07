@@ -29,14 +29,13 @@
 		<url>http://www.eclipse.org</url>
 	</organization>
 	<scm>
-		<developerConnection>scm:svn:https://dev.eclipse.org/svnroot/modeling/org.eclipse.mdt.sphinx</developerConnection>
+		<developerConnection>scm:git:git://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git</developerConnection>
 	</scm>
 	<issueManagement>
-		<system>Eclipse Bugzilla</system>
 		<url>https://bugs.eclipse.org/bugs</url>
 	</issueManagement>
 	<ciManagement>
-		<url>https://hudson.eclipse.org/hudson</url>
+		<url>https://hudson.eclipse.org/sphinx</url>
 		<system>Eclipse Hudson</system>
 	</ciManagement>
 	<properties>
