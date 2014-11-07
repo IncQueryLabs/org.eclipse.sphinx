@@ -20,13 +20,13 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.sphinx.emf.Activator;
-import org.eclipse.sphinx.emf.util.BasicWrappingEList.IWrapper;
+import org.eclipse.sphinx.emf.util.BasicUnwrappingEList.IWrapper;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
 /**
- * An extensible wrapping delegating list implementation with a wrapping and unwrapping object support.
+ * An extensible unwrapping delegating list implementation with a wrapping and unwrapping object support.
  */
-public class BasicWrappingEList<E extends IWrapper<T>, T> extends AbstractWrappingEList<E, T> {
+public class BasicUnwrappingEList<E extends IWrapper<T>, T> extends AbstractUnwrappingEList<E, T> {
 
 	public static interface IWrapper<T> {
 
@@ -36,14 +36,14 @@ public class BasicWrappingEList<E extends IWrapper<T>, T> extends AbstractWrappi
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Creates an instance of the BasicWrappingEList delegating list.
+	 * Creates an instance of the BasicUnwrappingEList delegating list.
 	 *
 	 * @param wrapperType
 	 *            the wrapper type
 	 * @param targetType
 	 *            the target object type
 	 */
-	public BasicWrappingEList(List<T> delegateList, Class<E> wrapperType, Class<T> targetType) {
+	public BasicUnwrappingEList(List<E> delegateList, Class<E> wrapperType, Class<T> targetType) {
 		super(delegateList, wrapperType, targetType);
 	}
 
