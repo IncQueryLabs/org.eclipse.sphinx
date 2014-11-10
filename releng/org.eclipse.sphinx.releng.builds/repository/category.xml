@@ -16,10 +16,22 @@
       <category name="org.eclipse.sphinx.auxiliaries.category"/>
    </feature>
    <feature url="features/org.eclipse.sphinx.nebula_0.9.0.qualifier.jar" id="org.eclipse.sphinx.nebula" version="0.9.0.qualifier">
-      <category name="org.eclipse.sphinx.category"/>
+      <category name="org.eclipse.sphinx.nebula.category"/>
    </feature>
    <feature url="features/org.eclipse.sphinx.nebula.sdk_0.9.0.qualifier.jar" id="org.eclipse.sphinx.nebula.sdk" version="0.9.0.qualifier">
-      <category name="org.eclipse.sphinx.category"/>
+      <category name="org.eclipse.sphinx.nebula.category"/>
+   </feature>
+   <feature url="features/org.eclipse.sphinx.examples.nebula_0.9.0.qualifier.jar" id="org.eclipse.sphinx.examples.nebula" version="0.9.0.qualifier">
+      <category name="org.eclipse.sphinx.nebula.category"/>
+   </feature>
+   <feature url="features/org.eclipse.sphinx.incquery_0.9.0.qualifier.jar" id="org.eclipse.sphinx.incquery" version="0.9.0.qualifier">
+      <category name="org.eclipse.sphinx.incquery.category"/>
+   </feature>
+   <feature url="features/org.eclipse.sphinx.incquery.sdk_0.9.0.qualifier.jar" id="org.eclipse.sphinx.incquery.sdk" version="0.9.0.qualifier">
+      <category name="org.eclipse.sphinx.incquery.category"/>
+   </feature>
+   <feature url="features/org.eclipse.sphinx.examples.incquery_0.9.0.qualifier.jar" id="org.eclipse.sphinx.examples.incquery" version="0.9.0.qualifier">
+      <category name="org.eclipse.sphinx.incquery.category"/>
    </feature>
    <category-def name="org.eclipse.sphinx.category" label="Sphinx (Incubation)">
       <description>
@@ -29,6 +41,16 @@
    <category-def name="org.eclipse.sphinx.auxiliaries.category" label="Sphinx Auxiliaries (Incubation)">
       <description>
          Third-party libraries, test helpers, and other things that can be used along with Sphinx.
+      </description>
+   </category-def>
+   <category-def name="org.eclipse.sphinx.incquery.category" label="Sphinx EMF-IncQuery (Incubation)">
+      <description>
+         Sphinx EMF-IncQuery Extensions.
+      </description>
+   </category-def>
+   <category-def name="org.eclipse.sphinx.nebula.category" label="Sphinx Nebula (Incubation)">
+      <description>
+         Sphinx Nebula Extensions.
       </description>
    </category-def>
 </site>
