@@ -11,15 +11,16 @@
  *     See4sys - Initial API and implementation
  *     itemis - [392426] Avoid to have multiple instances of same custom adapter factory
  *     itemis - [447193] Enable transient item providers to be created through adapter factories
+ *     itemis - [450882] Enable navigation to ancestor tree items in Model Explorer kind of model views
  *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.sphinx.emf.explorer.BasicExplorerContentProvider;
+import org.eclipse.sphinx.emf.explorer.BasicExplorerLabelProvider;
 
-public class ExtendedExplorerContentProvider extends BasicExplorerContentProvider {
+public class Hummingbird20ExplorerLabelProvider extends BasicExplorerLabelProvider {
 
 	@Override
 	protected AdapterFactory getCustomAdapterFactory() {
