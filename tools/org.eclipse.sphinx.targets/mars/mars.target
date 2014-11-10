@@ -43,6 +43,10 @@
 <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/cbi/updates/license"/>
 </location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.incquery.runtime.feature.feature.group" version="0.8.1.201410011502"/>
+<repository location="http://download.eclipse.org/incquery/updates/release"/>
+</location>
 </locations>
 <environment>
 <nl>en_EN</nl>
