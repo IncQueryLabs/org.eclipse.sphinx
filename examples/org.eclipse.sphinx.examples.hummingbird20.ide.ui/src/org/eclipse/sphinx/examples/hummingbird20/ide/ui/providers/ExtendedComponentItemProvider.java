@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [393312] Make sure that transient item providers created by extended item providers can be used before the getChildren() method of the latter has been called
  *     itemis - [447193] Enable transient item providers to be created through adapter factories
+ *     itemis - [450882] Enable navigation to ancestor tree items in Model Explorer kind of model views
  *
  * </copyright>
  */
@@ -49,6 +50,12 @@ public class ExtendedComponentItemProvider extends ComponentItemProvider {
 					.append(getString("_UI_Component_type"), StyledString.Style.QUALIFIER_STYLER).append(" ").append(label, IHummingbird20Styles.INSTANCE_STYLE); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return styledLabel;
+	}
+
+	@Override
+	public Object getParent(Object object) {
+		Object parent = super.getParent(object);
+		return adapterFactory.adapt(parent, ComponentsItemProvider.class);
 	}
 
 	@Override
