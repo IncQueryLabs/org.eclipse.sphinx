@@ -23,12 +23,6 @@ Contributors:
             <actionExtension pattern="org.eclipse.sphinx.emf.mwe.dynamic.ui.basicWorkflowActions" />
          </includes>
       </viewerActionBinding>
-      <viewerActionBinding
-            viewerId="org.eclipse.sphinx.examples.explorer.views.modelExplorer">
-         <includes>
-            <actionExtension pattern="org.eclipse.sphinx.emf.mwe.dynamic.ui.basicWorkflowActions" />
-         </includes>
-      </viewerActionBinding>
    </extension>
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
