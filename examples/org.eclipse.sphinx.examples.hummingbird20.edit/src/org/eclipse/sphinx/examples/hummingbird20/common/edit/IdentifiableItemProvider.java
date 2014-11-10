@@ -34,6 +34,7 @@ import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.StyledString;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 import org.eclipse.sphinx.emf.edit.ExtendedItemProviderAdapter;
+import org.eclipse.sphinx.emf.edit.ITreeItemAncestorProvider;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
@@ -44,7 +45,7 @@ import org.eclipse.sphinx.examples.hummingbird20.edit.Activator;
  * <!-- begin-user-doc --> <!-- end-user-doc -->
  * @generated
  */
-public class IdentifiableItemProvider extends ExtendedItemProviderAdapter implements IEditingDomainItemProvider, IStructuredItemContentProvider, ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource, IItemFontProvider, IItemStyledLabelProvider {
+public class IdentifiableItemProvider extends ExtendedItemProviderAdapter implements IEditingDomainItemProvider, IStructuredItemContentProvider, ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource, IItemFontProvider, IItemStyledLabelProvider, ITreeItemAncestorProvider {
 	/**
 	 * This constructs an instance from a factory and a notifier.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->

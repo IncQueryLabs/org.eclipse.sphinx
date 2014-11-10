@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xsd:schema xmlns:cn="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common" xmlns:im="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel" xmlns:tm="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel">
   <xsd:import namespace="http://www.omg.org/XMI" schemaLocation="platform:/plugin/org.eclipse.emf.ecore/model/XMI.xsd"/>
-  <xsd:import namespace="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel" schemaLocation="TypeModel20XMI.xsd"/>
+  <xsd:import namespace="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel" schemaLocation="Typemodel20XMI.xsd"/>
   <xsd:import namespace="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common" schemaLocation="Common20XMI.xsd"/>
-  <xsd:complexType name="Application" mixed="true">
-    <xsd:complexContent>
+  <xsd:complexType name="Application">
+    <xsd:complexContent mixed="true">
       <xsd:extension base="cn:Identifiable">
         <xsd:choice maxOccurs="unbounded" minOccurs="0">
           <xsd:element name="components" type="im:Component"/>
@@ -14,7 +14,7 @@
   </xsd:complexType>
   <xsd:element name="Application" type="im:Application"/>
   <xsd:complexType name="Component">
-    <xsd:complexContent>
+    <xsd:complexContent mixed="true">
       <xsd:extension base="cn:Identifiable">
         <xsd:choice maxOccurs="unbounded" minOccurs="0">
           <xsd:element name="type" type="tm:ComponentType"/>
@@ -30,7 +30,7 @@
   </xsd:complexType>
   <xsd:element name="Component" type="im:Component"/>
   <xsd:complexType name="Connection">
-    <xsd:complexContent>
+    <xsd:complexContent mixed="true">
       <xsd:extension base="cn:Identifiable">
         <xsd:choice maxOccurs="unbounded" minOccurs="0">
           <xsd:element name="sourcePort" type="tm:Port"/>
@@ -43,7 +43,7 @@
   </xsd:complexType>
   <xsd:element name="Connection" type="im:Connection"/>
   <xsd:complexType name="ParameterValue">
-    <xsd:complexContent>
+    <xsd:complexContent mixed="true">
       <xsd:extension base="cn:Identifiable">
         <xsd:choice maxOccurs="unbounded" minOccurs="0">
           <xsd:element name="type" type="tm:Parameter"/>

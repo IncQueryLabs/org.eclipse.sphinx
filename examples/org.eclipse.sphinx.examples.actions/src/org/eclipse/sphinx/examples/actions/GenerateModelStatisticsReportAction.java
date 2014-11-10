@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - Renamed ProjectStatisticsAction to GenerateModelStatisticsReportAction
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.actions;
@@ -50,13 +51,13 @@ import org.eclipse.ui.ide.IDE;
  * project} selected by the user. It creates a statistic report for the {@link IModelDescriptor model}s in the selected
  * {@link IProject project} by counting the number of model objects per model object type.
  */
-public class ProjectStatisticsAction extends BaseSelectionListenerAction {
+public class GenerateModelStatisticsReportAction extends BaseSelectionListenerAction {
 
 	/**
 	 * Constructor.
 	 */
-	public ProjectStatisticsAction() {
-		super(Messages.act_ProjectStatistics_label);
+	public GenerateModelStatisticsReportAction() {
+		super(Messages.act_GenerateModelStatisticsReport_label);
 	}
 
 	@Override
@@ -116,8 +117,9 @@ public class ProjectStatisticsAction extends BaseSelectionListenerAction {
 			// Check if the report file existed
 			if (project.getFile(fileName).exists()) {
 				// Get a new file name
-				InputDialog dialog = new InputDialog(ExtendedPlatformUI.getActiveShell(), Messages.dlg_ProjectStatistics_fileAlreadyExists_title,
-						Messages.dlg_ProjectStatistics_fileAlreadyExists_desc, fileName, null);
+				InputDialog dialog = new InputDialog(ExtendedPlatformUI.getActiveShell(),
+						Messages.dlg_GenerateModelStatisticsReport_fileAlreadyExists_title,
+						Messages.dlg_GenerateModelStatisticsReport_fileAlreadyExists_desc, fileName, null);
 				dialog.setBlockOnOpen(true);
 				int result = dialog.open();
 				if (result == Window.OK) {
@@ -145,7 +147,7 @@ public class ProjectStatisticsAction extends BaseSelectionListenerAction {
 
 	/**
 	 * Write a statistic report file within the project folder.
-	 * 
+	 *
 	 * @param project
 	 *            The project which will be made a statistic report.
 	 * @param objectsPerType
@@ -160,18 +162,20 @@ public class ProjectStatisticsAction extends BaseSelectionListenerAction {
 			throws IOException {
 		FileWriter fw = new FileWriter(project.getLocation().toOSString() + File.separator + fileName);
 		PrintWriter out = new PrintWriter(fw);
-		String message = NLS.bind(Messages.act_ProjectStatistics_result_ProjectName, project.getName());
+		String message = NLS.bind(Messages.act_GenerateModelStatisticsReport_result_ProjectName, project.getName());
 		out.println(message);
-		message = NLS.bind(Messages.act_ProjectStatistics_result_Summary, new Object[] { totalObjects, objectsPerType.size(), totalFile });
+		message = NLS
+				.bind(Messages.act_GenerateModelStatisticsReport_result_Summary, new Object[] { totalObjects, objectsPerType.size(), totalFile });
 		out.println(message);
 		// Format the output
 		String format = "| %1$-10s| %2$-100s|\n"; //$NON-NLS-1$
 
-		out.printf(format, Messages.act_ProjectStatistics_result_columLabel_Quantity, Messages.act_ProjectStatistics_result_columLabel_Type);
+		out.printf(format, Messages.act_GenerateModelStatisticsReport_result_columLabel_Quantity,
+				Messages.act_GenerateModelStatisticsReport_result_columLabel_Type);
 		for (Class<?> type : objectsPerType.keySet()) {
 			out.printf(format, objectsPerType.get(type).size(), type.getCanonicalName());
 		}
-		out.print(Messages.act_ProjectStatistics_result_eof);
+		out.print(Messages.act_GenerateModelStatisticsReport_result_eof);
 		out.close();
 	}
 }

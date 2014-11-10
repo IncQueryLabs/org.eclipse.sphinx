@@ -10,16 +10,16 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [436112] Rework XML Persistence Mapping & XSD generation menu items to make them less prominent in the Eclipse UI
+ *     itemis - Renamed ProjectStatisticsAction to GenerateModelStatisticsReportAction
  *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.actions.providers;
 
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.sphinx.examples.actions.ProjectStatisticsAction;
+import org.eclipse.sphinx.examples.actions.GenerateModelStatisticsReportAction;
 import org.eclipse.sphinx.examples.common.ui.actions.providers.AbstractSphinxExampleActionProvider;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 
@@ -34,21 +34,21 @@ public class SphinxExampleActionProvider extends AbstractSphinxExampleActionProv
 	 * The action responsible for creating a report on project's content (number of files, number of objects per type,
 	 * available types, etc.)
 	 */
-	private ProjectStatisticsAction projectStatisticsAction;
+	private GenerateModelStatisticsReportAction generateModelStatisticsReportAction;
 
 	/*
 	 * @see org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider#doInit()
 	 */
 	@Override
 	public void doInit() {
-		projectStatisticsAction = new ProjectStatisticsAction();
+		generateModelStatisticsReportAction = new GenerateModelStatisticsReportAction();
 
 		if (selectionProvider != null) {
-			selectionProvider.addSelectionChangedListener(projectStatisticsAction);
+			selectionProvider.addSelectionChangedListener(generateModelStatisticsReportAction);
 
 			ISelection selection = selectionProvider.getSelection();
 			IStructuredSelection structuredSelection = SelectionUtil.getStructuredSelection(selection);
-			projectStatisticsAction.updateSelection(structuredSelection);
+			generateModelStatisticsReportAction.updateSelection(structuredSelection);
 		}
 	}
 
@@ -59,7 +59,7 @@ public class SphinxExampleActionProvider extends AbstractSphinxExampleActionProv
 	 */
 	@Override
 	protected void fillSubMenu(IMenuManager subMenuManager) {
-		subMenuManager.add(new ActionContributionItem(projectStatisticsAction));
+		subMenuManager.add(generateModelStatisticsReportAction);
 	}
 
 	/*
@@ -67,8 +67,10 @@ public class SphinxExampleActionProvider extends AbstractSphinxExampleActionProv
 	 */
 	@Override
 	public void dispose() {
-		if (selectionProvider != null && projectStatisticsAction != null) {
-			selectionProvider.removeSelectionChangedListener(projectStatisticsAction);
+		if (selectionProvider != null) {
+			if (generateModelStatisticsReportAction != null) {
+				selectionProvider.removeSelectionChangedListener(generateModelStatisticsReportAction);
+			}
 		}
 
 		super.dispose();

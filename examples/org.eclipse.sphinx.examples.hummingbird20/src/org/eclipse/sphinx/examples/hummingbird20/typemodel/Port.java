@@ -100,7 +100,7 @@ public interface Port extends Identifiable {
 	 * @return the value of the '<em>Min Provider Count</em>' attribute.
 	 * @see #setMinProviderCount(int)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getPort_MinProviderCount()
-	 * @model required="true"
+	 * @model
 	 * @generated
 	 */
 	int getMinProviderCount();
@@ -125,7 +125,7 @@ public interface Port extends Identifiable {
 	 * @return the value of the '<em>Max Provider Count</em>' attribute.
 	 * @see #setMaxProviderCount(int)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getPort_MaxProviderCount()
-	 * @model required="true"
+	 * @model
 	 * @generated
 	 */
 	int getMaxProviderCount();

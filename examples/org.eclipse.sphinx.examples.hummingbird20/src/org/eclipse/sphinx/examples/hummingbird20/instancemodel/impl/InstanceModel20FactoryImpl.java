@@ -30,31 +30,30 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
- * 
  * @generated
  */
 public class InstanceModel20FactoryImpl extends EFactoryImpl implements InstanceModel20Factory {
 	/**
-	 * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Creates the default factory implementation.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public static InstanceModel20Factory init() {
 		try {
-			InstanceModel20Factory theInstanceModel20Factory = (InstanceModel20Factory) EPackage.Registry.INSTANCE
-					.getEFactory(InstanceModel20Package.eNS_URI);
+			InstanceModel20Factory theInstanceModel20Factory = (InstanceModel20Factory)EPackage.Registry.INSTANCE.getEFactory(InstanceModel20Package.eNS_URI);
 			if (theInstanceModel20Factory != null) {
 				return theInstanceModel20Factory;
 			}
-		} catch (Exception exception) {
+		}
+		catch (Exception exception) {
 			EcorePlugin.INSTANCE.log(exception);
 		}
 		return new InstanceModel20FactoryImpl();
 	}
 
 	/**
-	 * Creates an instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Creates an instance of the factory.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public InstanceModel20FactoryImpl() {
@@ -63,32 +62,24 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-		case InstanceModel20Package.APPLICATION:
-			return createApplication();
-		case InstanceModel20Package.COMPONENT:
-			return createComponent();
-		case InstanceModel20Package.CONNECTION:
-			return createConnection();
-		case InstanceModel20Package.PARAMETER_VALUE:
-			return createParameterValue();
-		case InstanceModel20Package.PARAMETER_EXPRESSSION:
-			return createParameterExpresssion();
-		case InstanceModel20Package.FORMULA:
-			return createFormula();
-		default:
-			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
+			case InstanceModel20Package.APPLICATION: return createApplication();
+			case InstanceModel20Package.COMPONENT: return createComponent();
+			case InstanceModel20Package.CONNECTION: return createConnection();
+			case InstanceModel20Package.PARAMETER_VALUE: return createParameterValue();
+			case InstanceModel20Package.PARAMETER_EXPRESSSION: return createParameterExpresssion();
+			case InstanceModel20Package.FORMULA: return createFormula();
+			default:
+				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -99,7 +90,6 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -110,7 +100,6 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -121,7 +110,6 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -132,7 +120,6 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -143,7 +130,6 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -154,17 +140,15 @@ public class InstanceModel20FactoryImpl extends EFactoryImpl implements Instance
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public InstanceModel20Package getInstanceModel20Package() {
-		return (InstanceModel20Package) getEPackage();
+		return (InstanceModel20Package)getEPackage();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @deprecated
 	 * @generated
 	 */

@@ -60,10 +60,8 @@
           eType="#//typemodel/ComponentType" eOpposite="#//typemodel/ComponentType/ports"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="requiredInterface" lowerBound="1"
           eType="#//typemodel/Interface" eOpposite="#//typemodel/Interface/requiringPorts"/>
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="minProviderCount" lowerBound="1"
-          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="maxProviderCount" lowerBound="1"
-          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="minProviderCount" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="maxProviderCount" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Interface" eSuperTypes="#//common/Identifiable">
       <eStructuralFeatures xsi:type="ecore:EReference" name="providingComponentTypes"

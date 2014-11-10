@@ -33,6 +33,7 @@ import org.eclipse.emf.edit.provider.IItemStyledLabelProvider;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
 import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
+import org.eclipse.sphinx.emf.edit.ITreeItemAncestorProvider;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.util.InstanceModel20AdapterFactory;
 
 /**
@@ -82,6 +83,7 @@ public class InstanceModel20ItemProviderAdapterFactory extends InstanceModel20Ad
 		supportedTypes.add(IItemPropertySource.class);
 		supportedTypes.add(IItemFontProvider.class);
 		supportedTypes.add(IItemStyledLabelProvider.class);
+		supportedTypes.add(ITreeItemAncestorProvider.class);
 	}
 
 	/**
@@ -314,7 +316,7 @@ public class InstanceModel20ItemProviderAdapterFactory extends InstanceModel20Ad
 	}
 
 	/**
-	 * This disposes all of the item providers created by this factory. 
+	 * This disposes all of the item providers created by this factory.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */

@@ -35,6 +35,7 @@ import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.emf.edit.provider.StyledString;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 import org.eclipse.sphinx.emf.edit.ExtendedItemProviderAdapter;
+import org.eclipse.sphinx.emf.edit.ITreeItemAncestorProvider;
 import org.eclipse.sphinx.examples.hummingbird20.edit.Activator;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
@@ -46,7 +47,7 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresss
  * <!-- end-user-doc -->
  * @generated
  */
-public class ParameterExpresssionItemProvider extends ExtendedItemProviderAdapter implements IEditingDomainItemProvider, IStructuredItemContentProvider, ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource, IItemFontProvider, IItemStyledLabelProvider {
+public class ParameterExpresssionItemProvider extends ExtendedItemProviderAdapter implements IEditingDomainItemProvider, IStructuredItemContentProvider, ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource, IItemFontProvider, IItemStyledLabelProvider, ITreeItemAncestorProvider {
 	/**
 	 * This constructs an instance from a factory and a notifier.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->

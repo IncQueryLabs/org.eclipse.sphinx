@@ -11,12 +11,14 @@
  *     See4sys - Initial API and implementation
  *     itemis - [393312] Make sure that transient item providers created by extended item providers can be used before the getChildren() method of the latter has been called
  *     itemis - [447193] Enable transient item providers to be created through adapter factories
+ *     itemis - [450882] Enable navigation to ancestor tree items in Model Explorer kind of model views
  *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird10.ide.ui.providers;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.sphinx.examples.hummingbird10.Component;
 import org.eclipse.sphinx.examples.hummingbird10.edit.ConnectionItemProvider;
 
 public class ExtendedConnectionItemProvider extends ConnectionItemProvider {
@@ -28,6 +30,9 @@ public class ExtendedConnectionItemProvider extends ConnectionItemProvider {
 	@Override
 	public Object getParent(Object object) {
 		Object parent = super.getParent(object);
-		return adapterFactory.adapt(parent, OutgoingConnectionsItemProvider.class);
+		if (((Component) parent).getOutgoingConnections().contains(object)) {
+			return adapterFactory.adapt(parent, OutgoingConnectionsItemProvider.class);
+		}
+		return parent;
 	}
 }
