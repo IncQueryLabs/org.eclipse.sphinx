@@ -10,7 +10,6 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [447193] Enable transient item providers to be created through adapter factories
- *     itemis - [450882] Enable navigation to ancestor tree items in Model Explorer kind of model views
  *
  * </copyright>
  */
@@ -68,7 +67,7 @@ public class ExtendedTypeModel20ItemProviderAdapterFactory extends TypeModel20It
 
 	@Override
 	public Object adapt(Object target, Object type) {
-		Object adapter = TransientItemProvider.AdapterFactoryHelper.adapt(target, type, this);
+		Adapter adapter = TransientItemProvider.AdapterFactoryHelper.adapt(target, type, this);
 		if (adapter != null) {
 			disposable.add(adapter);
 			return adapter;
