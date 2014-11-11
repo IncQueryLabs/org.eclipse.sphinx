@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.examples.actions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
@@ -35,24 +34,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
 
 public class BasicWalkUpAncestorsAction extends BaseSelectionListenerAction {
-
-	/**
-	 * A filter to determine the subsets of ancestor objects that are to be considered for walking up the ancestor
-	 * hierarchy.
-	 */
-	protected interface IAncestorFilter {
-
-		boolean accept(Object ancestor);
-	}
-
-	protected class DefaultAncestorFilter implements IAncestorFilter {
-
-		@Override
-		public boolean accept(Object ancestor) {
-			// Exclude Resource and ResourceSet objects as they are normally not directly visible in Model Explorer
-			return !(ancestor instanceof Resource) && !(ancestor instanceof ResourceSet);
-		}
-	};
 
 	public static long WALK_UP_ANCESTORS_DELAY = 500;
 
@@ -91,15 +72,18 @@ public class BasicWalkUpAncestorsAction extends BaseSelectionListenerAction {
 	public void run() {
 		List<Object> ancestorPath = treeItemAncestorProvider.getAncestorPath(selectedObject, false);
 
-		for (Object ancestor : getFilteredAncestors(ancestorPath, getAncestorFilter())) {
+		for (Object ancestor : ancestorPath) {
+			if (!skipAncestor(ancestor)) {
+				continue;
+			}
+			if (viewer == null || viewer.getControl() == null || viewer.getControl().isDisposed()) {
+				break;
+			}
+
 			// TODO Surround with appropriate tracing option
 			System.out.println(ancestor);
 
-			if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-				viewer.setSelection(new StructuredSelection(ancestor));
-			} else {
-				break;
-			}
+			viewer.setSelection(new StructuredSelection(ancestor));
 
 			try {
 				Thread.sleep(WALK_UP_ANCESTORS_DELAY);
@@ -110,6 +94,11 @@ public class BasicWalkUpAncestorsAction extends BaseSelectionListenerAction {
 
 		// TODO Surround with appropriate tracing option
 		System.out.println();
+	}
+
+	protected boolean skipAncestor(Object ancestor) {
+		// Skip Resource and ResourceSet objects as they are normally not directly visible in the Sphinx Model Explorer
+		return !(ancestor instanceof Resource) && !(ancestor instanceof ResourceSet);
 	}
 
 	/**
@@ -166,22 +155,5 @@ public class BasicWalkUpAncestorsAction extends BaseSelectionListenerAction {
 	 */
 	protected AdapterFactory getCustomAdapterFactory() {
 		return null;
-	}
-
-	protected List<Object> getFilteredAncestors(List<Object> allAncestors, IAncestorFilter ancestorFilter) {
-		Assert.isNotNull(allAncestors);
-		Assert.isNotNull(ancestorFilter);
-
-		List<Object> filteredAncestors = new ArrayList<Object>();
-		for (Object ancestor : allAncestors) {
-			if (ancestorFilter.accept(ancestor)) {
-				filteredAncestors.add(ancestor);
-			}
-		}
-		return filteredAncestors;
-	}
-
-	protected IAncestorFilter getAncestorFilter() {
-		return new DefaultAncestorFilter();
 	}
 }
