@@ -63,7 +63,7 @@ import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird10.Interface;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
-import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpression;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Port;
@@ -502,7 +502,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for {@link EcorePlatformUtil#isFileLoaded(IFile)}
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testIsFileLoaded() throws Exception {
@@ -1065,7 +1065,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for {@link EcorePlatformUtil#getFile(URI)}
-	 * 
+	 *
 	 * @throws Exception
 	 * @throws OperationCanceledException
 	 */
@@ -1177,7 +1177,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for {@link EcorePlatformUtil#getFile(Resource)}
-	 * 
+	 *
 	 * @throws InterruptedException
 	 * @throws OperationCanceledException
 	 */
@@ -1349,12 +1349,12 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		assertNotNull(component);
 
 		assertFalse(component.getParameterExpressions().isEmpty());
-		ParameterExpresssion parameterExpresssion = component.getParameterExpressions().get(0);
-		assertNotNull(parameterExpresssion);
-		assertFalse(parameterExpresssion.getMixed().isEmpty());
-		Entry testEntry = parameterExpresssion.getMixed().get(0);
+		ParameterExpression parameterExpression = component.getParameterExpressions().get(0);
+		assertNotNull(parameterExpression);
+		assertFalse(parameterExpression.getMixed().isEmpty());
+		Entry testEntry = parameterExpression.getMixed().get(0);
 
-		assertEquals(InstanceModel20Package.Literals.PARAMETER_EXPRESSSION__EXPRESSIONS, testEntry.getEStructuralFeature());
+		assertEquals(InstanceModel20Package.Literals.PARAMETER_EXPRESSION__EXPRESSIONS, testEntry.getEStructuralFeature());
 
 		IFile file = EcorePlatformUtil.getFile(testEntry);
 		assertNotNull(file);
@@ -1766,12 +1766,12 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		assertNotNull(component);
 
 		assertFalse(component.getParameterExpressions().isEmpty());
-		ParameterExpresssion parameterExpresssion = component.getParameterExpressions().get(0);
-		assertNotNull(parameterExpresssion);
-		assertFalse(parameterExpresssion.getMixed().isEmpty());
-		Entry testEntry = parameterExpresssion.getMixed().get(0);
+		ParameterExpression parameterExpression = component.getParameterExpressions().get(0);
+		assertNotNull(parameterExpression);
+		assertFalse(parameterExpression.getMixed().isEmpty());
+		Entry testEntry = parameterExpression.getMixed().get(0);
 
-		assertEquals(InstanceModel20Package.Literals.PARAMETER_EXPRESSSION__EXPRESSIONS, testEntry.getEStructuralFeature());
+		assertEquals(InstanceModel20Package.Literals.PARAMETER_EXPRESSION__EXPRESSIONS, testEntry.getEStructuralFeature());
 
 		Resource resource = EcorePlatformUtil.getResource(testEntry);
 		assertEquals(hbResource20A_1, resource);
@@ -1819,7 +1819,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 	/**
 	 * Test method for
 	 * {@link EcorePlatformUtil#saveNewModelResource(org.eclipse.emf.transaction.TransactionalEditingDomain, IPath, String, EObject, boolean, org.eclipse.core.runtime.IProgressMonitor)}
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	public void testSaveNewModelResource_WithoutSaveOptions() throws Exception {
@@ -2134,7 +2134,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 	/**
 	 * Test method for
 	 * {@link EcorePlatformUtil#saveNewModelResource(org.eclipse.emf.transaction.TransactionalEditingDomain, IPath, String, EObject, java.util.Map, boolean, org.eclipse.core.runtime.IProgressMonitor)}
-	 * 
+	 *
 	 * @see {@link this#testSaveNewModelResource_WithoutSaveOptions()}
 	 * @throws InterruptedException
 	 */
@@ -2171,7 +2171,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 	/**
 	 * Test method for
 	 * {@link EcorePlatformUtil#saveNewModelResources(org.eclipse.emf.transaction.TransactionalEditingDomain, java.util.Collection, java.util.Map, boolean, org.eclipse.core.runtime.IProgressMonitor)}
-	 * 
+	 *
 	 * @see {@link this#testSaveNewModelResource_WithoutSaveOptions()} {@link
 	 *      this#testSaveNewModelResource_WithoutSaveOptions()}
 	 * @throws InterruptedException
@@ -2337,7 +2337,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 	/**
 	 * Test method for
 	 * {@link EcorePlatformUtil#saveNewModelResources(org.eclipse.emf.transaction.TransactionalEditingDomain, java.util.Collection, boolean, org.eclipse.core.runtime.IProgressMonitor)}
-	 * 
+	 *
 	 * @see {@link this#testSaveNewModelResource_WithoutSaveOptions()}
 	 * @throws InterruptedException
 	 */
@@ -2495,7 +2495,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 	 * Test method for
 	 * {@link EcorePlatformUtil#saveModel(Object, Map, boolean, org.eclipse.core.runtime.IProgressMonitor)} with
 	 * contextObject is EObject
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	public void testSaveModel_Object_EObject_WithSaveOptions() throws Exception {
@@ -2710,7 +2710,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 	 * Test method for
 	 * {@link EcorePlatformUtil#saveModel(Object, java.util.Map, boolean, org.eclipse.core.runtime.IProgressMonitor)}
 	 * with contextObject is IProject
-	 * 
+	 *
 	 * @throws InterruptedException
 	 * @throws OperationCanceledException
 	 */
@@ -2817,7 +2817,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for {@link EcorePlatformUtil#saveModel(Object, boolean, org.eclipse.core.runtime.IProgressMonitor)}
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	public void testSaveModel_Object_IProject_WithoutSaveOptions() throws Exception {
@@ -2921,7 +2921,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 	/**
 	 * Test method for
 	 * {@link EcorePlatformUtil#saveProject(org.eclipse.core.resources.IProject, boolean, org.eclipse.core.runtime.IProgressMonitor)}
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	public void testSaveProject_WithoutSaveOptions() throws Exception {
@@ -3129,7 +3129,7 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for {@link EcorePlatformUtil#unloadFile(IFile)}
-	 * 
+	 *
 	 * @throws Exception
 	 * @throws OperationCanceledException
 	 */

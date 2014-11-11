@@ -1,16 +1,16 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird20.util;
@@ -38,9 +38,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
 
 /**
  * The <b>Resource Factory</b> associated with the package.
- * 
+ *
  * @see org.eclipse.sphinx.examples.hummingbird20.util.Hummingbird20ResourceImpl
- * @generated NOT
  */
 public class Hummingbird20ResourceFactoryImpl extends ResourceFactoryImpl {
 
@@ -52,8 +51,6 @@ public class Hummingbird20ResourceFactoryImpl extends ResourceFactoryImpl {
 
 	/**
 	 * Creates an instance of the resource factory.
-	 * 
-	 * @generated NOT
 	 */
 	public Hummingbird20ResourceFactoryImpl() {
 		// Create and initialize schema location catalog, i.e., a map providing namespace and system identifier pairs
@@ -76,7 +73,7 @@ public class Hummingbird20ResourceFactoryImpl extends ResourceFactoryImpl {
 		// during loading and schema files to be deresolved to schema locations during saving
 		schemaLocationURIHandler = new SchemaLocationURIHandler(schemaLocationCatalog);
 		schemaLocationURIHandler.addSchemaLocationBaseURI(Activator.getPlugin(), "model"); //$NON-NLS-1$
-		schemaLocationURIHandler.addSchemaLocationBaseURI(Activator.getPlugin(), "model/archive"); //$NON-NLS-1$ 
+		schemaLocationURIHandler.addSchemaLocationBaseURI(Activator.getPlugin(), "model/archive"); //$NON-NLS-1$
 
 		// Create and initialize migration-enabled extended meta data enabling Hummingbird resources whose version is
 		// not the same but compatible with that of current Hummingbird metamodel implementation to be loaded
@@ -93,8 +90,6 @@ public class Hummingbird20ResourceFactoryImpl extends ResourceFactoryImpl {
 
 	/**
 	 * Creates an instance of the resource.
-	 * 
-	 * @generated NOT
 	 */
 	@Override
 	public Resource createResource(URI uri) {

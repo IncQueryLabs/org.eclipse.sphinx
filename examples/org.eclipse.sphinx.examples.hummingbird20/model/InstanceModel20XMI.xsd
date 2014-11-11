@@ -21,7 +21,7 @@
           <xsd:element name="outgoingConnections" type="im:Connection"/>
           <xsd:element name="incomingConnections" type="im:Connection"/>
           <xsd:element name="parameterValues" type="im:ParameterValue"/>
-          <xsd:element name="parameterExpressions" type="im:ParameterExpresssion"/>
+          <xsd:element name="parameterExpressions" type="im:ParameterExpression"/>
         </xsd:choice>
         <xsd:attribute name="type" type="xsd:string"/>
         <xsd:attribute name="incomingConnections" type="xsd:string"/>
@@ -54,14 +54,14 @@
     </xsd:complexContent>
   </xsd:complexType>
   <xsd:element name="ParameterValue" type="im:ParameterValue"/>
-  <xsd:complexType name="ParameterExpresssion" mixed="true">
+  <xsd:complexType name="ParameterExpression" mixed="true">
     <xsd:choice maxOccurs="unbounded" minOccurs="0">
-      <xsd:element ref="xmi:Extension"/>
+       <xsd:element name="expressions" type="im:Formula"/>
     </xsd:choice>
     <xsd:attribute ref="xmi:id"/>
     <xsd:attributeGroup ref="xmi:ObjectAttribs"/>
   </xsd:complexType>
-  <xsd:element name="ParameterExpresssion" type="im:ParameterExpresssion"/>
+  <xsd:element name="ParameterExpression" type="im:ParameterExpression"/>
   <xsd:complexType name="Formula">
     <xsd:choice maxOccurs="unbounded" minOccurs="0">
       <xsd:element ref="xmi:Extension"/>

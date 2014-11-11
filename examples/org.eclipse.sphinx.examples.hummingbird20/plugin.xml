@@ -4,14 +4,15 @@
 <!--
 <copyright>
 
-Copyright (c) 2008-2012 itemis, See4sys and others.
+Copyright (c) 2008-2014 See4sys, itemis and others.
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
 which accompanies this distribution, and is available at
 http://www.eclipse.org/legal/epl-v10.html
- 
-Contributors: 
+
+Contributors:
     See4sys - Initial API and implementation
+    itemis - Enhancements and maintenance
     itemis - [393840] Provide example illustrating implementation of validation constraints for Sphinx-enabled metamodel
 
 </copyright>
@@ -67,8 +68,8 @@ Contributors:
             id="org.eclipse.sphinx.examples.hummingbird20">
       </descriptor>
    </extension>
-   
-   <!-- Enable Sphinx validation runtime enhancements for Hummingbird 2.0 metamodel --> 
+
+   <!-- Enable Sphinx validation runtime enhancements for Hummingbird 2.0 metamodel -->
 
    <extension
          point="org.eclipse.sphinx.emf.validation.registration">

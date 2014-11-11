@@ -44,6 +44,7 @@
           transient="true" containment="true">
         <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
           <details key="name" value="xsi:schemaLocation"/>
+          <details key="kind" value="element"/>
         </eAnnotations>
       </eStructuralFeatures>
     </eClassifiers>
@@ -118,7 +119,7 @@
       <eStructuralFeatures xsi:type="ecore:EReference" name="parameterValues" upperBound="-1"
           eType="#//instancemodel/ParameterValue" containment="true"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="parameterExpressions"
-          upperBound="-1" eType="#//instancemodel/ParameterExpresssion" containment="true"/>
+          upperBound="-1" eType="#//instancemodel/ParameterExpression" containment="true"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Connection" eSuperTypes="#//common/Identifiable">
       <eStructuralFeatures xsi:type="ecore:EReference" name="sourceComponent" lowerBound="1"
@@ -133,7 +134,7 @@
           eType="#//typemodel/Parameter"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eClassifiers>
-    <eClassifiers xsi:type="ecore:EClass" name="ParameterExpresssion">
+    <eClassifiers xsi:type="ecore:EClass" name="ParameterExpression">
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="mixed"/>
       </eAnnotations>
