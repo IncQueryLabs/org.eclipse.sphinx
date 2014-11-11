@@ -26,7 +26,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.sphinx.emf.mwe.dynamic.ui.dialogs.WorkflowSelectionDialog;
+import org.eclipse.sphinx.emf.mwe.dynamic.ui.dialogs.WorkflowFileSelectionDialog;
 import org.eclipse.sphinx.emf.mwe.dynamic.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.mwe.dynamic.ui.wizards.WorkflowSelectionWizard;
 import org.eclipse.sphinx.emf.mwe.dynamic.util.XtendUtil;
@@ -157,7 +157,7 @@ public class WorkflowSelectionWizardPage extends WizardPage {
 	}
 
 	protected void handleBrowseWorkspace(Composite parent) {
-		WorkflowSelectionDialog dialog = new WorkflowSelectionDialog(parent.getShell());
+		WorkflowFileSelectionDialog dialog = new WorkflowFileSelectionDialog(parent.getShell());
 		dialog.setInitialSelections(Collections.singletonList(getSelection()).toArray());
 		dialog.create();
 		dialog.open();

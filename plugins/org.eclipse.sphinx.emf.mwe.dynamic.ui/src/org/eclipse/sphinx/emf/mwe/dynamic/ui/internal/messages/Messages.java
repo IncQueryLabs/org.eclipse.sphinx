@@ -23,6 +23,7 @@ public class Messages extends NLS {
 	public static String menu_runWorkflow_label;
 	public static String operation_runWorkflow_label;
 	public static String action_runWorkflow_label;
+	public static String dialog_workflowFileSelection_title;
 
 	public static String workflowSelectionWizard_Title;
 
@@ -30,7 +31,6 @@ public class Messages extends NLS {
 	public static String workflowSelectionWizardPage_workflowGroupTitle;
 	public static String workflowSelectionWizardPage_title;
 	public static String workflowSelectionWizardPage_browseWorkspaceButtonLabel;
-	public static String workflowSelectionWizardPage_fileSelectionDialogTitle;
 	public static String workflowSelectionWizardPage_workflowClassErrorMessage;
 	public static String workflowSelectionWizardPage_workflowClassLabel;
 	public static String workflowSelectionWizardPage_workflowFileErrorMessage;

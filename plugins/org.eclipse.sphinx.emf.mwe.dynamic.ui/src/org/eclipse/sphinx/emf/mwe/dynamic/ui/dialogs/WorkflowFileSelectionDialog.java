@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.SelectionDialog;
 
 // TODO Generalize and move to new plug-in org.eclipse.sphinx.xtend.ui
-public class WorkflowSelectionDialog extends SelectionDialog {
+public class WorkflowFileSelectionDialog extends SelectionDialog {
 
 	private TreeViewer viewer;
 
@@ -47,9 +47,9 @@ public class WorkflowSelectionDialog extends SelectionDialog {
 	private final static int SIZING_SELECTION_WIDGET_HEIGHT = 300;
 	private final static int SIZING_SELECTION_WIDGET_WIDTH = 500;
 
-	public WorkflowSelectionDialog(Shell parentShell) {
+	public WorkflowFileSelectionDialog(Shell parentShell) {
 		super(parentShell);
-		setTitle(Messages.workflowSelectionWizardPage_fileSelectionDialogTitle);
+		setTitle(Messages.dialog_workflowFileSelection_title);
 	}
 
 	@Override

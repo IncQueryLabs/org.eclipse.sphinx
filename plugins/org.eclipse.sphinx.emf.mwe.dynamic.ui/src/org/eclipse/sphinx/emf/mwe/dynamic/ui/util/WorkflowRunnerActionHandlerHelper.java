@@ -64,6 +64,22 @@ public class WorkflowRunnerActionHandlerHelper {
 	}
 
 	public Object promptForWorkflow(IStructuredSelection structuredSelection) {
+
+		// TODO Use this code to instead of WorkflowSelectionWizard
+		// SelectionDialog dialog = new OpenTypeSelectionDialog(ExtendedPlatformUI.getActiveShell(), true,
+		// PlatformUI.getWorkbench()
+		// .getProgressService(), SearchEngine.createWorkspaceScope(), IJavaSearchConstants.TYPE);
+		// dialog.setTitle(JavaUIMessages.OpenTypeAction_dialogTitle);
+		// dialog.setMessage(JavaUIMessages.OpenTypeAction_dialogMessage);
+		//
+		// int result = dialog.open();
+		// if (result != IDialogConstants.OK_ID) {
+		// return result;
+		// }
+		//
+		// Object[] types = dialog.getResult();
+		// return types[0];
+
 		// Try to retrieve file behind selection and query workflow in enclosing project
 		IFile selectedFile = null;
 		if (structuredSelection != null) {
