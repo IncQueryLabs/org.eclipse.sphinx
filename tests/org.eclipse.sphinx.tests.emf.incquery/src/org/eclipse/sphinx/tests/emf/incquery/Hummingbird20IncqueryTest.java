@@ -48,49 +48,49 @@ public class Hummingbird20IncqueryTest extends AbstractIncqueryTestCase {
 	}
 
 	@Test
-	public void testAllInstanceofPlatform() throws Exception {
+	public void testAllInstancesofPlatform() throws Exception {
 		Assert.assertNotNull("IModelQueryService is null !", modelIndexService); //$NON-NLS-1$
 		List<Platform> allPlatforms = modelIndexService.getAllInstancesOf(getResourceSet().getResources().get(0), Platform.class);
 		Assert.assertEquals(1, allPlatforms.size());
 	}
 
 	@Test
-	public void testAllInstanceofApplication() throws Exception {
+	public void testAllInstancesofApplication() throws Exception {
 		Assert.assertNotNull("IModelQueryService is null !", modelIndexService); //$NON-NLS-1$
 		List<Application> allApplications = modelIndexService.getAllInstancesOf(getResourceSet().getResources().get(0), Application.class);
 		Assert.assertEquals(1, allApplications.size());
 	}
 
 	@Test
-	public void testAllInstanceofComponent() throws Exception {
+	public void testAllInstancesofComponent() throws Exception {
 		Assert.assertNotNull("IModelQueryService is null !", modelIndexService); //$NON-NLS-1$
 		List<Component> allComponents = modelIndexService.getAllInstancesOf(getResourceSet().getResources().get(0), Component.class);
 		Assert.assertEquals(7, allComponents.size());
 	}
 
 	@Test
-	public void testAllInstanceofComponentType() throws Exception {
+	public void testAllInstancesofComponentType() throws Exception {
 		Assert.assertNotNull("IModelQueryService is null !", modelIndexService); //$NON-NLS-1$
 		List<ComponentType> allComponentTypes = modelIndexService.getAllInstancesOf(getResourceSet().getResources().get(0), ComponentType.class);
 		Assert.assertEquals(4, allComponentTypes.size());
 	}
 
 	@Test
-	public void testAllInstanceofParameter() throws Exception {
+	public void testAllInstancesofParameter() throws Exception {
 		Assert.assertNotNull("IModelQueryService is null !", modelIndexService); //$NON-NLS-1$
 		List<Parameter> allParameters = modelIndexService.getAllInstancesOf(getResourceSet().getResources().get(0), Parameter.class);
 		Assert.assertEquals(8, allParameters.size());
 	}
 
 	@Test
-	public void testAllInstanceofInterface() throws Exception {
+	public void testAllInstancesofInterface() throws Exception {
 		Assert.assertNotNull("IModelQueryService is null !", modelIndexService); //$NON-NLS-1$
 		List<Interface> allInterfaces = modelIndexService.getAllInstancesOf(getResourceSet().getResources().get(0), Interface.class);
 		Assert.assertEquals(4, allInterfaces.size());
 	}
 
 	@Test
-	public void testAllInstanceofConnection() throws Exception {
+	public void testAllInstancesofConnection() throws Exception {
 		Assert.assertNotNull("IModelQueryService is null !", modelIndexService); //$NON-NLS-1$
 		List<Connection> allConnections = modelIndexService.getAllInstancesOf(getResourceSet().getResources().get(0), Connection.class);
 		Assert.assertEquals(7, allConnections.size());
