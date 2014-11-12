@@ -2,7 +2,7 @@
 <xsd:schema xmlns:cn="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common" xmlns:tm="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel">
   <xsd:import namespace="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common" schemaLocation="Common20XMI.xsd"/>
   <xsd:complexType name="Platform">
-    <xsd:complexContent>
+    <xsd:complexContent mixed="true">
       <xsd:extension base="cn:Identifiable">
         <xsd:choice maxOccurs="unbounded" minOccurs="0">
           <xsd:element name="componentTypes" type="tm:ComponentType"/>
@@ -13,7 +13,7 @@
   </xsd:complexType>
   <xsd:element name="Platform" type="tm:Platform"/>
   <xsd:complexType name="ComponentType">
-    <xsd:complexContent>
+    <xsd:complexContent mixed="true">
       <xsd:extension base="cn:Identifiable">
         <xsd:choice maxOccurs="unbounded" minOccurs="0">
           <xsd:element name="providedInterfaces" type="tm:Interface"/>
@@ -26,14 +26,14 @@
   </xsd:complexType>
   <xsd:element name="ComponentType" type="tm:ComponentType"/>
   <xsd:complexType name="Port">
-    <xsd:complexContent>
+    <xsd:complexContent mixed="true">
       <xsd:extension base="cn:Identifiable">
         <xsd:choice maxOccurs="unbounded" minOccurs="0">
           <xsd:element name="owner" type="tm:ComponentType"/>
           <xsd:element name="requiredInterface" type="tm:Interface"/>
         </xsd:choice>
-        <xsd:attribute name="minProviderCount" type="xsd:int" use="required"/>
-        <xsd:attribute name="maxProviderCount" type="xsd:int" use="required"/>
+        <xsd:attribute name="minProviderCount" type="xsd:int"/>
+        <xsd:attribute name="maxProviderCount" type="xsd:int"/>
         <xsd:attribute name="owner" type="xsd:string"/>
         <xsd:attribute name="requiredInterface" type="xsd:string"/>
       </xsd:extension>
@@ -41,7 +41,7 @@
   </xsd:complexType>
   <xsd:element name="Port" type="tm:Port"/>
   <xsd:complexType name="Interface">
-    <xsd:complexContent>
+    <xsd:complexContent mixed="true">
       <xsd:extension base="cn:Identifiable">
         <xsd:choice maxOccurs="unbounded" minOccurs="0">
           <xsd:element name="providingComponentTypes" type="tm:ComponentType"/>

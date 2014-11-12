@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [393312] Make sure that transient item providers created by extended item providers can be used before the getChildren() method of the latter has been called
  *     itemis - [447193] Enable transient item providers to be created through adapter factories
+ *     itemis - [450882] Enable navigation to ancestor tree items in Model Explorer kind of model views
  *
  * </copyright>
  */
@@ -53,7 +54,10 @@ public class ExtendedConnectionItemProvider extends ConnectionItemProvider {
 	@Override
 	public Object getParent(Object object) {
 		Object parent = super.getParent(object);
-		return adapterFactory.adapt(parent, ComponentsItemProvider.class);
+		if (((Component) parent).getOutgoingConnections().contains(object)) {
+			return adapterFactory.adapt(parent, OutgoingConnectionsItemProvider.class);
+		}
+		return parent;
 	}
 
 	@Override

@@ -44,6 +44,7 @@
           transient="true" containment="true">
         <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
           <details key="name" value="xsi:schemaLocation"/>
+          <details key="kind" value="element"/>
         </eAnnotations>
       </eStructuralFeatures>
     </eClassifiers>
@@ -60,10 +61,8 @@
           eType="#//typemodel/ComponentType" eOpposite="#//typemodel/ComponentType/ports"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="requiredInterface" lowerBound="1"
           eType="#//typemodel/Interface" eOpposite="#//typemodel/Interface/requiringPorts"/>
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="minProviderCount" lowerBound="1"
-          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="maxProviderCount" lowerBound="1"
-          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="minProviderCount" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="maxProviderCount" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Interface" eSuperTypes="#//common/Identifiable">
       <eStructuralFeatures xsi:type="ecore:EReference" name="providingComponentTypes"
@@ -116,11 +115,11 @@
       <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingConnections"
           upperBound="-1" eType="#//instancemodel/Connection" containment="true" eOpposite="#//instancemodel/Connection/sourceComponent"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="incomingConnections"
-          eType="#//instancemodel/Connection" eOpposite="#//instancemodel/Connection/targetComponent"/>
+          upperBound="-1" eType="#//instancemodel/Connection" eOpposite="#//instancemodel/Connection/targetComponent"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="parameterValues" upperBound="-1"
           eType="#//instancemodel/ParameterValue" containment="true"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="parameterExpressions"
-          upperBound="-1" eType="#//instancemodel/ParameterExpresssion" containment="true"/>
+          upperBound="-1" eType="#//instancemodel/ParameterExpression" containment="true"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Connection" eSuperTypes="#//common/Identifiable">
       <eStructuralFeatures xsi:type="ecore:EReference" name="sourceComponent" lowerBound="1"
@@ -135,7 +134,7 @@
           eType="#//typemodel/Parameter"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eClassifiers>
-    <eClassifiers xsi:type="ecore:EClass" name="ParameterExpresssion">
+    <eClassifiers xsi:type="ecore:EClass" name="ParameterExpression">
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="mixed"/>
       </eAnnotations>

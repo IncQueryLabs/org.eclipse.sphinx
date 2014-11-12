@@ -36,6 +36,8 @@ class PrintModelContentWorkflowComponent extends AbstractModelWorkflowComponent 
 		val modelObjects = ctx.modelSlot
 
 		for (modelObject : modelObjects) {
+			println("=> " + modelObject.label + " ["+ modelObject.URL + "]")
+
 			val eAllContents = modelObject.eAllContents
 			while (eAllContents.hasNext) {
 				val element = eAllContents.next

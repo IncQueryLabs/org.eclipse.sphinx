@@ -32,7 +32,6 @@ import org.eclipse.sphinx.emf.resource.ExtendedXMISaveImpl;
  * The <b>Resource </b> associated with the package.
  *
  * @see org.eclipse.sphinx.examples.hummingbird20.util.Hummingbird20ResourceFactoryImpl
- * @generated
  */
 public class Hummingbird20ResourceImpl extends XMIResourceImpl {
 
@@ -49,7 +48,6 @@ public class Hummingbird20ResourceImpl extends XMIResourceImpl {
 	 *
 	 * @param uri
 	 *            the URI of the new resource.
-	 * @generated NOT
 	 */
 	public Hummingbird20ResourceImpl(URI uri) {
 		super(uri);

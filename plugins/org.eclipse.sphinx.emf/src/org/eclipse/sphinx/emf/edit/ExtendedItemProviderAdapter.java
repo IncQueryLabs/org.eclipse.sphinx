@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
  *     itemis - [446573] BasicExplorerContent/LabelProvider don't get refreshed upon changes on provided referenced elements
+ *     itemis - [450882] Enable navigation to ancestor tree items in Model Explorer kind of model views
  *
  * </copyright>
  */
@@ -53,8 +54,6 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.AttributeValueWrapperItemProvider;
 import org.eclipse.emf.edit.provider.ComposedImage;
 import org.eclipse.emf.edit.provider.FeatureMapEntryWrapperItemProvider;
-import org.eclipse.emf.edit.provider.IItemFontProvider;
-import org.eclipse.emf.edit.provider.IItemStyledLabelProvider;
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.sphinx.emf.Activator;
@@ -64,7 +63,9 @@ import org.eclipse.sphinx.emf.ecore.EcoreTraversalHelper;
 /**
  * Extension of the default {@linkplain ItemProviderAdapter item provider adapter} implementation provided by EMF Edit.
  */
-public class ExtendedItemProviderAdapter extends ItemProviderAdapter implements IItemFontProvider, IItemStyledLabelProvider {
+public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
+
+	private ITreeItemAncestorProvider treeItemContentProviderHelper = null;
 
 	/**
 	 * An instance is created from an adapter factory. The factory is used as a key so that we always know which factory
@@ -75,6 +76,29 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter implements 
 	 */
 	public ExtendedItemProviderAdapter(AdapterFactory adapterFactory) {
 		super(adapterFactory);
+	}
+
+	protected ITreeItemAncestorProvider getTreeItemContentProviderHelper() {
+		if (treeItemContentProviderHelper == null) {
+			treeItemContentProviderHelper = createTreeItemContentProviderHelper();
+		}
+		return treeItemContentProviderHelper;
+	}
+
+	protected ITreeItemAncestorProvider createTreeItemContentProviderHelper() {
+		return new TreeItemAncestorProvider(this, adapterFactory);
+	}
+
+	public List<Object> getAncestorPath(Object object, boolean unwrap) {
+		return getTreeItemContentProviderHelper().getAncestorPath(object, unwrap);
+	}
+
+	public List<Object> getAncestorPath(Object beginObject, Class<?> endType, boolean unwrap) {
+		return getTreeItemContentProviderHelper().getAncestorPath(beginObject, endType, unwrap);
+	}
+
+	public Object findAncestor(Object object, Class<?> ancestorType, boolean unwrap) {
+		return getTreeItemContentProviderHelper().findAncestor(object, ancestorType, unwrap);
 	}
 
 	/*
@@ -116,7 +140,7 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter implements 
 		} else if (feature instanceof EAttribute) {
 			value = new AttributeValueWrapperItemProvider(value, object, (EAttribute) feature, index, adapterFactory, getResourceLocator());
 		} else if (!((EReference) feature).isContainment()) {
-			value = new StyledDelegatingWrapperItemProvider(value, object, feature, index, adapterFactory);
+			value = new ExtendedDelegatingWrapperItemProvider(value, object, feature, index, adapterFactory);
 		}
 
 		return value;

@@ -51,7 +51,7 @@ import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
-import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpresssion;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpression;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Factory;
 import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
@@ -697,13 +697,13 @@ public class EcorePlatformUtilTest2 extends DefaultIntegrationTestCase {
 		assertNotNull(component);
 
 		assertFalse(component.getParameterExpressions().isEmpty());
-		ParameterExpresssion parameterExpresssion = component.getParameterExpressions().get(0);
-		assertNotNull(parameterExpresssion);
-		assertFalse(parameterExpresssion.getMixed().isEmpty());
-		Entry testEntry = parameterExpresssion.getMixed().get(0);
+		ParameterExpression parameterExpression = component.getParameterExpressions().get(0);
+		assertNotNull(parameterExpression);
+		assertFalse(parameterExpression.getMixed().isEmpty());
+		Entry testEntry = parameterExpression.getMixed().get(0);
 
 		assertNotNull(testEntry);
-		assertEquals(InstanceModel20Package.Literals.PARAMETER_EXPRESSSION__EXPRESSIONS, testEntry.getEStructuralFeature());
+		assertEquals(InstanceModel20Package.Literals.PARAMETER_EXPRESSION__EXPRESSIONS, testEntry.getEStructuralFeature());
 
 		resResources = EcorePlatformUtil.getResourcesInModel(testEntry, true);
 		assertEquals(resources20FromHbProject20_A, resResources.size());

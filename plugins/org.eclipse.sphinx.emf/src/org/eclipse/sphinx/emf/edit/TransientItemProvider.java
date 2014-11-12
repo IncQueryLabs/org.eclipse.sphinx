@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [446573] BasicExplorerContent/LabelProvider don't get refreshed upon changes on provided referenced elements
  *     itemis - [447193] Enable transient item providers to be created through adapter factories
+ *     itemis - [450882] Enable navigation to ancestor tree items in Model Explorer kind of model views
  *
  * </copyright>
  */
@@ -59,19 +60,17 @@ import org.eclipse.sphinx.emf.Activator;
  * </p>
  */
 public class TransientItemProvider extends ExtendedItemProviderAdapter implements IEditingDomainItemProvider, IStructuredItemContentProvider,
-		ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
+		ITreeItemContentProvider, ITreeItemAncestorProvider, IItemLabelProvider, IItemPropertySource {
 
 	public static class AdapterFactoryHelper {
 
-		public static Adapter adapt(Object target, Object type, AdapterFactory adapterFactory) {
-			if (target instanceof Notifier && type instanceof Class) {
-				if (TransientItemProvider.class.isAssignableFrom((Class<?>) type)) {
-					Adapter adapter = EcoreUtil.getExistingAdapter((Notifier) target, type);
-					if (adapter != null) {
-						return adapter;
-					}
-					return adapterFactory.adaptNew((Notifier) target, type);
+		public static Object adapt(Object target, Object type, AdapterFactory adapterFactory) {
+			if (type instanceof Class<?> && TransientItemProvider.class.isAssignableFrom((Class<?>) type)) {
+				Adapter adapter = EcoreUtil.getExistingAdapter((Notifier) target, type);
+				if (adapter != null) {
+					return adapter;
 				}
+				return adapterFactory.adaptNew((Notifier) target, type);
 			}
 			return null;
 		}
@@ -221,10 +220,13 @@ public class TransientItemProvider extends ExtendedItemProviderAdapter implement
 	 * such a wrapper is needed; otherwise, returns the original value.
 	 * <p>
 	 * This method is very similar to {@link #createWrapper(EObject, EStructuralFeature, Object, int)} but accepts and
-	 * handles {@link Object} rather than just {@link EObject} <code>object</code> arguments.
+	 * handles {@link Object} rather than just {@link EObject} <code>object</code> arguments and uses
+	 * {@link ExtendedDelegatingWrapperItemProvider} instead of {@link DelegatingWrapperItemProvider} to wrap cross
+	 * references.
 	 * </p>
 	 *
 	 * @see #createWrapper(EObject, EStructuralFeature, Object, int)
+	 * @see ExtendedDelegatingWrapperItemProvider
 	 */
 	protected Object createWrapper(Object object, EStructuralFeature feature, Object value, int index) {
 		if (!isWrappingNeeded(object)) {
@@ -240,7 +242,7 @@ public class TransientItemProvider extends ExtendedItemProviderAdapter implement
 			}
 		} else {
 			if (!((EReference) feature).isContainment()) {
-				value = new DelegatingWrapperItemProvider(value, object, feature, index, adapterFactory);
+				value = new ExtendedDelegatingWrapperItemProvider(value, object, feature, index, adapterFactory);
 			}
 		}
 		return value;

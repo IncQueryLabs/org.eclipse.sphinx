@@ -20,13 +20,7 @@ Contributors:
    <extension point="org.eclipse.ui.navigator.viewer">
       <viewerActionBinding viewerId="org.eclipse.ui.navigator.ProjectExplorer">
          <includes>
-            <actionExtension pattern="org.eclipse.sphinx.xtend.workflow.ui.basicWorkflowActions" />
-         </includes>
-      </viewerActionBinding>
-      <viewerActionBinding
-            viewerId="org.eclipse.sphinx.examples.explorer.views.modelExplorer">
-         <includes>
-            <actionExtension pattern="org.eclipse.sphinx.xtend.workflow.ui.basicWorkflowActions" />
+            <actionExtension pattern="org.eclipse.sphinx.emf.mwe.dynamic.ui.basicWorkflowActions" />
          </includes>
       </viewerActionBinding>
    </extension>
@@ -34,7 +28,7 @@ Contributors:
          point="org.eclipse.ui.navigator.navigatorContent">
       <actionProvider
             class="org.eclipse.sphinx.emf.mwe.dynamic.ui.actions.providers.BasicWorkflowActionProvider"
-            id="org.eclipse.sphinx.xtend.workflow.ui.basicWorkflowActions">
+            id="org.eclipse.sphinx.emf.mwe.dynamic.ui.basicWorkflowActions">
          <enablement>
             <or>
                <instanceof

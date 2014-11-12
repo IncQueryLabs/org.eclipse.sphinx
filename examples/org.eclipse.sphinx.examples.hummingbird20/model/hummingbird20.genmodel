@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="&lt;copyright>&#xD;&#xA;&#xD;&#xA;Copyright (c) 2008-2011 See4sys and others.&#xD;&#xA;All rights reserved. This program and the accompanying materials&#xD;&#xA;are made available under the terms of the Eclipse Public License v1.0&#xD;&#xA;which accompanies this distribution, and is available at&#xD;&#xA;http://www.eclipse.org/legal/epl-v10.html&#xD;&#xA;&#xD;&#xA;Contributors: &#xD;&#xA;    See4sys - Initial API and implementation&#xD;&#xA;&#xD;&#xA;&lt;/copyright>"
-    modelDirectory="/org.eclipse.sphinx.examples.hummingbird20/src" creationSubmenus="true"
-    editDirectory="/org.eclipse.sphinx.examples.hummingbird20.edit/src" editorDirectory=""
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="&lt;copyright>&#xD;&#xA;&#xD;&#xA;Copyright (c) 2008-2014 See4sys, itemis and others.&#xD;&#xA;All rights reserved. This program and the accompanying materials&#xD;&#xA;are made available under the terms of the Eclipse Public License v1.0&#xD;&#xA;which accompanies this distribution, and is available at&#xD;&#xA;http://www.eclipse.org/legal/epl-v10.html&#xD;&#xA;&#xD;&#xA;Contributors: &#xD;&#xA;    See4sys - Initial API and implementation&#xD;&#xA;    itemis - Enhancements and maintenance&#xD;&#xA;&#xD;&#xA;&lt;/copyright>"
+    modelDirectory="/org.eclipse.sphinx.examples.hummingbird20/src-gen" creationSubmenus="true"
+    editDirectory="/org.eclipse.sphinx.examples.hummingbird20.edit/src-gen" editorDirectory=""
     modelPluginID="org.eclipse.sphinx.examples.hummingbird20" templateDirectory="/org.eclipse.sphinx.examples.hummingbird20/templates"
     dynamicTemplates="true" modelName="Hummingbird20" modelPluginClass="org.eclipse.sphinx.examples.hummingbird20.Activator"
     editPluginClass="org.eclipse.sphinx.examples.hummingbird20.edit.Activator" editorPluginClass=""
@@ -11,7 +11,7 @@
     complianceLevel="5.0" copyrightFields="false" providerRootExtendsClass="org.eclipse.sphinx.emf.edit.ExtendedItemProviderAdapter"
     editPluginID="org.eclipse.sphinx.examples.hummingbird20.edit" editorPluginID="org.eclipse.sphinx.examples.hummingbird20.editor"
     testsPluginID="org.eclipse.sphinx.examples.hummingbird20.editor" fontProviders="true"
-    runtimeVersion="2.6" language="" usedGenPackages="platform:/plugin/org.eclipse.emf.ecore/model/Ecore.genmodel#//ecore platform:/plugin/org.eclipse.emf.ecore/model/XMLType.genmodel#//type"
+    runtimeVersion="2.9" language="" usedGenPackages="platform:/plugin/org.eclipse.emf.ecore/model/Ecore.genmodel#//ecore platform:/plugin/org.eclipse.emf.ecore/model/XMLType.genmodel#//type"
     classNamePattern="" styleProviders="true">
   <genAnnotations source="http://www.eclipse.org/emf/2002/GenModel/exporter/org.eclipse.xsd.ecore.exporter.xmi">
     <genAnnotations source="selectedPackages">
@@ -28,9 +28,8 @@
   <foreignModel>hummingbird20.ecore</foreignModel>
   <modelPluginVariables>org.eclipse.sphinx.emf</modelPluginVariables>
   <modelPluginVariables>org.eclipse.sphinx.examples.hummingbird.ide</modelPluginVariables>
-  <genPackages prefix="Hummingbird20" basePackage="org.eclipse.sphinx.examples" resource="XMI"
-      disposableProviderFactory="true" providerPackageSuffix="edit" presentationPackageSuffix="editor"
-      contentTypeIdentifier="org.eclipse.sphinx.examples.hummingbird20.hummingbird20XMIFile"
+  <genPackages prefix="Hummingbird20" basePackage="org.eclipse.sphinx.examples" disposableProviderFactory="true"
+      providerPackageSuffix="edit" presentationPackageSuffix="editor" contentTypeIdentifier="org.eclipse.sphinx.examples.hummingbird20.hummingbird20XMIFile"
       ecorePackage="hummingbird20.ecore#/">
     <nestedGenPackages prefix="Common20" basePackage="org.eclipse.sphinx.examples.hummingbird20"
         disposableProviderFactory="true" providerPackageSuffix="edit" presentationPackageSuffix="editor"
@@ -121,9 +120,9 @@
             ecoreFeature="ecore:EReference hummingbird20.ecore#//instancemodel/ParameterValue/type"/>
         <genFeatures createChild="false" ecoreFeature="ecore:EAttribute hummingbird20.ecore#//instancemodel/ParameterValue/value"/>
       </genClasses>
-      <genClasses ecoreClass="hummingbird20.ecore#//instancemodel/ParameterExpresssion">
-        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute hummingbird20.ecore#//instancemodel/ParameterExpresssion/mixed"/>
-        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference hummingbird20.ecore#//instancemodel/ParameterExpresssion/expressions"/>
+      <genClasses ecoreClass="hummingbird20.ecore#//instancemodel/ParameterExpression">
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute hummingbird20.ecore#//instancemodel/ParameterExpression/mixed"/>
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference hummingbird20.ecore#//instancemodel/ParameterExpression/expressions"/>
       </genClasses>
       <genClasses ecoreClass="hummingbird20.ecore#//instancemodel/Formula">
         <genFeatures createChild="false" ecoreFeature="ecore:EAttribute hummingbird20.ecore#//instancemodel/Formula/value"/>

@@ -4,14 +4,15 @@
 <!--
 <copyright>
 
-Copyright (c) 2011 See4sys and others.
+Copyright (c) 2011-2014 See4sys, itemis and others.
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
 which accompanies this distribution, and is available at
 http://www.eclipse.org/legal/epl-v10.html
- 
-Contributors: 
+
+Contributors:
     See4sys - Initial API and implementation
+    itemis - [450882] Enable navigation to ancestor tree items in Model Explorer kind of model views
 
 </copyright>
 -->
@@ -27,17 +28,17 @@ Contributors:
       </includes>
     </viewerContentBinding>
   </extension>
-  
+
    <!-- Common navigator content contribution for Hummingbird 2.0 models -->
-  
+
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
       <navigatorContent
             id="org.eclipse.sphinx.examples.hummingbird20.ide.ui.navigatorContent.hummingbird"
             name="%sphinx.examples.hummingbird20.ide.ui.navigatorContent.hummingbird.name"
             activeByDefault="true"
-            contentProvider="org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.ExtendedExplorerContentProvider"
-            labelProvider="org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.ExtendedExplorerLabelProvider"
+            contentProvider="org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.Hummingbird20ExplorerContentProvider"
+            labelProvider="org.eclipse.sphinx.examples.hummingbird20.ide.ui.providers.Hummingbird20ExplorerLabelProvider"
             priority="normal">
          <triggerPoints>
             <and>
@@ -45,7 +46,7 @@ Contributors:
                <test
                      property="org.eclipse.sphinx.emf.isInScope"
                      value="true" />
-               <test 
+               <test
                      property="org.eclipse.sphinx.emf.metaModelIdMatches"
                      value="org\.eclipse\.sphinx\.examples\.hummingbird20"/>
             </and>
@@ -72,13 +73,17 @@ Contributors:
                </and>
             </or>
          </possibleChildren>
-         <dropAssistant 
+         <dropAssistant
                id="org.eclipse.sphinx.examples.hummingbird20.ide.ui.navigatorContent.dropAssistant.hummingbird"
                class="org.eclipse.sphinx.emf.explorer.BasicDropAdapterAssistant">
             <possibleDropTargets>
                <instanceof value="org.eclipse.emf.ecore.EObject"/>
             </possibleDropTargets>
-         </dropAssistant>      
+         </dropAssistant>
+         <actionProvider
+               class="org.eclipse.sphinx.examples.hummingbird20.ide.ui.actions.providers.Hummingbird20ActionProvider"
+               id="org.eclipse.sphinx.examples.hummingbird20.ide.ui.hummingbird20Actions">
+         </actionProvider>
       </navigatorContent>
    </extension>
 
