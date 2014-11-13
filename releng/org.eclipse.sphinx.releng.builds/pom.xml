@@ -30,6 +30,11 @@
 		<module>../../plugins/org.eclipse.sphinx.emf.workspace</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.workspace.incquery</module>
 		<module>../../plugins/org.eclipse.sphinx.emf</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.check</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.check.catalog</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.check.catalog.edit</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.check.catalog.editor</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.check.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.incquery</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.runtime.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.workspace</module>
@@ -62,6 +67,7 @@
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.incquery</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.transform.xtend</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.validation</module>
+		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.validation.check</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.workflows</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20</module>
 		<module>../../examples/org.eclipse.sphinx.examples.tests.perf</module>
@@ -102,6 +108,7 @@
 		<module>../../features/org.eclipse.sphinx.emf.navigators-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.serialization-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.serialization.generators-feature</module>
+		<module>../../features/org.eclipse.sphinx.emf.check-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.validation-feature</module>
 		<module>../../features/org.eclipse.sphinx.gmf.editors-feature</module>
 		<module>../../features/org.eclipse.sphinx.jdtpde-feature</module>

@@ -1,0 +1,214 @@
+/**
+ * <copyright>
+ *
+ * Copyright (c) 2014 itemis and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     itemis - Initial API and implementation
+ *
+ * </copyright>
+ */
+
+package org.eclipse.sphinx.emf.check.services;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceRuleFactory;
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.MultiRule;
+import org.eclipse.emf.common.util.Diagnostic;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EValidator;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.sphinx.emf.check.IValidationConstants;
+import org.eclipse.sphinx.emf.check.internal.Activator;
+import org.eclipse.sphinx.emf.util.EObjectUtil;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.validation.markers.IValidationMarker;
+import org.eclipse.sphinx.platform.util.StatusUtil;
+
+public class CheckProblemMarkerService {
+
+	public static CheckProblemMarkerService INSTANCE = new CheckProblemMarkerService();
+
+	private IProblemMarkerFactory markerFactory = null;
+
+	private CheckProblemMarkerService() {
+	}
+
+	private IProblemMarkerFactory getProblemMarkerFactory() {
+		if (markerFactory == null) {
+			markerFactory = createProblemMarkerFactory();
+		}
+		return markerFactory;
+	}
+
+	private IProblemMarkerFactory createProblemMarkerFactory() {
+		return new CheckProblemMarkerFactory();
+	}
+
+	public void updateProblemMarkers(EObject validationInput, final Diagnostic diagnostic) throws InterruptedException {
+		WorkspaceJob job = new WorkspaceJob(IValidationConstants.HANDLE_PROBLEM_MARKERS_JOB_LABEL) {
+			@Override
+			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+				try {
+					CheckProblemMarkerService.INSTANCE.handleDiagnostic(diagnostic);
+				} catch (CoreException ex) {
+					return ex.getStatus();
+				} catch (Exception ex) {
+					return StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
+				}
+				return Status.OK_STATUS;
+			}
+		};
+		ArrayList<ISchedulingRule> myRules = new ArrayList<ISchedulingRule>();
+		IResource resource = EcorePlatformUtil.getFile(validationInput);
+		if (resource != null) {
+			IResourceRuleFactory ruleFactory = resource.getWorkspace().getRuleFactory();
+			myRules.add(ruleFactory.modifyRule(resource));
+			myRules.add(ruleFactory.createRule(resource));
+		}
+		job.setRule(new MultiRule(myRules.toArray(new ISchedulingRule[myRules.size()])));
+		job.setPriority(Job.BUILD);
+		job.schedule();
+	}
+
+	public void handleDiagnostic(Diagnostic diagnostic) throws CoreException {
+		handleDiagnostic(diagnostic, EObjectUtil.DEPTH_INFINITE);
+	}
+
+	public void handleDiagnostic(Diagnostic diagnostic, int depth) throws CoreException {
+		Assert.isNotNull(diagnostic);
+		if (diagnostic.getData() == null) {
+			return;
+		}
+		List<?> diagnosticData = diagnostic.getData();
+		if (diagnosticData.isEmpty() || !(diagnosticData.get(0) instanceof EObject)) {
+			return;
+		}
+		EObject eObject = (EObject) diagnosticData.get(0);
+		if (diagnostic.getSeverity() == Diagnostic.OK) {
+			deleteMarkers(eObject, depth);
+		} else {
+			Resource resource = eObject.eResource();
+			if (resource != null) {
+				deleteMarkers(eObject, depth);
+				addMarkers(resource, diagnostic);
+			}
+		}
+	}
+
+	private void addMarkers(Resource resource, Diagnostic diagnostic) throws CoreException {
+		IResource file = EcorePlatformUtil.getFile(resource);
+		if (file == null || !file.exists()) {
+			return;
+		}
+		List<?> diagnosticData = diagnostic.getData();
+		if (diagnosticData == null || diagnosticData.size() == 0) {
+			return;
+		}
+		for (Diagnostic childDiagnostic : diagnostic.getChildren()) {
+			if (!childDiagnostic.getData().isEmpty()) {
+				getProblemMarkerFactory().createMarker(file, childDiagnostic);
+			}
+		}
+	}
+
+	private void deleteMarkers(EObject eObject, int depth) throws CoreException {
+		deleteMarkers(eObject, depth, IValidationMarker.MODEL_VALIDATION_PROBLEM);
+	}
+
+	private void deleteMarkers(EObject eObject, int depth, String markerType) throws CoreException {
+		Resource resource = eObject.eResource();
+		if (resource != null && resource.getContents() != null) {
+			EObject rootObject = resource.getContents().get(0);
+			if (rootObject == eObject && depth == EObjectUtil.DEPTH_INFINITE) {
+				getProblemMarkerFactory().deleteMarkers(resource);
+				return;
+			}
+		}
+		IMarker[] markers = getValidationMarkers(eObject, depth, markerType);
+		if (markers == null || markers.length == 0) {
+			return;
+		}
+		for (IMarker marker : markers) {
+			marker.delete();
+		}
+	}
+
+	public IMarker[] getValidationMarkers(final EObject eObject) throws CoreException, InterruptedException {
+		return getValidationMarkers(eObject, IResource.DEPTH_INFINITE, IValidationMarker.MODEL_VALIDATION_PROBLEM);
+	}
+
+	public IMarker[] getValidationMarkers(EObject eObject, int depth) throws CoreException {
+		// TODO: check whether the update problem markers jobs is still running, in such a case, wait until it is
+		// finished.
+		return getValidationMarkers(eObject, depth, IValidationMarker.MODEL_VALIDATION_PROBLEM);
+	}
+
+	private IMarker[] getValidationMarkers(EObject eObject, int depth, String markerType) throws CoreException {
+		IResource resource = EcorePlatformUtil.getFile(eObject);
+		if (resource == null || !resource.exists()) {
+			return new IMarker[0];
+		}
+		// All the Markers connected with this resource
+		IMarker[] allMarkers = resource.findMarkers(markerType, true, IResource.DEPTH_INFINITE);
+
+		// filter the markers according to the current object and the depth
+		// 1. if depth = zero, return the marker with the uri equal to object if any
+		// 2. if depth = one, return the marker with the uri equal to object and markers on direct children if any
+		// 3. if depth = infinite, return the marker with the uri equal to object and markers on direct and indirect
+		// children if any
+
+		List<IMarker> result = new ArrayList<IMarker>();
+		URI referenceURI = EcoreUtil.getURI(eObject);
+		for (IMarker current : allMarkers) {
+			String currentStringURI = (String) current.getAttribute(EValidator.URI_ATTRIBUTE);
+			if (currentStringURI != null) {
+				URI currentURI = URI.createURI(currentStringURI);
+				// String fragment = currentURI.fragment();
+				switch (depth) {
+				case EObjectUtil.DEPTH_ZERO:
+					if (currentURI.equals(referenceURI)) {
+						result.add(current);
+					}
+					break;
+				case EObjectUtil.DEPTH_ONE:
+					if (currentURI.equals(referenceURI)) {
+						result.add(current);
+					}
+					break;
+				case EObjectUtil.DEPTH_INFINITE:
+					if (currentURI.equals(referenceURI)) {
+						result.add(current);
+					} else {
+						if (currentURI.toString().contains(referenceURI.toString())) {
+							result.add(current);
+						}
+					}
+					break;
+				default:
+					break;
+				}
+
+			}
+		}
+		return result.toArray(new IMarker[result.size()]);
+	}
+}

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.ui.newWizards">
+      <!-- @generated CheckCatalog -->
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="org.eclipse.sphinx.emf.check.catalog.checkcatalog.presentation.CheckCatalogModelWizardID"
+            name="%_UI_CheckCatalogModelWizard_label"
+            class="org.eclipse.sphinx.emf.check.catalog.checkcatalog.presentation.CheckCatalogModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/CheckCatalogModelFile.gif">
+         <description>%_UI_CheckCatalogModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <!-- @generated CheckCatalog -->
+      <editor
+            id="org.eclipse.sphinx.emf.check.catalog.checkcatalog.presentation.CheckCatalogEditorID"
+            name="%_UI_CheckCatalogEditor_label"
+            icon="icons/full/obj16/CheckCatalogModelFile.gif"
+            extensions="check"
+            class="org.eclipse.sphinx.emf.check.catalog.checkcatalog.presentation.CheckCatalogEditor"
+            contributorClass="org.eclipse.sphinx.emf.check.catalog.checkcatalog.presentation.CheckCatalogActionBarContributor">
+      </editor>
+   </extension>
+
+</plugin>
