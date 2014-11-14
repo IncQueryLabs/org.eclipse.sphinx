@@ -80,10 +80,10 @@ public class Messages extends NLS {
 	public static String combo_ePackage_label;
 	public static String combo_eClassifier_label;
 	public static String button_browse_label;
-	public static String dialog_metaModelDescriptorBrowse_title;
-	public static String dialog_ePackageBrowse_title;
-	public static String dialog_eClassifierBrowse_title;
-	public static String dialog_browse_message;
+	public static String dialog_metaModelDescriptorSelection_title;
+	public static String dialog_ePackageSelection_title;
+	public static String dialog_eClassifierSelection_title;
+	public static String dialog_selection_message;
 	public static String error_noMetaModelDescriptorSelected;
 	public static String error_noEPackageSelected;
 	public static String error_noEClassifierSelected;

@@ -42,8 +42,9 @@ import org.eclipse.ui.dialogs.FilteredItemsSelectionDialog;
  * The clients must provide their implementations. The methods, {@link #toObject(String)} and {@link #toString(Object)},
  * to convert the item values, should be implemented by the subclasses.
  */
-public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDialog {
+public abstract class AbstractFilteredObjectsSelectionDialog<T> extends FilteredItemsSelectionDialog {
 
+	// TODO Improve names, see WorkflowFileSelectionWizard
 	private final String LAST_SELECTED_ITEM_KEY = "last.selected.item"; //$NON-NLS-1$
 
 	protected List<T> items = new ArrayList<T>();
@@ -70,8 +71,7 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 		public String getText(Object element) {
 			// To make the labels more readable, the element names are used as the text label, instead of simply use
 			// the object.toString().
-			String label = getElementName(element);
-			return label;
+			return getElementName(element);
 		}
 
 		/*
@@ -109,13 +109,13 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 	/**
 	 * Creates a new instance of the abstract browse dialog class. The created dialog does not allow to select more than
 	 * one item.
-	 * 
+	 *
 	 * @param shell
 	 *            the {@linkplain Shell shell} to parent the dialog on
 	 * @param items
 	 *            a {@linkplain Collection collection of items} to be filtered in this browse dialog
 	 */
-	public AbstractBrowseDialog(Shell shell, Collection<T> items) {
+	public AbstractFilteredObjectsSelectionDialog(Shell shell, Collection<T> items) {
 		this(shell, false, items);
 	}
 
@@ -123,7 +123,7 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 	 * Creates a new instance of the abstract browse dialog class. A collection of item objects is passed as the
 	 * resource to be filtered. This abstract class shows a list of items with a text entry field for a string pattern
 	 * used to filter the list of items.
-	 * 
+	 *
 	 * @param shell
 	 *            the {@linkplain Shell shell} to parent the dialog on
 	 * @param multi
@@ -132,7 +132,7 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 	 * @param items
 	 *            a {@linkplain Collection collection of items} to be filtered in this browse dialog
 	 */
-	public AbstractBrowseDialog(Shell shell, boolean multi, Collection<T> items) {
+	public AbstractFilteredObjectsSelectionDialog(Shell shell, boolean multi, Collection<T> items) {
 		super(shell, multi);
 		this.items = new ArrayList<T>(items);
 		setListLabelProvider(new BrowseItemListLabelProvider());
@@ -175,7 +175,7 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 			@Override
 			@SuppressWarnings("unchecked")
 			public boolean matchItem(Object item) {
-				return matches(AbstractBrowseDialog.this.toString((T) item));
+				return matches(AbstractFilteredObjectsSelectionDialog.this.toString((T) item));
 			}
 
 			/*
@@ -207,7 +207,8 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 			@SuppressWarnings("unchecked")
 			public int compare(Object item1, Object item2) {
 				// Compares the String of the two objects, pay attention to the null case
-				return safeStringCompareTo(AbstractBrowseDialog.this.toString((T) item1), AbstractBrowseDialog.this.toString((T) item2));
+				return safeStringCompareTo(AbstractFilteredObjectsSelectionDialog.this.toString((T) item1),
+						AbstractFilteredObjectsSelectionDialog.this.toString((T) item2));
 			}
 		};
 	}
@@ -218,7 +219,7 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 	 * <p>
 	 * Returns 0 if both strings are null, otherwise returns -1 if str1 is null, returns 1 if str2 is null, otherwise
 	 * returns the java.lang.String.compareTo()
-	 * 
+	 *
 	 * @param str1
 	 * @param str2
 	 * @return
@@ -258,7 +259,7 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 	/**
 	 * Converts the itemAsString, that is a possible string value for the dialog, into an object value. This method must
 	 * be implemented by the subclasses.
-	 * 
+	 *
 	 * @param itemAsString
 	 *            the String itemAsString to be converted to Object
 	 * @return the T Object to be converted into with the given String name itemAsString
@@ -268,7 +269,7 @@ public abstract class AbstractBrowseDialog<T> extends FilteredItemsSelectionDial
 	/**
 	 * Converts the itemAsObject, that is a possible object value for the dialog, into a string value. This method must
 	 * be implemented by the subclasses.
-	 * 
+	 *
 	 * @param itemAsObject
 	 *            the Object itemAsObject to be converted to String
 	 * @return the String to be converted into with the given Object itemAsObject
