@@ -191,6 +191,32 @@ public final class ReflectUtil {
 	}
 
 	/**
+	 * Sets the value of the visible (i.e. public) field with given name on given object. Supports declared and
+	 * inherited, non-static and static fields.
+	 *
+	 * @param object
+	 *            the object owning the field
+	 * @param fieldName
+	 *            the name of the field to be accessed
+	 * @param value
+	 *            the value to be set on the field
+	 * @throws NoSuchFieldException
+	 * @throws IllegalAccessException
+	 */
+	public static void setFieldValue(Object object, String fieldName, Object value) throws NoSuchFieldException, IllegalArgumentException,
+			IllegalAccessException {
+		Assert.isNotNull(object);
+
+		Class<? extends Object> clazz = object instanceof Class<?> ? (Class<?>) object : object.getClass();
+		Field field = ReflectUtil.findField(clazz, fieldName);
+		if (field == null) {
+			throw new NoSuchFieldException(clazz.getName() + "#" + fieldName); //$NON-NLS-1$
+		}
+
+		field.set(object, value);
+	}
+
+	/**
 	 * Sets the value of the invisible (i.e. private or protected) field with given name on given object. Supports
 	 * declared and inherited, non-static and static fields.
 	 *
