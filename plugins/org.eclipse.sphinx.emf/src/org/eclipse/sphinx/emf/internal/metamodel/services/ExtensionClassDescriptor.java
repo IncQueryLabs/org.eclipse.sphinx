@@ -16,6 +16,7 @@ package org.eclipse.sphinx.emf.internal.metamodel.services;
 
 import java.text.MessageFormat;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
@@ -24,42 +25,48 @@ import org.osgi.framework.Bundle;
  * Allows lazy loading of plug-in classes. Must be used when needed to initialize classes contributed through extension
  * points.
  */
+// TODO Provide this class for general usage (e.g. in org.eclipse.sphinx.platform)
 public class ExtensionClassDescriptor<T> {
 
-	private final static String ATT_CLASS = "class"; //$NON-NLS-1$
-	private static final String ATT_OVERRIDE = "override"; //$NON-NLS-1$
-	private final String ownerPlugin;
-	private final String className;
-	protected IConfigurationElement fCfgElem;
+	private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
+	private static final String ATTR_OVERRIDE = "override"; //$NON-NLS-1$
 
-	private boolean initialized = false;
+	private final String contributorName;
+	private final String className;
+
+	protected IConfigurationElement configurationElement;
 
 	private T instance;
 
 	/**
-	 * Create an <code>ExtensionClassWrapper</code> wrapped around a configuration element
+	 * Create an <code>ExtensionClassDescriptor</code> wrapped around a configuration element
 	 *
-	 * @param configElement
+	 * @param configurationElement
 	 *            the configuration element
 	 * @param attName
 	 *            the attribute from the configuration element that contain the class name
 	 */
-	public ExtensionClassDescriptor(IConfigurationElement configElement) {
-		this.fCfgElem = configElement;
-		this.ownerPlugin = configElement.getContributor().getName();
-		this.className = configElement.getAttribute(ATT_CLASS);
+	public ExtensionClassDescriptor(IConfigurationElement configurationElement) {
+		Assert.isNotNull(configurationElement);
+		this.configurationElement = configurationElement;
+
+		contributorName = configurationElement.getContributor().getName();
+		Assert.isNotNull(contributorName);
+
+		className = getClassName();
+		Assert.isNotNull(className);
 	}
 
 	protected String getAttribute(String attrName) {
-		return fCfgElem.getAttribute(attrName);
+		return configurationElement.getAttribute(attrName);
 	}
 
-	public String getServiceClass() {
-		return getAttribute(ATT_CLASS);
+	public String getClassName() {
+		return getAttribute(ATTR_CLASS);
 	}
 
 	public String getOverrideClassName() {
-		return getAttribute(ATT_OVERRIDE);
+		return getAttribute(ATTR_OVERRIDE);
 	}
 
 	/**
@@ -68,30 +75,11 @@ public class ExtensionClassDescriptor<T> {
 	 * @return The class instance
 	 * @throws Throwable
 	 */
-	@SuppressWarnings({ "nls", "unchecked" })
 	public T getInstance() throws Throwable {
-		if (!initialized) {
-			synchronized (this) {
-				try {
-					if (className != null) {
-						Bundle bundle = Platform.getBundle(ownerPlugin);
-						if (bundle == null) {
-							throw new Exception(MessageFormat.format("Cannot locate contributing plugin: {0}", ownerPlugin));
-						}
-						try {
-							Class<?> clazz = bundle.loadClass(className);
-							instance = (T) clazz.newInstance();
-						} catch (Throwable t) {
-							throw t;
-						}
-					}
-				} finally {
-					initialized = true;
-				}
-			}
-		}
 		if (instance == null) {
-			throw new Exception(MessageFormat.format("Failed to construct class {0}", className));
+			synchronized (this) {
+				instance = newInstance();
+			}
 		}
 		return instance;
 	}
@@ -103,16 +91,12 @@ public class ExtensionClassDescriptor<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public T newInstance() throws Throwable {
-		Bundle bundle = Platform.getBundle(ownerPlugin);
+		Bundle bundle = Platform.getBundle(contributorName);
 		if (bundle == null) {
-			throw new Exception(MessageFormat.format("Cannot locate contributing plugin: {0}", ownerPlugin)); //$NON-NLS-1$
+			throw new Exception(MessageFormat.format("Cannot locate contributing plugin: {0}", contributorName)); //$NON-NLS-1$
 		}
-		try {
-			Class<?> clazz = bundle.loadClass(className);
-			return (T) clazz.newInstance();
-		} catch (Throwable t) {
-			throw t;
-		}
+		Class<?> clazz = bundle.loadClass(className);
+		return (T) clazz.newInstance();
 	}
 
 	/**
@@ -127,25 +111,42 @@ public class ExtensionClassDescriptor<T> {
 		if (otherDescriptor == null) {
 			return true;
 		}
-		return otherDescriptor.getServiceClass().equals(getOverrideClassName());
+		return otherDescriptor.getClassName().equals(getOverrideClassName());
 	}
 
 	/*
-	 * (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof ExtensionClassDescriptor<?>) {
-			ExtensionClassDescriptor<?> classWrapper = (ExtensionClassDescriptor<?>) obj;
-			return ownerPlugin.equals(classWrapper.ownerPlugin) && className.equals(classWrapper.className);
-		} else {
-			return super.equals(obj);
+		if (this == obj) {
+			return true;
 		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		ExtensionClassDescriptor<?> other = (ExtensionClassDescriptor<?>) obj;
+		if (!className.equals(other.className)) {
+			return false;
+		}
+		if (!contributorName.equals(other.contributorName)) {
+			return false;
+		}
+		return true;
 	}
 
+	/*
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
-		return ownerPlugin.hashCode() * 31 + className.hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + className.hashCode();
+		result = prime * result + contributorName.hashCode();
+		return result;
 	}
 }

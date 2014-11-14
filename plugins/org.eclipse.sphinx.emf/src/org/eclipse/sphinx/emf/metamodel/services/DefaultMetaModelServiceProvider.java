@@ -18,7 +18,7 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.providers.IMetaModelDescriptorProvider;
 
 /**
- * A plugin extension registry based {@link IMetaModelServiceProvider}.
+ * A plug-in extension registry based {@link IMetaModelServiceProvider}.
  */
 public class DefaultMetaModelServiceProvider implements IMetaModelServiceProvider {
 
@@ -31,5 +31,4 @@ public class DefaultMetaModelServiceProvider implements IMetaModelServiceProvide
 	public <T extends IMetaModelService> T getService(IMetaModelDescriptorProvider provider, Class<T> serviceType) {
 		return getService(provider.getMetaModelDescriptor(), serviceType);
 	}
-
 }

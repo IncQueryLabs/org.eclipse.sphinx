@@ -33,11 +33,11 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 
 /**
- * The registry for the metamodel services. Clients should use {@link DefaultMetamodelServiceProvider}.
+ * The registry for the metamodel services. Clients should use {@link DefaultMetaModelServiceProvider}.
  */
-class MetaModelServiceRegistry {
+public class MetaModelServiceRegistry {
 
-	/** the singleton */
+	/** The singleton */
 	static final MetaModelServiceRegistry INSTANCE = new MetaModelServiceRegistry(Platform.getExtensionRegistry(), Activator.getPlugin().getLog());
 
 	private volatile Map<IMetaModelDescriptor, Map<String, ServiceClassDescriptor>> mmServices;
@@ -56,7 +56,7 @@ class MetaModelServiceRegistry {
 
 	private static final Plugin PLUGIN = Activator.getDefault();
 
-	MetaModelServiceRegistry(IExtensionRegistry extensionRegistry, ILog logger) {
+	private MetaModelServiceRegistry(IExtensionRegistry extensionRegistry, ILog logger) {
 		this.extensionRegistry = extensionRegistry;
 		this.logger = logger;
 	}
@@ -68,10 +68,10 @@ class MetaModelServiceRegistry {
 	 * <code>null</code> is returned
 	 */
 	@SuppressWarnings("unchecked")
-	<T extends IMetaModelService> T getService(IMetaModelDescriptor descriptor, Class<T> serviceClass) {
-		checkInit();
+	protected <T extends IMetaModelService> T getService(IMetaModelDescriptor descriptor, Class<T> serviceClass) {
+		initialize();
 		if (mmServices.containsKey(descriptor)) {
-			Map<String, ServiceClassDescriptor> map = getServiceRegistrations(descriptor);
+			Map<String, ServiceClassDescriptor> map = getServiceClassDescriptorsForMetaModel(descriptor);
 			String serviceClassName = serviceClass.getCanonicalName();
 			if (!map.containsKey(serviceClassName)) {
 				// unimplemented service, log error
@@ -115,7 +115,7 @@ class MetaModelServiceRegistry {
 	/**
 	 * Initialize internal data by reading from platform registry
 	 */
-	private void checkInit() {
+	private void initialize() {
 		if (mmServices == null) {
 
 			synchronized (INSTANCE) {
@@ -127,16 +127,16 @@ class MetaModelServiceRegistry {
 						return;
 					}
 					IConfigurationElement[] elements = extensionRegistry.getConfigurationElementsFor(MMS_EXTENSION_ID);
-					for (IConfigurationElement cfgElem : elements) {
+					for (IConfigurationElement element : elements) {
 
-						if (!cfgElem.getName().equals(MMS_EXTENSION_ELEM_DESCRIPTOR)) {
+						if (!element.getName().equals(MMS_EXTENSION_ELEM_DESCRIPTOR)) {
 							continue;
 						}
-						String identifier = cfgElem.getAttribute(MMS_ATT_DESCRIPTORID);
+						String identifier = element.getAttribute(MMS_ATT_DESCRIPTORID);
 
 						// missing identifier, log warning
 						if (identifier == null) {
-							logWarning(Messages.metamodelservice_MissingMMDescriptor, cfgElem.getContributor().getName());
+							logWarning(Messages.metamodelservice_MissingMMDescriptor, element.getContributor().getName());
 							continue;
 						}
 						// locate the corresponding meta-model descriptor
@@ -144,12 +144,12 @@ class MetaModelServiceRegistry {
 
 						// invalid descriptor, log warning
 						if (mmDescriptor == null) {
-							logWarning(Messages.metamodelservice_UnknownMM, cfgElem.getContributor().getName(), MMS_EXTENSION_ID, identifier);
+							logWarning(Messages.metamodelservice_UnknownMM, element.getContributor().getName(), MMS_EXTENSION_ID, identifier);
 							continue;
 						}
-						IConfigurationElement[] children = cfgElem.getChildren(MMS_EXTENSION_ELEM_SERVICE);
+						IConfigurationElement[] children = element.getChildren(MMS_EXTENSION_ELEM_SERVICE);
 						for (IConfigurationElement child : children) {
-							applyServiceRegistrationConfigElement(mmDescriptor, child);
+							registerMetaModelService(mmDescriptor, child);
 						}
 					}
 				}
@@ -157,85 +157,58 @@ class MetaModelServiceRegistry {
 		}
 	}
 
-	private void applyServiceRegistrationConfigElement(IMetaModelDescriptor mmDescriptor, IConfigurationElement configElement) {
+	private void registerMetaModelService(IMetaModelDescriptor mmDescriptor, IConfigurationElement configElement) {
 		try {
-			applyServiceRegistration(mmDescriptor, new ServiceClassDescriptor(configElement));
+			ServiceClassDescriptor descriptor = new ServiceClassDescriptor(configElement);
+			if (descriptor.overrides(getServiceClassDescriptor(mmDescriptor, descriptor.getType()))) {
+				addService(mmDescriptor, descriptor);
+			}
+			// FIXME NPE
+			else if (!getServiceClassDescriptor(mmDescriptor, descriptor.getType()).overrides(descriptor)) {
+				logWarning(Messages.metamodelservice_ServiceAlreadyExists, descriptor.getType(), mmDescriptor.getIdentifier());
+			}
 		} catch (IllegalArgumentException iae) {
 			logWarning(iae);
-		}
-	}
-
-	private void applyServiceRegistration(IMetaModelDescriptor mmDesc, ServiceClassDescriptor registration) {
-		if (isDominantServiceRegistration(mmDesc, registration)) {
-			registerService(mmDesc, registration);
-		} else if (!isDominantedServiceRegistration(mmDesc, registration)) {
-			logWarning(Messages.metamodelservice_ServiceAlreadySet, registration.getType(), mmDesc.getIdentifier());
 		}
 	}
 
 	/**
 	 * Registers a service with this <code>MetaModelServiceRegistry</code> for a metamodel.
 	 *
-	 * @param mmDesc
+	 * @param mmDescriptor
 	 *            the metamodel for which the service is to be registered.
-	 * @param registration
+	 * @param serviceClassDescriptor
 	 *            the service registration
 	 */
-	private void registerService(IMetaModelDescriptor mmDesc, ServiceClassDescriptor registration) {
-		getServiceRegistrations(mmDesc).put(registration.getType(), registration);
+	protected void addService(IMetaModelDescriptor mmDescriptor, ServiceClassDescriptor serviceClassDescriptor) {
+		getServiceClassDescriptorsForMetaModel(mmDescriptor).put(serviceClassDescriptor.getType(), serviceClassDescriptor);
 	}
 
 	/**
 	 * Returns the service registration for a metamodel.
 	 *
-	 * @param mmDesc
+	 * @param mmDescriptor
 	 *            the metamodel descriptor of the metamodel for which to return the registration.
 	 * @param serviceType
 	 *            the type of the service.
 	 * @return the service registration or <code>null</code> if no registration is found for the given metamodel
 	 */
-	private ServiceClassDescriptor getServiceRegistration(IMetaModelDescriptor mmDesc, String serviceType) {
-		return getServiceRegistrations(mmDesc).get(serviceType);
+	private ServiceClassDescriptor getServiceClassDescriptor(IMetaModelDescriptor mmDescriptor, String serviceType) {
+		return getServiceClassDescriptorsForMetaModel(mmDescriptor).get(serviceType);
 	}
 
 	/**
 	 * Returns all services registrations for a metamodel.
 	 *
-	 * @param mmDesc
+	 * @param mmDescriptor
 	 *            the metamodel descriptor of the metamodel for which to return the registrations.
 	 * @return all service registrations for the specified metamodel
 	 */
-	private Map<String, ServiceClassDescriptor> getServiceRegistrations(IMetaModelDescriptor mmDesc) {
-		if (!mmServices.containsKey(mmDesc)) {
-			mmServices.put(mmDesc, new HashMap<String, ServiceClassDescriptor>());
+	private Map<String, ServiceClassDescriptor> getServiceClassDescriptorsForMetaModel(IMetaModelDescriptor mmDescriptor) {
+		if (!mmServices.containsKey(mmDescriptor)) {
+			mmServices.put(mmDescriptor, new HashMap<String, ServiceClassDescriptor>());
 		}
-		return mmServices.get(mmDesc);
-	}
-
-	/**
-	 * Determines if the new service registration dominates the present registration.
-	 *
-	 * @param mmDesc
-	 *            the metamodel for which the new service is to be registered
-	 * @param
-	 * @return if the new service dominates the present registration
-	 * @see
-	 */
-	private boolean isDominantServiceRegistration(IMetaModelDescriptor mmDesc, ServiceClassDescriptor registration) {
-		return registration.overrides(getServiceRegistration(mmDesc, registration.getType()));
-	}
-
-	/**
-	 * Determines if the new service registration is dominated by the present registration.
-	 *
-	 * @param mmDesc
-	 *            the metamodel for which the new service is to be registered
-	 * @param
-	 * @return if the new service is dominated by the present registration
-	 * @see
-	 */
-	private boolean isDominantedServiceRegistration(IMetaModelDescriptor mmDesc, ServiceClassDescriptor registration) {
-		return getServiceRegistration(mmDesc, registration.getType()).overrides(registration);
+		return mmServices.get(mmDescriptor);
 	}
 
 }
