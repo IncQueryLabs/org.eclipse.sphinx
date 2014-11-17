@@ -42,7 +42,6 @@ public class WorkflowContributorRegistry {
 	public static final WorkflowContributorRegistry INSTANCE = new WorkflowContributorRegistry(Platform.getExtensionRegistry(), Activator.getPlugin()
 			.getLog());
 
-	private Set<IPath> contributorClasspathRootPaths = null;
 	private Set<String> contributorPluginIds = null;
 
 	private IExtensionRegistry extensionRegistry;
@@ -52,11 +51,6 @@ public class WorkflowContributorRegistry {
 	private WorkflowContributorRegistry(IExtensionRegistry extensionRegistry, ILog log) {
 		this.extensionRegistry = extensionRegistry;
 		this.log = log;
-	}
-
-	public Set<IPath> getContributorClasspathRootPaths() {
-		initialize();
-		return contributorClasspathRootPaths;
 	}
 
 	public Set<String> getContributorPluginIds() {
