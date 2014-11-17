@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.mwe2.runtime.workflow.Workflow;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.internal.core.JavaModelManager;
@@ -40,54 +41,29 @@ import org.eclipse.pde.internal.core.PDECore;
 import org.eclipse.pde.internal.core.SearchablePluginsManager;
 import org.eclipse.sphinx.emf.mwe.dynamic.WorkflowContributorRegistry;
 import org.eclipse.sphinx.emf.mwe.dynamic.ui.internal.Activator;
+import org.eclipse.sphinx.emf.mwe.dynamic.ui.internal.messages.Messages;
 import org.eclipse.sphinx.jdt.util.JavaExtensions;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.ReflectUtil;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.SelectionDialog;
 
 /**
- * TODO Uses custom JavaWorkspaceScope to narrow down search paths and filters matches resulting from search to keep
- * only subclasses of MWE2 Workflow
+ * Workflow {@link IType type} {@link SelectionDialog selection dialog} capable of finding static workflows in
+ * contributed binary plug-ins as well as dynamic workflows in plug-in projects in the workspace.
+ * <p>
+ * Extends {@link OpenTypeSelectionDialog} allowing to search and select any Java type and customizes it to match and
+ * show only subtypes of {@link Workflow} for that purpose.
+ * <p>
  */
 @SuppressWarnings("restriction")
 public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
 
-	protected void addWorkflowContributorsToJavaSearch() {
-		final SearchablePluginsManager manager = PDECore.getDefault().getSearchablePluginsManager();
-
-		// Determine workflow contributor plug-ins that still need to be added to Java search
-		final List<IPluginModelBase> modelsToBeAdded = new ArrayList<IPluginModelBase>();
-		for (String id : WorkflowContributorRegistry.INSTANCE.getContributorPluginIds()) {
-			// Retrieve PDE plug-in model for current workflow contributor plug-in
-			IPluginModelBase model = PluginRegistry.findModel(id);
-
-			// Check if current workflow contributor plug-in has not already been added to Java search
-			if (model != null && model.getUnderlyingResource() == null && !manager.isInJavaSearch(model.getPluginBase().getId())) {
-				modelsToBeAdded.add(model);
-			}
-		}
-		if (modelsToBeAdded.isEmpty()) {
-			return;
-		}
-
-		// Perform addition of previously determined workflow contributor plug-ins to Java search
-		try {
-			PlatformUI.getWorkbench().getProgressService().busyCursorWhile(new IRunnableWithProgress() {
-				@Override
-				public void run(IProgressMonitor monitor) throws InvocationTargetException {
-					try {
-						manager.addToJavaSearch(modelsToBeAdded.toArray(new IPluginModelBase[modelsToBeAdded.size()]));
-					} finally {
-						monitor.done();
-					}
-				}
-			});
-		} catch (Exception ex) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-		}
-	}
-
+	/**
+	 * Customized {@link JavaWorkspaceScope} implementation that narrows Java search paths down to plug-in projects in
+	 * the workspace and registered workflow contributor plug-ins.
+	 */
 	protected static class WorkflowSearchScope extends JavaWorkspaceScope {
 
 		@Override
@@ -140,6 +116,10 @@ public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
 		}
 	};
 
+	/**
+	 * Custom {@link TypeSelectionExtension} implementation that filters matches resulting from Java type search to keep
+	 * only subclasses of {@link Workflow}.
+	 */
 	protected static class WorkflowTypeSelectionExtension extends TypeSelectionExtension {
 		@Override
 		public ITypeInfoFilterExtension getFilterExtension() {
@@ -178,8 +158,48 @@ public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
 	public WorkflowTypeSelectionDialog(Shell parent) {
 		super(parent, false, PlatformUI.getWorkbench().getProgressService(), new WorkflowSearchScope(), IJavaSearchConstants.CLASS,
 				new WorkflowTypeSelectionExtension());
-		setTitle("Select Workflow");
-		setMessage("&Enter workflow type name prefix or pattern (*, ?, or camel case):");
+		setTitle(Messages.dialog_workflowTypeSelection_title);
+		setMessage(Messages.dialog_workflowTypeSelection_message);
+	}
+
+	@Override
+	public void create() {
 		addWorkflowContributorsToJavaSearch();
+		super.create();
+	}
+
+	protected void addWorkflowContributorsToJavaSearch() {
+		final SearchablePluginsManager manager = PDECore.getDefault().getSearchablePluginsManager();
+
+		// Determine workflow contributor plug-ins that still need to be added to Java search
+		final List<IPluginModelBase> modelsToBeAdded = new ArrayList<IPluginModelBase>();
+		for (String id : WorkflowContributorRegistry.INSTANCE.getContributorPluginIds()) {
+			// Retrieve PDE plug-in model for current workflow contributor plug-in
+			IPluginModelBase model = PluginRegistry.findModel(id);
+
+			// Check if current workflow contributor plug-in has not already been added to Java search
+			if (model != null && model.getUnderlyingResource() == null && !manager.isInJavaSearch(model.getPluginBase().getId())) {
+				modelsToBeAdded.add(model);
+			}
+		}
+		if (modelsToBeAdded.isEmpty()) {
+			return;
+		}
+
+		// Perform addition of previously determined workflow contributor plug-ins to Java search
+		try {
+			PlatformUI.getWorkbench().getProgressService().busyCursorWhile(new IRunnableWithProgress() {
+				@Override
+				public void run(IProgressMonitor monitor) throws InvocationTargetException {
+					try {
+						manager.addToJavaSearch(modelsToBeAdded.toArray(new IPluginModelBase[modelsToBeAdded.size()]));
+					} finally {
+						monitor.done();
+					}
+				}
+			});
+		} catch (Exception ex) {
+			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+		}
 	}
 }

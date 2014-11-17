@@ -23,7 +23,11 @@ public class Messages extends NLS {
 	public static String menu_runWorkflow_label;
 	public static String operation_runWorkflow_label;
 	public static String action_runWorkflow_label;
+
 	public static String dialog_workflowFileSelection_title;
+
+	public static String dialog_workflowTypeSelection_title;
+	public static String dialog_workflowTypeSelection_message;
 
 	public static String workflowSelectionWizard_Title;
 
