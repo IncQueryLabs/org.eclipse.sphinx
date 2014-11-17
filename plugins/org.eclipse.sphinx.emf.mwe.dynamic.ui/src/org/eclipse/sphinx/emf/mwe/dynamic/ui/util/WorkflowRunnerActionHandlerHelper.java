@@ -25,13 +25,16 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
+import org.eclipse.sphinx.emf.mwe.dynamic.ui.dialogs.WorkflowTypeSelectionDialog;
 import org.eclipse.sphinx.emf.mwe.dynamic.ui.wizards.WorkflowSelectionWizard;
 import org.eclipse.sphinx.emf.mwe.dynamic.util.XtendUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
+import org.eclipse.ui.dialogs.SelectionDialog;
 
 public class WorkflowRunnerActionHandlerHelper {
 
@@ -65,33 +68,30 @@ public class WorkflowRunnerActionHandlerHelper {
 
 	public Object promptForWorkflow(IStructuredSelection structuredSelection) {
 
-		// TODO Use this code to instead of WorkflowSelectionWizard
-		// SelectionDialog dialog = new OpenTypeSelectionDialog(ExtendedPlatformUI.getActiveShell(), true,
-		// PlatformUI.getWorkbench()
-		// .getProgressService(), SearchEngine.createWorkspaceScope(), IJavaSearchConstants.TYPE);
-		// dialog.setTitle(JavaUIMessages.OpenTypeAction_dialogTitle);
-		// dialog.setMessage(JavaUIMessages.OpenTypeAction_dialogMessage);
-		//
-		// int result = dialog.open();
-		// if (result != IDialogConstants.OK_ID) {
-		// return result;
-		// }
-		//
-		// Object[] types = dialog.getResult();
-		// return types[0];
+		SelectionDialog dialog = new WorkflowTypeSelectionDialog(ExtendedPlatformUI.getActiveShell());
 
-		// Try to retrieve file behind selection and query workflow in enclosing project
-		IFile selectedFile = null;
-		if (structuredSelection != null) {
-			Object selected = structuredSelection.getFirstElement();
-			if (selected instanceof IFile) {
-				selectedFile = (IFile) selected;
-			} else {
-				selectedFile = EcorePlatformUtil.getFile(selected);
+		int returnCode = dialog.open();
+		if (returnCode == IDialogConstants.OK_ID) {
+			Object[] workflowTypes = dialog.getResult();
+			if (workflowTypes.length > 0) {
+				return workflowTypes[0];
 			}
 		}
 
-		return promptForWorkflowFile(selectedFile != null ? selectedFile.getProject() : null);
+		return null;
+
+		// Try to retrieve file behind selection and query workflow in enclosing project
+		// IFile selectedFile = null;
+		// if (structuredSelection != null) {
+		// Object selected = structuredSelection.getFirstElement();
+		// if (selected instanceof IFile) {
+		// selectedFile = (IFile) selected;
+		// } else {
+		// selectedFile = EcorePlatformUtil.getFile(selected);
+		// }
+		// }
+		//
+		// return promptForWorkflowFile(selectedFile != null ? selectedFile.getProject() : null);
 	}
 
 	protected IFile promptForWorkflowFile(IProject contextProject) {

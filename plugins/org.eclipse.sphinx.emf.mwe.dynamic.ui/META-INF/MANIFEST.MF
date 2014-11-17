@@ -7,6 +7,7 @@ Bundle-Activator: org.eclipse.sphinx.emf.mwe.dynamic.ui.internal.Activator$Imple
 Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
+ org.eclipse.pde.core,
  org.eclipse.sphinx.emf.ui,
  org.eclipse.sphinx.emf.mwe.dynamic
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -23,3 +24,4 @@ Export-Package: org.eclipse.sphinx.emf.mwe.dynamic.ui,
  org.eclipse.sphinx.emf.mwe.dynamic.ui.wizards.pages
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
+Eclipse-BuddyPolicy: global
