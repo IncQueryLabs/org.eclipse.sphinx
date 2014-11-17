@@ -1,3 +1,17 @@
+/**
+ * <copyright>
+ *
+ * Copyright (c) 2014 itemis and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     itemis - Initial API and implementation
+ *
+ * </copyright>
+ */
 package org.eclipse.sphinx.examples.hummingbird20.check.internal;
 
 import org.eclipse.emf.common.EMFPlugin;
@@ -26,7 +40,7 @@ public final class Activator extends EMFPlugin {
 
 	/**
 	 * Returns the singleton instance of the Eclipse plug-in.
-	 * 
+	 *
 	 * @return the singleton instance.
 	 */
 	@Override
@@ -36,7 +50,7 @@ public final class Activator extends EMFPlugin {
 
 	/**
 	 * Returns the singleton instance of the Eclipse plug-in.
-	 * 
+	 *
 	 * @return the singleton instance.
 	 */
 	public static Implementation getPlugin() {
@@ -47,7 +61,7 @@ public final class Activator extends EMFPlugin {
 	 * Returns the singleton instance of the Eclipse plug-in. This method does actually the same thing as getPlugin()
 	 * and has been put in place for compatibility reasons with Activator classes which are not EMF-based but generated
 	 * by PDE.
-	 * 
+	 *
 	 * @return the singleton instance.
 	 */
 	public static Implementation getDefault() {
@@ -68,6 +82,5 @@ public final class Activator extends EMFPlugin {
 			// Remember the static instance
 			plugin = this;
 		}
-
 	}
 }
