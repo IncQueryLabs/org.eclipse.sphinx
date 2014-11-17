@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
@@ -27,10 +26,8 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.mwe.dynamic.ui.dialogs.WorkflowTypeSelectionDialog;
-import org.eclipse.sphinx.emf.mwe.dynamic.ui.wizards.WorkflowSelectionWizard;
 import org.eclipse.sphinx.emf.mwe.dynamic.util.XtendUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
@@ -79,30 +76,6 @@ public class WorkflowRunnerActionHandlerHelper {
 		}
 
 		return null;
-
-		// Try to retrieve file behind selection and query workflow in enclosing project
-		// IFile selectedFile = null;
-		// if (structuredSelection != null) {
-		// Object selected = structuredSelection.getFirstElement();
-		// if (selected instanceof IFile) {
-		// selectedFile = (IFile) selected;
-		// } else {
-		// selectedFile = EcorePlatformUtil.getFile(selected);
-		// }
-		// }
-		//
-		// return promptForWorkflowFile(selectedFile != null ? selectedFile.getProject() : null);
-	}
-
-	protected IFile promptForWorkflowFile(IProject contextProject) {
-		WorkflowSelectionWizard wizard = new WorkflowSelectionWizard(contextProject);
-		WizardDialog wizardDialog = new WizardDialog(ExtendedPlatformUI.getActiveShell(), wizard);
-		wizardDialog.create();
-		wizardDialog.open();
-
-		IFile workflowFile = wizard.getWorkflowFile();
-		String workflowClassName = wizard.getWorkflowClassName();
-		return XtendUtil.getJavaFile(workflowFile, workflowClassName);
 	}
 
 	public boolean isModel(IStructuredSelection structuredSelection) {

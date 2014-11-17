@@ -19,9 +19,7 @@ Export-Package: org.eclipse.sphinx.emf.mwe.dynamic.ui,
  org.eclipse.sphinx.emf.mwe.dynamic.ui.handlers,
  org.eclipse.sphinx.emf.mwe.dynamic.ui.internal;x-internal:=true,
  org.eclipse.sphinx.emf.mwe.dynamic.ui.internal.messages;x-internal:=true,
- org.eclipse.sphinx.emf.mwe.dynamic.ui.util,
- org.eclipse.sphinx.emf.mwe.dynamic.ui.wizards,
- org.eclipse.sphinx.emf.mwe.dynamic.ui.wizards.pages
+ org.eclipse.sphinx.emf.mwe.dynamic.ui.util
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Eclipse-BuddyPolicy: global
