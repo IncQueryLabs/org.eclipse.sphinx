@@ -16,6 +16,7 @@ package org.eclipse.sphinx.emf.mwe.dynamic.ui.dialogs;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,14 +40,15 @@ import org.eclipse.pde.internal.core.PDECore;
 import org.eclipse.pde.internal.core.SearchablePluginsManager;
 import org.eclipse.sphinx.emf.mwe.dynamic.WorkflowContributorRegistry;
 import org.eclipse.sphinx.emf.mwe.dynamic.ui.internal.Activator;
+import org.eclipse.sphinx.jdt.util.JavaExtensions;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.ReflectUtil;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * Uses custom JavaWorkspaceScope to narrow down search paths and filters matches resulting from search to keep only
- * subclasses of MWE2 Workflow
+ * TODO Uses custom JavaWorkspaceScope to narrow down search paths and filters matches resulting from search to keep
+ * only subclasses of MWE2 Workflow
  */
 @SuppressWarnings("restriction")
 public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
@@ -102,35 +104,14 @@ public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
 				return result;
 			}
 
-			// Collect paths to all Java projects in the workspace
-			Set<IPath> javaProjectPaths = new LinkedHashSet<IPath>();
-			try {
-				for (IJavaProject javaProject : JavaModelManager.getJavaModelManager().getJavaModel().getJavaProjects()) {
-					if (!javaProject.getProject().getName().equals(SearchablePluginsManager.PROXY_PROJECT_NAME)) {
-						javaProjectPaths.add(javaProject.getProject().getFullPath());
-					}
-				}
-			} catch (JavaModelException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
-
-			// Collect paths to all registered workflow contributor plug-ins
-			// TODO Check if only testing against plug-in id would be sufficient
-			Set<String> workflowContributorPluginIds = WorkflowContributorRegistry.INSTANCE.getContributorPluginIds();
-
 			// Let (re-)compute all workspace search paths and narrow them down to the subset or search paths
-			// relevant to source workflows in the workspace and binary workflows from registered contributor
+			// relevant to dynamic workflows in the workspace and static workflows from registered contributor
 			// plug-ins
 			Set<IPath> workflowSearchPaths = new LinkedHashSet<IPath>();
+			Set<IPath> javaProjectPaths = getJavaProjectPaths();
 			for (IPath path : super.enclosingProjectsAndJars()) {
-				if (javaProjectPaths.contains(path)) {
+				if (javaProjectPaths.contains(path) || WorkflowContributorRegistry.INSTANCE.isContributorClasspathRootPath(path)) {
 					workflowSearchPaths.add(path);
-				} else {
-					for (String id : workflowContributorPluginIds) {
-						if (path.lastSegment().equals(id) || path.segmentCount() > 1 && path.removeLastSegments(1).lastSegment().equals(id)) {
-							workflowSearchPaths.add(path);
-						}
-					}
 				}
 			}
 
@@ -142,6 +123,20 @@ public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
 				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			}
 			return result;
+		}
+
+		protected Set<IPath> getJavaProjectPaths() {
+			Set<IPath> javaProjectPaths = new HashSet<IPath>();
+			try {
+				for (IJavaProject javaProject : JavaModelManager.getJavaModelManager().getJavaModel().getJavaProjects()) {
+					if (!javaProject.getProject().getName().equals(SearchablePluginsManager.PROXY_PROJECT_NAME)) {
+						javaProjectPaths.add(javaProject.getProject().getFullPath());
+					}
+				}
+			} catch (JavaModelException ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			}
+			return javaProjectPaths;
 		}
 	};
 
@@ -164,7 +159,7 @@ public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
 						 * ClassNotFoundException may entail a significantly lower performance when many matches need to
 						 * be filtered.
 						 */
-						if (!className.startsWith("bin.")) { //$NON-NLS-1$
+						if (!className.startsWith(JavaExtensions.DEFAULT_OUTPUT_FOLDER_NAME)) {
 							// Retrieve class behind matched type
 							Class<?> forName = Class.forName(className);
 

@@ -9,7 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.core,
  org.eclipse.emf.mwe.core;visibility:=reexport,
  org.eclipse.sphinx.platform,
- org.eclipse.sphinx.jdt,
+ org.eclipse.sphinx.jdt;visibility:=reexport,
  org.eclipse.sphinx.emf,
  org.apache.commons.logging,
  org.apache.log4j

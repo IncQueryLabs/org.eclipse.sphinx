@@ -31,7 +31,7 @@ class ProjectClassLoader extends URLClassLoader {
 		Assert.isLegal(javaProject.exists && javaProject.isOpen)
 
 		// Retrieve and return URL of absolute file system location behind default output location of given Java project
-		val outputURL = javaProject.outputLocation.location?.toFile.toURI.toURL
+		val outputURL = javaProject.outputLocation.location?.toFile?.toURI?.toURL
 		if (outputURL != null) #[outputURL] else #[]
 	}
 

@@ -14,23 +14,30 @@
  */
 package org.eclipse.sphinx.emf.mwe.dynamic;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sphinx.emf.mwe.dynamic.internal.Activator;
+import org.eclipse.sphinx.jdt.util.JavaExtensions;
+import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.StatusUtil;
+import org.osgi.framework.Bundle;
 
 public class WorkflowContributorRegistry {
 
 	private final static String EXTP_WORKFLOW_CONTRIBUTORS = Activator.INSTANCE.getSymbolicName() + ".workflowContributors"; //$NON-NLS-1$
 	private final static String ELEM_CONTRIBUTOR = "contributor"; //$NON-NLS-1$
-	private final static String ATTR_ID = "id"; //$NON-NLS-1$
+	private final static String ATTR_PLUGIN_ID = "pluginId"; //$NON-NLS-1$
 
 	public static final WorkflowContributorRegistry INSTANCE = new WorkflowContributorRegistry(Platform.getExtensionRegistry(), Activator.getPlugin()
 			.getLog());
@@ -76,7 +83,7 @@ public class WorkflowContributorRegistry {
 					}
 
 					// Retrieve contributor bundle id
-					String id = element.getAttribute(ATTR_ID);
+					String id = element.getAttribute(ATTR_PLUGIN_ID);
 					if (id == null || id.isEmpty()) {
 						String msg = "Missing contributor id in " + EXTP_WORKFLOW_CONTRIBUTORS + " extension from " //$NON-NLS-1$ //$NON-NLS-2$
 								+ element.getContributor().getName();
@@ -86,32 +93,47 @@ public class WorkflowContributorRegistry {
 					}
 
 					contributorPluginIds.add(id);
-
-					// // Obtain contributor bundle
-					// Bundle bundle = null;
-					// if (id.equals(element.getContributor().getName())) {
-					// bundle = Platform.getBundle(element.getContributor().getName());
-					// } else {
-					// bundle = ExtendedPlatform.loadBundle(id);
-					// }
-					// if (bundle == null) {
-					//						String msg = "Unable to load workflow contributor bundle " + id; //$NON-NLS-1$
-					// IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), new RuntimeException(msg));
-					// log.log(status);
-					// continue;
-					// }
-					//
-					// // Retrieve and register the path to the contributor bundle's classpath root
-					//					URL url = bundle.getResource("/"); //$NON-NLS-1$
-					// try {
-					// URL resolvedURL = FileLocator.resolve(url);
-					// contributorClasspathRootPaths.add(new Path(resolvedURL.getPath()).removeTrailingSeparator());
-					// } catch (Exception ex) {
-					// IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
-					// log.log(status);
-					// }
 				}
 			}
 		}
+	}
+
+	// TODO Consider to move this method to ExtendedPlatform
+	public boolean isContributorClasspathRootPath(IPath path) {
+		if (path != null && path.segmentCount() > 0) {
+			for (String id : getContributorPluginIds()) {
+				// Classpath root paths of binary plug-ins: end with plug-in id
+				if (path.lastSegment().equals(id)) {
+					return true;
+				} else {
+					// Classpath root paths of plug-in projects living in a development workbench and running in a
+					// runtime workbench: end with default output folder name preceded by plug-in id
+					if (path.lastSegment().equals(JavaExtensions.DEFAULT_OUTPUT_FOLDER_NAME)) {
+						if (path.removeLastSegments(1).lastSegment().equals(id)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	// TODO Consider to move this method to ExtendedPlatform
+	public IPath getContributorClassPathRootPath(String contributorPluginId) {
+		try {
+			// Retrieve contributor bundle
+			Bundle contributorBundle = ExtendedPlatform.loadBundle(contributorPluginId);
+			if (contributorBundle != null) {
+				// Retrieve and register the path to the contributor bundle's classpath root
+				URL classpathRootURL = contributorBundle.getResource("/"); //$NON-NLS-1$
+				URL resolvedClasspathRootURL = FileLocator.resolve(classpathRootURL);
+				return new Path(resolvedClasspathRootURL.getPath()).removeTrailingSeparator();
+			}
+		} catch (IOException ex) {
+			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
+			log.log(status);
+		}
+		return null;
 	}
 }

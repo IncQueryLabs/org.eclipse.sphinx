@@ -30,7 +30,9 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil
 import org.eclipse.sphinx.jdt.internal.Activator
 
 class JavaExtensions {
-	
+
+	public static final String DEFAULT_OUTPUT_FOLDER_NAME = "bin"
+
 	static def File getFile(IClasspathEntry entry) {
 		if (entry.path.toFile.exists) {
 			entry.path.toFile
@@ -53,7 +55,7 @@ class JavaExtensions {
 	static def IPath getLocation(IPath workspacePath) {
 		ResourcesPlugin.getWorkspace().getRoot().findMember(workspacePath)?.getLocation()
 	}
-	
+
 	static def void validateCompilerCompliance(String compliance) {
 		val IVMInstall install = JavaRuntime.getDefaultVMInstall()
 		if (install instanceof IVMInstall2) {
