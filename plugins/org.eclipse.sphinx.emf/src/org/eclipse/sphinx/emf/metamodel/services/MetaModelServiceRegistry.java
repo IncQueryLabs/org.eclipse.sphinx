@@ -150,17 +150,17 @@ public class MetaModelServiceRegistry {
 					continue;
 				}
 				List<IMetaModelDescriptor> mmDescriptors = serviceClassDescriptor.getMetaModelDescriptors();
+				Set<String> unknownMetaModelDescIdPatterns = serviceClassDescriptor.getUnknownMetaModelDescIdPatterns();
 				// No descriptor, log warning
-				if (mmDescriptors.isEmpty()) {
-					Set<String> unknownMetaModelDescIdPatterns = serviceClassDescriptor.getUnknownMetaModelDescIdPatterns();
-					if (!unknownMetaModelDescIdPatterns.isEmpty()) {
-						logWarning(Messages.metamodelservice_UnknownMM, serviceClassDescriptor.getContributorName(), MMS_EXTENSION_ID,
-								unknownMetaModelDescIdPatterns);
-					} else {
-						logWarning(Messages.metamodelservice_MissingMMDescriptor, serviceClassDescriptor.getContributorName());
-					}
+				if (mmDescriptors.isEmpty() && unknownMetaModelDescIdPatterns.isEmpty()) {
+					logWarning(Messages.metamodelservice_MissingMMDescriptor, serviceClassDescriptor.getContributorName());
 					continue;
 				}
+				if (!unknownMetaModelDescIdPatterns.isEmpty()) {
+					logWarning(Messages.metamodelservice_UnknownMM, serviceClassDescriptor.getContributorName(), MMS_EXTENSION_ID,
+							unknownMetaModelDescIdPatterns);
+				}
+				// Add Services
 				for (IMetaModelDescriptor mmDescriptor : mmDescriptors) {
 					addService(mmDescriptor, serviceClassDescriptor);
 				}
