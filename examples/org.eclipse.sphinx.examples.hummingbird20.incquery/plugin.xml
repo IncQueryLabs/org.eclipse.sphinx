@@ -20,7 +20,6 @@ Contributors:
           class="org.eclipse.sphinx.examples.hummingbird20.incquery.service.Hummindbird20QueryService"
           type="org.eclipse.sphinx.emf.query.IModelQueryService">
           <applicableFor
-                metaModelDescriptorId="org.eclipse.sphinx.examples.hummingbird20"
                 metaModelDescriptorIdPattern="org.eclipse.sphinx.examples.hummingbird20">
        	  </applicableFor>
     </service>
