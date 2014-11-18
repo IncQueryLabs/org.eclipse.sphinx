@@ -14,11 +14,19 @@
  */
 package org.eclipse.sphinx.emf.internal.metamodel.services;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.metamodel.services.IMetaModelService;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
@@ -26,19 +34,42 @@ public class ServiceClassDescriptor extends ExtensionClassDescriptor<IMetaModelS
 
 	private final static String ATTR_TYPE = "type"; //$NON-NLS-1$
 
+	private final static String NODE_APPLICABLE_FOR = "applicableFor"; //$NON-NLS-1$
+
+	private final static String ATTR_META_MODEL_DESCRIPTOR_ID_PATTERN = "metaModelDescriptorIdPattern"; //$NON-NLS-1$
+
 	private String typeName;
 	private Class<IMetaModelService> serviceType;
+	private Set<String> mmDescIdPatterns;
 
 	public ServiceClassDescriptor(IConfigurationElement configurationElement) {
 		super(configurationElement);
 
 		typeName = configurationElement.getAttribute(ATTR_TYPE);
 		Assert.isNotNull(typeName, Messages.metamodelservice_MissingServiceType);
+
+		initMetaModelDescIdPatterns(configurationElement);
 	}
 
 	public ServiceClassDescriptor(Class<IMetaModelService> serviceType, Class<? extends IMetaModelService> serviceClass) {
 		super(serviceClass);
 		this.serviceType = serviceType;
+	}
+
+	private void initMetaModelDescIdPatterns(IConfigurationElement configurationElement) {
+		// Create the Set
+		mmDescIdPatterns = new HashSet<String>();
+		// Add mmDescIdPattern to the Set
+		IConfigurationElement[] applicableForElements = configurationElement.getChildren(NODE_APPLICABLE_FOR);
+
+		for (IConfigurationElement applicableFor : applicableForElements) {
+			String mmDescIdPattern = applicableFor.getAttribute(ATTR_META_MODEL_DESCRIPTOR_ID_PATTERN);
+			// Missing mmDescIdPattern, continue
+			if (mmDescIdPattern == null) {
+				continue;
+			}
+			mmDescIdPatterns.add(mmDescIdPattern);
+		}
 	}
 
 	public String getTypeName() {
@@ -55,5 +86,33 @@ public class ServiceClassDescriptor extends ExtensionClassDescriptor<IMetaModelS
 			}
 		}
 		return serviceType;
+	}
+
+	public List<IMetaModelDescriptor> getMetaModelDescriptors() {
+		List<IMetaModelDescriptor> mmDescriptors = new ArrayList<IMetaModelDescriptor>();
+		for (String mmDescIdPattern : mmDescIdPatterns) {
+			// Handle the case which contribute a service for any meta-model
+			if (".*".equals(mmDescIdPattern) || ".+".equals(mmDescIdPattern)) { //$NON-NLS-1$ //$NON-NLS-2$
+				mmDescriptors.add(MetaModelDescriptorRegistry.ANY_MM);
+			} else {
+				// Locate the corresponding meta-model descriptors
+				mmDescriptors.addAll(MetaModelDescriptorRegistry.INSTANCE.getDescriptors(mmDescIdPattern));
+			}
+		}
+		return mmDescriptors;
+	}
+
+	public Set<String> getUnknownMetaModelDescIdPatterns() {
+		Set<String> result = new HashSet<String>();
+		if (mmDescIdPatterns.isEmpty()) {
+			return Collections.emptySet();
+		}
+		for (String mmDescIdPattern : mmDescIdPatterns) {
+			if (!(".*".equals(mmDescIdPattern) || ".+".equals(mmDescIdPattern)) //$NON-NLS-1$ //$NON-NLS-2$
+					&& MetaModelDescriptorRegistry.INSTANCE.getDescriptors(mmDescIdPattern).isEmpty()) {
+				result.add(mmDescIdPattern);
+			}
+		}
+		return result;
 	}
 }

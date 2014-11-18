@@ -17,10 +17,10 @@ package org.eclipse.sphinx.emf.metamodel.services;
 import static org.eclipse.sphinx.platform.util.StatusUtil.createErrorStatus;
 import static org.eclipse.sphinx.platform.util.StatusUtil.createWarningStatus;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -33,7 +33,6 @@ import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.internal.metamodel.services.ServiceClassDescriptor;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
-import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 
 /**
  * The registry for the metamodel services. Clients should use {@link DefaultMetaModelServiceProvider}.
@@ -53,10 +52,6 @@ public class MetaModelServiceRegistry {
 	private final static String MMS_EXTENSION_ID = Activator.INSTANCE.getSymbolicName() + ".metaModelServices"; //$NON-NLS-1$
 
 	private final static String NODE_SERVICE = "service"; //$NON-NLS-1$
-
-	private final static String NODE_APPLICABLE_FOR = "applicableFor"; //$NON-NLS-1$
-
-	private final static String ATTR_META_MODEL_DESCRIPTOR_ID_PATTERN = "metaModelDescriptorIdPattern"; //$NON-NLS-1$
 
 	private static final Plugin PLUGIN = Activator.getDefault();
 
@@ -130,7 +125,7 @@ public class MetaModelServiceRegistry {
 			IConfigurationElement[] serviceConfigurationElements = extensionRegistry.getConfigurationElementsFor(MMS_EXTENSION_ID);
 
 			// Create a temporary map
-			Map<String, IConfigurationElement> idToServiceCfgElementMap = new HashMap<String, IConfigurationElement>();
+			Map<String, ServiceClassDescriptor> idToServiceClassDescriptorMap = new HashMap<String, ServiceClassDescriptor>();
 
 			// First iteration to detect duplicated service id and initialize the temporary map
 			for (IConfigurationElement serviceCfgElement : serviceConfigurationElements) {
@@ -140,56 +135,37 @@ public class MetaModelServiceRegistry {
 				}
 				ServiceClassDescriptor serviceClassDescriptor = new ServiceClassDescriptor(serviceCfgElement);
 				String serviceId = serviceClassDescriptor.getId();
-				if (idToServiceCfgElementMap.containsKey(serviceId)) {
+				if (idToServiceClassDescriptorMap.containsKey(serviceId)) {
 					logWarning(Messages.warning_serviceIdNotUnique, serviceId);
 					continue;
 				}
-				idToServiceCfgElementMap.put(serviceId, serviceCfgElement);
+				idToServiceClassDescriptorMap.put(serviceId, serviceClassDescriptor);
 			}
 
 			// Second iteration to add services
-			for (IConfigurationElement serviceCfgElement : idToServiceCfgElementMap.values()) {
-				ServiceClassDescriptor serviceClassDescriptor = new ServiceClassDescriptor(serviceCfgElement);
+			for (ServiceClassDescriptor serviceClassDescriptor : idToServiceClassDescriptorMap.values()) {
 				String override = serviceClassDescriptor.getOverride();
-				if (override != null && !idToServiceCfgElementMap.containsKey(override)) {
+				if (override != null && !idToServiceClassDescriptorMap.containsKey(override)) {
 					logWarning(Messages.warning_noServiceToOverride, serviceClassDescriptor.getId(), override);
 					continue;
 				}
-				IConfigurationElement[] applicableForElements = serviceCfgElement.getChildren(NODE_APPLICABLE_FOR);
-				if (applicableForElements.length == 0) {
-					logWarning(Messages.metamodelservice_MissingApplicableFor, serviceClassDescriptor.getContributorName());
+				List<IMetaModelDescriptor> mmDescriptors = serviceClassDescriptor.getMetaModelDescriptors();
+				// No descriptor, log warning
+				if (mmDescriptors.isEmpty()) {
+					Set<String> unknownMetaModelDescIdPatterns = serviceClassDescriptor.getUnknownMetaModelDescIdPatterns();
+					if (!unknownMetaModelDescIdPatterns.isEmpty()) {
+						logWarning(Messages.metamodelservice_UnknownMM, serviceClassDescriptor.getContributorName(), MMS_EXTENSION_ID,
+								unknownMetaModelDescIdPatterns);
+					} else {
+						logWarning(Messages.metamodelservice_MissingMMDescriptor, serviceClassDescriptor.getContributorName());
+					}
 					continue;
 				}
-				for (IConfigurationElement applicableFor : applicableForElements) {
-					String mmDescIdPattern = applicableFor.getAttribute(ATTR_META_MODEL_DESCRIPTOR_ID_PATTERN);
-					// Missing mmDescIdPattern, log warning
-					if (mmDescIdPattern == null) {
-						logWarning(Messages.metamodelservice_MissingMMDescriptor, serviceClassDescriptor.getContributorName());
-						continue;
-					}
-
-					List<IMetaModelDescriptor> mmDescriptors = Collections.emptyList();
-					// Handle the case which contribute a service for any meta-model
-					if (".*".equals(mmDescIdPattern) || ".+".equals(mmDescIdPattern)) { //$NON-NLS-1$ //$NON-NLS-2$
-						mmDescriptors = Collections.singletonList(MetaModelDescriptorRegistry.ANY_MM);
-						continue;
-					} else {
-						// Locate the corresponding meta-model descriptors
-						mmDescriptors = MetaModelDescriptorRegistry.INSTANCE.getDescriptors(mmDescIdPattern);
-					}
-
-					// No descriptor, log warning
-					if (mmDescriptors.isEmpty()) {
-						logWarning(Messages.metamodelservice_UnknownMM, serviceClassDescriptor.getContributorName(), MMS_EXTENSION_ID,
-								mmDescIdPattern);
-						continue;
-					}
-					for (IMetaModelDescriptor mmDescriptor : mmDescriptors) {
-						addService(mmDescriptor, serviceClassDescriptor);
-					}
+				for (IMetaModelDescriptor mmDescriptor : mmDescriptors) {
+					addService(mmDescriptor, serviceClassDescriptor);
 				}
 			}
-			idToServiceCfgElementMap.clear();
+			idToServiceClassDescriptorMap.clear();
 		}
 	}
 
