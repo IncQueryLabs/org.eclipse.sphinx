@@ -113,7 +113,7 @@ public class MethodWrapper {
 		return signature.equals(mw.signature) && instance == mw.instance;
 	}
 
-	public AbstractCheckValidator getInstance() {
+	public ICheckValidator getInstance() {
 		return instance;
 	}
 

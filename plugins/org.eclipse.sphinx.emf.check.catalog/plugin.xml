@@ -25,5 +25,12 @@
             class="org.eclipse.sphinx.emf.check.catalog.checkcatalog.CheckCatalogPackage"
             genModel="model/CheckCatalog.genmodel"/>
    </extension>
+   <extension
+         point="org.eclipse.emf.ecore.invocation_delegate">
+      <factory
+            class="org.eclipse.sphinx.emf.check.catalog.CategoryComparatorFactory"
+            uri="org.eclipse.sphinx.emf.check.catalog.similarity">
+      </factory>
+   </extension>
 
 </plugin>

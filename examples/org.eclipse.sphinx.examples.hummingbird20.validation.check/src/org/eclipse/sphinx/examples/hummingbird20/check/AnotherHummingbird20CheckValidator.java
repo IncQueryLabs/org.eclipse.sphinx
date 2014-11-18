@@ -28,7 +28,7 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
 
-public class Hummingbird20CheckValidator extends AbstractCheckValidator {
+public class AnotherHummingbird20CheckValidator extends AbstractCheckValidator {
 
 	private static final Pattern ILLEGAL_CHARACTERS_PATTERN = Pattern.compile(".*[ \\t\\.,;].*"); //$NON-NLS-1$
 

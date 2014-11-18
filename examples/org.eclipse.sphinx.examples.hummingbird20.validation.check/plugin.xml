@@ -9,4 +9,12 @@
       </validator>
    </extension>
 
+   <extension
+         point="org.eclipse.sphinx.emf.check.checkvalidator">
+      <validator
+            class="org.eclipse.sphinx.examples.hummingbird20.check.AnotherHummingbird20CheckValidator"
+            model="model/Hummingbird20.check">
+      </validator>
+   </extension>
+
 </plugin>

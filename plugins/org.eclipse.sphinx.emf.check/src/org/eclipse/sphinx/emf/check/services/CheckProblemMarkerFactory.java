@@ -64,6 +64,14 @@ public class CheckProblemMarkerFactory implements IProblemMarkerFactory {
 			message = Messages.noMessageAvailableForThisMarker;
 		}
 		attributes.put(IMarker.MESSAGE, message);
+
+		// store the id of the validator which raised the error
+		int size = data.size();
+		if (size > 1 && !(data.get(size - 1) instanceof DiagnosticLocation)) {
+			String validaorClassName = (String) data.get(1);
+			attributes.put(IMarker.SOURCE_ID, validaorClassName);
+		}
+
 		marker.setAttributes(attributes);
 	}
 

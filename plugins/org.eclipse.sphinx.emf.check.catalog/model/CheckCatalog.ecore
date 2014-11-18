@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="checkcatalog" nsURI="http://www.eclipse.org/sphinx/check" nsPrefix="checkcatalog">
+  <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore" references="#//%http:%2F%2Fwww.eclipse.org%2Femf%2F2002%2FEcore%">
+    <details key="invocationDelegates" value="org.eclipse.sphinx.emf.check.catalog.similarity"/>
+  </eAnnotations>
   <eClassifiers xsi:type="ecore:EClass" name="Identifiable" abstract="true">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         iD="true"/>
@@ -20,7 +23,12 @@
         eType="#//Category"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="comment" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Category" eSuperTypes="#//Identifiable"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Category" eSuperTypes="#//Identifiable">
+    <eOperations name="equals" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="org.eclipse.sphinx.emf.check.catalog.similarity" references="#//Category/equals/%org.eclipse.sphinx.emf.check.catalog.similarity%"/>
+      <eParameters name="another" eType="#//Category"/>
+    </eOperations>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="Severity">
     <eLiterals name="Error" value="2"/>
     <eLiterals name="Warning" value="1" literal="Warning"/>

@@ -29,6 +29,10 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference CheckCatalog.ecore#//Constraint/categories"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute CheckCatalog.ecore#//Constraint/comment"/>
     </genClasses>
-    <genClasses ecoreClass="CheckCatalog.ecore#//Category"/>
+    <genClasses ecoreClass="CheckCatalog.ecore#//Category">
+      <genOperations ecoreOperation="CheckCatalog.ecore#//Category/equals">
+        <genParameters ecoreParameter="CheckCatalog.ecore#//Category/equals/another"/>
+      </genOperations>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

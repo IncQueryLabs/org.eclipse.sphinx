@@ -15,6 +15,7 @@
 
 package org.eclipse.sphinx.emf.check.ui.actions.dialog;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -24,11 +25,11 @@ import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category;
 
 public class CategorySelectionContentProvider implements IStructuredContentProvider {
 
-	private final CheckModelHelper helper;
+	private final Set<CheckModelHelper> helpers;
 
-	public CategorySelectionContentProvider(CheckModelHelper helper) {
+	public CategorySelectionContentProvider(Set<CheckModelHelper> helpers) {
 		super();
-		this.helper = helper;
+		this.helpers = helpers;
 	}
 
 	@Override
@@ -43,7 +44,21 @@ public class CategorySelectionContentProvider implements IStructuredContentProvi
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		Set<Category> categories = helper.getCategories();
+		Set<Category> categories = new HashSet<Category>();
+		for (CheckModelHelper helper : helpers) {
+			Set<Category> categoriesSubset = helper.getCategories();
+			for (Category category : categoriesSubset) {
+				boolean equality = false;
+				for (Category c : categories) {
+					if (c.equals(category)) {
+						equality = true;
+					}
+				}
+				if (!equality) {
+					categories.add(category);
+				}
+			}
+		}
 		return categories.toArray();
 	}
 }

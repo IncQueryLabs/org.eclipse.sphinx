@@ -14,9 +14,11 @@
  */
 package org.eclipse.sphinx.emf.check.catalog.checkcatalog.impl;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -255,6 +257,15 @@ public class CheckCatalogPackageImpl extends EPackageImpl implements CheckCatalo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EOperation getCategory__Equals__Category() {
+		return categoryEClass.getEOperations().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EEnum getSeverity() {
 		return severityEEnum;
 	}
@@ -303,6 +314,7 @@ public class CheckCatalogPackageImpl extends EPackageImpl implements CheckCatalo
 		createEAttribute(constraintEClass, CONSTRAINT__COMMENT);
 
 		categoryEClass = createEClass(CATEGORY);
+		createEOperation(categoryEClass, CATEGORY___EQUALS__CATEGORY);
 
 		// Create enums
 		severityEEnum = createEEnum(SEVERITY);
@@ -358,6 +370,9 @@ public class CheckCatalogPackageImpl extends EPackageImpl implements CheckCatalo
 
 		initEClass(categoryEClass, Category.class, "Category", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
+		EOperation op = initEOperation(getCategory__Equals__Category(), ecorePackage.getEBoolean(), "equals", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getCategory(), "another", 0, 1, IS_UNIQUE, IS_ORDERED);
+
 		// Initialize enums and add enum literals
 		initEEnum(severityEEnum, Severity.class, "Severity");
 		addEEnumLiteral(severityEEnum, Severity.ERROR);
@@ -366,6 +381,49 @@ public class CheckCatalogPackageImpl extends EPackageImpl implements CheckCatalo
 
 		// Create resource
 		createResource(eNS_URI);
+
+		// Create annotations
+		// http://www.eclipse.org/emf/2002/Ecore
+		createEcoreAnnotations();
+		// org.eclipse.sphinx.emf.check.catalog.similarity
+		createOrgAnnotations();
+	}
+
+	/**
+	 * Initializes the annotations for <b>http://www.eclipse.org/emf/2002/Ecore</b>.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void createEcoreAnnotations() {
+		String source = "http://www.eclipse.org/emf/2002/Ecore";	
+		addAnnotation
+		  (this, 
+		   source, 
+		   new String[] {
+			 "invocationDelegates", "org.eclipse.sphinx.emf.check.catalog.similarity"
+		   },
+		   new URI[] {
+			 URI.createURI(eNS_URI).appendFragment("//%http:%2F%2Fwww.eclipse.org%2Femf%2F2002%2FEcore%")
+		   });
+	}
+
+	/**
+	 * Initializes the annotations for <b>org.eclipse.sphinx.emf.check.catalog.similarity</b>.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void createOrgAnnotations() {
+		String source = "org.eclipse.sphinx.emf.check.catalog.similarity";	
+		addAnnotation
+		  (getCategory__Equals__Category(), 
+		   source, 
+		   new String[] {
+		   },
+		   new URI[] {
+			 URI.createURI(eNS_URI).appendFragment("//Category/equals/%org.eclipse.sphinx.emf.check.catalog.similarity%")
+		   });
 	}
 
 } //CheckCatalogPackageImpl

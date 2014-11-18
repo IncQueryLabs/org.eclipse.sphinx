@@ -2,6 +2,7 @@ package org.eclipse.sphinx.emf.check.internal;
 
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.util.ResourceLocator;
+import org.eclipse.sphinx.emf.check.registry.CheckValidatorRegistry;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -74,6 +75,7 @@ public final class Activator extends EMFPlugin {
 		public void start(BundleContext context) throws Exception {
 			super.start(context);
 
+			CheckValidatorRegistry.getInstance().initialize();
 		}
 	}
 }

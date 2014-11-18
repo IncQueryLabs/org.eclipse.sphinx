@@ -20,12 +20,14 @@ Require-Bundle: org.eclipse.ui,
  com.google.guava,
  org.eclipse.sphinx.emf,
  org.eclipse.sphinx.emf.validation,
- org.eclipse.sphinx.emf.check.catalog
+ org.eclipse.sphinx.emf.check.catalog,
+ org.eclipse.sphinx.emf.mwe.dynamic
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.sphinx.emf.check,
  org.eclipse.sphinx.emf.check.internal,
  org.eclipse.sphinx.emf.check.registry,
  org.eclipse.sphinx.emf.check.services,
- org.eclipse.sphinx.emf.check.util
+ org.eclipse.sphinx.emf.check.util,
+ org.eclipse.sphinx.emf.check.workflows
 Bundle-Localization: plugin

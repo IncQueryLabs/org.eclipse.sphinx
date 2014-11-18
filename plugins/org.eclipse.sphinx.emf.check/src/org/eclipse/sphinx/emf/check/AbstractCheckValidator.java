@@ -15,6 +15,7 @@
 package org.eclipse.sphinx.emf.check;
 
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,15 +30,15 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Severity;
 import org.eclipse.sphinx.emf.check.internal.Activator;
+import org.eclipse.sphinx.emf.util.BasicWrappingEList;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Sets;
 
-public abstract class AbstractCheckValidator implements EValidator {
+public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	private int INSIGNIFICANT_INDEX = -1;
 
@@ -83,6 +84,10 @@ public abstract class AbstractCheckValidator implements EValidator {
 		checkModelHelper = new CheckModelHelper(this);
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.check.ICheckValidator#setFilter(java.util.Set)
+	 */
+	@Override
 	public void setFilter(Set<String> validationSets) {
 		filter = validationSets;
 	}
@@ -219,14 +224,22 @@ public abstract class AbstractCheckValidator implements EValidator {
 		return true;
 	}
 
-	protected void issue(EObject object, EStructuralFeature feature) {
-		issue(object, feature, INSIGNIFICANT_INDEX);
+	protected void issue(Object object, EStructuralFeature feature, Object... arguments) {
+		if (object instanceof BasicWrappingEList.IWrapper<?>) {
+			Object eObject = ((BasicWrappingEList.IWrapper<?>) object).getTarget();
+			issue(eObject, feature, INSIGNIFICANT_INDEX, arguments);
+		}
+		throw new UnsupportedOperationException("Could not recognize type of " + object.toString()); //$NON-NLS-1$
 	}
 
-	protected void issue(EObject object, EStructuralFeature feature, int index) {
+	protected void issue(EObject object, EStructuralFeature feature, Object... arguments) {
+		issue(object, feature, INSIGNIFICANT_INDEX, arguments);
+	}
+
+	protected void issue(EObject object, EStructuralFeature feature, int index, Object... arguments) {
 		State current = getState().get();
 		String constraint = current.constraint;
-		String severityMessage = checkModelHelper.getSeverityMessage(constraint);
+		String severityMessage = MessageFormat.format(checkModelHelper.getMessage(constraint), arguments);
 		Severity severity = checkModelHelper.getSeverityType(constraint);
 		switch (severity) {
 		case ERROR:
@@ -248,7 +261,7 @@ public abstract class AbstractCheckValidator implements EValidator {
 	}
 
 	protected void warning(String message, EObject object, EStructuralFeature feature, int index) {
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature) };
+		Object[] data = new Object[] { new DiagnosticLocation(object, feature), this.getClass().getName() };
 		warning(message, object, feature, index, data);
 	}
 
@@ -261,7 +274,7 @@ public abstract class AbstractCheckValidator implements EValidator {
 	}
 
 	protected void error(String message, EObject object, EStructuralFeature feature, int index) {
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature) };
+		Object[] data = new Object[] { new DiagnosticLocation(object, feature), this.getClass().getName() };
 		error(message, object, feature, index, data);
 	}
 
@@ -275,7 +288,7 @@ public abstract class AbstractCheckValidator implements EValidator {
 	}
 
 	protected void info(String message, EObject object, EStructuralFeature feature, int index) {
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature) };
+		Object[] data = new Object[] { new DiagnosticLocation(object, feature), this.getClass().getName() };
 		info(message, object, feature, index, data);
 	}
 
@@ -311,10 +324,18 @@ public abstract class AbstractCheckValidator implements EValidator {
 		return state;
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.check.ICheckValidator#getFilter()
+	 */
+	@Override
 	public Set<String> getFilter() {
 		return filter;
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.check.ICheckValidator#getCheckModelHelper()
+	 */
+	@Override
 	public CheckModelHelper getCheckModelHelper() {
 		return checkModelHelper;
 	}

@@ -16,6 +16,7 @@ package org.eclipse.sphinx.emf.check.ui.actions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
@@ -24,6 +25,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.Diagnostician;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -34,8 +36,10 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.sphinx.emf.check.AbstractCheckValidator;
 import org.eclipse.sphinx.emf.check.CheckModelHelper;
+import org.eclipse.sphinx.emf.check.ComposedValidator;
+import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category;
-import org.eclipse.sphinx.emf.check.registry.CheckValidationRegistry;
+import org.eclipse.sphinx.emf.check.registry.CheckValidatorRegistry;
 import org.eclipse.sphinx.emf.check.services.CheckProblemMarkerService;
 import org.eclipse.sphinx.emf.check.ui.IValidationUIConstants;
 import org.eclipse.sphinx.emf.check.ui.actions.dialog.CategorySelectionContentProvider;
@@ -91,20 +95,20 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 			final EPackage ePackage = validationInput.eClass().getEPackage();
 			try {
 				// get the associated validator
-				final AbstractCheckValidator checkValidator = CheckValidationRegistry.getInstance().getCheckValidator(ePackage);
-				Assert.isNotNull(checkValidator);
+				final EValidator validator = CheckValidatorRegistry.getInstance().getValidator(ePackage);
+				Assert.isNotNull(validator);
 
-				// register the validator
-				CheckValidationRegistry.getInstance().register(ePackage, checkValidator);
-
-				// Retrieves filter for categories of constraints to validate (user's selection)
-				CheckModelHelper checkModelHelper = checkValidator.getCheckModelHelper();
-				final Set<String> validationSets = queryValidationSets(checkModelHelper);
+				// query validation sets from user
+				final Set<String> validationSets = queryValidationSets(validator);
 				if (validationSets == null) {
 					return;
 				}
 				// set the validation categories for the current check validator
-				checkValidator.setFilter(validationSets);
+				if (validator instanceof AbstractCheckValidator) {
+					((ICheckValidator) validator).setFilter(validationSets);
+				} else if (validator instanceof ComposedValidator) {
+					((ComposedValidator) validator).setFilter(validationSets);
+				}
 
 				// launch validation
 				try {
@@ -128,10 +132,9 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 		}
 	}
 
-	private Set<String> queryValidationSets(CheckModelHelper helper) {
+	private Set<String> queryValidationSets(EValidator validator) {
 		Shell shell = ExtendedPlatformUI.getActiveShell();
-
-		IStructuredContentProvider contentProvider = createContentProvider(helper);
+		IStructuredContentProvider contentProvider = createContentProvider(validator);
 		ILabelProvider labelProvider = createLabelProvider();
 
 		// Creates the dialog allowing user to choose categories of constraints to validate
@@ -158,7 +161,23 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 		return new CategorySelectionLabelProvider();
 	}
 
-	protected IStructuredContentProvider createContentProvider(CheckModelHelper helper) {
-		return new CategorySelectionContentProvider(helper);
+	protected IStructuredContentProvider createContentProvider(EValidator validator) {
+		Set<CheckModelHelper> helpers = new HashSet<CheckModelHelper>();
+		if (validator instanceof AbstractCheckValidator) {
+			helpers.add(((ICheckValidator) validator).getCheckModelHelper());
+			return new CategorySelectionContentProvider(helpers);
+		} else if (validator instanceof ComposedValidator) {
+			List<EValidator> delegates = ((ComposedValidator) validator).getDelegates();
+			for (EValidator delegate : delegates) {
+				if (delegate instanceof AbstractCheckValidator) {
+					CheckModelHelper helper = ((ICheckValidator) delegate).getCheckModelHelper();
+					helpers.add(helper);
+				} else {
+					throw new RuntimeException("Could not recognize type of delegate validator"); //$NON-NLS-1$
+				}
+			}
+			return new CategorySelectionContentProvider(helpers);
+		}
+		throw new RuntimeException("Could not recognize type of validator"); //$NON-NLS-1$
 	}
 }

@@ -17,6 +17,7 @@ package org.eclipse.sphinx.emf.check.catalog.checkcatalog;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -34,6 +35,7 @@ import org.eclipse.emf.ecore.EReference;
  * <!-- end-user-doc -->
  * @see org.eclipse.sphinx.emf.check.catalog.checkcatalog.CheckCatalogFactory
  * @model kind="package"
+ *        annotation="http://www.eclipse.org/emf/2002/Ecore invocationDelegates='org.eclipse.sphinx.emf.check.catalog.similarity'"
  * @generated
  */
 public interface CheckCatalogPackage extends EPackage {
@@ -335,13 +337,22 @@ public interface CheckCatalogPackage extends EPackage {
 	int CATEGORY_FEATURE_COUNT = IDENTIFIABLE_FEATURE_COUNT + 0;
 
 	/**
+	 * The operation id for the '<em>Equals</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CATEGORY___EQUALS__CATEGORY = IDENTIFIABLE_OPERATION_COUNT + 0;
+
+	/**
 	 * The number of operations of the '<em>Category</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CATEGORY_OPERATION_COUNT = IDENTIFIABLE_OPERATION_COUNT + 0;
+	int CATEGORY_OPERATION_COUNT = IDENTIFIABLE_OPERATION_COUNT + 1;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.sphinx.emf.check.catalog.checkcatalog.Severity <em>Severity</em>}' enum.
@@ -494,6 +505,16 @@ public interface CheckCatalogPackage extends EPackage {
 	EClass getCategory();
 
 	/**
+	 * Returns the meta object for the '{@link org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category#equals(org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category) <em>Equals</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Equals</em>' operation.
+	 * @see org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category#equals(org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category)
+	 * @generated
+	 */
+	EOperation getCategory__Equals__Category();
+
+	/**
 	 * Returns the meta object for enum '{@link org.eclipse.sphinx.emf.check.catalog.checkcatalog.Severity <em>Severity</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -637,6 +658,14 @@ public interface CheckCatalogPackage extends EPackage {
 		 * @generated
 		 */
 		EClass CATEGORY = eINSTANCE.getCategory();
+
+		/**
+		 * The meta object literal for the '<em><b>Equals</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation CATEGORY___EQUALS__CATEGORY = eINSTANCE.getCategory__Equals__Category();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.sphinx.emf.check.catalog.checkcatalog.Severity <em>Severity</em>}' enum.

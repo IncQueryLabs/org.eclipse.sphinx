@@ -14,8 +14,13 @@
  */
 package org.eclipse.sphinx.emf.check.catalog.checkcatalog.impl;
 
+import java.lang.reflect.InvocationTargetException;
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EClass;
 
+import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category;
 import org.eclipse.sphinx.emf.check.catalog.checkcatalog.CheckCatalogPackage;
 
@@ -46,6 +51,44 @@ public class CategoryImpl extends IdentifiableImpl implements Category {
 	@Override
 	protected EClass eStaticClass() {
 		return CheckCatalogPackage.Literals.CATEGORY;
+	}
+
+	/**
+	 * The cached invocation delegate for the '{@link #equals(org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category) <em>Equals</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #equals(org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category)
+	 * @generated
+	 * @ordered
+	 */
+	protected static final EOperation.Internal.InvocationDelegate EQUALS_CATEGORY__EINVOCATION_DELEGATE = ((EOperation.Internal)CheckCatalogPackage.Literals.CATEGORY___EQUALS__CATEGORY).getInvocationDelegate();
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public boolean equals(Category another) {
+		try {
+			return (Boolean)EQUALS_CATEGORY__EINVOCATION_DELEGATE.dynamicInvoke(this, new BasicEList.UnmodifiableEList<Object>(1, new Object[]{another}));
+		}
+		catch (InvocationTargetException ite) {
+			throw new WrappedException(ite);
+		}
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
+		switch (operationID) {
+			case CheckCatalogPackage.CATEGORY___EQUALS__CATEGORY:
+				return equals((Category)arguments.get(0));
+		}
+		return super.eInvoke(operationID, arguments);
 	}
 
 } //CategoryImpl

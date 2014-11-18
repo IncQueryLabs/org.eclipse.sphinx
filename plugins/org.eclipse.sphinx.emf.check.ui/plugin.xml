@@ -227,6 +227,11 @@
                id="org.eclipse.sphinx.emf.check.ui.description.uri"
                visible="true">
          </markerFieldReference>
+         <markerFieldReference
+               id="org.eclipse.sphinx.emf.check.ui.source"
+               visible="true">
+         </markerFieldReference>
+         
          <markerFieldConfiguration
                id="org.eclipse.sphinx.emf.check.ui.markers.group"
                name="All Errors"
@@ -281,6 +286,11 @@
             class="org.eclipse.sphinx.emf.check.ui.markers.field.URIMarkerField"
             id="org.eclipse.sphinx.emf.check.ui.description.uri"
             name="URI">
+      </markerField>
+      <markerField
+            class="org.eclipse.sphinx.emf.check.ui.markers.field.SourceIDMarkerField"
+            id="org.eclipse.sphinx.emf.check.ui.source"
+            name="Source">
       </markerField>
    </extension>
 </plugin>

@@ -27,7 +27,7 @@ import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Catalog;
 import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category;
 import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Constraint;
 import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Severity;
-import org.eclipse.sphinx.emf.check.registry.CheckValidationRegistry;
+import org.eclipse.sphinx.emf.check.registry.CheckValidatorRegistry;
 
 public class CheckModelHelper {
 
@@ -35,9 +35,9 @@ public class CheckModelHelper {
 
 	private Catalog root;
 
-	public CheckModelHelper(AbstractCheckValidator checkValidator) {
+	public CheckModelHelper(ICheckValidator checkValidator) {
 		String fqn = checkValidator.getClass().getName();
-		URI uri = CheckValidationRegistry.getInstance().getCheckModelURI(fqn);
+		URI uri = CheckValidatorRegistry.getInstance().getCheckModelURI(fqn);
 		Assert.isNotNull(uri);
 		Resource checkResource = new ResourceSetImpl().getResource(uri, true);
 		EObject eObject = checkResource.getContents().get(0);
@@ -48,7 +48,7 @@ public class CheckModelHelper {
 		setRoot((Catalog) eObject);
 	}
 
-	public String getSeverityMessage(String constraint) {
+	public String getMessage(String constraint) {
 		EList<Constraint> constraints = root.getConstraints();
 		for (Constraint c : constraints) {
 			String name = c.getId();
