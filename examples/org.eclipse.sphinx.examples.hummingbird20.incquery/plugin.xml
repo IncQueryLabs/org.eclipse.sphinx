@@ -15,9 +15,15 @@ Contributors:
 -->
 <plugin>
   <extension point="org.eclipse.sphinx.emf.metaModelServices">
-    <descriptor descriptorID="org.eclipse.sphinx.examples.hummingbird20">
-      <service class="org.eclipse.sphinx.examples.hummingbird20.incquery.service.Hummindbird20QueryService" type="org.eclipse.sphinx.emf.query.IModelQueryService"/>
-    </descriptor>
+    <service
+          id="org.eclipse.sphinx.examples.hummingbird20.incquery.service"
+          class="org.eclipse.sphinx.examples.hummingbird20.incquery.service.Hummindbird20QueryService"
+          type="org.eclipse.sphinx.emf.query.IModelQueryService">
+          <applicableFor
+                metaModelDescriptorId="org.eclipse.sphinx.examples.hummingbird20"
+                metaModelDescriptorIdPattern="org.eclipse.sphinx.examples.hummingbird20">
+       	  </applicableFor>
+    </service>
   </extension>
   <extension id="org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common" point="org.eclipse.incquery.runtime.queryspecification">
     <group group="org.eclipse.incquery.runtime.extensibility.SingletonExtensionFactory:org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common" id="org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common"/>

@@ -17,9 +17,12 @@ package org.eclipse.sphinx.emf.metamodel.services;
 import static org.eclipse.sphinx.platform.util.StatusUtil.createErrorStatus;
 import static org.eclipse.sphinx.platform.util.StatusUtil.createWarningStatus;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.ILog;
@@ -40,7 +43,8 @@ public class MetaModelServiceRegistry {
 	/** The singleton */
 	static final MetaModelServiceRegistry INSTANCE = new MetaModelServiceRegistry(Platform.getExtensionRegistry(), Activator.getPlugin().getLog());
 
-	private volatile Map<IMetaModelDescriptor, Map<String, ServiceClassDescriptor>> mmServices;
+	// private Map<String, ServiceClassDescriptor> idToMetaModelServiceMap;
+	private volatile Map<IMetaModelDescriptor, Map<Class<IMetaModelService>, ServiceClassDescriptor>> mmServices;
 
 	private IExtensionRegistry extensionRegistry;
 
@@ -48,11 +52,11 @@ public class MetaModelServiceRegistry {
 
 	private final static String MMS_EXTENSION_ID = Activator.INSTANCE.getSymbolicName() + ".metaModelServices"; //$NON-NLS-1$
 
-	private final static String MMS_EXTENSION_ELEM_DESCRIPTOR = "descriptor"; //$NON-NLS-1$
+	private final static String NODE_SERVICE = "service"; //$NON-NLS-1$
 
-	private final static String MMS_EXTENSION_ELEM_SERVICE = "service"; //$NON-NLS-1$
+	private final static String NODE_APPLICABLE_FOR = "applicableFor"; //$NON-NLS-1$
 
-	private final static String MMS_ATT_DESCRIPTORID = "descriptorID"; //$NON-NLS-1$
+	private final static String ATTR_META_MODEL_DESCRIPTOR_ID_PATTERN = "metaModelDescriptorIdPattern"; //$NON-NLS-1$
 
 	private static final Plugin PLUGIN = Activator.getDefault();
 
@@ -68,22 +72,21 @@ public class MetaModelServiceRegistry {
 	 * <code>null</code> is returned
 	 */
 	@SuppressWarnings("unchecked")
-	protected <T extends IMetaModelService> T getService(IMetaModelDescriptor descriptor, Class<T> serviceClass) {
+	protected <T extends IMetaModelService> T getService(IMetaModelDescriptor descriptor, Class<T> serviceType) {
 		initialize();
 		if (mmServices.containsKey(descriptor)) {
-			Map<String, ServiceClassDescriptor> map = getServiceClassDescriptorsForMetaModel(descriptor);
-			String serviceClassName = serviceClass.getCanonicalName();
-			if (!map.containsKey(serviceClassName)) {
+			Map<Class<IMetaModelService>, ServiceClassDescriptor> map = getServiceClassDescriptorsForMetaModel(descriptor);
+			if (!map.containsKey(serviceType)) {
 				// unimplemented service, log error
-				logError(Messages.metamodelservice_ServiceNotImplemented, serviceClassName, descriptor.getIdentifier());
+				logError(Messages.metamodelservice_ServiceNotImplemented, serviceType.getName(), descriptor.getIdentifier());
 			} else {
-				ServiceClassDescriptor wrapper = map.get(serviceClassName);
+				ServiceClassDescriptor serviceClassDescriptor = map.get(serviceType);
 				try {
-					IMetaModelService service = wrapper.getInstance();
-					if (serviceClass.isInstance(service)) {
+					IMetaModelService service = serviceClassDescriptor.getInstance();
+					if (serviceType.isInstance(service)) {
 						return (T) service;
 					} else {
-						logError(Messages.metamodelservice_InvalidServiceClass, serviceClassName, service.getClass().getCanonicalName());
+						logError(Messages.metamodelservice_InvalidServiceClass, serviceType.getName(), service.getClass().getName());
 					}
 				} catch (Throwable ex) {
 					logError(ex);
@@ -116,59 +119,99 @@ public class MetaModelServiceRegistry {
 	 * Initialize internal data by reading from platform registry
 	 */
 	private void initialize() {
+		if (extensionRegistry == null) {
+			return;
+		}
+
 		if (mmServices == null) {
+			mmServices = new HashMap<IMetaModelDescriptor, Map<Class<IMetaModelService>, ServiceClassDescriptor>>();
 
-			synchronized (INSTANCE) {
+			// All configuration elements from all meta-model service extensions.
+			IConfigurationElement[] serviceConfigurationElements = extensionRegistry.getConfigurationElementsFor(MMS_EXTENSION_ID);
 
-				if (mmServices == null) {
+			// Create a temporary map
+			Map<String, IConfigurationElement> idToServiceCfgElementMap = new HashMap<String, IConfigurationElement>();
 
-					mmServices = new HashMap<IMetaModelDescriptor, Map<String, ServiceClassDescriptor>>();
-					if (extensionRegistry == null) {
-						return;
+			// First iteration to detect duplicated service id and initialize the temporary map
+			for (IConfigurationElement serviceCfgElement : serviceConfigurationElements) {
+
+				if (!serviceCfgElement.getName().equals(NODE_SERVICE)) {
+					continue;
+				}
+				ServiceClassDescriptor serviceClassDescriptor = new ServiceClassDescriptor(serviceCfgElement);
+				String serviceId = serviceClassDescriptor.getId();
+				if (idToServiceCfgElementMap.containsKey(serviceId)) {
+					logWarning(Messages.warning_serviceIdNotUnique, serviceId);
+					continue;
+				}
+				idToServiceCfgElementMap.put(serviceId, serviceCfgElement);
+			}
+
+			// Second iteration to add services
+			for (IConfigurationElement serviceCfgElement : idToServiceCfgElementMap.values()) {
+				ServiceClassDescriptor serviceClassDescriptor = new ServiceClassDescriptor(serviceCfgElement);
+				String override = serviceClassDescriptor.getOverride();
+				if (override != null && !idToServiceCfgElementMap.containsKey(override)) {
+					logWarning(Messages.warning_noServiceToOverride, serviceClassDescriptor.getId(), override);
+					continue;
+				}
+				IConfigurationElement[] applicableForElements = serviceCfgElement.getChildren(NODE_APPLICABLE_FOR);
+				if (applicableForElements.length == 0) {
+					logWarning(Messages.metamodelservice_MissingApplicableFor, serviceClassDescriptor.getContributorName());
+					continue;
+				}
+				for (IConfigurationElement applicableFor : applicableForElements) {
+					String mmDescIdPattern = applicableFor.getAttribute(ATTR_META_MODEL_DESCRIPTOR_ID_PATTERN);
+					// Missing mmDescIdPattern, log warning
+					if (mmDescIdPattern == null) {
+						logWarning(Messages.metamodelservice_MissingMMDescriptor, serviceClassDescriptor.getContributorName());
+						continue;
 					}
-					IConfigurationElement[] elements = extensionRegistry.getConfigurationElementsFor(MMS_EXTENSION_ID);
-					for (IConfigurationElement element : elements) {
 
-						if (!element.getName().equals(MMS_EXTENSION_ELEM_DESCRIPTOR)) {
-							continue;
-						}
-						String identifier = element.getAttribute(MMS_ATT_DESCRIPTORID);
+					List<IMetaModelDescriptor> mmDescriptors = Collections.emptyList();
+					// Handle the case which contribute a service for any meta-model
+					if (".*".equals(mmDescIdPattern) || ".+".equals(mmDescIdPattern)) { //$NON-NLS-1$ //$NON-NLS-2$
+						mmDescriptors = Collections.singletonList(MetaModelDescriptorRegistry.ANY_MM);
+						continue;
+					} else {
+						// Locate the corresponding meta-model descriptors
+						mmDescriptors = MetaModelDescriptorRegistry.INSTANCE.getDescriptors(mmDescIdPattern);
+					}
 
-						// missing identifier, log warning
-						if (identifier == null) {
-							logWarning(Messages.metamodelservice_MissingMMDescriptor, element.getContributor().getName());
-							continue;
-						}
-						// locate the corresponding meta-model descriptor
-						IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(identifier);
-
-						// invalid descriptor, log warning
-						if (mmDescriptor == null) {
-							logWarning(Messages.metamodelservice_UnknownMM, element.getContributor().getName(), MMS_EXTENSION_ID, identifier);
-							continue;
-						}
-						IConfigurationElement[] children = element.getChildren(MMS_EXTENSION_ELEM_SERVICE);
-						for (IConfigurationElement child : children) {
-							registerMetaModelService(mmDescriptor, child);
-						}
+					// No descriptor, log warning
+					if (mmDescriptors.isEmpty()) {
+						logWarning(Messages.metamodelservice_UnknownMM, serviceClassDescriptor.getContributorName(), MMS_EXTENSION_ID,
+								mmDescIdPattern);
+						continue;
+					}
+					for (IMetaModelDescriptor mmDescriptor : mmDescriptors) {
+						addService(mmDescriptor, serviceClassDescriptor);
 					}
 				}
 			}
+			idToServiceCfgElementMap.clear();
 		}
 	}
 
-	private void registerMetaModelService(IMetaModelDescriptor mmDescriptor, IConfigurationElement configElement) {
+	private void addService(IMetaModelDescriptor mmDescriptor, ServiceClassDescriptor newServiceClassDescriptor) {
 		try {
-			ServiceClassDescriptor descriptor = new ServiceClassDescriptor(configElement);
-			if (descriptor.overrides(getServiceClassDescriptor(mmDescriptor, descriptor.getType()))) {
-				addService(mmDescriptor, descriptor);
+			ServiceClassDescriptor existingServiceClassDescriptorWithSameMMDescAndSameType = getServiceClassDescriptor(mmDescriptor,
+					newServiceClassDescriptor.getServiceType());
+			if (existingServiceClassDescriptorWithSameMMDescAndSameType == null) {
+				getServiceClassDescriptorsForMetaModel(mmDescriptor).put(newServiceClassDescriptor.getServiceType(), newServiceClassDescriptor);
+			} else {
+				if (newServiceClassDescriptor.overrides(existingServiceClassDescriptorWithSameMMDescAndSameType)) {
+					getServiceClassDescriptorsForMetaModel(mmDescriptor).put(newServiceClassDescriptor.getServiceType(), newServiceClassDescriptor);
+				} else if (existingServiceClassDescriptorWithSameMMDescAndSameType.overrides(newServiceClassDescriptor)) {
+					// Nothing to do
+				} else {
+					// Conflicting services not overriding each other
+					logWarning(Messages.metamodelservice_ServiceAlreadyExists, newServiceClassDescriptor.getServiceType(),
+							mmDescriptor.getIdentifier());
+				}
 			}
-			// FIXME NPE
-			else if (!getServiceClassDescriptor(mmDescriptor, descriptor.getType()).overrides(descriptor)) {
-				logWarning(Messages.metamodelservice_ServiceAlreadyExists, descriptor.getType(), mmDescriptor.getIdentifier());
-			}
-		} catch (IllegalArgumentException iae) {
-			logWarning(iae);
+		} catch (IllegalArgumentException ex) {
+			logWarning(ex);
 		}
 	}
 
@@ -177,11 +220,16 @@ public class MetaModelServiceRegistry {
 	 *
 	 * @param mmDescriptor
 	 *            the metamodel for which the service is to be registered.
-	 * @param serviceClassDescriptor
-	 *            the service registration
+	 * @param serviceType
+	 *            the type of the service
+	 * @param serviceClass
+	 *            the class which implements the service
 	 */
-	protected void addService(IMetaModelDescriptor mmDescriptor, ServiceClassDescriptor serviceClassDescriptor) {
-		getServiceClassDescriptorsForMetaModel(mmDescriptor).put(serviceClassDescriptor.getType(), serviceClassDescriptor);
+	protected void addService(IMetaModelDescriptor mmDescriptor, Class<IMetaModelService> serviceType, Class<? extends IMetaModelService> serviceClass) {
+		Assert.isLegal(!serviceClass.isInterface());
+
+		ServiceClassDescriptor serviceClassDesc = new ServiceClassDescriptor(serviceType, serviceClass);
+		getServiceClassDescriptorsForMetaModel(mmDescriptor).put(serviceType, serviceClassDesc);
 	}
 
 	/**
@@ -191,24 +239,24 @@ public class MetaModelServiceRegistry {
 	 *            the metamodel descriptor of the metamodel for which to return the registration.
 	 * @param serviceType
 	 *            the type of the service.
-	 * @return the service registration or <code>null</code> if no registration is found for the given metamodel
+	 * @return the service class descriptor or <code>null</code> if no service class descriptor is found for the given
+	 *         metamodel
 	 */
-	private ServiceClassDescriptor getServiceClassDescriptor(IMetaModelDescriptor mmDescriptor, String serviceType) {
+	private ServiceClassDescriptor getServiceClassDescriptor(IMetaModelDescriptor mmDescriptor, Class<IMetaModelService> serviceType) {
 		return getServiceClassDescriptorsForMetaModel(mmDescriptor).get(serviceType);
 	}
 
 	/**
-	 * Returns all services registrations for a metamodel.
+	 * Returns all service class descriptors for a metamodel.
 	 *
 	 * @param mmDescriptor
 	 *            the metamodel descriptor of the metamodel for which to return the registrations.
-	 * @return all service registrations for the specified metamodel
+	 * @return all service class descriptors for the specified metamodel
 	 */
-	private Map<String, ServiceClassDescriptor> getServiceClassDescriptorsForMetaModel(IMetaModelDescriptor mmDescriptor) {
+	private Map<Class<IMetaModelService>, ServiceClassDescriptor> getServiceClassDescriptorsForMetaModel(IMetaModelDescriptor mmDescriptor) {
 		if (!mmServices.containsKey(mmDescriptor)) {
-			mmServices.put(mmDescriptor, new HashMap<String, ServiceClassDescriptor>());
+			mmServices.put(mmDescriptor, new HashMap<Class<IMetaModelService>, ServiceClassDescriptor>());
 		}
 		return mmServices.get(mmDescriptor);
 	}
-
 }

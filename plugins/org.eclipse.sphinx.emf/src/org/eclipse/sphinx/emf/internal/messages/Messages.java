@@ -82,6 +82,8 @@ public class Messages extends NLS {
 	public static String warning_fileExtensionForTargetMetaModelDescriptorProviderNotUnique;
 	public static String warning_contentTypeIdForTargetMetaModelDescriptorProviderMustNotBeNull;
 	public static String warning_contentTypeIdForTargetMetaModelDescriptorProviderNotUnique;
+	public static String warning_serviceIdNotUnique;
+	public static String warning_noServiceToOverride;
 
 	public static String warning_multipleOverridesForSameResourceScopeProvider;
 	public static String warning_multipleResourceScopeProvidersContributedForSameMetaModelDescriptor;
@@ -108,6 +110,7 @@ public class Messages extends NLS {
 	public static String metamodelservice_ServiceNotImplemented;
 	public static String metamodelservice_InvalidServiceClass;
 	public static String metamodelservice_MissingServiceType;
+	public static String metamodelservice_MissingApplicableFor;
 
 	static {
 		// initialize resource bundle

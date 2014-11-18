@@ -18,7 +18,7 @@
       </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="descriptor"/>
+            <element ref="service"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -47,30 +47,22 @@
       </complexType>
    </element>
 
-   <element name="descriptor">
-      <complexType>
-         <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="service"/>
-         </sequence>
-         <attribute name="descriptorID" type="string">
-            <annotation>
-               <documentation>
-                  The ID of the MM descriptor.
-               </documentation>
-               <appInfo>
-                  <meta.attribute kind="identifier" basedOn="org.eclipse.sphinx.emf.metaModelDescriptors/descriptor/@id"/>
-               </appInfo>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
    <element name="service">
       <complexType>
+         <sequence>
+            <element ref="applicableFor" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The id of the service.
+               </documentation>
+            </annotation>
+         </attribute>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  The class that implements the MM service, should be an instanceof IMetaModelService
+                  The class that implements the MM service, should be an instanceof IMetaModelService.
                </documentation>
                <appInfo>
                   <meta.attribute kind="java" basedOn=":org.eclipse.sphinx.emf.metamodel.services.IMetaModelService"/>
@@ -80,14 +72,29 @@
          <attribute name="type" type="string" use="required">
             <annotation>
                <documentation>
-                  The type of the service
+                  The type of the service.
                </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.sphinx.emf.metamodel.services.IMetaModelService:"/>
+               </appInfo>
             </annotation>
          </attribute>
          <attribute name="override" type="string">
             <annotation>
                <documentation>
-                  The fully qualified name of the class implementing the IMetaModelService interface to be override.
+                  The id of the service to be override.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="applicableFor">
+      <complexType>
+         <attribute name="metaModelDescriptorIdPattern" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The matching pattern for identifier of meta-model descriptor.
                </documentation>
             </annotation>
          </attribute>
