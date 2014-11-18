@@ -147,7 +147,7 @@ public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
 							return Workflow.class.isAssignableFrom(forName);
 						}
 					} catch (Exception ex) {
-						PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+						// Ignore exception
 					}
 					return false;
 				}
