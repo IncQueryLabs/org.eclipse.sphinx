@@ -47,6 +47,7 @@ import org.eclipse.sphinx.emf.check.ui.actions.dialog.CategorySelectionDialog;
 import org.eclipse.sphinx.emf.check.ui.actions.dialog.CategorySelectionLabelProvider;
 import org.eclipse.sphinx.emf.check.ui.internal.Activator;
 import org.eclipse.sphinx.emf.check.ui.internal.CheckValidationImageProvider;
+import org.eclipse.sphinx.emf.util.BasicWrappingEList;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -90,7 +91,7 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 
 	@Override
 	public void run() {
-		final EObject validationInput = (EObject) getValidationInput();
+		final EObject validationInput = unwrap(getValidationInput());
 		if (validationInput != null) {
 			final EPackage ePackage = validationInput.eClass().getEPackage();
 			try {
@@ -130,6 +131,19 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 				PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 			}
 		}
+	}
+
+	protected EObject unwrap(Object object) {
+		// TODO support other case like transient item provider...
+		if (object instanceof BasicWrappingEList.IWrapper<?>) {
+			Object target = ((BasicWrappingEList.IWrapper<?>) object).getTarget();
+			if (target instanceof EObject) {
+				return (EObject) target;
+			}
+		} else if (object instanceof EObject) {
+			return (EObject) object;
+		}
+		return null;
 	}
 
 	private Set<String> queryValidationSets(EValidator validator) {
