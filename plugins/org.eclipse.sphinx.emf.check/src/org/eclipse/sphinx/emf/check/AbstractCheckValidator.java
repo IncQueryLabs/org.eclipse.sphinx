@@ -40,6 +40,7 @@ import com.google.common.collect.Sets;
 
 public abstract class AbstractCheckValidator implements ICheckValidator {
 
+	// TODO replace by NO_INDEX from EMF
 	private int INSIGNIFICANT_INDEX = -1;
 
 	private volatile Set<MethodWrapper> checkMethods = null;
