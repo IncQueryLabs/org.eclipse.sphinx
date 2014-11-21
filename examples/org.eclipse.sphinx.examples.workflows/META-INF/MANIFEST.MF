@@ -14,5 +14,4 @@ Export-Package: org.eclipse.sphinx.examples.workflows.empty,
  org.eclipse.sphinx.examples.workflows.longrunning,
  org.eclipse.sphinx.examples.workflows.model,
  org.eclipse.sphinx.examples.workflows.simple.java,
- org.eclipse.sphinx.examples.workflows.simple.xtend,
- org.eclipse.sphinx.examples.workflows.validation
+ org.eclipse.sphinx.examples.workflows.simple.xtend
