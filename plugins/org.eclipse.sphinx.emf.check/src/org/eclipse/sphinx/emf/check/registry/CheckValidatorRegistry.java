@@ -41,6 +41,8 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public class CheckValidatorRegistry {
 
+	public static CheckValidatorRegistry INSTANCE = new CheckValidatorRegistry();
+
 	private static final String checkValidator_extenstion = "org.eclipse.sphinx.emf.check.checkvalidator"; //$NON-NLS-1$
 	private static final String checkValidator_configElement = "validator"; //$NON-NLS-1$
 	private static final String validator_class = "class"; //$NON-NLS-1$
@@ -50,16 +52,7 @@ public class CheckValidatorRegistry {
 
 	private org.eclipse.emf.ecore.EValidator.Registry eValidatorRegistry = null;
 
-	private static CheckValidatorRegistry INSTANCE = null;
-
 	private Map<String, URI> validatorToCheckModelMap = Collections.synchronizedMap(new LinkedHashMap<String, URI>());
-
-	public static CheckValidatorRegistry getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new CheckValidatorRegistry();
-		}
-		return INSTANCE;
-	}
 
 	private CheckValidatorRegistry() {
 		eValidatorRegistry = EValidator.Registry.INSTANCE;
@@ -119,7 +112,7 @@ public class CheckValidatorRegistry {
 	/**
 	 * The following method makes the assumption that the EPackage is located in the same Java package than the classes
 	 * given as input, which is the default behavior of the EMF API model generator.
-	 * 
+	 *
 	 * @param classes
 	 * @return
 	 */
@@ -162,7 +155,7 @@ public class CheckValidatorRegistry {
 
 	/**
 	 * Retrieve a check-based validator contributed through the checkvalidator extension point for the given package.
-	 * 
+	 *
 	 * @param ePackage
 	 * @return
 	 * @throws CoreException
@@ -190,7 +183,7 @@ public class CheckValidatorRegistry {
 
 	/**
 	 * Returns the URI of a check model given a fully qualified name of a check validator.
-	 * 
+	 *
 	 * @param fqn
 	 * @return
 	 */

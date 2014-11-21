@@ -37,7 +37,7 @@ public class CheckModelHelper {
 
 	public CheckModelHelper(ICheckValidator checkValidator) {
 		String fqn = checkValidator.getClass().getName();
-		URI uri = CheckValidatorRegistry.getInstance().getCheckModelURI(fqn);
+		URI uri = CheckValidatorRegistry.INSTANCE.getCheckModelURI(fqn);
 		Assert.isNotNull(uri);
 		Resource checkResource = new ResourceSetImpl().getResource(uri, true);
 		EObject eObject = checkResource.getContents().get(0);

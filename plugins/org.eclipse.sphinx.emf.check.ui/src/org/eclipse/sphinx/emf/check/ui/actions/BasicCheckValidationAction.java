@@ -96,7 +96,7 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 			final EPackage ePackage = validationInput.eClass().getEPackage();
 			try {
 				// get the associated validator
-				final EValidator validator = CheckValidatorRegistry.getInstance().getValidator(ePackage);
+				final EValidator validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
 				Assert.isNotNull(validator);
 
 				// query validation sets from user
