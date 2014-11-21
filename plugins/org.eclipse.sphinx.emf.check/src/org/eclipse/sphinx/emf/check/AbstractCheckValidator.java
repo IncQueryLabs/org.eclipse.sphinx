@@ -226,8 +226,9 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	protected void issue(Object object, EStructuralFeature feature, Object... arguments) {
 		if (object instanceof BasicWrappingEList.IWrapper<?>) {
-			Object eObject = ((BasicWrappingEList.IWrapper<?>) object).getTarget();
-			issue(eObject, feature, INSIGNIFICANT_INDEX, arguments);
+			issue(((BasicWrappingEList.IWrapper<?>) object).getTarget(), feature, INSIGNIFICANT_INDEX, arguments);
+		} else if (object instanceof EObject) {
+			issue((EObject) object, feature, INSIGNIFICANT_INDEX, arguments);
 		}
 		throw new UnsupportedOperationException("Could not recognize type of " + object.toString()); //$NON-NLS-1$
 	}
