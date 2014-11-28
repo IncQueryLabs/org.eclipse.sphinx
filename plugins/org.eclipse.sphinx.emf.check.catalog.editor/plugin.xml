@@ -28,7 +28,7 @@
             id="org.eclipse.sphinx.emf.check.catalog.checkcatalog.presentation.CheckCatalogEditorID"
             name="%_UI_CheckCatalogEditor_label"
             icon="icons/full/obj16/CheckCatalogModelFile.gif"
-            extensions="check"
+            extensions="checkcatalog"
             class="org.eclipse.sphinx.emf.check.catalog.checkcatalog.presentation.CheckCatalogEditor"
             contributorClass="org.eclipse.sphinx.emf.check.catalog.checkcatalog.presentation.CheckCatalogActionBarContributor">
       </editor>
