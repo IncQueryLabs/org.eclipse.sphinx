@@ -49,10 +49,10 @@
 
    <element name="validator">
       <complexType>
-         <attribute name="model" type="string">
+         <attribute name="catalog" type="string">
             <annotation>
                <documentation>
-                  
+                  A relative path of a check catalog if the check catalog is located in the contributing plugin, otherwise a platform plugin URI of a check catalog.
                </documentation>
                <appinfo>
                   <meta.attribute kind="resource"/>
@@ -62,7 +62,7 @@
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The fully qualified name of a check validator class.
                </documentation>
                <appinfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.sphinx.emf.check.AbstractCheckValidator:"/>
