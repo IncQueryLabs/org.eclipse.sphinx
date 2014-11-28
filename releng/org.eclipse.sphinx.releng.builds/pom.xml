@@ -67,7 +67,7 @@
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.incquery</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.transform.xtend</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.validation</module>
-		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.validation.check</module>
+		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.check.withcatalog</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.workflows</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20</module>
 		<module>../../examples/org.eclipse.sphinx.examples.tests.perf</module>
