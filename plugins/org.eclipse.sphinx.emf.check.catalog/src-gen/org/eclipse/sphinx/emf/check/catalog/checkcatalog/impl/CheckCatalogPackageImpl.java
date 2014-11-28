@@ -15,6 +15,7 @@
 package org.eclipse.sphinx.emf.check.catalog.checkcatalog.impl;
 
 import org.eclipse.emf.common.util.URI;
+
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;

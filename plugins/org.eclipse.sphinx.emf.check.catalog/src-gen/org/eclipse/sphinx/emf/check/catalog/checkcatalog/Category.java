@@ -26,7 +26,6 @@ package org.eclipse.sphinx.emf.check.catalog.checkcatalog;
  * @generated
  */
 public interface Category extends Identifiable {
-
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -34,4 +33,5 @@ public interface Category extends Identifiable {
 	 * @generated
 	 */
 	boolean equals(Category another);
+
 } // Category

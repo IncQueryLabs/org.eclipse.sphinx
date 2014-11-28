@@ -15,12 +15,14 @@
 package org.eclipse.sphinx.emf.check.catalog.checkcatalog.impl;
 
 import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.WrappedException;
-import org.eclipse.emf.ecore.EClass;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EOperation;
+
 import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category;
 import org.eclipse.sphinx.emf.check.catalog.checkcatalog.CheckCatalogPackage;
 

@@ -8,7 +8,7 @@
     complianceLevel="6.0" copyrightFields="false" operationReflection="true" importOrganizing="true">
   <foreignModel>CheckCatalog.ecore</foreignModel>
   <genPackages prefix="CheckCatalog" basePackage="org.eclipse.sphinx.emf.check.catalog"
-      disposableProviderFactory="true" fileExtensions="check" ecorePackage="CheckCatalog.ecore#/">
+      disposableProviderFactory="true" fileExtensions="checkcatalog" ecorePackage="CheckCatalog.ecore#/">
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="CheckCatalog.ecore#//Severity">
       <genEnumLiterals ecoreEnumLiteral="CheckCatalog.ecore#//Severity/Error"/>
       <genEnumLiterals ecoreEnumLiteral="CheckCatalog.ecore#//Severity/Warning"/>

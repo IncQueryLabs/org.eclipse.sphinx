@@ -17,8 +17,8 @@ public class CategoryComparatorDelegate extends BasicInvocationDelegate
 	}
 
 	/**
-	 * Two categories are equals iff (1) they have equal ids
-	 * 
+	 * The equality between categories is based on the following assumption: Two
+	 * categories are equals iff they have equal ids
 	 */
 	@Override
 	public Object dynamicInvoke(InternalEObject target, EList<?> arguments)

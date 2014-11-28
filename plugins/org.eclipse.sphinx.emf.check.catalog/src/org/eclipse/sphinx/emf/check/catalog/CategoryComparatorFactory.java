@@ -12,7 +12,6 @@ public class CategoryComparatorFactory implements Factory {
 			.getFactory(URI);
 
 	public CategoryComparatorFactory() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
