@@ -29,38 +29,42 @@ import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Constraint;
 import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Severity;
 import org.eclipse.sphinx.emf.check.registry.CheckValidatorRegistry;
 
-public class CheckModelHelper {
-
-	private static final String CONSTRAINT_MESSAGE_NOT_FOUND_MESSAGE = "CONSTRAINT MESSAGE NOT FOUND!"; //$NON-NLS-1$
+public class CheckCatalogHelper {
 
 	private Catalog root;
 
-	public CheckModelHelper(ICheckValidator checkValidator) {
+	public CheckCatalogHelper(ICheckValidator checkValidator) {
 		String fqn = checkValidator.getClass().getName();
-		URI uri = CheckValidatorRegistry.INSTANCE.getCheckModelURI(fqn);
-		Assert.isNotNull(uri);
-		Resource checkResource = new ResourceSetImpl().getResource(uri, true);
-		EObject eObject = checkResource.getContents().get(0);
-		Assert.isNotNull(eObject);
-		if (!(eObject instanceof Catalog)) {
-			throw new RuntimeException("Could not find the check model Catalogue!"); //$NON-NLS-1$
+		URI uri = CheckValidatorRegistry.getInstance().getCheckModelURI(fqn);
+		if (uri != null) {
+			Resource checkResource = new ResourceSetImpl().getResource(uri, true);
+			EObject eObject = checkResource.getContents().get(0);
+			Assert.isNotNull(eObject);
+			if (!(eObject instanceof Catalog)) {
+				throw new RuntimeException("Could not find the check model Catalogue!"); //$NON-NLS-1$
+			}
+			setRoot((Catalog) eObject);
 		}
-		setRoot((Catalog) eObject);
 	}
 
 	public String getMessage(String constraint) {
-		EList<Constraint> constraints = root.getConstraints();
-		for (Constraint c : constraints) {
-			String name = c.getId();
-			if (name.equals(constraint)) {
-				return c.getMessage();
+		if (root != null) {
+			EList<Constraint> constraints = root.getConstraints();
+			for (Constraint c : constraints) {
+				String name = c.getId();
+				if (name.equals(constraint)) {
+					return c.getMessage();
+				}
 			}
 		}
-		return CONSTRAINT_MESSAGE_NOT_FOUND_MESSAGE;
+		return null;
 	}
 
 	public Set<Category> getCategories() {
-		return new HashSet<Category>(root.getCategories());
+		if (root != null) {
+			return new HashSet<Category>(root.getCategories());
+		}
+		return new HashSet<Category>();
 	}
 
 	public Severity getSeverityType(String constraint) {

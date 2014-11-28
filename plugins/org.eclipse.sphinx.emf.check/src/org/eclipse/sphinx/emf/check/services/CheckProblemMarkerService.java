@@ -157,8 +157,8 @@ public class CheckProblemMarkerService {
 	}
 
 	public IMarker[] getValidationMarkers(EObject eObject, int depth) throws CoreException {
-		// TODO: check whether the update problem markers jobs is still running, in such a case, wait until it is
-		// finished.
+		// TODO: check if any update problem markers jobs is still running, and in such a case,
+		// wait until the job is finished.
 		return getValidationMarkers(eObject, depth, IValidationMarker.MODEL_VALIDATION_PROBLEM);
 	}
 
@@ -206,7 +206,6 @@ public class CheckProblemMarkerService {
 				default:
 					break;
 				}
-
 			}
 		}
 		return result.toArray(new IMarker[result.size()]);

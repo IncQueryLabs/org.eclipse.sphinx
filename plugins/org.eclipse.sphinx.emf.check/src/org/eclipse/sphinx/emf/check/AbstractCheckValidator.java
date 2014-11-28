@@ -38,10 +38,14 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import com.google.common.base.Function;
 import com.google.common.collect.Sets;
 
+/**
+ * An abstract implementation of a check-based validator. Depending on the type of the object under validation, the set
+ * of methods annotated with @Check, whose argument type equals (or is subclass of) the type of the object, are
+ * automatically triggered. To be sub-classed by custom check validators.
+ */
 public abstract class AbstractCheckValidator implements ICheckValidator {
 
-	// TODO replace by NO_INDEX from EMF
-	private int INSIGNIFICANT_INDEX = -1;
+	private int NO_INDEX = -1;
 
 	private volatile Set<MethodWrapper> checkMethods = null;
 
@@ -49,7 +53,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	private final ThreadLocal<State> state;
 
-	private final CheckModelHelper checkModelHelper;
+	private final CheckCatalogHelper checkCatalogHelper;
 
 	protected static class State {
 		public DiagnosticChain chain = null;
@@ -82,7 +86,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	public AbstractCheckValidator() {
 		state = new ThreadLocal<State>();
-		checkModelHelper = new CheckModelHelper(this);
+		checkCatalogHelper = new CheckCatalogHelper(this);
 	}
 
 	/*
@@ -227,22 +231,41 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	protected void issue(Object object, EStructuralFeature feature, Object... arguments) {
 		if (object instanceof BasicWrappingEList.IWrapper<?>) {
-			issue(((BasicWrappingEList.IWrapper<?>) object).getTarget(), feature, INSIGNIFICANT_INDEX, arguments);
+			Object eObject = ((BasicWrappingEList.IWrapper<?>) object).getTarget();
+			issue(eObject, feature, NO_INDEX, arguments);
 		} else if (object instanceof EObject) {
-			issue((EObject) object, feature, INSIGNIFICANT_INDEX, arguments);
+			issue((EObject) object, feature, NO_INDEX, arguments);
 		}
 		throw new UnsupportedOperationException("Could not recognize type of " + object.toString()); //$NON-NLS-1$
 	}
 
+	/**
+	 * Use this method only if a check catalog is contributed.
+	 * 
+	 * @param object
+	 * @param feature
+	 * @param arguments
+	 */
 	protected void issue(EObject object, EStructuralFeature feature, Object... arguments) {
-		issue(object, feature, INSIGNIFICANT_INDEX, arguments);
+		issue(object, feature, NO_INDEX, arguments);
 	}
 
+	/**
+	 * Use this method only if a check catalog is contributed.
+	 * 
+	 * @param object
+	 * @param feature
+	 * @param index
+	 * @param arguments
+	 */
 	protected void issue(EObject object, EStructuralFeature feature, int index, Object... arguments) {
 		State current = getState().get();
 		String constraint = current.constraint;
-		String severityMessage = MessageFormat.format(checkModelHelper.getMessage(constraint), arguments);
-		Severity severity = checkModelHelper.getSeverityType(constraint);
+		if (checkCatalogHelper == null) {
+			return;
+		}
+		String severityMessage = MessageFormat.format(checkCatalogHelper.getMessage(constraint), arguments);
+		Severity severity = checkCatalogHelper.getSeverityType(constraint);
 		switch (severity) {
 		case ERROR:
 			error(severityMessage, object, feature, index);
@@ -259,11 +282,11 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void warning(String message, EObject object, EStructuralFeature feature) {
-		warning(message, object, feature, INSIGNIFICANT_INDEX);
+		warning(message, object, feature, NO_INDEX);
 	}
 
 	protected void warning(String message, EObject object, EStructuralFeature feature, int index) {
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature), this.getClass().getName() };
+		Object[] data = new Object[] { new DiagnosticLocation(object, feature) };
 		warning(message, object, feature, index, data);
 	}
 
@@ -272,11 +295,11 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void error(String message, EObject object, EStructuralFeature feature) {
-		error(message, object, feature, INSIGNIFICANT_INDEX);
+		error(message, object, feature, NO_INDEX);
 	}
 
 	protected void error(String message, EObject object, EStructuralFeature feature, int index) {
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature), this.getClass().getName() };
+		Object[] data = new Object[] { new DiagnosticLocation(object, feature) };
 		error(message, object, feature, index, data);
 	}
 
@@ -286,11 +309,11 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void info(String message, EObject object, EStructuralFeature feature) {
-		info(message, object, feature, INSIGNIFICANT_INDEX);
+		info(message, object, feature, NO_INDEX);
 	}
 
 	protected void info(String message, EObject object, EStructuralFeature feature, int index) {
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature), this.getClass().getName() };
+		Object[] data = new Object[] { new DiagnosticLocation(object, feature) };
 		info(message, object, feature, index, data);
 	}
 
@@ -300,7 +323,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	protected Diagnostic createDiagnostic(Severity severity, String message, EObject source, EStructuralFeature feature, int index, Object[] issueData) {
 		int diagnosticSeverity = toDiagnosticSeverity(severity);
-		Diagnostic result = new BasicDiagnostic(diagnosticSeverity, source.toString(), 0, message, issueData);
+		Diagnostic result = new BasicDiagnostic(diagnosticSeverity, this.getClass().getName(), 0, message, issueData);
 		return result;
 	}
 
@@ -338,7 +361,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	 * @see org.eclipse.sphinx.emf.check.ICheckValidator#getCheckModelHelper()
 	 */
 	@Override
-	public CheckModelHelper getCheckModelHelper() {
-		return checkModelHelper;
+	public CheckCatalogHelper getCheckCatalogHelper() {
+		return checkCatalogHelper;
 	}
 }

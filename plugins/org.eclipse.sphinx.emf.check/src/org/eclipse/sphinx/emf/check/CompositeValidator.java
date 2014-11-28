@@ -26,45 +26,52 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 
-public class ComposedValidator implements ICheckValidator {
+/**
+ * A delegating validator. This validator is automatically created when multiple check
+ * {@link org.eclipse.sphinx.emf.check.AbstractCheckValidator validators} are contributed for the same
+ * {@link org.eclipse.emf.ecore.EPackage ePackage}. In this case, the composite validator is set as the root validator,
+ * it delegates the validation to all its children and returns the logical <em>AND</em> of the delegated diagnostics
+ * results.
+ */
+public class CompositeValidator implements ICheckValidator {
 
-	private List<EValidator> delegates;
+	private List<EValidator> children;
 
-	public ComposedValidator() {
-		delegates = new ArrayList<EValidator>();
+	public CompositeValidator() {
+		children = new ArrayList<EValidator>();
 	}
 
-	public ComposedValidator(EValidator delegate) {
+	public CompositeValidator(EValidator delegate) {
 		this();
-		addDelegate(delegate);
+		addChild(delegate);
 	}
 
-	public void addDelegate(EValidator delegate) {
+	public void addChild(EValidator delegate) {
 		if (this == delegate) {
 			return;
 		}
-		if (!delegates.contains(delegate)) {
-			delegates.add(delegate);
+		if (!children.contains(delegate)) {
+			children.add(delegate);
 		}
 	}
 
-	public void removeDelegate(EValidator delegate) {
+	public void removeChild(EValidator delegate) {
 		if (this == delegate) {
 			return;
 		}
-		if (delegates.contains(delegate)) {
-			delegates.remove(delegate);
+		if (children.contains(delegate)) {
+			children.remove(delegate);
 		}
 	}
 
-	public List<EValidator> getDelegates() {
-		return delegates;
+	public List<EValidator> getChildren() {
+		return children;
 	}
 
 	@Override
 	public boolean validate(EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		boolean result = true;
-		for (EValidator validator : getDelegates()) {
+		for (EValidator validator : getChildren()) {
 			result = result && validator.validate(eObject, diagnostics, context);
 		}
 		return result;
@@ -73,7 +80,7 @@ public class ComposedValidator implements ICheckValidator {
 	@Override
 	public boolean validate(EClass eClass, EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		boolean result = true;
-		for (EValidator validator : getDelegates()) {
+		for (EValidator validator : getChildren()) {
 			boolean validate = validator.validate(eClass, eObject, diagnostics, context);
 			result = result && validate;
 		}
@@ -83,7 +90,7 @@ public class ComposedValidator implements ICheckValidator {
 	@Override
 	public boolean validate(EDataType eDataType, Object value, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		boolean result = true;
-		for (EValidator validator : getDelegates()) {
+		for (EValidator validator : getChildren()) {
 			boolean validate = validator.validate(eDataType, value, diagnostics, context);
 			result = result && validate;
 		}
@@ -91,14 +98,14 @@ public class ComposedValidator implements ICheckValidator {
 	}
 
 	@Override
-	public CheckModelHelper getCheckModelHelper() {
+	public CheckCatalogHelper getCheckCatalogHelper() {
 		return null;
 	}
 
 	@Override
 	public void setFilter(Set<String> validationSets) {
-		for (EValidator delegate : delegates) {
-			if (delegate instanceof AbstractCheckValidator) {
+		for (EValidator delegate : children) {
+			if (delegate instanceof ICheckValidator) {
 				((ICheckValidator) delegate).setFilter(validationSets);
 			}
 		}

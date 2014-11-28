@@ -70,9 +70,18 @@ public class MethodWrapper {
 			String[] categories = annotation.categories();
 			Set<String> categoriesSet = new HashSet<String>(Arrays.asList(categories));
 			Set<String> filter = instance.getFilter();
-			Set<String> intersection = new HashSet<String>(filter);
-			intersection.retainAll(categoriesSet);
-			if (!intersection.isEmpty()) {
+			Set<String> scope = new HashSet<String>(filter);
+
+			// If no categories are specified, invoke the @Check method on all the categories defined in the check
+			// catalog, otherwise invoke the @Check method on the intersection of categories provided by the user, and
+			// the categories defined in the check catalog.
+			if (categoriesSet.size() == 0) {
+				scope = filter;
+			} else {
+				scope.retainAll(categoriesSet);
+			}
+			// go ahead if scope is not empty or if validator has no check catalog
+			if (!scope.isEmpty() || instance.getCheckCatalogHelper().getRoot() == null) {
 				try {
 					state.currentMethod = method;
 					state.currentCheckType = annotation.value();

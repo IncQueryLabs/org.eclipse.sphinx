@@ -32,6 +32,9 @@ import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.validation.markers.IValidationMarker;
 import org.eclipse.sphinx.emf.validation.util.Messages;
 
+/**
+ * Default check problem errors factory.
+ */
 public class CheckProblemMarkerFactory implements IProblemMarkerFactory {
 
 	@Override
@@ -64,13 +67,7 @@ public class CheckProblemMarkerFactory implements IProblemMarkerFactory {
 			message = Messages.noMessageAvailableForThisMarker;
 		}
 		attributes.put(IMarker.MESSAGE, message);
-
-		// store the id of the validator which raised the error
-		int size = data.size();
-		if (size > 1 && !(data.get(size - 1) instanceof DiagnosticLocation)) {
-			String validaorClassName = (String) data.get(1);
-			attributes.put(IMarker.SOURCE_ID, validaorClassName);
-		}
+		attributes.put(IMarker.SOURCE_ID, diagnostic.getSource());
 
 		marker.setAttributes(attributes);
 	}

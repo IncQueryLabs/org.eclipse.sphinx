@@ -2,7 +2,6 @@ package org.eclipse.sphinx.emf.check.internal;
 
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.util.ResourceLocator;
-import org.eclipse.sphinx.emf.check.registry.CheckValidatorRegistry;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -28,7 +27,7 @@ public final class Activator extends EMFPlugin {
 
 	/**
 	 * Returns the singleton instance of the Eclipse plug-in.
-	 *
+	 * 
 	 * @return the singleton instance.
 	 */
 	@Override
@@ -38,7 +37,7 @@ public final class Activator extends EMFPlugin {
 
 	/**
 	 * Returns the singleton instance of the Eclipse plug-in.
-	 *
+	 * 
 	 * @return the singleton instance.
 	 */
 	public static Implementation getPlugin() {
@@ -49,7 +48,7 @@ public final class Activator extends EMFPlugin {
 	 * Returns the singleton instance of the Eclipse plug-in. This method does actually the same thing as getPlugin()
 	 * and has been put in place for compatibility reasons with Activator classes which are not EMF-based but generated
 	 * by PDE.
-	 *
+	 * 
 	 * @return the singleton instance.
 	 */
 	public static Implementation getDefault() {
@@ -74,8 +73,6 @@ public final class Activator extends EMFPlugin {
 		@Override
 		public void start(BundleContext context) throws Exception {
 			super.start(context);
-
-			CheckValidatorRegistry.INSTANCE.initialize();
 		}
 	}
 }

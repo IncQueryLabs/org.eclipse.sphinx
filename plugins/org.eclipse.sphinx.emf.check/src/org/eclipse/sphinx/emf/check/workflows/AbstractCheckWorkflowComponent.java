@@ -19,6 +19,9 @@ import org.eclipse.sphinx.emf.mwe.dynamic.IWorkflowSlots;
 import org.eclipse.sphinx.emf.mwe.dynamic.components.AbstractModelWorkflowComponent;
 import org.eclipse.sphinx.emf.mwe.dynamic.components.IModelWorkflowComponent;
 
+/**
+ * An abstract workflow component which makes use of the check validation service.
+ */
 public abstract class AbstractCheckWorkflowComponent extends AbstractModelWorkflowComponent implements IModelWorkflowComponent {
 
 	private ICheckValidator validator = null;
@@ -27,8 +30,8 @@ public abstract class AbstractCheckWorkflowComponent extends AbstractModelWorkfl
 
 	public ICheckValidator getValidator(EPackage ePackage) throws CoreException {
 		if (validator == null) {
-			validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
-			CheckValidatorRegistry.INSTANCE.register(ePackage, validator);
+			CheckValidatorRegistry registry = CheckValidatorRegistry.getInstance();
+			validator = registry.getValidator(ePackage);
 		}
 		return validator;
 	}
