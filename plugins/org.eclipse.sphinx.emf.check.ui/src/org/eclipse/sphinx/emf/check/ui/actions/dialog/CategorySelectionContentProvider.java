@@ -20,14 +20,14 @@ import java.util.Set;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.sphinx.emf.check.CheckModelHelper;
+import org.eclipse.sphinx.emf.check.CheckCatalogHelper;
 import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category;
 
 public class CategorySelectionContentProvider implements IStructuredContentProvider {
 
-	private final Set<CheckModelHelper> helpers;
+	private final Set<CheckCatalogHelper> helpers;
 
-	public CategorySelectionContentProvider(Set<CheckModelHelper> helpers) {
+	public CategorySelectionContentProvider(Set<CheckCatalogHelper> helpers) {
 		super();
 		this.helpers = helpers;
 	}
@@ -45,7 +45,7 @@ public class CategorySelectionContentProvider implements IStructuredContentProvi
 	@Override
 	public Object[] getElements(Object inputElement) {
 		Set<Category> categories = new HashSet<Category>();
-		for (CheckModelHelper helper : helpers) {
+		for (CheckCatalogHelper helper : helpers) {
 			Set<Category> categoriesSubset = helper.getCategories();
 			for (Category category : categoriesSubset) {
 				boolean equality = false;
@@ -61,4 +61,5 @@ public class CategorySelectionContentProvider implements IStructuredContentProvi
 		}
 		return categories.toArray();
 	}
+
 }

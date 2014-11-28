@@ -35,8 +35,8 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.sphinx.emf.check.AbstractCheckValidator;
-import org.eclipse.sphinx.emf.check.CheckModelHelper;
-import org.eclipse.sphinx.emf.check.ComposedValidator;
+import org.eclipse.sphinx.emf.check.CheckCatalogHelper;
+import org.eclipse.sphinx.emf.check.CompositeValidator;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category;
 import org.eclipse.sphinx.emf.check.registry.CheckValidatorRegistry;
@@ -55,6 +55,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
 import org.eclipse.ui.actions.WorkspaceModifyDelegatingOperation;
 
+/**
+ * A basic action implementation for performing check-based validation. Given the {@link org.eclipse.emf.ecore.EPackage
+ * ePackage} of the input object, the action retrieves the check validator -if any- from the validation registry
+ * singleton. Then, whether the validator has an associated check catalog or not, the user is invited to select the set
+ * of constraint categories to verify. To launch a validation, the standard
+ * {@link org.eclipse.emf.ecore.util.Diagnostician diagnostician} is used. Finally the marker
+ * {@link org.eclipse.sphinx.emf.check.services.CheckProblemMarkerService service} is used to display the error markers
+ * on the problems view and the check validation view.
+ */
 public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 
 	public BasicCheckValidationAction() {
@@ -96,7 +105,7 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 			final EPackage ePackage = validationInput.eClass().getEPackage();
 			try {
 				// get the associated validator
-				final EValidator validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
+				final ICheckValidator validator = CheckValidatorRegistry.getInstance().getValidator(ePackage);
 				Assert.isNotNull(validator);
 
 				// query validation sets from user
@@ -104,12 +113,8 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 				if (validationSets == null) {
 					return;
 				}
-				// set the validation categories for the current check validator
-				if (validator instanceof AbstractCheckValidator) {
-					((ICheckValidator) validator).setFilter(validationSets);
-				} else if (validator instanceof ComposedValidator) {
-					((ComposedValidator) validator).setFilter(validationSets);
-				}
+				// set the categories filter for the current validator
+				validator.setFilter(validationSets);
 
 				// launch validation
 				try {
@@ -133,20 +138,13 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 		}
 	}
 
-	protected EObject unwrap(Object object) {
-		// TODO support other case like transient item provider...
-		if (object instanceof BasicWrappingEList.IWrapper<?>) {
-			Object target = ((BasicWrappingEList.IWrapper<?>) object).getTarget();
-			if (target instanceof EObject) {
-				return (EObject) target;
-			}
-		} else if (object instanceof EObject) {
-			return (EObject) object;
+	private Set<String> queryValidationSets(ICheckValidator validator) {
+		Set<String> selectedCategories = new HashSet<String>();
+		CheckCatalogHelper checkCatalog = validator.getCheckCatalogHelper();
+		if (checkCatalog != null && checkCatalog.getRoot() == null) {
+			// agnostic validator
+			return selectedCategories;
 		}
-		return null;
-	}
-
-	private Set<String> queryValidationSets(EValidator validator) {
 		Shell shell = ExtendedPlatformUI.getActiveShell();
 		IStructuredContentProvider contentProvider = createContentProvider(validator);
 		ILabelProvider labelProvider = createLabelProvider();
@@ -157,7 +155,6 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 		dialog.setTitle(IValidationUIConstants.CONSTRAINT_CATEGORIES_SELECTION_TITLE);
 		dialog.setBlockOnOpen(true);
 
-		Set<String> selectedCategories = new HashSet<String>();
 		int result = dialog.open();
 		if (result == Window.OK) {
 			for (Object obj : dialog.getResult()) {
@@ -176,15 +173,15 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 	}
 
 	protected IStructuredContentProvider createContentProvider(EValidator validator) {
-		Set<CheckModelHelper> helpers = new HashSet<CheckModelHelper>();
+		Set<CheckCatalogHelper> helpers = new HashSet<CheckCatalogHelper>();
 		if (validator instanceof AbstractCheckValidator) {
-			helpers.add(((ICheckValidator) validator).getCheckModelHelper());
+			helpers.add(((AbstractCheckValidator) validator).getCheckCatalogHelper());
 			return new CategorySelectionContentProvider(helpers);
-		} else if (validator instanceof ComposedValidator) {
-			List<EValidator> delegates = ((ComposedValidator) validator).getDelegates();
+		} else if (validator instanceof CompositeValidator) {
+			List<EValidator> delegates = ((CompositeValidator) validator).getChildren();
 			for (EValidator delegate : delegates) {
 				if (delegate instanceof AbstractCheckValidator) {
-					CheckModelHelper helper = ((ICheckValidator) delegate).getCheckModelHelper();
+					CheckCatalogHelper helper = ((AbstractCheckValidator) delegate).getCheckCatalogHelper();
 					helpers.add(helper);
 				} else {
 					throw new RuntimeException("Could not recognize type of delegate validator"); //$NON-NLS-1$
@@ -193,5 +190,18 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 			return new CategorySelectionContentProvider(helpers);
 		}
 		throw new RuntimeException("Could not recognize type of validator"); //$NON-NLS-1$
+	}
+
+	protected EObject unwrap(Object object) {
+		// TODO support other case like transient item provider...
+		if (object instanceof BasicWrappingEList.IWrapper<?>) {
+			Object target = ((BasicWrappingEList.IWrapper<?>) object).getTarget();
+			if (target instanceof EObject) {
+				return (EObject) target;
+			}
+		} else if (object instanceof EObject) {
+			return (EObject) object;
+		}
+		return null;
 	}
 }

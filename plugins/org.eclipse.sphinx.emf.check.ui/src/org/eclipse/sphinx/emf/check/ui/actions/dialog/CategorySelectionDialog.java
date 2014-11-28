@@ -17,6 +17,10 @@ package org.eclipse.sphinx.emf.check.ui.actions.dialog;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ListSelectionDialog;
 
@@ -27,4 +31,16 @@ public class CategorySelectionDialog extends ListSelectionDialog {
 		super(parentShell, input, contentProvider, labelProvider, message);
 	}
 
+	@Override
+	protected Control createDialogArea(Composite parent) {
+		Control control = super.createDialogArea(parent);
+		// sort categories alphabetically
+		getViewer().setSorter(new ViewerSorter() {
+			@Override
+			public int compare(Viewer viewer, Object e1, Object e2) {
+				return super.compare(viewer, e1, e2);
+			}
+		});
+		return control;
+	}
 }
