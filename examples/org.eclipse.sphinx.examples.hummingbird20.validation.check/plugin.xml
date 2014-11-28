@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+
+	<!-- Shared catalog referenced by a its plugin URI -->
    <extension
-         point="org.eclipse.sphinx.emf.check.checkvalidator">
+         point="org.eclipse.sphinx.emf.check.checkvalidators">
       <validator
-            class="org.eclipse.sphinx.examples.hummingbird20.check.Hummingbird20CheckValidator"
-            model="model/Hummingbird20.check">
+            class="org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20CheckValidator"
+            catalog="platform:/plugin/org.eclipse.sphinx.examples.hummingbird20.check/model/Hummingbird20.checkcatalog">
       </validator>
    </extension>
 
+	<!-- Embedded catalog referenced by a its relative path -->
    <extension
-         point="org.eclipse.sphinx.emf.check.checkvalidator">
+         point="org.eclipse.sphinx.emf.check.checkvalidators">
       <validator
-            class="org.eclipse.sphinx.examples.hummingbird20.check.AnotherHummingbird20CheckValidator"
-            model="model/Hummingbird20.check">
+            class="org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20AnotherCheckValidator"
+            catalog="model/Hummingbird20.checkcatalog">
+      </validator>
+   </extension>
+
+	<!-- No catalog used by this one -->
+   <extension
+         point="org.eclipse.sphinx.emf.check.checkvalidators">
+      <validator
+            class="org.eclipse.sphinx.examples.hummingbird20.check.basic.Hummingbird20BasicCheckValidator">
       </validator>
    </extension>
 

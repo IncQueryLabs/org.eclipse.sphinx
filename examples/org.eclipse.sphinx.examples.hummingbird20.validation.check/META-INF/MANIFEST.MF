@@ -14,5 +14,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.sphinx.emf.check
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.sphinx.examples.hummingbird20.check,
- org.eclipse.sphinx.examples.hummingbird20.check.internal;x-internal:=true
+Export-Package: org.eclipse.sphinx.examples.hummingbird20.check.basic,
+ org.eclipse.sphinx.examples.hummingbird20.check.withcatalog
