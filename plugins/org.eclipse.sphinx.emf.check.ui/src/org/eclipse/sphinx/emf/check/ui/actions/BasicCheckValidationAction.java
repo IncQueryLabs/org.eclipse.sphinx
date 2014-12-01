@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.Diagnostic;
@@ -105,16 +104,18 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 			final EPackage ePackage = validationInput.eClass().getEPackage();
 			try {
 				// get the associated validator
-				final ICheckValidator validator = CheckValidatorRegistry.getInstance().getValidator(ePackage);
-				Assert.isNotNull(validator);
+				ICheckValidator validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
 
-				// query validation sets from user
-				final Set<String> validationSets = queryValidationSets(validator);
-				if (validationSets == null) {
-					return;
+				// TODO Move this test to updateSelection()
+				if (validator != null) {
+					// query validation sets from user
+					Set<String> validationSets = queryValidationSets(validator);
+					if (validationSets == null) {
+						return;
+					}
+					// set the categories filter for the current validator
+					validator.setFilter(validationSets);
 				}
-				// set the categories filter for the current validator
-				validator.setFilter(validationSets);
 
 				// launch validation
 				try {
@@ -141,7 +142,7 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 	private Set<String> queryValidationSets(ICheckValidator validator) {
 		Set<String> selectedCategories = new HashSet<String>();
 		CheckCatalogHelper checkCatalog = validator.getCheckCatalogHelper();
-		if (checkCatalog != null && checkCatalog.getRoot() == null) {
+		if (checkCatalog != null && checkCatalog.getCatalog() == null) {
 			// agnostic validator
 			return selectedCategories;
 		}

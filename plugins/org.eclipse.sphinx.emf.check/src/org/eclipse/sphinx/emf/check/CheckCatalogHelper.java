@@ -31,11 +31,11 @@ import org.eclipse.sphinx.emf.check.registry.CheckValidatorRegistry;
 
 public class CheckCatalogHelper {
 
-	private Catalog root;
+	private Catalog catalog;
 
 	public CheckCatalogHelper(ICheckValidator checkValidator) {
 		String fqn = checkValidator.getClass().getName();
-		URI uri = CheckValidatorRegistry.getInstance().getCheckModelURI(fqn);
+		URI uri = CheckValidatorRegistry.INSTANCE.getCheckModelURI(fqn);
 		if (uri != null) {
 			Resource checkResource = new ResourceSetImpl().getResource(uri, true);
 			EObject eObject = checkResource.getContents().get(0);
@@ -43,13 +43,13 @@ public class CheckCatalogHelper {
 			if (!(eObject instanceof Catalog)) {
 				throw new RuntimeException("Could not find the check model Catalogue!"); //$NON-NLS-1$
 			}
-			setRoot((Catalog) eObject);
+			setCatalog((Catalog) eObject);
 		}
 	}
 
 	public String getMessage(String constraint) {
-		if (root != null) {
-			EList<Constraint> constraints = root.getConstraints();
+		if (catalog != null) {
+			EList<Constraint> constraints = catalog.getConstraints();
 			for (Constraint c : constraints) {
 				String name = c.getId();
 				if (name.equals(constraint)) {
@@ -61,28 +61,27 @@ public class CheckCatalogHelper {
 	}
 
 	public Set<Category> getCategories() {
-		if (root != null) {
-			return new HashSet<Category>(root.getCategories());
+		if (catalog != null) {
+			return new HashSet<Category>(catalog.getCategories());
 		}
 		return new HashSet<Category>();
 	}
 
 	public Severity getSeverityType(String constraint) {
-		EList<Constraint> constraints = root.getConstraints();
-		for (Constraint c : constraints) {
-			String name = c.getId();
+		for (Constraint contraintInCatalog : catalog.getConstraints()) {
+			String name = contraintInCatalog.getId();
 			if (name.equals(constraint)) {
-				return c.getSeverity();
+				return contraintInCatalog.getSeverity();
 			}
 		}
 		return Severity.ERROR;
 	}
 
-	public Catalog getRoot() {
-		return root;
+	public Catalog getCatalog() {
+		return catalog;
 	}
 
-	public void setRoot(Catalog root) {
-		this.root = root;
+	public void setCatalog(Catalog catalog) {
+		this.catalog = catalog;
 	}
 }

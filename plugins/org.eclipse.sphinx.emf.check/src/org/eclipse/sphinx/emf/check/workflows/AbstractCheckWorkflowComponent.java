@@ -30,8 +30,7 @@ public abstract class AbstractCheckWorkflowComponent extends AbstractModelWorkfl
 
 	public ICheckValidator getValidator(EPackage ePackage) throws CoreException {
 		if (validator == null) {
-			CheckValidatorRegistry registry = CheckValidatorRegistry.getInstance();
-			validator = registry.getValidator(ePackage);
+			validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
 		}
 		return validator;
 	}

@@ -81,7 +81,7 @@ public class MethodWrapper {
 				scope.retainAll(categoriesSet);
 			}
 			// go ahead if scope is not empty or if validator has no check catalog
-			if (!scope.isEmpty() || instance.getCheckCatalogHelper().getRoot() == null) {
+			if (!scope.isEmpty() || instance.getCheckCatalogHelper().getCatalog() == null) {
 				try {
 					state.currentMethod = method;
 					state.currentCheckType = annotation.value();

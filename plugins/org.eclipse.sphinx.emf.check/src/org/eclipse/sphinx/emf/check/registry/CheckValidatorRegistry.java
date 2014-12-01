@@ -61,7 +61,10 @@ public class CheckValidatorRegistry {
 
 	private org.eclipse.emf.ecore.EValidator.Registry eValidatorRegistry = null;
 
-	private static CheckValidatorRegistry INSTANCE = null;
+	/**
+	 * The singleton instance of this registry.
+	 */
+	public static final CheckValidatorRegistry INSTANCE = new CheckValidatorRegistry(Platform.getExtensionRegistry(), Activator.getPlugin().getLog());
 
 	private Map<String, CheckValidatorDescriptor> validatorToCheckModelMap = Collections
 			.synchronizedMap(new LinkedHashMap<String, CheckValidatorDescriptor>());
@@ -71,13 +74,6 @@ public class CheckValidatorRegistry {
 	private IExtensionRegistry extensionRegistry;
 
 	private static final Plugin PLUGIN = Activator.getDefault();
-
-	public static CheckValidatorRegistry getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new CheckValidatorRegistry(Platform.getExtensionRegistry(), Activator.getPlugin().getLog());
-		}
-		return INSTANCE;
-	}
 
 	/**
 	 * Retrieve a check-based validator contributed through the <code>org.eclipse.sphinx.emf.check.chekvalidators</code>
@@ -212,7 +208,7 @@ public class CheckValidatorRegistry {
 		Assert.isNotNull(clazz);
 
 		String packageName = clazz.getPackage().getName();
-		Collection<Object> safeEPackages = EPackage.Registry.INSTANCE.values();
+		Collection<Object> safeEPackages = new HashSet<Object>(EPackage.Registry.INSTANCE.values());
 		for (Object object : safeEPackages) {
 			EPackage ePackage = null;
 			if (object instanceof EPackage) {
