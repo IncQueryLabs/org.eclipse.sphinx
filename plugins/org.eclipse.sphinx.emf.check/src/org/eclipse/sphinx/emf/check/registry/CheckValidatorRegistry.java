@@ -19,15 +19,15 @@ import static org.eclipse.sphinx.platform.util.StatusUtil.createWarningStatus;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -57,6 +57,8 @@ public class CheckValidatorRegistry {
 	private static final String checkValidator_extenstion = "org.eclipse.sphinx.emf.check.checkvalidators"; //$NON-NLS-1$
 	private static final String checkValidator_configElement = "validator"; //$NON-NLS-1$
 
+	private static final String DEFAULT_EMF_MODEL_CLASS_PACKAGE_SUFFIX = "impl"; //$NON-NLS-1$
+
 	private org.eclipse.emf.ecore.EValidator.Registry eValidatorRegistry = null;
 
 	private static CheckValidatorRegistry INSTANCE = null;
@@ -80,7 +82,7 @@ public class CheckValidatorRegistry {
 	/**
 	 * Retrieve a check-based validator contributed through the <code>org.eclipse.sphinx.emf.check.chekvalidators</code>
 	 * extension point for the given package.
-	 * 
+	 *
 	 * @param ePackage
 	 * @return
 	 * @throws CoreException
@@ -98,7 +100,7 @@ public class CheckValidatorRegistry {
 
 	/**
 	 * Returns the URI of a check model given a fully qualified name of a check validator.
-	 * 
+	 *
 	 * @param qualifiedName
 	 * @return
 	 */
@@ -162,7 +164,7 @@ public class CheckValidatorRegistry {
 
 	/**
 	 * Retrieve the classes from the arguments of the methods annotated with @Check
-	 * 
+	 *
 	 * @param validatorClass
 	 * @return
 	 */
@@ -187,7 +189,7 @@ public class CheckValidatorRegistry {
 	/**
 	 * The following method makes the assumption that the ePackages associated to a validator are located in the same
 	 * Java package than the classes given as input, which is the default behavior of the EMF API model generator.
-	 * 
+	 *
 	 * @param classes
 	 * @return
 	 */
@@ -195,36 +197,52 @@ public class CheckValidatorRegistry {
 		Set<EPackage> packagesInScope = new HashSet<EPackage>();
 		Iterator<Class<?>> iterator = classes.iterator();
 		while (iterator.hasNext()) {
-			Class<?> c = iterator.next();
-			String packageName = c.getPackage().getName();
-			packagesInScope.add(findEPackage(packageName));
+			Class<?> clazz = iterator.next();
+			EPackage ePackage = findEPackage(clazz);
+			if (ePackage != null) {
+				packagesInScope.add(ePackage);
+			} else {
+				logError("Unable to find EPackage for ", clazz.getCanonicalName()); //$NON-NLS-1$
+			}
 		}
 		return packagesInScope;
 	}
 
-	private EPackage findEPackage(String packageName) {
-		List<Object> packages = new ArrayList<Object>();
-		// do it in two steps so that concurrent modification exceptions are avoided
-		for (Object object : EPackage.Registry.INSTANCE.values()) {
-			if (object instanceof EPackage || object instanceof EPackage.Descriptor) {
-				packages.add(object);
-			}
-		}
-		EPackage ePackage = null;
-		for (Object object : packages) {
+	private EPackage findEPackage(Class<?> clazz) {
+		Assert.isNotNull(clazz);
+
+		String packageName = clazz.getPackage().getName();
+		Collection<Object> safeEPackages = EPackage.Registry.INSTANCE.values();
+		for (Object object : safeEPackages) {
+			EPackage ePackage = null;
 			if (object instanceof EPackage) {
 				ePackage = (EPackage) object;
 			} else if (object instanceof EPackage.Descriptor) {
 				ePackage = ((EPackage.Descriptor) object).getEPackage();
-			} else {
-				logError("Could not recognize type of regitered EPackage"); //$NON-NLS-1$
 			}
-			String instanceClassName = ePackage.getClass().getCanonicalName();
-			if (instanceClassName.contains(packageName)) {
-				break;
+			if (ePackage != null) {
+				String interfacePackageName = getEMFModelInterfacePackageName(ePackage);
+				if (packageName.equals(interfacePackageName)) {
+					return ePackage;
+				}
 			}
 		}
-		return ePackage;
+		return null;
+	}
+
+	private String getEMFModelInterfacePackageName(EPackage ePackage) {
+		Assert.isNotNull(ePackage);
+
+		String instanceClassName = ePackage.getClass().getCanonicalName();
+		int implPackageIdx = instanceClassName.lastIndexOf('.' + DEFAULT_EMF_MODEL_CLASS_PACKAGE_SUFFIX);
+		if (implPackageIdx != -1) {
+			return instanceClassName.substring(0, implPackageIdx);
+		}
+		int ePackageClassIdx = instanceClassName.lastIndexOf('.');
+		if (ePackageClassIdx != -1) {
+			return instanceClassName.substring(0, ePackageClassIdx);
+		}
+		return null;
 	}
 
 	private void register(EPackage ePackage, Class<?> clazz) {
@@ -232,9 +250,7 @@ public class CheckValidatorRegistry {
 		try {
 			validatorInstance = (EValidator) clazz.newInstance();
 			register(ePackage, validatorInstance);
-		} catch (InstantiationException ex) {
-			logError(ex);
-		} catch (IllegalAccessException ex) {
+		} catch (Exception ex) {
 			logError(ex);
 		}
 	}
@@ -264,10 +280,10 @@ public class CheckValidatorRegistry {
 		}
 		// there is another type of validator registered, create a composite validator and wrap the validators
 		else {
-			CompositeValidator dispatcher = new CompositeValidator();
-			dispatcher.addChild(existingValidator);
-			dispatcher.addChild(newValidator);
-			getRegistry().put(ePackage, dispatcher);
+			CompositeValidator composite = new CompositeValidator();
+			composite.addChild(existingValidator);
+			composite.addChild(newValidator);
+			getRegistry().put(ePackage, composite);
 		}
 	}
 
