@@ -278,8 +278,18 @@ public class BasicExplorerLabelProvider extends BaseLabelProvider implements ICo
 	public StyledString getStyledText(Object element) {
 		if (!(element instanceof IFile)) {
 			AdapterFactoryLabelProvider labelProvider = getModelLabelProvider(element);
-			if (labelProvider != null) {
+			// FIXME Use commented code instead of subsequent if/else statement once we don't need to support Eclipse
+			// 4.3 (and EMF 2.9) any longer
+			// if (labelProvider != null) {
+			// return labelProvider.getStyledText(element);
+			// }
+			if (labelProvider instanceof IStyledLabelProvider) {
 				return labelProvider.getStyledText(element);
+			} else {
+				String text = labelProvider.getText(element);
+				if (text != null && text.length() > 0) {
+					return new StyledString(text);
+				}
 			}
 		}
 		return null;
