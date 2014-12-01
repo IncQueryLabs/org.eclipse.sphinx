@@ -1,18 +1,18 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2012 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
  *     itemis - [344145] AbstractModelConverter should build document from XMLInputSource with systemId and publicId set
  *     BMW Car IT - Make sure JDOM uses platform specific line separator instead of always using Windows \r\n.
- *      
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.resource;
@@ -80,7 +80,8 @@ public abstract class AbstractModelConverter implements IModelConverter {
 		// Check if resource version of this model converter matches resource version indicated by load options
 		Object value = options.get(ExtendedResource.OPTION_RESOURCE_VERSION_DESCRIPTOR);
 		if (value instanceof IMetaModelDescriptor) {
-			return getResourceVersionDescriptor().equals(value);
+			return getResourceVersionDescriptor() != null && getResourceVersionDescriptor().equals(value)
+					&& !value.equals(getMetaModelVersionDescriptor());
 		}
 
 		// Check if resource version matches the resource's namespace

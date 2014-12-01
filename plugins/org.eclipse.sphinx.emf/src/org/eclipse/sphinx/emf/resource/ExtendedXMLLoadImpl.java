@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.resource;
@@ -51,11 +51,6 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 
-	protected boolean enableSchemaValidation;
-	protected SAXParser parser = null;
-	protected IModelConverter converter = null;
-	protected boolean didConvert = false;
-
 	/*
 	 * @see XMLLoadImpl#XMLLoadImpl(XMLHelper)
 	 */
@@ -88,7 +83,7 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 		this.resource = resource;
 		is = inputStream;
 		this.options = options;
-		enableSchemaValidation = Boolean.TRUE.equals(options.get(ExtendedResource.OPTION_ENABLE_SCHEMA_VALIDATION));
+		boolean enableSchemaValidation = Boolean.TRUE.equals(options.get(ExtendedResource.OPTION_ENABLE_SCHEMA_VALIDATION));
 
 		// HACK: reading encoding
 		String encoding = null;
@@ -100,8 +95,8 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 		// If an applicable model converter is around let it migrate the document prior to parsing it
 		InputSource inputSource = null;
 		boolean closeIs = false;
-		converter = ModelConverterRegistry.INSTANCE.getLoadConverter(resource, options);
-		didConvert = false;
+		IModelConverter converter = ModelConverterRegistry.INSTANCE.getLoadConverter(resource, options);
+		boolean didConvert = false;
 		if (converter != null) {
 			try {
 				inputSource = converter.convertLoad(resource, is, options);
@@ -161,6 +156,7 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 		parserProperties.put(Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_HANDLER_PROPERTY, new ExtendedErrorHandlerWrapper());
 
 		DefaultHandler handler = null;
+		SAXParser parser = null;
 		XMLParserPool pool = (XMLParserPool) options.get(XMLResource.OPTION_USE_PARSER_POOL);
 		try {
 			if (pool != null) {
