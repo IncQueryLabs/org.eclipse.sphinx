@@ -231,9 +231,9 @@ public class ResourceProblemMarkerService {
 	 * @see #PROXY_URI_INTEGRITY_PROBLEM
 	 * @see IMarker#PROBLEM
 	 */
-	public void updateProblemMarkers(Resource resource, final IProgressMonitor monitor) {
+	public void addProblemMarkers(Resource resource, final IProgressMonitor monitor) {
 		if (resource != null) {
-			updateProblemMarkers(Collections.singleton(resource), monitor);
+			addProblemMarkers(Collections.singleton(resource), monitor);
 		}
 	}
 
@@ -299,7 +299,7 @@ public class ResourceProblemMarkerService {
 	 * @see #PROXY_URI_INTEGRITY_PROBLEM
 	 * @see IMarker#PROBLEM
 	 */
-	public void updateProblemMarkers(final Collection<Resource> resources, final IProgressMonitor monitor) {
+	public void addProblemMarkers(final Collection<Resource> resources, final IProgressMonitor monitor) {
 		Assert.isNotNull(resources);
 
 		// Retrieve resources with problems (errors + warnings)
@@ -331,14 +331,31 @@ public class ResourceProblemMarkerService {
 			}
 
 			for (final TransactionalEditingDomain editingDomain : resourcesToUpdate.keySet()) {
-				updateProblemMarkersInEditingDomain(editingDomain, resourcesToUpdate, progress.newChild(1));
+				addProblemMarkersInEditingDomain(editingDomain, resourcesToUpdate, progress.newChild(1));
 			}
 
 			MarkerJob.INSTANCE.schedule();
 		}
 	}
 
-	private void updateProblemMarkersInEditingDomain(final TransactionalEditingDomain editingDomain,
+	/**
+	 * Removes problem markers related to resource loading and saving.
+	 *
+	 * @param files
+	 *            Collection of {@link IFile file}s for which we ask to remove problem markers.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public void removeProblemMarkers(final Collection<IFile> files, final IProgressMonitor monitor) {
+		for (IFile file : files) {
+			if (file.isAccessible()) {
+				getResourceProblemMarkerFactory(file).deleteMarkers(file);
+			}
+		}
+	}
+
+	private void addProblemMarkersInEditingDomain(final TransactionalEditingDomain editingDomain,
 			final Map<TransactionalEditingDomain, Collection<Resource>> resourcesToUpdate, final IProgressMonitor monitor) {
 		Assert.isNotNull(resourcesToUpdate);
 
@@ -354,11 +371,6 @@ public class ResourceProblemMarkerService {
 				for (Resource resource : resourcesToUpdateInEditingDomain) {
 					IFile file = EcorePlatformUtil.getFile(resource);
 					if (file != null) {
-						// Remove old problem makers related to resource loading and saving
-						if (file.isAccessible()) {
-							getResourceProblemMarkerFactory(file).deleteMarkers(file);
-						}
-
 						ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
 						int maxCount = extendedResource != null ? (Integer) extendedResource.getProblemHandlingOptions().get(
 								ExtendedResource.OPTION_MAX_PROBLEM_MARKER_COUNT) : ExtendedResource.OPTION_MAX_PROBLEM_MARKER_COUNT_UNLIMITED;

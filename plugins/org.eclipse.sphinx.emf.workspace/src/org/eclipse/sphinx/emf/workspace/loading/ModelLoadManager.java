@@ -871,7 +871,7 @@ public final class ModelLoadManager {
 		}
 
 		// Handle problems that may have been encountered during proxy resolution
-		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resources, progress.newChild(10));
+		ResourceProblemMarkerService.INSTANCE.addProblemMarkers(resources, progress.newChild(10));
 
 		// Perform a full garbage collection
 		ExtendedPlatform.performGarbageCollection();
@@ -1487,7 +1487,7 @@ public final class ModelLoadManager {
 	 * {@link IProject project}s are removed in order to make sure that models in the formerly referencing
 	 * {@link IProject project}s do no longer reference any elements of models in the formerly referenced
 	 * {@link IProject project}s.
-	 * 
+	 *
 	 * @param projects
 	 *            The project of which the unreachable cross project references are to be unresolved.
 	 * @param async
@@ -1654,7 +1654,7 @@ public final class ModelLoadManager {
 	/**
 	 * Loads all resources owned by the provided {@link IModelDescriptor model descriptor} (i.e all the persisted
 	 * resources owned by the model)
-	 * 
+	 *
 	 * @param modelDescriptor
 	 * @param async
 	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
@@ -1670,7 +1670,7 @@ public final class ModelLoadManager {
 	/**
 	 * Loads all resources owned by the provided {@link IModelDescriptor model descriptor} (i.e all the persisted
 	 * resources owned by the model)
-	 * 
+	 *
 	 * @param modelDescriptor
 	 *            the {@link IModelDescriptor model descriptor} describing the model.
 	 * @param includeReferencedScopes
@@ -1727,7 +1727,7 @@ public final class ModelLoadManager {
 	/**
 	 * Loads in memory all persisted resources owned by the model described by the {@link IModelDescriptor model
 	 * Descriptor}s provided in argument.
-	 * 
+	 *
 	 * @param modelDescriptors
 	 *            {@link IModelDescriptor model Descriptor}s describing the models to load.
 	 * @param async
@@ -1744,7 +1744,7 @@ public final class ModelLoadManager {
 	/**
 	 * Loads in memory all persisted resources owned by the model described by the {@link IModelDescriptor model
 	 * Descriptor}s provided in argument.
-	 * 
+	 *
 	 * @param modelDescriptors
 	 *            {@link IModelDescriptor model Descriptor}s describing the models to load.
 	 * @param includeReferencedScopes
@@ -1822,7 +1822,7 @@ public final class ModelLoadManager {
 
 	/**
 	 * Unloads all resources owned by the {@link IModelDescriptor model Descriptor} provided in argument.
-	 * 
+	 *
 	 * @param modelDescriptor
 	 *            The {@link IModelDescriptor model Descriptor} for the one resources must be unloaded
 	 * @param async
@@ -1838,7 +1838,7 @@ public final class ModelLoadManager {
 
 	/**
 	 * Unloads all resources owned by the {@link IModelDescriptor model Descriptor} provided in argument.
-	 * 
+	 *
 	 * @param modelDescriptor
 	 *            The {@link IModelDescriptor model Descriptor} for the one resources must be unloaded.
 	 * @param includeReferencedScopes
@@ -1864,7 +1864,7 @@ public final class ModelLoadManager {
 
 	/**
 	 * Unload all resources owned by the {@link IModelDescriptor model Descriptor}s provided in argument.
-	 * 
+	 *
 	 * @param modelDescriptors
 	 *            The {@link IModelDescriptor model Descriptor}s owning resources that must be unloaded.
 	 * @param async
@@ -1880,7 +1880,7 @@ public final class ModelLoadManager {
 
 	/**
 	 * Unload all resources owned by the {@link IModelDescriptor model Descriptor}s provided in argument.
-	 * 
+	 *
 	 * @param modelDescriptors
 	 *            The {@link IModelDescriptor model Descriptor}s owning resources that must be unloaded.
 	 * @param includeReferencedScopes
@@ -1909,7 +1909,7 @@ public final class ModelLoadManager {
 	/**
 	 * Updates {@link URI}s of {@link Resource resource}s behind the old {@link IFile file}s (keys) in the given map
 	 * according to the new {@link IPath path}s (values) they are mapped to. May be run synchronously or asynchronously.
-	 * 
+	 *
 	 * @param filesToUpdate
 	 *            A map specifying relevant old {@link IFile file}s along with their respective new {@link IPath path}s.
 	 * @param async

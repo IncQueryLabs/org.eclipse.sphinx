@@ -52,7 +52,7 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
  * Listens for {@link Resource resource}s that have been loaded or saved and requests the problem markers of underlying
  * {@link IFile file}s to be updated according to the {@link Resource#getErrors() errors} and
  * {@link Resource#getWarnings() warnings} of each loaded or saved {@link Resource} resource.
- * 
+ *
  * @see ResourceProblemMarkerService#updateProblemMarkers(Collection, boolean,
  *      org.eclipse.core.runtime.IProgressMonitor)
  */
@@ -135,7 +135,7 @@ public class ResourceProblemHandler extends ResourceSetListenerImpl implements I
 	}
 
 	protected void handleLoadedResources(Collection<Resource> resources) {
-		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resources, null);
+		ResourceProblemMarkerService.INSTANCE.addProblemMarkers(resources, null);
 	}
 
 	/*
@@ -146,12 +146,15 @@ public class ResourceProblemHandler extends ResourceSetListenerImpl implements I
 		try {
 			IResourceDelta delta = event.getDelta();
 			if (delta != null) {
+				final Set<IFile> changedFiles = new HashSet<IFile>();
 				final Set<IFile> savedFiles = new HashSet<IFile>();
 
 				// Investigate resource delta on saved files
 				IResourceDeltaVisitor visitor = new ResourceDeltaVisitor(event.getType(), new DefaultResourceChangeHandler() {
 					@Override
 					public void handleFileChanged(int eventType, IFile file) {
+						changedFiles.add(file);
+
 						/*
 						 * !! Important Note !! We must not try to obtain the model resource behind the changed file in
 						 * the present execution context. This would require requesting exclusive access to underlying
@@ -170,12 +173,21 @@ public class ResourceProblemHandler extends ResourceSetListenerImpl implements I
 				});
 				delta.accept(visitor);
 
+				// Handle changed files
+				handleChangedFiles(changedFiles);
+
 				// Handle saved files
 				handleSavedFiles(savedFiles);
 			}
 		} catch (Exception ex) {
 			PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 		}
+	}
+
+	protected void handleChangedFiles(Collection<IFile> files) {
+		Assert.isNotNull(files);
+
+		ResourceProblemMarkerService.INSTANCE.removeProblemMarkers(files, null);
 	}
 
 	protected void handleSavedFiles(Collection<IFile> files) {
@@ -193,6 +205,6 @@ public class ResourceProblemHandler extends ResourceSetListenerImpl implements I
 	}
 
 	protected void handleSavedResources(Collection<Resource> resources) {
-		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resources, null);
+		ResourceProblemMarkerService.INSTANCE.addProblemMarkers(resources, null);
 	}
 }

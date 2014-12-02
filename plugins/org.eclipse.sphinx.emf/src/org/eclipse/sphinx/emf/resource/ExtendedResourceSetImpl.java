@@ -624,7 +624,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		}
 
 		// Handle problems that may have been encountered during proxy resolution
-		ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resourcesWithProblems, null);
+		ResourceProblemMarkerService.INSTANCE.addProblemMarkers(resourcesWithProblems, null);
 
 		return resolvedEObject;
 	}
@@ -715,7 +715,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 			}
 
 			// Handle problems that may have been encountered during proxy resolution
-			ResourceProblemMarkerService.INSTANCE.updateProblemMarkers(resource, null);
+			ResourceProblemMarkerService.INSTANCE.addProblemMarkers(resource, null);
 		}
 
 		return null;
