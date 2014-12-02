@@ -16,6 +16,7 @@ package org.eclipse.sphinx.emf.mwe.dynamic.ui.dialogs;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -23,11 +24,14 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.mwe2.runtime.workflow.Workflow;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
+import org.eclipse.jdt.core.search.TypeNameMatch;
 import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.eclipse.jdt.internal.core.search.JavaWorkspaceScope;
 import org.eclipse.jdt.internal.ui.dialogs.OpenTypeSelectionDialog;
@@ -127,24 +131,41 @@ public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
 				@Override
 				public boolean select(ITypeInfoRequestor typeInfoRequestor) {
 					try {
-						// Compute class name of matched type
-						String className = typeInfoRequestor.getPackageName() + "." + typeInfoRequestor.getTypeName(); //$NON-NLS-1$
+						// Retrieve Java type behind given match
+						TypeNameMatch match = (TypeNameMatch) ReflectUtil.getInvisibleFieldValue(typeInfoRequestor, "fMatch"); //$NON-NLS-1$
+						IType matchType = match.getType();
 
-						/*
-						 * Performance optimization: Ignore class names with "bin" prefix. Such class names are
-						 * duplicates of the same class name without "bin" prefix. They occur when running in a runtime
-						 * workbench and the underlying classes are actually classes from plug-in projects in the
-						 * development workbench. The alternative approach consisting of performing the subsequent
-						 * Class#forName() analysis also for "bin" prefixed class names and ignoring the resulting
-						 * ClassNotFoundException may entail a significantly lower performance when many matches need to
-						 * be filtered.
-						 */
-						if (!className.startsWith(JavaExtensions.DEFAULT_OUTPUT_FOLDER_NAME)) {
-							// Retrieve class behind matched type
-							Class<?> forName = Class.forName(className);
+						// Try to find type for MWE2 Workflow within underlying Java project
+						IType workflowType = matchType.getJavaProject().findType(Workflow.class.getName());
+						if (workflowType != null) {
+							// Matched type refers to an on-the-fly compiled Java class in the runtime workspace
 
-							// Check if class is a subclass of MWE2 Workflow
-							return Workflow.class.isAssignableFrom(forName);
+							// Retrieve super class hierarchy of matched type
+							ITypeHierarchy supertypeHierarchy = matchType.newSupertypeHierarchy(new NullProgressMonitor());
+							List<IType> matchSuperclasses = Arrays.asList(supertypeHierarchy.getAllSuperclasses(matchType));
+
+							// Check if matched type is a subclass of MWE2 Workflow
+							return matchSuperclasses.contains(workflowType);
+						} else {
+							// Matched type refers to a binary Java class from the running Eclipse instance
+
+							// Lookup Java class behind matched type
+							/*
+							 * Performance optimization: Ignore class names with "bin" prefix. Such class names are
+							 * duplicates of the same class name without "bin" prefix. They occur when running in a
+							 * runtime workbench and the underlying classes are actually classes from plug-in projects
+							 * in the development workbench. The alternative approach consisting of performing the
+							 * subsequent Class#forName() analysis also for "bin" prefixed class names and ignoring the
+							 * resulting ClassNotFoundException may entail a significantly lower performance when many
+							 * matches need to be filtered.
+							 */
+							String matchClassName = matchType.getFullyQualifiedName();
+							if (!matchClassName.startsWith(JavaExtensions.DEFAULT_OUTPUT_FOLDER_NAME)) {
+								Class<?> matchClazz = Class.forName(matchClassName);
+
+								// Check if matched class is a subclass of MWE2 Workflow
+								return Workflow.class.isAssignableFrom(matchClazz);
+							}
 						}
 					} catch (Exception ex) {
 						// Ignore exception
