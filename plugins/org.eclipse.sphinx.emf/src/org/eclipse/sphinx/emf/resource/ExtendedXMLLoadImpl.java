@@ -51,6 +51,10 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 
+	protected boolean enableSchemaValidation;
+
+	protected SAXParser parser = null;
+
 	/*
 	 * @see XMLLoadImpl#XMLLoadImpl(XMLHelper)
 	 */
@@ -156,7 +160,6 @@ public class ExtendedXMLLoadImpl extends XMLLoadImpl {
 		parserProperties.put(Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_HANDLER_PROPERTY, new ExtendedErrorHandlerWrapper());
 
 		DefaultHandler handler = null;
-		SAXParser parser = null;
 		XMLParserPool pool = (XMLParserPool) options.get(XMLResource.OPTION_USE_PARSER_POOL);
 		try {
 			if (pool != null) {
