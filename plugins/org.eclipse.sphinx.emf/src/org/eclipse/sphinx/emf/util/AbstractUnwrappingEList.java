@@ -232,7 +232,15 @@ public abstract class AbstractUnwrappingEList<E, T> extends AbstractEList<T> imp
 	 * @return an array containing all the objects in the backing store list in sequence.
 	 */
 	protected Object[] delegateToArray() {
-		return delegateList().toArray();
+		Object[] result = new Object[size()];
+		for (int i = 0; i < size(); i++) {
+			try {
+				result[i] = unwrap(delegateList().get(i));
+			} catch (Exception ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -257,6 +265,7 @@ public abstract class AbstractUnwrappingEList<E, T> extends AbstractEList<T> imp
 	 * @return an array containing all the objects in sequence.
 	 */
 	protected <T1> T1[] delegateToArray(T1[] array) {
+		// FIXME
 		return delegateList().toArray(array);
 	}
 
