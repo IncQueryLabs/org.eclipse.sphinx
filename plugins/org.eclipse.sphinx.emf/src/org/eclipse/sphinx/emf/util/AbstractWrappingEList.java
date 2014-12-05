@@ -15,6 +15,7 @@
 package org.eclipse.sphinx.emf.util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
@@ -232,15 +233,15 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @return an array containing all the objects in the backing store list in sequence.
 	 */
 	protected Object[] delegateToArray() {
-		Object[] result = new Object[size()];
-		for (int i = 0; i < size(); i++) {
+		List<E> result = new ArrayList<E>(size());
+		for (T object : delegateList()) {
 			try {
-				result[i] = wrap(delegateList().get(i));
+				result.add(wrap(object));
 			} catch (Exception ex) {
 				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			}
 		}
-		return result;
+		return result.toArray();
 	}
 
 	/**
@@ -264,9 +265,16 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 *            the same type will be allocated and used instead.
 	 * @return an array containing all the objects in sequence.
 	 */
-	protected <T1> T1[] delegateToArray(T1[] array) {
-		// FIXME
-		return delegateList().toArray(array);
+	protected <E1> E1[] delegateToArray(E1[] array) {
+		List<E> result = new ArrayList<E>(size());
+		for (T object : delegateList()) {
+			try {
+				result.add(wrap(object));
+			} catch (Exception ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			}
+		}
+		return result.toArray(array);
 	}
 
 	/**

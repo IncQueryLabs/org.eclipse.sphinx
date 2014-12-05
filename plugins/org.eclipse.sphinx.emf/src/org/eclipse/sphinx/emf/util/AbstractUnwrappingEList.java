@@ -15,6 +15,7 @@
 package org.eclipse.sphinx.emf.util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
@@ -232,15 +233,15 @@ public abstract class AbstractUnwrappingEList<E, T> extends AbstractEList<T> imp
 	 * @return an array containing all the objects in the backing store list in sequence.
 	 */
 	protected Object[] delegateToArray() {
-		Object[] result = new Object[size()];
-		for (int i = 0; i < size(); i++) {
+		List<T> result = new ArrayList<T>(size());
+		for (E object : delegateList()) {
 			try {
-				result[i] = unwrap(delegateList().get(i));
+				result.add(unwrap(object));
 			} catch (Exception ex) {
 				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			}
 		}
-		return result;
+		return result.toArray();
 	}
 
 	/**
@@ -265,8 +266,15 @@ public abstract class AbstractUnwrappingEList<E, T> extends AbstractEList<T> imp
 	 * @return an array containing all the objects in sequence.
 	 */
 	protected <T1> T1[] delegateToArray(T1[] array) {
-		// FIXME
-		return delegateList().toArray(array);
+		List<T> result = new ArrayList<T>(size());
+		for (E object : delegateList()) {
+			try {
+				result.add(unwrap(object));
+			} catch (Exception ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			}
+		}
+		return result.toArray(array);
 	}
 
 	/**
