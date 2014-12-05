@@ -19,6 +19,7 @@
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
             <element ref="validator"/>
+            <element ref="ePackageMapping" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -67,6 +68,25 @@
                <appinfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.sphinx.emf.check.AbstractCheckValidator:"/>
                </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="ePackageMapping">
+      <complexType>
+         <attribute name="packageName" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="className" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
             </annotation>
          </attribute>
       </complexType>

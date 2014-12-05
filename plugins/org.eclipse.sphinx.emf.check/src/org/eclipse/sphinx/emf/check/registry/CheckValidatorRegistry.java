@@ -42,6 +42,8 @@ import org.eclipse.sphinx.emf.check.AbstractCheckValidator;
 import org.eclipse.sphinx.emf.check.CompositeValidator;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.internal.Activator;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.sphinx.platform.util.ReflectUtil;
 
 /**
  * A validation registry singleton which backs a standard EMF validation
@@ -54,8 +56,11 @@ import org.eclipse.sphinx.emf.check.internal.Activator;
  */
 public class CheckValidatorRegistry {
 
-	private static final String checkValidator_extenstion = "org.eclipse.sphinx.emf.check.checkvalidators"; //$NON-NLS-1$
-	private static final String checkValidator_configElement = "validator"; //$NON-NLS-1$
+	private static final String EXTP_CHECK_VALIDATORS = "org.eclipse.sphinx.emf.check.checkvalidators"; //$NON-NLS-1$
+	private static final String NODE_VALIDATOR = "validator"; //$NON-NLS-1$
+	private static final String NODE_EPACKAGE_MAPPING = "ePackageMapping"; //$NON-NLS-1$
+	private static final String ATTR_PACKAGE_NAME = "packageName"; //$NON-NLS-1$
+	private static final String ATTR_CLASS_NAME = "className"; //$NON-NLS-1$
 
 	private static final String DEFAULT_EMF_MODEL_CLASS_PACKAGE_SUFFIX = "impl"; //$NON-NLS-1$
 
@@ -68,6 +73,8 @@ public class CheckValidatorRegistry {
 
 	private Map<String, CheckValidatorDescriptor> validatorToCheckModelMap = Collections
 			.synchronizedMap(new LinkedHashMap<String, CheckValidatorDescriptor>());
+
+	private Map<String, EPackage> ePackageMappingsMap = Collections.synchronizedMap(new LinkedHashMap<String, EPackage>());
 
 	private ILog logger;
 
@@ -114,23 +121,43 @@ public class CheckValidatorRegistry {
 		if (extensionRegistry == null) {
 			return;
 		}
-		IConfigurationElement[] config = extensionRegistry.getConfigurationElementsFor(checkValidator_extenstion);
-		if (config.length != 0) {
+		IConfigurationElement[] configElements = extensionRegistry.getConfigurationElementsFor(EXTP_CHECK_VALIDATORS);
+		if (configElements.length != 0) {
 
 			// First iteration to detect wrong check contributions and initialize the check map
-			for (IConfigurationElement iConfigElement : config) {
-				if (!iConfigElement.getName().toLowerCase().equals(checkValidator_configElement.toLowerCase())) {
-					continue;
-				}
-				CheckValidatorDescriptor checkValidatorDescriptor = new CheckValidatorDescriptor(iConfigElement);
-				String validatorClassName = checkValidatorDescriptor.getValidatorClassName();
+			for (IConfigurationElement configElement : configElements) {
+				try {
+					if (NODE_VALIDATOR.equals(configElement.getName())) {
+						CheckValidatorDescriptor checkValidatorDescriptor = new CheckValidatorDescriptor(configElement);
+						String validatorClassName = checkValidatorDescriptor.getValidatorClassName();
 
-				// populate the check map
-				if (getValidatorToCheckModelMap().containsKey(validatorClassName)) {
-					logWarning("Duplicate validator contribution found for: " + validatorClassName); //$NON-NLS-1$
-					continue;
+						// populate the check map
+						if (getValidatorToCheckModelMap().containsKey(validatorClassName)) {
+							logWarning("Duplicate validator contribution found for: " + validatorClassName); //$NON-NLS-1$
+							continue;
+						}
+						getValidatorToCheckModelMap().put(validatorClassName, checkValidatorDescriptor);
+					} else if (NODE_EPACKAGE_MAPPING.equals(configElement.getName())) {
+						String javaPackageName = configElement.getAttribute(ATTR_PACKAGE_NAME);
+						EPackage ePackage = null;
+						try {
+							String className = configElement.getAttribute(ATTR_CLASS_NAME);
+							Class<?> clazz = Platform.getBundle(configElement.getContributor().getName()).loadClass(className);
+							ePackage = (EPackage) ReflectUtil.getFieldValue(clazz, "eINSTANCE"); //$NON-NLS-1$
+						} catch (ClassNotFoundException ex) {
+							PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+						} catch (IllegalAccessException ex) {
+							PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+						} catch (NoSuchFieldException noSuchFieldEx) {
+							PlatformLogUtil.logAsInfo(Activator.getPlugin(), noSuchFieldEx);
+							ePackage = (EPackage) configElement.createExecutableExtension(ATTR_CLASS_NAME);
+						}
+
+						getEPackageMappingsMap().put(javaPackageName, ePackage);
+					}
+				} catch (Exception ex) {
+					PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 				}
-				getValidatorToCheckModelMap().put(validatorClassName, checkValidatorDescriptor);
 			}
 
 			// Second iteration on the check map to register the validators
@@ -196,6 +223,7 @@ public class CheckValidatorRegistry {
 			Class<?> clazz = iterator.next();
 			EPackage ePackage = findEPackage(clazz);
 			if (ePackage != null) {
+				getEPackageMappingsMap().put(clazz.getName(), ePackage);
 				packagesInScope.add(ePackage);
 			} else {
 				logError("Unable to find EPackage for ", clazz.getCanonicalName()); //$NON-NLS-1$
@@ -207,10 +235,15 @@ public class CheckValidatorRegistry {
 	private EPackage findEPackage(Class<?> clazz) {
 		Assert.isNotNull(clazz);
 
+		EPackage ePackage = getEPackageMappingforClass(clazz);
+		if (ePackage != null) {
+			return ePackage;
+		}
+
 		String packageName = clazz.getPackage().getName();
 		Collection<Object> safeEPackages = new HashSet<Object>(EPackage.Registry.INSTANCE.values());
 		for (Object object : safeEPackages) {
-			EPackage ePackage = null;
+			ePackage = null;
 			if (object instanceof EPackage) {
 				ePackage = (EPackage) object;
 			} else if (object instanceof EPackage.Descriptor) {
@@ -305,5 +338,19 @@ public class CheckValidatorRegistry {
 
 	private Map<String, CheckValidatorDescriptor> getValidatorToCheckModelMap() {
 		return validatorToCheckModelMap;
+	}
+
+	private Map<String, EPackage> getEPackageMappingsMap() {
+		return ePackageMappingsMap;
+	}
+
+	private EPackage getEPackageMappingforClass(Class<?> clazz) {
+		Assert.isNotNull(clazz);
+
+		EPackage ePackage = getEPackageMappingsMap().get(clazz.getName());
+		if (ePackage == null) {
+			ePackage = getEPackageMappingsMap().get(clazz.getPackage().getName());
+		}
+		return ePackage;
 	}
 }
