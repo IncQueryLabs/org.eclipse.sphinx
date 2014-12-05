@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.sphinx.emf.check" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.eclipse.sphinx.emf.check" id="checkvalidator" name="org.eclipse.sphinx.emf.check"/>
+         <meta.schema plugin="org.eclipse.sphinx.emf.check" id="checkvalidators" name="Check Validators"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]
@@ -75,18 +75,21 @@
 
    <element name="ePackageMapping">
       <complexType>
-         <attribute name="packageName" type="string" use="required">
+         <attribute name="javaPackageName" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="className" type="string" use="required">
+         <attribute name="ePackageClass" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.emf.ecore.EPackage:"/>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>

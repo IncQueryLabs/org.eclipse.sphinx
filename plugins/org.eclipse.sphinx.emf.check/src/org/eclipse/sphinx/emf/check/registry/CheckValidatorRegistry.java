@@ -59,8 +59,8 @@ public class CheckValidatorRegistry {
 	private static final String EXTP_CHECK_VALIDATORS = "org.eclipse.sphinx.emf.check.checkvalidators"; //$NON-NLS-1$
 	private static final String NODE_VALIDATOR = "validator"; //$NON-NLS-1$
 	private static final String NODE_EPACKAGE_MAPPING = "ePackageMapping"; //$NON-NLS-1$
-	private static final String ATTR_PACKAGE_NAME = "packageName"; //$NON-NLS-1$
-	private static final String ATTR_CLASS_NAME = "className"; //$NON-NLS-1$
+	private static final String ATTR_JAVA_PACKAGE_NAME = "javaPackageName"; //$NON-NLS-1$
+	private static final String ATTR_EPACKAGE_CLASS = "ePackageClass"; //$NON-NLS-1$
 
 	private static final String DEFAULT_EMF_MODEL_CLASS_PACKAGE_SUFFIX = "impl"; //$NON-NLS-1$
 
@@ -138,10 +138,10 @@ public class CheckValidatorRegistry {
 						}
 						getValidatorToCheckModelMap().put(validatorClassName, checkValidatorDescriptor);
 					} else if (NODE_EPACKAGE_MAPPING.equals(configElement.getName())) {
-						String javaPackageName = configElement.getAttribute(ATTR_PACKAGE_NAME);
+						String javaPackageName = configElement.getAttribute(ATTR_JAVA_PACKAGE_NAME);
 						EPackage ePackage = null;
 						try {
-							String className = configElement.getAttribute(ATTR_CLASS_NAME);
+							String className = configElement.getAttribute(ATTR_EPACKAGE_CLASS);
 							Class<?> clazz = Platform.getBundle(configElement.getContributor().getName()).loadClass(className);
 							ePackage = (EPackage) ReflectUtil.getFieldValue(clazz, "eINSTANCE"); //$NON-NLS-1$
 						} catch (ClassNotFoundException ex) {
@@ -150,7 +150,7 @@ public class CheckValidatorRegistry {
 							PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 						} catch (NoSuchFieldException noSuchFieldEx) {
 							PlatformLogUtil.logAsInfo(Activator.getPlugin(), noSuchFieldEx);
-							ePackage = (EPackage) configElement.createExecutableExtension(ATTR_CLASS_NAME);
+							ePackage = (EPackage) configElement.createExecutableExtension(ATTR_EPACKAGE_CLASS);
 						}
 
 						getEPackageMappingsMap().put(javaPackageName, ePackage);
