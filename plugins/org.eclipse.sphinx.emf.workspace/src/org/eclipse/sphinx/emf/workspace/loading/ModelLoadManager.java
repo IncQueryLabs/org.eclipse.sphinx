@@ -15,6 +15,7 @@
  *     itemis - [418005] Add support for model files with multiple root elements
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
  *     itemis - [427461] Add progress monitor to resource load options (useful for loading large models)
+ *     itemis - [454092] Loading model resources
  *
  * </copyright>
  */
@@ -534,6 +535,14 @@ public final class ModelLoadManager {
 			if (!LoadJob.shouldCreateJob(projects, includeReferencedProjects, mmDescriptor)) {
 				return;
 			}
+			// Add the files to an existing scheduled job if any
+			for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
+				if (job instanceof ModelLoadJob) {
+					((ModelLoadJob) job).addProjects(projects);
+					return;
+				}
+			}
+			// Otherwise, create new job
 			Job job = new ModelLoadJob(projects, includeReferencedProjects, mmDescriptor) {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
@@ -651,6 +660,14 @@ public final class ModelLoadManager {
 			if (!LoadJob.shouldCreateJob(files, mmDescriptor)) {
 				return;
 			}
+			// Add the files to an existing scheduled job if any
+			for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
+				if (job instanceof FileLoadJob) {
+					((FileLoadJob) job).addFiles(files);
+					return;
+				}
+			}
+			// Otherwise, create new job
 			Job job = new FileLoadJob(files, mmDescriptor) {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
@@ -1693,6 +1710,14 @@ public final class ModelLoadManager {
 			if (!LoadJob.shouldCreateJob(persistedFiles, mmDescriptor)) {
 				return;
 			}
+			// Add the files to an existing scheduled job if any
+			for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
+				if (job instanceof FileLoadJob) {
+					((FileLoadJob) job).addFiles(persistedFiles);
+					return;
+				}
+			}
+			// Otherwise, create new job
 			Job job = new FileLoadJob(persistedFiles, mmDescriptor) {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
