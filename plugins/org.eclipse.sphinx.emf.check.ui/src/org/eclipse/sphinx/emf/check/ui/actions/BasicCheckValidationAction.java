@@ -46,8 +46,8 @@ import org.eclipse.sphinx.emf.check.ui.actions.dialog.CategorySelectionDialog;
 import org.eclipse.sphinx.emf.check.ui.actions.dialog.CategorySelectionLabelProvider;
 import org.eclipse.sphinx.emf.check.ui.internal.Activator;
 import org.eclipse.sphinx.emf.check.ui.internal.CheckValidationImageProvider;
-import org.eclipse.sphinx.emf.util.BasicWrappingEList;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.IWrapper;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.widgets.Shell;
@@ -195,8 +195,8 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 
 	protected EObject unwrap(Object object) {
 		// TODO support other case like transient item provider...
-		if (object instanceof BasicWrappingEList.IWrapper<?>) {
-			Object target = ((BasicWrappingEList.IWrapper<?>) object).getTarget();
+		if (object instanceof IWrapper<?>) {
+			Object target = ((IWrapper<?>) object).getTarget();
 			if (target instanceof EObject) {
 				return (EObject) target;
 			}
