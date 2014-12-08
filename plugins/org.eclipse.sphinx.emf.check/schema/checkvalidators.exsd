@@ -75,21 +75,18 @@
 
    <element name="ePackageMapping">
       <complexType>
-         <attribute name="javaPackageName" type="string" use="required">
+         <attribute name="eObjectWrapperPackageName" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="ePackageClass" type="string" use="required">
+         <attribute name="ePackageNsURI" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
-               <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.emf.ecore.EPackage:"/>
-               </appinfo>
             </annotation>
          </attribute>
       </complexType>

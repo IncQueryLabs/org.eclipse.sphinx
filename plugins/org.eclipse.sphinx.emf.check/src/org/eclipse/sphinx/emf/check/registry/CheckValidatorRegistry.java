@@ -43,7 +43,6 @@ import org.eclipse.sphinx.emf.check.CompositeValidator;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
-import org.eclipse.sphinx.platform.util.ReflectUtil;
 
 /**
  * A validation registry singleton which backs a standard EMF validation
@@ -59,8 +58,8 @@ public class CheckValidatorRegistry {
 	private static final String EXTP_CHECK_VALIDATORS = "org.eclipse.sphinx.emf.check.checkvalidators"; //$NON-NLS-1$
 	private static final String NODE_VALIDATOR = "validator"; //$NON-NLS-1$
 	private static final String NODE_EPACKAGE_MAPPING = "ePackageMapping"; //$NON-NLS-1$
-	private static final String ATTR_JAVA_PACKAGE_NAME = "javaPackageName"; //$NON-NLS-1$
-	private static final String ATTR_EPACKAGE_CLASS = "ePackageClass"; //$NON-NLS-1$
+	private static final String ATTR_EOBJECT_WRAPPER_PACKAGE_NAME = "eObjectWrapperPackageName"; //$NON-NLS-1$
+	private static final String ATTR_EPACKAGE_NS_URI = "ePackageNsURI"; //$NON-NLS-1$
 
 	private static final String DEFAULT_EMF_MODEL_CLASS_PACKAGE_SUFFIX = "impl"; //$NON-NLS-1$
 
@@ -74,7 +73,7 @@ public class CheckValidatorRegistry {
 	private Map<String, CheckValidatorDescriptor> validatorToCheckModelMap = Collections
 			.synchronizedMap(new LinkedHashMap<String, CheckValidatorDescriptor>());
 
-	private Map<String, EPackage> ePackageMappingsMap = Collections.synchronizedMap(new LinkedHashMap<String, EPackage>());
+	private Map<String, Object> ePackageMappingsMap = Collections.synchronizedMap(new LinkedHashMap<String, Object>());
 
 	private ILog logger;
 
@@ -138,22 +137,14 @@ public class CheckValidatorRegistry {
 						}
 						getValidatorToCheckModelMap().put(validatorClassName, checkValidatorDescriptor);
 					} else if (NODE_EPACKAGE_MAPPING.equals(configElement.getName())) {
-						String javaPackageName = configElement.getAttribute(ATTR_JAVA_PACKAGE_NAME);
-						EPackage ePackage = null;
-						try {
-							String className = configElement.getAttribute(ATTR_EPACKAGE_CLASS);
-							Class<?> clazz = Platform.getBundle(configElement.getContributor().getName()).loadClass(className);
-							ePackage = (EPackage) ReflectUtil.getFieldValue(clazz, "eINSTANCE"); //$NON-NLS-1$
-						} catch (ClassNotFoundException ex) {
-							PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-						} catch (IllegalAccessException ex) {
-							PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-						} catch (NoSuchFieldException noSuchFieldEx) {
-							PlatformLogUtil.logAsInfo(Activator.getPlugin(), noSuchFieldEx);
-							ePackage = (EPackage) configElement.createExecutableExtension(ATTR_EPACKAGE_CLASS);
+						String javaPackageName = configElement.getAttribute(ATTR_EOBJECT_WRAPPER_PACKAGE_NAME);
+						String ePackageNsURI = configElement.getAttribute(ATTR_EPACKAGE_NS_URI);
+						Object object = EPackage.Registry.INSTANCE.get(ePackageNsURI);
+						if (object != null) {
+							getEPackageMappingsMap().put(javaPackageName, object);
+						} else {
+							logError("Unable to find EPackage for ", ePackageNsURI); //$NON-NLS-1$
 						}
-
-						getEPackageMappingsMap().put(javaPackageName, ePackage);
 					}
 				} catch (Exception ex) {
 					PlatformLogUtil.logAsError(Activator.getDefault(), ex);
@@ -162,7 +153,6 @@ public class CheckValidatorRegistry {
 
 			// Second iteration on the check map to register the validators
 			for (CheckValidatorDescriptor descriptor : getValidatorToCheckModelMap().values()) {
-
 				// load the validator class from the fully qualified name and register it
 				String bundleName = descriptor.getContributorName();
 				String validatorClassName = descriptor.getValidatorClassName();
@@ -235,7 +225,7 @@ public class CheckValidatorRegistry {
 	private EPackage findEPackage(Class<?> clazz) {
 		Assert.isNotNull(clazz);
 
-		EPackage ePackage = getEPackageMappingforClass(clazz);
+		EPackage ePackage = getEPackageMapping(clazz);
 		if (ePackage != null) {
 			return ePackage;
 		}
@@ -340,17 +330,23 @@ public class CheckValidatorRegistry {
 		return validatorToCheckModelMap;
 	}
 
-	private Map<String, EPackage> getEPackageMappingsMap() {
+	private Map<String, Object> getEPackageMappingsMap() {
 		return ePackageMappingsMap;
 	}
 
-	private EPackage getEPackageMappingforClass(Class<?> clazz) {
+	private EPackage getEPackageMapping(Class<?> clazz) {
 		Assert.isNotNull(clazz);
 
-		EPackage ePackage = getEPackageMappingsMap().get(clazz.getName());
-		if (ePackage == null) {
-			ePackage = getEPackageMappingsMap().get(clazz.getPackage().getName());
+		Object object = getEPackageMappingsMap().get(clazz.getName());
+		if (object == null) {
+			object = getEPackageMappingsMap().get(clazz.getPackage().getName());
 		}
-		return ePackage;
+
+		if (object instanceof EPackage) {
+			return (EPackage) object;
+		} else if (object instanceof EPackage.Descriptor) {
+			return ((EPackage.Descriptor) object).getEPackage();
+		}
+		return null;
 	}
 }
