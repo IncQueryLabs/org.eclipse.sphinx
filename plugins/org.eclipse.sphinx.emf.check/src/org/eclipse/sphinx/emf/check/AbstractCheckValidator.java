@@ -33,7 +33,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Severity;
 import org.eclipse.sphinx.emf.check.internal.Activator;
-import org.eclipse.sphinx.emf.util.BasicWrappingEList;
+import org.eclipse.sphinx.emf.util.IWrapper;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 import com.google.common.base.Function;
@@ -236,8 +236,8 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void issue(Object object, EStructuralFeature feature, Object... arguments) {
-		if (object instanceof BasicWrappingEList.IWrapper<?>) {
-			Object eObject = ((BasicWrappingEList.IWrapper<?>) object).getTarget();
+		if (object instanceof IWrapper<?>) {
+			Object eObject = ((IWrapper<?>) object).getTarget();
 			issue(eObject, feature, NO_INDEX, arguments);
 		} else if (object instanceof EObject) {
 			issue((EObject) object, feature, NO_INDEX, arguments);
