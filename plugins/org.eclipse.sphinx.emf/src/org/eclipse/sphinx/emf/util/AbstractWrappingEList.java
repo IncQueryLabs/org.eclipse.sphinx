@@ -30,12 +30,12 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 /**
  * An extensible abstract wrapping delegating list implementation with a wrapping and unwrapping object support.
  */
-public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> implements Cloneable, Serializable {
+public abstract class AbstractWrappingEList<W, T> extends AbstractEList<W> implements Cloneable, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	protected Class<T> targetType;
-	protected Class<E> wrapperType;
+	protected Class<W> wrapperType;
 
 	private List<T> delegateList;
 
@@ -47,7 +47,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @return the wrapped object.
 	 * @throws CoreException
 	 */
-	protected abstract E wrap(T object) throws CoreException;
+	protected abstract W wrap(T object) throws CoreException;
 
 	/**
 	 * Unwraps the given object.
@@ -56,7 +56,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 *            object to be unwrapped.
 	 * @return the unwrapped object.
 	 */
-	protected abstract T unwrap(E object);
+	protected abstract T unwrap(W object);
 
 	/**
 	 * Creates an instance of the AbstractWrappingEList delegating list.
@@ -66,7 +66,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @param targetType
 	 *            the target object type
 	 */
-	public AbstractWrappingEList(List<T> delegateList, Class<E> wrapperType, Class<T> targetType) {
+	public AbstractWrappingEList(List<T> delegateList, Class<W> wrapperType, Class<T> targetType) {
 		super();
 
 		Assert.isNotNull(delegateList);
@@ -233,7 +233,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @return an array containing all the objects in the backing store list in sequence.
 	 */
 	protected Object[] delegateToArray() {
-		List<E> result = new ArrayList<E>(size());
+		List<W> result = new ArrayList<W>(size());
 		for (T object : delegateList()) {
 			try {
 				result.add(wrap(object));
@@ -266,7 +266,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @return an array containing all the objects in sequence.
 	 */
 	protected <E1> E1[] delegateToArray(E1[] array) {
-		List<E> result = new ArrayList<E>(size());
+		List<W> result = new ArrayList<W>(size());
 		for (T object : delegateList()) {
 			try {
 				result.add(wrap(object));
@@ -290,7 +290,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @see #basicGet
 	 */
 	@Override
-	public E get(int index) {
+	public W get(int index) {
 		return resolve(index, delegateGet(index));
 	}
 
@@ -303,7 +303,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @exception IndexOutOfBoundsException
 	 *                if the index isn't within the size range.
 	 */
-	protected E delegateGet(int index) {
+	protected W delegateGet(int index) {
 		T object = delegateList().get(index);
 		try {
 			return wrap(object);
@@ -325,12 +325,12 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @see #get
 	 */
 	@Override
-	protected E basicGet(int index) {
+	protected W basicGet(int index) {
 		return delegateGet(index);
 	}
 
 	@Override
-	protected E primitiveGet(int index) {
+	protected W primitiveGet(int index) {
 		return delegateGet(index);
 	}
 
@@ -346,8 +346,8 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @see #set
 	 */
 	@Override
-	public E setUnique(int index, E object) {
-		E oldObject = delegateSet(index, validate(index, object));
+	public W setUnique(int index, W object) {
+		W oldObject = delegateSet(index, validate(index, object));
 		didSet(index, object, oldObject);
 		didChange();
 		return oldObject;
@@ -360,7 +360,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 *            the object to set.
 	 * @return the old object at the index.
 	 */
-	protected E delegateSet(int index, E object) {
+	protected W delegateSet(int index, W object) {
 		try {
 			return wrap(delegateList().set(index, unwrap(object)));
 		} catch (Exception ex) {
@@ -378,7 +378,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @see #add(Object)
 	 */
 	@Override
-	public void addUnique(E object) {
+	public void addUnique(W object) {
 		++modCount;
 
 		int size = size();
@@ -393,7 +393,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @param object
 	 *            the object to be added.
 	 */
-	protected void delegateAdd(E object) {
+	protected void delegateAdd(W object) {
 		T target = unwrap(object);
 		delegateList().add(target);
 	}
@@ -407,7 +407,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @see #add(int, Object)
 	 */
 	@Override
-	public void addUnique(int index, E object) {
+	public void addUnique(int index, W object) {
 		++modCount;
 
 		delegateAdd(index, validate(index, object));
@@ -421,7 +421,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @param object
 	 *            the object to be added.
 	 */
-	protected void delegateAdd(int index, E object) {
+	protected void delegateAdd(int index, W object) {
 		delegateList().add(index, unwrap(object));
 	}
 
@@ -434,14 +434,14 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @see #addAll(Collection)
 	 */
 	@Override
-	public boolean addAllUnique(Collection<? extends E> collection) {
+	public boolean addAllUnique(Collection<? extends W> collection) {
 		++modCount;
 
 		if (collection.isEmpty()) {
 			return false;
 		} else {
 			int i = size();
-			for (E object : collection) {
+			for (W object : collection) {
 				delegateAdd(validate(i, object));
 				didAdd(i, object);
 				didChange();
@@ -465,13 +465,13 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @see #addAll(int, Collection)
 	 */
 	@Override
-	public boolean addAllUnique(int index, Collection<? extends E> collection) {
+	public boolean addAllUnique(int index, Collection<? extends W> collection) {
 		++modCount;
 
 		if (collection.isEmpty()) {
 			return false;
 		} else {
-			for (E object : collection) {
+			for (W object : collection) {
 				delegateAdd(index, validate(index, object));
 				didAdd(index, object);
 				didChange();
@@ -508,7 +508,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 			int index = size();
 			for (int i = start; i < end; ++i, ++index) {
 				@SuppressWarnings("unchecked")
-				E object = (E) objects[i];
+				W object = (W) objects[i];
 				delegateAdd(validate(index, object));
 				didAdd(index, object);
 				didChange();
@@ -545,7 +545,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 		} else {
 			for (int i = start; i < end; ++i, ++index) {
 				@SuppressWarnings("unchecked")
-				E object = (E) objects[i];
+				W object = (W) objects[i];
 				delegateAdd(validate(index, object));
 				didAdd(index, object);
 				didChange();
@@ -607,10 +607,10 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 *                if the index isn't within the size range.
 	 */
 	@Override
-	public E remove(int index) {
+	public W remove(int index) {
 		++modCount;
 
-		E oldObject = delegateRemove(index);
+		W oldObject = delegateRemove(index);
 		didRemove(index, oldObject);
 		didChange();
 
@@ -624,7 +624,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @exception IndexOutOfBoundsException
 	 *                if the index isn't within the size range.
 	 */
-	protected E delegateRemove(int index) {
+	protected W delegateRemove(int index) {
 		try {
 			return wrap(delegateList().remove(index));
 		} catch (Exception ex) {
@@ -699,7 +699,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 *                if either index isn't within the size range.
 	 */
 	@Override
-	public E move(int targetIndex, int sourceIndex) {
+	public W move(int targetIndex, int sourceIndex) {
 		++modCount;
 		int size = size();
 		if (targetIndex >= size || targetIndex < 0) {
@@ -710,7 +710,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 			throw new IndexOutOfBoundsException("sourceIndex=" + sourceIndex + ", size=" + size); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
-		E object;
+		W object;
 		if (targetIndex != sourceIndex) {
 			object = delegateMove(targetIndex, sourceIndex);
 			didMove(targetIndex, object, sourceIndex);
@@ -734,8 +734,8 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 *                if either index isn't within the size range.
 	 * @since 2.3
 	 */
-	protected E delegateMove(int targetIndex, int sourceIndex) {
-		E result = delegateRemove(sourceIndex);
+	protected W delegateMove(int targetIndex, int sourceIndex) {
+		W result = delegateRemove(sourceIndex);
 		delegateAdd(targetIndex, result);
 		return result;
 	}
@@ -805,7 +805,7 @@ public abstract class AbstractWrappingEList<E, T> extends AbstractEList<E> imple
 	 * @return an <b>unsafe</b> list that provides a non-resolving view of the underlying data storage.
 	 */
 	@Override
-	protected List<E> basicList() {
+	protected List<W> basicList() {
 		if (delegateSize() == 0) {
 			return ECollections.emptyEList();
 		} else {

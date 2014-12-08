@@ -20,18 +20,13 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.sphinx.emf.Activator;
-import org.eclipse.sphinx.emf.util.BasicWrappingEList.IWrapper;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
 /**
  * An extensible wrapping delegating list implementation with a wrapping and unwrapping object support.
  */
-public class BasicWrappingEList<E extends IWrapper<T>, T> extends AbstractWrappingEList<E, T> {
 
-	public static interface IWrapper<T> {
-
-		T getTarget();
-	}
+public class BasicWrappingEList<W extends IWrapper<T>, T> extends AbstractWrappingEList<W, T> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -43,7 +38,7 @@ public class BasicWrappingEList<E extends IWrapper<T>, T> extends AbstractWrappi
 	 * @param targetType
 	 *            the target object type
 	 */
-	public BasicWrappingEList(List<T> delegateList, Class<E> wrapperType, Class<T> targetType) {
+	public BasicWrappingEList(List<T> delegateList, Class<W> wrapperType, Class<T> targetType) {
 		super(delegateList, wrapperType, targetType);
 	}
 
@@ -56,9 +51,9 @@ public class BasicWrappingEList<E extends IWrapper<T>, T> extends AbstractWrappi
 	 * @throws CoreException
 	 */
 	@Override
-	protected E wrap(T object) throws CoreException {
+	protected W wrap(T object) throws CoreException {
 		try {
-			Constructor<E> constructor = wrapperType.getDeclaredConstructor(targetType);
+			Constructor<W> constructor = wrapperType.getDeclaredConstructor(targetType);
 			return constructor.newInstance(object);
 		} catch (Exception ex) {
 			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
@@ -74,7 +69,7 @@ public class BasicWrappingEList<E extends IWrapper<T>, T> extends AbstractWrappi
 	 * @return the unwrapped object.
 	 */
 	@Override
-	protected T unwrap(E object) {
+	protected T unwrap(W object) {
 		return object.getTarget();
 	}
 }

@@ -30,14 +30,14 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 /**
  * An extensible abstract unwrapping delegating list implementation.
  */
-public abstract class AbstractUnwrappingEList<E, T> extends AbstractEList<T> implements Cloneable, Serializable {
+public abstract class AbstractUnwrappingEList<W, T> extends AbstractEList<T> implements Cloneable, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	protected Class<T> targetType;
-	protected Class<E> wrapperType;
+	protected Class<W> wrapperType;
 
-	private List<E> delegateList;
+	private List<W> delegateList;
 
 	/**
 	 * Wraps the given object.
@@ -47,7 +47,7 @@ public abstract class AbstractUnwrappingEList<E, T> extends AbstractEList<T> imp
 	 * @return the wrapped object.
 	 * @throws CoreException
 	 */
-	protected abstract E wrap(T object) throws CoreException;
+	protected abstract W wrap(T object) throws CoreException;
 
 	/**
 	 * Unwraps the given object.
@@ -56,7 +56,7 @@ public abstract class AbstractUnwrappingEList<E, T> extends AbstractEList<T> imp
 	 *            object to be unwrapped.
 	 * @return the unwrapped object.
 	 */
-	protected abstract T unwrap(E object);
+	protected abstract T unwrap(W object);
 
 	/**
 	 * Creates an instance of the AbstractUnwrappingEList delegating list.
@@ -66,7 +66,7 @@ public abstract class AbstractUnwrappingEList<E, T> extends AbstractEList<T> imp
 	 * @param targetType
 	 *            the target object type
 	 */
-	public AbstractUnwrappingEList(List<E> delegateList, Class<E> wrapperType, Class<T> targetType) {
+	public AbstractUnwrappingEList(List<W> delegateList, Class<W> wrapperType, Class<T> targetType) {
 		super();
 
 		Assert.isNotNull(delegateList);
@@ -83,7 +83,7 @@ public abstract class AbstractUnwrappingEList<E, T> extends AbstractEList<T> imp
 	 *
 	 * @return the list that acts as the backing store.
 	 */
-	protected List<E> delegateList() {
+	protected List<W> delegateList() {
 		return delegateList;
 	}
 
@@ -234,7 +234,7 @@ public abstract class AbstractUnwrappingEList<E, T> extends AbstractEList<T> imp
 	 */
 	protected Object[] delegateToArray() {
 		List<T> result = new ArrayList<T>(size());
-		for (E object : delegateList()) {
+		for (W object : delegateList()) {
 			try {
 				result.add(unwrap(object));
 			} catch (Exception ex) {
@@ -267,7 +267,7 @@ public abstract class AbstractUnwrappingEList<E, T> extends AbstractEList<T> imp
 	 */
 	protected <T1> T1[] delegateToArray(T1[] array) {
 		List<T> result = new ArrayList<T>(size());
-		for (E object : delegateList()) {
+		for (W object : delegateList()) {
 			try {
 				result.add(unwrap(object));
 			} catch (Exception ex) {
@@ -304,7 +304,7 @@ public abstract class AbstractUnwrappingEList<E, T> extends AbstractEList<T> imp
 	 *                if the index isn't within the size range.
 	 */
 	protected T delegateGet(int index) {
-		E object = delegateList().get(index);
+		W object = delegateList().get(index);
 		try {
 			return unwrap(object);
 		} catch (Exception ex) {
@@ -395,7 +395,7 @@ public abstract class AbstractUnwrappingEList<E, T> extends AbstractEList<T> imp
 	 */
 	protected void delegateAdd(T object) {
 		try {
-			E target = wrap(object);
+			W target = wrap(object);
 			delegateList().add(target);
 		} catch (Exception ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
