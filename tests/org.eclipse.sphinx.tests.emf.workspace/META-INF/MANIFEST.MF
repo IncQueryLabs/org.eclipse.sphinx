@@ -9,6 +9,7 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.sphinx.testutils,
  org.eclipse.sphinx.examples.hummingbird20
 Export-Package: org.eclipse.sphinx.tests.emf.workspace.domain,
- org.eclipse.sphinx.tests.emf.workspace.internal
+ org.eclipse.sphinx.tests.emf.workspace.internal,
+ org.eclipse.sphinx.tests.emf.workspace.loading
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.tests.emf.workspace.internal.Activator$Implementation

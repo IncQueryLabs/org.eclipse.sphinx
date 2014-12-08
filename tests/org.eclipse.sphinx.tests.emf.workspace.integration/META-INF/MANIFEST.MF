@@ -9,8 +9,12 @@ Require-Bundle: org.eclipse.ui,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Export-Package: org.eclipse.sphinx.tests.emf.workspace.integration.inmemoryresources,
+Export-Package: org.eclipse.sphinx.tests.emf.workspace.integration.domain.mapping,
+ org.eclipse.sphinx.tests.emf.workspace.integration.inmemoryresources,
  org.eclipse.sphinx.tests.emf.workspace.integration.internal;x-internal:=true,
+ org.eclipse.sphinx.tests.emf.workspace.integration.internal.loading;x-internal:=true,
+ org.eclipse.sphinx.tests.emf.workspace.integration.loading,
+ org.eclipse.sphinx.tests.emf.workspace.integration.referentialintegrity,
  org.eclipse.sphinx.tests.emf.workspace.integration.saving,
  org.eclipse.sphinx.tests.emf.workspace.integration.syncing
 Bundle-ActivationPolicy: lazy

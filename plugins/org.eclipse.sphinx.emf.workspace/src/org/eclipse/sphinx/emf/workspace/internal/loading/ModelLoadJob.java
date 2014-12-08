@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2014 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [454092] Loading model resources
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.internal.loading;
@@ -33,6 +34,7 @@ import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 public abstract class ModelLoadJob extends LoadJob {
 
 	protected Set<IProject> fProjects;
+
 	protected boolean fIncludeReferencedProjects;
 
 	/**
@@ -44,9 +46,16 @@ public abstract class ModelLoadJob extends LoadJob {
 		super(mmDescriptor != null ? Messages.job_loadingModel : Messages.job_loadingModels, mmDescriptor);
 
 		fIncludeReferencedProjects = includeReferencedProjects;
-		fProjects = new HashSet<IProject>(projects);
+		addProjects(projects);
+	}
+
+	public void addProjects(Collection<IProject> projects) {
+		if (fProjects == null) {
+			fProjects = new HashSet<IProject>();
+		}
+		fProjects.addAll(projects);
 		// Compute project group if referenced projects must be considered
-		if (includeReferencedProjects) {
+		if (fIncludeReferencedProjects) {
 			for (IProject p : projects) {
 				fProjects.addAll(getProjectGroup(p, false));
 			}
@@ -96,7 +105,7 @@ public abstract class ModelLoadJob extends LoadJob {
 	 * Then, it delegates the project group computing to
 	 * {@linkplain ExtendedPlatform#getProjectGroup(IProject, boolean)}.
 	 * <p>
-	 * 
+	 *
 	 * @param contextObject
 	 *            A context object whose scope must be computed.
 	 * @param includeReferencingProjects
