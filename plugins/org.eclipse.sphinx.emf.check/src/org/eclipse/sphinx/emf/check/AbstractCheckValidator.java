@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
@@ -129,11 +130,16 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		state.checkMode = checkMode;
 		state.context = context;
 
-		for (MethodWrapper method : methodsForType.get(object.getClass())) {
+		for (MethodWrapper method : methodsForType.get(getMethodWrapperType(object))) {
 			method.invoke(state);
 		}
 
 		return !state.hasErrors;
+	}
+
+	protected Class<?> getMethodWrapperType(EObject eObject) {
+		Assert.isNotNull(eObject);
+		return eObject.getClass();
 	}
 
 	private List<MethodWrapper> collectMethods(Class<? extends AbstractCheckValidator> clazz) {
@@ -221,7 +227,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	@Override
 	public boolean validate(EClass eClass, EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
-		return internalValidate(eObject.eClass(), eObject, diagnostics, context);
+		return internalValidate(eClass, eObject, diagnostics, context);
 	}
 
 	@Override
@@ -241,7 +247,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	/**
 	 * Use this method only if a check catalog is contributed.
-	 * 
+	 *
 	 * @param object
 	 * @param feature
 	 * @param arguments
@@ -252,7 +258,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	/**
 	 * Use this method only if a check catalog is contributed.
-	 * 
+	 *
 	 * @param object
 	 * @param feature
 	 * @param index
