@@ -22,4 +22,3 @@ Export-Package: org.eclipse.sphinx.emf.mwe.dynamic.ui,
  org.eclipse.sphinx.emf.mwe.dynamic.ui.util
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Eclipse-BuddyPolicy: global

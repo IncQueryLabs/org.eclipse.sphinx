@@ -33,6 +33,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.sphinx.emf.mwe.dynamic.ModelWorkflowContext;
+import org.eclipse.sphinx.emf.mwe.dynamic.WorkflowContributorRegistry;
 import org.eclipse.sphinx.emf.mwe.dynamic.WorkspaceWorkflow;
 import org.eclipse.sphinx.emf.mwe.dynamic.components.IModelWorkflowComponent;
 import org.eclipse.sphinx.emf.mwe.dynamic.internal.Activator;
@@ -163,21 +164,30 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 	}
 
 	protected Class<?> loadWorkflowClass(IType workflowType, Object model) throws ClassNotFoundException {
-		ClassLoader parentClassLoader = getParentClassLoader(model);
-		ProjectClassLoader projectClassLoader = new ProjectClassLoader(workflowType.getJavaProject(), parentClassLoader);
+		Assert.isNotNull(workflowType);
 
-		// TODO Surround with appropriate tracing option
-		// ClassLoaderExtensions.printHierarchy(projectClassLoader);
+		// Find out where given workflow type originates from
+		if (workflowType.getParent() instanceof ICompilationUnit) {
+			// Workflow type refers to an on-the-fly compiled Java class in the runtime workspace
 
-		return projectClassLoader.loadClass(workflowType.getFullyQualifiedName());
+			ClassLoader parentClassLoader = getParentClassLoader(model);
+			ProjectClassLoader projectClassLoader = new ProjectClassLoader(workflowType.getJavaProject(), parentClassLoader);
+
+			// TODO Surround with appropriate tracing option
+			// ClassLoaderExtensions.printHierarchy(projectClassLoader);
+
+			return projectClassLoader.loadClass(workflowType.getFullyQualifiedName());
+		} else {
+			// Workflow type refers to a binary Java class from the running Eclipse instance
+
+			// Load Java class behind workflow type from underlying contributor plug-in
+			return WorkflowContributorRegistry.INSTANCE.loadContributedClass(workflowType);
+		}
 	}
 
 	protected Workflow createWorkflowInstance(IType workflowType, Object model) throws CoreException {
-		Assert.isNotNull(workflowType);
-
 		try {
 			Class<?> workflowClass = loadWorkflowClass(workflowType, model);
-
 			return createWorkflowInstance(workflowClass);
 		} catch (CoreException ex) {
 			throw ex;

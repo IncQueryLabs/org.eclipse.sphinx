@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.mwe2.runtime.workflow.Workflow;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
@@ -90,7 +91,7 @@ public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
 			Set<IPath> workflowSearchPaths = new LinkedHashSet<IPath>();
 			Set<IPath> javaProjectPaths = getJavaProjectPaths();
 			for (IPath path : super.enclosingProjectsAndJars()) {
-				if (javaProjectPaths.contains(path) || WorkflowContributorRegistry.INSTANCE.isContributorClasspathRootPath(path)) {
+				if (javaProjectPaths.contains(path) || WorkflowContributorRegistry.INSTANCE.isContributorClasspathLocation(path)) {
 					workflowSearchPaths.add(path);
 				}
 			}
@@ -135,33 +136,32 @@ public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
 						TypeNameMatch match = (TypeNameMatch) ReflectUtil.getInvisibleFieldValue(typeInfoRequestor, "fMatch"); //$NON-NLS-1$
 						IType matchType = match.getType();
 
-						// Try to find type for MWE2 Workflow within underlying Java project
-						IType workflowType = matchType.getJavaProject().findType(Workflow.class.getName());
-						if (workflowType != null) {
+						// Find out where matched type originates from
+						if (matchType.getParent() instanceof ICompilationUnit) {
 							// Matched type refers to an on-the-fly compiled Java class in the runtime workspace
 
-							// Retrieve super class hierarchy of matched type
-							ITypeHierarchy supertypeHierarchy = matchType.newSupertypeHierarchy(new NullProgressMonitor());
-							List<IType> matchSuperclasses = Arrays.asList(supertypeHierarchy.getAllSuperclasses(matchType));
+							// Try to find type for MWE2 Workflow within underlying Java project
+							IType workflowType = matchType.getJavaProject().findType(Workflow.class.getName());
+							if (workflowType != null) {
+								// Retrieve super class hierarchy of matched type
+								ITypeHierarchy supertypeHierarchy = matchType.newSupertypeHierarchy(new NullProgressMonitor());
+								List<IType> matchSuperclasses = Arrays.asList(supertypeHierarchy.getAllSuperclasses(matchType));
 
-							// Check if matched type is a subclass of MWE2 Workflow
-							return matchSuperclasses.contains(workflowType);
+								// Check if matched type is a subclass of MWE2 Workflow
+								return matchSuperclasses.contains(workflowType);
+							}
 						} else {
 							// Matched type refers to a binary Java class from the running Eclipse instance
 
-							// Lookup Java class behind matched type
+							// Load Java class behind matched type from underlying contributor plug-in
 							/*
 							 * Performance optimization: Ignore class names with "bin" prefix. Such class names are
 							 * duplicates of the same class name without "bin" prefix. They occur when running in a
 							 * runtime workbench and the underlying classes are actually classes from plug-in projects
-							 * in the development workbench. The alternative approach consisting of performing the
-							 * subsequent Class#forName() analysis also for "bin" prefixed class names and ignoring the
-							 * resulting ClassNotFoundException may entail a significantly lower performance when many
-							 * matches need to be filtered.
+							 * in the development workbench.
 							 */
-							String matchClassName = matchType.getFullyQualifiedName();
-							if (!matchClassName.startsWith(JavaExtensions.DEFAULT_OUTPUT_FOLDER_NAME)) {
-								Class<?> matchClazz = Class.forName(matchClassName);
+							if (!matchType.getFullyQualifiedName().startsWith(JavaExtensions.DEFAULT_OUTPUT_FOLDER_NAME)) {
+								Class<?> matchClazz = WorkflowContributorRegistry.INSTANCE.loadContributedClass(matchType);
 
 								// Check if matched class is a subclass of MWE2 Workflow
 								return Workflow.class.isAssignableFrom(matchClazz);
