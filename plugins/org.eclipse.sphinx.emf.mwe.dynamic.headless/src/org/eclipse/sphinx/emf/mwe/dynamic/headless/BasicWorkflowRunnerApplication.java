@@ -1,14 +1,15 @@
 /**
  * <copyright>
  *
- * Copyright (c) See4sys and others.
- * All rights reserved. This program and the accompanying materials are made
- * available under the terms of the Artop Software License Based on AUTOSAR
- * Released Material (ASLR) which accompanies this distribution, and is
- * available at http://www.artop.org/aslr.html
+ * Copyright (c) 2014 itemis and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     See4sys - Initial API and implementation
+ *     itemis - Initial API and implementation
+ *     itemis - [454532] NPE in BasicWorkflowRunnerApplication
  *
  * </copyright>
  */
@@ -35,7 +36,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.mwe.dynamic.headless.internal.messages.Messages;
 import org.eclipse.sphinx.emf.mwe.dynamic.operations.BasicWorkflowRunnerOperation;
@@ -220,7 +220,7 @@ public class BasicWorkflowRunnerApplication extends AbstractCLIApplication {
 	}
 
 	protected void saveModel(IProgressMonitor monitor) {
-		TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(modelResource);
+		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(modelResource);
 		if (SaveIndicatorUtil.isDirty(editingDomain, modelResource)) {
 			EcorePlatformUtil.saveModel(modelResource, false, monitor);
 		}
