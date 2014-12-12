@@ -58,7 +58,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	protected static class State {
 		public DiagnosticChain chain = null;
-		public EObject currentObject = null;
+		public Object currentObject = null;
 		public Method currentMethod = null;
 		public CheckMode checkMode = null;
 		public CheckType currentCheckType = null;
@@ -126,7 +126,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 		State state = new State();
 		state.chain = diagnostics;
-		state.currentObject = object;
+		setCurrentObject(state, object);
 		state.checkMode = checkMode;
 		state.context = context;
 
@@ -140,6 +140,11 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	protected Class<?> getMethodWrapperType(EObject eObject) {
 		Assert.isNotNull(eObject);
 		return eObject.getClass();
+	}
+
+	protected void setCurrentObject(State state, Object object) {
+		Assert.isNotNull(state);
+		state.currentObject = object;
 	}
 
 	private List<MethodWrapper> collectMethods(Class<? extends AbstractCheckValidator> clazz) {
@@ -241,8 +246,9 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			issue(eObject, feature, NO_INDEX, arguments);
 		} else if (object instanceof EObject) {
 			issue((EObject) object, feature, NO_INDEX, arguments);
+		} else {
+			throw new UnsupportedOperationException("Could not recognize type of " + object.toString()); //$NON-NLS-1$
 		}
-		throw new UnsupportedOperationException("Could not recognize type of " + object.toString()); //$NON-NLS-1$
 	}
 
 	/**
