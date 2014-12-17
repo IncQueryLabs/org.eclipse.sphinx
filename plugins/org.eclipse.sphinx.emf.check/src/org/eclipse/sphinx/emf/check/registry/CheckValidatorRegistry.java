@@ -216,7 +216,7 @@ public class CheckValidatorRegistry {
 				getEPackageMappingsMap().put(clazz.getName(), ePackage);
 				packagesInScope.add(ePackage);
 			} else {
-				logError("Unable to find EPackage for ", clazz.getCanonicalName()); //$NON-NLS-1$
+				logError("Unable to find EPackage for ", clazz.getName()); //$NON-NLS-1$
 			}
 		}
 		return packagesInScope;
@@ -252,16 +252,12 @@ public class CheckValidatorRegistry {
 	private String getEMFModelInterfacePackageName(EPackage ePackage) {
 		Assert.isNotNull(ePackage);
 
-		String instanceClassName = ePackage.getClass().getCanonicalName();
-		int implPackageIdx = instanceClassName.lastIndexOf('.' + DEFAULT_EMF_MODEL_CLASS_PACKAGE_SUFFIX);
+		String javaPackageName = ePackage.getClass().getPackage().getName();
+		int implPackageIdx = javaPackageName.lastIndexOf('.' + DEFAULT_EMF_MODEL_CLASS_PACKAGE_SUFFIX);
 		if (implPackageIdx != -1) {
-			return instanceClassName.substring(0, implPackageIdx);
+			return javaPackageName.substring(0, implPackageIdx);
 		}
-		int ePackageClassIdx = instanceClassName.lastIndexOf('.');
-		if (ePackageClassIdx != -1) {
-			return instanceClassName.substring(0, ePackageClassIdx);
-		}
-		return null;
+		return javaPackageName;
 	}
 
 	private void register(EPackage ePackage, Class<?> clazz) {
