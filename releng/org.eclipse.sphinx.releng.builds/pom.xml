@@ -141,6 +141,12 @@
 	</modules>
 	<profiles>
 		<profile>
+			<id>platform-kepler</id>
+			<properties>
+				<platform.version.name>kepler</platform.version.name>
+			</properties>
+		</profile>
+		<profile>
 			<id>platform-luna</id>
 			<properties>
 				<platform.version.name>luna</platform.version.name>
