@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [424028] Improve AbstractCLIApplication
  *     itemis - [446340] Add support for dynamic execution of MWE workflows such that workflows can have direct access shared model instances already loaded in Sphinx
+ *     itemis - [455002] AbstractCLIApplication should not only print Exception message, but also stack trace
  *
  * </copyright>
  */
@@ -33,7 +34,9 @@ import org.apache.commons.cli.PosixParser;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.sphinx.platform.internal.Activator;
 import org.eclipse.sphinx.platform.internal.messages.Messages;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public abstract class AbstractCLIApplication implements IApplication {
 
@@ -370,6 +373,7 @@ public abstract class AbstractCLIApplication implements IApplication {
 			err.println(Messages.cliHelp_useHelpOptionForMoreInformation);
 		} else {
 			err.println(throwable.getMessage());
+			PlatformLogUtil.logAsError(Activator.getDefault(), throwable);
 		}
 		return ERROR_UNSPECIFIED;
 	}
