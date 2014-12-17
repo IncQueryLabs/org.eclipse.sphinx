@@ -19,21 +19,21 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 
 public class DiagnosticLocation {
 
-	private EObject source;
+	private EObject object;
 
 	private EStructuralFeature feature;
 
-	public DiagnosticLocation(EObject source, EStructuralFeature feature) {
-		setSource(source);
+	public DiagnosticLocation(EObject object, EStructuralFeature feature) {
+		setObject(object);
 		setFeature(feature);
 	}
 
-	public EObject getSource() {
-		return source;
+	public EObject getObject() {
+		return object;
 	}
 
-	public void setSource(EObject source) {
-		this.source = source;
+	public void setObject(EObject object) {
+		this.object = object;
 	}
 
 	public EStructuralFeature getFeature() {

@@ -49,10 +49,17 @@ public class CheckProblemMarkerFactory implements IProblemMarkerFactory {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		@SuppressWarnings("unchecked")
 		List<Object> data = (List<Object>) diagnostic.getData();
-		DiagnosticLocation location = (DiagnosticLocation) data.get(0);
-		EObject targetObject = location.getSource();
-		attributes.put(EValidator.URI_ATTRIBUTE, EcoreUtil.getURI(targetObject).toString());
-		attributes.put(IValidationMarker.HASH_ATTRIBUTE, targetObject.hashCode());
+		if (!data.isEmpty()) {
+			Object firstDataItem = data.get(0);
+			if (firstDataItem instanceof DiagnosticLocation) {
+				DiagnosticLocation location = (DiagnosticLocation) data.get(0);
+				EObject object = location.getObject();
+				attributes.put(EValidator.URI_ATTRIBUTE, EcoreUtil.getURI(object).toString());
+				attributes.put(IValidationMarker.HASH_ATTRIBUTE, object.hashCode());
+			}
+		}
+		// TODO Add problem marker attribute for DiagnosticLocation#getFeature() (see
+		// IValidationMarker.FEATURES_ATTRIBUTE and its usages for details)
 		int severity = diagnostic.getSeverity();
 		if (severity < Diagnostic.WARNING) {
 			markerSeverity = IMarker.SEVERITY_INFO;
