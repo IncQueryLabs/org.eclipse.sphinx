@@ -425,17 +425,9 @@ public final class ModelLoadManager {
 			final boolean memoryOptimized, boolean async, IProgressMonitor monitor) throws OperationCanceledException {
 		Assert.isNotNull(resourcesToUnload);
 
-		ModelUnloadOperation unloadModelResourceOperation = new ModelUnloadOperation(resourcesToUnload, memoryOptimized);
-		if (async && resourcesToUnload.size() > 0) {
-			loadJobScheduler.scheduleModelLoadJob(unloadModelResourceOperation);
-		} else {
-			try {
-				unloadModelResourceOperation.run(monitor);
-			} catch (OperationCanceledException ex) {
-				// Ignore exception
-			} catch (CoreException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
+		if (!resourcesToUnload.isEmpty()) {
+			ModelUnloadOperation unloadModelResourceOperation = new ModelUnloadOperation(resourcesToUnload, memoryOptimized);
+			LoadOperationRunnerHelper.run(unloadModelResourceOperation, async, monitor);
 		}
 	}
 
