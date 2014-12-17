@@ -9,10 +9,10 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [454883] CheckProblemMarkerFactory Exception because of std. EObject validation
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.check.services;
 
 import java.util.HashMap;
@@ -50,16 +50,27 @@ public class CheckProblemMarkerFactory implements IProblemMarkerFactory {
 		@SuppressWarnings("unchecked")
 		List<Object> data = (List<Object>) diagnostic.getData();
 		if (!data.isEmpty()) {
-			Object firstDataItem = data.get(0);
-			if (firstDataItem instanceof DiagnosticLocation) {
-				DiagnosticLocation location = (DiagnosticLocation) data.get(0);
-				EObject object = location.getObject();
-				attributes.put(EValidator.URI_ATTRIBUTE, EcoreUtil.getURI(object).toString());
-				attributes.put(IValidationMarker.HASH_ATTRIBUTE, object.hashCode());
+			EObject affectedObject = null;
+			DiagnosticLocation affectedLocation = null;
+
+			Object item = data.get(0);
+			if (item instanceof EObject) {
+				affectedObject = (EObject) item;
+			} else if (item instanceof DiagnosticLocation) {
+				affectedLocation = (DiagnosticLocation) data.get(0);
+				affectedObject = affectedLocation.getObject();
+			}
+
+			if (affectedObject != null) {
+				attributes.put(EValidator.URI_ATTRIBUTE, EcoreUtil.getURI(affectedObject).toString());
+				attributes.put(IValidationMarker.HASH_ATTRIBUTE, affectedObject.hashCode());
+			}
+
+			if (affectedLocation != null) {
+				// TODO Add problem marker attribute for DiagnosticLocation#getFeature() (see
+				// IValidationMarker.FEATURES_ATTRIBUTE and its usages for details)
 			}
 		}
-		// TODO Add problem marker attribute for DiagnosticLocation#getFeature() (see
-		// IValidationMarker.FEATURES_ATTRIBUTE and its usages for details)
 		int severity = diagnostic.getSeverity();
 		if (severity < Diagnostic.WARNING) {
 			markerSeverity = IMarker.SEVERITY_INFO;
