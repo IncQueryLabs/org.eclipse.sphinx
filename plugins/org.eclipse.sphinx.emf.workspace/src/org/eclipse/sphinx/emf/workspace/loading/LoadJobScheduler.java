@@ -22,9 +22,9 @@ import org.eclipse.sphinx.emf.workspace.loading.operations.FileLoadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.FileReloadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.FileUnloadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.ModelLoadOperation;
+import org.eclipse.sphinx.emf.workspace.loading.operations.ModelUnloadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.ProjectLoadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.ProjectReloadOperation;
-import org.eclipse.sphinx.emf.workspace.loading.operations.UnloadModelResourceOperation;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 
 @SuppressWarnings("rawtypes")
@@ -36,7 +36,45 @@ public class LoadJobScheduler {
 		loadJobFactory = new LoadJobFactory();
 	}
 
-	public void scheduleProjectLoadJob(ProjectLoadOperation prjLoadOperation) {
+	public void scheduleModelLoadJob(AbstractLoadOperation operation) {
+		if (operation instanceof FileLoadOperation) {
+			scheduleModelLoadJob((FileLoadOperation) operation);
+		} else if (operation instanceof ProjectLoadOperation) {
+			scheduleModelLoadJob((ProjectLoadOperation) operation);
+		} else if (operation instanceof ModelLoadOperation) {
+			scheduleModelLoadJob((ModelLoadOperation) operation);
+		} else if (operation instanceof FileReloadOperation) {
+			scheduleModelLoadJob((FileReloadOperation) operation);
+		} else if (operation instanceof ProjectReloadOperation) {
+			scheduleModelLoadJob((ProjectReloadOperation) operation);
+		} else if (operation instanceof FileUnloadOperation) {
+			scheduleModelLoadJob((FileUnloadOperation) operation);
+		}
+	}
+
+	private void scheduleModelLoadJob(FileLoadOperation fileLoadOperation) {
+		// Check first if job should really be created or not
+		if (!loadJobFactory.shouldCreateLoadJob(fileLoadOperation.getFiles(), fileLoadOperation.getMetaModelDescriptor())) {
+			return;
+		}
+		// Add the files to an existing scheduled job if any
+		for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
+			if (job instanceof ModelLoadJob) {
+				AbstractLoadOperation operation = ((ModelLoadJob) job).getOperation();
+				if (operation instanceof FileLoadOperation) {
+					((FileLoadOperation) operation).addFiles(fileLoadOperation.getFiles());
+					return;
+				}
+			}
+		}
+		// Otherwise, create new job
+		Job job = loadJobFactory.createModelLoadJob(fileLoadOperation);
+		job.setPriority(Job.BUILD);
+		job.setRule(fileLoadOperation.getRule());
+		job.schedule();
+	}
+
+	private void scheduleModelLoadJob(ProjectLoadOperation prjLoadOperation) {
 		// Check first if job should really be created or not
 		if (!loadJobFactory.shouldCreateLoadJob(prjLoadOperation.getProjects(), prjLoadOperation.isIncludeReferencedProjects(),
 				prjLoadOperation.getMetaModelDescriptor())) {
@@ -53,84 +91,13 @@ public class LoadJobScheduler {
 			}
 		}
 		// Otherwise, create new job
-		Job job = loadJobFactory.createProjectLoadJob(prjLoadOperation);
+		Job job = loadJobFactory.createModelLoadJob(prjLoadOperation);
 		job.setPriority(Job.BUILD);
 		job.setRule(prjLoadOperation.getRule());
 		job.schedule();
 	}
 
-	public void scheduleFileLoadJob(FileLoadOperation fileLoadOperation) {
-		// Check first if job should really be created or not
-		if (!loadJobFactory.shouldCreateLoadJob(fileLoadOperation.getFiles(), fileLoadOperation.getMetaModelDescriptor())) {
-			return;
-		}
-		// Add the files to an existing scheduled job if any
-		for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
-			if (job instanceof ModelLoadJob) {
-				AbstractLoadOperation operation = ((ModelLoadJob) job).getOperation();
-				if (operation instanceof FileLoadOperation) {
-					((FileLoadOperation) operation).addFiles(fileLoadOperation.getFiles());
-					return;
-				}
-			}
-		}
-		// Otherwise, create new job
-		Job job = loadJobFactory.createFileLoadJob(fileLoadOperation);
-		job.setPriority(Job.BUILD);
-		job.setRule(fileLoadOperation.getRule());
-		job.schedule();
-	}
-
-	public void scheduleProjectReloadJob(ProjectReloadOperation projectReloadOperation) {
-		// Check first if job should really be created or not
-		if (!loadJobFactory.shouldCreateReloadJob(projectReloadOperation.getProjects(), projectReloadOperation.isIncludeReferencedProjects(),
-				projectReloadOperation.getMetaModelDescriptor())) {
-			return;
-		}
-
-		// Add the files to an existing scheduled job if any
-		for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
-			if (job instanceof ModelLoadJob) {
-				AbstractLoadOperation operation = ((ModelLoadJob) job).getOperation();
-				if (operation instanceof ProjectReloadOperation) {
-					((ProjectReloadOperation) operation).addProjects(projectReloadOperation.getProjects());
-					return;
-				}
-			}
-		}
-
-		// Otherwise, create new job
-		Job job = loadJobFactory.createProjectReloadJob(projectReloadOperation);
-		job.setPriority(Job.BUILD);
-		job.setRule(projectReloadOperation.getRule());
-		job.schedule();
-	}
-
-	public void scheduleFileReloadJob(FileReloadOperation fileReloadOperation) {
-		// Check first if job should really be created or not
-		if (!loadJobFactory.shouldCreateReloadJob(fileReloadOperation.getFiles(), fileReloadOperation.getMetaModelDescriptor())) {
-			return;
-		}
-
-		// Add the files to an existing scheduled job if any
-		for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
-			if (job instanceof ModelLoadJob) {
-				AbstractLoadOperation operation = ((ModelLoadJob) job).getOperation();
-				if (operation instanceof FileReloadOperation) {
-					((FileReloadOperation) operation).addFiles(fileReloadOperation.getFiles());
-					return;
-				}
-			}
-		}
-
-		// Otherwise, create new job
-		Job job = loadJobFactory.createFileReloadJob(fileReloadOperation);
-		job.setPriority(Job.BUILD);
-		job.setRule(fileReloadOperation.getRule());
-		job.schedule();
-	}
-
-	public void scheduleModelLoadJob(ModelLoadOperation modelLoadOperation) {
+	private void scheduleModelLoadJob(ModelLoadOperation modelLoadOperation) {
 		// Check first if job should really be created or not
 		if (!loadJobFactory.shouldCreateLoadJob(modelLoadOperation.getFiles(), modelLoadOperation.getModelDescriptor().getMetaModelDescriptor())) {
 			return;
@@ -152,18 +119,67 @@ public class LoadJobScheduler {
 		job.schedule();
 	}
 
-	public void scheduleUnloadModelResourceJob(UnloadModelResourceOperation unloadModelResourceOperation) {
-		Job job = loadJobFactory.createUnloadModelResourceJob(unloadModelResourceOperation);
-		job.setPriority(Job.BUILD);
-		job.setRule(unloadModelResourceOperation.getRule());
-		job.schedule();
+	private void scheduleModelLoadJob(FileReloadOperation fileReloadOperation) {
+		// Check first if job should really be created or not
+		if (!loadJobFactory.shouldCreateReloadJob(fileReloadOperation.getFiles(), fileReloadOperation.getMetaModelDescriptor())) {
+			return;
+		}
 
+		// Add the files to an existing scheduled job if any
+		for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
+			if (job instanceof ModelLoadJob) {
+				AbstractLoadOperation operation = ((ModelLoadJob) job).getOperation();
+				if (operation instanceof FileReloadOperation) {
+					((FileReloadOperation) operation).addFiles(fileReloadOperation.getFiles());
+					return;
+				}
+			}
+		}
+
+		// Otherwise, create new job
+		Job job = loadJobFactory.createModelLoadJob(fileReloadOperation);
+		job.setPriority(Job.BUILD);
+		job.setRule(fileReloadOperation.getRule());
+		job.schedule();
 	}
 
-	public void scheduleFileUnloadJob(FileUnloadOperation fileUnloadOperation) {
-		Job job = loadJobFactory.createFileUnloadJob(fileUnloadOperation);
+	private void scheduleModelLoadJob(ProjectReloadOperation projectReloadOperation) {
+		// Check first if job should really be created or not
+		if (!loadJobFactory.shouldCreateReloadJob(projectReloadOperation.getProjects(), projectReloadOperation.isIncludeReferencedProjects(),
+				projectReloadOperation.getMetaModelDescriptor())) {
+			return;
+		}
+
+		// Add the files to an existing scheduled job if any
+		for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
+			if (job instanceof ModelLoadJob) {
+				AbstractLoadOperation operation = ((ModelLoadJob) job).getOperation();
+				if (operation instanceof ProjectReloadOperation) {
+					((ProjectReloadOperation) operation).addProjects(projectReloadOperation.getProjects());
+					return;
+				}
+			}
+		}
+
+		// Otherwise, create new job
+		Job job = loadJobFactory.createModelLoadJob(projectReloadOperation);
+		job.setPriority(Job.BUILD);
+		job.setRule(projectReloadOperation.getRule());
+		job.schedule();
+	}
+
+	private void scheduleModelLoadJob(FileUnloadOperation fileUnloadOperation) {
+		Job job = loadJobFactory.createModelLoadJob(fileUnloadOperation);
 		job.setPriority(Job.BUILD);
 		job.setRule(fileUnloadOperation.getRule());
 		job.schedule();
+	}
+
+	public void scheduleUnloadModelResourceJob(ModelUnloadOperation modelUnloadOperation) {
+		Job job = loadJobFactory.createModelUnloadJob(modelUnloadOperation);
+		job.setPriority(Job.BUILD);
+		job.setRule(modelUnloadOperation.getRule());
+		job.schedule();
+
 	}
 }

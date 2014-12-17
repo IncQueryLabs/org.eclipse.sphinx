@@ -21,13 +21,13 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.sphinx.emf.workspace.Activator;
-import org.eclipse.sphinx.emf.workspace.loading.operations.UnloadModelResourceOperation;
+import org.eclipse.sphinx.emf.workspace.loading.operations.ModelUnloadOperation;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
 public class UnloadModelResourceJob extends Job {
 
-	private UnloadModelResourceOperation unloadModelResourceOperation;
+	private ModelUnloadOperation unloadModelResourceOperation;
 
 	/**
 	 * Constructor.
@@ -35,7 +35,7 @@ public class UnloadModelResourceJob extends Job {
 	 * @param unloadModelResourceOperation
 	 *            The operation which this job is supposed to run.
 	 */
-	public UnloadModelResourceJob(UnloadModelResourceOperation unloadModelResourceOperation) {
+	public UnloadModelResourceJob(ModelUnloadOperation unloadModelResourceOperation) {
 		super(unloadModelResourceOperation.getLabel());
 		this.unloadModelResourceOperation = unloadModelResourceOperation;
 	}

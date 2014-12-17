@@ -57,9 +57,9 @@ import org.eclipse.sphinx.emf.workspace.loading.operations.FileLoadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.FileReloadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.FileUnloadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.ModelLoadOperation;
+import org.eclipse.sphinx.emf.workspace.loading.operations.ModelUnloadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.ProjectLoadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.ProjectReloadOperation;
-import org.eclipse.sphinx.emf.workspace.loading.operations.UnloadModelResourceOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.UnresolveUnreachableCrossProjectReferencesOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.UpdateResourceURIOperation;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
@@ -240,17 +240,9 @@ public final class ModelLoadManager {
 			boolean async, IProgressMonitor monitor) {
 		Assert.isNotNull(projects);
 
-		ProjectLoadOperation projectLoadOperation = new ProjectLoadOperation(projects, includeReferencedProjects, mmDescriptor);
-		if (async && projects.size() > 0) {
-			loadJobScheduler.scheduleProjectLoadJob(projectLoadOperation);
-		} else {
-			try {
-				projectLoadOperation.run(monitor);
-			} catch (OperationCanceledException ex) {
-				// Ignore exception
-			} catch (CoreException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
+		if (!projects.isEmpty()) {
+			ProjectLoadOperation projectLoadOperation = new ProjectLoadOperation(projects, includeReferencedProjects, mmDescriptor);
+			LoadOperationRunnerHelper.run(projectLoadOperation, async, monitor);
 		}
 	}
 
@@ -307,17 +299,9 @@ public final class ModelLoadManager {
 	public void loadFiles(final Collection<IFile> files, final IMetaModelDescriptor mmDescriptor, boolean async, IProgressMonitor monitor) {
 		Assert.isNotNull(files);
 
-		FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-		if (async && files.size() > 0) {
-			loadJobScheduler.scheduleFileLoadJob(fileLoadOperation);
-		} else {
-			try {
-				fileLoadOperation.run(monitor);
-			} catch (OperationCanceledException ex) {
-				// Ignore exception
-			} catch (CoreException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
+		if (!files.isEmpty()) {
+			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
+			LoadOperationRunnerHelper.run(fileLoadOperation, async, monitor);
 		}
 	}
 
@@ -441,7 +425,7 @@ public final class ModelLoadManager {
 			final boolean memoryOptimized, boolean async, IProgressMonitor monitor) throws OperationCanceledException {
 		Assert.isNotNull(resourcesToUnload);
 
-		UnloadModelResourceOperation unloadModelResourceOperation = new UnloadModelResourceOperation(resourcesToUnload, memoryOptimized);
+		ModelUnloadOperation unloadModelResourceOperation = new ModelUnloadOperation(resourcesToUnload, memoryOptimized);
 		if (async && resourcesToUnload.size() > 0) {
 			loadJobScheduler.scheduleUnloadModelResourceJob(unloadModelResourceOperation);
 		} else {
@@ -511,17 +495,9 @@ public final class ModelLoadManager {
 			IProgressMonitor monitor) {
 		Assert.isNotNull(files);
 
-		FileUnloadOperation fileUnloadOperation = new FileUnloadOperation(files, mmDescriptor, memoryOptimized);
-		if (async && files.size() > 0) {
-			loadJobScheduler.scheduleFileUnloadJob(fileUnloadOperation);
-		} else {
-			try {
-				fileUnloadOperation.run(monitor);
-			} catch (OperationCanceledException ex) {
-				// Ignore exception
-			} catch (CoreException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
+		if (!files.isEmpty()) {
+			FileUnloadOperation fileUnloadOperation = new FileUnloadOperation(files, mmDescriptor, memoryOptimized);
+			LoadOperationRunnerHelper.run(fileUnloadOperation, async, monitor);
 		}
 	}
 
@@ -584,17 +560,9 @@ public final class ModelLoadManager {
 			boolean async, IProgressMonitor monitor) {
 		Assert.isNotNull(projects);
 
-		ProjectReloadOperation projectReloadOperation = new ProjectReloadOperation(projects, includeReferencedProjects, mmDescriptor);
-		if (async && projects.size() > 0) {
-			loadJobScheduler.scheduleProjectReloadJob(projectReloadOperation);
-		} else {
-			try {
-				projectReloadOperation.run(monitor);
-			} catch (OperationCanceledException ex) {
-				// Ignore exception
-			} catch (CoreException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
+		if (!projects.isEmpty()) {
+			ProjectReloadOperation projectReloadOperation = new ProjectReloadOperation(projects, includeReferencedProjects, mmDescriptor);
+			LoadOperationRunnerHelper.run(projectReloadOperation, async, monitor);
 		}
 	}
 
@@ -654,17 +622,9 @@ public final class ModelLoadManager {
 			IProgressMonitor monitor) {
 		Assert.isNotNull(files);
 
-		FileReloadOperation fileReloadOperation = new FileReloadOperation(files, mmDescriptor, memoryOptimized);
-		if (async && files.size() > 0) {
-			loadJobScheduler.scheduleFileReloadJob(fileReloadOperation);
-		} else {
-			try {
-				fileReloadOperation.run(monitor);
-			} catch (OperationCanceledException ex) {
-				// Ignore exception
-			} catch (CoreException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
+		if (!files.isEmpty()) {
+			FileReloadOperation fileReloadOperation = new FileReloadOperation(files, mmDescriptor, memoryOptimized);
+			LoadOperationRunnerHelper.run(fileReloadOperation, async, monitor);
 		}
 	}
 
@@ -750,17 +710,9 @@ public final class ModelLoadManager {
 		Assert.isNotNull(modelDescriptor);
 
 		final Collection<IFile> persistedFiles = modelDescriptor.getPersistedFiles(includeReferencedScopes);
-		ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, persistedFiles);
-		if (async && persistedFiles.size() > 0) {
-			loadJobScheduler.scheduleModelLoadJob(modelLoadOperation);
-		} else {
-			try {
-				modelLoadOperation.run(monitor);
-			} catch (OperationCanceledException ex) {
-				// Ignore exception
-			} catch (CoreException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-			}
+		if (!persistedFiles.isEmpty()) {
+			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, persistedFiles);
+			LoadOperationRunnerHelper.run(modelLoadOperation, async, monitor);
 		}
 	}
 

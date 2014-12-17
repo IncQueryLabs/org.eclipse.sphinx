@@ -62,9 +62,9 @@ public abstract class AbstractFileLoadOperation extends AbstractLoadOperation {
 	}
 
 	public void addFiles(Collection<IFile> files) {
-		if (this.files == null) {
+		if (getFiles() == null) {
 			this.files = new HashSet<IFile>();
 		}
-		this.files.addAll(files);
+		getFiles().addAll(files);
 	}
 }

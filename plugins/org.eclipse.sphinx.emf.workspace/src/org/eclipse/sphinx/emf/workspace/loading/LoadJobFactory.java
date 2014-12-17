@@ -26,11 +26,9 @@ import org.eclipse.sphinx.emf.workspace.internal.loading.UnloadModelResourceJob;
 import org.eclipse.sphinx.emf.workspace.loading.operations.AbstractLoadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.FileLoadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.FileReloadOperation;
-import org.eclipse.sphinx.emf.workspace.loading.operations.FileUnloadOperation;
-import org.eclipse.sphinx.emf.workspace.loading.operations.ModelLoadOperation;
+import org.eclipse.sphinx.emf.workspace.loading.operations.ModelUnloadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.ProjectLoadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.ProjectReloadOperation;
-import org.eclipse.sphinx.emf.workspace.loading.operations.UnloadModelResourceOperation;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 
 public class LoadJobFactory {
@@ -39,31 +37,11 @@ public class LoadJobFactory {
 		// Nothing to do
 	}
 
-	public Job createFileLoadJob(FileLoadOperation fileLoadOperation) {
-		return new ModelLoadJob<FileLoadOperation>(fileLoadOperation);
+	public <T extends AbstractLoadOperation> Job createModelLoadJob(T operation) {
+		return new ModelLoadJob<T>(operation);
 	}
 
-	public Job createProjectLoadJob(ProjectLoadOperation prjLoadOperation) {
-		return new ModelLoadJob<ProjectLoadOperation>(prjLoadOperation);
-	}
-
-	public Job createModelLoadJob(ModelLoadOperation modelLoadOperation) {
-		return new ModelLoadJob<ModelLoadOperation>(modelLoadOperation);
-	}
-
-	public Job createFileReloadJob(FileReloadOperation fileReloadOperation) {
-		return new ModelLoadJob<FileReloadOperation>(fileReloadOperation);
-	}
-
-	public Job createProjectReloadJob(ProjectReloadOperation projectReloadOperation) {
-		return new ModelLoadJob<ProjectReloadOperation>(projectReloadOperation);
-	}
-
-	public Job createFileUnloadJob(FileUnloadOperation fileUnloadOperation) {
-		return new ModelLoadJob<FileUnloadOperation>(fileUnloadOperation);
-	}
-
-	public Job createUnloadModelResourceJob(UnloadModelResourceOperation unloadModelResourceOperation) {
+	public Job createModelUnloadJob(ModelUnloadOperation unloadModelResourceOperation) {
 		return new UnloadModelResourceJob(unloadModelResourceOperation);
 	}
 

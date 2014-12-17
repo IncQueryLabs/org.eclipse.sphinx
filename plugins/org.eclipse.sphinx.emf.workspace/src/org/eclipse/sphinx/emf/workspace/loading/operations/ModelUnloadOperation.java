@@ -17,12 +17,12 @@ import org.eclipse.sphinx.emf.workspace.loading.SchedulingRuleFactory;
 import org.eclipse.sphinx.platform.operations.AbstractWorkspaceOperation;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 
-public class UnloadModelResourceOperation extends AbstractWorkspaceOperation {
+public class ModelUnloadOperation extends AbstractWorkspaceOperation {
 
 	private Map<TransactionalEditingDomain, Collection<Resource>> resourcesToUnload;
 	private boolean memoryOptimized;
 
-	public UnloadModelResourceOperation(Map<TransactionalEditingDomain, Collection<Resource>> resourcesToUnload, boolean memoryOptimized) {
+	public ModelUnloadOperation(Map<TransactionalEditingDomain, Collection<Resource>> resourcesToUnload, boolean memoryOptimized) {
 		super(Messages.job_unloadingModelResources);
 		this.resourcesToUnload = resourcesToUnload;
 		this.memoryOptimized = memoryOptimized;

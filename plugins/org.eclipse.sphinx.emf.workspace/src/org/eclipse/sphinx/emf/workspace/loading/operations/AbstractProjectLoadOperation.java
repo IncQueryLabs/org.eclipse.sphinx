@@ -77,14 +77,14 @@ public abstract class AbstractProjectLoadOperation extends AbstractLoadOperation
 	}
 
 	public void addProjects(Collection<IProject> projects) {
-		if (projects == null) {
-			projects = new HashSet<IProject>();
+		if (getProjects() == null) {
+			this.projects = new HashSet<IProject>();
 		}
-		projects.addAll(projects);
+		getProjects().addAll(projects);
 		// Compute project group if referenced projects must be considered
 		if (includeReferencedProjects) {
 			for (IProject p : projects) {
-				projects.addAll(getProjectGroup(p, false));
+				getProjects().addAll(getProjectGroup(p, false));
 			}
 		}
 	}
