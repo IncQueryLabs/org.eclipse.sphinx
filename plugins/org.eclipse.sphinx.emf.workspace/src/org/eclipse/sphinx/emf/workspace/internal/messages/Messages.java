@@ -74,6 +74,8 @@ public class Messages extends NLS {
 
 	public static String error_unexpectedSourceType;
 
+	public static String error_unsupportedLoadOperation;
+
 	public static String warning_multipleOverridesForSameURIChangeDetectorDelegate;
 
 	public static String warning_multipleURIChangeDetectorDelegatesContributedForSameResourceType;

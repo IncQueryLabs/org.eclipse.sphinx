@@ -427,7 +427,7 @@ public final class ModelLoadManager {
 
 		ModelUnloadOperation unloadModelResourceOperation = new ModelUnloadOperation(resourcesToUnload, memoryOptimized);
 		if (async && resourcesToUnload.size() > 0) {
-			loadJobScheduler.scheduleUnloadModelResourceJob(unloadModelResourceOperation);
+			loadJobScheduler.scheduleModelLoadJob(unloadModelResourceOperation);
 		} else {
 			try {
 				unloadModelResourceOperation.run(monitor);

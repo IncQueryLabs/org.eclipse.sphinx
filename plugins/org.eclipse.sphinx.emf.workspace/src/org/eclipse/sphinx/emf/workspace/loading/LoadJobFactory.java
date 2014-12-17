@@ -22,11 +22,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.workspace.internal.loading.ModelLoadJob;
-import org.eclipse.sphinx.emf.workspace.internal.loading.UnloadModelResourceJob;
 import org.eclipse.sphinx.emf.workspace.loading.operations.AbstractLoadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.FileLoadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.FileReloadOperation;
-import org.eclipse.sphinx.emf.workspace.loading.operations.ModelUnloadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.ProjectLoadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.ProjectReloadOperation;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
@@ -39,10 +37,6 @@ public class LoadJobFactory {
 
 	public <T extends AbstractLoadOperation> Job createModelLoadJob(T operation) {
 		return new ModelLoadJob<T>(operation);
-	}
-
-	public Job createModelUnloadJob(ModelUnloadOperation unloadModelResourceOperation) {
-		return new UnloadModelResourceJob(unloadModelResourceOperation);
 	}
 
 	/**

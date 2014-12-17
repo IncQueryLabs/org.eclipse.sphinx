@@ -16,7 +16,9 @@
 package org.eclipse.sphinx.emf.workspace.loading;
 
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.workspace.internal.loading.ModelLoadJob;
+import org.eclipse.sphinx.emf.workspace.internal.messages.Messages;
 import org.eclipse.sphinx.emf.workspace.loading.operations.AbstractLoadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.FileLoadOperation;
 import org.eclipse.sphinx.emf.workspace.loading.operations.FileReloadOperation;
@@ -49,6 +51,10 @@ public class LoadJobScheduler {
 			scheduleModelLoadJob((ProjectReloadOperation) operation);
 		} else if (operation instanceof FileUnloadOperation) {
 			scheduleModelLoadJob((FileUnloadOperation) operation);
+		} else if (operation instanceof ModelUnloadOperation) {
+			scheduleModelLoadJob((ModelUnloadOperation) operation);
+		} else {
+			throw new UnsupportedOperationException(NLS.bind(Messages.error_unsupportedLoadOperation, operation.getClass().getSimpleName()));
 		}
 	}
 
@@ -175,8 +181,8 @@ public class LoadJobScheduler {
 		job.schedule();
 	}
 
-	public void scheduleUnloadModelResourceJob(ModelUnloadOperation modelUnloadOperation) {
-		Job job = loadJobFactory.createModelUnloadJob(modelUnloadOperation);
+	private void scheduleModelLoadJob(ModelUnloadOperation modelUnloadOperation) {
+		Job job = loadJobFactory.createModelLoadJob(modelUnloadOperation);
 		job.setPriority(Job.BUILD);
 		job.setRule(modelUnloadOperation.getRule());
 		job.schedule();
