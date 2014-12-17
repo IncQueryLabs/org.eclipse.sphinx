@@ -27,7 +27,8 @@ import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
-import org.eclipse.sphinx.emf.workspace.internal.loading.LoadJob;
+import org.eclipse.sphinx.emf.workspace.internal.loading.ModelLoadJob;
+import org.eclipse.sphinx.emf.workspace.loading.operations.AbstractLoadOperation;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 
@@ -41,7 +42,7 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 	 * The loading job that this test may interrupt (by asking it to fall asleep) and that must be waked up before the
 	 * end the test (aims at avoiding deadlock for instance).
 	 */
-	private WeakReference<LoadJob> loadJob;
+	private WeakReference<ModelLoadJob> loadJob;
 
 	protected static final boolean SHOULD_CREATE = true;
 	protected static final boolean SHOULD_NOT_CREATE = false;
@@ -57,7 +58,7 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 	 * <li>No loading job is queued in the {@linkplain IJobManager job manager};</li>
 	 * </ul>
 	 */
-	protected <T extends LoadJob> void assertNoLoadJobIsSleeping() {
+	protected void assertNoLoadJobIsSleeping() {
 		try {
 
 			// Retrieves from JobManager the list of jobs that belong to the "model loading" family
@@ -80,13 +81,14 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 	 * <li>The retrieved loading job is expected to be instance of the specified {@linkplain ILoadJob} class;</li>
 	 * <li>This job is really is the {@linkplain Job#SLEEPING SLEEPING} state.</li>
 	 * </ul>
-	 * 
+	 *
 	 * @param <T>
-	 *            The expected type of loading job.
+	 *            The expected type of loading operation.
 	 * @param clazz
-	 *            The expected subclass of {@linkplain LoadJob}.
+	 *            The expected subclass of {@linkplain AbstractLoadOperation}.
 	 */
-	protected <T extends LoadJob> void assertOnlyOneLoadJobIsSleeping(Class<T> clazz) {
+	@SuppressWarnings("rawtypes")
+	protected <T extends AbstractLoadOperation> void assertOnlyOneLoadJobIsSleeping(Class<T> clazz) {
 		try {
 			// Retrieves from JobManager the list of jobs that belong to the "model loading" family
 			Job[] jobs = Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING);
@@ -94,11 +96,16 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 			// Verify that one and only one loading job is queued
 			assertEquals(MSG_expectedOneJob, 1, jobs.length);
 
-			// Verify that type of job is the expected one (usually ModelLoadJob or FileLoadJob)
-			assertTrue(NLS.bind(MSG_expectedTypeOfJob, clazz.getSimpleName(), getSimpleName(jobs[0].getClass())), clazz.isInstance(jobs[0]));
+			// Verify that it's a load job
+			assertTrue(jobs[0] instanceof ModelLoadJob);
+			ModelLoadJob job = (ModelLoadJob) jobs[0];
+
+			// Verify that type of operation is the expected one
+			assertTrue(NLS.bind(MSG_expectedTypeOfOperation, clazz.getSimpleName(), getSimpleName(job.getOperation().getClass())),
+					clazz.isInstance(jobs[0]));
 
 			// Keep a reference on that job
-			loadJob = new WeakReference<LoadJob>(clazz.cast(jobs[0]));
+			loadJob = new WeakReference<ModelLoadJob>(job);
 			// Ask for the loading job to fall asleep
 			loadJob.get().sleep();
 
@@ -147,16 +154,16 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 
 	private static final String MSG_expectedNoJob = "No job from family MODEL LOADING should be found";
 	private static final String MSG_expectedOneJob = "One and only one job from family MODEL LOADING should be found";
-	private static final String MSG_expectedTypeOfJob = "Job is expected to be an instance of <{0}> but was <{1}>";
+	private static final String MSG_expectedTypeOfOperation = "Operation is expected to be an instance of <{0}> but was <{1}>";
 	private static final String MSG_expectedSleepingJob = "Sleep ask failed (model loading job was already running)";
 
 	private static final String MSG_SHOULD_CREATE = "One loading job should be created for {0}(s) [{1}] with meta-model descriptor \"{2}\"";
 	private static final String MSG_SHOULD_NOT_CREATE = "No loading job should be created for {0}(s) [{1}] with meta-model descriptor \"{2}\"";
 
-	private static <T extends Job> String getSimpleName(Class<T> jobClass) {
-		String className = jobClass.getSimpleName();
+	private static <T extends AbstractLoadOperation> String getSimpleName(Class<T> operationClass) {
+		String className = operationClass.getSimpleName();
 		if (className == null || "".equals(className)) {
-			className = getSimpleName((Class<T>) jobClass.getSuperclass());
+			className = getSimpleName((Class<T>) operationClass.getSuperclass());
 		}
 		return className;
 	}

@@ -27,8 +27,6 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
-import org.eclipse.sphinx.emf.workspace.internal.loading.FileLoadJob;
-import org.eclipse.sphinx.emf.workspace.internal.loading.LoadJob;
 import org.eclipse.sphinx.emf.workspace.internal.loading.ModelLoadJob;
 import org.eclipse.sphinx.examples.hummingbird.ide.natures.HummingbirdNature;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
@@ -114,10 +112,10 @@ public class AppendToSleepingLoadJobTest extends TestCase {
 			Job[] jobs = Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING);
 
 			// Verify that one and only one loading job is queued
-			List<LoadJob> jobList = new ArrayList<LoadJob>();
+			List<Job> jobList = new ArrayList<Job>();
 			for (Job job : jobs) {
-				if (job instanceof ModelLoadJob || job instanceof FileLoadJob) {
-					jobList.add((LoadJob) job);
+				if (job instanceof ModelLoadJob) {
+					jobList.add(job);
 				}
 			}
 			assertEquals(MSG_expectedOneJob, 1, jobList.size());

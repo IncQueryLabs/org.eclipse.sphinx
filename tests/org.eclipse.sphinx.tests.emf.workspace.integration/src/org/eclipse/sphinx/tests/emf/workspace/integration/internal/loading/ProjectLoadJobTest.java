@@ -24,9 +24,10 @@ import java.util.Set;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.workspace.internal.loading.LoadJob;
 import org.eclipse.sphinx.emf.workspace.internal.loading.ModelLoadJob;
+import org.eclipse.sphinx.emf.workspace.loading.LoadJobFactory;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
+import org.eclipse.sphinx.emf.workspace.loading.operations.ProjectLoadOperation;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 
 /**
@@ -48,13 +49,15 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#hbProject20_C} <b>with</b> its
 	 * referenced projects.
 	 */
 	public void testShouldCreateJob_20C_RefProjectsIncluded() {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IProject> projectsToLoad = Collections.singletonList(refWks
 				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
@@ -62,7 +65,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadProjects(projectsToLoad, true, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[14];
@@ -77,42 +80,42 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 1
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 2
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 3
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 4
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 5
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 6
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -122,7 +125,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 			;
 		}
 		{ // 7
@@ -133,7 +136,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 8
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -142,7 +145,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 9
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -151,7 +154,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 10
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -160,7 +163,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 11
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -169,7 +172,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 12
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -180,7 +183,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 13
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -191,7 +194,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -219,13 +222,15 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#arProject20_C} <b>without</b> its
 	 * referenced projects.
 	 */
 	public void testShouldCreateJob_20C_RefProjectsExcluded() {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IProject> projectsToLoad = Collections.singletonList(refWks
 				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
@@ -233,7 +238,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadProjects(projectsToLoad, false, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[14];
@@ -248,42 +253,42 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 1
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 2
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 3
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 4
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 5
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 6
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -293,7 +298,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 7
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -303,7 +308,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 8
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -312,7 +317,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 9
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -321,7 +326,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 10
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -330,7 +335,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 11
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -339,7 +344,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 12
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -350,7 +355,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 13
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -361,7 +366,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -389,14 +394,16 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project
 	 * {@linkplain DefaultTestReferenceWorkspace#getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B)}
 	 * <b>with</b> its referenced projects.
 	 */
 	public void testShouldCreateJob_20B_RefProjectsIncluded() {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IProject> projectsToLoad = Collections.singletonList(refWks
 				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
@@ -404,7 +411,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadProjects(projectsToLoad, true, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[14];
@@ -419,42 +426,42 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 1
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 2
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 3
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 4
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 5
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 6
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -464,7 +471,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 7
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -474,7 +481,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 8
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -483,7 +490,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 9
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -492,7 +499,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 10
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -501,7 +508,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 11
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -510,7 +517,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 12
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -521,7 +528,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 13
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -532,7 +539,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -560,14 +567,16 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project
 	 * {@linkplain DefaultTestReferenceWorkspace#getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B)}
 	 * <b>without</b> its referenced projects.
 	 */
 	public void testShouldCreateJob_20B_RefProjectsExcluded() {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IProject> projectsToLoad = Collections.singletonList(refWks
 				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
@@ -575,7 +584,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadProjects(projectsToLoad, false, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[14];
@@ -590,42 +599,42 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 1
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 2
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 3
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 4
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 5
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 6
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -635,7 +644,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 7
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -645,7 +654,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 8
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -654,7 +663,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 9
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -663,7 +672,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 10
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -672,7 +681,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 11
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -681,7 +690,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 12
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -692,7 +701,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 13
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -703,7 +712,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -731,14 +740,16 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project
 	 * {@linkplain DefaultTestReferenceWorkspace#getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A)}
 	 * <b>with</b> its referenced projects.
 	 */
 	public void testShouldCreateJob_20A_RefProjectsIncluded() {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IProject> projectsToLoad = Collections.singletonList(refWks
 				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
@@ -746,7 +757,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadProjects(projectsToLoad, true, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[14];
@@ -761,42 +772,42 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 1
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 2
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 3
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 4
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 5
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 6
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -806,7 +817,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 7
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -816,7 +827,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 8
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -825,7 +836,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 9
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -834,7 +845,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 10
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -843,7 +854,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 11
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -852,7 +863,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 12
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -863,7 +874,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 13
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -874,7 +885,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -902,14 +913,16 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project
 	 * {@linkplain DefaultTestReferenceWorkspace#getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A)}
 	 * <b>without</b> its referenced projects.
 	 */
 	public void testShouldCreateJob_20A_RefProjectsExcluded() {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IProject> projectsToLoad = Collections.singletonList(refWks
 				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
@@ -917,7 +930,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadProjects(projectsToLoad, false, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[14];
@@ -932,42 +945,42 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 1
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 2
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 3
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 4
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 5
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 6
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -977,7 +990,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 7
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -987,7 +1000,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 8
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -996,7 +1009,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 9
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -1005,7 +1018,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 10
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -1014,7 +1027,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 11
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -1023,7 +1036,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 12
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -1034,7 +1047,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, true, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, true, mmDescriptor);
 		}
 		{ // 13
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -1045,7 +1058,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before

@@ -23,9 +23,10 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.workspace.internal.loading.FileLoadJob;
-import org.eclipse.sphinx.emf.workspace.internal.loading.LoadJob;
+import org.eclipse.sphinx.emf.workspace.internal.loading.ModelLoadJob;
+import org.eclipse.sphinx.emf.workspace.loading.LoadJobFactory;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
+import org.eclipse.sphinx.emf.workspace.loading.operations.FileLoadOperation;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
@@ -95,20 +96,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of file {@linkplain DefaultTestReferenceWorkspace#HB_FILE_NAME_10_10A_1} specifying
 	 * {@linkplain MetaModelDescriptorRegistry#ANY_MM} as meta-model descriptor.
 	 */
 	public void testShouldCreateJob_10A_oneFile() {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = Collections.singletonList(hbFile10_10A_1);
 
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, MetaModelDescriptorRegistry.ANY_MM, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[6];
@@ -123,21 +126,21 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 1
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_2);
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 2
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_3);
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 3
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -147,7 +150,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 4
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -157,7 +160,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 5
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -170,7 +173,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -190,13 +193,15 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of files from project {@linkplain DefaultTestReferenceWorkspace#arProject10_A} specifying
 	 * {@linkplain MetaModelDescriptorRegistry#ANY_MM} as meta-model descriptor.
 	 */
 	public void testShouldCreateJob_10A_ANYMM() {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(hbFile10_10A_1);
@@ -206,7 +211,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, MetaModelDescriptorRegistry.ANY_MM, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[12];
@@ -222,21 +227,21 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 1
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_2);
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 2
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_3);
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 3
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -246,7 +251,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 4
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -256,7 +261,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 5
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -269,7 +274,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 
 		mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
@@ -279,21 +284,21 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 7
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_2);
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 8
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_3);
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 9
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -303,7 +308,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 10
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -313,7 +318,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 11
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -326,7 +331,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -352,13 +357,15 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of files from project {@linkplain DefaultTestReferenceWorkspace#arProject10_A} specifying
 	 * {@linkplain Hummingbird10MMDescriptor} as meta-model descriptor.
 	 */
 	public void testShouldCreateJob_10A_Hb10RD() {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(hbFile10_10A_1);
@@ -368,7 +375,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, Hummingbird10MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[12];
@@ -384,21 +391,21 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 1
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_2);
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 2
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_3);
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 3
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -408,7 +415,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 4
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -418,7 +425,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 5
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -431,7 +438,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 
 		mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
@@ -441,21 +448,21 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 7
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_2);
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 8
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_3);
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 9
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -465,7 +472,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 10
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -475,7 +482,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 11
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -488,7 +495,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -514,7 +521,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of files from project {@linkplain DefaultTestReferenceWorkspace#arProject10_A} specifying
 	 * {@linkplain UML2MMDescriptor} as meta-model descriptor.
@@ -522,6 +529,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_10A_UML2MMD() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(hbFile10_10A_1);
@@ -531,7 +539,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, UML2MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[6];
@@ -544,17 +552,17 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		{ // 0
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_1);
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 1
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_2);
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 2
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_3);
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 3
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -562,7 +570,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			files.add(hbFile10_10A_2);
 			files.add(hbFile10_10A_3);
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 4
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -570,7 +578,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			files.add(hbFile10_10B_2);
 			files.add(hbFile10_10B_3);
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 		{ // 5
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -581,7 +589,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			files.add(uml2File_20B_2);
 			files.add(uml2File_20B_3);
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -601,7 +609,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain MetaModelDescriptorRegistry#ANY_MM} as meta-model descriptor.
@@ -609,6 +617,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_AllFiles_ANYMM() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(hbFile20_20B_1);
@@ -621,7 +630,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, MetaModelDescriptorRegistry.ANY_MM, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[20];
@@ -642,22 +651,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -669,22 +678,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -696,22 +705,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -729,22 +738,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -756,22 +765,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -806,7 +815,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain Hummingbird10MMDescriptor} as meta-model descriptor.
@@ -814,6 +823,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_AllFiles_Hb10RD() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(hbFile20_20B_1);
@@ -826,7 +836,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, Hummingbird10MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[20];
@@ -847,22 +857,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -873,22 +883,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -900,22 +910,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -933,22 +943,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -960,22 +970,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -1010,7 +1020,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain Hummingbird20MMDescriptor} as meta-model descriptor.
@@ -1018,6 +1028,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_AllFiles_Hb20RD() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(hbFile20_20B_1);
@@ -1030,7 +1041,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, Hummingbird20MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[20];
@@ -1051,22 +1062,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -1078,22 +1089,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -1105,22 +1116,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -1138,22 +1149,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -1165,22 +1176,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -1215,7 +1226,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain UML2MMDescriptor} as meta-model descriptor.
@@ -1223,6 +1234,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_AllFiles_UML2MMD() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(hbFile20_20B_1);
@@ -1235,7 +1247,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, UML2MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[20];
@@ -1256,22 +1268,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -1283,22 +1295,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -1310,22 +1322,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -1343,22 +1355,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -1370,22 +1382,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -1420,7 +1432,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of Hummingbird 10 files from project
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
@@ -1429,6 +1441,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_Hb10Files_ANYMM() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		ModelLoadManager.INSTANCE.loadFiles(Collections.<IFile> emptyList(), MetaModelDescriptorRegistry.ANY_MM, true, null);
 
@@ -1454,22 +1467,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -1481,22 +1494,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -1508,22 +1521,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -1541,22 +1554,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -1568,22 +1581,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -1618,7 +1631,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of Hummingbird 10 files from project
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying {@linkplain Hummingbird10MMDescriptor} as
@@ -1627,6 +1640,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_Hb10Files_Hb10RD() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		ModelLoadManager.INSTANCE.loadFiles(Collections.<IFile> emptyList(), Hummingbird10MMDescriptor.INSTANCE, true, null);
 
@@ -1652,22 +1666,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -1679,22 +1693,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -1706,22 +1720,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -1739,22 +1753,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -1766,22 +1780,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -1816,7 +1830,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of Hummingbird 10 files from project
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying {@linkplain Hummingbird20MMDescriptor} as
@@ -1825,6 +1839,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_Hb10Files_Hb20RD() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		ModelLoadManager.INSTANCE.loadFiles(Collections.<IFile> emptyList(), Hummingbird20MMDescriptor.INSTANCE, true, null);
 
@@ -1850,22 +1865,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -1877,22 +1892,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -1904,22 +1919,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -1937,22 +1952,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -1964,22 +1979,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -2013,7 +2028,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of Hummingbird 10 files from project
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying {@linkplain UML2MMDescriptor} as meta-model
@@ -2022,6 +2037,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_Hb10Files_UML2MMD() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		ModelLoadManager.INSTANCE.loadFiles(Collections.<IFile> emptyList(), UML2MMDescriptor.INSTANCE, true, null);
 
@@ -2047,22 +2063,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -2074,22 +2090,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -2101,22 +2117,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -2134,22 +2150,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -2161,22 +2177,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -2210,7 +2226,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of Hummingbird 20 files from project
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
@@ -2219,6 +2235,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_Hb20Files_ANYMM() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(hbFile20_20B_1);
@@ -2228,7 +2245,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, MetaModelDescriptorRegistry.ANY_MM, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[20];
@@ -2249,22 +2266,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -2276,22 +2293,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -2303,22 +2320,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -2336,22 +2353,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -2363,22 +2380,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -2412,7 +2429,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of Hummingbird 20 files from project
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying {@linkplain Hummingbird10MMDescriptor} as
@@ -2421,6 +2438,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_Hb20Files_Hb10RD() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(hbFile20_20B_1);
@@ -2430,7 +2448,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, Hummingbird10MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[20];
@@ -2451,22 +2469,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -2478,22 +2496,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -2505,22 +2523,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -2538,22 +2556,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -2565,22 +2583,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -2614,7 +2632,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of Hummingbird 20 files from project
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying {@linkplain Hummingbird20MMDescriptor} as
@@ -2623,6 +2641,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_Hb20Files_Hb20RD() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(hbFile20_20B_1);
@@ -2632,7 +2651,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, Hummingbird20MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[20];
@@ -2653,22 +2672,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -2680,22 +2699,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -2707,22 +2726,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -2740,22 +2759,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -2767,22 +2786,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -2816,7 +2835,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of Hummingbird 20 files from project
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying {@linkplain UML2MMDescriptor} as meta-model
@@ -2825,6 +2844,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_Hb20Files_UML2MMD() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(hbFile20_20B_1);
@@ -2834,7 +2854,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, UML2MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[20];
@@ -2855,22 +2875,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -2882,22 +2902,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -2909,22 +2929,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -2942,22 +2962,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -2969,22 +2989,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -3018,7 +3038,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of Uml2 files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B}
 	 * specifying {@linkplain MetaModelDescriptorRegistry#ANY_MM} as meta-model descriptor.
@@ -3026,6 +3046,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_UML2Files_ANYMM() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(uml2File_20B_1);
@@ -3035,7 +3056,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, MetaModelDescriptorRegistry.ANY_MM, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[20];
@@ -3056,22 +3077,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -3083,22 +3104,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -3110,22 +3131,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -3143,22 +3164,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -3170,22 +3191,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -3220,7 +3241,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	//
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of Uml2 files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B}
 	 * specifying {@linkplain Hummingbird10MMDescriptor} as meta-model descriptor.
@@ -3228,6 +3249,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_Uml2Files_Hb10RD() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(uml2File_20B_1);
@@ -3237,7 +3259,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, Hummingbird10MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[20];
@@ -3258,22 +3280,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -3285,22 +3307,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -3312,22 +3334,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -3345,22 +3367,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -3372,22 +3394,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -3421,7 +3443,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of Uml2 files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B}
 	 * specifying {@linkplain Hummingbird20MMDescriptor} as meta-model descriptor.
@@ -3429,6 +3451,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_Uml2Files_Hb20RD() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(uml2File_20B_1);
@@ -3438,7 +3461,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, Hummingbird20MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[20];
@@ -3459,22 +3482,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -3486,22 +3509,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -3513,22 +3536,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -3546,22 +3569,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -3573,22 +3596,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -3622,7 +3645,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of Uml2 files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B}
 	 * specifying {@linkplain UML2MMDescriptor} as meta-model descriptor.
@@ -3630,6 +3653,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	public void testShouldCreateJob_20B_Uml2Files_UML2MMD() {
 
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		Collection<IFile> filesToLoad = new ArrayList<IFile>();
 		filesToLoad.add(uml2File_20B_1);
@@ -3639,7 +3663,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadFiles(filesToLoad, UML2MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(FileLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(FileLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[20];
@@ -3660,22 +3684,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 0.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 1
@@ -3687,22 +3711,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 1.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 2
@@ -3714,22 +3738,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 2.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 3
@@ -3747,22 +3771,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 3.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 		{ // 4
@@ -3774,22 +3798,22 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			{ // 4.0
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 			{ // 4.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
-				shouldCreateJob[index] = LoadJob.shouldCreateJob(files, mmDescriptor);
+				shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(files, mmDescriptor);
 			}
 		}
 
@@ -3820,5 +3844,4 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 		// Ends the test by verifying that everything is fine
 		finish();
 	}
-
 }

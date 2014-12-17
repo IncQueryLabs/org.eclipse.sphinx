@@ -22,9 +22,10 @@ import java.util.Set;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.workspace.internal.loading.LoadJob;
 import org.eclipse.sphinx.emf.workspace.internal.loading.ModelLoadJob;
+import org.eclipse.sphinx.emf.workspace.loading.LoadJobFactory;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
+import org.eclipse.sphinx.emf.workspace.loading.operations.ModelLoadOperation;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
@@ -44,20 +45,22 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain Hummingbird10MMDescriptor} as meta-model descriptor (consider or not its referenced projects is not
 	 * relevant in the context of this test and corresponding boolean will be kept to <code>false</code>).
 	 */
 	public void testShouldCreateJob_20B_hb20RD() {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				Hummingbird10MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(ModelLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[5];
@@ -72,35 +75,35 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 1
 			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 2
 			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 3
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 4
 			IMetaModelDescriptor mmDescriptor = null;
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -119,20 +122,22 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain Hummingbird20MMDescriptor} as meta-model descriptor (consider or not its referenced projects is not
 	 * relevant in the context of this test and corresponding boolean will be kept to <code>false</code>).
 	 */
 	public void testShouldCreateJob_20B_Hb20RD() {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				Hummingbird20MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(ModelLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[5];
@@ -147,35 +152,35 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 1
 			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 2
 			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 3
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 4
 			IMetaModelDescriptor mmDescriptor = null;
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -194,20 +199,22 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain UML2MMDescriptor} as meta-model descriptor (consider or not its referenced projects is not relevant
 	 * in the context of this test and corresponding boolean will be kept to <code>false</code>).
 	 */
 	public void testShouldCreateJob_20B_UML2MMD() {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				UML2MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(ModelLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[5];
@@ -222,35 +229,35 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 1
 			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 2
 			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 3
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 4
 			IMetaModelDescriptor mmDescriptor = null;
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -269,21 +276,23 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain MetaModelDescriptorRegistry#ANY_MM} as meta-model descriptor (consider or not its referenced projects
 	 * is not relevant in the context of this test and corresponding boolean will be kept to <code>false</code>).
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testShouldCreateJob_20B_ANYMM() throws Exception {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				MetaModelDescriptorRegistry.ANY_MM, true, null);
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(ModelLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[5];
@@ -298,35 +307,35 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 1
 			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 2
 			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 3
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 4
 			IMetaModelDescriptor mmDescriptor = null;
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -345,20 +354,22 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain LoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * <code>null</code> as meta-model descriptor (consider or not its referenced projects is not relevant in the
 	 * context of this test and corresponding boolean will be kept to <code>false</code>).
 	 */
 	public void testShouldCreateJob_20B_null() {
+
 		// Local initialization of this test
+		LoadJobFactory loadJobFactory = new LoadJobFactory();
 
 		ModelLoadManager.INSTANCE
 				.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false, null, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadJob.class);
+		assertOnlyOneLoadJobIsSleeping(ModelLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[5];
@@ -373,35 +384,35 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 1
 			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 2
 			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 3
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 		{ // 4
 			IMetaModelDescriptor mmDescriptor = null;
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
-			shouldCreateJob[index] = LoadJob.shouldCreateJob(projects, false, mmDescriptor);
+			shouldCreateJob[index] = loadJobFactory.shouldCreateLoadJob(projects, false, mmDescriptor);
 		}
 
 		// Wake up the model load job that we put sleeping before
