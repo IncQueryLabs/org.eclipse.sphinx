@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Sphinx Mars Target" sequenceNumber="14">
+<?pde version="3.8"?><target name="Sphinx Mars Target" sequenceNumber="15">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="4.5.0.I20141029-2000"/>
-<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.100.v20140925-0313"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.100.v20140924-1957"/>
+<unit id="org.eclipse.sdk.ide" version="4.5.0.I20141210-2000"/>
+<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.100.v20141210-1822"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.100.v20141210-0918"/>
 <repository location="http://download.eclipse.org/eclipse/updates/4.5milestones"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.3.10.v201411111017"/>
-<unit id="org.eclipse.emf.sdk.feature.group" version="2.11.0.v20141110-0530"/>
-<unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.9.0.201411230352"/>
-<unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.9.0.201411230228"/>
-<unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.9.0.201411230248"/>
-<unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.9.0.201411230102"/>
+<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.3.10.v201412160330"/>
+<unit id="org.eclipse.emf.sdk.feature.group" version="2.11.0.v20141215-0350"/>
+<unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.9.0.201412161904"/>
+<unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.9.0.201412161741"/>
+<unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.9.0.201412161742"/>
+<unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.9.0.201412162002"/>
 <unit id="org.eclipse.gmf.tooling.feature.group" version="3.2.0.201406111907"/>
-<unit id="org.eclipse.uml2.sdk.feature.group" version="5.1.0.v20141110-0909"/>
+<unit id="org.eclipse.uml2.sdk.feature.group" version="5.1.0.v20141215-0748"/>
 <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.6.1.v201410030012"/>
-<unit id="org.eclipse.xpand.sdk.feature.group" version="2.1.0.v201411111024"/>
-<unit id="org.eclipse.xsd.sdk.feature.group" version="2.10.0.v20141110-0530"/>
-<unit id="org.eclipse.xtext.sdk.feature.group" version="2.8.0.v201411111037"/>
+<unit id="org.eclipse.xpand.sdk.feature.group" version="2.1.0.v201412160338"/>
+<unit id="org.eclipse.xsd.sdk.feature.group" version="2.10.0.v20141215-0350"/>
+<unit id="org.eclipse.xtext.sdk.feature.group" version="2.8.0.v201412160421"/>
 <repository location="http://download.eclipse.org/releases/staging"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
