@@ -102,7 +102,7 @@ abstract class AbstractLoadJobTest extends DefaultIntegrationTestCase {
 
 			// Verify that type of operation is the expected one
 			assertTrue(NLS.bind(MSG_expectedTypeOfOperation, clazz.getSimpleName(), getSimpleName(job.getOperation().getClass())),
-					clazz.isInstance(jobs[0]));
+					clazz.isInstance(job.getOperation()));
 
 			// Keep a reference on that job
 			loadJob = new WeakReference<ModelLoadJob>(job);
