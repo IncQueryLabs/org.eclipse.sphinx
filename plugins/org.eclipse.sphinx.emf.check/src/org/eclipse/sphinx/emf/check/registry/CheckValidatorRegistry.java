@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [455185] Check Framework incompatible with QVTO metamodel
  *
  * </copyright>
  */
