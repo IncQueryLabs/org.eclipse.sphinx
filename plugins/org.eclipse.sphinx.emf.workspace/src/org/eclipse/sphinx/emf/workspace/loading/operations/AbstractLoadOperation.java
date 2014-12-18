@@ -46,8 +46,6 @@ import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.Activator;
-import org.eclipse.sphinx.emf.workspace.internal.loading.ModelLoadingPerformanceStats;
-import org.eclipse.sphinx.emf.workspace.internal.loading.ModelLoadingPerformanceStats.ModelEvent;
 import org.eclipse.sphinx.emf.workspace.internal.messages.Messages;
 import org.eclipse.sphinx.emf.workspace.loading.SchedulingRuleFactory;
 import org.eclipse.sphinx.platform.operations.AbstractWorkspaceOperation;
@@ -163,25 +161,16 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 			throw new OperationCanceledException();
 		}
 
-		String contextLoadFiles = ModelLoadingPerformanceStats.ModelContext.CONTEXT_LOAD_FILES.getName();
-		ModelLoadingPerformanceStats.INSTANCE.openContextIfFirstOne(contextLoadFiles);
-
 		// Detect model resources among given files
-		ModelEvent eventDetectFilesToLoad = ModelLoadingPerformanceStats.ModelEvent.EVENT_DETECT_FILES_TO_LOAD;
-		ModelLoadingPerformanceStats.INSTANCE.startNewEvent(eventDetectFilesToLoad, files);
-
 		Map<TransactionalEditingDomain, Collection<IFile>> filesToLoad = detectFilesToLoad(files, mmDescriptor, true, progress.newChild(10));
-		ModelLoadingPerformanceStats.INSTANCE.endEvent(eventDetectFilesToLoad, files);
 
 		// Nothing to load?
-		if (filesToLoad.size() == 0) {
-			ModelLoadingPerformanceStats.INSTANCE.closeAndLogCurrentContext();
+		if (filesToLoad.isEmpty()) {
 			progress.done();
 			// TODO Surround with appropriate tracing option
 			// System.out.println("[ModelLoadManager#runDetectAndLoadModelFiles()] No model files to be loaded");
 			return;
 		}
-		ModelLoadingPerformanceStats.INSTANCE.closeContext(contextLoadFiles);
 		runLoadModelFiles(filesToLoad, progress.newChild(90));
 		// TODO Surround with appropriate tracing option
 		// System.out.println("[ModelLoadManager#runDetectAndLoadModelFiles()] Loaded " +
@@ -258,9 +247,6 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 			throw new OperationCanceledException();
 		}
 
-		String contextLoadFiles = ModelLoadingPerformanceStats.ModelContext.CONTEXT_LOAD_FILES.getName();
-		boolean openedContext = ModelLoadingPerformanceStats.INSTANCE.openContextIfFirstOne(contextLoadFiles);
-
 		// Iterate over editing domains of files to load
 		for (TransactionalEditingDomain editingDomain : filesToLoad.keySet()) {
 			loadModelFilesInEditingDomain(editingDomain, filesToLoad.get(editingDomain), progress.newChild(1));
@@ -268,11 +254,6 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 
 		// Perform a full garbage collection
 		ExtendedPlatform.performGarbageCollection();
-
-		// Close current performance stats context
-		if (openedContext) {
-			ModelLoadingPerformanceStats.INSTANCE.closeAndLogCurrentContext();
-		}
 	}
 
 	protected void loadModelFilesInEditingDomain(final TransactionalEditingDomain editingDomain, final Collection<IFile> filesToLoadInEditingDomain,
@@ -301,8 +282,6 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 					for (IFile file : filesToLoadInEditingDomain) {
 						loadProgress.subTask(NLS.bind(Messages.subtask_loadingFile, file.getFullPath().toString()));
 						try {
-							ModelLoadingPerformanceStats.INSTANCE.startNewEvent(ModelLoadingPerformanceStats.ModelEvent.EVENT_LOAD_FILE, file
-									.getFullPath().toString());
 
 							try {
 								Map<?, ?> loadOptions = Collections.singletonMap(ExtendedResource.OPTION_PROGRESS_MONITOR, loadProgress.newChild(1));
@@ -320,8 +299,6 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 								 */
 							}
 
-							ModelLoadingPerformanceStats.INSTANCE.endEvent(ModelLoadingPerformanceStats.ModelEvent.EVENT_LOAD_FILE, file
-									.getFullPath().toString());
 						} catch (Exception ex) {
 							PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 						}
@@ -347,6 +324,7 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 		} catch (InterruptedException ex) {
 			PlatformLogUtil.logAsWarning(Activator.getDefault(), ex);
 		}
+		monitor.done();
 	}
 
 	protected void updateUnresolvedProxyBlackList(Collection<IFile> files, ModelIndex blackList) {
@@ -370,8 +348,6 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 		if (progress.isCanceled()) {
 			throw new OperationCanceledException();
 		}
-
-		ModelLoadingPerformanceStats.INSTANCE.startNewEvent(ModelLoadingPerformanceStats.ModelEvent.EVENT_RESOLVE_PROXY, files);
 
 		// Get complete set of model resources from given set of loaded files
 		progress.subTask(Messages.subtask_initializingProxyResolution);
@@ -410,8 +386,6 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 
 		// Perform a full garbage collection
 		ExtendedPlatform.performGarbageCollection();
-
-		ModelLoadingPerformanceStats.INSTANCE.endEvent(ModelLoadingPerformanceStats.ModelEvent.EVENT_RESOLVE_PROXY, files);
 	}
 
 	protected void runDetectAndReloadModelFiles(Collection<IFile> files, IMetaModelDescriptor mmDescriptor, boolean memoryOptimized,

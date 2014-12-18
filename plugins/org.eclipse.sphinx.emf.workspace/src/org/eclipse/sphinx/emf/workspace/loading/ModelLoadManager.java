@@ -75,13 +75,11 @@ public final class ModelLoadManager {
 	 */
 	public static final ModelLoadManager INSTANCE = new ModelLoadManager();
 
-	private LoadJobScheduler loadJobScheduler;
-
 	/**
 	 * Private constructor for the singleton pattern that prevents from instantiation by clients.
 	 */
 	private ModelLoadManager() {
-		loadJobScheduler = new LoadJobScheduler();
+
 	}
 
 	private Map<TransactionalEditingDomain, Collection<Resource>> detectResourcesToUnload(final IProject project,

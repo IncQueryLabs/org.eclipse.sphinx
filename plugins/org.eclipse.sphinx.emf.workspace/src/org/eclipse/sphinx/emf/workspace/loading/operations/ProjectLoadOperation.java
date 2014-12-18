@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
-import org.eclipse.sphinx.emf.workspace.internal.loading.ModelLoadingPerformanceStats;
 import org.eclipse.sphinx.emf.workspace.internal.messages.Messages;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 
@@ -60,11 +59,7 @@ public class ProjectLoadOperation extends AbstractProjectLoadOperation {
 				progress.done();
 				continue;
 			}
-
-			String context = ModelLoadingPerformanceStats.ModelContext.CONTEXT_LOAD_PROJECT.getName() + " " + project.getName(); //$NON-NLS-1$
-			ModelLoadingPerformanceStats.INSTANCE.openContext(context);
 			runDetectAndLoadModelFiles(files, mmDescriptor, progress.newChild(99));
-			ModelLoadingPerformanceStats.INSTANCE.closeAndLogCurrentContext();
 		}
 	}
 }

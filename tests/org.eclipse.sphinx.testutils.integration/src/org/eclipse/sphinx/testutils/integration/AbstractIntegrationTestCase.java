@@ -326,7 +326,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	/**
 	 * Detects projects that have resources changed during the test. If projects were closed in the test, we need to
 	 * open it to delete changed files or reset project description and settings
-	 * 
+	 *
 	 * @return
 	 */
 	private Collection<IProject> detectProjectsToOpen() {
@@ -390,7 +390,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	/**
 	 * Deletes files which has been changed in the test. These files will be imported again in setUp() of next test if
 	 * they are required for the test.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void synchronizedDeleteChangedFiles() throws Exception {
@@ -403,7 +403,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	/**
 	 * Deletes all new files which have been added during the test.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void synchronizedDeleteAddedFiles() throws Exception {
@@ -418,7 +418,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	/**
 	 * Deletes all new folders which have been added during the test.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void synchronizedDeleteAddedFolders() throws Exception {
@@ -447,7 +447,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	/**
 	 * Resets description of projects which have been changed during the test by copying .project file from source
 	 * reference file
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void syncrhonizedResetProjectDescriptions() throws Exception {
@@ -479,7 +479,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	/**
 	 * Resets settings of projects which have been changed during the test by copying .settings folder from source
 	 * reference directory
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void synchronizedResetProjectSettings() throws Exception {
@@ -510,7 +510,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	/**
 	 * Checks if it is necessary to unzip reference workspace from archive.
-	 * 
+	 *
 	 * @return <code>true</code> if the reference workspace archive was not already unzipped and reference workspace
 	 *         source root directory path was not already saved to the referenceWorkspaceSourceRootDirectory.properties
 	 *         file or if reference workspace archive is newer than existing unzipped reference workspace in temporary
@@ -534,7 +534,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	/**
 	 * Saves the reference workspace source directory to read
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	private void saveReferenceWorkspaceSourceDir() throws IOException {
@@ -1165,7 +1165,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	/**
 	 * Deletes external file or directory with specified <code>path</code>. If external resource is a directory then all
 	 * files and subdirectories under this directory are deleted. If it is a file then only the file is deleted.
-	 * 
+	 *
 	 * @param path
 	 *            The path of the file or directory to be deleted.
 	 * @throws IOException
@@ -1182,7 +1182,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	/**
 	 * Deletes specified external <code>file</code>. If external file is a directory then all files and subdirectories
 	 * under this directory are deleted. If it is a file then only the file is deleted.
-	 * 
+	 *
 	 * @param path
 	 *            The file or directory to be deleted.
 	 * @throws IOException
@@ -1247,7 +1247,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 	}
 
 	protected void synchronizedLoadAllProjects() {
-		ModelLoadManager.INSTANCE.loadProjects(Arrays.asList(ResourcesPlugin.getWorkspace().getRoot().getProjects()), false, false, null);
+		ModelLoadManager.INSTANCE.loadProjects(Arrays.asList(ResourcesPlugin.getWorkspace().getRoot().getProjects()), true, false, null);
 		waitForModelLoading();
 	}
 
@@ -1622,7 +1622,7 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 
 	/**
 	 * Creates project and/or any missing folders on path of given container.
-	 * 
+	 *
 	 * @param container
 	 *            The container to be processed.
 	 * @throws Exception
