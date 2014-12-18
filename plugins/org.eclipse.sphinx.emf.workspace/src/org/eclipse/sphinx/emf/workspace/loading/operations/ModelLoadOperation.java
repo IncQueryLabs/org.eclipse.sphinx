@@ -38,11 +38,12 @@ public class ModelLoadOperation extends AbstractFileLoadOperation {
 
 	public ModelLoadOperation(IModelDescriptor modelDescriptor, Collection<IFile> files) {
 		super(Messages.job_loadingModelResources, files, modelDescriptor.getMetaModelDescriptor());
+		this.modelDescriptor = modelDescriptor;
 	}
 
 	@Override
 	public void run(IProgressMonitor monitor) throws CoreException {
-		runCollectAndLoadModelFiles(modelDescriptor.getEditingDomain(), getFiles(), monitor);
+		runCollectAndLoadModelFiles(getModelDescriptor().getEditingDomain(), getFiles(), monitor);
 	}
 
 	public IModelDescriptor getModelDescriptor() {
@@ -52,6 +53,7 @@ public class ModelLoadOperation extends AbstractFileLoadOperation {
 	private void runCollectAndLoadModelFiles(TransactionalEditingDomain editingDomain, Collection<IFile> files, IProgressMonitor monitor)
 			throws OperationCanceledException {
 		Assert.isNotNull(files);
+
 		SubMonitor progress = SubMonitor.convert(monitor, Messages.task_loadingModelFiles, 100);
 		if (progress.isCanceled()) {
 			throw new OperationCanceledException();

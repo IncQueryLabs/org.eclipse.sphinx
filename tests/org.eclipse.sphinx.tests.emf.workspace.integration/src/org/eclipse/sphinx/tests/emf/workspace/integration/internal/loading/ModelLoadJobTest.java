@@ -25,7 +25,7 @@ import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.workspace.internal.loading.ModelLoadJob;
 import org.eclipse.sphinx.emf.workspace.loading.LoadJobFactory;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
-import org.eclipse.sphinx.emf.workspace.loading.operations.ModelLoadOperation;
+import org.eclipse.sphinx.emf.workspace.loading.operations.ProjectLoadOperation;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10MMDescriptor;
 import org.eclipse.sphinx.examples.hummingbird20.Hummingbird20MMDescriptor;
 import org.eclipse.sphinx.examples.uml2.ide.metamodel.UML2MMDescriptor;
@@ -60,7 +60,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 				Hummingbird10MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadOperation.class);
+		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[5];
@@ -137,7 +137,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 				Hummingbird20MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadOperation.class);
+		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[5];
@@ -214,7 +214,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 				UML2MMDescriptor.INSTANCE, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadOperation.class);
+		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[5];
@@ -292,7 +292,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				MetaModelDescriptorRegistry.ANY_MM, true, null);
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadOperation.class);
+		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[5];
@@ -369,7 +369,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 				.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false, null, true, null);
 
 		// Verify prerequisites assertions
-		assertOnlyOneLoadJobIsSleeping(ModelLoadOperation.class);
+		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
 		boolean[] shouldCreateJob = new boolean[5];

@@ -24,7 +24,6 @@ import org.eclipse.sphinx.emf.workspace.internal.messages.Messages;
 
 public class FileReloadOperation extends AbstractFileLoadOperation {
 
-	private Collection<IFile> files;
 	private boolean memoryOptimized;
 
 	/**
@@ -45,7 +44,7 @@ public class FileReloadOperation extends AbstractFileLoadOperation {
 
 	@Override
 	public void run(IProgressMonitor monitor) throws CoreException {
-		runDetectAndReloadModelFiles(files, getMetaModelDescriptor(), memoryOptimized, monitor);
+		runDetectAndReloadModelFiles(getFiles(), getMetaModelDescriptor(), memoryOptimized, monitor);
 	}
 
 	public boolean isMemoryOptimized() {
