@@ -78,6 +78,11 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 
 	@Override
 	public void setSearchArchives(boolean searchArchives) {
+		if (this.searchArchives != searchArchives) {
+			// Set workspaceClassLoader to null in order to force it to be recreated according to new value of
+			// searchArchives
+			workspaceClassLoader = null;
+		}
 		this.searchArchives = searchArchives;
 	}
 
@@ -147,8 +152,8 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 				// Ignore exception
 			}
 		}
-		return !outputURLs.isEmpty() ? new URLClassLoader(outputURLs.toArray(new URL[outputURLs.size()]), Thread.currentThread()
-				.getContextClassLoader()) : null;
+		return !outputURLs.isEmpty() ? new URLClassLoader(outputURLs.toArray(new URL[outputURLs.size()]), searchArchives ? Thread.currentThread()
+				.getContextClassLoader() : null) : null;
 	}
 
 	protected IPath getJavaOutputPath(IProject project) {
@@ -202,7 +207,6 @@ public class BasicWorkspaceResourceLoader extends AbstractResourceLoader impleme
 			return url;
 		}
 
-		// TODO Delete this if clause when support for deprecated #searchArchives property is removed.
 		if (searchArchives) {
 			return super.getResource(path);
 		}
