@@ -17,6 +17,7 @@ package org.eclipse.sphinx.emf.workspace.incquery;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 
@@ -29,7 +30,7 @@ public class IncQueryEngineHelper implements IIncQueryEngineHelper {
 			if (eResource != null) {
 				return getEngine(eResource);
 			}
-			return IncQueryEngine.on(contextObject);
+			return IncQueryEngine.on(EcoreUtil.getRootContainer(contextObject));
 		}
 		return null;
 	}
