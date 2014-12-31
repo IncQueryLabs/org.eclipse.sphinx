@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.workspace.incquery;
+package org.eclipse.sphinx.emf.incquery;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;

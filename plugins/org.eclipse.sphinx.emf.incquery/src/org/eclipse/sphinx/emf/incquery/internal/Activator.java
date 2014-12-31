@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.workspace.incquery.internal;
+package org.eclipse.sphinx.emf.incquery.internal;
 
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.util.ResourceLocator;

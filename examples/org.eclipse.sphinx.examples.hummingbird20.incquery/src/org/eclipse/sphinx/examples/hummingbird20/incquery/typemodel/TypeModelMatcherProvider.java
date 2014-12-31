@@ -17,7 +17,7 @@ package org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.api.IncQueryMatcher;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
-import org.eclipse.sphinx.emf.workspace.incquery.AbstractMatcherProvider;
+import org.eclipse.sphinx.emf.incquery.AbstractMatcherProvider;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter;

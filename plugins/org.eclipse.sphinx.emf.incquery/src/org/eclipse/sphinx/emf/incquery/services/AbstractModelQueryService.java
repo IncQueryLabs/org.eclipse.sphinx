@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.workspace.incquery.services;
+package org.eclipse.sphinx.emf.incquery.services;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +22,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.incquery.runtime.api.IncQueryMatcher;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
+import org.eclipse.sphinx.emf.incquery.IIncQueryEngineHelper;
+import org.eclipse.sphinx.emf.incquery.IMatcherProvider;
+import org.eclipse.sphinx.emf.incquery.IncQueryEngineHelper;
+import org.eclipse.sphinx.emf.incquery.internal.Activator;
 import org.eclipse.sphinx.emf.query.IModelQueryService;
-import org.eclipse.sphinx.emf.workspace.incquery.IIncQueryEngineHelper;
-import org.eclipse.sphinx.emf.workspace.incquery.IMatcherProvider;
-import org.eclipse.sphinx.emf.workspace.incquery.IncQueryEngineHelper;
-import org.eclipse.sphinx.emf.workspace.incquery.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public abstract class AbstractModelQueryService implements IModelQueryService {

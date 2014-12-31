@@ -51,6 +51,7 @@ import org.eclipse.emf.ecore.xmi.XMIException;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.Activator;
+import org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolverService;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelper;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelperAdapterFactory;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
@@ -58,6 +59,7 @@ import org.eclipse.sphinx.emf.internal.resource.ResourceProblemMarkerService;
 import org.eclipse.sphinx.emf.internal.resource.URIResourceCacheUpdater;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.metamodel.services.DefaultMetaModelServiceProvider;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
@@ -433,6 +435,11 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 			return null;
 		}
 
+		IProxyResolverService indexService = getIndexService(contextObject);
+		if (indexService != null) {
+			return indexService.getEObject(proxy, contextObject, loadOnDemand);
+		}
+
 		URI uri = ((InternalEObject) proxy).eProxyURI();
 		if (proxyHelper != null) {
 			// If proxy URI references a known unresolved proxy then don't try to resolve it again
@@ -786,6 +793,14 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 			if (contextFile != null) {
 				return contextFile.getParent();
 			}
+		}
+		return null;
+	}
+
+	protected IProxyResolverService getIndexService(EObject contextObject) {
+		IMetaModelDescriptor descriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(contextObject);
+		if (descriptor != null) {
+			return new DefaultMetaModelServiceProvider().getService(descriptor, IProxyResolverService.class);
 		}
 		return null;
 	}

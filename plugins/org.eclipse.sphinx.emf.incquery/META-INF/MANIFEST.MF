@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.sphinx.emf.incquery;singleton:=true
 Bundle-Version: 0.9.0.qualifier
-Bundle-Activator: org.eclipse.sphinx.emf.workspace.incquery.internal.Activator$Implementation
+Bundle-Activator: org.eclipse.sphinx.emf.incquery.internal.Activator$Implementation
 Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.common,
@@ -11,7 +11,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sphinx.emf;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipse.sphinx.emf.workspace.incquery,
- org.eclipse.sphinx.emf.workspace.incquery.internal;x-internal:=true,
- org.eclipse.sphinx.emf.workspace.incquery.services
+Export-Package: org.eclipse.sphinx.emf.incquery,
+ org.eclipse.sphinx.emf.incquery.internal;x-internal:=true,
+ org.eclipse.sphinx.emf.incquery.proxymanagment,
+ org.eclipse.sphinx.emf.incquery.services
 Bundle-Localization: plugin

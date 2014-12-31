@@ -17,7 +17,7 @@ package org.eclipse.sphinx.examples.hummingbird20.incquery.common;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.api.IncQueryMatcher;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
-import org.eclipse.sphinx.emf.workspace.incquery.AbstractMatcherProvider;
+import org.eclipse.sphinx.emf.incquery.AbstractMatcherProvider;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 
 public class CommonMatcherProvider extends AbstractMatcherProvider {

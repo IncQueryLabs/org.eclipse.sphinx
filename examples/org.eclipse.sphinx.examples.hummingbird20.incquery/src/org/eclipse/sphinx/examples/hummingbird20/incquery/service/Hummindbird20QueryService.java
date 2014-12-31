@@ -14,7 +14,7 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.incquery.service;
 
-import org.eclipse.sphinx.emf.workspace.incquery.services.AbstractModelQueryService;
+import org.eclipse.sphinx.emf.incquery.services.AbstractModelQueryService;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.common.CommonMatcherProvider;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.InstanceModelMatcherProvider;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.TypeModelMatcherProvider;

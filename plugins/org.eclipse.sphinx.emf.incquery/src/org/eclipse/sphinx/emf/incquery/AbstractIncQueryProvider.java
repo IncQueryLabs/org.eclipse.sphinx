@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.workspace.incquery;
+package org.eclipse.sphinx.emf.incquery;
 
 import java.util.ArrayList;
 import java.util.List;
