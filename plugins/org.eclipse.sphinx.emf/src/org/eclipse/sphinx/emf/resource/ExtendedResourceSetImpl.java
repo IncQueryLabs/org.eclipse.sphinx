@@ -371,6 +371,15 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 			return null;
 		}
 
+		// Retrieve context information from given URI
+		String targetMMDescriptorId = contextAwareProxyURIHelper.getTargetMetaModelDescriptorId(uri);
+		IMetaModelDescriptor targetMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(targetMMDescriptorId);
+
+		IProxyResolverService proxyResolverService = getProxyResolverService(targetMMDescriptor);
+		if (proxyResolverService != null) {
+			return proxyResolverService.getEObject(uri, loadOnDemand);
+		}
+
 		if (proxyHelper != null) {
 			// If proxy URI references a known unresolved proxy then don't try to resolve it again
 			if (proxyHelper.getBlackList().existsProxyURI(uri)) {
@@ -395,8 +404,6 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		}
 
 		// Retrieve context information from given URI
-		String targetMMDescriptorId = contextAwareProxyURIHelper.getTargetMetaModelDescriptorId(uri);
-		IMetaModelDescriptor targetMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(targetMMDescriptorId);
 		URI contextURI = contextAwareProxyURIHelper.getContextURI(uri);
 
 		// Try to resolve proxy URI in this resource set
@@ -435,9 +442,13 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 			return null;
 		}
 
-		IProxyResolverService indexService = getIndexService(contextObject);
-		if (indexService != null) {
-			return indexService.getEObject(proxy, contextObject, loadOnDemand);
+		// Retrieve context information from provided arguments
+		IMetaModelDescriptor targetMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy);
+
+		// Try to retrieve an IProxyResolverService for the given meta-model descriptor
+		IProxyResolverService proxyResolverService = getProxyResolverService(targetMMDescriptor);
+		if (proxyResolverService != null) {
+			return proxyResolverService.getEObject(proxy, contextObject, loadOnDemand);
 		}
 
 		URI uri = ((InternalEObject) proxy).eProxyURI();
@@ -463,9 +474,6 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 				}
 			}
 		}
-
-		// Retrieve context information from provided arguments
-		IMetaModelDescriptor targetMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(proxy);
 
 		// Try to resolve proxy URI in this resource set
 		EObject resolvedEObject = getEObject(uri, targetMMDescriptor, contextObject, loadOnDemand);
@@ -797,8 +805,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		return null;
 	}
 
-	protected IProxyResolverService getIndexService(EObject contextObject) {
-		IMetaModelDescriptor descriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(contextObject);
+	protected IProxyResolverService getProxyResolverService(IMetaModelDescriptor descriptor) {
 		if (descriptor != null) {
 			return new DefaultMetaModelServiceProvider().getService(descriptor, IProxyResolverService.class);
 		}

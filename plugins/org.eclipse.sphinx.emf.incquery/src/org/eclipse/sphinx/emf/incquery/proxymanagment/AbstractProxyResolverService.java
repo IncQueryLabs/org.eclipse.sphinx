@@ -23,12 +23,12 @@ import org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolverService;
 import org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolver;
 import org.eclipse.sphinx.emf.incquery.IncQueryEngineHelper;
 
-public abstract class AbstractProxyResolutionService implements IProxyResolverService {
+public abstract class AbstractProxyResolverService implements IProxyResolverService {
 
 	private List<IProxyResolver> proxyResolvers = new ArrayList<IProxyResolver>();
 	private IncQueryEngineHelper incQueryEngineHelper;
 
-	public AbstractProxyResolutionService() {
+	public AbstractProxyResolverService() {
 		initProxyResolvers();
 	}
 
