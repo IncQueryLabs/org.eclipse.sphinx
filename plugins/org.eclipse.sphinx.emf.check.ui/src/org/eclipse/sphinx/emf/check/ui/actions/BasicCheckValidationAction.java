@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [456869] Duplicated Check problem markers due to URI comparison
  *
  * </copyright>
  */
@@ -125,7 +126,7 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 							// use standard entry point
 							final Diagnostic diagnostic = Diagnostician.INSTANCE.validate(validationInput);
 							// generate error markers and update check validation view
-							CheckProblemMarkerService.INSTANCE.updateProblemMarkers(validationInput, diagnostic);
+							updateProblemMarkers(validationInput, diagnostic);
 						}
 					});
 					// Run the validation operation, and show progress
@@ -204,5 +205,12 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 			return (EObject) object;
 		}
 		return null;
+	}
+
+	/**
+	 * Generate error markers and update check validation view.
+	 */
+	protected void updateProblemMarkers(EObject eObject, final Diagnostic diagnostic) {
+		CheckProblemMarkerService.INSTANCE.updateProblemMarkers(eObject, diagnostic);
 	}
 }

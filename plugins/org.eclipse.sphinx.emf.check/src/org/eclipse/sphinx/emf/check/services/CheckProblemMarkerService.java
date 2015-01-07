@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [456869] Duplicated Check problem markers due to URI comparison
  *
  * </copyright>
  */
@@ -38,6 +39,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.sphinx.emf.check.IValidationConstants;
 import org.eclipse.sphinx.emf.check.internal.Activator;
+import org.eclipse.sphinx.emf.resource.ExtendedResource;
+import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.validation.markers.IValidationMarker;
@@ -49,7 +52,7 @@ public class CheckProblemMarkerService {
 
 	private IProblemMarkerFactory markerFactory = null;
 
-	private CheckProblemMarkerService() {
+	protected CheckProblemMarkerService() {
 	}
 
 	private IProblemMarkerFactory getProblemMarkerFactory() {
@@ -63,12 +66,12 @@ public class CheckProblemMarkerService {
 		return new CheckProblemMarkerFactory();
 	}
 
-	public void updateProblemMarkers(EObject validationInput, final Diagnostic diagnostic) throws InterruptedException {
+	public void updateProblemMarkers(EObject validationInput, final Diagnostic diagnostic) {
 		WorkspaceJob job = new WorkspaceJob(IValidationConstants.HANDLE_PROBLEM_MARKERS_JOB_LABEL) {
 			@Override
 			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 				try {
-					CheckProblemMarkerService.INSTANCE.handleDiagnostic(diagnostic);
+					handleDiagnostic(diagnostic);
 				} catch (CoreException ex) {
 					return ex.getStatus();
 				} catch (Exception ex) {
@@ -177,7 +180,7 @@ public class CheckProblemMarkerService {
 		// children if any
 
 		List<IMarker> result = new ArrayList<IMarker>();
-		URI referenceURI = EcoreUtil.getURI(eObject);
+		URI referenceURI = getURI(eObject);
 		for (IMarker current : allMarkers) {
 			String currentStringURI = (String) current.getAttribute(EValidator.URI_ATTRIBUTE);
 			if (currentStringURI != null) {
@@ -198,7 +201,7 @@ public class CheckProblemMarkerService {
 					if (currentURI.equals(referenceURI)) {
 						result.add(current);
 					} else {
-						if (currentURI.toString().contains(referenceURI.toString())) {
+						if (contains(currentURI, referenceURI)) {
 							result.add(current);
 						}
 					}
@@ -209,5 +212,23 @@ public class CheckProblemMarkerService {
 			}
 		}
 		return result.toArray(new IMarker[result.size()]);
+	}
+
+	protected URI getURI(EObject modelObject) {
+		Assert.isNotNull(modelObject);
+
+		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(modelObject.eResource());
+		if (extendedResource != null) {
+			return extendedResource.getURI(modelObject);
+		} else {
+			return EcoreUtil.getURI(modelObject);
+		}
+	}
+
+	protected boolean contains(URI uri, URI anotherURI) {
+		if (uri != null && anotherURI != null) {
+			return uri.toString().contains(anotherURI.toString());
+		}
+		return false;
 	}
 }
