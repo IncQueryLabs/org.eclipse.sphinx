@@ -55,11 +55,13 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.XMIException;
 import org.eclipse.emf.ecore.xmi.XMLResource;
@@ -1085,6 +1087,36 @@ public final class EcoreResourceUtil {
 			validator.validate(source);
 		} finally {
 			ExtendedPlatform.safeClose(stream);
+		}
+	}
+
+	/**
+	 * Check if provided URI representing a file or object is an EMF model or not.
+	 *
+	 * @param uri
+	 *            the URI representing a model file or model object.
+	 * @return <code>true</code> if provided URI correspond to an EMF model. Otherwise <code>false</code>.
+	 */
+	public static boolean isEMFModelFile(URI uri) {
+		String namespace = readModelNamespace(null, uri);
+		return EPackage.Registry.INSTANCE.get(namespace) != null;
+	}
+
+	/**
+	 * Gets the URI associated to the provided model object.
+	 * 
+	 * @param modelObject
+	 *            an EMF model object.
+	 * @return the URI associated to the provided model object.
+	 */
+	public static URI getURI(EObject modelObject) {
+		Assert.isNotNull(modelObject);
+
+		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(modelObject.eResource());
+		if (extendedResource != null) {
+			return extendedResource.getURI(modelObject);
+		} else {
+			return EcoreUtil.getURI(modelObject);
 		}
 	}
 

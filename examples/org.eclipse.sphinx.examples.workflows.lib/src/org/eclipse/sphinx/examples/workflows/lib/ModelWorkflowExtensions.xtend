@@ -16,14 +16,11 @@ package org.eclipse.sphinx.examples.workflows.lib
 
 import java.util.List
 import org.eclipse.core.runtime.OperationCanceledException
-import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.EObject
-import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain
 import org.eclipse.emf.edit.provider.AdapterFactoryItemDelegator
 import org.eclipse.emf.mwe.core.WorkflowContext
 import org.eclipse.sphinx.emf.mwe.dynamic.IWorkflowSlots
-import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory
 
 class ModelWorkflowExtensions {
 
@@ -48,15 +45,6 @@ class ModelWorkflowExtensions {
 			}
 		} else {
 			return modelObject.toString
-		}
-	}
-
-	def static URI getURL(EObject modelObject) {
-		val extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(modelObject.eResource)
-		if (extendedResource != null) {
-			return extendedResource.getURI(modelObject)
-		} else {
-			return EcoreUtil.getURI(modelObject)
 		}
 	}
 }

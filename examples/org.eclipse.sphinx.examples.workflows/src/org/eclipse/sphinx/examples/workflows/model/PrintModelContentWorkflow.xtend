@@ -21,6 +21,7 @@ import org.eclipse.sphinx.emf.mwe.dynamic.WorkspaceWorkflow
 import org.eclipse.sphinx.emf.mwe.dynamic.components.AbstractModelWorkflowComponent
 
 import static extension org.eclipse.sphinx.examples.workflows.lib.ModelWorkflowExtensions.*
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil
 
 class PrintModelContentWorkflow extends WorkspaceWorkflow {
 
@@ -36,12 +37,12 @@ class PrintModelContentWorkflowComponent extends AbstractModelWorkflowComponent 
 		val modelObjects = ctx.modelSlot
 
 		for (modelObject : modelObjects) {
-			println("=> " + modelObject.label + " ["+ modelObject.URL + "]")
+			println("=> " + modelObject.label + " ["+ EcoreResourceUtil.getURI(modelObject) + "]")
 
 			val eAllContents = modelObject.eAllContents
 			while (eAllContents.hasNext) {
 				val element = eAllContents.next
-				println("=> " + element.label + " ["+ element.URL + "]")
+				println("=> " + element.label + " ["+ EcoreResourceUtil.getURI(element) + "]")
 			}
 		}
 

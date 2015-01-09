@@ -1,16 +1,16 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.ui.wizards.pages;
@@ -23,13 +23,10 @@ import java.util.MissingResourceException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
-import org.eclipse.sphinx.emf.resource.ExtendedResource;
-import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.ui.groups.FileSelectionGroup;
 import org.eclipse.sphinx.platform.ui.wizards.pages.AbstractWizardPage;
 import org.eclipse.sphinx.xtendxpand.CheckEvaluationRequest;
@@ -87,15 +84,7 @@ public class CheckConfigurationPage extends AbstractWizardPage {
 
 	protected String getCheckFileSelectionSectionName(EObject object) {
 		Assert.isNotNull(object);
-
-		URI uri;
-		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(object.eResource());
-		if (extendedResource != null) {
-			uri = extendedResource.getURI(object);
-		} else {
-			uri = EcoreUtil.getURI(object);
-		}
-		return Activator.getDefault().getBundle().getSymbolicName() + ".SECTION" + uri.toString(); //$NON-NLS-1$
+		return Activator.getDefault().getBundle().getSymbolicName() + ".SECTION" + EcoreResourceUtil.getURI(object).toString(); //$NON-NLS-1$
 	}
 
 	@Override

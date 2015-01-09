@@ -36,13 +36,11 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.sphinx.emf.check.IValidationConstants;
 import org.eclipse.sphinx.emf.check.internal.Activator;
-import org.eclipse.sphinx.emf.resource.ExtendedResource;
-import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.validation.markers.IValidationMarker;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
@@ -180,7 +178,7 @@ public class CheckProblemMarkerService {
 		// children if any
 
 		List<IMarker> result = new ArrayList<IMarker>();
-		URI referenceURI = getURI(eObject);
+		URI referenceURI = EcoreResourceUtil.getURI(eObject);
 		for (IMarker current : allMarkers) {
 			String currentStringURI = (String) current.getAttribute(EValidator.URI_ATTRIBUTE);
 			if (currentStringURI != null) {
@@ -212,17 +210,6 @@ public class CheckProblemMarkerService {
 			}
 		}
 		return result.toArray(new IMarker[result.size()]);
-	}
-
-	protected URI getURI(EObject modelObject) {
-		Assert.isNotNull(modelObject);
-
-		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(modelObject.eResource());
-		if (extendedResource != null) {
-			return extendedResource.getURI(modelObject);
-		} else {
-			return EcoreUtil.getURI(modelObject);
-		}
 	}
 
 	protected boolean contains(URI uri, URI anotherURI) {

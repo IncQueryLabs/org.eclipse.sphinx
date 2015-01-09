@@ -1,17 +1,17 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [343844] Enable multiple Xtend MetaModels to be configured on BasicM2xAction, M2xConfigurationWizard, and Xtend/Xpand/CheckJob
  *     itemis - [357813] Risk of NullPointerException when transforming models using M2MConfigurationWizard
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.ui.groups;
@@ -28,9 +28,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.internal.xtend.xtend.ast.Extension;
 import org.eclipse.internal.xtend.xtend.ast.ExtensionFile;
 import org.eclipse.jface.dialogs.DialogSettings;
@@ -39,9 +37,8 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.sphinx.emf.mwe.IXtendXpandConstants;
-import org.eclipse.sphinx.emf.resource.ExtendedResource;
-import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.ui.fields.ComboField;
 import org.eclipse.sphinx.platform.ui.fields.IField;
 import org.eclipse.sphinx.platform.ui.fields.IFieldListener;
@@ -379,7 +376,7 @@ public class ExtensionGroup extends AbstractGroup {
 
 	/**
 	 * Saves, using the {@link DialogSettings} dialogSettings, the state of the different fields of this group.
-	 * 
+	 *
 	 * @param templatePathDialogSettingsKey
 	 * @see #setDialogSettings(IDialogSettings)
 	 */
@@ -409,15 +406,6 @@ public class ExtensionGroup extends AbstractGroup {
 
 	protected String getExtensionFileDialogSettingsKey(EObject object) {
 		Assert.isNotNull(object);
-
-		URI uri;
-		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(object.eResource());
-		if (extendedResource != null) {
-			uri = extendedResource.getURI(object);
-		} else {
-			uri = EcoreUtil.getURI(object);
-		}
-
-		return ExtensionGroup.STORE_EXTENSION_FILE + uri.toString();
+		return ExtensionGroup.STORE_EXTENSION_FILE + EcoreResourceUtil.getURI(object).toString();
 	}
 }

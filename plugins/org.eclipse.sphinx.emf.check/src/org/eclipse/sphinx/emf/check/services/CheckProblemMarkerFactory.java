@@ -22,18 +22,14 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.Diagnostic;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.sphinx.emf.check.DiagnosticLocation;
-import org.eclipse.sphinx.emf.resource.ExtendedResource;
-import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.validation.markers.IValidationMarker;
 import org.eclipse.sphinx.emf.validation.util.Messages;
 
@@ -67,7 +63,7 @@ public class CheckProblemMarkerFactory implements IProblemMarkerFactory {
 			}
 
 			if (affectedObject != null) {
-				attributes.put(EValidator.URI_ATTRIBUTE, getURI(affectedObject).toString());
+				attributes.put(EValidator.URI_ATTRIBUTE, EcoreResourceUtil.getURI(affectedObject).toString());
 				attributes.put(IValidationMarker.HASH_ATTRIBUTE, affectedObject.hashCode());
 			}
 
@@ -109,17 +105,6 @@ public class CheckProblemMarkerFactory implements IProblemMarkerFactory {
 		IMarker[] markers = file.findMarkers(markerType, true, IResource.DEPTH_INFINITE);
 		for (IMarker marker : markers) {
 			marker.delete();
-		}
-	}
-
-	protected URI getURI(EObject modelObject) {
-		Assert.isNotNull(modelObject);
-
-		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(modelObject.eResource());
-		if (extendedResource != null) {
-			return extendedResource.getURI(modelObject);
-		} else {
-			return EcoreUtil.getURI(modelObject);
 		}
 	}
 }

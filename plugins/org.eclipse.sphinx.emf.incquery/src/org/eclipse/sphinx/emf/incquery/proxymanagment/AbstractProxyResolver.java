@@ -18,14 +18,12 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolver;
 import org.eclipse.sphinx.emf.incquery.AbstractIncQueryProvider;
 import org.eclipse.sphinx.emf.incquery.internal.Activator;
-import org.eclipse.sphinx.emf.resource.ExtendedResource;
-import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public abstract class AbstractProxyResolver extends AbstractIncQueryProvider implements IProxyResolver {
@@ -62,13 +60,7 @@ public abstract class AbstractProxyResolver extends AbstractIncQueryProvider imp
 
 	protected boolean matches(EObject proxy, EObject candidate) {
 		URI proxyURI = ((InternalEObject) proxy).eProxyURI();
-		URI candidateURI;
-		ExtendedResource extendedTargetResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(candidate.eResource());
-		if (extendedTargetResource != null) {
-			candidateURI = extendedTargetResource.getURI(candidate);
-		} else {
-			candidateURI = EcoreUtil.getURI(candidate);
-		}
+		URI candidateURI = EcoreResourceUtil.getURI(candidate);
 		return proxyURI.equals(candidateURI);
 	}
 

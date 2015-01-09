@@ -1,16 +1,16 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.util;
@@ -80,7 +80,7 @@ public final class EObjectUtil {
 	 * derived from the provided EReference. All returned EObject will of the same type as the type the EReference
 	 * points to. The ResourceSet is calculated from an EObject. The method will resolve the ResourceSet to which the
 	 * EObject belongs.
-	 * 
+	 *
 	 * @param contextObject
 	 *            The context object used to calculate the context inside which instances of the expected type must be
 	 *            returned.
@@ -107,7 +107,7 @@ public final class EObjectUtil {
 	 * Returns all instances of a certain type within a specified ResourceSet. The ResourceSet is calculated from an
 	 * EObject. The method will resolve the ResourceSet to which the EObject belongs. In case, the contextObject without
 	 * Resource(stand alone), returns all instances of a certain type within contextObject's contents
-	 * 
+	 *
 	 * @param contextObject
 	 *            The context EObject used to calculate the context inside which instances of the expected type must be
 	 *            returned.
@@ -138,7 +138,7 @@ public final class EObjectUtil {
 	 * Returns all instances of a certain type within a specified ResourceSet. The ResourceSet is calculated from a
 	 * Resource. The method will resolve the ResourceSet to which the Resource belongs. In case Resource in ResourSet
 	 * without EditingDomain, all resources in the ResourceSet will be considered.
-	 * 
+	 *
 	 * @param contextResource
 	 *            The context resource used to calculate the context inside which instances of the expected type must be
 	 *            returned.
@@ -160,7 +160,7 @@ public final class EObjectUtil {
 	/**
 	 * Returns all instances of a certain type within a specified ResourceSet. The ResourceSet is resolved from the
 	 * provided IModelDescriptor.
-	 * 
+	 *
 	 * @param modelDescriptor
 	 *            The model descriptor used to calculate the context inside which instances of the expected type must be
 	 *            returned.
@@ -181,7 +181,7 @@ public final class EObjectUtil {
 
 	/**
 	 * Returns all instances of a certain type within a specified set of Resources.
-	 * 
+	 *
 	 * @param resources
 	 *            The list of resources inside which instances of the expected type must be returned.
 	 * @param type
@@ -207,7 +207,7 @@ public final class EObjectUtil {
 
 	/**
 	 * Return all instance of reference objects (which is many) of the given object
-	 * 
+	 *
 	 * @param owner
 	 *            The given object to get referenced instances.
 	 * @param reference
@@ -255,7 +255,7 @@ public final class EObjectUtil {
 
 	/**
 	 * Return all instances of a certain type within the provided {@link TreeIterator}
-	 * 
+	 *
 	 * @param allContents
 	 *            The {@link TreeIterator} which instances of the expected type must be returned.
 	 * @param type
@@ -293,7 +293,7 @@ public final class EObjectUtil {
 	 * Returns a collection of {@link EStructuralFeature.Setting settings} objects describing the inverse references of
 	 * given {@link EObject object}, i.e., the {@link EObject objects}s and {@link EStructuralFeature features}s that
 	 * reference given {@link EObject object}.
-	 * 
+	 *
 	 * @param object
 	 *            The {@link EObject object} whose {@link EStructuralFeature.Setting inverse references} are to be
 	 * @param resolve
@@ -327,7 +327,7 @@ public final class EObjectUtil {
 
 	/**
 	 * Return the EClassifier in the given EPakcage by Class
-	 * 
+	 *
 	 * @param rootEPackage
 	 *            The package container of return EClassifiers
 	 * @param type
@@ -345,7 +345,7 @@ public final class EObjectUtil {
 
 	/**
 	 * Return the EClassifier in the given EPackage by typeName
-	 * 
+	 *
 	 * @param rootEPackage
 	 *            The package container of return EClassifiers
 	 * @param typeName
@@ -373,7 +373,7 @@ public final class EObjectUtil {
 
 	/**
 	 * Returns all EClasses which are derived from a given EClass.
-	 * 
+	 *
 	 * @param eClass
 	 *            The EClass from which the returned EClasses have to be derived.
 	 * @param concreteTypesOnly
@@ -405,7 +405,7 @@ public final class EObjectUtil {
 	/**
 	 * Tests if given EClass is assignment compatible with type with specified name, i.e. if it is equal to or a sub
 	 * type of type with specified name.
-	 * 
+	 *
 	 * @param eClass
 	 *            the EClass to be tested.
 	 * @param typeName
@@ -436,7 +436,7 @@ public final class EObjectUtil {
 
 	/**
 	 * Return all EClassifiers that are containers and have a containment reference to the specified EClass
-	 * 
+	 *
 	 * @param eClass
 	 *            The class whose container classifiers must be returned.
 	 * @return The set of EClassifiers that have a containment reference to the specified EClass.
@@ -483,7 +483,7 @@ public final class EObjectUtil {
 	 * Returns the EStructuralFeature specified by the <code>featureName</code>. The method will return the
 	 * EStructuralFeature if it exists for a given EClass or EObject. If the provided Object is not an EClass or an
 	 * EObject or the EStructuralFeature does not exist, <code>null</code> is returned.
-	 * 
+	 *
 	 * @param owner
 	 *            The EClass or EObject from which the EStructuralFeature is to be resolved.
 	 * @param featureName
@@ -505,7 +505,7 @@ public final class EObjectUtil {
 	 * Returns the EStructuralFeature specified by the <code>featureID</code>. The method will return the
 	 * EStructuralFeature if it exists for a given EClass or EObject. If the provided Object is not an EClass or an
 	 * EObject or the EStructuralFeature does not exist, <code>null</code> is returned.
-	 * 
+	 *
 	 * @param owner
 	 *            The EClass or EObject from which the EStructuralFeature is to be resolved.
 	 * @param featureID
@@ -528,7 +528,7 @@ public final class EObjectUtil {
 	 * objects where all references which are non-containment, non-container and not the reference going back to
 	 * specified owner object are unset. The owner object which may but does not have to be the container of the
 	 * target/orphan objects.
-	 * 
+	 *
 	 * @param owner
 	 *            The owner object of the returned objects
 	 * @param reference
@@ -581,7 +581,7 @@ public final class EObjectUtil {
 
 	/**
 	 * Return mixedText of the given FeatureMap
-	 * 
+	 *
 	 * @param mixed
 	 *            The given FeatureMap to get text
 	 * @return The text for the given FeatureMap.
@@ -604,7 +604,7 @@ public final class EObjectUtil {
 
 	/**
 	 * Set mixed text of the given FeatureMap
-	 * 
+	 *
 	 * @param mixed
 	 *            The given FeatureMap to set text
 	 * @param text
@@ -622,7 +622,7 @@ public final class EObjectUtil {
 	/**
 	 * Turns given {@link EObject} in to a proxy object using an {@link URI} composed of the URI of the resource the
 	 * EObject is in plus the URI fragment relative to that resource.
-	 * 
+	 *
 	 * @param eObject
 	 *            The {@link EObject} to be proxified.
 	 * @return The provided <code>eObject</code> is returned. If the proxy could not be created the given
@@ -635,7 +635,7 @@ public final class EObjectUtil {
 	/**
 	 * Turns given {@link EObject} in to a proxy object using an {@link URI} composed of the URI of the resource the
 	 * EObject is in plus the URI fragment relative to that resource.
-	 * 
+	 *
 	 * @param oldOwner
 	 *            The old owner of the {@link EObject} to be proxified
 	 * @param oldFeature
@@ -683,7 +683,7 @@ public final class EObjectUtil {
 	 * Turns a given proxy EObject into a normal EObject. Only EObjects derived from InternalEObject will be effected.
 	 * If the provided EObject is an InternalEObject but not a proxy EObject the method has not effect on the provided
 	 * <code>eObject</code>.
-	 * 
+	 *
 	 * @param eObject
 	 *            The proxy EObject.
 	 * @return The provided <code>eObject</code> is returned.
@@ -707,7 +707,7 @@ public final class EObjectUtil {
 	 * Creates a proxy representing given {@link EObject object}. The given object is used as a template to create the
 	 * proxy, i.e. the resulting proxy will have the same type and a proxy {@link URI} which references the given
 	 * object.
-	 * 
+	 *
 	 * @param eObject
 	 *            The {@link EObject object} for which the proxy is to be created.
 	 * @param contextResource
@@ -721,14 +721,7 @@ public final class EObjectUtil {
 		EFactory eFactoryInstance = eObject.eClass().getEPackage().getEFactoryInstance();
 		InternalEObject proxy = (InternalEObject) eFactoryInstance.create(eObject.eClass());
 
-		URI uri;
-		ExtendedResource extendedTargetResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(eObject.eResource());
-		if (extendedTargetResource != null) {
-			uri = extendedTargetResource.getURI(eObject);
-		} else {
-			uri = EcoreUtil.getURI(eObject);
-		}
-		proxy.eSetProxyURI(uri);
+		proxy.eSetProxyURI(EcoreResourceUtil.getURI(eObject));
 
 		// Augment the proxy's URI to a context-aware proxy URI if required
 		ExtendedResource extendedContextResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(contextResource);
@@ -754,7 +747,7 @@ public final class EObjectUtil {
 	 * catching exceptions that are raised during proxy resolution and attaching them as errors on given
 	 * {@link Resource resource}.
 	 * </p>
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link Resource resource} to visit.
 	 * @see EcoreUtil#resolveAll(Resource)

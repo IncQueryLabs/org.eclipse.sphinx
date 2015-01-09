@@ -48,7 +48,7 @@ import org.eclipse.sphinx.platform.util.ExtendedPlatform;
  * This registry provides methods allowing to add, remove or retrieve one (or several) {@linkplain IModelDescriptor
  * model descriptor}(s). Registry is kept up-to-date thanks to a resource set listener that is notified when any
  * resource is loaded or unloaded.
- * 
+ *
  * @see org.eclipse.sphinx.emf.model.IModelDescriptor
  */
 public class ModelDescriptorRegistry {
@@ -81,7 +81,7 @@ public class ModelDescriptorRegistry {
 	 * Adds the {@linkplain IModelDescriptor model descriptor} for the specified {@link IFile file} to this registry.
 	 * Usually called when the {@linkplain Resource resource} corresponding to the specified {@link IFile file} has just
 	 * been loaded.
-	 * 
+	 *
 	 * @param file
 	 *            The {@linkplain IFile file} for which corresponding {@linkplain IModelDescriptor model descriptor}
 	 *            must be added/upgraded.
@@ -128,7 +128,7 @@ public class ModelDescriptorRegistry {
 	/**
 	 * Adds the {@linkplain IModelDescriptor model descriptor} for the specified {@link Resource resource} to this
 	 * registry. Usually called when the {@linkplain Resource resource} has just been loaded.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@linkplain Resource resource} for which corresponding {@linkplain IModelDescriptor model
 	 *            descriptor} must be added/upgraded.
@@ -161,7 +161,7 @@ public class ModelDescriptorRegistry {
 	 * descriptor} and {@linkplain IResourceScope resource scope} {@link IResource root} to this registry. The model
 	 * descriptor is also added for the resource scopes referenced by the resource scope behind specified
 	 * <tt>resourceScopeRoot</tt>.
-	 * 
+	 *
 	 * @param mmDescriptor
 	 *            The meta-model descriptor of the model to add.
 	 * @param targetMMDescriptor
@@ -202,7 +202,7 @@ public class ModelDescriptorRegistry {
 	 * Adds the {@linkplain IModelDescriptor model descriptor} corresponding to the specified
 	 * {@linkplain IMetaModelDescriptor meta-model descriptor}, {@linkplain IMetaModelDescriptor target meta-model
 	 * descriptor} and {@link IResourceScope resource scope} to this registry.
-	 * 
+	 *
 	 * @param mmDescriptor
 	 *            The meta-model descriptor of the model to add.
 	 * @param targetMMDescriptor
@@ -238,7 +238,7 @@ public class ModelDescriptorRegistry {
 
 	/**
 	 * Returns the {@link IModelDescriptor descriptor} of the model the specified {@link IFile file} belongs to.
-	 * 
+	 *
 	 * @param file
 	 *            The file whose {@link IModelDescriptor model descriptor} is to be retrieved.
 	 * @return The {@link IModelDescriptor descriptor} of the model the specified {@link IFile file} belongs to, or
@@ -259,6 +259,17 @@ public class ModelDescriptorRegistry {
 			return model;
 		}
 		return null;
+	}
+
+	/**
+	 * Check if specified file is a Sphinx model file
+	 *
+	 * @param file
+	 *            the file be checked.
+	 * @return <code>true</code> if specified file is a Sphinx model file. Otherwise <code>false</code>.
+	 */
+	public boolean isModelFile(IFile file) {
+		return getModel(file) != null;
 	}
 
 	private IModelDescriptor internalGetModel(IFile file) {
@@ -295,7 +306,7 @@ public class ModelDescriptorRegistry {
 
 	/**
 	 * Returns the {@link IModelDescriptor descriptor} of the model the specified {@link Resource resource} belongs to.
-	 * 
+	 *
 	 * @param resource
 	 *            The resource whose {@link IModelDescriptor model descriptor} is to be retrieved.
 	 * @return The {@link IModelDescriptor descriptor} of the model the specified {@linkplain Resource resource} belongs
@@ -347,7 +358,7 @@ public class ModelDescriptorRegistry {
 	/**
 	 * Returns the old {@link IModelDescriptor descriptor} of the model the specified {@link IFile file} did belong to
 	 * before it was changed or deleted.
-	 * 
+	 *
 	 * @param file
 	 *            The file whose old {@link IModelDescriptor model descriptor} is to be retrieved.
 	 * @return The {@link IModelDescriptor descriptor} of the model the specified {@link IFile file} did belong to, or
@@ -383,7 +394,7 @@ public class ModelDescriptorRegistry {
 	/**
 	 * Returns the old {@link IModelDescriptor descriptor} of the model the specified {@link Resource resource} did
 	 * belong to before it was changed or unloaded.
-	 * 
+	 *
 	 * @param file
 	 *            The file whose old {@link IModelDescriptor model descriptor} is to be retrieved.
 	 * @return The {@link IModelDescriptor descriptor} of the model the specified {@link Resource resource} did belong
@@ -459,7 +470,7 @@ public class ModelDescriptorRegistry {
 
 	/**
 	 * Returns all registered {@linkplain IModelDescriptor model descriptors}.
-	 * 
+	 *
 	 * @return As specified above.
 	 */
 	public Collection<IModelDescriptor> getAllModels() {
@@ -469,7 +480,7 @@ public class ModelDescriptorRegistry {
 	/**
 	 * Returns all registered {@linkplain IModelDescriptor model descriptors} for the specified
 	 * {@linkplain IMetaModelDescriptor meta-model descriptor}.
-	 * 
+	 *
 	 * @param mmDescriptor
 	 *            The meta-model descriptor to use in order to filter the model descriptors in the registry.
 	 * @return As specified above.
@@ -564,7 +575,7 @@ public class ModelDescriptorRegistry {
 
 	/**
 	 * Recursively collects {@linkplain IModelDescriptor model descriptor}s from the specified {@link IFolder folder}.
-	 * 
+	 *
 	 * @param folder
 	 *            The folder containing {@link IFile file}s for which descriptors must be collected.
 	 * @param modelDescriptors
@@ -593,7 +604,7 @@ public class ModelDescriptorRegistry {
 	 * Moves all {@link IModelDescriptor model descriptor}s from specified {@link IProject old project}, if any, to
 	 * specified {@link IProject new project}.Usually called when specified {@link IProject old project} has been
 	 * renamed.
-	 * 
+	 *
 	 * @param oldProject
 	 *            The {@link IProject old project} whose {@link IMetaModelDescriptor meta-model descriptor}s are to be
 	 *            moved.
@@ -612,7 +623,7 @@ public class ModelDescriptorRegistry {
 	 * Removes the {@linkplain IModelDescriptor model descriptor} for the specified {@link IFile file} from this
 	 * registry. Usually called when the {@linkplain Resource resource} corresponding to the specified {@link IFile
 	 * file} has just been unloaded.
-	 * 
+	 *
 	 * @param file
 	 *            The {@linkplain IFile file} for which corresponding {@linkplain IModelDescriptor model descriptor}
 	 *            must be upgraded/removed.
@@ -639,7 +650,7 @@ public class ModelDescriptorRegistry {
 	/**
 	 * Removes the {@linkplain IModelDescriptor model descriptor} for the specified {@link Resource resource} from this
 	 * registry. Usually called when the {@linkplain Resource resource} has just been unloaded.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@linkplain Resource resource} for which corresponding {@linkplain IModelDescriptor model
 	 *            descriptor} must be upgraded/removed.
@@ -660,7 +671,7 @@ public class ModelDescriptorRegistry {
 	 * Removes the specified {@linkplain IModelDescriptor model descriptor} this registry. Also removes as well all
 	 * corresponding {@linkplain IModelDescriptor model descriptor}s from projects referencing the projects covered by
 	 * the given {@link IModelDescriptor modelDescriptor}.
-	 * 
+	 *
 	 * @param modelDescriptor
 	 *            The model descriptor to remove from this registry.
 	 * @since 0.7.0
@@ -692,7 +703,7 @@ public class ModelDescriptorRegistry {
 
 	/**
 	 * Removes the specified {@link IModelDescriptor modelDescriptor} from this registry.
-	 * 
+	 *
 	 * @param modelDescriptor
 	 *            The {@linkplain IModelDescriptor model descriptor} to remove from this registry.
 	 */
@@ -735,7 +746,7 @@ public class ModelDescriptorRegistry {
 	/**
 	 * Adds the given listener for {@link IModelDescriptor model descriptor} change events to this
 	 * modelDescriptorRegistry. Has no effect if an identical listener is already registered.
-	 * 
+	 *
 	 * @param listener
 	 *            the listener
 	 * @see IModelDescriptorChangeListener
@@ -747,7 +758,7 @@ public class ModelDescriptorRegistry {
 	/**
 	 * remove the given listener for {@link IModelDescriptor model descriptor} change events from this
 	 * modelDescriptorRegistry. Has no effect if such a listener is not registered.
-	 * 
+	 *
 	 * @param listener
 	 *            the listener
 	 * @see IModelDescriptorChangeListener
