@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
@@ -30,6 +31,7 @@ import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.mwe.dynamic.ui.dialogs.WorkflowTypeSelectionDialog;
 import org.eclipse.sphinx.emf.mwe.dynamic.util.XtendUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.ui.dialogs.SelectionDialog;
 
@@ -64,7 +66,6 @@ public class WorkflowRunnerActionHandlerHelper {
 	}
 
 	public Object promptForWorkflow(IStructuredSelection structuredSelection) {
-
 		SelectionDialog dialog = new WorkflowTypeSelectionDialog(ExtendedPlatformUI.getActiveShell());
 
 		int returnCode = dialog.open();
@@ -79,12 +80,63 @@ public class WorkflowRunnerActionHandlerHelper {
 	}
 
 	public boolean isModel(IStructuredSelection structuredSelection) {
-		return getModel(structuredSelection) != null;
+		for (URI uri : getModelURIs(structuredSelection)) {
+			if (EcoreResourceUtil.isEMFModelURI(uri)) {
+				return true;
+			}
+		}
+
+		return !getModelObjects(structuredSelection).isEmpty();
 	}
 
-	public Object getModel(IStructuredSelection structuredSelection) {
+	public List<URI> getModelURIs(IStructuredSelection structuredSelection) {
 		if (structuredSelection == null) {
-			return null;
+			return Collections.emptyList();
+		}
+
+		List<URI> uris = new ArrayList<URI>();
+		for (Object selected : structuredSelection.toList()) {
+			uris.addAll(getModelURIs(selected));
+		}
+
+		return uris;
+	}
+
+	protected List<URI> getModelURIs(Object object) {
+		// Wrapped model object or model object
+		object = AdapterFactoryEditingDomain.unwrap(object);
+		if (object instanceof EObject) {
+			return Collections.singletonList(EcoreResourceUtil.getURI((EObject) object, true));
+		}
+
+		// Group of model objects
+		if (object instanceof TransientItemProvider) {
+			TransientItemProvider provider = (TransientItemProvider) object;
+			List<URI> uris = new ArrayList<URI>();
+			for (Object child : provider.getChildren(object)) {
+				uris.addAll(getModelURIs(child));
+			}
+			return uris;
+		}
+
+		// Model file or model resource
+		URI uri = null;
+		if (object instanceof IFile) {
+			uri = EcorePlatformUtil.createURI(((IFile) object).getFullPath());
+		}
+		if (object instanceof Resource) {
+			uri = ((Resource) object).getURI();
+		}
+		if (uri != null) {
+			return Collections.singletonList(uri);
+		}
+
+		return Collections.emptyList();
+	}
+
+	protected List<EObject> getModelObjects(IStructuredSelection structuredSelection) {
+		if (structuredSelection == null) {
+			return Collections.emptyList();
 		}
 
 		List<EObject> modelObjects = new ArrayList<EObject>();
@@ -92,7 +144,7 @@ public class WorkflowRunnerActionHandlerHelper {
 			modelObjects.addAll(getModelObjects(selected));
 		}
 
-		return !modelObjects.isEmpty() ? modelObjects : null;
+		return modelObjects;
 	}
 
 	protected List<EObject> getModelObjects(Object object) {
@@ -110,18 +162,6 @@ public class WorkflowRunnerActionHandlerHelper {
 				modelObjects.addAll(getModelObjects(child));
 			}
 			return modelObjects;
-		}
-
-		// Model file or model resource
-		Resource resource = null;
-		if (object instanceof IFile) {
-			resource = EcorePlatformUtil.getResource((IFile) object);
-		}
-		if (object instanceof Resource) {
-			resource = (Resource) object;
-		}
-		if (resource != null) {
-			return resource.getContents();
 		}
 
 		return Collections.emptyList();

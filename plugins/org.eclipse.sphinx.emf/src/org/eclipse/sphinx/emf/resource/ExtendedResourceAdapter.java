@@ -221,6 +221,40 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	}
 
 	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getURI(org.eclipse.emf.ecore.EObject, boolean)
+	 */
+	@Override
+	public URI getURI(EObject eObject, boolean fragmentBased) {
+		return getURI(null, null, eObject, fragmentBased);
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getURI(org.eclipse.emf.ecore.EObject,
+	 * org.eclipse.emf.ecore.EStructuralFeature, org.eclipse.emf.ecore.EObject, boolean)
+	 */
+	@Override
+	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject, boolean fragmentBased) {
+		Assert.isNotNull(eObject);
+
+		// Non-proxy object
+		if (fragmentBased && !eObject.eIsProxy()) {
+			URI uri = getURI(oldOwner, oldFeature, eObject);
+			String uriFragment = uri.fragment();
+
+			Resource resource = eObject.eResource();
+			// Non-proxy object that has been removed, i.e., is no longer directly or indirectly contained in any
+			// resource?
+			if (resource == null) {
+				resource = (Resource) getTarget();
+			}
+			URI resourceURI = resource.getURI();
+			return resourceURI.appendFragment(uriFragment);
+		}
+
+		return getURI(oldOwner, oldFeature, eObject);
+	}
+
+	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#createURI(java.lang.String, org.eclipse.emf.ecore.EClass)
 	 */
 	@Override

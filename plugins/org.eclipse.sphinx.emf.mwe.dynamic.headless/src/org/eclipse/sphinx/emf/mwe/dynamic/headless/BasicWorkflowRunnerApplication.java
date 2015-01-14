@@ -17,7 +17,6 @@ package org.eclipse.sphinx.emf.mwe.dynamic.headless;
 
 import java.io.FileNotFoundException;
 import java.util.Collections;
-import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,18 +31,13 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.mwe.dynamic.headless.internal.messages.Messages;
 import org.eclipse.sphinx.emf.mwe.dynamic.operations.BasicWorkflowRunnerOperation;
 import org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation;
-import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
-import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.platform.cli.AbstractCLIApplication;
 import org.eclipse.sphinx.platform.cli.ICommonCLIConstants;
 
@@ -127,26 +121,26 @@ public class BasicWorkflowRunnerApplication extends AbstractCLIApplication {
 	protected Object interrogate() throws Throwable {
 		super.interrogate();
 
-		SubMonitor progress = SubMonitor.convert(createProgressMonitor(), 100);
-
 		// Retrieve options
 		CommandLine commandLine = getCommandLine();
 		String workflowOptionValue = commandLine.getOptionValue(IWorkflowRunnerCLIConstants.OPTION_WORKFLOW);
 		String modelOptionValue = commandLine.getOptionValue(IWorkflowRunnerCLIConstants.OPTION_MODEL);
 
-		// Load model
-		Object model = loadModel(modelOptionValue, progress.newChild(5));
+		final URI modelURI = modelOptionValue != null ? EcorePlatformUtil.createURI(new Path(modelOptionValue).makeAbsolute()) : null;
+		if (modelURI != null) {
+			URI uri = modelURI.trimFragment();
+			// Validate model resource existence
+			if (!EcoreResourceUtil.exists(uri)) {
+				throw new FileNotFoundException(NLS.bind(Messages.cliError_modelResourceDoesNotExist, uri.toPlatformString(true)));
+			}
+		}
 
 		// Create the workflow operation
-		IWorkflowRunnerOperation operation = createWorkflowRunnerOperation();
+		IWorkflowRunnerOperation operation = createWorkflowRunnerOperation(modelURI);
 		operation.setWorkflow(getWorkflow(workflowOptionValue));
-		operation.setModel(model);
 
 		// Run workflow operation
-		operation.run(progress.newChild(90));
-
-		// Save model if needed
-		saveModel(progress.newChild(5));
+		operation.run(SubMonitor.convert(createProgressMonitor(), 100));
 
 		return ERROR_NO;
 	}
@@ -155,8 +149,8 @@ public class BasicWorkflowRunnerApplication extends AbstractCLIApplication {
 		return new NullProgressMonitor();
 	}
 
-	protected BasicWorkflowRunnerOperation createWorkflowRunnerOperation() {
-		return new BasicWorkflowRunnerOperation(IWorkflowRunnerCLIConstants.APPLICATION_NAME);
+	protected BasicWorkflowRunnerOperation createWorkflowRunnerOperation(URI modelURI) {
+		return new BasicWorkflowRunnerOperation(IWorkflowRunnerCLIConstants.APPLICATION_NAME, Collections.singletonList(modelURI));
 	}
 
 	protected Object getWorkflow(String workflowOptionValue) throws ClassNotFoundException, FileNotFoundException {
@@ -179,50 +173,6 @@ public class BasicWorkflowRunnerApplication extends AbstractCLIApplication {
 				throw new FileNotFoundException(NLS.bind(Messages.cliError_workflowFileDoesNotExist, workflowLocation.toOSString()));
 			}
 			return workflowFile;
-		}
-	}
-
-	protected Object loadModel(String modelOptionValue, IProgressMonitor monitor) throws FileNotFoundException, NoSuchElementException {
-		if (modelOptionValue == null) {
-			return null;
-		}
-
-		URI uri = EcorePlatformUtil.createURI(new Path(modelOptionValue).makeAbsolute()).trimFragment();
-		if (!EcoreResourceUtil.exists(uri)) {
-			throw new FileNotFoundException(NLS.bind(Messages.cliError_modelResourceDoesNotExist, uri.toPlatformString(true)));
-		}
-
-		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(uri);
-		ResourceSet resourceSet = editingDomain != null ? editingDomain.getResourceSet() : null;
-
-		String fragment = URI.createURI(modelOptionValue).fragment();
-		if (fragment != null) {
-			// URI refers to a model object
-			EObject eObject = EcoreResourceUtil.loadEObject(resourceSet, uri.appendFragment(fragment));
-			if (eObject == null) {
-				throw new NoSuchElementException(NLS.bind(Messages.cliError_modelResourceContainsNoMatchingElement, uri.toPlatformString(true),
-						fragment));
-			}
-			modelResource = eObject.eResource();
-			return Collections.singletonList(eObject);
-		} else {
-			// URI refers to a model resource
-			modelResource = EcoreResourceUtil.loadResource(resourceSet, uri, null);
-			if (modelResource == null) {
-				throw new NoSuchElementException(NLS.bind(Messages.cliError_modelResourceCouldNotBeLoaded, uri.toPlatformString(true)));
-			}
-			if (modelResource.getContents().isEmpty()) {
-				throw new NoSuchElementException(NLS.bind(Messages.cliError_modelResourceHasNoContent, uri.toPlatformString(true)));
-			}
-
-			return modelResource.getContents();
-		}
-	}
-
-	protected void saveModel(IProgressMonitor monitor) {
-		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(modelResource);
-		if (SaveIndicatorUtil.isDirty(editingDomain, modelResource)) {
-			EcorePlatformUtil.saveModel(modelResource, false, monitor);
 		}
 	}
 }

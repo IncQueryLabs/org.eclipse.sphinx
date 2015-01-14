@@ -30,9 +30,6 @@ public class Messages extends NLS {
 	public static String cliError_workflowClassNotFound;
 	public static String cliError_workflowFileDoesNotExist;
 	public static String cliError_modelResourceDoesNotExist;
-	public static String cliError_modelResourceContainsNoMatchingElement;
-	public static String cliError_modelResourceCouldNotBeLoaded;
-	public static String cliError_modelResourceHasNoContent;
 
 	static {
 		// initialize resource bundle

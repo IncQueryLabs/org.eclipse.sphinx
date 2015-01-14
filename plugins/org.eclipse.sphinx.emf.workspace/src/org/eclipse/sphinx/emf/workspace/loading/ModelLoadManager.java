@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -48,6 +49,7 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.scoping.ProjectResourceScope;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.Activator;
 import org.eclipse.sphinx.emf.workspace.internal.loading.UnresolveUnreachableCrossProjectReferencesJob;
@@ -304,6 +306,66 @@ public final class ModelLoadManager {
 	}
 
 	/**
+	 * @param uri
+	 *            a model URI
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public void loadURI(URI uri, boolean async, IProgressMonitor monitor) {
+		loadURIs(Collections.singleton(uri), null, async, monitor);
+	}
+
+	/**
+	 * @param uri
+	 *            a model URI
+	 * @param mmDescriptor
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public void loadURI(URI uri, IMetaModelDescriptor mmDescriptor, boolean async, IProgressMonitor monitor) {
+		loadURIs(Collections.singleton(uri), mmDescriptor, async, monitor);
+	}
+
+	/**
+	 * @param uris
+	 *            a set of model URIs
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public void loadURIs(Collection<URI> uris, boolean async, IProgressMonitor monitor) {
+		loadURIs(uris, null, async, monitor);
+	}
+
+	/**
+	 * @param uris
+	 *            a set of model URIs
+	 * @param mmDescriptor
+	 *            the metamodel descriptor
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public void loadURIs(final Collection<URI> uris, final IMetaModelDescriptor mmDescriptor, boolean async, IProgressMonitor monitor) {
+		Assert.isNotNull(uris);
+		loadFiles(getFiles(uris), mmDescriptor, async, monitor);
+	}
+
+	/**
 	 * @param project
 	 * @param includeReferencedProjects
 	 * @param async
@@ -492,6 +554,64 @@ public final class ModelLoadManager {
 	}
 
 	/**
+	 * @param uri
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public void unloadURI(URI uri, boolean async, IProgressMonitor monitor) {
+		unloadURIs(Collections.singleton(uri), null, false, async, monitor);
+	}
+
+	/**
+	 * @param uri
+	 * @param mmDescriptor
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public void unloadURI(URI uri, IMetaModelDescriptor mmDescriptor, boolean async, IProgressMonitor monitor) {
+		unloadURIs(Collections.singleton(uri), mmDescriptor, false, async, monitor);
+	}
+
+	/**
+	 * @param uris
+	 * @param memoryOptimized
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public void unloadURIs(Collection<URI> uris, boolean memoryOptimized, boolean async, IProgressMonitor monitor) {
+		unloadURIs(uris, null, memoryOptimized, async, monitor);
+	}
+
+	/**
+	 * @param uris
+	 * @param mmDescriptor
+	 * @param memoryOptimized
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public void unloadURIs(final Collection<URI> uris, final IMetaModelDescriptor mmDescriptor, final boolean memoryOptimized, boolean async,
+			IProgressMonitor monitor) {
+		Assert.isNotNull(uris);
+		unloadFiles(getFiles(uris), mmDescriptor, memoryOptimized, async, monitor);
+	}
+
+	/**
 	 * @param project
 	 * @param includeReferencedProjects
 	 * @param async
@@ -616,6 +736,64 @@ public final class ModelLoadManager {
 			FileReloadOperation fileReloadOperation = new FileReloadOperation(files, mmDescriptor, memoryOptimized);
 			LoadOperationRunnerHelper.run(fileReloadOperation, async, monitor);
 		}
+	}
+
+	/**
+	 * @param uri
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public void reloadURI(URI uri, boolean async, IProgressMonitor monitor) {
+		reloadURIs(Collections.singleton(uri), null, false, async, monitor);
+	}
+
+	/**
+	 * @param uri
+	 * @param mmDescriptor
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public void reloadURI(URI uri, IMetaModelDescriptor mmDescriptor, boolean async, IProgressMonitor monitor) {
+		reloadURIs(Collections.singleton(uri), mmDescriptor, false, async, monitor);
+	}
+
+	/**
+	 * @param uris
+	 * @param memoryOptimized
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public void reloadURIs(Collection<URI> uris, boolean memoryOptimized, boolean async, IProgressMonitor monitor) {
+		reloadURIs(uris, null, memoryOptimized, async, monitor);
+	}
+
+	/**
+	 * @param uris
+	 * @param mmDescriptor
+	 * @param memoryOptimized
+	 * @param async
+	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
+	 *            synchronous execution is desired.
+	 * @param monitor
+	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
+	 *            desired.
+	 */
+	public void reloadURIs(final Collection<URI> uris, final IMetaModelDescriptor mmDescriptor, final boolean memoryOptimized, boolean async,
+			IProgressMonitor monitor) {
+		Assert.isNotNull(uris);
+		reloadFiles(getFiles(uris), mmDescriptor, memoryOptimized, async, monitor);
 	}
 
 	/**
@@ -869,5 +1047,24 @@ public final class ModelLoadManager {
 				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			}
 		}
+	}
+
+	private Collection<IFile> getFiles(Collection<URI> uris) {
+		Set<IFile> files = new HashSet<IFile>();
+		if (uris != null) {
+			Set<URI> modelResourceURIs = new HashSet<URI>();
+			for (URI uri : uris) {
+				// Removing URI fragment
+				modelResourceURIs.add(uri.trimFragment());
+			}
+
+			for (URI modelResourceURI : modelResourceURIs) {
+				final IFile file = EcorePlatformUtil.getFile(modelResourceURI);
+				if (file != null) {
+					files.add(file);
+				}
+			}
+		}
+		return files;
 	}
 }

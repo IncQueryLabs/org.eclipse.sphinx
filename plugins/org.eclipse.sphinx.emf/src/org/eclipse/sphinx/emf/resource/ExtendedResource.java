@@ -264,6 +264,19 @@ public interface ExtendedResource {
 	URI getURI(EObject eObject);
 
 	/**
+	 * Returns a {@link URI} representing given {@link InternalEObject}. Clients may implement/override this method when
+	 * they require URIs with custom formats to be created.
+	 *
+	 * @param InternalEObject
+	 *            The {@link InternalEObject} for which the URI is to be created.
+	 * @param fragmentBased
+	 *            a boolean value indicating if the URI should be a platform fragment-based URI including associated
+	 *            resource.
+	 * @return The URI for given {@link InternalEObject}, or <code>null</code> if no such could be created.
+	 */
+	URI getURI(EObject eObject, boolean fragmentBased);
+
+	/**
 	 * Returns a {@link URI} representing given {@link EObject eObject} owned by {@link EObject owner} through provided
 	 * {@link EStructuralFeature feature}.If the {@link EObject eObject} is stand-alone (i.e freshly removed and without
 	 * attached resource) the {@link URI} is determine using the {@link EObject owner} and the
@@ -285,6 +298,32 @@ public interface ExtendedResource {
 	 *         value is null.
 	 */
 	URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject);
+
+	/**
+	 * Returns a {@link URI} representing given {@link EObject eObject} owned by {@link EObject owner} through provided
+	 * {@link EStructuralFeature feature}.If the {@link EObject eObject} is stand-alone (i.e freshly removed and without
+	 * attached resource) the {@link URI} is determine using the {@link EObject owner} and the
+	 * {@link EStructuralFeature feature}, if the {@link EObject eObject} is still attached to a {@link Resource} the
+	 * {@link URI} is calculated using same implementation as in {@link ResourceImpl#unload()}.
+	 * <p>
+	 * Clients may implement/override this method when they require URIs with custom formats to be created.
+	 * </p>
+	 *
+	 * @param oldOwner
+	 *            The {@link EObject} owning the {@link EObject} before it was deleted.
+	 * @param oldFeature
+	 *            The {@link EStructuralFeature} of the owner containing the {@link EObject eObject} before it was
+	 *            deleted.
+	 * @param eObject
+	 *            The {@link EObject} for which the URI is to be created.
+	 * @param fragmentBased
+	 *            a boolean value indicating if the URI should be a platform fragment-based URI including associated
+	 *            resource.
+	 * @return The URI for given {@link EObject eObject}, or <code>null</code> if no such could be created.If the
+	 *         provided {@link EObject} has no {@link Resource eResource} and no {@link EObject owner}, the returned
+	 *         value is null.
+	 */
+	URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject, boolean fragmentBased);
 
 	/**
 	 * Creates a {@link URI} from given <code>uriLiteral</code> that refers to an instance of given {@link EClass object

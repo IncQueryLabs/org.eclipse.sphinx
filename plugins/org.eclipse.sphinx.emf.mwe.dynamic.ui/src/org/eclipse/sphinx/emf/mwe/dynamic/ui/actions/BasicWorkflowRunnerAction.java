@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.mwe.dynamic.ui.actions;
 
 import java.lang.reflect.InvocationTargetException;
@@ -72,15 +71,13 @@ public class BasicWorkflowRunnerAction extends BaseSelectionListenerAction {
 	}
 
 	protected IWorkflowRunnerOperation createWorkflowRunnerOperation() {
-		IWorkflowRunnerOperation operation = new BasicWorkflowRunnerOperation(getOperationName());
+		IWorkflowRunnerOperation operation = new BasicWorkflowRunnerOperation(getOperationName(), helper.getModelURIs(getStructuredSelection()));
 
 		Object workflow = helper.getWorkflow(getStructuredSelection());
 		if (workflow == null) {
 			workflow = helper.promptForWorkflow(getStructuredSelection());
 		}
 		operation.setWorkflow(workflow);
-
-		operation.setModel(helper.getModel(getStructuredSelection()));
 
 		return operation;
 	}

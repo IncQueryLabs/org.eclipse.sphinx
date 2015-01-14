@@ -14,7 +14,12 @@
  */
 package org.eclipse.sphinx.emf.mwe.dynamic.operations;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
@@ -22,9 +27,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.mwe2.runtime.workflow.IWorkflowComponent;
 import org.eclipse.emf.mwe2.runtime.workflow.Workflow;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -32,13 +40,22 @@ import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.mwe.dynamic.ModelWorkflowContext;
 import org.eclipse.sphinx.emf.mwe.dynamic.WorkflowContributorRegistry;
 import org.eclipse.sphinx.emf.mwe.dynamic.WorkspaceWorkflow;
 import org.eclipse.sphinx.emf.mwe.dynamic.components.IModelWorkflowComponent;
 import org.eclipse.sphinx.emf.mwe.dynamic.internal.Activator;
+import org.eclipse.sphinx.emf.mwe.dynamic.internal.messages.Messages;
 import org.eclipse.sphinx.emf.mwe.dynamic.util.XtendUtil;
+import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
+import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
+import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
+import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.jdt.loaders.DelegatingClassLoader;
 import org.eclipse.sphinx.jdt.loaders.ProjectClassLoader;
 import org.eclipse.sphinx.platform.operations.AbstractWorkspaceOperation;
@@ -52,8 +69,16 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 
 	private Workflow workflowInstance = null;
 
-	public BasicWorkflowRunnerOperation(String label) {
+	private Collection<URI> modelURIs;
+	private Set<Resource> modelResources = new HashSet<Resource>();
+
+	public BasicWorkflowRunnerOperation(String label, URI modelURI) {
+		this(label, Collections.singletonList(modelURI));
+	}
+
+	public BasicWorkflowRunnerOperation(String label, Collection<URI> modelURIs) {
 		super(label);
+		this.modelURIs = modelURIs;
 	}
 
 	/*
@@ -265,6 +290,7 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 	@Override
 	public void run(final IProgressMonitor monitor) throws CoreException, OperationCanceledException {
 		try {
+			final SubMonitor progress = SubMonitor.convert(monitor, 100);
 			final Workflow workflow = getWorkflowInstance();
 			if (workflow == null) {
 				return;
@@ -273,8 +299,20 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 			Runnable runnable = new Runnable() {
 				@Override
 				public void run() {
-					ModelWorkflowContext context = new ModelWorkflowContext(model, monitor);
+					// Load selected Sphinx/EMF model file (if any)
+					try {
+						model = loadModel(progress.newChild(5));
+					} catch (OperationCanceledException ex) {
+						throw ex;
+					} catch (CoreException ex) {
+						throw new RuntimeException(ex);
+					}
+
+					ModelWorkflowContext context = new ModelWorkflowContext(model, progress.newChild(90));
 					workflow.run(context);
+
+					// Save model if needed
+					saveModel(progress.newChild(5));
 				}
 			};
 
@@ -298,6 +336,101 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 		} catch (Exception ex) {
 			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
 			throw new CoreException(status);
+		}
+	}
+
+	protected Object loadModel(IProgressMonitor monitor) throws CoreException, OperationCanceledException {
+		if (modelURIs == null || modelURIs.isEmpty()) {
+			return null;
+		}
+
+		final SubMonitor progress = SubMonitor.convert(monitor, modelURIs.size());
+		if (progress.isCanceled()) {
+			throw new OperationCanceledException();
+		}
+
+		List<EObject> modelObjects = new ArrayList<EObject>();
+
+		// Loads Sphinx integrated models
+		ModelLoadManager.INSTANCE.loadURIs(modelURIs, false, monitor);
+
+		ResourceSet resouceSet = new ScopingResourceSetImpl();
+		for (URI modelURI : modelURIs) {
+			IFile file = EcorePlatformUtil.getFile(modelURI.trimFragment());
+			// Sphinx integrated model
+			if (ModelDescriptorRegistry.INSTANCE.isModelFile(file)) {
+				String fragment = modelURI.fragment();
+				if (fragment != null) {
+					// URI refers to a model object
+					EObject eObject = EcorePlatformUtil.getEObject(modelURI);
+					if (eObject == null) {
+						IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(),
+								NLS.bind(Messages.modelResourceContainsNoMatchingElementError, modelURI.toPlatformString(true), fragment));
+						throw new CoreException(status);
+					}
+					modelObjects.add(eObject);
+					modelResources.add(eObject.eResource());
+				} else {
+					// URI refers to a model resource
+					// Exclude Xtend files from being considered as workflow models
+					if (!XtendUtil.isXtendResource(modelURI)) {
+						Resource modelResource = EcorePlatformUtil.getResource(modelURI);
+						if (modelResource == null) {
+							IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(),
+									NLS.bind(Messages.modelResourceCouldNotBeLoadedError, modelURI.toPlatformString(true)));
+							throw new CoreException(status);
+						}
+						modelObjects.addAll(modelResource.getContents());
+						modelResources.add(modelResource);
+					}
+				}
+			} else {
+				// Regular EMF model
+				String fragment = modelURI.fragment();
+				if (fragment != null) {
+					// URI refers to a model object
+					EObject eObject = EcoreResourceUtil.loadEObject(resouceSet, modelURI);
+					if (eObject == null) {
+						IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(),
+								NLS.bind(Messages.modelResourceContainsNoMatchingElementError, modelURI.toPlatformString(true), fragment));
+						throw new CoreException(status);
+					}
+					modelObjects.add(eObject);
+					modelResources.add(eObject.eResource());
+				} else {
+					// URI refers to a model resource
+					// Exclude Xtend files from being considered as workflow models
+					if (!XtendUtil.isXtendResource(modelURI)) {
+						Resource modelResource = EcoreResourceUtil.loadResource(resouceSet, modelURI, null);
+						if (modelResource == null) {
+							IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(),
+									NLS.bind(Messages.modelResourceCouldNotBeLoadedError, modelURI.toPlatformString(true)));
+							throw new CoreException(status);
+						}
+						modelObjects.addAll(modelResource.getContents());
+						modelResources.add(modelResource);
+					}
+				}
+			}
+
+			progress.worked(1);
+			if (progress.isCanceled()) {
+				throw new OperationCanceledException();
+			}
+		}
+
+		return !modelObjects.isEmpty() ? modelObjects : null;
+	}
+
+	protected void saveModel(IProgressMonitor monitor) {
+		final SubMonitor progress = SubMonitor.convert(monitor, modelResources.size());
+		for (Resource modelResource : modelResources) {
+			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(modelResource);
+			if (SaveIndicatorUtil.isDirty(editingDomain, modelResource)) {
+				EcorePlatformUtil.saveModel(modelResource, false, progress.newChild(1));
+			} else {
+				progress.worked(1);
+			}
 		}
 	}
 }

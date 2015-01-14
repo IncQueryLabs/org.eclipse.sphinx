@@ -1097,24 +1097,38 @@ public final class EcoreResourceUtil {
 	 *            the URI representing a model file or model object.
 	 * @return <code>true</code> if provided URI correspond to an EMF model. Otherwise <code>false</code>.
 	 */
-	public static boolean isEMFModelFile(URI uri) {
+	public static boolean isEMFModelURI(URI uri) {
 		String namespace = readModelNamespace(null, uri);
 		return EPackage.Registry.INSTANCE.get(namespace) != null;
 	}
 
 	/**
 	 * Gets the URI associated to the provided model object.
-	 * 
+	 *
 	 * @param modelObject
 	 *            an EMF model object.
 	 * @return the URI associated to the provided model object.
 	 */
 	public static URI getURI(EObject modelObject) {
+		return getURI(modelObject, false);
+	}
+
+	/**
+	 * Gets the URI associated to the provided model object.
+	 *
+	 * @param modelObject
+	 *            an EMF model object.
+	 * @param fragmentBased
+	 *            a boolean value indicating if the URI should be a platform fragment-based URI including associated
+	 *            resource.
+	 * @return the URI associated to the provided model object.
+	 */
+	public static URI getURI(EObject modelObject, boolean fragmentBased) {
 		Assert.isNotNull(modelObject);
 
 		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(modelObject.eResource());
 		if (extendedResource != null) {
-			return extendedResource.getURI(modelObject);
+			return extendedResource.getURI(modelObject, fragmentBased);
 		} else {
 			return EcoreUtil.getURI(modelObject);
 		}

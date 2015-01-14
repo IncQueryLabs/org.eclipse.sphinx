@@ -70,6 +70,10 @@ public class XtendUtil {
 		return file != null && IXtendConstants.XTEND_FILE_EXTENSION.equals(file.getFileExtension());
 	}
 
+	public static boolean isXtendResource(URI uri) {
+		return uri != null && IXtendConstants.XTEND_FILE_EXTENSION.equals(uri.fileExtension());
+	}
+
 	public static IPath getJavaPath(IPath xtendOrJavaPath) {
 		Assert.isNotNull(xtendOrJavaPath);
 
