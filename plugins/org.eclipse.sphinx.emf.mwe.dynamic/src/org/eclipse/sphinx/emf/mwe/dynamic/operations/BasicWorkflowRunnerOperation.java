@@ -15,8 +15,6 @@
 package org.eclipse.sphinx.emf.mwe.dynamic.operations;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +39,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.mwe.dynamic.ModelWorkflowContext;
 import org.eclipse.sphinx.emf.mwe.dynamic.WorkflowContributorRegistry;
@@ -53,7 +52,6 @@ import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
-import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.jdt.loaders.DelegatingClassLoader;
@@ -64,21 +62,18 @@ import org.eclipse.sphinx.platform.util.StatusUtil;
 public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation implements IWorkflowRunnerOperation {
 
 	private Object model;
-
 	private Object workflow;
-
 	private Workflow workflowInstance = null;
 
-	private Collection<URI> modelURIs;
-	private Set<Resource> modelResources = new HashSet<Resource>();
+	private boolean autoSave = false;
 
-	public BasicWorkflowRunnerOperation(String label, URI modelURI) {
-		this(label, Collections.singletonList(modelURI));
-	}
+	private List<URI> modelURIs = new ArrayList<URI>();
+	private Set<IModelDescriptor> modelDescriptors = new HashSet<IModelDescriptor>();
+	private Set<Resource> emfModelResources = new HashSet<Resource>();
 
-	public BasicWorkflowRunnerOperation(String label, Collection<URI> modelURIs) {
+	public BasicWorkflowRunnerOperation(String label, Object workflow) {
 		super(label);
-		this.modelURIs = modelURIs;
+		this.workflow = workflow;
 	}
 
 	/*
@@ -90,11 +85,35 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation#setWorkflow(java.lang.Object)
+	 * @see org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation#getModelURIs()
 	 */
 	@Override
-	public void setWorkflow(Object workflow) {
-		this.workflow = workflow;
+	public List<URI> getModelURIs() {
+		return modelURIs;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation#setAutoSave(boolean)
+	 */
+	@Override
+	public void setAutoSave(boolean autoSave) {
+		this.autoSave = autoSave;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation#isAutoSave()
+	 */
+	@Override
+	public boolean isAutoSave() {
+		return autoSave;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation#getModel()
+	 */
+	@Override
+	public Object getModel() {
+		return model;
 	}
 
 	/*
@@ -107,19 +126,56 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation#setModel(java.lang.Object)
+	 * @see org.eclipse.core.resources.IWorkspaceRunnable#run(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
-	public void setModel(Object model) {
-		this.model = model;
-	}
+	public void run(final IProgressMonitor monitor) throws CoreException, OperationCanceledException {
+		try {
+			final SubMonitor progress = SubMonitor.convert(monitor, 100);
+			final Workflow workflow = getWorkflowInstance();
+			if (workflow == null) {
+				return;
+			}
 
-	/*
-	 * @see org.eclipse.sphinx.emf.mwe.dynamic.operations.IWorkflowRunnerOperation#getModel()
-	 */
-	@Override
-	public Object getModel() {
-		return model;
+			// Load selected Sphinx/EMF model file (if any)
+			model = loadModel(progress.newChild(5));
+
+			Runnable runnable = new Runnable() {
+				@Override
+				public void run() {
+					ModelWorkflowContext context = new ModelWorkflowContext(model, progress.newChild(90));
+					workflow.run(context);
+				}
+			};
+
+			// Workflow dealing with some model?
+			TransactionalEditingDomain editingDomain = getEditingDomain(model);
+			if (editingDomain != null && hasModelWorkflowComponents(workflow)) {
+				// Workflow intending to modify the model?
+				if (isModifyingModel(workflow)) {
+					// Execute in write transaction
+					WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable, getLabel());
+				} else {
+					// Execute in read transaction
+					editingDomain.runExclusive(runnable);
+				}
+			} else {
+				// Execute right away
+				runnable.run();
+			}
+
+			// Save model if needed
+			if (isAutoSave()) {
+				saveModel(progress.newChild(5));
+			} else {
+				progress.worked(5);
+			}
+		} catch (OperationCanceledException ex) {
+			throw ex;
+		} catch (Exception ex) {
+			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
+			throw new CoreException(status);
+		}
 	}
 
 	protected TransactionalEditingDomain getEditingDomain(Object model) {
@@ -284,63 +340,8 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 		return false;
 	}
 
-	/*
-	 * @see org.eclipse.core.resources.IWorkspaceRunnable#run(org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	@Override
-	public void run(final IProgressMonitor monitor) throws CoreException, OperationCanceledException {
-		try {
-			final SubMonitor progress = SubMonitor.convert(monitor, 100);
-			final Workflow workflow = getWorkflowInstance();
-			if (workflow == null) {
-				return;
-			}
-
-			Runnable runnable = new Runnable() {
-				@Override
-				public void run() {
-					// Load selected Sphinx/EMF model file (if any)
-					try {
-						model = loadModel(progress.newChild(5));
-					} catch (OperationCanceledException ex) {
-						throw ex;
-					} catch (CoreException ex) {
-						throw new RuntimeException(ex);
-					}
-
-					ModelWorkflowContext context = new ModelWorkflowContext(model, progress.newChild(90));
-					workflow.run(context);
-
-					// Save model if needed
-					saveModel(progress.newChild(5));
-				}
-			};
-
-			// Workflow dealing with some model?
-			TransactionalEditingDomain editingDomain = getEditingDomain(model);
-			if (editingDomain != null && hasModelWorkflowComponents(workflow)) {
-				// Workflow intending to modify the model?
-				if (isModifyingModel(workflow)) {
-					// Execute in write transaction
-					WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable, getLabel());
-				} else {
-					// Execute in read transaction
-					editingDomain.runExclusive(runnable);
-				}
-			} else {
-				// Execute right away
-				runnable.run();
-			}
-		} catch (OperationCanceledException ex) {
-			throw ex;
-		} catch (Exception ex) {
-			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
-			throw new CoreException(status);
-		}
-	}
-
 	protected Object loadModel(IProgressMonitor monitor) throws CoreException, OperationCanceledException {
-		if (modelURIs == null || modelURIs.isEmpty()) {
+		if (modelURIs.isEmpty()) {
 			return null;
 		}
 
@@ -369,7 +370,8 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 						throw new CoreException(status);
 					}
 					modelObjects.add(eObject);
-					modelResources.add(eObject.eResource());
+					IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(eObject.eResource());
+					modelDescriptors.add(modelDescriptor);
 				} else {
 					// URI refers to a model resource
 					// Exclude Xtend files from being considered as workflow models
@@ -381,7 +383,8 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 							throw new CoreException(status);
 						}
 						modelObjects.addAll(modelResource.getContents());
-						modelResources.add(modelResource);
+						IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(modelResource);
+						modelDescriptors.add(modelDescriptor);
 					}
 				}
 			} else {
@@ -396,7 +399,7 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 						throw new CoreException(status);
 					}
 					modelObjects.add(eObject);
-					modelResources.add(eObject.eResource());
+					emfModelResources.add(eObject.eResource());
 				} else {
 					// URI refers to a model resource
 					// Exclude Xtend files from being considered as workflow models
@@ -408,7 +411,7 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 							throw new CoreException(status);
 						}
 						modelObjects.addAll(modelResource.getContents());
-						modelResources.add(modelResource);
+						emfModelResources.add(modelResource);
 					}
 				}
 			}
@@ -423,13 +426,31 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 	}
 
 	protected void saveModel(IProgressMonitor monitor) {
-		final SubMonitor progress = SubMonitor.convert(monitor, modelResources.size());
-		for (Resource modelResource : modelResources) {
-			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(modelResource);
-			if (SaveIndicatorUtil.isDirty(editingDomain, modelResource)) {
-				EcorePlatformUtil.saveModel(modelResource, false, progress.newChild(1));
+		final SubMonitor progress = SubMonitor.convert(monitor, modelDescriptors.size() + emfModelResources.size());
+		if (progress.isCanceled()) {
+			throw new OperationCanceledException();
+		}
+
+		// Save Sphinx integrated models
+		for (IModelDescriptor modelDescriptor : modelDescriptors) {
+			if (SaveIndicatorUtil.isDirty(modelDescriptor)) {
+				EcorePlatformUtil.saveModel(modelDescriptor, false, progress.newChild(1));
+
+				if (progress.isCanceled()) {
+					throw new OperationCanceledException();
+				}
 			} else {
 				progress.worked(1);
+			}
+		}
+
+		// Save regular EMF models
+		for (Resource modelResource : emfModelResources) {
+			EcoreResourceUtil.saveModelResource(modelResource, null);
+			progress.worked(1);
+
+			if (progress.isCanceled()) {
+				throw new OperationCanceledException();
 			}
 		}
 	}

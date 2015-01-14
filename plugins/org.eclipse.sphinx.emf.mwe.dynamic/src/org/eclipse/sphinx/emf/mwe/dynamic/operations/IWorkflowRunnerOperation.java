@@ -14,15 +14,20 @@
  */
 package org.eclipse.sphinx.emf.mwe.dynamic.operations;
 
+import java.util.List;
+
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.sphinx.platform.operations.IWorkspaceOperation;
 
 public interface IWorkflowRunnerOperation extends IWorkspaceOperation {
 
 	Object getWorkflow();
 
-	void setWorkflow(Object workflow);
+	List<URI> getModelURIs();
+
+	void setAutoSave(boolean autoSave);
+
+	boolean isAutoSave();
 
 	Object getModel();
-
-	void setModel(Object object);
 }

@@ -27,6 +27,8 @@ public class Messages extends NLS {
 	public static String cliOption_model_argName;
 	public static String cliOption_model_description;
 
+	public static String cliOption_skipSave_description;
+
 	public static String cliError_workflowClassNotFound;
 	public static String cliError_workflowFileDoesNotExist;
 	public static String cliError_modelResourceDoesNotExist;

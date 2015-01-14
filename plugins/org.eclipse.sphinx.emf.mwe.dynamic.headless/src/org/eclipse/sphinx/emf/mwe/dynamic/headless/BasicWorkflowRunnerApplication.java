@@ -16,11 +16,11 @@
 package org.eclipse.sphinx.emf.mwe.dynamic.headless;
 
 import java.io.FileNotFoundException;
-import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -29,7 +29,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.osgi.util.NLS;
@@ -112,6 +111,8 @@ public class BasicWorkflowRunnerApplication extends AbstractCLIApplication {
 		OptionBuilder.withArgName(IWorkflowRunnerCLIConstants.OPTION_MODEL_ARG_NAME);
 		OptionBuilder.withDescription(IWorkflowRunnerCLIConstants.OPTION_MODEL_DESCRIPTION);
 		addOption(OptionBuilder.create(IWorkflowRunnerCLIConstants.OPTION_MODEL));
+
+		addOption(new Option(IWorkflowRunnerCLIConstants.OPTION_SKIP_SAVE, IWorkflowRunnerCLIConstants.OPTION_SKIP_SAVE_DESCRIPTION));
 	}
 
 	/*
@@ -125,6 +126,7 @@ public class BasicWorkflowRunnerApplication extends AbstractCLIApplication {
 		CommandLine commandLine = getCommandLine();
 		String workflowOptionValue = commandLine.getOptionValue(IWorkflowRunnerCLIConstants.OPTION_WORKFLOW);
 		String modelOptionValue = commandLine.getOptionValue(IWorkflowRunnerCLIConstants.OPTION_MODEL);
+		boolean skipSaveOption = commandLine.hasOption(IWorkflowRunnerCLIConstants.OPTION_SKIP_SAVE);
 
 		final URI modelURI = modelOptionValue != null ? EcorePlatformUtil.createURI(new Path(modelOptionValue).makeAbsolute()) : null;
 		if (modelURI != null) {
@@ -136,11 +138,12 @@ public class BasicWorkflowRunnerApplication extends AbstractCLIApplication {
 		}
 
 		// Create the workflow operation
-		IWorkflowRunnerOperation operation = createWorkflowRunnerOperation(modelURI);
-		operation.setWorkflow(getWorkflow(workflowOptionValue));
+		IWorkflowRunnerOperation operation = createWorkflowRunnerOperation(getWorkflow(workflowOptionValue));
+		operation.getModelURIs().add(modelURI);
+		operation.setAutoSave(!skipSaveOption);
 
 		// Run workflow operation
-		operation.run(SubMonitor.convert(createProgressMonitor(), 100));
+		operation.run(createProgressMonitor());
 
 		return ERROR_NO;
 	}
@@ -149,8 +152,8 @@ public class BasicWorkflowRunnerApplication extends AbstractCLIApplication {
 		return new NullProgressMonitor();
 	}
 
-	protected BasicWorkflowRunnerOperation createWorkflowRunnerOperation(URI modelURI) {
-		return new BasicWorkflowRunnerOperation(IWorkflowRunnerCLIConstants.APPLICATION_NAME, Collections.singletonList(modelURI));
+	protected BasicWorkflowRunnerOperation createWorkflowRunnerOperation(Object workflow) {
+		return new BasicWorkflowRunnerOperation(IWorkflowRunnerCLIConstants.APPLICATION_NAME, workflow);
 	}
 
 	protected Object getWorkflow(String workflowOptionValue) throws ClassNotFoundException, FileNotFoundException {

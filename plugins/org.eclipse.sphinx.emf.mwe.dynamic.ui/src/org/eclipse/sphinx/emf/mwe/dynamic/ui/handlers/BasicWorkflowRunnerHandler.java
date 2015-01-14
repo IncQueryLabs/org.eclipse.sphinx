@@ -15,10 +15,12 @@
 package org.eclipse.sphinx.emf.mwe.dynamic.ui.handlers;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.sphinx.emf.mwe.dynamic.operations.BasicWorkflowRunnerOperation;
@@ -60,13 +62,14 @@ public class BasicWorkflowRunnerHandler extends AbstractHandler {
 	}
 
 	protected IWorkflowRunnerOperation createWorkflowRunnerOperation() {
-		IWorkflowRunnerOperation operation = new BasicWorkflowRunnerOperation(getOperationName(), helper.getModelURIs(getStructuredSelection()));
-
 		Object workflow = helper.getWorkflow(getStructuredSelection());
 		if (workflow == null) {
 			workflow = helper.promptForWorkflow(getStructuredSelection());
 		}
-		operation.setWorkflow(workflow);
+
+		IWorkflowRunnerOperation operation = new BasicWorkflowRunnerOperation(getOperationName(), workflow);
+		List<URI> modelURIs = helper.getModelURIs(getStructuredSelection());
+		operation.getModelURIs().addAll(modelURIs);
 
 		return operation;
 	}

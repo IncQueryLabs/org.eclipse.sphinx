@@ -37,4 +37,10 @@ public interface IWorkflowRunnerCLIConstants {
 	String OPTION_MODEL = "model"; //$NON-NLS-1$
 	String OPTION_MODEL_ARG_NAME = Messages.cliOption_model_argName;
 	String OPTION_MODEL_DESCRIPTION = Messages.cliOption_model_description;
+
+	/*
+	 * Skip Save option.
+	 */
+	String OPTION_SKIP_SAVE = "skipSave"; //$NON-NLS-1$
+	String OPTION_SKIP_SAVE_DESCRIPTION = Messages.cliOption_skipSave_description;
 }
