@@ -21,18 +21,15 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Component</b></em>'. <!-- end-user-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getType <em>Type</em>}</li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getOutgoingConnections <em>Outgoing
- * Connections</em>}</li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getIncomingConnections <em>Incoming
- * Connections</em>}</li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getParameterValues <em>Parameter Values
- * </em>}</li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getParameterExpressions <em>Parameter
- * Expressions</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getType <em>Type</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getOutgoingConnections <em>Outgoing Connections</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getIncomingConnections <em>Incoming Connections</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getParameterValues <em>Parameter Values</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getParameterExpressions <em>Parameter Expressions</em>}</li>
  * </ul>
  * </p>
  *
@@ -42,12 +39,12 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
  */
 public interface Component extends Identifiable {
 	/**
-	 * Returns the value of the '<em><b>Type</b></em>' reference. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Type</b></em>' reference.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Type</em>' reference isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Type</em>' reference.
 	 * @see #setType(ComponentType)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getComponent_Type()
@@ -57,27 +54,24 @@ public interface Component extends Identifiable {
 	ComponentType getType();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getType
-	 * <em>Type</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Type</em>' reference.
+	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getType <em>Type</em>}' reference.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Type</em>' reference.
 	 * @see #getType()
 	 * @generated
 	 */
 	void setType(ComponentType value);
 
 	/**
-	 * Returns the value of the '<em><b>Outgoing Connections</b></em>' containment reference list. The list contents are
-	 * of type {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection}. It is bidirectional and its
-	 * opposite is '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection#getSourceComponent
-	 * <em>Source Component</em>}'. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Outgoing Connections</b></em>' containment reference list.
+	 * The list contents are of type {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection}.
+	 * It is bidirectional and its opposite is '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection#getSourceComponent <em>Source Component</em>}'.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Outgoing Connections</em>' containment reference list isn't clear, there really should
 	 * be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Outgoing Connections</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getComponent_OutgoingConnections()
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection#getSourceComponent
@@ -87,16 +81,15 @@ public interface Component extends Identifiable {
 	EList<Connection> getOutgoingConnections();
 
 	/**
-	 * Returns the value of the '<em><b>Incoming Connections</b></em>' reference list. The list contents are of type
-	 * {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection}. It is bidirectional and its opposite
-	 * is '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection#getTargetComponent
-	 * <em>Target Component</em>}'. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Incoming Connections</b></em>' reference list.
+	 * The list contents are of type {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection}.
+	 * It is bidirectional and its opposite is '{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection#getTargetComponent <em>Target Component</em>}'.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Incoming Connections</em>' reference list isn't clear, there really should be more of
 	 * a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Incoming Connections</em>' reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getComponent_IncomingConnections()
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection#getTargetComponent
@@ -106,14 +99,14 @@ public interface Component extends Identifiable {
 	EList<Connection> getIncomingConnections();
 
 	/**
-	 * Returns the value of the '<em><b>Parameter Values</b></em>' containment reference list. The list contents are of
-	 * type {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue}. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Parameter Values</b></em>' containment reference list.
+	 * The list contents are of type {@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue}.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Parameter Values</em>' containment reference list isn't clear, there really should be
 	 * more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Parameter Values</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getComponent_ParameterValues()
 	 * @model containment="true"

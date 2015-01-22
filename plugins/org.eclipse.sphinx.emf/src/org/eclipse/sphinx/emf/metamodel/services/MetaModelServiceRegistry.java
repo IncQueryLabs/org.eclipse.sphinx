@@ -71,10 +71,7 @@ public class MetaModelServiceRegistry {
 		initialize();
 		if (mmServices.containsKey(descriptor)) {
 			Map<Class<IMetaModelService>, ServiceClassDescriptor> map = getServiceClassDescriptorsForMetaModel(descriptor);
-			if (!map.containsKey(serviceType)) {
-				// unimplemented service, log error
-				logError(Messages.metamodelservice_ServiceNotImplemented, serviceType.getName(), descriptor.getIdentifier());
-			} else {
+			if (map.containsKey(serviceType)) {
 				ServiceClassDescriptor serviceClassDescriptor = map.get(serviceType);
 				try {
 					IMetaModelService service = serviceClassDescriptor.getInstance();
@@ -87,9 +84,6 @@ public class MetaModelServiceRegistry {
 					logError(ex);
 				}
 			}
-		} else {
-			// unknown descriptor, log warning
-			logWarning(Messages.metamodelservice_UnknownDescriptor, descriptor);
 		}
 		return null;
 	}

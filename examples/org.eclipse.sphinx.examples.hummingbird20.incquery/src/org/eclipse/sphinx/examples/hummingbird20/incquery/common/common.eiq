@@ -19,3 +19,7 @@ import "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common"
 pattern identifiables(identifiable : Identifiable) {
 	Identifiable(identifiable);
 }
+
+pattern identifiablesByName(identifiable : Identifiable, name) {
+	Identifiable.name(identifiable, name);
+}

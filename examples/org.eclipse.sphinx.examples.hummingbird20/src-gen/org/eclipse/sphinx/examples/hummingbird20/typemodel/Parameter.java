@@ -19,11 +19,12 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Parameter</b></em>'. <!-- end-user-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter#getDataType <em>Data Type</em>}</li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter#isOptional <em>Optional</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter#getDataType <em>Data Type</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter#isOptional <em>Optional</em>}</li>
  * </ul>
  * </p>
  *
@@ -33,13 +34,13 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
  */
 public interface Parameter extends Identifiable {
 	/**
-	 * Returns the value of the '<em><b>Data Type</b></em>' attribute. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Data Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Data Type</em>' attribute isn't clear, there really should be more of a description
 	 * here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Data Type</em>' attribute.
 	 * @see #setDataType(String)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getParameter_DataType()
@@ -49,24 +50,22 @@ public interface Parameter extends Identifiable {
 	String getDataType();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter#getDataType
-	 * <em>Data Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Data Type</em>' attribute.
+	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter#getDataType <em>Data Type</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Data Type</em>' attribute.
 	 * @see #getDataType()
 	 * @generated
 	 */
 	void setDataType(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Optional</b></em>' attribute. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Optional</b></em>' attribute.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Optional</em>' attribute isn't clear, there really should be more of a description
 	 * here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Optional</em>' attribute.
 	 * @see #setOptional(boolean)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getParameter_Optional()
@@ -76,11 +75,9 @@ public interface Parameter extends Identifiable {
 	boolean isOptional();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter#isOptional
-	 * <em>Optional</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Optional</em>' attribute.
+	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter#isOptional <em>Optional</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Optional</em>' attribute.
 	 * @see #isOptional()
 	 * @generated
 	 */

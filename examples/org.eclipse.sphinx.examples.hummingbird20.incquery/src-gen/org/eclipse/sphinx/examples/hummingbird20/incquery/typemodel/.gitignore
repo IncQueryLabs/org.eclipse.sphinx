@@ -9,3 +9,13 @@
 /.PortsMatch.java._trace
 /.PortsMatcher.java._trace
 /.Typemodel.java._trace
+/.ComponentTypesByNameMatch.java._trace
+/.ComponentTypesByNameMatcher.java._trace
+/.PlatformsByNameMatch.java._trace
+/.PlatformsByNameMatcher.java._trace
+/.PortsByNameMatch.java._trace
+/.PortsByNameMatcher.java._trace
+/.InterfacesByNameMatch.java._trace
+/.InterfacesByNameMatcher.java._trace
+/.ParametersByNameMatch.java._trace
+/.ParametersByNameMatcher.java._trace

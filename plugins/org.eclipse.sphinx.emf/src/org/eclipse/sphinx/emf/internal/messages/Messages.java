@@ -105,7 +105,6 @@ public class Messages extends NLS {
 
 	public static String metamodelservice_ServiceAlreadyExists;
 	public static String metamodelservice_UnknownMM;
-	public static String metamodelservice_UnknownDescriptor;
 	public static String metamodelservice_ServiceNotImplemented;
 	public static String metamodelservice_InvalidServiceClass;
 	public static String metamodelservice_MissingServiceType;

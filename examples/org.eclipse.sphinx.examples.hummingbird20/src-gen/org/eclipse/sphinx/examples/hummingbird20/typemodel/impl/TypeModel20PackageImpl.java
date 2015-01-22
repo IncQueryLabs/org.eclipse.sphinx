@@ -36,41 +36,35 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
- * 
  * @generated
  */
 public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20Package {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private EClass platformEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private EClass componentTypeEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private EClass portEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private EClass interfaceEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private EClass parameterEClass = null;
@@ -94,7 +88,6 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private static boolean isInited = false;
@@ -112,13 +105,10 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	 * @generated
 	 */
 	public static TypeModel20Package init() {
-		if (isInited) {
-			return (TypeModel20Package) EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI);
-		}
+		if (isInited) return (TypeModel20Package)EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI);
 
 		// Obtain or create and register package
-		TypeModel20PackageImpl theTypeModel20Package = (TypeModel20PackageImpl) (EPackage.Registry.INSTANCE.get(eNS_URI) instanceof TypeModel20PackageImpl ? EPackage.Registry.INSTANCE
-				.get(eNS_URI) : new TypeModel20PackageImpl());
+		TypeModel20PackageImpl theTypeModel20Package = (TypeModel20PackageImpl)(EPackage.Registry.INSTANCE.get(eNS_URI) instanceof TypeModel20PackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI) : new TypeModel20PackageImpl());
 
 		isInited = true;
 
@@ -127,11 +117,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 		XMLTypePackage.eINSTANCE.eClass();
 
 		// Obtain or create and register interdependencies
-		Common20PackageImpl theCommon20Package = (Common20PackageImpl) (EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI) instanceof Common20PackageImpl ? EPackage.Registry.INSTANCE
-				.getEPackage(Common20Package.eNS_URI) : Common20Package.eINSTANCE);
-		InstanceModel20PackageImpl theInstanceModel20Package = (InstanceModel20PackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(InstanceModel20Package.eNS_URI) instanceof InstanceModel20PackageImpl ? EPackage.Registry.INSTANCE
-				.getEPackage(InstanceModel20Package.eNS_URI) : InstanceModel20Package.eINSTANCE);
+		Common20PackageImpl theCommon20Package = (Common20PackageImpl)(EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI) instanceof Common20PackageImpl ? EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI) : Common20Package.eINSTANCE);
+		InstanceModel20PackageImpl theInstanceModel20Package = (InstanceModel20PackageImpl)(EPackage.Registry.INSTANCE.getEPackage(InstanceModel20Package.eNS_URI) instanceof InstanceModel20PackageImpl ? EPackage.Registry.INSTANCE.getEPackage(InstanceModel20Package.eNS_URI) : InstanceModel20Package.eINSTANCE);
 
 		// Create package meta-data objects
 		theTypeModel20Package.createPackageContents();
@@ -146,6 +133,7 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 		// Mark meta-data to indicate it can't be changed
 		theTypeModel20Package.freeze();
 
+  
 		// Update the registry and return the package
 		EPackage.Registry.INSTANCE.put(TypeModel20Package.eNS_URI, theTypeModel20Package);
 		return theTypeModel20Package;
@@ -153,7 +141,6 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -163,47 +150,42 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getPlatform_ComponentTypes() {
-		return (EReference) platformEClass.getEStructuralFeatures().get(0);
+		return (EReference)platformEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getPlatform_Interfaces() {
-		return (EReference) platformEClass.getEStructuralFeatures().get(1);
+		return (EReference)platformEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getPlatform_Mixed() {
-		return (EAttribute) platformEClass.getEStructuralFeatures().get(2);
+		return (EAttribute)platformEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getPlatform_XSISchemaLocation() {
-		return (EReference) platformEClass.getEStructuralFeatures().get(3);
+		return (EReference)platformEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -213,37 +195,33 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getComponentType_ProvidedInterfaces() {
-		return (EReference) componentTypeEClass.getEStructuralFeatures().get(0);
+		return (EReference)componentTypeEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getComponentType_Ports() {
-		return (EReference) componentTypeEClass.getEStructuralFeatures().get(1);
+		return (EReference)componentTypeEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getComponentType_Parameters() {
-		return (EReference) componentTypeEClass.getEStructuralFeatures().get(2);
+		return (EReference)componentTypeEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -253,47 +231,42 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getPort_Owner() {
-		return (EReference) portEClass.getEStructuralFeatures().get(0);
+		return (EReference)portEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getPort_RequiredInterface() {
-		return (EReference) portEClass.getEStructuralFeatures().get(1);
+		return (EReference)portEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getPort_MinProviderCount() {
-		return (EAttribute) portEClass.getEStructuralFeatures().get(2);
+		return (EAttribute)portEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getPort_MaxProviderCount() {
-		return (EAttribute) portEClass.getEStructuralFeatures().get(3);
+		return (EAttribute)portEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -303,27 +276,24 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getInterface_ProvidingComponentTypes() {
-		return (EReference) interfaceEClass.getEStructuralFeatures().get(0);
+		return (EReference)interfaceEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getInterface_RequiringPorts() {
-		return (EReference) interfaceEClass.getEStructuralFeatures().get(1);
+		return (EReference)interfaceEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -333,51 +303,45 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getParameter_DataType() {
-		return (EAttribute) parameterEClass.getEStructuralFeatures().get(0);
+		return (EAttribute)parameterEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getParameter_Optional() {
-		return (EAttribute) parameterEClass.getEStructuralFeatures().get(1);
+		return (EAttribute)parameterEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public TypeModel20Factory getTypeModel20Factory() {
-		return (TypeModel20Factory) getEFactoryInstance();
+		return (TypeModel20Factory)getEFactoryInstance();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private boolean isCreated = false;
 
 	/**
-	 * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but
-	 * its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Creates the meta-model objects for the package.  This method is
+	 * guarded to have no affect on any invocation but its first.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void createPackageContents() {
-		if (isCreated) {
-			return;
-		}
+		if (isCreated) return;
 		isCreated = true;
 
 		// Create classes and their features
@@ -409,21 +373,18 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private boolean isInitialized = false;
 
 	/**
-	 * Complete the initialization of the package and its meta-model. This method is guarded to have no affect on any
-	 * invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Complete the initialization of the package and its meta-model.  This
+	 * method is guarded to have no affect on any invocation but its first.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void initializePackageContents() {
-		if (isInitialized) {
-			return;
-		}
+		if (isInitialized) return;
 		isInitialized = true;
 
 		// Initialize package
@@ -432,8 +393,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 		setNsURI(eNS_URI);
 
 		// Obtain other dependent packages
-		Common20Package theCommon20Package = (Common20Package) EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI);
-		EcorePackage theEcorePackage = (EcorePackage) EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
+		Common20Package theCommon20Package = (Common20Package)EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI);
+		EcorePackage theEcorePackage = (EcorePackage)EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
 
 		// Create type parameters
 
@@ -448,84 +409,29 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(platformEClass, Platform.class, "Platform", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEReference(
-				getPlatform_ComponentTypes(),
-				getComponentType(),
-				null,
-				"componentTypes", null, 1, -1, Platform.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getPlatform_Interfaces(),
-				getInterface(),
-				null,
-				"interfaces", null, 0, -1, Platform.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEAttribute(
-				getPlatform_Mixed(),
-				ecorePackage.getEFeatureMapEntry(),
-				"mixed", null, 0, -1, Platform.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getPlatform_XSISchemaLocation(),
-				theEcorePackage.getEStringToStringMapEntry(),
-				null,
-				"xSISchemaLocation", null, 0, -1, Platform.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getPlatform_ComponentTypes(), this.getComponentType(), null, "componentTypes", null, 1, -1, Platform.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getPlatform_Interfaces(), this.getInterface(), null, "interfaces", null, 0, -1, Platform.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getPlatform_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, Platform.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getPlatform_XSISchemaLocation(), theEcorePackage.getEStringToStringMapEntry(), null, "xSISchemaLocation", null, 0, -1, Platform.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(componentTypeEClass, ComponentType.class, "ComponentType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEReference(
-				getComponentType_ProvidedInterfaces(),
-				getInterface(),
-				getInterface_ProvidingComponentTypes(),
-				"providedInterfaces", null, 0, -1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getComponentType_Ports(),
-				getPort(),
-				getPort_Owner(),
-				"ports", null, 0, -1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getComponentType_Parameters(),
-				getParameter(),
-				null,
-				"parameters", null, 0, -1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getComponentType_ProvidedInterfaces(), this.getInterface(), this.getInterface_ProvidingComponentTypes(), "providedInterfaces", null, 0, -1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getComponentType_Ports(), this.getPort(), this.getPort_Owner(), "ports", null, 0, -1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getComponentType_Parameters(), this.getParameter(), null, "parameters", null, 0, -1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(portEClass, Port.class, "Port", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEReference(
-				getPort_Owner(),
-				getComponentType(),
-				getComponentType_Ports(),
-				"owner", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getPort_RequiredInterface(),
-				getInterface(),
-				getInterface_RequiringPorts(),
-				"requiredInterface", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEAttribute(
-				getPort_MinProviderCount(),
-				ecorePackage.getEInt(),
-				"minProviderCount", null, 0, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEAttribute(
-				getPort_MaxProviderCount(),
-				ecorePackage.getEInt(),
-				"maxProviderCount", null, 0, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getPort_Owner(), this.getComponentType(), this.getComponentType_Ports(), "owner", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getPort_RequiredInterface(), this.getInterface(), this.getInterface_RequiringPorts(), "requiredInterface", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getPort_MinProviderCount(), ecorePackage.getEInt(), "minProviderCount", null, 0, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getPort_MaxProviderCount(), ecorePackage.getEInt(), "maxProviderCount", null, 0, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(interfaceEClass, Interface.class, "Interface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEReference(
-				getInterface_ProvidingComponentTypes(),
-				getComponentType(),
-				getComponentType_ProvidedInterfaces(),
-				"providingComponentTypes", null, 0, -1, Interface.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getInterface_RequiringPorts(),
-				getPort(),
-				getPort_RequiredInterface(),
-				"requiringPorts", null, 0, -1, Interface.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getInterface_ProvidingComponentTypes(), this.getComponentType(), this.getComponentType_ProvidedInterfaces(), "providingComponentTypes", null, 0, -1, Interface.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getInterface_RequiringPorts(), this.getPort(), this.getPort_RequiredInterface(), "requiringPorts", null, 0, -1, Interface.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(parameterEClass, Parameter.class, "Parameter", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEAttribute(
-				getParameter_DataType(),
-				ecorePackage.getEString(),
-				"dataType", null, 0, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEAttribute(
-				getParameter_Optional(),
-				ecorePackage.getEBoolean(),
-				"optional", null, 0, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getParameter_DataType(), ecorePackage.getEString(), "dataType", null, 0, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getParameter_Optional(), ecorePackage.getEBoolean(), "optional", null, 0, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		// Create resource
 		createResource(eNS_URI);
@@ -536,21 +442,33 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 	}
 
 	/**
-	 * Initializes the annotations for <b>http:///org/eclipse/emf/ecore/util/ExtendedMetaData</b>. <!-- begin-user-doc
+	 * Initializes the annotations for <b>http:///org/eclipse/emf/ecore/util/ExtendedMetaData</b>.
+	 * <!-- begin-user-doc
 	 * --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected void createExtendedMetaDataAnnotations() {
-		String source = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData"; //$NON-NLS-1$
-		addAnnotation(platformEClass, source, new String[] { "kind", "mixed" //$NON-NLS-1$ //$NON-NLS-2$
-		});
-		addAnnotation(getPlatform_Mixed(), source, new String[] { "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
-				"kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
-		});
-		addAnnotation(getPlatform_XSISchemaLocation(), source, new String[] { "name", "xsi:schemaLocation", //$NON-NLS-1$ //$NON-NLS-2$
-				"kind", "element" //$NON-NLS-1$ //$NON-NLS-2$
-		});
+		String source = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData"; //$NON-NLS-1$	
+		addAnnotation
+		  (platformEClass, 
+		   source, 
+		   new String[] {
+			 "kind", "mixed" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getPlatform_Mixed(), 
+		   source, 
+		   new String[] {
+			 "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
+			 "kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getPlatform_XSISchemaLocation(), 
+		   source, 
+		   new String[] {
+			 "name", "xsi:schemaLocation", //$NON-NLS-1$ //$NON-NLS-2$
+			 "kind", "element" //$NON-NLS-1$ //$NON-NLS-2$
+		   });
 	}
 
 } // TypeModel20PackageImpl

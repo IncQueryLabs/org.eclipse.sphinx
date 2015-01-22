@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.emf.ecore.proxymanagement;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 
@@ -40,4 +41,9 @@ public interface IProxyResolver {
 	 *         <code>proxy</code> cannot be resolved.
 	 */
 	EObject getEObject(EObject proxy, EObject contextObject, boolean loadOnDemand);
+
+	/**
+	 * Returns the object resolved by the URI.
+	 */
+	EObject getEObject(URI uri, boolean loadOnDemand);
 }

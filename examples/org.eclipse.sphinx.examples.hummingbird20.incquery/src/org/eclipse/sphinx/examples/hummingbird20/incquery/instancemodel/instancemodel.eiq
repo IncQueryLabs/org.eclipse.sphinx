@@ -15,15 +15,28 @@
 package org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel
 
 import "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel"
+import "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common"
 
 pattern applications(app : Application){
 	Application(app);
+}
+
+pattern applicationsByName(app : Application, name){
+	Application.name(app, name);
 }
 
 pattern components(component : Component) {
 	Component(component);
 }
 
+pattern componentsByName(component : Component, name) {
+	Component.name(component, name);
+}
+
 pattern connections(connection : Connection){
 	Connection(connection);
+}
+
+pattern connectionsByName(connection : Connection, name){
+	Connection.name(connection, name);
 }

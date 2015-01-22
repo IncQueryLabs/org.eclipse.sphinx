@@ -21,18 +21,38 @@ pattern platforms(platform : Platform){
 	Platform(platform);
 }
 
+pattern platformsByName(platform : Platform, name){
+	Platform.name(platform, name);
+}
+
 pattern componentTypes(componentType : ComponentType) {
 	ComponentType(componentType);
+}
+
+pattern componentTypesByName(componentType : ComponentType, name) {
+	ComponentType.name(componentType, name);
 }
 
 pattern ports(port : Port){
 	Port(port);
 }
 
+pattern portsByName(port : Port, name){
+	Port.name(port, name);
+}
+
 pattern interfaces(interface : Interface){
 	Interface(interface);
 }
 
+pattern interfacesByName(interface : Interface,name){
+	Interface.name(interface, name);
+}
+
 pattern parameters(param : Parameter){
 	Parameter(param);
+}
+
+pattern parametersByName(param : Parameter, name){
+	Parameter.name(param, name);
 }

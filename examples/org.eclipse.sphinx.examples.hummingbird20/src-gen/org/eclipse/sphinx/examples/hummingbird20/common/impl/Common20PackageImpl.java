@@ -33,20 +33,17 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.TypeModel20Packa
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
- * 
  * @generated
  */
 public class Common20PackageImpl extends EPackageImpl implements Common20Package {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private EClass identifiableEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private EClass descriptionEClass = null;
@@ -70,31 +67,27 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private static boolean isInited = false;
 
 	/**
 	 * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
-	 * <p>
-	 * This method is used to initialize {@link Common20Package#eINSTANCE} when that field is accessed. Clients should
-	 * not invoke it directly. Instead, they should simply access that field to obtain the package. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
 	 * 
+	 * <p>This method is used to initialize {@link Common20Package#eINSTANCE} when that field is accessed.
+	 * Clients should not invoke it directly. Instead, they should simply access that field to obtain the package.
+	 * <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
 	 * @see #eNS_URI
 	 * @see #createPackageContents()
 	 * @see #initializePackageContents()
 	 * @generated
 	 */
 	public static Common20Package init() {
-		if (isInited) {
-			return (Common20Package) EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI);
-		}
+		if (isInited) return (Common20Package)EPackage.Registry.INSTANCE.getEPackage(Common20Package.eNS_URI);
 
 		// Obtain or create and register package
-		Common20PackageImpl theCommon20Package = (Common20PackageImpl) (EPackage.Registry.INSTANCE.get(eNS_URI) instanceof Common20PackageImpl ? EPackage.Registry.INSTANCE
-				.get(eNS_URI) : new Common20PackageImpl());
+		Common20PackageImpl theCommon20Package = (Common20PackageImpl)(EPackage.Registry.INSTANCE.get(eNS_URI) instanceof Common20PackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI) : new Common20PackageImpl());
 
 		isInited = true;
 
@@ -103,11 +96,8 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 		XMLTypePackage.eINSTANCE.eClass();
 
 		// Obtain or create and register interdependencies
-		TypeModel20PackageImpl theTypeModel20Package = (TypeModel20PackageImpl) (EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI) instanceof TypeModel20PackageImpl ? EPackage.Registry.INSTANCE
-				.getEPackage(TypeModel20Package.eNS_URI) : TypeModel20Package.eINSTANCE);
-		InstanceModel20PackageImpl theInstanceModel20Package = (InstanceModel20PackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(InstanceModel20Package.eNS_URI) instanceof InstanceModel20PackageImpl ? EPackage.Registry.INSTANCE
-				.getEPackage(InstanceModel20Package.eNS_URI) : InstanceModel20Package.eINSTANCE);
+		TypeModel20PackageImpl theTypeModel20Package = (TypeModel20PackageImpl)(EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI) instanceof TypeModel20PackageImpl ? EPackage.Registry.INSTANCE.getEPackage(TypeModel20Package.eNS_URI) : TypeModel20Package.eINSTANCE);
+		InstanceModel20PackageImpl theInstanceModel20Package = (InstanceModel20PackageImpl)(EPackage.Registry.INSTANCE.getEPackage(InstanceModel20Package.eNS_URI) instanceof InstanceModel20PackageImpl ? EPackage.Registry.INSTANCE.getEPackage(InstanceModel20Package.eNS_URI) : InstanceModel20Package.eINSTANCE);
 
 		// Create package meta-data objects
 		theCommon20Package.createPackageContents();
@@ -122,6 +112,7 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 		// Mark meta-data to indicate it can't be changed
 		theCommon20Package.freeze();
 
+  
 		// Update the registry and return the package
 		EPackage.Registry.INSTANCE.put(Common20Package.eNS_URI, theCommon20Package);
 		return theCommon20Package;
@@ -129,7 +120,6 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -139,27 +129,24 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getIdentifiable_Name() {
-		return (EAttribute) identifiableEClass.getEStructuralFeatures().get(0);
+		return (EAttribute)identifiableEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getIdentifiable_Description() {
-		return (EReference) identifiableEClass.getEStructuralFeatures().get(1);
+		return (EReference)identifiableEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -169,41 +156,36 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getDescription_Mixed() {
-		return (EAttribute) descriptionEClass.getEStructuralFeatures().get(0);
+		return (EAttribute)descriptionEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Common20Factory getCommon20Factory() {
-		return (Common20Factory) getEFactoryInstance();
+		return (Common20Factory)getEFactoryInstance();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private boolean isCreated = false;
 
 	/**
-	 * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but
-	 * its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Creates the meta-model objects for the package.  This method is
+	 * guarded to have no affect on any invocation but its first.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void createPackageContents() {
-		if (isCreated) {
-			return;
-		}
+		if (isCreated) return;
 		isCreated = true;
 
 		// Create classes and their features
@@ -217,21 +199,18 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private boolean isInitialized = false;
 
 	/**
-	 * Complete the initialization of the package and its meta-model. This method is guarded to have no affect on any
-	 * invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Complete the initialization of the package and its meta-model.  This
+	 * method is guarded to have no affect on any invocation but its first.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void initializePackageContents() {
-		if (isInitialized) {
-			return;
-		}
+		if (isInitialized) return;
 		isInitialized = true;
 
 		// Initialize package
@@ -247,21 +226,11 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(identifiableEClass, Identifiable.class, "Identifiable", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEAttribute(
-				getIdentifiable_Name(),
-				ecorePackage.getEString(),
-				"name", null, 0, 1, Identifiable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-		initEReference(
-				getIdentifiable_Description(),
-				getDescription(),
-				null,
-				"description", null, 0, 1, Identifiable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getIdentifiable_Name(), ecorePackage.getEString(), "name", null, 0, 1, Identifiable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getIdentifiable_Description(), this.getDescription(), null, "description", null, 0, 1, Identifiable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(descriptionEClass, Description.class, "Description", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-		initEAttribute(
-				getDescription_Mixed(),
-				ecorePackage.getEFeatureMapEntry(),
-				"mixed", null, 0, -1, Description.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getDescription_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, Description.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		// Create resource
 		createResource(eNS_URI);
@@ -272,18 +241,26 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	}
 
 	/**
-	 * Initializes the annotations for <b>http:///org/eclipse/emf/ecore/util/ExtendedMetaData</b>. <!-- begin-user-doc
+	 * Initializes the annotations for <b>http:///org/eclipse/emf/ecore/util/ExtendedMetaData</b>.
+	 * <!-- begin-user-doc
 	 * --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected void createExtendedMetaDataAnnotations() {
-		String source = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData"; //$NON-NLS-1$
-		addAnnotation(descriptionEClass, source, new String[] { "kind", "mixed" //$NON-NLS-1$ //$NON-NLS-2$
-		});
-		addAnnotation(getDescription_Mixed(), source, new String[] { "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
-				"kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
-		});
+		String source = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData"; //$NON-NLS-1$	
+		addAnnotation
+		  (descriptionEClass, 
+		   source, 
+		   new String[] {
+			 "kind", "mixed" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getDescription_Mixed(), 
+		   source, 
+		   new String[] {
+			 "name", ":mixed", //$NON-NLS-1$ //$NON-NLS-2$
+			 "kind", "elementWildcard" //$NON-NLS-1$ //$NON-NLS-2$
+		   });
 	}
 
 } // Common20PackageImpl

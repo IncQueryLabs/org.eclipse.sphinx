@@ -5,3 +5,9 @@
 /.ConnectionsMatch.java._trace
 /.ConnectionsMatcher.java._trace
 /.Instancemodel.java._trace
+/.ApplicationsByNameMatch.java._trace
+/.ApplicationsByNameMatcher.java._trace
+/.ComponentsByNameMatch.java._trace
+/.ComponentsByNameMatcher.java._trace
+/.ConnectionsByNameMatch.java._trace
+/.ConnectionsByNameMatcher.java._trace

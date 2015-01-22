@@ -18,11 +18,13 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolver;
 import org.eclipse.sphinx.emf.incquery.AbstractIncQueryProvider;
 import org.eclipse.sphinx.emf.incquery.internal.Activator;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
@@ -38,7 +40,15 @@ public abstract class AbstractProxyResolver extends AbstractIncQueryProvider imp
 	 * @param engine
 	 * @return
 	 */
-	protected abstract EObject[] getEObjectCandidates(EObject proxy, EObject contextObject, IncQueryEngine engine);
+	protected abstract EObject[] getEObjectCandidates(EObject proxy, Object contextObject, IncQueryEngine engine);
+
+	/**
+	 * @param proxyURI
+	 * @param contextObject
+	 * @param engine
+	 * @return
+	 */
+	protected abstract EObject[] getEObjectCandidates(URI proxyURI, Object contextObject, IncQueryEngine engine);
 
 	protected Class<?> getInstanceClass(EObject proxy) {
 		if (proxy != null && proxy.eClass() != null) {
@@ -58,8 +68,24 @@ public abstract class AbstractProxyResolver extends AbstractIncQueryProvider imp
 		return null;
 	}
 
+	protected EObject getMatchingEObject(URI uri, EObject[] eObjectCandidates) {
+		if (uri != null && eObjectCandidates != null) {
+			for (EObject eObj : eObjectCandidates) {
+				if (matches(uri, eObj)) {
+					return eObj;
+				}
+			}
+		}
+		return null;
+	}
+
 	protected boolean matches(EObject proxy, EObject candidate) {
 		URI proxyURI = ((InternalEObject) proxy).eProxyURI();
+		return matches(proxyURI, candidate);
+	}
+
+	protected boolean matches(URI proxyURI, EObject candidate) {
+		proxyURI = proxyURI.trimQuery();
 		URI candidateURI = EcoreResourceUtil.getURI(candidate);
 		return proxyURI.equals(candidateURI);
 	}
@@ -90,5 +116,24 @@ public abstract class AbstractProxyResolver extends AbstractIncQueryProvider imp
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
 		return null;
+	}
+
+	@Override
+	public EObject getEObject(URI uri, boolean loadOnDemand) {
+		try {
+			Resource contextResource = getContextResource(uri);
+			if (contextResource != null) {
+				IncQueryEngine engine = getIncQueryEngineHelper().getEngine(contextResource);
+				EObject[] eObjectCandidates = getEObjectCandidates(uri, contextResource, engine);
+				return getMatchingEObject(uri, eObjectCandidates);
+			}
+		} catch (IncQueryException ex) {
+			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+		}
+		return null;
+	}
+
+	protected Resource getContextResource(URI proxyURI) {
+		return EcorePlatformUtil.getResource(proxyURI.trimFragment());
 	}
 }

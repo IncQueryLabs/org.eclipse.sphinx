@@ -8,3 +8,13 @@
 /.PlatformsQuerySpecification.java._trace
 /.PortsProcessor.java._trace
 /.PortsQuerySpecification.java._trace
+/.ComponentTypesByNameProcessor.java._trace
+/.ComponentTypesByNameQuerySpecification.java._trace
+/.PlatformsByNameProcessor.java._trace
+/.PlatformsByNameQuerySpecification.java._trace
+/.PortsByNameProcessor.java._trace
+/.PortsByNameQuerySpecification.java._trace
+/.InterfacesByNameProcessor.java._trace
+/.InterfacesByNameQuerySpecification.java._trace
+/.ParametersByNameProcessor.java._trace
+/.ParametersByNameQuerySpecification.java._trace
