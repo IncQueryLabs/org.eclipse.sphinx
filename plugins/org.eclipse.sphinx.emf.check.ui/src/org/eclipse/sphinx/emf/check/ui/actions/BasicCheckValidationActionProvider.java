@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.emf.check.ui.actions;
 
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
@@ -55,7 +54,7 @@ public class BasicCheckValidationActionProvider extends BasicActionProvider {
 
 	@Override
 	protected void fillSubMenu(IMenuManager subMenuManager) {
-		subMenuManager.add(new ActionContributionItem(validateAction));
+		subMenuManager.add(validateAction);
 	}
 
 	@Override

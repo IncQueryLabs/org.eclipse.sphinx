@@ -14,7 +14,6 @@
  */
 package org.eclipse.sphinx.examples.hummingbird.metamodelgen.ui.actions.providers;
 
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
@@ -82,9 +81,9 @@ public class HummingbirdMetaModelGenActionProvider extends AbstractHummingbirdEx
 	 */
 	@Override
 	protected void fillSubMenu(IMenuManager subMenuManager) {
-		subMenuManager.add(new ActionContributionItem(generateXMLPersistenceMappingsAction));
-		subMenuManager.add(new ActionContributionItem(generateXSDAction));
-		subMenuManager.add(new ActionContributionItem(generateXMLPersistenceMappingsAndXSDAction));
+		subMenuManager.add(generateXMLPersistenceMappingsAction);
+		subMenuManager.add(generateXSDAction);
+		subMenuManager.add(generateXMLPersistenceMappingsAndXSDAction);
 	}
 
 	/*

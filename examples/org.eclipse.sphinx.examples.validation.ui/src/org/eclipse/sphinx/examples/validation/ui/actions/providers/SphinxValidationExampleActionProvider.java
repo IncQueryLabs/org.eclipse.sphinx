@@ -1,27 +1,26 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.validation.ui.actions.providers;
 
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.sphinx.examples.validation.ui.actions.BasicValidateSelectedCategoriesAction;
 
 /**
  * {@link AbstractSphinxValidationExampleActionProvider Provider} for Sphinx validation example actions.
- * 
+ *
  * @since 0.7.0
  */
 public class SphinxValidationExampleActionProvider extends AbstractSphinxValidationExampleActionProvider {
@@ -49,6 +48,6 @@ public class SphinxValidationExampleActionProvider extends AbstractSphinxValidat
 	protected void populateActions(IMenuManager menu, IStructuredSelection selection, boolean enabled) {
 		validateCategoriesAction.selectionChanged(selection);
 		validateCategoriesAction.setEnabled(enabled);
-		menu.add(new ActionContributionItem(validateCategoriesAction));
+		menu.add(validateCategoriesAction);
 	}
 }
