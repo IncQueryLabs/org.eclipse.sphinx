@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [457704] Integrate EMF compare 3.x in Sphinx
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.compare.ui.editor;
@@ -67,7 +68,7 @@ public class ModelCompareActionBarContributor extends EditingDomainActionBarCont
 	 * Creates the {@linkplain IOperationHistoryListener operation history listener} that is responsible for setting
 	 * editing domain on <em>undo</em>/<em>redo</em> actions as soon as an operation (on the command stack of that
 	 * precise editing domain) has been finished.
-	 * 
+	 *
 	 * @return The {@linkplain IOperationHistoryListener operation history listener} to add on the concerned editing
 	 *         domain's command stack.
 	 */
@@ -138,7 +139,7 @@ public class ModelCompareActionBarContributor extends EditingDomainActionBarCont
 	 * Returns the {@linkplain RedoAction} this action bar contributor must provide. Default implementation creates a
 	 * new instance of {@linkplain RedoActionWrapper}; clients may override this method in order to create another kind
 	 * of action instead.
-	 * 
+	 *
 	 * @return The {@linkplain RedoAction} this action bar contributor must provide.
 	 */
 	@Override
@@ -150,7 +151,7 @@ public class ModelCompareActionBarContributor extends EditingDomainActionBarCont
 	 * Returns the {@linkplain UndoAction} this action bar contributor must provide. Default implementation creates a
 	 * new instance of {@linkplain UndoActionWrapper}; clients may override this method in order to create another kind
 	 * of action instead.
-	 * 
+	 *
 	 * @return The {@linkplain UndoAction} this action bar contributor must provide.
 	 */
 	@Override

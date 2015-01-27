@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2010 See4sys and others.
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     See4sys - Initial API and implementation
+ *     itemis - [457704] Integrate EMF compare 3.x in Sphinx
  *
  * </copyright>
  */
@@ -25,6 +26,7 @@ import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
@@ -37,6 +39,7 @@ import org.eclipse.emf.workspace.IWorkspaceCommandStack;
 import org.eclipse.emf.workspace.ResourceUndoContext;
 import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -137,10 +140,12 @@ public class ModelCompareEditor extends CompareEditor {
 	 * {@linkplain IUndoContext undo context} encapsulated by this editor.
 	 * <p>
 	 * Clients may override this default implementation.
-	 * 
+	 *
 	 * @return The {@linkplain IOperationHistoryListener operation history listener} to register on the command stack of
 	 *         the concerned editing domain.
 	 */
+	// TODO Replace with ModelEditorUndoContextManager, Move org.eclipse.sphinx.gmf.runtime.ui.internal.editor.* to new
+	// plug-in org.eclipse.sphinx.editors, also reuse ModelEditorInputSynchronizer.java
 	protected IOperationHistoryListener createAffectedObjectsListener() {
 		return new IOperationHistoryListener() {
 
@@ -255,7 +260,7 @@ public class ModelCompareEditor extends CompareEditor {
 	 */
 	public TransactionalEditingDomain[] getEditingDomains() {
 		TransactionalEditingDomain[] editingDomains = new TransactionalEditingDomain[2];
-		EObject[] modelRoots = getModelRoots();
+		Object[] modelRoots = getModelRoots();
 		if (modelRoots[0] != null) {
 			editingDomains[0] = WorkspaceEditingDomainUtil.getEditingDomain(modelRoots[0]);
 		}
@@ -281,14 +286,14 @@ public class ModelCompareEditor extends CompareEditor {
 
 	/**
 	 * @return The root objects of the model part that are currently being compared in this editor or an empty array if
-	 *         no such objects are available. Anyway, always returns an array of {@linkplain EObject}s which size is 2
+	 *         no such objects are available. Anyway, always returns an array of {@linkplain Object}s which size is 2
 	 *         and where at index 0 is the left root and at index 1 is the right root.
 	 */
-	public EObject[] getModelRoots() {
-		EObject[] modelRoots = new EObject[2];
+	public Object[] getModelRoots() {
+		Object[] modelRoots = new Object[2];
 		IEditorInput editorInput = getEditorInput();
-		if (editorInput instanceof ModelElementCompareEditorInput) {
-			modelRoots = ((ModelElementCompareEditorInput) editorInput).getModelRoots();
+		if (editorInput instanceof ModelElementComparisonScopeEditorInput) {
+			modelRoots = ((ModelElementComparisonScopeEditorInput) editorInput).getModelRoots();
 		}
 		return modelRoots;
 	}
@@ -302,16 +307,18 @@ public class ModelCompareEditor extends CompareEditor {
 	 * {@linkplain Resource}s whose size is 2.</td>
 	 * </tr>
 	 * </table>
-	 * 
+	 *
 	 * @return
 	 */
 	protected Resource[] getModelRootsResources() {
 		Resource[] resources = new Resource[2];
-		EObject[] modelRoots = getModelRoots();
+		Object[] modelRoots = getModelRoots();
 		for (int i = 0; i < 2; i++) {
-			EObject modelRoot = modelRoots[i];
-			if (modelRoot != null) {
-				resources[i] = modelRoot.eResource();
+			Object modelRoot = modelRoots[i];
+			if (modelRoot instanceof EObject) {
+				resources[i] = ((EObject) modelRoot).eResource();
+			} else if (modelRoot instanceof IFile) {
+				resources[i] = EcorePlatformUtil.getResource((IFile) modelRoot);
 			}
 		}
 		return resources;
@@ -319,7 +326,7 @@ public class ModelCompareEditor extends CompareEditor {
 
 	protected String getModelRootsNames() {
 		String[] labels = new String[2];
-		EObject[] modelRoots = getModelRoots();
+		Object[] modelRoots = getModelRoots();
 		AdapterFactoryItemDelegator[] itemDelegators = getItemDelegators();
 		for (int i = 0; i < 2; i++) {
 			if (modelRoots[i] != null && itemDelegators[i] != null) {
@@ -364,7 +371,7 @@ public class ModelCompareEditor extends CompareEditor {
 
 	@Override
 	public void setInput(IEditorInput input) {
-		if (input instanceof ModelElementCompareEditorInput) {
+		if (input instanceof ModelElementComparisonScopeEditorInput) {
 			super.setInput(input);
 		} else {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), new RuntimeException(Messages.error_invalidEditorInput));

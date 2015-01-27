@@ -39,39 +39,21 @@ Contributors:
             name="%sphinx.emf.compare.ui.editors.modelCompareEditor.name">
       </editor>
    </extension>
+   <!--
    <extension
          point="org.eclipse.compare.contentMergeViewers">
       <viewer
-            class="org.eclipse.sphinx.emf.compare.ui.viewer.content.ModelElementContentMergeViewerCreator"
+            class="org.eclipse.sphinx.emf.compare.ui.viewer.structuremerge.ModelElementStructureMergeViewerCreator"
             extensions="*"
             id="org.eclipse.sphinx.emf.compare.ui.viewer.content.modelElementContentMergeViewer">
       </viewer>
    </extension>
+   -->
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             adaptable="false"
-            id="org.eclipse.sphinx.emf.compare.ui.eclipse34FileContributions"
-            objectClass="org.eclipse.core.resources.IFile">
-         <action
-               class="org.eclipse.sphinx.emf.compare.ui.actions.FileCompareAction"
-               enablesFor="2+"
-               id="org.eclipse.sphinx.emf.compare.ui.actions.compareWithEachOther"
-               label="%sphinx.emf.compare.ui.actions.compareWithEachOther.label"
-               menubarPath="compareWithMenu/compareWithGroup"
-               overrideActionId="compareWithEachOther"
-               tooltip="%sphinx.emf.compare.ui.actions.compareWithEachOther.tooltip">
-         </action>
-         <visibility>
-            <systemProperty
-                  name="org.eclipse.platform.featureReleaseName"
-                  value="3.4">
-            </systemProperty>
-         </visibility>
-      </objectContribution>
-      <objectContribution
-            adaptable="false"
-            id="org.eclipse.sphinx.emf.compare.ui.eclipse35orLaterFileContributions"
+            id="org.eclipse.sphinx.emf.compare.ui.eclipse.FileContributions"
             objectClass="org.eclipse.core.resources.IFile">
          <action
                class="org.eclipse.sphinx.emf.compare.ui.actions.FileCompareAction"
@@ -82,14 +64,6 @@ Contributors:
                overrideActionId="org.eclipse.team.ui.compareWithEachOther"
                tooltip="%sphinx.emf.compare.ui.actions.compareWithEachOther.tooltip">
          </action>
-         <visibility>
-            <not>
-               <systemProperty
-                     name="org.eclipse.platform.featureReleaseName"
-                     value="3.4">
-               </systemProperty>
-            </not>
-         </visibility>
       </objectContribution>
       <objectContribution
             adaptable="false"
@@ -112,5 +86,21 @@ Contributors:
                tooltip="%sphinx.emf.compare.ui.actions.mergeWithEachOther.tooltip">
          </action>
       </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.compare.structureMergeViewers">
+      <viewer
+            class="org.eclipse.sphinx.emf.compare.ui.viewer.structuremerge.ModelElementStructureMergeViewerCreator"
+            extensions="*"
+            id="org.eclipse.emf.compare.ide.ui.internal.structureMergeViewer">
+      </viewer>
+      <contentTypeBinding
+            contentTypeId="org.eclipse.emf.ecore.xmi"
+            structureMergeViewerId="org.eclipse.sphinx.emf.compare.ui.viewer.structure.modelElementStructureMergeViewer">
+      </contentTypeBinding>
+      <contentTypeBinding
+            contentTypeId="org.eclipse.emf.compare.content.type"
+            structureMergeViewerId="org.eclipse.sphinx.emf.compare.ui.viewer.structure.modelElementStructureMergeViewer">
+      </contentTypeBinding>
    </extension>
 </plugin>

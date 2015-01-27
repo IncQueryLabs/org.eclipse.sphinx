@@ -1,33 +1,32 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [457704] Integrate EMF compare 3.x in Sphinx
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.compare.ui.actions.providers;
 
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.sphinx.emf.compare.ui.ICompareMenuConstants;
-import org.eclipse.sphinx.emf.compare.ui.actions.BasicAutoMergeAction;
 import org.eclipse.sphinx.emf.compare.ui.actions.BasicCompareAction;
 import org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider;
-import org.eclipse.ui.navigator.ICommonMenuConstants;
+import org.eclipse.ui.IWorkbenchActionConstants;
 
 /**
- * 
+ *
  */
 public class BasicCompareActionProvider extends BasicActionProvider {
 
@@ -35,23 +34,24 @@ public class BasicCompareActionProvider extends BasicActionProvider {
 	 * The compare action to use.
 	 */
 	protected BasicCompareAction compareAction;
-	protected BasicAutoMergeAction mergeAutoAction;
+
+	// FIXME protected BasicAutoMergeAction mergeAutoAction;
 
 	@Override
 	protected void doInit() {
 		compareAction = new BasicCompareAction();
-		mergeAutoAction = new BasicAutoMergeAction();
+		// FIXME mergeAutoAction = new BasicAutoMergeAction();
 
 		if (selectionProvider != null) {
 			selectionProvider.addSelectionChangedListener(compareAction);
-			selectionProvider.addSelectionChangedListener(mergeAutoAction);
+			// FIXME selectionProvider.addSelectionChangedListener(mergeAutoAction);
 
 			ISelection selection = selectionProvider.getSelection();
 			IStructuredSelection structuredSelection = selection instanceof IStructuredSelection ? (IStructuredSelection) selection
 					: StructuredSelection.EMPTY;
 
 			compareAction.updateSelection(structuredSelection);
-			mergeAutoAction.updateSelection(structuredSelection);
+			// FIXME mergeAutoAction.updateSelection(structuredSelection);
 		}
 	}
 
@@ -61,10 +61,15 @@ public class BasicCompareActionProvider extends BasicActionProvider {
 	 */
 	@Override
 	protected IMenuManager addSubMenu(IMenuManager contextMenuManager) {
-		IMenuManager subMenuManager = contextMenuManager.findMenuUsingPath(ICompareMenuConstants.MENU_COMPARE_ID);
+		// TODO Use existing Compare With group
+
+		// menu:compareWithMenu?after=org.eclipse.emf.compare.ide.ui.compareInEditor
+
+		IMenuManager subMenuManager = contextMenuManager.findMenuUsingPath("compareWithMenu");
 		if (subMenuManager == null) {
-			subMenuManager = new MenuManager(ICompareMenuConstants.MENU_COMPARE_LABEL, ICompareMenuConstants.MENU_COMPARE_ID);
-			contextMenuManager.appendToGroup(ICommonMenuConstants.GROUP_ADDITIONS, subMenuManager);
+			subMenuManager = new MenuManager("Compare With", "compareWithMenu");
+			subMenuManager.add(new Separator("compareWithGroup"));
+			contextMenuManager.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, subMenuManager);
 		}
 		return subMenuManager;
 	}
@@ -76,8 +81,9 @@ public class BasicCompareActionProvider extends BasicActionProvider {
 	 */
 	@Override
 	protected void fillSubMenu(IMenuManager subMenuManager) {
-		subMenuManager.add(new ActionContributionItem(compareAction));
-		subMenuManager.add(new ActionContributionItem(mergeAutoAction));
+		// TODO check others...
+		subMenuManager.add(compareAction);
+		// FIXME subMenuManager.add(new ActionContributionItem(mergeAutoAction));
 	}
 
 	@Override
@@ -87,9 +93,9 @@ public class BasicCompareActionProvider extends BasicActionProvider {
 			if (compareAction != null) {
 				selectionProvider.removeSelectionChangedListener(compareAction);
 			}
-			if (mergeAutoAction != null) {
-				selectionProvider.removeSelectionChangedListener(mergeAutoAction);
-			}
+			// FIXME if (mergeAutoAction != null) {
+			// selectionProvider.removeSelectionChangedListener(mergeAutoAction);
+			// }
 		}
 	}
 }

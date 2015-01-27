@@ -1,22 +1,22 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2014 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [457704] Integrate EMF compare 3.x in Sphinx
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.compare.ui.actions;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,17 +25,31 @@ import org.eclipse.compare.CompareEditorInput;
 import org.eclipse.compare.internal.ComparePreferencePage;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.emf.compare.EMFCompare;
+import org.eclipse.emf.compare.EMFCompare.Builder;
+import org.eclipse.emf.compare.domain.ICompareEditingDomain;
+import org.eclipse.emf.compare.ide.ui.internal.configuration.EMFCompareConfiguration;
+import org.eclipse.emf.compare.match.IMatchEngine;
+import org.eclipse.emf.compare.rcp.EMFCompareRCPPlugin;
+import org.eclipse.emf.compare.rcp.internal.extension.impl.EMFCompareBuilderConfigurator;
+import org.eclipse.emf.compare.scope.IComparisonScope;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.sphinx.emf.compare.match.ModelMatchEngineFactory;
+import org.eclipse.sphinx.emf.compare.scope.ModelComparisonScope;
 import org.eclipse.sphinx.emf.compare.ui.editor.ModelCompareEditor;
-import org.eclipse.sphinx.emf.compare.ui.editor.ModelElementCompareEditorInput;
+import org.eclipse.sphinx.emf.compare.ui.editor.ModelElementComparisonScopeEditorInput;
 import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
+import org.eclipse.sphinx.emf.compare.ui.util.BasicCompareUIUtil;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.widgets.Display;
@@ -45,25 +59,22 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
 
 /**
- * 
+ * The basic compare action.
  */
 @SuppressWarnings("restriction")
 public class BasicCompareAction extends BaseSelectionListenerAction implements ISelectionChangedListener {
 
 	/**
-	 * The comparison snapshot owning the match and diff models. This snapshot is needed in order to create the compare
-	 * editor input.
-	 */
-	protected ComparisonSnapshot comparisonSnapshot;
-
-	/**
 	 * The selected objects that must be compared.
 	 */
-	protected List<WeakReference<EObject>> selectedObjects = null;
+	protected List<WeakReference<EObject>> selectedEObjects = null;
+
 	/**
 	 * The selected files that must be compared.
 	 */
 	protected List<WeakReference<IFile>> selectedFiles = null;
+
+	private IMatchEngine.Factory matchEngineFactory;
 
 	/**
 	 * Constructor.
@@ -92,20 +103,20 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 		}
 
 		// Reset attributes
-		comparisonSnapshot = null;
 		selectedFiles = null;
-		selectedObjects = null;
+		selectedEObjects = null;
 
 		for (Iterator<?> it = selection.iterator(); it.hasNext();) {
 			Object obj = it.next();
 
 			if (obj instanceof EObject) {
-				if (selectedObjects == null) {
-					selectedObjects = new ArrayList<WeakReference<EObject>>();
+				if (selectedEObjects == null) {
+					selectedEObjects = new ArrayList<WeakReference<EObject>>();
 				}
-				selectedObjects.add(new WeakReference<EObject>((EObject) obj));
+				selectedEObjects.add(new WeakReference<EObject>((EObject) obj));
 			} else if (obj instanceof IFile) {
 				IFile file = (IFile) obj;
+				// FIXME
 				if (MetaModelDescriptorRegistry.INSTANCE.getDescriptor(file) != null) {
 					if (selectedFiles == null) {
 						selectedFiles = new ArrayList<WeakReference<IFile>>();
@@ -114,73 +125,105 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 				}
 			}
 		}
-		return selectedFiles != null ? selectedFiles.size() == 2 : false ^ selectedObjects != null ? selectedObjects.size() == 2 : false;
+		return selectedFiles != null ? selectedFiles.size() == 2 : false ^ selectedEObjects != null ? selectedEObjects.size() == 2 : false;
 	}
 
 	@Override
 	public void run() {
-		EObject leftObject = null;
-		EObject rightObject = null;
-		if (selectedObjects != null && selectedObjects.size() == 2) {
-			leftObject = selectedObjects.get(0).get();
-			rightObject = selectedObjects.get(1).get();
+		Object leftObject = null;
+		Object rightObject = null;
+		if (selectedEObjects != null && selectedEObjects.size() == 2) {
+			leftObject = selectedEObjects.get(0).get();
+			rightObject = selectedEObjects.get(1).get();
 		} else if (selectedFiles != null && selectedFiles.size() == 2) {
-			leftObject = getModelRoot(selectedFiles.get(0).get());
-			rightObject = getModelRoot(selectedFiles.get(1).get());
+			leftObject = selectedFiles.get(0).get();
+			rightObject = selectedFiles.get(1).get();
 		}
+
 		if (leftObject == null || rightObject == null) {
 			return;
 		}
-		try {
-			MatchModel matchModel = MatchService.doContentMatch(leftObject, rightObject, null);
-			DiffModel diffModel = DiffService.doDiff(matchModel);
 
-			comparisonSnapshot = createComparisonSnapshot(matchModel, diffModel);
+		CompareEditorInput input = getCompareEditorInput(leftObject, rightObject);
+		IWorkbenchPage page = ExtendedPlatformUI.getActivePage();
+		IReusableEditor editor = getReusableEditor();
 
-			CompareEditorInput input = getCompareEditorInput();
-			IWorkbenchPage page = ExtendedPlatformUI.getActivePage();
-			IReusableEditor editor = getReusableEditor();
-
-			openCompareEditor(input, page, editor);
-
-		} catch (InterruptedException ex) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-		} finally {
-		}
+		openCompareEditor(input, page, editor);
 	}
 
-	/**
-	 * @param file
-	 *            The file whose root model object must be returned.
-	 * @return The root object of the model contained in the specified {@link IFile file}.
-	 */
-	protected EObject getModelRoot(IFile file) {
-		Assert.isNotNull(file);
+	protected CompareEditorInput getCompareEditorInput(Object leftObject, Object rightObject) {
+		Assert.isTrue(leftObject instanceof Notifier || leftObject instanceof IFile);
+		Assert.isTrue(rightObject instanceof Notifier || rightObject instanceof IFile);
 
-		// Get model from workspace file and force it to be loaded in case that this has not been done yet
-		return EcorePlatformUtil.loadModelRoot(file);
-	}
-
-	protected ComparisonSnapshot createComparisonSnapshot(MatchModel matchModel, DiffModel diffModel) {
-		ComparisonResourceSnapshot snapshot = DiffFactory.eINSTANCE.createComparisonResourceSnapshot();
-		snapshot.setDate(Calendar.getInstance().getTime());
-		snapshot.setDiff(diffModel);
-		snapshot.setMatch(matchModel);
-		return snapshot;
-	}
-
-	protected CompareEditorInput getCompareEditorInput() {
-		CompareEditorInput input = new ModelElementCompareEditorInput(comparisonSnapshot);
+		AdapterFactory adapterFactory = new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
+		CompareEditorInput input = createCompareEditorInput(adapterFactory, leftObject, rightObject, null);
 
 		CompareConfiguration configuration = input.getCompareConfiguration();
 		if (configuration != null) {
-			IPreferenceStore ps = configuration.getPreferenceStore();
-			if (ps != null) {
+			IPreferenceStore prefStore = configuration.getPreferenceStore();
+			if (prefStore != null) {
 				configuration.setProperty(CompareConfiguration.USE_OUTLINE_VIEW,
-						Boolean.valueOf(ps.getBoolean(ComparePreferencePage.USE_OUTLINE_VIEW)));
+						Boolean.valueOf(prefStore.getBoolean(ComparePreferencePage.USE_OUTLINE_VIEW)));
 			}
 		}
 		return input;
+	}
+
+	protected CompareEditorInput createCompareEditorInput(AdapterFactory adapterFactory, Object left, Object right, Notifier origin) {
+		return createCompareEditorInput(adapterFactory, left, right, origin, null);
+	}
+
+	protected CompareEditorInput createCompareEditorInput(AdapterFactory adapterFactory, Object left, Object right, Notifier origin,
+			IEclipsePreferences enginePreferences) {
+		CompareEditorInput input = null;
+
+		IMatchEngine.Factory matchEngineFactory = getModelMatchEngineFactory();
+		matchEngineFactory.setRanking(Integer.MAX_VALUE);
+		final IMatchEngine.Factory.Registry matchEngineFactoryRegistry = EMFCompareRCPPlugin.getDefault().getMatchEngineFactoryRegistry();
+		matchEngineFactoryRegistry.add(matchEngineFactory);
+
+		Builder builder = EMFCompare.builder().setPostProcessorRegistry(EMFCompareRCPPlugin.getDefault().getPostProcessorRegistry());
+		if (enginePreferences != null) {
+			EMFCompareBuilderConfigurator engineProvider = new EMFCompareBuilderConfigurator(enginePreferences, matchEngineFactoryRegistry);
+			engineProvider.configure(builder);
+		}
+		builder.setMatchEngineFactoryRegistry(matchEngineFactoryRegistry);
+
+		EMFCompare comparator = builder.build();
+		final ICompareEditingDomain editingDomain = BasicCompareUIUtil.createEMFCompareEditingDomain(left, right, origin);
+		final EMFCompareConfiguration configuration = getEMFCompareConfiguration();
+		IComparisonScope scope = getComparisonScope(left, right, origin);
+
+		input = new ModelElementComparisonScopeEditorInput(configuration, editingDomain, adapterFactory, comparator, scope) {
+			@Override
+			protected void handleDispose() {
+				super.handleDispose();
+				matchEngineFactoryRegistry.remove(getModelMatchEngineFactory().getClass().getName());
+			}
+		};
+
+		configuration.setContainer(input);
+		return input;
+	}
+
+	protected IMatchEngine.Factory getModelMatchEngineFactory() {
+		if (matchEngineFactory == null) {
+			matchEngineFactory = new ModelMatchEngineFactory();
+		}
+		return matchEngineFactory;
+	}
+
+	protected EMFCompareConfiguration getEMFCompareConfiguration() {
+		return new EMFCompareConfiguration(new CompareConfiguration());
+	}
+
+	protected IComparisonScope getComparisonScope(Object left, Object right, Object origin) {
+		if (left instanceof Notifier && right instanceof Notifier) {
+			return new ModelComparisonScope((Notifier) left, (Notifier) right, origin instanceof Notifier ? (Notifier) origin : null);
+		} else if (left instanceof IFile && right instanceof IFile) {
+			return new ModelComparisonScope((IFile) left, (IFile) right);
+		}
+		return null;
 	}
 
 	protected IReusableEditor getReusableEditor() {
@@ -189,7 +232,7 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 
 	/**
 	 * Performs the comparison described by the given input and opens a compare editor on the result.
-	 * 
+	 *
 	 * @param input
 	 *            the input on which to open the compare editor
 	 * @param page
@@ -236,7 +279,7 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 	 * <p>
 	 * Inheriting clients may override this method in order to specify the identifier of another compare editor (e.g.
 	 * according to the type of the specified input).
-	 * 
+	 *
 	 * @param input
 	 *            The {@linkplain CompareEditorInput editor input} for which a compare editor is supposed to be opened.
 	 * @return The identifier of the compare editor to open.
