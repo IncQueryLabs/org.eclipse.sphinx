@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.gmf.runtime.diagram.ui;visibility:=reexport,
  org.eclipse.gmf.runtime.diagram.ui.resources.editor;visibility:=reexport,
  org.eclipse.sphinx.gmf.workspace;visibility:=reexport,
- org.eclipse.sphinx.emf.workspace.ui;visibility:=reexport
+ org.eclipse.sphinx.emf.editors;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.sphinx.gmf.runtime.ui.editor,
