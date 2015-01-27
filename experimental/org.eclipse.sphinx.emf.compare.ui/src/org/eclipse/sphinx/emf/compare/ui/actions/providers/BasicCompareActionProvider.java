@@ -21,13 +21,11 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.sphinx.emf.compare.ui.ICompareMenuConstants;
 import org.eclipse.sphinx.emf.compare.ui.actions.BasicCompareAction;
 import org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider;
 import org.eclipse.ui.IWorkbenchActionConstants;
 
-/**
- *
- */
 public class BasicCompareActionProvider extends BasicActionProvider {
 
 	/**
@@ -61,14 +59,10 @@ public class BasicCompareActionProvider extends BasicActionProvider {
 	 */
 	@Override
 	protected IMenuManager addSubMenu(IMenuManager contextMenuManager) {
-		// TODO Use existing Compare With group
-
-		// menu:compareWithMenu?after=org.eclipse.emf.compare.ide.ui.compareInEditor
-
-		IMenuManager subMenuManager = contextMenuManager.findMenuUsingPath("compareWithMenu");
+		IMenuManager subMenuManager = contextMenuManager.findMenuUsingPath(ICompareMenuConstants.MENU_COMPARE_WITH_ID);
 		if (subMenuManager == null) {
-			subMenuManager = new MenuManager("Compare With", "compareWithMenu");
-			subMenuManager.add(new Separator("compareWithGroup"));
+			subMenuManager = new MenuManager(ICompareMenuConstants.MENU_COMPARE_WITH_LABEL, ICompareMenuConstants.MENU_COMPARE_WITH_ID);
+			subMenuManager.add(new Separator(ICompareMenuConstants.MENU_COMPARE_WITH_GROUP));
 			contextMenuManager.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, subMenuManager);
 		}
 		return subMenuManager;

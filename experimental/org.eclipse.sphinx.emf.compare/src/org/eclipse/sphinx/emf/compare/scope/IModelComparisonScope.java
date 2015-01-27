@@ -21,7 +21,7 @@ public interface IModelComparisonScope extends IComparisonScope {
 
 	IComparisonScope getDelegate();
 
-	void setDelegate(IComparisonScope delegateComparisonScope);
+	void setDelegate(IComparisonScope delegate);
 
 	IFile getLeftFile();
 

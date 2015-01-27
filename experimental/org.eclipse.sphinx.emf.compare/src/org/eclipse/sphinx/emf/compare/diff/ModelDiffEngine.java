@@ -17,7 +17,7 @@ package org.eclipse.sphinx.emf.compare.diff;
 
 import org.eclipse.emf.compare.diff.DefaultDiffEngine;
 
-// FIXME
+// FIXME will be removed if not needed
 public class ModelDiffEngine extends DefaultDiffEngine {
 
 }

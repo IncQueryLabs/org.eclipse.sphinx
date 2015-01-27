@@ -36,6 +36,7 @@ public class ModelElementComparisonScopeInput extends ComparisonScopeInput {
 
 	@Override
 	public void copy(boolean leftToRight) {
+		System.out.println();
 		// FIXME
 		// doTransactionalCopy(
 		// leftToRight ? WorkspaceEditingDomainUtil.getEditingDomain(getRightResource())

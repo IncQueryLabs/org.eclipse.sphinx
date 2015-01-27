@@ -15,20 +15,9 @@
  */
 package org.eclipse.sphinx.emf.compare.ui;
 
-import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
-
-/**
- *
- */
 public interface ICompareMenuConstants {
 
-	/**
-	 * Identifier of the Sphinx Examples sub menu.
-	 */
-	public static final String MENU_COMPARE_ID = "sphinx.compare.menu";//$NON-NLS-1$
-
-	/**
-	 * Label of the Sphinx Examples sub menu.
-	 */
-	public static final String MENU_COMPARE_LABEL = Messages.menu_compare_label;
+	String MENU_COMPARE_WITH_ID = "compareWithMenu";//$NON-NLS-1$
+	String MENU_COMPARE_WITH_LABEL = "Compare With"; //$NON-NLS-1$
+	String MENU_COMPARE_WITH_GROUP = "compareWithGroup"; //$NON-NLS-1$
 }

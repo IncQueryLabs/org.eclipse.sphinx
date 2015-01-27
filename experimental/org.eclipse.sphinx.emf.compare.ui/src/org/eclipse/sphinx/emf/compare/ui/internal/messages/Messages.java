@@ -30,11 +30,6 @@ public class Messages extends NLS {
 	public static String action_copyLeftToRight;
 
 	/*
-	 * Compare Menu
-	 */
-	public static String menu_compare_label;
-
-	/*
 	 * Dialogs
 	 */
 	public static String dlg_mergeAuto_title;
