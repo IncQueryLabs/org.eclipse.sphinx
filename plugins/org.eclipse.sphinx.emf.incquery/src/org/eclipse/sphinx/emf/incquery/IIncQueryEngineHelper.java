@@ -24,4 +24,6 @@ public interface IIncQueryEngineHelper {
 	IncQueryEngine getEngine(EObject contextObject) throws IncQueryException;
 
 	IncQueryEngine getEngine(Resource contextResource) throws IncQueryException;
+
+	IncQueryEngine getEngine(Resource contextResource, boolean strict) throws IncQueryException;
 }
