@@ -19,6 +19,9 @@ Contributors:
     <service class="org.eclipse.sphinx.examples.hummingbird20.incquery.service.Hummingbird20ProxyResolverService" id="org.eclipse.sphinx.examples.hummingbird20.incquery.proxymanagement.service" type="org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolverService">
       <applicableFor metaModelDescriptorIdPattern="org.eclipse.sphinx.examples.hummingbird20"/>
     </service>
+    <service class="org.eclipse.sphinx.examples.hummingbird20.incquery.service.Hummingbird20ModelSearchQuery" id="org.eclipse.sphinx.examples.hummingbird20.incquery.modelsearch.service" type="org.eclipse.sphinx.emf.search.ui.services.IModelSearchService">
+      <applicableFor metaModelDescriptorIdPattern="org.eclipse.sphinx.examples.hummingbird20"/>
+    </service>
   </extension>
   <extension id="org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common" point="org.eclipse.incquery.runtime.queryspecification">
     <group group="org.eclipse.incquery.runtime.extensibility.SingletonExtensionFactory:org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common" id="org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common"/>

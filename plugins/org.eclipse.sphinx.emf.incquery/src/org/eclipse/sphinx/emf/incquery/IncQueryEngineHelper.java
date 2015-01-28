@@ -37,8 +37,13 @@ public class IncQueryEngineHelper implements IIncQueryEngineHelper {
 
 	@Override
 	public IncQueryEngine getEngine(Resource contextResource) throws IncQueryException {
+		return getEngine(contextResource, false);
+	}
+
+	@Override
+	public IncQueryEngine getEngine(Resource contextResource, boolean strict) throws IncQueryException {
 		if (contextResource != null) {
-			ResourceSet resourceSet = contextResource.getResourceSet();
+			ResourceSet resourceSet = strict ? null : contextResource.getResourceSet();
 			if (resourceSet != null) {
 				return IncQueryEngine.on(resourceSet);
 			}

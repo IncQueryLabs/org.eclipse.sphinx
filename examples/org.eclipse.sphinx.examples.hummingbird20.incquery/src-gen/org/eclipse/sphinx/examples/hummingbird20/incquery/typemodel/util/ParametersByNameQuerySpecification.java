@@ -78,8 +78,8 @@ public final class ParametersByNameQuerySpecification extends BaseGeneratedQuery
         new ExportedParameter(body, var_name, "name")
       ));
       
-      
       new TypeUnary(body, var_param, getClassifierLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel", "Parameter"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel/Parameter");
+      
       new TypeBinary(body, CONTEXT, var_param, var_name, getFeatureLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common", "Identifiable", "name"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common/Identifiable.name");
       bodies.add(body);
     }
