@@ -18,5 +18,6 @@ Export-Package: org.eclipse.sphinx.emf.compare.diff,
  org.eclipse.sphinx.emf.compare.internal;x-internal:=true,
  org.eclipse.sphinx.emf.compare.internal.messages;x-internal:=true,
  org.eclipse.sphinx.emf.compare.match,
- org.eclipse.sphinx.emf.compare.scope
+ org.eclipse.sphinx.emf.compare.scope,
+ org.eclipse.sphinx.emf.compare.util
 
