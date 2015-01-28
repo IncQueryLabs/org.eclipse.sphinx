@@ -47,6 +47,7 @@
 		<module>../../plugins/org.eclipse.sphinx.xtend.typesystem.emf</module>
 		<module>../../plugins/org.eclipse.sphinx.xtendxpand.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.xtendxpand</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.search.ui</module>
 
 		<!-- Examples -->
 		<module>../../examples/org.eclipse.sphinx.examples.actions</module>
