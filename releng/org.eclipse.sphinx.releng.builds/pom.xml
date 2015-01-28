@@ -101,6 +101,7 @@
 
 		<!-- Features -->
 		<module>../../features/org.eclipse.sphinx.core-feature</module>
+		<module>../../features/org.eclipse.sphinx.emf.editors-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms.nebula-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.incquery-feature</module>
