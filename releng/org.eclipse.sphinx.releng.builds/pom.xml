@@ -37,6 +37,7 @@
 		<module>../../plugins/org.eclipse.sphinx.emf.check.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.incquery</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.editors</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.search.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.runtime.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.workspace</module>
 		<module>../../plugins/org.eclipse.sphinx.jdt</module>
@@ -47,7 +48,6 @@
 		<module>../../plugins/org.eclipse.sphinx.xtend.typesystem.emf</module>
 		<module>../../plugins/org.eclipse.sphinx.xtendxpand.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.xtendxpand</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.search.ui</module>
 
 		<!-- Examples -->
 		<module>../../examples/org.eclipse.sphinx.examples.actions</module>
