@@ -35,8 +35,10 @@
 		<module>../../plugins/org.eclipse.sphinx.emf.check.catalog.edit</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.check.catalog.editor</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.check.ui</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.incquery</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.editors</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.compare</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.compare.ui</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.incquery</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.search.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.runtime.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.workspace</module>
@@ -103,6 +105,7 @@
 
 		<!-- Features -->
 		<module>../../features/org.eclipse.sphinx.core-feature</module>
+		<module>../../features/org.eclipse.sphinx.emf.compare-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms.nebula-feature</module>

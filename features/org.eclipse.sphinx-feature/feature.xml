@@ -71,4 +71,8 @@
          id="org.eclipse.sphinx.emf.editors"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.sphinx.emf.compare"
+         version="0.0.0"/>
+
 </feature>
