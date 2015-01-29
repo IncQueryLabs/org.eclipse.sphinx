@@ -156,9 +156,9 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 	public Object[] getModelRoots() {
 		Object[] modelRoots = new Object[2];
 		IEditorInput editorInput = getEditorInput();
-		if (editorInput instanceof ModelElementComparisonScopeEditorInput) {
-			modelRoots[0] = ((ModelElementComparisonScopeEditorInput) editorInput).getLeftObject();
-			modelRoots[1] = ((ModelElementComparisonScopeEditorInput) editorInput).getRightObject();
+		if (editorInput instanceof ModelComparisonScopeEditorInput) {
+			modelRoots[0] = ((ModelComparisonScopeEditorInput) editorInput).getLeftObject();
+			modelRoots[1] = ((ModelComparisonScopeEditorInput) editorInput).getRightObject();
 		}
 		return modelRoots;
 	}
@@ -193,7 +193,7 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 
 	@Override
 	public void setInput(IEditorInput input) {
-		if (input instanceof ModelElementComparisonScopeEditorInput) {
+		if (input instanceof ModelComparisonScopeEditorInput) {
 			super.setInput(input);
 		} else {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), new RuntimeException(Messages.error_invalidEditorInput));
@@ -202,9 +202,9 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 
 	@Override
 	public boolean containEditorInputObject(IEditorInput editorInput, Set<EObject> removedObjects) {
-		if (editorInput instanceof ModelElementComparisonScopeEditorInput && removedObjects != null) {
-			Object leftObject = ((ModelElementComparisonScopeEditorInput) editorInput).getLeftObject();
-			Object rightObject = ((ModelElementComparisonScopeEditorInput) editorInput).getRightObject();
+		if (editorInput instanceof ModelComparisonScopeEditorInput && removedObjects != null) {
+			Object leftObject = ((ModelComparisonScopeEditorInput) editorInput).getLeftObject();
+			Object rightObject = ((ModelComparisonScopeEditorInput) editorInput).getRightObject();
 			return removedObjects.contains(leftObject) || removedObjects.contains(rightObject);
 		}
 		return false;
@@ -212,13 +212,13 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 
 	@Override
 	public boolean containEditorInputResourceURI(IEditorInput editorInput, Set<URI> resourceURIs) {
-		if (editorInput instanceof ModelElementComparisonScopeEditorInput) {
+		if (editorInput instanceof ModelComparisonScopeEditorInput) {
 			Set<URI> editorInputResourceURIs = new HashSet<URI>();
-			Resource leftResource = EcorePlatformUtil.getResource(((ModelElementComparisonScopeEditorInput) editorInput).getLeftObject());
+			Resource leftResource = EcorePlatformUtil.getResource(((ModelComparisonScopeEditorInput) editorInput).getLeftObject());
 			if (leftResource != null) {
 				editorInputResourceURIs.add(leftResource.getURI());
 			}
-			Resource rightResource = EcorePlatformUtil.getResource(((ModelElementComparisonScopeEditorInput) editorInput).getRightObject());
+			Resource rightResource = EcorePlatformUtil.getResource(((ModelComparisonScopeEditorInput) editorInput).getRightObject());
 			if (rightResource != null) {
 				editorInputResourceURIs.add(rightResource.getURI());
 			}

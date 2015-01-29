@@ -23,6 +23,8 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.compare.EMFCompare;
 import org.eclipse.emf.compare.domain.ICompareEditingDomain;
@@ -32,15 +34,17 @@ import org.eclipse.emf.compare.scope.DefaultComparisonScope;
 import org.eclipse.emf.compare.scope.IComparisonScope;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.edit.provider.IDisposable;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.compare.domain.DelegatingEMFCompareEditingDomain;
 import org.eclipse.sphinx.emf.compare.scope.IModelComparisonScope;
-import org.eclipse.sphinx.emf.compare.ui.ModelElementComparisonScopeInput;
 import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.compare.util.ModelCompareUtil;
+import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
+import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
@@ -52,37 +56,28 @@ import org.eclipse.ui.ISaveablesSource;
 import org.eclipse.ui.Saveable;
 import org.eclipse.ui.navigator.SaveablesProvider;
 
-public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEditorInput implements ISaveablesSource {
+public class ModelComparisonScopeEditorInput extends ComparisonScopeEditorInput implements ISaveablesSource {
 
 	protected SaveablesProvider modelSaveablesProvider;
 
 	private final IComparisonScope scope;
-	private final EMFCompare comparator;
 
+	// Selected EObject or IFile
 	private Object leftObject;
 	private Object rightObject;
 
-	public ModelElementComparisonScopeEditorInput(EMFCompareConfiguration configuration, ICompareEditingDomain editingDomain,
-			AdapterFactory adapterFactory, EMFCompare comparator, IComparisonScope scope) {
-		super(configuration, editingDomain, adapterFactory, comparator, scope);
+	// Input EMF resource if selected objects are IFile
+	private Resource leftResource;
+	private Resource rightResource;
 
+	public ModelComparisonScopeEditorInput(EMFCompareConfiguration configuration, ICompareEditingDomain editingDomain, AdapterFactory adapterFactory,
+			EMFCompare comparator, IComparisonScope scope) {
+		super(configuration, editingDomain, adapterFactory, comparator, scope);
 		this.scope = scope;
-		this.comparator = comparator;
 	}
 
 	public IComparisonScope getScope() {
 		return scope;
-	}
-
-	/**
-	 * Returns the save options to consider while saving the underlying model being edited. Default implementation
-	 * returns the default save options provided by the Sphinx EMF platform utility {@linkplain EcoreResourceUtil}.
-	 * Clients may override this method in order to specify custom options.
-	 *
-	 * @return The save options to consider while saving the underlying model being edited.
-	 */
-	protected Map<?, ?> getSaveOptions() {
-		return EcoreResourceUtil.getDefaultSaveOptions();
 	}
 
 	@Override
@@ -92,14 +87,15 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 		selectedObjects.add(getLeftObject());
 		selectedObjects.add(getRightObject());
 
-		for (Object modelRoot : selectedObjects) {
+		for (int i = 0; i < selectedObjects.size(); i++) {
+			Object object = selectedObjects.get(i);
 			Resource resource = null;
-			if (modelRoot instanceof EObject) {
-				resource = ((EObject) modelRoot).eResource();
-			} else if (modelRoot instanceof Resource) {
-				resource = (Resource) modelRoot;
-			} else if (modelRoot instanceof IFile) {
-				resource = EcorePlatformUtil.getResource((IFile) modelRoot);
+			if (object instanceof EObject) {
+				resource = ((EObject) object).eResource();
+			} else if (object instanceof Resource) {
+				resource = (Resource) object;
+			} else if (object instanceof IFile) {
+				resource = i == 0 ? leftResource : rightResource;
 			}
 
 			if (resource != null) {
@@ -188,14 +184,17 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 	protected Object doPrepareInput(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 		init();
 
-		// FIXME The models should be loaded on demand in the
-		// org.eclipse.sphinx.emf.compare.ui.viewer.structuremerge.ModelElementStructureMergeViewer. We performed model
-		// load step here, if needed, due to an API restriction from EMF compare side.
-		if (scope instanceof IModelComparisonScope && ((IModelComparisonScope) scope).isFileBasedComparison()) {
-			loadModel((IModelComparisonScope) scope, monitor);
+		SubMonitor progress = SubMonitor.convert(monitor, 100);
+		if (progress.isCanceled()) {
+			throw new OperationCanceledException();
+		}
 
-			Resource leftResource = EcorePlatformUtil.getResource(((IModelComparisonScope) scope).getLeftFile());
-			Resource rightResource = EcorePlatformUtil.getResource(((IModelComparisonScope) scope).getRightFile());
+		// FIXME The models should be loaded on demand in the
+		// org.eclipse.sphinx.emf.compare.ui.viewer.structuremerge.ModelElementStructureMergeViewer. We perform model
+		// loading, if needed, due to an API restriction from EMF compare side.
+		if (scope instanceof IModelComparisonScope && ((IModelComparisonScope) scope).isFileBasedComparison()) {
+			loadModel((IModelComparisonScope) scope, progress.newChild(50));
+
 			((IModelComparisonScope) scope).setDelegate(new DefaultComparisonScope(leftResource, rightResource, null));
 
 			EMFCompareConfiguration compareConfiguration = getCompareConfiguration();
@@ -204,10 +203,11 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 				ICompareEditingDomain delegatingEditingDomain = ModelCompareUtil.createEMFCompareEditingDomain(leftResource, rightResource, null);
 				((DelegatingEMFCompareEditingDomain) editingDomain).setDelegate(delegatingEditingDomain);
 			}
+		} else {
+			progress.worked(50);
 		}
 
-		getCompareConfiguration().setEMFComparator(comparator);
-		Object input = new ModelElementComparisonScopeInput(scope, getAdapterFactory());
+		Object input = super.doPrepareInput(progress.newChild(50));
 
 		String title;
 		String leftLabel = getLeftLabel();
@@ -224,18 +224,34 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 
 	protected void loadModel(IModelComparisonScope comparisonScope, IProgressMonitor monitor) {
 		if (comparisonScope != null && comparisonScope.isFileBasedComparison()) {
-			final Set<IFile> filesToBeLoaded = new HashSet<IFile>();
+			final Set<IFile> sphinxModelFiles = new HashSet<IFile>();
+			ResourceSet nonSphinxModelResouceSet = new ScopingResourceSetImpl();
+
 			IFile leftFile = comparisonScope.getLeftFile();
 			if (leftFile != null) {
-				filesToBeLoaded.add(leftFile);
+				if (ModelDescriptorRegistry.INSTANCE.isModelFile(leftFile)) {
+					sphinxModelFiles.add(leftFile);
+				} else {
+					leftResource = EcoreResourceUtil.loadResource(nonSphinxModelResouceSet, EcorePlatformUtil.createURI(leftFile.getFullPath()),
+							getLoadOptions());
+				}
 			}
 			IFile rightFile = comparisonScope.getRightFile();
 			if (rightFile != null) {
-				filesToBeLoaded.add(rightFile);
+				if (ModelDescriptorRegistry.INSTANCE.isModelFile(rightFile)) {
+					sphinxModelFiles.add(rightFile);
+				} else {
+					rightResource = EcoreResourceUtil.loadResource(nonSphinxModelResouceSet, EcorePlatformUtil.createURI(rightFile.getFullPath()),
+							getLoadOptions());
+				}
 			}
 
-			if (!filesToBeLoaded.isEmpty()) {
-				ModelLoadManager.INSTANCE.loadFiles(filesToBeLoaded, false, monitor);
+			ModelLoadManager.INSTANCE.loadFiles(sphinxModelFiles, false, monitor);
+			if (leftResource == null) {
+				leftResource = EcorePlatformUtil.getResource(leftFile);
+			}
+			if (rightResource == null) {
+				rightResource = EcorePlatformUtil.getResource(rightFile);
 			}
 		}
 	}
@@ -319,18 +335,41 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 		selectedObjects.add(getLeftObject());
 		selectedObjects.add(getRightObject());
 
-		for (Object object : selectedObjects) {
+		for (int i = 0; i < selectedObjects.size(); i++) {
 			Resource resource = null;
+			Object object = selectedObjects.get(i);
 			if (object instanceof EObject) {
 				resource = ((EObject) object).eResource();
 			} else if (object instanceof IFile) {
-				resource = EcorePlatformUtil.getResource((IFile) object);
+				resource = i == 0 ? leftResource : rightResource;
 			}
 			// Save the all dirty resources of underlying model
 			if (resource != null) {
 				ModelSaveManager.INSTANCE.saveModel(resource, getSaveOptions(), false, monitor);
 			}
 		}
+	}
+
+	/**
+	 * Returns the load options to consider while loading the underlying model being edited. Default implementation
+	 * returns the default load options provided by the Sphinx EMF platform utility {@linkplain EcoreResourceUtil}.
+	 * Clients may override this method in order to specify custom options.
+	 *
+	 * @return The load options to consider while loading the underlying model being edited.
+	 */
+	protected Map<?, ?> getLoadOptions() {
+		return EcoreResourceUtil.getDefaultLoadOptions();
+	}
+
+	/**
+	 * Returns the save options to consider while saving the underlying model being edited. Default implementation
+	 * returns the default save options provided by the Sphinx EMF platform utility {@linkplain EcoreResourceUtil}.
+	 * Clients may override this method in order to specify custom options.
+	 *
+	 * @return The save options to consider while saving the underlying model being edited.
+	 */
+	protected Map<?, ?> getSaveOptions() {
+		return EcoreResourceUtil.getDefaultSaveOptions();
 	}
 
 	@Override

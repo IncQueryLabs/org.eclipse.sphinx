@@ -33,7 +33,8 @@ public class BasicCompareActionProvider extends BasicActionProvider {
 	 */
 	protected BasicCompareAction compareAction;
 
-	// FIXME protected BasicAutoMergeAction mergeAutoAction;
+	// FIXME check if auto merge is needed
+	// protected BasicAutoMergeAction mergeAutoAction;
 
 	@Override
 	protected void doInit() {

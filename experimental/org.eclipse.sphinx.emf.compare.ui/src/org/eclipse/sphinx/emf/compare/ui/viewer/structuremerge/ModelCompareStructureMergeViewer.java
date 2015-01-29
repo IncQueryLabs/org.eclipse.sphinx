@@ -15,19 +15,30 @@
 package org.eclipse.sphinx.emf.compare.ui.viewer.structuremerge;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.compare.ide.ui.internal.configuration.EMFCompareConfiguration;
 import org.eclipse.emf.compare.ide.ui.internal.structuremergeviewer.EMFCompareStructureMergeViewer;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.sphinx.emf.compare.scope.IModelComparisonScope;
+import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.swt.widgets.Composite;
 
-public class ModelElementStructureMergeViewer extends EMFCompareStructureMergeViewer {
+public class ModelCompareStructureMergeViewer extends EMFCompareStructureMergeViewer {
 
-	public ModelElementStructureMergeViewer(Composite parent, EMFCompareConfiguration config) {
+	// Input EMF resources if selected input objects are IFile
+	private Resource leftResource;
+	private Resource rightResource;
+
+	public ModelCompareStructureMergeViewer(Composite parent, EMFCompareConfiguration config) {
 		super(parent, config);
 	}
 
@@ -40,8 +51,6 @@ public class ModelElementStructureMergeViewer extends EMFCompareStructureMergeVi
 	// if (scope instanceof IModelComparisonScope) {
 	// loadModel((IModelComparisonScope) scope);
 	//
-	// Resource leftResource = EcorePlatformUtil.getResource(((IModelComparisonScope) scope).getLeftFile());
-	// Resource rightResource = EcorePlatformUtil.getResource(((IModelComparisonScope) scope).getRightFile());
 	// ((IModelComparisonScope) scope).setDelegate(new DefaultComparisonScope(leftResource, rightResource, null));
 	//
 	// EMFCompareConfiguration compareConfiguration = getCompareConfiguration();
@@ -58,19 +67,46 @@ public class ModelElementStructureMergeViewer extends EMFCompareStructureMergeVi
 
 	protected void loadModel(IModelComparisonScope comparisonScope, IProgressMonitor monitor) {
 		if (comparisonScope != null && comparisonScope.isFileBasedComparison()) {
-			final Set<IFile> filesToBeLoaded = new HashSet<IFile>();
+			final Set<IFile> sphinxModelFiles = new HashSet<IFile>();
+			ResourceSet nonSphinxModelResouceSet = new ScopingResourceSetImpl();
+
 			IFile leftFile = comparisonScope.getLeftFile();
 			if (leftFile != null) {
-				filesToBeLoaded.add(leftFile);
+				if (ModelDescriptorRegistry.INSTANCE.isModelFile(leftFile)) {
+					sphinxModelFiles.add(leftFile);
+				} else {
+					leftResource = EcoreResourceUtil.loadResource(nonSphinxModelResouceSet, EcorePlatformUtil.createURI(leftFile.getFullPath()),
+							getLoadOptions());
+				}
 			}
 			IFile rightFile = comparisonScope.getRightFile();
 			if (rightFile != null) {
-				filesToBeLoaded.add(rightFile);
+				if (ModelDescriptorRegistry.INSTANCE.isModelFile(rightFile)) {
+					sphinxModelFiles.add(rightFile);
+				} else {
+					rightResource = EcoreResourceUtil.loadResource(nonSphinxModelResouceSet, EcorePlatformUtil.createURI(rightFile.getFullPath()),
+							getLoadOptions());
+				}
 			}
 
-			if (!filesToBeLoaded.isEmpty()) {
-				ModelLoadManager.INSTANCE.loadFiles(filesToBeLoaded, false, monitor);
+			ModelLoadManager.INSTANCE.loadFiles(sphinxModelFiles, false, monitor);
+			if (leftResource == null) {
+				leftResource = EcorePlatformUtil.getResource(leftFile);
+			}
+			if (rightResource == null) {
+				rightResource = EcorePlatformUtil.getResource(rightFile);
 			}
 		}
+	}
+
+	/**
+	 * Returns the load options to consider while loading the underlying model being edited. Default implementation
+	 * returns the default load options provided by the Sphinx EMF platform utility {@linkplain EcoreResourceUtil}.
+	 * Clients may override this method in order to specify custom options.
+	 *
+	 * @return The load options to consider while loading the underlying model being edited.
+	 */
+	protected Map<?, ?> getLoadOptions() {
+		return EcoreResourceUtil.getDefaultLoadOptions();
 	}
 }

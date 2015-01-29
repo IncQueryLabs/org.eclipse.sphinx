@@ -45,11 +45,10 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.sphinx.emf.compare.match.ModelMatchEngineFactory;
 import org.eclipse.sphinx.emf.compare.scope.ModelComparisonScope;
 import org.eclipse.sphinx.emf.compare.ui.editor.ModelCompareEditor;
-import org.eclipse.sphinx.emf.compare.ui.editor.ModelElementComparisonScopeEditorInput;
+import org.eclipse.sphinx.emf.compare.ui.editor.ModelComparisonScopeEditorInput;
 import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.compare.util.ModelCompareUtil;
-import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.widgets.Display;
@@ -107,22 +106,18 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 		selectedEObjects = null;
 
 		for (Iterator<?> it = selection.iterator(); it.hasNext();) {
-			Object obj = it.next();
+			Object object = it.next();
 
-			if (obj instanceof EObject) {
+			if (object instanceof EObject) {
 				if (selectedEObjects == null) {
 					selectedEObjects = new ArrayList<WeakReference<EObject>>();
 				}
-				selectedEObjects.add(new WeakReference<EObject>((EObject) obj));
-			} else if (obj instanceof IFile) {
-				IFile file = (IFile) obj;
-				// FIXME
-				if (MetaModelDescriptorRegistry.INSTANCE.getDescriptor(file) != null) {
-					if (selectedFiles == null) {
-						selectedFiles = new ArrayList<WeakReference<IFile>>();
-					}
-					selectedFiles.add(new WeakReference<IFile>(file));
+				selectedEObjects.add(new WeakReference<EObject>((EObject) object));
+			} else if (object instanceof IFile) {
+				if (selectedFiles == null) {
+					selectedFiles = new ArrayList<WeakReference<IFile>>();
 				}
+				selectedFiles.add(new WeakReference<IFile>((IFile) object));
 			}
 		}
 		return selectedFiles != null ? selectedFiles.size() == 2 : false ^ selectedEObjects != null ? selectedEObjects.size() == 2 : false;
@@ -151,13 +146,15 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 		openCompareEditor(input, page, editor);
 	}
 
+	protected AdapterFactory getAdapterFactory() {
+		return new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
+	}
+
 	protected CompareEditorInput getCompareEditorInput(Object leftObject, Object rightObject) {
 		Assert.isTrue(leftObject instanceof Notifier || leftObject instanceof IFile);
 		Assert.isTrue(rightObject instanceof Notifier || rightObject instanceof IFile);
 
-		AdapterFactory adapterFactory = new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
-		CompareEditorInput input = createCompareEditorInput(adapterFactory, leftObject, rightObject, null);
-
+		CompareEditorInput input = createCompareEditorInput(getAdapterFactory(), leftObject, rightObject, null);
 		CompareConfiguration configuration = input.getCompareConfiguration();
 		if (configuration != null) {
 			IPreferenceStore prefStore = configuration.getPreferenceStore();
@@ -194,7 +191,7 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 		final EMFCompareConfiguration configuration = getEMFCompareConfiguration();
 		IComparisonScope scope = getComparisonScope(left, right, origin);
 
-		input = new ModelElementComparisonScopeEditorInput(configuration, editingDomain, adapterFactory, comparator, scope) {
+		input = new ModelComparisonScopeEditorInput(configuration, editingDomain, adapterFactory, comparator, scope) {
 			@Override
 			protected void handleDispose() {
 				super.handleDispose();

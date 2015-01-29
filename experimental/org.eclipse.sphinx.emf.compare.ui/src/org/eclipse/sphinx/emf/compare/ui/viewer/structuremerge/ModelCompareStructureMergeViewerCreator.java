@@ -21,15 +21,15 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Composite;
 
 /**
- * Required when creating a {@link ModelElementStructureMergeViewer} from a plugin.xml file.
+ * Required when creating a {@link ModelCompareStructureMergeViewer} from a plugin.xml file.
  */
-public class ModelElementStructureMergeViewerCreator implements IViewerCreator {
+public class ModelCompareStructureMergeViewerCreator implements IViewerCreator {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Viewer createViewer(Composite parent, CompareConfiguration config) {
-		return new ModelElementStructureMergeViewer(parent, new EMFCompareConfiguration(config));
+		return new ModelCompareStructureMergeViewer(parent, new EMFCompareConfiguration(config));
 	}
 }

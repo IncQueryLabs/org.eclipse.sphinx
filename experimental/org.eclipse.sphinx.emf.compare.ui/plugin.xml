@@ -33,6 +33,7 @@
       </viewer>
    </extension>
    -->
+   
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
@@ -49,32 +50,11 @@
                tooltip="%sphinx.emf.compare.ui.actions.compareWithEachOther.tooltip">
          </action>
       </objectContribution>
-      <objectContribution
-            adaptable="false"
-            id="org.eclipse.sphinx.emf.compare.ui.fileContributions"
-            objectClass="org.eclipse.core.resources.IFile">
-         <menu
-               id="mergeWithMenu"
-               label="%sphinx.emf.compare.ui.menus.mergeWith.label"
-               path="additions">
-            <separator
-                  name="mergeWithGroup">
-            </separator>
-         </menu>
-         <action
-               class="org.eclipse.sphinx.emf.compare.ui.actions.FileMergeAction"
-               enablesFor="2"
-               id="org.eclipse.sphinx.emf.compare.ui.actions.mergeWithEachOther"
-               label="%sphinx.emf.compare.ui.actions.mergeWithEachOther.label"
-               menubarPath="mergeWithMenu/mergeWithGroup"
-               tooltip="%sphinx.emf.compare.ui.actions.mergeWithEachOther.tooltip">
-         </action>
-      </objectContribution>
    </extension>
    <extension
          point="org.eclipse.compare.structureMergeViewers">
       <viewer
-            class="org.eclipse.sphinx.emf.compare.ui.viewer.structuremerge.ModelElementStructureMergeViewerCreator"
+            class="org.eclipse.sphinx.emf.compare.ui.viewer.structuremerge.ModelCompareStructureMergeViewerCreator"
             extensions="*"
             id="org.eclipse.emf.compare.ide.ui.internal.structureMergeViewer">
       </viewer>
