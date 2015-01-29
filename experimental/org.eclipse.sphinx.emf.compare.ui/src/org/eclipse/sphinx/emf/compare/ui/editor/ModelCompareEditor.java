@@ -18,35 +18,29 @@ package org.eclipse.sphinx.emf.compare.ui.editor;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.compare.CompareEditorInput;
 import org.eclipse.compare.internal.CompareEditor;
-import org.eclipse.core.commands.operations.IOperationHistory;
-import org.eclipse.core.commands.operations.IOperationHistoryListener;
 import org.eclipse.core.commands.operations.IUndoContext;
-import org.eclipse.core.commands.operations.IUndoableOperation;
-import org.eclipse.core.commands.operations.ObjectUndoContext;
-import org.eclipse.core.commands.operations.OperationHistoryEvent;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.AdapterFactoryItemDelegator;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.emf.transaction.util.TransactionUtil;
-import org.eclipse.emf.workspace.IWorkspaceCommandStack;
-import org.eclipse.emf.workspace.ResourceUndoContext;
 import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
+import org.eclipse.sphinx.emf.editors.IModelEditorInputChangeAnalyzer;
+import org.eclipse.sphinx.emf.editors.IModelEditorInputChangeHandler;
+import org.eclipse.sphinx.emf.editors.ModelEditorInputSynchronizer;
+import org.eclipse.sphinx.emf.editors.ModelEditorUndoContextManager;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.ISaveablesLifecycleListener;
-import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.SaveablesLifecycleEvent;
 
@@ -54,157 +48,46 @@ import org.eclipse.ui.SaveablesLifecycleEvent;
  * Extends the Eclipse compare editor in order to make model oriented.
  */
 @SuppressWarnings("restriction")
-public class ModelCompareEditor extends CompareEditor {
+public class ModelCompareEditor extends CompareEditor implements IModelEditorInputChangeAnalyzer {
 
 	/**
 	 * The identifier of this editor (as contributed).
 	 */
 	public static String ID = "org.eclipse.sphinx.emf.compare.ui.editors.modelCompareEditor"; //$NON-NLS-1$
 
-	/**
-	 * The undo context for this compare editor.
-	 */
-	protected IUndoContext undoContext;
+	protected ModelEditorUndoContextManager undoContextManager;
 
-	private IOperationHistoryListener affectedObjectsListener;
+	protected ModelEditorInputSynchronizer editorInputSynchronizer;
 
 	/**
 	 * Default constructor.
 	 */
 	public ModelCompareEditor() {
-		// Create undo context
-		undoContext = new ObjectUndoContext(this, ID);
 	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 
-		// First do not keep duplicated editing domain entries
-		Set<TransactionalEditingDomain> editingDomains = new HashSet<TransactionalEditingDomain>();
-		for (TransactionalEditingDomain editingDomain : getEditingDomains()) {
-			if (editingDomain != null) {
-				editingDomains.add(editingDomain);
-			}
+		undoContextManager = getModelEditorUndoContextManager();
+		TransactionalEditingDomain editingDomain = getEditingDomains()[0] != null ? getEditingDomains()[0] : getEditingDomains()[1];
+		editorInputSynchronizer = new ModelEditorInputSynchronizer(input, editingDomain, this, new ModelCompareEditorInputChangeHandler());
+	}
+
+	protected ModelEditorUndoContextManager getModelEditorUndoContextManager() {
+		if (undoContextManager == null) {
+			TransactionalEditingDomain editingDomain = getEditingDomains()[0] != null ? getEditingDomains()[0] : getEditingDomains()[1];
+			undoContextManager = new ModelEditorUndoContextManager(getSite(), this, editingDomain);
 		}
-		if (editingDomains.isEmpty()) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), new RuntimeException(Messages.error_notFound_editingDomain));
-		}
-		// Then creates and registers listeners on resulting editing domains
-		for (TransactionalEditingDomain editingDomain : editingDomains) {
-			addTransactionalEditingDomainListeners(editingDomain);
-		}
+		return undoContextManager;
 	}
 
 	@Override
 	public void dispose() {
-		for (TransactionalEditingDomain editingDomain : getEditingDomains()) {
-			if (editingDomain != null) {
-				removeTransactionalEditingDomainListeners(editingDomain);
-			}
-		}
-
-		for (IOperationHistory operationHistory : getOperationHistories()) {
-			if (operationHistory != null) {
-				operationHistory.dispose(getUndoContext(), true, true, true);
-			}
+		if (undoContextManager != null) {
+			undoContextManager.dispose();
 		}
 		super.dispose();
-	}
-
-	protected void addTransactionalEditingDomainListeners(TransactionalEditingDomain editingDomain) {
-		if (editingDomain != null) {
-			// Create and register IOperationHistoryListener that detects changed objects
-			affectedObjectsListener = createAffectedObjectsListener();
-			Assert.isNotNull(affectedObjectsListener);
-			((IWorkspaceCommandStack) editingDomain.getCommandStack()).getOperationHistory().addOperationHistoryListener(affectedObjectsListener);
-		}
-	}
-
-	protected void removeTransactionalEditingDomainListeners(TransactionalEditingDomain editingDomain) {
-		if (editingDomain != null) {
-			if (affectedObjectsListener != null) {
-				IOperationHistory operationHistory = ((IWorkspaceCommandStack) editingDomain.getCommandStack()).getOperationHistory();
-				operationHistory.removeOperationHistoryListener(affectedObjectsListener);
-			}
-		}
-	}
-
-	/**
-	 * Creates and returns the {@linkplain IOperationHistoryListener listener} to add on the
-	 * {@linkplain IOperationHistory operation history} of {@linkplain TransactionalEditingDomain editing domain}'s
-	 * {@linkplain IWorkspaceCommandStack command stack}.
-	 * <p>
-	 * The listener's implementation that is provided here aims at updating {@linkplain IUndoableOperation operation}'s
-	 * context by first removing default {@linkplain IUndoContext undo context} and second by adding
-	 * {@linkplain IUndoContext undo context} encapsulated by this editor.
-	 * <p>
-	 * Clients may override this default implementation.
-	 *
-	 * @return The {@linkplain IOperationHistoryListener operation history listener} to register on the command stack of
-	 *         the concerned editing domain.
-	 */
-	// TODO Replace with ModelEditorUndoContextManager, Move org.eclipse.sphinx.gmf.runtime.ui.internal.editor.* to new
-	// plug-in org.eclipse.sphinx.editors, also reuse ModelEditorInputSynchronizer.java
-	protected IOperationHistoryListener createAffectedObjectsListener() {
-		return new IOperationHistoryListener() {
-
-			@Override
-			public void historyNotification(final OperationHistoryEvent event) {
-				IUndoableOperation operation = event.getOperation();
-				if (event.getEventType() == OperationHistoryEvent.ABOUT_TO_EXECUTE) {
-					handleOperationAboutToExecute(operation);
-				} else if (event.getEventType() == OperationHistoryEvent.DONE || event.getEventType() == OperationHistoryEvent.UNDONE
-						|| event.getEventType() == OperationHistoryEvent.REDONE) {
-					Set<?> affectedResources = ResourceUndoContext.getAffectedResources(operation);
-					Resource[] resources = getModelRootsResources();
-					boolean isLeftResourceAffected = resources[0] != null ? affectedResources.contains(resources[0]) : false;
-					boolean isRightResourceAffected = resources[1] != null ? affectedResources.contains(resources[1]) : false;
-					if (isLeftResourceAffected || isRightResourceAffected) {
-						handleOperationFinished(operation);
-					}
-				}
-			}
-
-			private void handleOperationAboutToExecute(final IUndoableOperation operation) {
-				if (operation.canUndo()) {
-					IWorkbenchPartSite site = getSite();
-					if (site != null) {
-						site.getShell().getDisplay().syncExec(new Runnable() {
-							@Override
-							public void run() {
-								if (isActivePart()) {
-									Resource[] resources = getModelRootsResources();
-									for (Resource resource : resources) {
-										TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resource);
-										if (editingDomain != null && editingDomain.getCommandStack() instanceof IWorkspaceCommandStack) {
-											IWorkspaceCommandStack cmdStack = (IWorkspaceCommandStack) editingDomain.getCommandStack();
-											IUndoContext defaultUndoContext = cmdStack.getDefaultUndoContext();
-											if (defaultUndoContext != null) {
-												// Remove default undo context and this editor's undo context
-												operation.removeContext(defaultUndoContext);
-											}
-										}
-									}
-									operation.addContext(getUndoContext());
-								}
-							}
-						});
-					}
-				}
-			}
-
-			private void handleOperationFinished(final IUndoableOperation operation) {
-				getSite().getShell().getDisplay().asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						// Update editor part name
-						// FIXME Not needed for the moment.
-						// setPartName(getModelRootsNames());
-					}
-				});
-			}
-		};
 	}
 
 	/**
@@ -241,17 +124,9 @@ public class ModelCompareEditor extends CompareEditor {
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class key) {
 		if (key.equals(IUndoContext.class)) {
 			// Used by undo/redo actions to get their undo context
-			return getUndoContext();
-		} else {
-			return super.getAdapter(key);
+			return getModelEditorUndoContextManager().getUndoContext();
 		}
-	}
-
-	/**
-	 * @return The {@linkplain IUndoContext undo context} associated to this compare editor.
-	 */
-	public IUndoContext getUndoContext() {
-		return undoContext;
+		return super.getAdapter(key);
 	}
 
 	/**
@@ -273,17 +148,6 @@ public class ModelCompareEditor extends CompareEditor {
 		return editingDomains;
 	}
 
-	protected IOperationHistory[] getOperationHistories() {
-		IOperationHistory[] operationHistories = new IOperationHistory[2];
-		TransactionalEditingDomain[] editingDomains = getEditingDomains();
-		for (int i = 0; i < 2; i++) {
-			if (editingDomains[i] != null) {
-				operationHistories[i] = ((IWorkspaceCommandStack) editingDomains[i].getCommandStack()).getOperationHistory();
-			}
-		}
-		return operationHistories;
-	}
-
 	/**
 	 * @return The root objects of the model part that are currently being compared in this editor or an empty array if
 	 *         no such objects are available. Anyway, always returns an array of {@linkplain Object}s which size is 2
@@ -293,52 +157,10 @@ public class ModelCompareEditor extends CompareEditor {
 		Object[] modelRoots = new Object[2];
 		IEditorInput editorInput = getEditorInput();
 		if (editorInput instanceof ModelElementComparisonScopeEditorInput) {
-			modelRoots = ((ModelElementComparisonScopeEditorInput) editorInput).getModelRoots();
+			modelRoots[0] = ((ModelElementComparisonScopeEditorInput) editorInput).getLeftObject();
+			modelRoots[1] = ((ModelElementComparisonScopeEditorInput) editorInput).getRightObject();
 		}
 		return modelRoots;
-	}
-
-	/**
-	 * <p>
-	 * <table>
-	 * <tr valign=top>
-	 * <td><b>Note</b>&nbsp;&nbsp;</td>
-	 * <td>Whatever the model roots are (i.e. if <code>null</code> or not), this method returns an array of
-	 * {@linkplain Resource}s whose size is 2.</td>
-	 * </tr>
-	 * </table>
-	 *
-	 * @return
-	 */
-	protected Resource[] getModelRootsResources() {
-		Resource[] resources = new Resource[2];
-		Object[] modelRoots = getModelRoots();
-		for (int i = 0; i < 2; i++) {
-			Object modelRoot = modelRoots[i];
-			if (modelRoot instanceof EObject) {
-				resources[i] = ((EObject) modelRoot).eResource();
-			} else if (modelRoot instanceof IFile) {
-				resources[i] = EcorePlatformUtil.getResource((IFile) modelRoot);
-			}
-		}
-		return resources;
-	}
-
-	protected String getModelRootsNames() {
-		String[] labels = new String[2];
-		Object[] modelRoots = getModelRoots();
-		AdapterFactoryItemDelegator[] itemDelegators = getItemDelegators();
-		for (int i = 0; i < 2; i++) {
-			if (modelRoots[i] != null && itemDelegators[i] != null) {
-				// Label of model root
-				labels[i] = itemDelegators[i].getText(modelRoots[i]);
-			}
-		}
-		if (labels[0] != null && labels[1] != null) {
-			return labels[0] + " <---> " + labels[1]; //$NON-NLS-1$
-		} else {
-			return ((CompareEditorInput) getEditorInput()).getTitle();
-		}
 	}
 
 	protected AdapterFactory[] getAdapterFactories() {
@@ -376,5 +198,86 @@ public class ModelCompareEditor extends CompareEditor {
 		} else {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), new RuntimeException(Messages.error_invalidEditorInput));
 		}
+	}
+
+	@Override
+	public boolean containEditorInputObject(IEditorInput editorInput, Set<EObject> removedObjects) {
+		if (editorInput instanceof ModelElementComparisonScopeEditorInput && removedObjects != null) {
+			Object leftObject = ((ModelElementComparisonScopeEditorInput) editorInput).getLeftObject();
+			Object rightObject = ((ModelElementComparisonScopeEditorInput) editorInput).getRightObject();
+			return removedObjects.contains(leftObject) || removedObjects.contains(rightObject);
+		}
+		return false;
+	}
+
+	@Override
+	public boolean containEditorInputResourceURI(IEditorInput editorInput, Set<URI> resourceURIs) {
+		if (editorInput instanceof ModelElementComparisonScopeEditorInput) {
+			Set<URI> editorInputResourceURIs = new HashSet<URI>();
+			Resource leftResource = EcorePlatformUtil.getResource(((ModelElementComparisonScopeEditorInput) editorInput).getLeftObject());
+			if (leftResource != null) {
+				editorInputResourceURIs.add(leftResource.getURI());
+			}
+			Resource rightResource = EcorePlatformUtil.getResource(((ModelElementComparisonScopeEditorInput) editorInput).getRightObject());
+			if (rightResource != null) {
+				editorInputResourceURIs.add(rightResource.getURI());
+			}
+
+			for (URI editorInputResourceURI : editorInputResourceURIs) {
+				if (resourceURIs.contains(editorInputResourceURI)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public class ModelCompareEditorInputChangeHandler implements IModelEditorInputChangeHandler {
+
+		public ModelCompareEditorInputChangeHandler() {
+		}
+
+		@Override
+		public void handleEditorInputObjectChanged(IEditorInput editorInput) {
+			// Do nothing
+		}
+
+		@Override
+		public void handleEditorInputObjectRemoved(IEditorInput editorInput) {
+			// Close editor
+			close(false);
+		}
+
+		@Override
+		public void handleEditorInputResourceLoaded(IEditorInput editorInput) {
+			// TODO
+		}
+
+		@Override
+		public void handleEditorInputResourceMoved(IEditorInput editorInput, URI oldURI, URI newURI) {
+			// TODO
+		}
+
+		@Override
+		public void handleEditorInputResourceRemoved(IEditorInput editorInput) {
+			// Close editor
+			close(false);
+		}
+	}
+
+	/**
+	 * Closes the editor programmatically.
+	 *
+	 * @param save
+	 *            if <code>true</code>, the content should be saved before closing.
+	 */
+	protected void close(final boolean save) {
+		Display display = getSite().getShell().getDisplay();
+		display.asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				getSite().getPage().closeEditor(ModelCompareEditor.this, save);
+			}
+		});
 	}
 }

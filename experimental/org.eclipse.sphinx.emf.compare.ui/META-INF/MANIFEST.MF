@@ -12,6 +12,7 @@ Require-Bundle: org.eclipse.compare;visibility:=reexport,
  org.eclipse.emf.compare.ide.ui,
  org.eclipse.emf.compare.rcp.ui,
  org.eclipse.sphinx.emf.compare;visibility:=reexport,
+ org.eclipse.sphinx.emf.editors,
  org.eclipse.sphinx.emf.workspace.ui;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -21,5 +22,4 @@ Export-Package: org.eclipse.sphinx.emf.compare.ui,
  org.eclipse.sphinx.emf.compare.ui.editor,
  org.eclipse.sphinx.emf.compare.ui.internal;x-internal:=true,
  org.eclipse.sphinx.emf.compare.ui.internal.messages;x-internal:=true,
- org.eclipse.sphinx.emf.compare.ui.util,
  org.eclipse.sphinx.emf.compare.ui.viewer.structuremerge

@@ -80,11 +80,11 @@
       </viewer>
       <contentTypeBinding
             contentTypeId="org.eclipse.emf.ecore.xmi"
-            structureMergeViewerId="org.eclipse.sphinx.emf.compare.ui.viewer.structure.modelElementStructureMergeViewer">
+            structureMergeViewerId="org.eclipse.emf.compare.ide.ui.internal.structureMergeViewer">
       </contentTypeBinding>
       <contentTypeBinding
             contentTypeId="org.eclipse.emf.compare.content.type"
-            structureMergeViewerId="org.eclipse.sphinx.emf.compare.ui.viewer.structure.modelElementStructureMergeViewer">
+            structureMergeViewerId="org.eclipse.emf.compare.ide.ui.internal.structureMergeViewer">
       </contentTypeBinding>
    </extension>
 </plugin>

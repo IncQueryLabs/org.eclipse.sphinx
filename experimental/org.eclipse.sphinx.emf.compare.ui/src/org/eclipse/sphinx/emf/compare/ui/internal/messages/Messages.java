@@ -53,7 +53,7 @@ public class Messages extends NLS {
 	 */
 	public static String warning_workbenchPartNull;
 	public static String warning_workbenchPartInstanceofModelCompareEditor;
-	public static String warning_inputMatchModelNull;
+	public static String warning_inputModelComparisonInputNull;
 	public static String warning_inputsNull;
 
 	/*

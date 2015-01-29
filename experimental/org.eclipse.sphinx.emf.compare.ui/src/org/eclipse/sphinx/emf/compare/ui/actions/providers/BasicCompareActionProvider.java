@@ -75,7 +75,6 @@ public class BasicCompareActionProvider extends BasicActionProvider {
 	 */
 	@Override
 	protected void fillSubMenu(IMenuManager subMenuManager) {
-		// TODO check others...
 		subMenuManager.add(compareAction);
 		// FIXME subMenuManager.add(new ActionContributionItem(mergeAutoAction));
 	}

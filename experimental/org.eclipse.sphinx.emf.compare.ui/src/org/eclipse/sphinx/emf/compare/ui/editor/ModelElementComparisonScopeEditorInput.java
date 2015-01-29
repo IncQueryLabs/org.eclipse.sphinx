@@ -15,14 +15,14 @@
 package org.eclipse.sphinx.emf.compare.ui.editor;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.compare.EMFCompare;
 import org.eclipse.emf.compare.domain.ICompareEditingDomain;
@@ -39,8 +39,7 @@ import org.eclipse.sphinx.emf.compare.scope.IModelComparisonScope;
 import org.eclipse.sphinx.emf.compare.ui.ModelElementComparisonScopeInput;
 import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
-import org.eclipse.sphinx.emf.compare.ui.util.BasicCompareUIUtil;
-import org.eclipse.sphinx.emf.compare.ui.viewer.structuremerge.ModelElementStructureMergeViewerCreator;
+import org.eclipse.sphinx.emf.compare.util.ModelCompareUtil;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
@@ -60,15 +59,8 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 	private final IComparisonScope scope;
 	private final EMFCompare comparator;
 
-	private ModelElementStructureMergeViewerCreator viewerCreator = new ModelElementStructureMergeViewerCreator();
-
-	/**
-	 * The two {@linkplain Object}s that are currently being compared.
-	 * <p>
-	 * <code>modelRoots[0]</code> is the <b>left</b> model root object;<br>
-	 * <code>modelRoots[1]</code> is the <b>right</b> model root object.
-	 */
-	private Object[] modelRoots;
+	private Object leftObject;
+	private Object rightObject;
 
 	public ModelElementComparisonScopeEditorInput(EMFCompareConfiguration configuration, ICompareEditingDomain editingDomain,
 			AdapterFactory adapterFactory, EMFCompare comparator, IComparisonScope scope) {
@@ -96,13 +88,23 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 	@Override
 	public boolean isDirty() {
 		boolean isDirty = false;
-		for (Object modelRoot : getModelRoots()) {
+		List<Object> selectedObjects = new ArrayList<Object>();
+		selectedObjects.add(getLeftObject());
+		selectedObjects.add(getRightObject());
+
+		for (Object modelRoot : selectedObjects) {
+			Resource resource = null;
 			if (modelRoot instanceof EObject) {
-				// Return true if the model, this editor or both are dirty
-				isDirty = isDirty || ModelSaveManager.INSTANCE.isDirty(((EObject) modelRoot).eResource());
+				resource = ((EObject) modelRoot).eResource();
 			} else if (modelRoot instanceof Resource) {
+				resource = (Resource) modelRoot;
+			} else if (modelRoot instanceof IFile) {
+				resource = EcorePlatformUtil.getResource((IFile) modelRoot);
+			}
+
+			if (resource != null) {
 				// Return true if the model, this editor or both are dirty
-				isDirty = isDirty || ModelSaveManager.INSTANCE.isDirty((Resource) modelRoot);
+				isDirty = isDirty || ModelSaveManager.INSTANCE.isDirty(resource);
 			}
 		}
 		return isDirty;
@@ -127,47 +129,51 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 	}
 
 	/**
-	 * @return The root object of the model part that is currently being edited in this editor or <code>null</code> if
-	 *         no such is available.
+	 * @return The left object that is currently being edited in this editor or <code>null</code> if no such is
+	 *         available.
 	 */
-	public Object[] getModelRoots() {
-		if (modelRoots == null) {
-			modelRoots = new Object[2];
-		}
-
-		if (scope != null) {
-			if (scope instanceof IModelComparisonScope) {
-				// File-based comparison
-				if (((IModelComparisonScope) scope).isFileBasedComparison()) {
-					if (modelRoots[0] == null) {
-						modelRoots[0] = ((IModelComparisonScope) scope).getLeftFile();
-					}
-					if (modelRoots[1] == null) {
-						modelRoots[1] = ((IModelComparisonScope) scope).getRightFile();
-					}
-				} else {
-					Object left = modelRoots[0];
-					if (left == null || left instanceof EObject
-							&& (((EObject) left).eIsProxy() || ((EObject) left).eResource() == null || !((EObject) left).eResource().isLoaded())) {
-						// FIXME
-						modelRoots[0] = scope.getLeft();
-					}
-					Object right = modelRoots[1];
-					if (right == null || right instanceof EObject
-							&& (((EObject) right).eIsProxy() || ((EObject) right).eResource() == null || !((EObject) right).eResource().isLoaded())) {
-						// FIXME
-						modelRoots[1] = scope.getRight();
-					}
+	public Object getLeftObject() {
+		if (scope instanceof IModelComparisonScope) {
+			// File-based comparison
+			if (((IModelComparisonScope) scope).isFileBasedComparison()) {
+				if (leftObject == null) {
+					leftObject = ((IModelComparisonScope) scope).getLeftFile();
+				}
+			} else {
+				if (leftObject == null
+						|| leftObject instanceof EObject
+						&& (((EObject) leftObject).eIsProxy() || ((EObject) leftObject).eResource() == null || !((EObject) leftObject).eResource()
+								.isLoaded())) {
+					leftObject = scope.getLeft();
 				}
 			}
-		} else {
-			// FIXME message comparison null
-			IStatus warning = new Status(IStatus.WARNING, Activator.getPlugin().getSymbolicName(), Messages.warning_inputMatchModelNull,
-					new NullPointerException());
-			PlatformLogUtil.logAsWarning(Activator.getPlugin(), warning);
 		}
 
-		return modelRoots;
+		return leftObject;
+	}
+
+	/**
+	 * @return The right object that is currently being edited in this editor or <code>null</code> if no such is
+	 *         available.
+	 */
+	public Object getRightObject() {
+		if (scope instanceof IModelComparisonScope) {
+			// File-based comparison
+			if (((IModelComparisonScope) scope).isFileBasedComparison()) {
+				if (rightObject == null) {
+					rightObject = ((IModelComparisonScope) scope).getRightFile();
+				}
+			} else {
+				if (rightObject == null
+						|| rightObject instanceof EObject
+						&& (((EObject) rightObject).eIsProxy() || ((EObject) rightObject).eResource() == null || !((EObject) rightObject).eResource()
+								.isLoaded())) {
+					rightObject = scope.getRight();
+				}
+			}
+		}
+
+		return rightObject;
 	}
 
 	protected SaveablesProvider createModelSaveablesProvider() {
@@ -181,11 +187,10 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 	@Override
 	protected Object doPrepareInput(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 		init();
-		String title;
 
 		// FIXME The models should be loaded on demand in the
 		// org.eclipse.sphinx.emf.compare.ui.viewer.structuremerge.ModelElementStructureMergeViewer. We performed model
-		// load step here, if needed, due to an API restriction from AMF compare side.
+		// load step here, if needed, due to an API restriction from EMF compare side.
 		if (scope instanceof IModelComparisonScope && ((IModelComparisonScope) scope).isFileBasedComparison()) {
 			loadModel((IModelComparisonScope) scope, monitor);
 
@@ -196,7 +201,7 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 			EMFCompareConfiguration compareConfiguration = getCompareConfiguration();
 			ICompareEditingDomain editingDomain = compareConfiguration.getEditingDomain();
 			if (editingDomain instanceof DelegatingEMFCompareEditingDomain) {
-				ICompareEditingDomain delegatingEditingDomain = BasicCompareUIUtil.createEMFCompareEditingDomain(leftResource, rightResource, null);
+				ICompareEditingDomain delegatingEditingDomain = ModelCompareUtil.createEMFCompareEditingDomain(leftResource, rightResource, null);
 				((DelegatingEMFCompareEditingDomain) editingDomain).setDelegate(delegatingEditingDomain);
 			}
 		}
@@ -204,6 +209,7 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 		getCompareConfiguration().setEMFComparator(comparator);
 		Object input = new ModelElementComparisonScopeInput(scope, getAdapterFactory());
 
+		String title;
 		String leftLabel = getLeftLabel();
 		String rightLabel = getRightLabel();
 		String ancestorLabel = getAncestorLabel();
@@ -235,47 +241,45 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 	}
 
 	/**
-	 * Returns the label of the left compared object to use it in the title and the tool tip of the compare editor.
-	 *
-	 * @return As specified above.
-	 */
-	protected String getRightLabel() {
-		String rightLabel = ""; //$NON-NLS-1$
-		Object rightRoot = getModelRoots()[1];
-
-		if (rightRoot instanceof EObject) {
-			Resource rightResource = ((EObject) rightRoot).eResource();
-			String fragment = rightResource.getURIFragment((EObject) rightRoot);
-			fragment = fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR) == -1 ? "" : fragment.substring(0, fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR)); //$NON-NLS-1$
-			rightLabel = rightResource.getURI().toPlatformString(true).concat(ExtendedResource.URI_FRAGMENT_SEPARATOR + fragment);
-		} else if (rightRoot instanceof IFile) {
-			// TODO
-			rightLabel = ((IFile) rightRoot).getName();
-		}
-
-		return rightLabel;
-	}
-
-	/**
 	 * Returns the label of the right compared object to use it in the title and the tool tip of the compare editor.
 	 *
 	 * @return As specified above.
 	 */
 	protected String getLeftLabel() {
 		String leftLabel = ""; //$NON-NLS-1$;
-		Object leftRoot = getModelRoots()[0];
+		Object leftObject = getLeftObject();
 
-		if (leftRoot instanceof EObject) {
-			Resource leftResource = ((EObject) leftRoot).eResource();
-			String fragment = leftResource.getURIFragment((EObject) leftRoot);
+		if (leftObject instanceof EObject) {
+			Resource leftResource = ((EObject) leftObject).eResource();
+			String fragment = leftResource.getURIFragment((EObject) leftObject);
 			fragment = fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR) == -1 ? "" : fragment.substring(0, fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR)); //$NON-NLS-1$
 			leftLabel = leftResource.getURI().toPlatformString(true).concat(ExtendedResource.URI_FRAGMENT_SEPARATOR + fragment);
-		} else if (leftRoot instanceof IFile) {
-			// TODO
-			leftLabel = ((IFile) leftRoot).getName();
+		} else if (leftObject instanceof IFile) {
+			leftLabel = ((IFile) leftObject).getName();
 		}
 
 		return leftLabel;
+	}
+
+	/**
+	 * Returns the label of the left compared object to use it in the title and the tool tip of the compare editor.
+	 *
+	 * @return As specified above.
+	 */
+	protected String getRightLabel() {
+		String rightLabel = ""; //$NON-NLS-1$
+		Object rightObject = getRightObject();
+
+		if (rightObject instanceof EObject) {
+			Resource rightResource = ((EObject) rightObject).eResource();
+			String fragment = rightResource.getURIFragment((EObject) rightObject);
+			fragment = fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR) == -1 ? "" : fragment.substring(0, fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR)); //$NON-NLS-1$
+			rightLabel = rightResource.getURI().toPlatformString(true).concat(ExtendedResource.URI_FRAGMENT_SEPARATOR + fragment);
+		} else if (rightObject instanceof IFile) {
+			rightLabel = ((IFile) rightObject).getName();
+		}
+
+		return rightLabel;
 	}
 
 	/**
@@ -284,7 +288,7 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 	 * @return As specified above.
 	 */
 	protected String getAncestorLabel() {
-		// FIXME
+		// TODO in case three way comparison supported
 		// Resource ancestorResource = preparedInput.getAncestorResource();
 		// if (ancestorResource != null) {
 		// return ancestorResource.getURI().toString();
@@ -311,12 +315,16 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 
 	@Override
 	public void saveChanges(IProgressMonitor monitor) {
-		for (Object modelRoot : getModelRoots()) {
+		List<Object> selectedObjects = new ArrayList<Object>();
+		selectedObjects.add(getLeftObject());
+		selectedObjects.add(getRightObject());
+
+		for (Object object : selectedObjects) {
 			Resource resource = null;
-			if (modelRoot instanceof EObject) {
-				resource = ((EObject) modelRoot).eResource();
-			} else if (modelRoot instanceof IFile) {
-				resource = EcorePlatformUtil.getResource((IFile) modelRoot);
+			if (object instanceof EObject) {
+				resource = ((EObject) object).eResource();
+			} else if (object instanceof IFile) {
+				resource = EcorePlatformUtil.getResource((IFile) object);
 			}
 			// Save the all dirty resources of underlying model
 			if (resource != null) {
@@ -334,22 +342,21 @@ public class ModelElementComparisonScopeEditorInput extends ComparisonScopeEdito
 	public Saveable[] getSaveables() {
 		Set<Saveable> saveables = new HashSet<Saveable>();
 		if (modelSaveablesProvider != null) {
-			if (getModelRoots()[0] != null) {
-				Saveable leftSaveable = modelSaveablesProvider.getSaveable(getModelRoots()[0]);
+			if (getLeftObject() != null) {
+				Saveable leftSaveable = modelSaveablesProvider.getSaveable(getLeftObject());
 				if (leftSaveable != null) {
 					saveables.add(leftSaveable);
 				}
 			}
 
-			if (getModelRoots()[1] != null) {
-				Saveable rightSaveable = modelSaveablesProvider.getSaveable(getModelRoots()[1]);
+			if (getRightObject() != null) {
+				Saveable rightSaveable = modelSaveablesProvider.getSaveable(getRightObject());
 				if (rightSaveable != null) {
 					saveables.add(rightSaveable);
 				}
 			}
 		}
 		return saveables.toArray(new Saveable[saveables.size()]);
-
 	}
 
 	@Override

@@ -48,7 +48,7 @@ import org.eclipse.sphinx.emf.compare.ui.editor.ModelCompareEditor;
 import org.eclipse.sphinx.emf.compare.ui.editor.ModelElementComparisonScopeEditorInput;
 import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
-import org.eclipse.sphinx.emf.compare.ui.util.BasicCompareUIUtil;
+import org.eclipse.sphinx.emf.compare.util.ModelCompareUtil;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -190,7 +190,7 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 		builder.setMatchEngineFactoryRegistry(matchEngineFactoryRegistry);
 
 		EMFCompare comparator = builder.build();
-		final ICompareEditingDomain editingDomain = BasicCompareUIUtil.createEMFCompareEditingDomain(left, right, origin);
+		final ICompareEditingDomain editingDomain = ModelCompareUtil.createEMFCompareEditingDomain(left, right, origin);
 		final EMFCompareConfiguration configuration = getEMFCompareConfiguration();
 		IComparisonScope scope = getComparisonScope(left, right, origin);
 
