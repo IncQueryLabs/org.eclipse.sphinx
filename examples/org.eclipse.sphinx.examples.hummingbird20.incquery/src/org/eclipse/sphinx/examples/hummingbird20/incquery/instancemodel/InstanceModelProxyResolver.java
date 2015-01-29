@@ -5,12 +5,12 @@ import java.util.Set;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
-import org.eclipse.sphinx.examples.hummingbird20.incquery.AbstractHb20ProxyResolver;
+import org.eclipse.sphinx.examples.hummingbird20.incquery.AbstractHummingbird20ProxyResolver;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection;
 
-public class InstanceModelProxyResolver extends AbstractHb20ProxyResolver {
+public class InstanceModelProxyResolver extends AbstractHummingbird20ProxyResolver {
 
 	@Override
 	protected void initSupportedTypes() {

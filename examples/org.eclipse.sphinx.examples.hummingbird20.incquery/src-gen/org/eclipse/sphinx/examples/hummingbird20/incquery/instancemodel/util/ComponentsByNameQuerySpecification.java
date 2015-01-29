@@ -78,8 +78,8 @@ public final class ComponentsByNameQuerySpecification extends BaseGeneratedQuery
         new ExportedParameter(body, var_name, "name")
       ));
       
-      
       new TypeUnary(body, var_component, getClassifierLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel", "Component"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel/Component");
+      
       new TypeBinary(body, CONTEXT, var_component, var_name, getFeatureLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common", "Identifiable", "name"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common/Identifiable.name");
       bodies.add(body);
     }

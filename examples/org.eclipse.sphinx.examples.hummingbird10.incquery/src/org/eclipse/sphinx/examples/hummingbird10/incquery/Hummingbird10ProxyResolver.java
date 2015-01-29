@@ -28,12 +28,12 @@ import org.eclipse.sphinx.examples.hummingbird10.Connection;
 import org.eclipse.sphinx.examples.hummingbird10.Interface;
 import org.eclipse.sphinx.examples.hummingbird10.Parameter;
 import org.eclipse.sphinx.examples.hummingbird10.incquery.internal.Activator;
-import org.eclipse.sphinx.examples.hummingbird10.incquery.util.Hb10IncQueryHelper;
+import org.eclipse.sphinx.examples.hummingbird10.incquery.util.Hummingbird10IncQueryHelper;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
-public class Hb10ProxyResolver extends AbstractProxyResolver {
+public class Hummingbird10ProxyResolver extends AbstractProxyResolver {
 
-	private Hb10IncQueryHelper helper = new Hb10IncQueryHelper();
+	private Hummingbird10IncQueryHelper helper = new Hummingbird10IncQueryHelper();
 
 	@Override
 	protected void initSupportedTypes() {

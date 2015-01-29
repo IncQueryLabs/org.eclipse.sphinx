@@ -10,7 +10,7 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
-public abstract class AbstractHb20ProxyResolver extends AbstractProxyResolver {
+public abstract class AbstractHummingbird20ProxyResolver extends AbstractProxyResolver {
 
 	public static final String QUERY_SEPARATOR = "?"; //$NON-NLS-1$
 	public static final String SEGMENT_SEPARATOR = "/"; //$NON-NLS-1$

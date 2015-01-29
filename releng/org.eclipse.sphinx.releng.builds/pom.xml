@@ -60,6 +60,7 @@
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.metamodelgen</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10.edit</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10.ide.ui</module>
+		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10.incquery</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.codegen.xpand</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.diagram.gmf</module>

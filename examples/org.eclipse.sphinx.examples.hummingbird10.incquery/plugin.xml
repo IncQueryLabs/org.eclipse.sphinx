@@ -15,15 +15,9 @@ Contributors:
   <extension id="org.eclipse.sphinx.examples.hummingbird10.incquery.Hummingbird10" point="org.eclipse.incquery.runtime.queryspecification">
     <group group="org.eclipse.incquery.runtime.extensibility.SingletonExtensionFactory:org.eclipse.sphinx.examples.hummingbird10.incquery.Hummingbird10" id="org.eclipse.sphinx.examples.hummingbird10.incquery.Hummingbird10"/>
   </extension>
-  <extension
-        point="org.eclipse.sphinx.emf.metaModelServices">
-     <service
-           class="org.eclipse.sphinx.examples.hummingbird10.incquery.service.Hummingbird10ProxyResolverService"
-           id="org.eclipse.sphinx.examples.hummingbird10.incquery.proxymanagement.service"
-           type="org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolverService">
-        <applicableFor
-              metaModelDescriptorIdPattern="org.eclipse.sphinx.examples.hummingbird10">
-        </applicableFor>
-     </service>
+  <extension point="org.eclipse.sphinx.emf.metaModelServices">
+    <service class="org.eclipse.sphinx.examples.hummingbird10.incquery.service.Hummingbird10ProxyResolverService" id="org.eclipse.sphinx.examples.hummingbird10.incquery.proxymanagement.service" type="org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolverService">
+      <applicableFor metaModelDescriptorIdPattern="org.eclipse.sphinx.examples.hummingbird10"/>
+    </service>
   </extension>
 </plugin>

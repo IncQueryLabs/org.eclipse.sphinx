@@ -17,16 +17,16 @@ package org.eclipse.sphinx.examples.hummingbird10.incquery.service;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.sphinx.emf.incquery.proxymanagment.AbstractProxyResolverService;
-import org.eclipse.sphinx.examples.hummingbird10.incquery.Hb10ProxyResolver;
-import org.eclipse.sphinx.examples.hummingbird10.incquery.util.Hb10IncQueryHelper;
+import org.eclipse.sphinx.examples.hummingbird10.incquery.Hummingbird10ProxyResolver;
+import org.eclipse.sphinx.examples.hummingbird10.incquery.util.Hummingbird10IncQueryHelper;
 
 public class Hummingbird10ProxyResolverService extends AbstractProxyResolverService {
 
-	private Hb10IncQueryHelper helper = new Hb10IncQueryHelper();
+	private Hummingbird10IncQueryHelper helper = new Hummingbird10IncQueryHelper();
 
 	@Override
 	protected void initProxyResolvers() {
-		getProxyResolvers().add(new Hb10ProxyResolver());
+		getProxyResolvers().add(new Hummingbird10ProxyResolver());
 	}
 
 	@Override

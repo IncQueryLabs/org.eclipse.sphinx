@@ -78,8 +78,8 @@ public final class PortsByNameQuerySpecification extends BaseGeneratedQuerySpeci
         new ExportedParameter(body, var_name, "name")
       ));
       
-      new TypeUnary(body, var_port, getClassifierLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel", "Port"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel/Port");
       
+      new TypeUnary(body, var_port, getClassifierLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel", "Port"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel/Port");
       new TypeBinary(body, CONTEXT, var_port, var_name, getFeatureLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common", "Identifiable", "name"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common/Identifiable.name");
       bodies.add(body);
     }

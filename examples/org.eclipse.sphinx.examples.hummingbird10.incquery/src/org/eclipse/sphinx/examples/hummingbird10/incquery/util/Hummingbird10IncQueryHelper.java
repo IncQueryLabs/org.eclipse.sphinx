@@ -21,7 +21,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 
-public class Hb10IncQueryHelper {
+public class Hummingbird10IncQueryHelper {
 
 	public static final String SEGMENT_PREFIX = "@"; //$NON-NLS-1$
 	public static final String DOT = "."; //$NON-NLS-1$

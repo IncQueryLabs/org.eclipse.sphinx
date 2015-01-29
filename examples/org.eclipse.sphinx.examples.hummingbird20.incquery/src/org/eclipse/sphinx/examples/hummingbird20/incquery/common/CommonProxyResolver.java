@@ -6,9 +6,9 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
-import org.eclipse.sphinx.examples.hummingbird20.incquery.AbstractHb20ProxyResolver;
+import org.eclipse.sphinx.examples.hummingbird20.incquery.AbstractHummingbird20ProxyResolver;
 
-public class CommonProxyResolver extends AbstractHb20ProxyResolver {
+public class CommonProxyResolver extends AbstractHummingbird20ProxyResolver {
 
 	@Override
 	protected void initSupportedTypes() {
