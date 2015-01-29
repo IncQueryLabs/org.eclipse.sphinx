@@ -40,13 +40,10 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Pa
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ApplicationImpl#getComponents <em>Components
- * </em>}</li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ApplicationImpl#getMixed <em>Mixed</em>}</li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ApplicationImpl#getXSISchemaLocation <em>XSI
- * Schema Location</em>}</li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ApplicationImpl#getMixedOuterContent <em>
- * Mixed Outer Content</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ApplicationImpl#getComponents <em>Components</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ApplicationImpl#getMixed <em>Mixed</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ApplicationImpl#getXSISchemaLocation <em>XSI Schema Location</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ApplicationImpl#getMixedOuterContent <em>Mixed Outer Content</em>}</li>
  * </ul>
  * </p>
  *
@@ -64,9 +61,9 @@ public class ApplicationImpl extends IdentifiableImpl implements Application {
 	protected EList<Component> components;
 
 	/**
-	 * The cached value of the '{@link #getMixed() <em>Mixed</em>}' attribute list. <!-- begin-user-doc --> <!--
+	 * The cached value of the '{@link #getMixed() <em>Mixed</em>}' attribute list.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @see #getMixed()
 	 * @generated
 	 * @ordered
@@ -74,9 +71,9 @@ public class ApplicationImpl extends IdentifiableImpl implements Application {
 	protected FeatureMap mixed;
 
 	/**
-	 * The cached value of the '{@link #getXSISchemaLocation() <em>XSI Schema Location</em>}' map. <!-- begin-user-doc
+	 * The cached value of the '{@link #getXSISchemaLocation() <em>XSI Schema Location</em>}' map.
+	 * <!-- begin-user-doc
 	 * --> <!-- end-user-doc -->
-	 * 
 	 * @see #getXSISchemaLocation()
 	 * @generated
 	 * @ordered
@@ -95,7 +92,6 @@ public class ApplicationImpl extends IdentifiableImpl implements Application {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected ApplicationImpl() {
@@ -104,7 +100,6 @@ public class ApplicationImpl extends IdentifiableImpl implements Application {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -114,7 +109,6 @@ public class ApplicationImpl extends IdentifiableImpl implements Application {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -127,7 +121,6 @@ public class ApplicationImpl extends IdentifiableImpl implements Application {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -140,21 +133,18 @@ public class ApplicationImpl extends IdentifiableImpl implements Application {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EMap<String, String> getXSISchemaLocation() {
 		if (xSISchemaLocation == null) {
-			xSISchemaLocation = new EcoreEMap<String, String>(EcorePackage.Literals.ESTRING_TO_STRING_MAP_ENTRY, EStringToStringMapEntryImpl.class,
-					this, InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION);
+			xSISchemaLocation = new EcoreEMap<String,String>(EcorePackage.Literals.ESTRING_TO_STRING_MAP_ENTRY, EStringToStringMapEntryImpl.class, this, InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION);
 		}
 		return xSISchemaLocation;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public FeatureMap getMixedOuterContent() {
@@ -166,134 +156,119 @@ public class ApplicationImpl extends IdentifiableImpl implements Application {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case InstanceModel20Package.APPLICATION__COMPONENTS:
-			return ((InternalEList<?>) getComponents()).basicRemove(otherEnd, msgs);
-		case InstanceModel20Package.APPLICATION__MIXED:
-			return ((InternalEList<?>) getMixed()).basicRemove(otherEnd, msgs);
-		case InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION:
-			return ((InternalEList<?>) getXSISchemaLocation()).basicRemove(otherEnd, msgs);
-		case InstanceModel20Package.APPLICATION__MIXED_OUTER_CONTENT:
-			return ((InternalEList<?>) getMixedOuterContent()).basicRemove(otherEnd, msgs);
+			case InstanceModel20Package.APPLICATION__COMPONENTS:
+				return ((InternalEList<?>)getComponents()).basicRemove(otherEnd, msgs);
+			case InstanceModel20Package.APPLICATION__MIXED:
+				return ((InternalEList<?>)getMixed()).basicRemove(otherEnd, msgs);
+			case InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION:
+				return ((InternalEList<?>)getXSISchemaLocation()).basicRemove(otherEnd, msgs);
+			case InstanceModel20Package.APPLICATION__MIXED_OUTER_CONTENT:
+				return ((InternalEList<?>)getMixedOuterContent()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case InstanceModel20Package.APPLICATION__COMPONENTS:
-			return getComponents();
-		case InstanceModel20Package.APPLICATION__MIXED:
-			if (coreType) {
-				return getMixed();
-			}
-			return ((FeatureMap.Internal) getMixed()).getWrapper();
-		case InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION:
-			if (coreType) {
-				return getXSISchemaLocation();
-			} else {
-				return getXSISchemaLocation().map();
-			}
-		case InstanceModel20Package.APPLICATION__MIXED_OUTER_CONTENT:
-			if (coreType) {
-				return getMixedOuterContent();
-			}
-			return ((FeatureMap.Internal) getMixedOuterContent()).getWrapper();
+			case InstanceModel20Package.APPLICATION__COMPONENTS:
+				return getComponents();
+			case InstanceModel20Package.APPLICATION__MIXED:
+				if (coreType) return getMixed();
+				return ((FeatureMap.Internal)getMixed()).getWrapper();
+			case InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION:
+				if (coreType) return getXSISchemaLocation();
+				else return getXSISchemaLocation().map();
+			case InstanceModel20Package.APPLICATION__MIXED_OUTER_CONTENT:
+				if (coreType) return getMixedOuterContent();
+				return ((FeatureMap.Internal)getMixedOuterContent()).getWrapper();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case InstanceModel20Package.APPLICATION__COMPONENTS:
-			getComponents().clear();
-			getComponents().addAll((Collection<? extends Component>) newValue);
-			return;
-		case InstanceModel20Package.APPLICATION__MIXED:
-			((FeatureMap.Internal) getMixed()).set(newValue);
-			return;
-		case InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION:
-			((EStructuralFeature.Setting) getXSISchemaLocation()).set(newValue);
-			return;
-		case InstanceModel20Package.APPLICATION__MIXED_OUTER_CONTENT:
-			((FeatureMap.Internal) getMixedOuterContent()).set(newValue);
-			return;
+			case InstanceModel20Package.APPLICATION__COMPONENTS:
+				getComponents().clear();
+				getComponents().addAll((Collection<? extends Component>)newValue);
+				return;
+			case InstanceModel20Package.APPLICATION__MIXED:
+				((FeatureMap.Internal)getMixed()).set(newValue);
+				return;
+			case InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION:
+				((EStructuralFeature.Setting)getXSISchemaLocation()).set(newValue);
+				return;
+			case InstanceModel20Package.APPLICATION__MIXED_OUTER_CONTENT:
+				((FeatureMap.Internal)getMixedOuterContent()).set(newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case InstanceModel20Package.APPLICATION__COMPONENTS:
-			getComponents().clear();
-			return;
-		case InstanceModel20Package.APPLICATION__MIXED:
-			getMixed().clear();
-			return;
-		case InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION:
-			getXSISchemaLocation().clear();
-			return;
-		case InstanceModel20Package.APPLICATION__MIXED_OUTER_CONTENT:
-			getMixedOuterContent().clear();
-			return;
+			case InstanceModel20Package.APPLICATION__COMPONENTS:
+				getComponents().clear();
+				return;
+			case InstanceModel20Package.APPLICATION__MIXED:
+				getMixed().clear();
+				return;
+			case InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION:
+				getXSISchemaLocation().clear();
+				return;
+			case InstanceModel20Package.APPLICATION__MIXED_OUTER_CONTENT:
+				getMixedOuterContent().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case InstanceModel20Package.APPLICATION__COMPONENTS:
-			return components != null && !components.isEmpty();
-		case InstanceModel20Package.APPLICATION__MIXED:
-			return mixed != null && !mixed.isEmpty();
-		case InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION:
-			return xSISchemaLocation != null && !xSISchemaLocation.isEmpty();
-		case InstanceModel20Package.APPLICATION__MIXED_OUTER_CONTENT:
-			return mixedOuterContent != null && !mixedOuterContent.isEmpty();
+			case InstanceModel20Package.APPLICATION__COMPONENTS:
+				return components != null && !components.isEmpty();
+			case InstanceModel20Package.APPLICATION__MIXED:
+				return mixed != null && !mixed.isEmpty();
+			case InstanceModel20Package.APPLICATION__XSI_SCHEMA_LOCATION:
+				return xSISchemaLocation != null && !xSISchemaLocation.isEmpty();
+			case InstanceModel20Package.APPLICATION__MIXED_OUTER_CONTENT:
+				return mixedOuterContent != null && !mixedOuterContent.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy()) {
-			return super.toString();
-		}
+		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (mixed: "); //$NON-NLS-1$

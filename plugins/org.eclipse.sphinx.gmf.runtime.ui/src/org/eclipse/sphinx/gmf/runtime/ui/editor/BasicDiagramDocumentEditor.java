@@ -1,17 +1,18 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2012 itemis, See4sys and others.
+ *
+ * Copyright (c) 2008-2014 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [392464] Finish up Sphinx editor socket for GMF-based graphical editors
  *     itemis - [393479] Enable BasicTabbedPropertySheetTitleProvider to retrieve same AdapterFactory as underlying IWorkbenchPart is using
- * 
+ *     itemis - [458518] Add org.eclipse.sphinx.emf.editors plug-in
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.gmf.runtime.ui.editor;
@@ -28,9 +29,9 @@ import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.diagram.ui.resources.editor.parts.DiagramDocumentEditor;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.sphinx.emf.editors.ModelEditorUndoContextManager;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
-import org.eclipse.sphinx.gmf.runtime.ui.internal.editor.ModelEditorUndoContextManager;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -70,7 +71,7 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 
 	/**
 	 * Creates an {@linkplain ISaveablesLifecycleListener}
-	 * 
+	 *
 	 * @return
 	 */
 	protected ISaveablesLifecycleListener createModelSaveablesLifecycleListener() {
@@ -169,7 +170,7 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 	 * return any {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter
 	 * factory} will then be returned as result by this method.
 	 * </p>
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain editing domain} whose embedded {@link AdapterFactory adapter
 	 *            factory} is to be returned as default. May be left <code>null</code> if
@@ -202,7 +203,7 @@ public class BasicDiagramDocumentEditor extends DiagramDocumentEditor implements
 	 * {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter factory} will
 	 * then be returned as result by {@link #getAdapterFactory(TransactionalEditingDomain)}.
 	 * </p>
-	 * 
+	 *
 	 * @return The custom {@link AdapterFactory adapter factory} that is to be used by this
 	 *         {@link BasicTransactionalFormEditor form editor}. <code>null</code> the default {@link AdapterFactory
 	 *         adapter factory} returned by {@link #getAdapterFactory(TransactionalEditingDomain)} should be used

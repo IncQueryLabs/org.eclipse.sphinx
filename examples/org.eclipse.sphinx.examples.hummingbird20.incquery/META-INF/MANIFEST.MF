@@ -6,7 +6,8 @@ Bundle-Version: 0.9.0.qualifier
 Bundle-Activator: org.eclipse.sphinx.examples.hummingbird20.incquery.internal.Activator$Implementation
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Export-Package: org.eclipse.sphinx.examples.hummingbird20.incquery.common,
+Export-Package: org.eclipse.sphinx.examples.hummingbird20.incquery,
+ org.eclipse.sphinx.examples.hummingbird20.incquery.common,
  org.eclipse.sphinx.examples.hummingbird20.incquery.common.util,
  org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel,
  org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.util,
@@ -17,7 +18,7 @@ Export-Package: org.eclipse.sphinx.examples.hummingbird20.incquery.common,
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.xtext.xbase.lib,
  org.apache.log4j,
- org.eclipse.sphinx.emf.incquery;visibility:=reexport,
+ org.eclipse.sphinx.emf.search.ui,
  org.eclipse.sphinx.examples.hummingbird20;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

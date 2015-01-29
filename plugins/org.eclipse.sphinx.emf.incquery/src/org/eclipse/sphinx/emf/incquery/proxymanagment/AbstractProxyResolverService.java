@@ -17,10 +17,11 @@ package org.eclipse.sphinx.emf.incquery.proxymanagment;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolverService;
 import org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolver;
+import org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolverService;
 import org.eclipse.sphinx.emf.incquery.IncQueryEngineHelper;
 
 public abstract class AbstractProxyResolverService implements IProxyResolverService {
@@ -33,6 +34,8 @@ public abstract class AbstractProxyResolverService implements IProxyResolverServ
 	}
 
 	protected abstract void initProxyResolvers();
+
+	protected abstract EClass getTargetEClass(URI uri);
 
 	protected List<IProxyResolver> getProxyResolvers() {
 		if (proxyResolvers == null) {
@@ -61,7 +64,19 @@ public abstract class AbstractProxyResolverService implements IProxyResolverServ
 	public EObject getEObject(EObject proxy, EObject contextObject, boolean loadOnDemand) {
 		IProxyResolver proxyResolver = getProxyResolver(proxy.eClass());
 		if (proxyResolver != null) {
-			return proxyResolver.getEObject(proxy, contextObject, false);
+			return proxyResolver.getEObject(proxy, contextObject, loadOnDemand);
+		}
+		return null;
+	}
+
+	@Override
+	public EObject getEObject(URI uri, boolean loadOnDemand) {
+		EClass targetEClass = getTargetEClass(uri);
+		if (targetEClass != null) {
+			IProxyResolver proxyResolver = getProxyResolver(targetEClass);
+			if (proxyResolver != null) {
+				return proxyResolver.getEObject(uri, loadOnDemand);
+			}
 		}
 		return null;
 	}

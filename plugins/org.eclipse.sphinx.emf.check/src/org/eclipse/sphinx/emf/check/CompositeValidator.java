@@ -16,6 +16,7 @@
 package org.eclipse.sphinx.emf.check;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,9 +37,11 @@ import org.eclipse.emf.ecore.EValidator;
 public class CompositeValidator implements ICheckValidator {
 
 	private List<EValidator> children;
+	private Set<String> validationSets;
 
 	public CompositeValidator() {
 		children = new ArrayList<EValidator>();
+		validationSets = new HashSet<String>();
 	}
 
 	public CompositeValidator(EValidator delegate) {
@@ -104,6 +107,7 @@ public class CompositeValidator implements ICheckValidator {
 
 	@Override
 	public void setFilter(Set<String> validationSets) {
+		this.validationSets = validationSets;
 		for (EValidator delegate : children) {
 			if (delegate instanceof ICheckValidator) {
 				((ICheckValidator) delegate).setFilter(validationSets);
@@ -113,6 +117,6 @@ public class CompositeValidator implements ICheckValidator {
 
 	@Override
 	public Set<String> getFilter() {
-		return null;
+		return validationSets;
 	}
 }

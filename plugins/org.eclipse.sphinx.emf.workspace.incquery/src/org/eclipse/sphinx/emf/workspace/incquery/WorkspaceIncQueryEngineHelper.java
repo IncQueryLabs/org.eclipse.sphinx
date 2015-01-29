@@ -19,12 +19,13 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
+import org.eclipse.sphinx.emf.incquery.IncQueryEngineHelper;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSet;
 import org.eclipse.sphinx.emf.workspace.incquery.internal.DelegatingScopingResourceSetImpl;
 
-public class WorkspaceIncQueryEngineHelper implements IWorkspaceIncQueryEngineHelper {
+public class WorkspaceIncQueryEngineHelper extends IncQueryEngineHelper implements IWorkspaceIncQueryEngineHelper {
 
 	@Override
 	public IncQueryEngine getEngine(EObject contextObject) throws IncQueryException {

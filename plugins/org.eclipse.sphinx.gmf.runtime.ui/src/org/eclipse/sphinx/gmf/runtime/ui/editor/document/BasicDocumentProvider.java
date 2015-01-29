@@ -1,17 +1,18 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2013 itemis, See4sys and others.
+ *
+ * Copyright (c) 2008-2014 itemis, See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [392464] Finish up Sphinx editor socket for GMF-based graphical editors
  *     itemis - [418005] Add support for model files with multiple root elements
- * 
+ *     itemis - [458518] Add org.eclipse.sphinx.emf.editors plug-in
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.gmf.runtime.ui.editor.document;
@@ -49,15 +50,15 @@ import org.eclipse.gmf.runtime.diagram.ui.resources.editor.document.IDocument;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.editors.IModelEditorInputChangeAnalyzer;
+import org.eclipse.sphinx.emf.editors.IModelEditorInputChangeHandler;
+import org.eclipse.sphinx.emf.editors.ModelEditorInputSynchronizer;
 import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.saving.ModelSaveManager;
 import org.eclipse.sphinx.gmf.runtime.ui.internal.Activator;
-import org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChangeAnalyzer;
-import org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChangeHandler;
-import org.eclipse.sphinx.gmf.runtime.ui.internal.editor.ModelEditorInputSynchronizer;
 import org.eclipse.sphinx.gmf.runtime.ui.internal.messages.Messages;
 import org.eclipse.sphinx.gmf.workspace.metamodel.GMFNotationDescriptor;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -76,7 +77,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	protected ElementInfo createElementInfo(Object element) throws CoreException {
 		if (false == element instanceof FileEditorInput && false == element instanceof URIEditorInput) {
 			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
-					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
+					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$
 					null));
 		}
 		IEditorInput editorInput = (IEditorInput) element;
@@ -96,7 +97,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	protected IDocument createDocument(Object element) throws CoreException {
 		if (false == element instanceof FileEditorInput && false == element instanceof URIEditorInput) {
 			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
-					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
+					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$
 					null));
 		}
 		IEditorInput editorInput = (IEditorInput) element;
@@ -111,7 +112,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	/**
 	 * Sets up the given document as it would be provided for the given element. The content of the document is not
 	 * changed. This default implementation is empty. Subclasses may re-implement.
-	 * 
+	 *
 	 * @param element
 	 *            the blue-print element
 	 * @param document
@@ -137,7 +138,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	protected void setDocumentContent(IDocument document, IEditorInput element) throws CoreException {
 		if (false == element instanceof FileEditorInput && false == element instanceof URIEditorInput) {
 			throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
-					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
+					new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$
 					null));
 		}
 		IDiagramDocument diagramDocument = (IDiagramDocument) document;
@@ -408,7 +409,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 			if (false == element instanceof FileEditorInput && false == element instanceof URIEditorInput) {
 				fireElementStateChangeFailed(element);
 				throw new CoreException(new Status(IStatus.ERROR, Activator.getPlugin().getSymbolicName(), 0, NLS.bind(Messages.error_IncorrectInput,
-						new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$ 
+						new Object[] { element, "org.eclipse.ui.part.FileEditorInput", "org.eclipse.emf.common.ui.URIEditorInput" }), //$NON-NLS-1$ //$NON-NLS-2$
 						null));
 			}
 			URI newResoruceURI = EcoreUIUtil.getURIFromEditorInput((IEditorInput) element);

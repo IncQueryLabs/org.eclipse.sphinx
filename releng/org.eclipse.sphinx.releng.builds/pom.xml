@@ -35,7 +35,11 @@
 		<module>../../plugins/org.eclipse.sphinx.emf.check.catalog.edit</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.check.catalog.editor</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.check.ui</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.editors</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.compare</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.compare.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.incquery</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.search.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.runtime.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.workspace</module>
 		<module>../../plugins/org.eclipse.sphinx.jdt</module>
@@ -58,6 +62,7 @@
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.metamodelgen</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10.edit</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10.ide.ui</module>
+		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10.incquery</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird10</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.codegen.xpand</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.diagram.gmf</module>
@@ -100,6 +105,8 @@
 
 		<!-- Features -->
 		<module>../../features/org.eclipse.sphinx.core-feature</module>
+		<module>../../features/org.eclipse.sphinx.emf.compare-feature</module>
+		<module>../../features/org.eclipse.sphinx.emf.editors-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms.nebula-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.incquery-feature</module>

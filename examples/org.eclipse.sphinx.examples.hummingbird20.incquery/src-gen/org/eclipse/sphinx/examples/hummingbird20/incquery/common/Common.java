@@ -3,7 +3,9 @@ package org.eclipse.sphinx.examples.hummingbird20.incquery.common;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.api.impl.BaseGeneratedPatternGroup;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
+import org.eclipse.sphinx.examples.hummingbird20.incquery.common.IdentifiablesByNameMatcher;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.common.IdentifiablesMatcher;
+import org.eclipse.sphinx.examples.hummingbird20.incquery.common.util.IdentifiablesByNameQuerySpecification;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.common.util.IdentifiablesQuerySpecification;
 
 /**
@@ -15,6 +17,7 @@ import org.eclipse.sphinx.examples.hummingbird20.incquery.common.util.Identifiab
  * 
  * <p> From package org.eclipse.sphinx.examples.hummingbird20.incquery.common, the group contains the definition of the following patterns: <ul>
  * <li>identifiables</li>
+ * <li>identifiablesByName</li>
  * </ul>
  * 
  * @see IPatternGroup
@@ -41,6 +44,7 @@ public final class Common extends BaseGeneratedPatternGroup {
   
   private Common() throws IncQueryException {
     querySpecifications.add(IdentifiablesQuerySpecification.instance());
+    querySpecifications.add(IdentifiablesByNameQuerySpecification.instance());
     
   }
   
@@ -50,5 +54,13 @@ public final class Common extends BaseGeneratedPatternGroup {
   
   public IdentifiablesMatcher getIdentifiables(final IncQueryEngine engine) throws IncQueryException {
     return IdentifiablesMatcher.on(engine);
+  }
+  
+  public IdentifiablesByNameQuerySpecification getIdentifiablesByName() throws IncQueryException {
+    return IdentifiablesByNameQuerySpecification.instance();
+  }
+  
+  public IdentifiablesByNameMatcher getIdentifiablesByName(final IncQueryEngine engine) throws IncQueryException {
+    return IdentifiablesByNameMatcher.on(engine);
   }
 }

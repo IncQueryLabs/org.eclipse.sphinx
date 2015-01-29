@@ -6,7 +6,7 @@
     modelPluginID="org.eclipse.sphinx.examples.hummingbird20" templateDirectory="/org.eclipse.sphinx.examples.hummingbird20/templates"
     dynamicTemplates="true" modelName="Hummingbird20" modelPluginClass="org.eclipse.sphinx.examples.hummingbird20.Activator"
     editPluginClass="org.eclipse.sphinx.examples.hummingbird20.edit.Activator" editorPluginClass=""
-    generateSchema="true" nonNLSMarkers="true" rootExtendsClass="org.eclipse.sphinx.emf.ecore.ExtendedEObjectImpl"
+    generateSchema="true" nonNLSMarkers="true" rootExtendsClass="org.eclipse.sphinx.examples.hummingbird20.Hummingbird20EObjectImpl"
     rootImplementsInterface="" testsDirectory="" testSuiteClass="" importerID="org.eclipse.emf.importer.ecore"
     complianceLevel="5.0" copyrightFields="false" providerRootExtendsClass="org.eclipse.sphinx.emf.edit.ExtendedItemProviderAdapter"
     editPluginID="org.eclipse.sphinx.examples.hummingbird20.edit" editorPluginID="org.eclipse.sphinx.examples.hummingbird20.editor"

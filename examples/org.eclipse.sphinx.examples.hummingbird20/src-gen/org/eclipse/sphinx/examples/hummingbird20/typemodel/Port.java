@@ -19,14 +19,14 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Port</b></em>'. <!-- end-user-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getOwner <em>Owner</em>}</li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getRequiredInterface <em>Required Interface</em>}
- * </li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMinProviderCount <em>Min Provider Count</em>}</li>
- * <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMaxProviderCount <em>Max Provider Count</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getOwner <em>Owner</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getRequiredInterface <em>Required Interface</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMinProviderCount <em>Min Provider Count</em>}</li>
+ *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMaxProviderCount <em>Max Provider Count</em>}</li>
  * </ul>
  * </p>
  *
@@ -55,26 +55,23 @@ public interface Port extends Identifiable {
 	ComponentType getOwner();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getOwner <em>Owner</em>}'
-	 * container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Owner</em>' container reference.
+	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getOwner <em>Owner</em>}' container reference.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Owner</em>' container reference.
 	 * @see #getOwner()
 	 * @generated
 	 */
 	void setOwner(ComponentType value);
 
 	/**
-	 * Returns the value of the '<em><b>Required Interface</b></em>' reference. It is bidirectional and its opposite is
-	 * '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface#getRequiringPorts <em>Requiring Ports</em>}
-	 * '. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Required Interface</b></em>' reference.
+	 * It is bidirectional and its opposite is '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface#getRequiringPorts <em>Requiring Ports</em>}'.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Required Interface</em>' reference isn't clear, there really should be more of a
 	 * description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Required Interface</em>' reference.
 	 * @see #setRequiredInterface(Interface)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getPort_RequiredInterface()
@@ -85,24 +82,22 @@ public interface Port extends Identifiable {
 	Interface getRequiredInterface();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getRequiredInterface
-	 * <em>Required Interface</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Required Interface</em>' reference.
+	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getRequiredInterface <em>Required Interface</em>}' reference.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Required Interface</em>' reference.
 	 * @see #getRequiredInterface()
 	 * @generated
 	 */
 	void setRequiredInterface(Interface value);
 
 	/**
-	 * Returns the value of the '<em><b>Min Provider Count</b></em>' attribute. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Min Provider Count</b></em>' attribute.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Min Provider Count</em>' attribute isn't clear, there really should be more of a
 	 * description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Min Provider Count</em>' attribute.
 	 * @see #setMinProviderCount(int)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getPort_MinProviderCount()
@@ -112,24 +107,22 @@ public interface Port extends Identifiable {
 	int getMinProviderCount();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMinProviderCount
-	 * <em>Min Provider Count</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Min Provider Count</em>' attribute.
+	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMinProviderCount <em>Min Provider Count</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Min Provider Count</em>' attribute.
 	 * @see #getMinProviderCount()
 	 * @generated
 	 */
 	void setMinProviderCount(int value);
 
 	/**
-	 * Returns the value of the '<em><b>Max Provider Count</b></em>' attribute. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Max Provider Count</b></em>' attribute.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Max Provider Count</em>' attribute isn't clear, there really should be more of a
 	 * description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Max Provider Count</em>' attribute.
 	 * @see #setMaxProviderCount(int)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getPort_MaxProviderCount()
@@ -139,11 +132,9 @@ public interface Port extends Identifiable {
 	int getMaxProviderCount();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMaxProviderCount
-	 * <em>Max Provider Count</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Max Provider Count</em>' attribute.
+	 * Sets the value of the '{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMaxProviderCount <em>Max Provider Count</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Max Provider Count</em>' attribute.
 	 * @see #getMaxProviderCount()
 	 * @generated
 	 */
