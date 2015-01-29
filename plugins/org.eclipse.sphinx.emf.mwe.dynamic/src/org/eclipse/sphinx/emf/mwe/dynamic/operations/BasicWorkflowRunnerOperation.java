@@ -54,7 +54,6 @@ import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
-import org.eclipse.sphinx.jdt.loaders.DelegatingClassLoader;
 import org.eclipse.sphinx.jdt.loaders.ProjectClassLoader;
 import org.eclipse.sphinx.platform.operations.AbstractWorkspaceOperation;
 import org.eclipse.sphinx.platform.util.StatusUtil;
@@ -191,36 +190,6 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 		return null;
 	}
 
-	protected ClassLoader getParentClassLoader(Object model) {
-		ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
-		if (model != null) {
-			ClassLoader modelClassLoader = getModelClassLoader(model);
-			if (modelClassLoader != null) {
-				parentClassLoader = new DelegatingClassLoader(parentClassLoader, modelClassLoader);
-			}
-		}
-		return parentClassLoader;
-	}
-
-	protected ClassLoader getModelClassLoader(Object model) {
-		if (model instanceof EObject) {
-			return model.getClass().getClassLoader();
-		}
-		if (model instanceof Resource) {
-			Resource resource = (Resource) model;
-			if (!resource.getContents().isEmpty()) {
-				return getModelClassLoader(resource.getContents().get(0));
-			}
-		}
-		if (model instanceof List) {
-			List<?> models = (List<?>) model;
-			if (!models.isEmpty()) {
-				return getModelClassLoader(models.get(0));
-			}
-		}
-		return null;
-	}
-
 	protected IType getWorkflowType() throws CoreException {
 		if (workflow instanceof IType) {
 			return (IType) workflow;
@@ -248,15 +217,17 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 		Assert.isNotNull(workflowType);
 
 		// Find out where given workflow type originates from
-		if (workflowType.getParent() instanceof ICompilationUnit) {
+		if (!workflowType.isBinary()) {
 			// Workflow type refers to an on-the-fly compiled Java class in the runtime workspace
 
-			ClassLoader parentClassLoader = getParentClassLoader(model);
-			ProjectClassLoader projectClassLoader = new ProjectClassLoader(workflowType.getJavaProject(), parentClassLoader);
+			// Create project class loader capable of loading Java class behind workflow type from underlying Java or
+			// plug-in project in runtime workspace
+			ProjectClassLoader projectClassLoader = new ProjectClassLoader(workflowType.getJavaProject());
 
 			// TODO Surround with appropriate tracing option
 			// ClassLoaderExtensions.printHierarchy(projectClassLoader);
 
+			// Use project class loader to load Java class behind workflow type
 			return projectClassLoader.loadClass(workflowType.getFullyQualifiedName());
 		} else {
 			// Workflow type refers to a binary Java class from the running Eclipse instance

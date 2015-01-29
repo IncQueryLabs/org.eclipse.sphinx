@@ -1,20 +1,20 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, BMW Car IT, Continental Engineering Services, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
  *     Conti - [353487] - Performance of ExtendedPlatform.isPlatformPrivateResource
- *     itemis - [357965] Scheduling rules for saving new resources must be scoped to enclosing project 
+ *     itemis - [357965] Scheduling rules for saving new resources must be scoped to enclosing project
  *     BMW Car IT - [373481] Performance optimizations for model loading
  *     BMW Car IT - [374883] Improve handling of out-of-sync workspace files during descriptor initialization
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.platform.util;
@@ -72,6 +72,7 @@ import org.eclipse.sphinx.platform.resources.IResourceSyncMarker;
 import org.eclipse.sphinx.platform.resources.MarkerJob;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.wiring.BundleRevision;
 
 /**
  * A utility class which extends the functionality provided by the eclipse platform.
@@ -104,7 +105,7 @@ public final class ExtendedPlatform {
 	/**
 	 * Returns the feature version of the running instance of the Eclipse platform (e.g., 3.4 for Eclipse 3.4, 3.5 for
 	 * Eclipse 3.5).
-	 * 
+	 *
 	 * @return The feature version of the running Eclipse platform instance.
 	 */
 	public static String getFeatureVersion() {
@@ -121,7 +122,7 @@ public final class ExtendedPlatform {
 	 * Returns an ordinal for the feature version of the running instance of the Eclipse platform (e.g., 34 for Eclipse
 	 * 3.4, 35 for Eclipse 3.5). Can be used for easy testing if the running version of Eclipse platform is newer or
 	 * older than a given version.
-	 * 
+	 *
 	 * @return The feature version ordinal of the running Eclipse platform instance.
 	 */
 	public static int getFeatureVersionOrdinal() {
@@ -144,7 +145,7 @@ public final class ExtendedPlatform {
 	/**
 	 * Returns the active bundle matching specified symbolic name that has the highest version. Starts that bundle if
 	 * not already in active state.
-	 * 
+	 *
 	 * @param symbolicName
 	 *            Symbolic name of bundle to be loaded.
 	 * @return The bundle that has the specified symbolic name with the highest version in active state, or
@@ -155,8 +156,13 @@ public final class ExtendedPlatform {
 		Bundle bundle = Platform.getBundle(symbolicName);
 		if (bundle != null) {
 			try {
-				if (bundle.getState() != Bundle.ACTIVE && bundle.getState() != Bundle.STARTING) {
-					bundle.start(Bundle.START_TRANSIENT);
+				// Avoid attempts to start fragments individually (they get automatically started when their host
+				// plug-in is started)
+				BundleRevision revision = bundle.adapt(BundleRevision.class);
+				if (revision != null && (revision.getTypes() & BundleRevision.TYPE_FRAGMENT) == 0) {
+					if (bundle.getState() != Bundle.ACTIVE && bundle.getState() != Bundle.STARTING) {
+						bundle.start(Bundle.START_TRANSIENT);
+					}
 				}
 			} catch (BundleException ex) {
 				PlatformLogUtil.logAsError(Activator.getDefault(), ex);
@@ -168,7 +174,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Returns the contributing bundle for a given <code>contribution</code>.
-	 * 
+	 *
 	 * @param contribution
 	 *            The contribution whose contributor bundle must be returned<br>
 	 *            (must not be <tt>null</tt>).
@@ -182,7 +188,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Creates a {@link ISchedulingRule scheduling rule} required for modifying the given {@link IResource resource}.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link IResource resource} to be modified.
 	 * @return The resulting {@link ISchedulingRule scheduling rule} or <code>null</code> if no such could be created.
@@ -198,7 +204,7 @@ public final class ExtendedPlatform {
 	/**
 	 * Creates a {@link ISchedulingRule scheduling rule} required for modifying the given collection of {@link IFile
 	 * file}s.
-	 * 
+	 *
 	 * @param files
 	 *            The collection of {@link IFile file}s to be modified.
 	 * @return The resulting {@link ISchedulingRule scheduling rule} or <code>null</code> if provided collection of
@@ -229,7 +235,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Creates a {@link ISchedulingRule scheduling rule} required for creating the given {@link IResource resource}.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link IResource resource} to be created.
 	 * @return The resulting {@link ISchedulingRule scheduling rule} or <code>null</code> if no such could be created.
@@ -244,7 +250,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Creates a {@link ISchedulingRule scheduling rule} required for saving the given new {@link IResource resource}.
-	 * 
+	 *
 	 * @param resource
 	 *            The new {@link IResource resource} to be saved.
 	 * @return The resulting {@link ISchedulingRule scheduling rule} or <code>null</code> if no such could be created.
@@ -268,7 +274,7 @@ public final class ExtendedPlatform {
 	/**
 	 * Creates a {@link ISchedulingRule scheduling rule} required for saving the new {@link IFile file} with given
 	 * {@link IPath path}.
-	 * 
+	 *
 	 * @param filePath
 	 *            The {@link IPath path} of the new {@link IFile file} to be saved.
 	 * @return The resulting {@link ISchedulingRule scheduling rule} or <code>null</code> if no such could be created.
@@ -284,7 +290,7 @@ public final class ExtendedPlatform {
 	/**
 	 * Creates a {@link ISchedulingRule scheduling rule} required for saving the new {@link IFile file}s with the given
 	 * collection of {@link IPath path}s.
-	 * 
+	 *
 	 * @param filePaths
 	 *            The collection of {@link IPath}s of the new {@link IFile file}s to be saved.
 	 * @return The resulting {@link ISchedulingRule scheduling rule} or <code>null</code> if provided collection of
@@ -315,7 +321,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Creates a {@link ISchedulingRule scheduling rule} required for saving the given {@link IResource resource}.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link IResource resource} to be saved.
 	 * @return The resulting {@link ISchedulingRule scheduling rule} or <code>null</code> if no such could be created.
@@ -331,7 +337,7 @@ public final class ExtendedPlatform {
 	/**
 	 * Indicates if given {@link IResource resource} is a project description file, i.e. a file named ".project" located
 	 * directly under the root of a project.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link IResource resource} to be investigated.
 	 * @return <code>true</code> if given {@link IResource resource} is a project description file, or
@@ -352,7 +358,7 @@ public final class ExtendedPlatform {
 	/**
 	 * Indicates if given {@link IResource resource} is a project properties folder, i.e. a folder named ".settings"
 	 * located directly under the root of a project.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link IResource resource} to be investigated.
 	 * @return <code>true</code> if given {@link IResource resource} is a project properties folder, or
@@ -373,7 +379,7 @@ public final class ExtendedPlatform {
 	/**
 	 * Indicates if given {@link IResource resource} is a project properties file, i.e. a *.prefs file in a folder named
 	 * ".settings" and located directly under the root of a project.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link IResource resource} to be investigated.
 	 * @return <code>true</code> if given {@link IResource resource} is a project properties file, or <code>false</code>
@@ -392,7 +398,7 @@ public final class ExtendedPlatform {
 	 * <p>
 	 * This is a convenience method, fully equivalent to <code>isTeamPrivateResource(resource, IResource.NONE)</code>.
 	 * </p>
-	 * 
+	 *
 	 * @return <code>true</code> if given {@link IResource resource} is team private, or <code>false</code> otherwise.
 	 * @see IResource#isTeamPrivateMember(boolean)
 	 * @since 0.7.0
@@ -411,7 +417,7 @@ public final class ExtendedPlatform {
 	 * If the {@link IResource#CHECK_ANCESTORS} option flag is not specified, this method returns false for children of
 	 * team private resources.
 	 * </p>
-	 * 
+	 *
 	 * @param options
 	 *            Bit-wise OR of option flag constants (only {@link IResource#CHECK_ANCESTORS} is applicable).
 	 * @return <code>true</code> if given {@link IResource resource} is team private, or <code>false</code> otherwise.
@@ -433,7 +439,7 @@ public final class ExtendedPlatform {
 			 * Performance optimization: test if ".svn" is contained in resource name; this enables direct detection of
 			 * ".svn" folders and "*.svn-base" files and avoids recursive checking of ancestor resources in these cases.
 			 */
-			if (resource.getName().contains(".svn")) { //$NON-NLS-1$ 
+			if (resource.getName().contains(".svn")) { //$NON-NLS-1$
 				return true;
 			}
 
@@ -448,7 +454,7 @@ public final class ExtendedPlatform {
 	/**
 	 * Returns whether given {@link IResource resource} is platform private (i.e., a team private resource, project
 	 * description file, or project properties folder or file).
-	 * 
+	 *
 	 * @return <code>true</code> if given {@link IResource resource} is platform private, or <code>false</code>
 	 *         otherwise.
 	 * @see IResource#isTeamPrivateMember(boolean)
@@ -468,7 +474,7 @@ public final class ExtendedPlatform {
 	/**
 	 * Returns all {@link IFile file}s contained in the {@link IFolder folder}. The {@link IFolder folder} is searched
 	 * recursively. Thus, {@link IFile file}s contained in descending {@link IFolder folder}s are also returned.
-	 * 
+	 *
 	 * @param folder
 	 *            The {@link IFolder folder} owning the {@link IFile file}s to return.
 	 * @return The list of {@link IFile file}s owned by the given {@link IFolder folder} (and its descendant
@@ -549,7 +555,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Returns all files of a project.
-	 * 
+	 *
 	 * @param project
 	 *            The project whose files must be returned.
 	 * @param deeply
@@ -566,7 +572,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Encapsulated method {@link IContainer#members()} in order to keep as much robustness as possible.
-	 * 
+	 *
 	 * @param container
 	 *            The container whose members must be returned.
 	 * @return The resources that are members of the given container.
@@ -592,7 +598,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Encapsulated method {@link IProject#getReferencedProjects()} in order to keep as much robustness as possible.
-	 * 
+	 *
 	 * @see IProject#getReferencedProjects()
 	 * @param project
 	 *            The project whose referenced projects must be returned.
@@ -614,7 +620,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Encapsulated method {@link IProject#getReferencingProjects()} in order to keep as much robustness as possible.
-	 * 
+	 *
 	 * @see IProject#getReferencingProjects()
 	 * @param project
 	 *            The project whose referencing projects must be returned.
@@ -642,7 +648,7 @@ public final class ExtendedPlatform {
 	/**
 	 * Computes a group of projects. This method will search recursively all referenced projects of the given project
 	 * and if wanted also the projects that reference the given project.
-	 * 
+	 *
 	 * @param project
 	 *            A project whose scope will be computed.
 	 * @param includeReferencingProjects
@@ -678,7 +684,7 @@ public final class ExtendedPlatform {
 	 * Returns a {@linkplain Collection collection} containing all the {@linkplain IProject project}s that are
 	 * referenced by the specified project and recursively all the projects that are referenced by the projects that are
 	 * referenced by the given {@link IProject project}.
-	 * 
+	 *
 	 * @param project
 	 *            The project whose all referenced projects must be returned.
 	 * @return All the projects that are referenced by the specified {@link IProject project}.
@@ -712,7 +718,7 @@ public final class ExtendedPlatform {
 	 * Returns a {@linkplain Collection collection} containing all the {@linkplain IProject project}s that are
 	 * referencing the specified project and recursively all the projects that are referencing the projects that are
 	 * referencing by the given {@link IProject project}.
-	 * 
+	 *
 	 * @param project
 	 *            The project whose all referencing projects must be returned.
 	 * @return All the projects that are referencing the specified {@link IProject project}.
@@ -732,7 +738,7 @@ public final class ExtendedPlatform {
 	/**
 	 * Returns wheather the given {@link IProject} is a root project. Root projects are projects which are not
 	 * referenced from another project. From a root project an entire model can be loaded.
-	 * 
+	 *
 	 * @param project
 	 *            The project to be evaluated.
 	 * @return <tt>true</tt> if given project is a root project, <tt>false</tt> otherwise.
@@ -747,7 +753,7 @@ public final class ExtendedPlatform {
 	 * <p>
 	 * If the given <code>project</code> has more than one root project the first one found will be returned. If the
 	 * provided <code>project</code> is a root project itself it is returned.
-	 * 
+	 *
 	 * @param project
 	 *            The project for which the root project is to be determined.
 	 * @return The root project of the given <code>project</code>.
@@ -791,7 +797,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Returns all root projects in the workspace.
-	 * 
+	 *
 	 * @return All root projects in the workspace.
 	 * @see #getFirstRootProject(IProject)
 	 */
@@ -807,7 +813,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Returns the projects in the workspace which have the given nature associated with them.
-	 * 
+	 *
 	 * @param natureId
 	 *            An identifier specifying the nature of the projects to be returned.
 	 * @return A collection of projects having the specified nature.
@@ -831,7 +837,7 @@ public final class ExtendedPlatform {
 	/**
 	 * Creates a file name that is unique among the names of the files present in {@link IContainer container} with
 	 * given <code>containerFullPath</code>.
-	 * 
+	 *
 	 * @param containerFullPath
 	 * @param candidateFileName
 	 * @return
@@ -861,7 +867,7 @@ public final class ExtendedPlatform {
 	 * already is unique wrt provided <code>allocatedPaths</code> the <code>candidatePath</code> is returned as is.
 	 * Otherwise the <code>candidatePath</code> is made unique by appending an appropriate number to its last segment.
 	 * Any file extension present on the <code>candiatePath</code> is be preserved.
-	 * 
+	 *
 	 * @param candidatePath
 	 *            The candidate {@link IPath path} from which a unique path is to be created.
 	 * @param allocatedPaths
@@ -894,7 +900,7 @@ public final class ExtendedPlatform {
 	 * {@linkplain IFile#getSessionProperty(QualifiedName)} where {@link QualifiedName qualifiedName} can be computed by
 	 * using {@linkplain ExtendedPlatform#toQualifedName(String)} and specifying
 	 * {@linkplain IExtendedPlatformConstants#RESOURCE_PROPERTY_CONTENT_TYPE_ID} as <code>name</code>.
-	 * 
+	 *
 	 * @param file
 	 *            The file whose content-type identifier must be returned.
 	 * @return The content-type identifier of the given {@link IFile file} or <code>null</code> if no such could be
@@ -919,7 +925,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Returns the content-type identifier of the specified {@linkplain File file}.
-	 * 
+	 *
 	 * @param file
 	 *            The file whose content-type identifier must be returned.
 	 * @return The content-type identifier of the given {@link File file} or <code>null</code> if no such could be
@@ -1200,7 +1206,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Returns a set of file extensions supported by content-type with given id.
-	 * 
+	 *
 	 * @param contentTypeId
 	 *            The content-type id for which the supported file extensions are to be retrieved.
 	 * @return The set of file extensions supported by content-type with given id or an empty collection if no such
@@ -1218,7 +1224,7 @@ public final class ExtendedPlatform {
 	 * Returns wether the given content type is applicable to the passed in file. Applicability will be checked based on
 	 * the filename/extension. The contents of the file will not be considered which would induce a massive performance
 	 * overhead.
-	 * 
+	 *
 	 * @param contentTypeId
 	 *            The identifier of the content type to check for applicability
 	 * @param file
@@ -1241,7 +1247,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Converts the specified {@linkplain String name} into a {@linkplain QualifiedName qualified name}.
-	 * 
+	 *
 	 * @param name
 	 *            The name to convert.
 	 * @return The qualified name resulting from the conversion of the given {@link String name}.
@@ -1260,7 +1266,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Adds specified {@link IProjectNature nature} to given {@link IProject project}.
-	 * 
+	 *
 	 * @param project
 	 *            The {@link IProject project} to be handled.
 	 * @param natureId
@@ -1292,7 +1298,7 @@ public final class ExtendedPlatform {
 
 	/**
 	 * Removes specified {@link IProjectNature nature} from given {@link IProject project}.
-	 * 
+	 *
 	 * @param project
 	 *            The {@link IProject project} to be handled.
 	 * @param natureId
@@ -1381,7 +1387,7 @@ public final class ExtendedPlatform {
 	 * Checks wether the resource is in-sync with the file system and updates its out-of-sync marker accordingly. If the
 	 * resource is out-of-sync a problem marker is created otherwise any previously existing markers are removed. This
 	 * method will not synchronize the resource.
-	 * 
+	 *
 	 * @param markerJob
 	 *            the marker job that will be used to asynchronously create or delete markers
 	 * @param resource

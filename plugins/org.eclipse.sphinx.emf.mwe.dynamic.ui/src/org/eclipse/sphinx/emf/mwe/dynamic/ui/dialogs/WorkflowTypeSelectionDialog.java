@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.mwe2.runtime.workflow.Workflow;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
@@ -137,7 +136,7 @@ public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
 						IType matchType = match.getType();
 
 						// Find out where matched type originates from
-						if (matchType.getParent() instanceof ICompilationUnit) {
+						if (!matchType.isBinary()) {
 							// Matched type refers to an on-the-fly compiled Java class in the runtime workspace
 
 							// Try to find type for MWE2 Workflow within underlying Java project

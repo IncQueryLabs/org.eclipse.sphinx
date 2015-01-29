@@ -17,6 +17,7 @@ package org.eclipse.sphinx.jdt.util
 import java.net.URLClassLoader
 import java.util.ArrayList
 import java.util.Arrays
+import org.eclipse.sphinx.jdt.loaders.ProjectClassLoader
 
 class ClassLoaderExtensions {
 
@@ -36,7 +37,10 @@ class ClassLoaderExtensions {
 
 	static def void print(ClassLoader classLoader) {
 		var String classLoaderAsString
-		if (classLoader instanceof URLClassLoader) {
+		if (classLoader instanceof ProjectClassLoader) {
+			classLoaderAsString = classLoader.toString
+		}
+		else if (classLoader instanceof URLClassLoader) {
 			classLoaderAsString = classLoader.getClass().name + " [urls=" + Arrays.toString(classLoader.URLs) + "]"
 		} else {
 			classLoaderAsString = classLoader.toString
