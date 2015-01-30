@@ -15,6 +15,7 @@
  package org.eclipse.sphinx.pde.util
 
 import org.eclipse.jdt.core.JavaCore
+import org.eclipse.sphinx.jdt.util.JavaExtensions
 
 class PDEExtensions {
 	
@@ -38,7 +39,7 @@ class PDEExtensions {
 			requiredExecutionEnvironment = PDE_EXECUTION_ENVIRONMENT_JavaSE_16;
 		} else if (JavaCore.VERSION_1_7.equals(compilerCompliance)) {
 			requiredExecutionEnvironment = PDE_EXECUTION_ENVIRONMENT_JavaSE_17;
-		} else if (JavaCore.VERSION_1_8.equals(compilerCompliance)) {
+		} else if (JavaExtensions.VERSION_1_8.equals(compilerCompliance)) {
 			requiredExecutionEnvironment = PDE_EXECUTION_ENVIRONMENT_JavaSE_18;
 		}
 		return requiredExecutionEnvironment;

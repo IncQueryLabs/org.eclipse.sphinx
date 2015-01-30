@@ -206,7 +206,7 @@ public class ConvertProjectToJavaProjectJob extends WorkspaceJob {
 			jreContainer += JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_JAVA_SE_1_6;
 		} else if (JavaCore.VERSION_1_7.equals(compilerCompliance)) {
 			jreContainer += JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_JAVA_SE_1_7;
-		} else if (JavaCore.VERSION_1_8.equals(compilerCompliance)) {
+		} else if (JavaExtensions.VERSION_1_8.equals(compilerCompliance)) {
 			jreContainer += JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_JAVA_SE_1_8;
 		}
 		classpathEntries.add(JavaCore.newContainerEntry(new Path(jreContainer)));

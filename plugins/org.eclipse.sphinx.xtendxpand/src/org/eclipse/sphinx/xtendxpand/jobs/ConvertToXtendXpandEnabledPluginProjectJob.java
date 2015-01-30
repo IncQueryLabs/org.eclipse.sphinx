@@ -229,7 +229,7 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 			requiredExecutionEnvironment = PDE_EXECUTION_ENVIRONMENT_JavaSE_16;
 		} else if (JavaCore.VERSION_1_7.equals(compilerCompliance)) {
 			requiredExecutionEnvironment = PDE_EXECUTION_ENVIRONMENT_JavaSE_17;
-		} else if (JavaCore.VERSION_1_8.equals(compilerCompliance)) {
+		} else if (JavaExtensions.VERSION_1_8.equals(compilerCompliance)) {
 			requiredExecutionEnvironment = PDE_EXECUTION_ENVIRONMENT_JavaSE_18;
 		}
 		return requiredExecutionEnvironment;

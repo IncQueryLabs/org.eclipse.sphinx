@@ -39,6 +39,9 @@ import org.eclipse.sphinx.platform.util.StatusUtil
 import org.osgi.framework.Bundle
 
 class JavaExtensions {
+	
+	// Ensure backward compatibility with Eclipse 4.3.x (Kepler) and earlier
+	public static final String VERSION_1_8 = "1.8"; //$NON-NLS-1$
 
 	public static final String DEFAULT_OUTPUT_FOLDER_NAME = "bin"
 
@@ -161,8 +164,8 @@ class JavaExtensions {
 		val String version = vmInstall.getJavaVersion();
 		if (version == null) {
 			return defaultCompliance;
-		} else if (version.startsWith(JavaCore.VERSION_1_8)) {
-			return JavaCore.VERSION_1_8;
+		} else if (version.startsWith(VERSION_1_8)) {
+			return VERSION_1_8;
 		} else if (version.startsWith(JavaCore.VERSION_1_7)) {
 			return JavaCore.VERSION_1_7;
 		} else if (version.startsWith(JavaCore.VERSION_1_6)) {
