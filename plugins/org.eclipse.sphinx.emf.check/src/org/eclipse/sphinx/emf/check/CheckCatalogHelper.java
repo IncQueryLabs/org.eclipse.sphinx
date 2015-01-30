@@ -34,8 +34,8 @@ public class CheckCatalogHelper {
 	private Catalog catalog;
 
 	public CheckCatalogHelper(ICheckValidator checkValidator) {
-		String fqn = checkValidator.getClass().getName();
-		URI uri = CheckValidatorRegistry.INSTANCE.getCheckModelURI(fqn);
+		String checkValidatorClassName = checkValidator.getClass().getName();
+		URI uri = CheckValidatorRegistry.INSTANCE.getCheckCatalogURI(checkValidatorClassName);
 		if (uri != null) {
 			Resource checkResource = new ResourceSetImpl().getResource(uri, true);
 			EObject eObject = checkResource.getContents().get(0);

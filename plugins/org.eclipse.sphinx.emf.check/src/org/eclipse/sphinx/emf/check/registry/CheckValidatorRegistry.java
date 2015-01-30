@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,8 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [455185] Check Framework incompatible with QVTO metamodel
+ *     itemis - [458403] CheckValidatorRegistry.getCheckModelURI(String) should be null-safe
+ *     itemis - [458405] CheckValidatorRegistry.register(*) should be public
  *
  * </copyright>
  */
@@ -71,7 +73,7 @@ public class CheckValidatorRegistry {
 	 */
 	public static final CheckValidatorRegistry INSTANCE = new CheckValidatorRegistry(Platform.getExtensionRegistry(), Activator.getPlugin().getLog());
 
-	private Map<String, CheckValidatorDescriptor> validatorToCheckModelMap = Collections
+	private Map<String, CheckValidatorDescriptor> checkValidatorClassNameToCheckValidatorDescriptorMap = Collections
 			.synchronizedMap(new LinkedHashMap<String, CheckValidatorDescriptor>());
 
 	private Map<String, Object> ePackageMappingsMap = Collections.synchronizedMap(new LinkedHashMap<String, Object>());
@@ -91,7 +93,7 @@ public class CheckValidatorRegistry {
 	 * @throws CoreException
 	 */
 	public ICheckValidator getValidator(EPackage ePackage) throws CoreException {
-		if (getValidatorToCheckModelMap().isEmpty()) {
+		if (getCheckValidatorClassNameToCheckValidatorDescriptorMap().isEmpty()) {
 			initialize();
 		}
 		EValidator eValidator = getRegistry().getEValidator(ePackage);
@@ -104,11 +106,15 @@ public class CheckValidatorRegistry {
 	/**
 	 * Returns the URI of a check model given a fully qualified name of a check validator.
 	 *
-	 * @param qualifiedName
+	 * @param checkValidatorClassName
 	 * @return
 	 */
-	public URI getCheckModelURI(String qualifiedName) {
-		return getValidatorToCheckModelMap().get(qualifiedName).getURI();
+	public URI getCheckCatalogURI(String checkValidatorClassName) {
+		CheckValidatorDescriptor descriptor = getCheckValidatorClassNameToCheckValidatorDescriptorMap().get(checkValidatorClassName);
+		if (descriptor != null) {
+			return descriptor.getCheckCatalogURI();
+		}
+		return null;
 	}
 
 	private CheckValidatorRegistry(IExtensionRegistry extensionRegistry, ILog logger) {
@@ -132,11 +138,11 @@ public class CheckValidatorRegistry {
 						String validatorClassName = checkValidatorDescriptor.getValidatorClassName();
 
 						// populate the check map
-						if (getValidatorToCheckModelMap().containsKey(validatorClassName)) {
+						if (getCheckValidatorClassNameToCheckValidatorDescriptorMap().containsKey(validatorClassName)) {
 							logWarning("Duplicate validator contribution found for: " + validatorClassName); //$NON-NLS-1$
 							continue;
 						}
-						getValidatorToCheckModelMap().put(validatorClassName, checkValidatorDescriptor);
+						getCheckValidatorClassNameToCheckValidatorDescriptorMap().put(validatorClassName, checkValidatorDescriptor);
 					} else if (NODE_EPACKAGE_MAPPING.equals(configElement.getName())) {
 						String javaPackageName = configElement.getAttribute(ATTR_EOBJECT_WRAPPER_PACKAGE_NAME);
 						String ePackageNsURI = configElement.getAttribute(ATTR_EPACKAGE_NS_URI);
@@ -153,14 +159,14 @@ public class CheckValidatorRegistry {
 			}
 
 			// Second iteration on the check map to register the validators
-			for (CheckValidatorDescriptor descriptor : getValidatorToCheckModelMap().values()) {
+			for (CheckValidatorDescriptor descriptor : getCheckValidatorClassNameToCheckValidatorDescriptorMap().values()) {
 				// load the validator class from the fully qualified name and register it
-				String bundleName = descriptor.getContributorName();
+				String contributorPluginId = descriptor.getContributorPluginId();
 				String validatorClassName = descriptor.getValidatorClassName();
 				try {
-					Class<?> clazz = Platform.getBundle(bundleName).loadClass(validatorClassName);
+					Class<?> validatorClass = Platform.getBundle(contributorPluginId).loadClass(validatorClassName);
 					// register the ePackages within the scope of the validator
-					registerPackagesInScope(clazz);
+					addPackagesInScope(validatorClass);
 				} catch (ClassNotFoundException ex) {
 					logError(ex);
 				}
@@ -168,11 +174,11 @@ public class CheckValidatorRegistry {
 		}
 	}
 
-	private void registerPackagesInScope(Class<?> clazz) {
-		Set<Class<?>> classes = findClassesInScope(clazz);
-		Set<EPackage> packagesToRegister = findEPackagesInScope(classes);
-		for (EPackage p : packagesToRegister) {
-			register(p, clazz);
+	private void addPackagesInScope(Class<?> validatorClass) {
+		Set<Class<?>> validatorClasses = findClassesInScope(validatorClass);
+		Set<EPackage> ePackagesToRegisterUpon = findEPackagesInScope(validatorClasses);
+		for (EPackage ePackage : ePackagesToRegisterUpon) {
+			addValidator(ePackage, validatorClass);
 		}
 	}
 
@@ -261,45 +267,45 @@ public class CheckValidatorRegistry {
 		return javaPackageName;
 	}
 
-	private void register(EPackage ePackage, Class<?> clazz) {
+	private void addValidator(EPackage ePackage, Class<?> validatorClass) {
 		EValidator validatorInstance;
 		try {
-			validatorInstance = (EValidator) clazz.newInstance();
-			register(ePackage, validatorInstance);
+			validatorInstance = (EValidator) validatorClass.newInstance();
+			addValidator(ePackage, validatorInstance);
 		} catch (Exception ex) {
 			logError(ex);
 		}
 	}
 
-	private void register(EPackage ePackage, EValidator newValidator) {
+	public void addValidator(EPackage ePackage, EValidator validator) {
 
 		EValidator existingValidator = getRegistry().getEValidator(ePackage);
 
 		// there is no validator already registered, register the new validator
 		if (existingValidator == null) {
-			getRegistry().put(ePackage, newValidator);
+			getRegistry().put(ePackage, validator);
 		}
 
 		// there is a check-based validator already registered, replace it by the injected one
 		else if (existingValidator instanceof AbstractCheckValidator) {
 			// getRegistry().put(ePackage, newValidator);
-			CompositeValidator validator = new CompositeValidator();
-			validator.addChild(existingValidator);
-			validator.addChild(newValidator);
-			getRegistry().put(ePackage, validator);
+			CompositeValidator compositeValidator = new CompositeValidator();
+			compositeValidator.addChild(existingValidator);
+			compositeValidator.addChild(validator);
+			getRegistry().put(ePackage, compositeValidator);
 		}
 
 		// there is a composite validator already registered, get its delegates, find the check-based validator and
 		// replace it with the new one
 		else if (existingValidator instanceof CompositeValidator) {
-			((CompositeValidator) existingValidator).addChild(newValidator);
+			((CompositeValidator) existingValidator).addChild(validator);
 		}
 		// there is another type of validator registered, create a composite validator and wrap the validators
 		else {
-			CompositeValidator composite = new CompositeValidator();
-			composite.addChild(existingValidator);
-			composite.addChild(newValidator);
-			getRegistry().put(ePackage, composite);
+			CompositeValidator compositeValidator = new CompositeValidator();
+			compositeValidator.addChild(existingValidator);
+			compositeValidator.addChild(validator);
+			getRegistry().put(ePackage, compositeValidator);
 		}
 	}
 
@@ -323,8 +329,8 @@ public class CheckValidatorRegistry {
 		return eValidatorRegistry;
 	}
 
-	private Map<String, CheckValidatorDescriptor> getValidatorToCheckModelMap() {
-		return validatorToCheckModelMap;
+	private Map<String, CheckValidatorDescriptor> getCheckValidatorClassNameToCheckValidatorDescriptorMap() {
+		return checkValidatorClassNameToCheckValidatorDescriptorMap;
 	}
 
 	private Map<String, Object> getEPackageMappingsMap() {

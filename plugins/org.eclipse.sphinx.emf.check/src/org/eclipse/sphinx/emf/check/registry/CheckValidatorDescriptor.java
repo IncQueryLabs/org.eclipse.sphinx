@@ -30,25 +30,25 @@ public class CheckValidatorDescriptor {
 	private static final String PATH_SEPARATOR = "/"; //$NON-NLS-1$
 
 	private String checkCatalogPath = null;
-	private String validatorClassName = null;
-	private String contributorName = null;
+	private String checkValidatorClassName = null;
+	private String contributorPluginId = null;
 
 	public CheckValidatorDescriptor(IConfigurationElement iConfigElement) {
 		String modelPath = iConfigElement.getAttribute(validator_model);
 		String clazz = iConfigElement.getAttribute(validator_class);
 		Assert.isNotNull(clazz);
-		String pluginName = iConfigElement.getContributor().getName();
+		String contributorPluginId = iConfigElement.getContributor().getName();
 		setCatalogPath(modelPath);
 		setValidatorClassName(clazz);
-		setContributorName(pluginName);
+		setContributorPluginId(contributorPluginId);
 	}
 
-	public String getContributorName() {
-		return contributorName;
+	public String getContributorPluginId() {
+		return contributorPluginId;
 	}
 
-	public void setContributorName(String contributorName) {
-		this.contributorName = contributorName;
+	public void setContributorPluginId(String contributorPluginId) {
+		this.contributorPluginId = contributorPluginId;
 	}
 
 	public String getCatalogPath() {
@@ -60,20 +60,20 @@ public class CheckValidatorDescriptor {
 	}
 
 	public String getValidatorClassName() {
-		return validatorClassName;
+		return checkValidatorClassName;
 	}
 
 	public void setValidatorClassName(String validatorClassName) {
-		this.validatorClassName = validatorClassName;
+		this.checkValidatorClassName = validatorClassName;
 	}
 
-	public URI getURI() {
+	public URI getCheckCatalogURI() {
 		if (checkCatalogPath != null) {
 			Matcher matcher = uriPattern.matcher(checkCatalogPath);
 			if (matcher.matches()) {
 				return URI.createURI(checkCatalogPath);
 			}
-			String stringURI = getContributorName() + PATH_SEPARATOR + checkCatalogPath;
+			String stringURI = getContributorPluginId() + PATH_SEPARATOR + checkCatalogPath;
 			return URI.createPlatformPluginURI(stringURI, false);
 		}
 		return null;
