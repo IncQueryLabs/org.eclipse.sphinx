@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2014 See4sys, itemis and others.
+ * Copyright (c) 2008-2015 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@
  *     itemis - [441970] Result returned by ExtendedResourceAdapter#getHREF(EObject) must default to complete object URI (edit)
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *     itemis - [443647] Enable HREF representing serialized cross-document references to be customized through ExtendedResource of resource being serialized
+ *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
  *
  * </copyright>
  */
@@ -224,8 +225,8 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getURI(org.eclipse.emf.ecore.EObject, boolean)
 	 */
 	@Override
-	public URI getURI(EObject eObject, boolean fragmentBased) {
-		return getURI(null, null, eObject, fragmentBased);
+	public URI getURI(EObject eObject, boolean resolve) {
+		return getURI(null, null, eObject, resolve);
 	}
 
 	/*
@@ -233,25 +234,28 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	 * org.eclipse.emf.ecore.EStructuralFeature, org.eclipse.emf.ecore.EObject, boolean)
 	 */
 	@Override
-	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject, boolean fragmentBased) {
+	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject, boolean resolve) {
 		Assert.isNotNull(eObject);
 
-		// Non-proxy object
-		if (fragmentBased && !eObject.eIsProxy()) {
-			URI uri = getURI(oldOwner, oldFeature, eObject);
-			String uriFragment = uri.fragment();
+		URI uri = getURI(oldOwner, oldFeature, eObject);
 
+		// URI to be resolved against underlying resource?
+		if (resolve && !eObject.eIsProxy()) {
+			// Retrieve the resource of given model object
 			Resource resource = eObject.eResource();
-			// Non-proxy object that has been removed, i.e., is no longer directly or indirectly contained in any
-			// resource?
+
+			// Model object that has been removed, i.e., is no longer directly or indirectly contained in any resource?
 			if (resource == null) {
+				// Use target resource to substitute former model object's resource
 				resource = (Resource) getTarget();
 			}
-			URI resourceURI = resource.getURI();
-			return resourceURI.appendFragment(uriFragment);
+
+			// Construct resolved model object URI by using resource URI as prefix and model object URI fragment as
+			// postfix
+			uri = resource.getURI().appendFragment(uri.fragment());
 		}
 
-		return getURI(oldOwner, oldFeature, eObject);
+		return uri;
 	}
 
 	/*

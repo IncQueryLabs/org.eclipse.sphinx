@@ -1,29 +1,25 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2013 See4sys, itemis and others.
+ *
+ * Copyright (c) 2008-2015 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [420520] Model explorer view state not restored completely when affected model objects are added lately
- *     
+ *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.explorer;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -63,7 +59,6 @@ import org.eclipse.emf.workspace.IWorkspaceCommandStack;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.domain.factory.EditingDomainFactoryListenerRegistry;
@@ -498,117 +493,58 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 		super.saveState(memento);
 	}
 
+	/*
+	 * @see org.eclipse.ui.navigator.CommonNavigator#show(org.eclipse.ui.part.ShowInContext)
+	 */
 	@Override
 	public boolean show(ShowInContext context) {
+		// Check if the show in context's input transports problem markers and reveal and selected underlying model
+		// objects if there are any such
 		Object input = context.getInput();
-		if (input != null) {
-			List<IMarker> markers = retrieveRealMarkerSelection(input);
+		if (input instanceof IStructuredSelection) {
+			// Retrieve model objects behind problem markers
 			List<Object> objects = new ArrayList<Object>();
-			for (IMarker marker : markers) {
-				Object object = null;
-				String uriAttribute = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
-				if (uriAttribute != null) {
-					object = EcorePlatformUtil.getEObject(URI.createURI(uriAttribute, true));
-				}
-				if (object != null) {
-					objects.add(object);
+			for (Object selected : ((IStructuredSelection) input).toList()) {
+				try {
+					if (selected instanceof IMarker) {
+						IMarker marker = (IMarker) selected;
+						if (marker.isSubtypeOf(EValidator.MARKER)) {
+							TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(marker.getResource());
+							if (editingDomain != null) {
+								String uriAttribute = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
+								if (uriAttribute != null) {
+									EObject object = EcorePlatformUtil.getEObject(editingDomain, URI.createURI(uriAttribute, true));
+									if (object != null) {
+										objects.add(object);
+									}
+								}
+							}
+						}
+					}
+				} catch (Exception ex) {
+					// Ignore exception, just continue with next marker
 				}
 			}
+
+			// Reveal and select model objects addressed by problem markers
 			if (objects.size() > 0) {
 				try {
 					StructuredSelection selection = new StructuredSelection(objects);
 					selectReveal(selection);
-				} catch (RuntimeException ex) {
+					return true;
+				} catch (Exception ex) {
 					// Ignore exception, just return false
 					return false;
 				}
-				return true;
 			}
 		}
+
 		try {
 			return super.show(context);
-		} catch (RuntimeException ex) {
+		} catch (Exception ex) {
 			// Ignore exception, just return false
 			return false;
 		}
-	}
-
-	protected List<IMarker> retrieveRealMarkerSelection(Object input) {
-		if (input.getClass().toString().indexOf("MarkerAdapter") >= 0) { //$NON-NLS-1$
-			try {
-				// TODO Switch to using RelectUtil and eliminate call to Class#getDeclaredField()
-				Field declaredField = input.getClass().getDeclaredField("view"); //$NON-NLS-1$
-				if (declaredField != null) {
-					boolean oldAccessible = declaredField.isAccessible();
-					declaredField.setAccessible(true);
-					Object object = declaredField.get(input);
-					declaredField.setAccessible(oldAccessible);
-					// TODO Switch to using RelectUtil and eliminate #getMethod()
-					Method getViewer = getMethod(object.getClass(), "getViewer"); //$NON-NLS-1$
-					if (getViewer == null) {
-						return Collections.emptyList();
-					}
-					oldAccessible = getViewer.isAccessible();
-					getViewer.setAccessible(true);
-					Object viewer = getViewer.invoke(object);
-					getViewer.setAccessible(oldAccessible);
-
-					if (viewer instanceof StructuredViewer) {
-						ISelection selection = ((StructuredViewer) viewer).getSelection();
-						ArrayList<IMarker> markers = new ArrayList<IMarker>();
-						if (selection instanceof IStructuredSelection) {
-							Iterator<?> i = ((IStructuredSelection) selection).iterator();
-							while (i.hasNext()) {
-								Object next = i.next();
-								if (next instanceof IMarker) {
-									markers.add((IMarker) next);
-								} else if (next.getClass().toString().indexOf("Marker") >= 0) { //$NON-NLS-1$
-									// TODO Switch to using RelectUtil and eliminate #getMethod()
-									Method getMarker = getMethod(next.getClass(), "getMarker"); //$NON-NLS-1$
-									if (getMarker == null) {
-										break;
-									}
-									oldAccessible = getMarker.isAccessible();
-									getMarker.setAccessible(true);
-									Object marker = getMarker.invoke(next);
-									getMarker.setAccessible(oldAccessible);
-									markers.add((IMarker) marker);
-								}
-
-							}
-						}
-						return markers;
-					}
-				}
-			} catch (SecurityException ex) {
-			} catch (NoSuchFieldException ex) {
-			} catch (IllegalArgumentException ex) {
-			} catch (IllegalAccessException ex) {
-			} catch (NoSuchMethodException ex) {
-			} catch (InvocationTargetException ex) {
-			}
-		}
-		return Collections.emptyList();
-	}
-
-	/**
-	 * @param object
-	 * @return
-	 * @throws NoSuchMethodException
-	 * @throws NoSuchMethodException
-	 */
-	protected Method getMethod(Class<?> clazz, String methodName) throws NoSuchMethodException {
-		if (clazz == null) {
-			throw new NoSuchMethodException(methodName);
-		}
-		Method declaredMethod = null;
-		try {
-			declaredMethod = clazz.getDeclaredMethod(methodName);
-		} catch (SecurityException ex) {
-		} catch (NoSuchMethodException ex) {
-			return getMethod(clazz.getSuperclass(), methodName);
-		}
-		return declaredMethod;
 	}
 
 	protected Collection<TransactionalEditingDomain> getEditingDomainsFromSelection() {
@@ -645,6 +581,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 					return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<URI>() {
 						@Override
 						public void run() {
+							// FIXME Consider to use EcoreResourceUtil.getURI(eObject, true)
 							setResult(EcoreUtil.getURI(eObject));
 						}
 					});

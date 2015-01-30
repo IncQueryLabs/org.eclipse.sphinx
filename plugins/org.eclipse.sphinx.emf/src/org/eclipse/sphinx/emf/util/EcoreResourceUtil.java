@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2014 BMW Car IT, See4sys, itemis and others.
+ * Copyright (c) 2008-2015 BMW Car IT, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,7 @@
  *     itemis - [418005] Add support for model files with multiple root elements
  *	   itemis - [425175] Resources that produce exceptions while being loaded should not get unloaded by Sphinx thereafter
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
+ *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
  *
  * </copyright>
  */
@@ -1103,10 +1104,10 @@ public final class EcoreResourceUtil {
 	}
 
 	/**
-	 * Gets the URI associated to the provided model object.
+	 * Returns the URI of the provided model object.
 	 *
 	 * @param modelObject
-	 *            an EMF model object.
+	 *            a model object.
 	 * @return the URI associated to the provided model object.
 	 */
 	public static URI getURI(EObject modelObject) {
@@ -1114,21 +1115,26 @@ public final class EcoreResourceUtil {
 	}
 
 	/**
-	 * Gets the URI associated to the provided model object.
+	 * Returns the URI of the provided model object.
 	 *
 	 * @param modelObject
-	 *            an EMF model object.
-	 * @param fragmentBased
-	 *            a boolean value indicating if the URI should be a platform fragment-based URI including associated
-	 *            resource.
+	 *            a model object.
+	 * @param resolve
+	 *            indicates whether the URI should resolved against the URI of the resource which contains the provided
+	 *            model object. This is useful is cases where the native model object URI evaluates in some sort of
+	 *            fragment-based URI which does not contain any information about the resource that contains the model
+	 *            object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true, such fragment-based
+	 *            URIs will be automatically expanded to a URI that starts with the URI of the model object's resource
+	 *            and is followed by the fragment of the model object's native URI (e.g.,
+	 *            platform:/resource/MyProject/MyResource/#//MyComponent/MyParameterValue).
 	 * @return the URI associated to the provided model object.
 	 */
-	public static URI getURI(EObject modelObject, boolean fragmentBased) {
+	public static URI getURI(EObject modelObject, boolean resolve) {
 		Assert.isNotNull(modelObject);
 
 		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(modelObject.eResource());
 		if (extendedResource != null) {
-			return extendedResource.getURI(modelObject, fragmentBased);
+			return extendedResource.getURI(modelObject, resolve);
 		} else {
 			return EcoreUtil.getURI(modelObject);
 		}

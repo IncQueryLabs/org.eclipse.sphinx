@@ -7,8 +7,8 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     See4sys - copied from org.eclipse.ui.views.markers.internal.ProblemView to 
- *               add support for problem markers on model objects (rather than 
+ *     See4sys - copied from org.eclipse.ui.views.markers.internal.ProblemView to
+ *               add support for problem markers on model objects (rather than
  *               only on workspace resources)
  *******************************************************************************/
 package org.eclipse.sphinx.emf.validation.ui.views;
@@ -16,6 +16,7 @@ package org.eclipse.sphinx.emf.validation.ui.views;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -31,7 +32,9 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.commands.ActionHandler;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.ColumnLayoutData;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.osgi.util.NLS;
@@ -47,6 +50,8 @@ import org.eclipse.ui.activities.IActivityManagerListener;
 import org.eclipse.ui.handlers.IHandlerActivation;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.ide.IDEInternalPreferences;
+import org.eclipse.ui.part.IShowInSource;
+import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 import org.eclipse.ui.views.markers.internal.ProblemView;
 
@@ -101,7 +106,7 @@ public class ValidationView extends MarkerView {
 
 		/**
 		 * Create a new instance of the receiver.
-		 * 
+		 *
 		 * @param label
 		 * @param field
 		 * @param view
@@ -190,6 +195,39 @@ public class ValidationView extends MarkerView {
 	}
 
 	/*
+	 * @see org.eclipse.sphinx.emf.validation.ui.views.MarkerView#getAdapter(java.lang.Class)
+	 */
+	@Override
+	public Object getAdapter(Class adaptable) {
+		if (adaptable.equals(IShowInSource.class)) {
+			return new IShowInSource() {
+				@Override
+				public ShowInContext getShowInContext() {
+					ISelection selection = getViewer().getSelection();
+					if (!(selection instanceof IStructuredSelection)) {
+						return null;
+					}
+					IStructuredSelection structured = (IStructuredSelection) selection;
+					Iterator markerIterator = structured.iterator();
+					List newSelection = new ArrayList();
+					List selectedMarkers = new ArrayList();
+					while (markerIterator.hasNext()) {
+						Object obj = markerIterator.next();
+						if (obj instanceof ConcreteMarker) {
+							ConcreteMarker element = (ConcreteMarker) obj;
+							newSelection.add(element.getResource());
+							selectedMarkers.add(element.getMarker());
+						}
+					}
+					return new ShowInContext(new StructuredSelection(selectedMarkers), new StructuredSelection(newSelection));
+				}
+
+			};
+		}
+		return super.getAdapter(adaptable);
+	}
+
+	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.views.markers.internal.TableView#getSortingFields()
 	 */
@@ -239,7 +277,7 @@ public class ValidationView extends MarkerView {
 		String quickFixId = "org.eclipse.jdt.ui.edit.text.java.correction.assist.proposals"; //$NON-NLS-1$
 		resolveMarkerAction.setActionDefinitionId(quickFixId);
 
-		handlerService = (IHandlerService) getViewSite().getService(IHandlerService.class);
+		handlerService = getViewSite().getService(IHandlerService.class);
 		if (handlerService != null) {
 			resolveMarkerHandlerActivation = handlerService.activateHandler(quickFixId, new ActionHandler(resolveMarkerAction));
 		}
@@ -300,7 +338,7 @@ public class ValidationView extends MarkerView {
 	/**
 	 * Retrieves statistical information (the total number of markers with each severity type) for the markers contained
 	 * in the selection passed in. This information is then massaged into a string which may be displayed by the caller.
-	 * 
+	 *
 	 * @param selection
 	 *            a valid selection or <code>null</code>
 	 * @return a message ready for display
@@ -515,7 +553,7 @@ public class ValidationView extends MarkerView {
 
 	/**
 	 * Return the field whose description matches description.
-	 * 
+	 *
 	 * @param description
 	 * @return IField
 	 */
@@ -563,7 +601,7 @@ public class ValidationView extends MarkerView {
 
 	/**
 	 * Select the category for the receiver.
-	 * 
+	 *
 	 * @param description
 	 * @param sorter
 	 *            - the sorter to select for
@@ -603,7 +641,7 @@ public class ValidationView extends MarkerView {
 
 	/**
 	 * Select the field groupingField.
-	 * 
+	 *
 	 * @param groupingField
 	 * @param sorter
 	 */
@@ -669,7 +707,7 @@ public class ValidationView extends MarkerView {
 
 	/**
 	 * Set the enablement state of the filter called filterName to enabled.
-	 * 
+	 *
 	 * @param filterName
 	 * @param enabled
 	 * @param filters

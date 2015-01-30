@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2014 See4sys, itemis and others.
+ * Copyright (c) 2008-2015 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@
  *     itemis - [427461] Add progress monitor to resource load options (useful for loading large models)
  *     itemis - [434954] Hook for overwriting conversion of EMF Diagnostics to IMarkers
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
+ *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
  *
  * </copyright>
  */
@@ -269,12 +270,17 @@ public interface ExtendedResource {
 	 *
 	 * @param InternalEObject
 	 *            The {@link InternalEObject} for which the URI is to be created.
-	 * @param fragmentBased
-	 *            a boolean value indicating if the URI should be a platform fragment-based URI including associated
-	 *            resource.
+	 * @param resolve
+	 *            indicates whether the URI should resolved against the URI of the resource which contains the provided
+	 *            model object. This is useful is cases where the native model object URI evaluates in some sort of
+	 *            fragment-based URI which does not contain any information about the resource that contains the model
+	 *            object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true, such fragment-based
+	 *            URIs will be automatically expanded to a URI that starts with the URI of the model object's resource
+	 *            and is followed by the fragment of the model object's native URI (e.g.,
+	 *            platform:/resource/MyProject/MyResource/#//MyComponent/MyParameterValue).
 	 * @return The URI for given {@link InternalEObject}, or <code>null</code> if no such could be created.
 	 */
-	URI getURI(EObject eObject, boolean fragmentBased);
+	URI getURI(EObject eObject, boolean resolve);
 
 	/**
 	 * Returns a {@link URI} representing given {@link EObject eObject} owned by {@link EObject owner} through provided
@@ -316,14 +322,19 @@ public interface ExtendedResource {
 	 *            deleted.
 	 * @param eObject
 	 *            The {@link EObject} for which the URI is to be created.
-	 * @param fragmentBased
-	 *            a boolean value indicating if the URI should be a platform fragment-based URI including associated
-	 *            resource.
+	 * @param resolve
+	 *            indicates whether the URI should resolved against the URI of the resource which contains the provided
+	 *            model object. This is useful is cases where the native model object URI evaluates in some sort of
+	 *            fragment-based URI which does not contain any information about the resource that contains the model
+	 *            object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true, such fragment-based
+	 *            URIs will be automatically expanded to a URI that starts with the URI of the model object's resource
+	 *            and is followed by the fragment of the model object's native URI (e.g.,
+	 *            platform:/resource/MyProject/MyResource/#//MyComponent/MyParameterValue).
 	 * @return The URI for given {@link EObject eObject}, or <code>null</code> if no such could be created.If the
 	 *         provided {@link EObject} has no {@link Resource eResource} and no {@link EObject owner}, the returned
 	 *         value is null.
 	 */
-	URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject, boolean fragmentBased);
+	URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject, boolean resolve);
 
 	/**
 	 * Creates a {@link URI} from given <code>uriLiteral</code> that refers to an instance of given {@link EClass object

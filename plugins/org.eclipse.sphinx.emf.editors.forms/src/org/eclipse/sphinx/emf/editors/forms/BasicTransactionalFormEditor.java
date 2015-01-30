@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2014 See4sys, itemis and others.
+ * Copyright (c) 2008-2015 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,8 @@
  *     itemis - [426798] BasicTransactionalFormsEditor uses wrong drag and drop transfer type
  *     itemis - [430218] Sphinx-integrated form editors should not prompt user for saving when being closed
  *     itemis - [434809] The BasicTransactionalFormEditor does not report resource errors & warnings
- *     itemis- [434842] BasicTransactionalFormEditor does not close loadingEditorInputPage for empty resources 
+ *     itemis - [434842] BasicTransactionalFormEditor does not close loadingEditorInputPage for empty resources
+ *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
  *
  * </copyright>
  */
@@ -1014,7 +1015,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 				if (uriAttribute != null) {
 					EditingDomain editingDomain = getEditingDomain();
 					if (editingDomain != null) {
-						EObject object = EcorePlatformUtil.getEObject(URI.createURI(uriAttribute, true));
+						EObject object = EcorePlatformUtil.getEObject((TransactionalEditingDomain) editingDomain, URI.createURI(uriAttribute, true));
 
 						// FIXME This way of retrieving the wrapped object is not appropriate in case that the editor,
 						// its pages or sections use custom adapter factories instead of the standard adapter factory of
@@ -1249,7 +1250,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * is <code>null</code> or not. When the editor has been disposed, it is an error to invoke any other method using
 	 * the editor.
 	 * </p>
-	 * 
+	 *
 	 * @return <code>true</code> when the editor is disposed and <code>false</code> otherwise.
 	 */
 	protected boolean isDisposed() {
@@ -1330,7 +1331,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	/**
 	 * A {@link CommandStackListener} which is used just in the case when the resource resides outside the workspace.
-	 * 
+	 *
 	 * @return
 	 */
 	protected CommandStackListener createCommandStackListener() {
@@ -1768,7 +1769,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 
 	/**
 	 * Creates an {@linkplain ISaveablesLifecycleListener}
-	 * 
+	 *
 	 * @return
 	 */
 	protected ISaveablesLifecycleListener createModelSaveablesLifecycleListener() {
@@ -1822,7 +1823,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * return any {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter
 	 * factory} will then be returned as result by this method.
 	 * </p>
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain editing domain} whose embedded {@link AdapterFactory adapter
 	 *            factory} is to be returned as default. May be left <code>null</code> if
@@ -1855,7 +1856,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 	 * {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter factory} will
 	 * then be returned as result by {@link #getAdapterFactory(TransactionalEditingDomain)}.
 	 * </p>
-	 * 
+	 *
 	 * @return The custom {@link AdapterFactory adapter factory} that is to be used by this
 	 *         {@link BasicTransactionalFormEditor form editor}. <code>null</code> the default {@link AdapterFactory
 	 *         adapter factory} returned by {@link #getAdapterFactory(TransactionalEditingDomain)} should be used
