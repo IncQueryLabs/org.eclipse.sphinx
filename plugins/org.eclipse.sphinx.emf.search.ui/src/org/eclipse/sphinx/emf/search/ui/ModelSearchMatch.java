@@ -14,9 +14,12 @@
  */
 package org.eclipse.sphinx.emf.search.ui;
 
+import java.util.Collection;
+
 public class ModelSearchMatch {
 
 	private Object element;
+	private Collection<Object> objects;
 
 	public ModelSearchMatch(Object element) {
 		this.element = element;

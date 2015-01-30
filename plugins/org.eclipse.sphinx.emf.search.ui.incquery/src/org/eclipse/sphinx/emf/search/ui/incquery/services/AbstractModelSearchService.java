@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.search.ui.services;
+package org.eclipse.sphinx.emf.search.ui.incquery.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +25,8 @@ import org.eclipse.sphinx.emf.incquery.IncQueryEngineHelper;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.search.ui.ModelSearchMatch;
 import org.eclipse.sphinx.emf.search.ui.QuerySpecification;
-import org.eclipse.sphinx.emf.search.ui.internal.Activator;
+import org.eclipse.sphinx.emf.search.ui.incquery.internal.Activator;
+import org.eclipse.sphinx.emf.search.ui.services.IModelSearchService;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public abstract class AbstractModelSearchService implements IModelSearchService {

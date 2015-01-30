@@ -78,8 +78,8 @@ public final class ConnectionsByNameQuerySpecification extends BaseGeneratedQuer
         new ExportedParameter(body, var_name, "name")
       ));
       
-      new TypeUnary(body, var_connection, getClassifierLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel", "Connection"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel/Connection");
       
+      new TypeUnary(body, var_connection, getClassifierLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel", "Connection"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel/Connection");
       new TypeBinary(body, CONTEXT, var_connection, var_name, getFeatureLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common", "Identifiable", "name"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common/Identifiable.name");
       bodies.add(body);
     }

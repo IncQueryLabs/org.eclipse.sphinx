@@ -78,8 +78,8 @@ public final class ApplicationsByNameQuerySpecification extends BaseGeneratedQue
         new ExportedParameter(body, var_name, "name")
       ));
       
-      new TypeUnary(body, var_app, getClassifierLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel", "Application"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel/Application");
       
+      new TypeUnary(body, var_app, getClassifierLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel", "Application"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/instancemodel/Application");
       new TypeBinary(body, CONTEXT, var_app, var_name, getFeatureLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common", "Identifiable", "name"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common/Identifiable.name");
       bodies.add(body);
     }

@@ -18,7 +18,7 @@ Export-Package: org.eclipse.sphinx.examples.hummingbird20.incquery,
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.xtext.xbase.lib,
  org.apache.log4j,
- org.eclipse.sphinx.emf.search.ui,
+ org.eclipse.sphinx.emf.search.ui.incquery,
  org.eclipse.sphinx.examples.hummingbird20;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

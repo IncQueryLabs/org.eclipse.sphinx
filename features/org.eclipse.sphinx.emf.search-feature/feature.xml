@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.sphinx.emf.incquery"
+      id="org.eclipse.sphinx.emf.search"
       label="%featureName"
       version="0.9.0.qualifier"
       provider-name="%providerName"
@@ -20,21 +20,7 @@
    </license>
 
    <plugin
-         id="org.eclipse.sphinx.emf.incquery"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.emf.workspace.incquery"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.sphinx.emf.search.ui.incquery"
+         id="org.eclipse.sphinx.emf.search.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

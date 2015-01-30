@@ -10,8 +10,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.common,
  org.eclipse.emf.common.ui,
  org.eclipse.search,
- org.eclipse.sphinx.platform.ui,
- org.eclipse.sphinx.emf.workspace.incquery;visibility:=reexport
+ org.eclipse.sphinx.emf;visibility:=reexport,
+ org.eclipse.sphinx.platform.ui;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.sphinx.emf.search.ui,
