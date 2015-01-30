@@ -11,6 +11,7 @@
 		<module>../../tools/org.eclipse.sphinx.targets/${platform.version.name}</module>
 
 		<!-- Plug-ins -->
+		<module>../../plugins/org.eclipse.sphinx.emf.editors</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.editors.forms.nebula</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.editors.forms</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.explorer</module>
@@ -35,7 +36,6 @@
 		<module>../../plugins/org.eclipse.sphinx.emf.check.catalog.edit</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.check.catalog.editor</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.check.ui</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.editors</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.compare</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.compare.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.incquery</module>
