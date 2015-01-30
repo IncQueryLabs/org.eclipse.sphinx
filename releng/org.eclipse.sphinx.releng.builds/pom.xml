@@ -110,6 +110,7 @@
 		<module>../../features/org.eclipse.sphinx.emf.editors-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms.nebula-feature</module>
+		<module>../../features/org.eclipse.sphinx.emf.search-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.incquery-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.metamodelgen-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.mwe.dynamic-feature</module>
