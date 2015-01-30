@@ -36,12 +36,13 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
  * set of categories for which a constraint is applicable. For a constraint to be applicable within the scope of a
  * validator, the set of categories specified in its @Check annotation should be a subset of the set of categories
  * referenced by the constraint in the check catalog.
- * 
+ *
  * @see org.eclipse.sphinx.emf.check.AbstractCheckValidator
  */
-public class Hummingbird20CheckValidator extends AbstractCheckValidator {
+// TODO Consolidate issue(Object, ...)/issue(EObject, ...) methods, see how EMF Edit handles this
+public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckValidator {
 
-	private static final Pattern ILLEGAL_CHARACTERS_PATTERN = Pattern.compile(".*[ \\t\\.,;].*"); //$NON-NLS-1$
+	private static final Pattern ILLEGAL_CHARACTERS_PATTERN = Pattern.compile("[ \\t\\.,;]"); //$NON-NLS-1$
 
 	/**
 	 * In the following method, the @Check annotation references a constraint with Id equals to
@@ -49,12 +50,12 @@ public class Hummingbird20CheckValidator extends AbstractCheckValidator {
 	 * the set {"Category1", "Category2"}. The scope of the constraint for this validator, as specified in the
 	 * annotation below, is also { "Category1", "Category2" }, which means the following method is called when the user
 	 * selects either Category1, Category2, or both.
-	 * 
+	 *
 	 * @param application
 	 */
 	@Check(constraint = "ApplicationNameNotValid", categories = { "Category1", "Category2" })
 	void checkApplicationNameForAllCategories(Application application) {
-		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, "with explicit category annotations"); //$NON-NLS-1$
+		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, "(part of Category1, Category2, as per check catalog and annotation)"); //$NON-NLS-1$
 	}
 
 	/**
@@ -62,50 +63,53 @@ public class Hummingbird20CheckValidator extends AbstractCheckValidator {
 	 * applicable for all the categories referenced by the constraint in the associated check catalog. For example, the
 	 * following annotation (constraint = "ApplicationNameNotValid") is equivalent to (constraint =
 	 * "ApplicationNameNotValid", categories = { "Category1", "Category2" }).
-	 * 
+	 *
 	 * @param application
 	 */
+	// FIXME Checks without any annotated category are completely ignored
 	@Check(constraint = "ApplicationNameNotValid")
 	void checkApplicationName(Application application) {
-		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, "whithout category annotations"); //$NON-NLS-1$
+		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, "(part of Category1, Category2, as per check catalog)"); //$NON-NLS-1$
 	}
 
 	/**
 	 * This method is called by this validator only when the user selects "Category1" even though the associated
 	 * constraint is applicable for the set {"Category1", "Category2"}.
-	 * 
+	 *
 	 * @param application
 	 */
 	@Check(constraint = "ApplicationNameNotValid", categories = { "Category1" })
 	void checkApplicationNameForCategory1(Application application) {
-		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME);
+		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME,
+				"(only part of Category1, as per check catalog and narrowed down by check annotation)"); //$NON-NLS-1$
 	}
 
 	/**
 	 * This method is *never* called by this validator because Category3 does not exist in the catalog.
-	 * 
+	 *
 	 * @param application
 	 */
 	@Check(constraint = "ApplicationNameNotValid", categories = { "Category3" })
 	void checkApplicationNameForCategory3(Application application) {
-		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, "never called"); //$NON-NLS-1$
+		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME,
+				"(part of Category3, not defined in check catalog and therefore invalid check annotation)"); //$NON-NLS-1$
 	}
 
 	/**
 	 * This method is called by this validator only when the user selects "Category1".
-	 * 
+	 *
 	 * @param component
 	 */
 	@Check(constraint = "ComponentNameNotValid", categories = "Category1")
 	void checkComponentName(Component component) {
-		if (!isValidName(component)) {
+		if (!hasValidName(component)) {
 			issue(component, Common20Package.Literals.IDENTIFIABLE__DESCRIPTION, component.getName());
 		}
 	}
 
 	/**
 	 * This method is called by this validator only when the user selects "Category2".
-	 * 
+	 *
 	 * @param component
 	 */
 	@Check(constraint = "ParameterValuesNotValid", categories = { "Category2" })
@@ -120,8 +124,8 @@ public class Hummingbird20CheckValidator extends AbstractCheckValidator {
 		}
 	}
 
-	private boolean isValidName(Identifiable identifiable) {
+	private boolean hasValidName(Identifiable identifiable) {
 		Assert.isNotNull(identifiable);
-		return !ILLEGAL_CHARACTERS_PATTERN.matcher(identifiable.getName()).matches();
+		return !ILLEGAL_CHARACTERS_PATTERN.matcher(identifiable.getName()).find();
 	}
 }
