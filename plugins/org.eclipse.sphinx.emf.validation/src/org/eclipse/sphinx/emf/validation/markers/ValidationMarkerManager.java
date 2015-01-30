@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2014 See4sys, itemis and others.
+ * Copyright (c) 2008-2015 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [418902] ValidationMarkerManager does not distinguish objects with identical URI
+ *     itemis - [458509] NPE in ValidationMarkerManager
  *
  * </copyright>
  */
@@ -63,7 +64,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * The singleton accessor
-	 * 
+	 *
 	 * @return singleton
 	 */
 	public static ValidationMarkerManager getInstance() {
@@ -84,7 +85,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * Translate diagnostic in markers on the {@link Resource} resource
-	 * 
+	 *
 	 * @param resource
 	 *            the target resource
 	 * @param diagnostic
@@ -223,7 +224,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * Remove all markers of type {@link IValidationMarker.MODEL_VALIDATION_PROBLEM} present on the resource.
-	 * 
+	 *
 	 * @param resource
 	 *            the target {@link IResource}
 	 * @see IMarker#getType()
@@ -235,7 +236,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * Remove all markers of type {@linkplain IXMLMarker.XML_INTEGRITY_PROBLEM} present on the resource.
-	 * 
+	 *
 	 * @param resource
 	 *            the target {@link IResource}
 	 * @see IMarker#getType()
@@ -247,7 +248,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * Remove all markers of type {@linkplain IXMLMarker.XML_VALIDITY_PROBLEM} present on the resource.
-	 * 
+	 *
 	 * @param resource
 	 *            the target {@link IResource}
 	 * @see IMarker#getType()
@@ -259,7 +260,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * Remove all markers of type {@link IXMLMarker.XML_WELLFORMEDNESS_PROBLEM} present on the resource.
-	 * 
+	 *
 	 * @param resource
 	 *            the target {@link IResource}
 	 * @see IMarker#getType()
@@ -274,7 +275,7 @@ public class ValidationMarkerManager {
 	 * (depth set to IValidationMarkerManager.DEPTH_ZERO), to its direct children (depth set to
 	 * IValidationMarkerManager.DEPTH_ONE), or to itself and all its children (depth set to
 	 * IValidationMarkerManager.DEPTH_INFINITE)
-	 * 
+	 *
 	 * @param eObject
 	 *            the target eObject
 	 * @param depth
@@ -289,7 +290,7 @@ public class ValidationMarkerManager {
 	 * Remove all markers directly attached to this eObject (depth set to IValidationMarkerManager.DEPTH_ZERO), to its
 	 * direct children (depth set to IValidationMarkerManager.DEPTH_ONE), or to itself and all its children (depth set
 	 * to IValidationMarkerManager.DEPTH_INFINITE)
-	 * 
+	 *
 	 * @param eObject
 	 *            the target eObject
 	 * @param depth
@@ -335,7 +336,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * Modify the URI of markers connected with the given {@link IResource} and its children
-	 * 
+	 *
 	 * @param resource
 	 *            the target {@link IResource}
 	 * @param oldUri
@@ -377,7 +378,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * Update the uri attribute of the problem marker with the URI of the file
-	 * 
+	 *
 	 * @param resource
 	 *            an IResource
 	 * @throws CoreException
@@ -430,7 +431,7 @@ public class ValidationMarkerManager {
 	 * only, or itself and also to its children, according to the depth value (respectively
 	 * IValidationMarkerManager.DEPTH_ZERO, IValidationMarkerManager.DEPTH_ONE and
 	 * IValidationMarkerManager.DET_INFINITE.)
-	 * 
+	 *
 	 * @param eObject
 	 * @param depth
 	 *            see {@link IValidationMarkerManager}
@@ -447,7 +448,7 @@ public class ValidationMarkerManager {
 	 * direct children only, or itself and also to its children, according to the depth value (respectively
 	 * IValidationMarkerManager.DEPTH_ZERO, IValidationMarkerManager.DEPTH_ONE and
 	 * IValidationMarkerManager.DET_INFINITE.)
-	 * 
+	 *
 	 * @param eObject
 	 * @param depth
 	 *            see {@link IValidationMarkerManager}
@@ -468,7 +469,7 @@ public class ValidationMarkerManager {
 
 		// URI of eObj
 		String[] tmp = ValidationUtil.splitURI(eObject);
-		if (tmp.length < 2) {
+		if (tmp == null || tmp.length < 2) {
 			return new IMarker[0];
 		}
 		String eObjURI = tmp[0];
@@ -524,7 +525,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * check if an array of IMarker contains a marker with the status IStatus.ERROR
-	 * 
+	 *
 	 * @param markers
 	 *            array of {@link IMarker}
 	 * @return true if the status IMarker.SEVERITY_ERROR is found, false otherwise
@@ -535,7 +536,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * check if an array of IMarker contains a marker with the status IStatus.WARNING
-	 * 
+	 *
 	 * @param markers
 	 *            array of {@link IMarker}
 	 * @return true if the status IMarker.SEVERITY_WARNING is found, false otherwise
@@ -546,7 +547,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * look for markers with severity code
-	 * 
+	 *
 	 * @param status
 	 * @see {@link org.eclipse.core.runtime.IStatus}
 	 * @param markers
@@ -570,7 +571,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * Get the greater severity code from a set of {@link org.eclipse.core.resources.IMarker IMarkers}.
-	 * 
+	 *
 	 * @param markers
 	 *            An array of {@link org.eclipse.core.resources.IMarker IMarkers}.
 	 * @return The greater severity code from the {@link org.eclipse.core.resources.IMarker IMarker} array
@@ -596,7 +597,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * return the validation severity code of the {@link EObject} {@link EObject}.
-	 * 
+	 *
 	 * @param eObject
 	 *            the target {@link EObject}
 	 * @param depth
@@ -614,7 +615,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * Handles the given diagnostic and update markers on the concerned {@link EObject} with infinite depth
-	 * 
+	 *
 	 * @param diagnostic
 	 *            The validation diagnostic to handle.
 	 */
@@ -624,7 +625,7 @@ public class ValidationMarkerManager {
 
 	/**
 	 * Handles the given diagnostic and update markers on the concerned {@link EObject}.
-	 * 
+	 *
 	 * @param diagnostic
 	 *            The validation diagnostic to handle.
 	 * @param depth
