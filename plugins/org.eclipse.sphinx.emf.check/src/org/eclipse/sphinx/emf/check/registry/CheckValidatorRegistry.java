@@ -10,6 +10,7 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [455185] Check Framework incompatible with QVTO metamodel
+ *     itemis - [458403] CheckValidatorRegistry.getCheckModelURI(String) should be null-safe
  *
  * </copyright>
  */
@@ -71,7 +72,7 @@ public class CheckValidatorRegistry {
 	 */
 	public static final CheckValidatorRegistry INSTANCE = new CheckValidatorRegistry(Platform.getExtensionRegistry(), Activator.getPlugin().getLog());
 
-	private Map<String, CheckValidatorDescriptor> validatorToCheckModelMap = Collections
+	private Map<String, CheckValidatorDescriptor> checkValidatorClassNameToCheckValidatorDescriptorMap = Collections
 			.synchronizedMap(new LinkedHashMap<String, CheckValidatorDescriptor>());
 
 	private Map<String, Object> ePackageMappingsMap = Collections.synchronizedMap(new LinkedHashMap<String, Object>());
@@ -91,7 +92,7 @@ public class CheckValidatorRegistry {
 	 * @throws CoreException
 	 */
 	public ICheckValidator getValidator(EPackage ePackage) throws CoreException {
-		if (getValidatorToCheckModelMap().isEmpty()) {
+		if (getCheckValidatorClassNameToCheckValidatorDescriptorMap().isEmpty()) {
 			initialize();
 		}
 		EValidator eValidator = getRegistry().getEValidator(ePackage);
@@ -104,11 +105,15 @@ public class CheckValidatorRegistry {
 	/**
 	 * Returns the URI of a check model given a fully qualified name of a check validator.
 	 *
-	 * @param qualifiedName
+	 * @param checkValidatorClassName
 	 * @return
 	 */
-	public URI getCheckModelURI(String qualifiedName) {
-		return getValidatorToCheckModelMap().get(qualifiedName).getURI();
+	public URI getCheckCatalogURI(String checkValidatorClassName) {
+		CheckValidatorDescriptor descriptor = getCheckValidatorClassNameToCheckValidatorDescriptorMap().get(checkValidatorClassName);
+		if (descriptor != null) {
+			return descriptor.getURI();
+		}
+		return null;
 	}
 
 	private CheckValidatorRegistry(IExtensionRegistry extensionRegistry, ILog logger) {
@@ -132,11 +137,11 @@ public class CheckValidatorRegistry {
 						String validatorClassName = checkValidatorDescriptor.getValidatorClassName();
 
 						// populate the check map
-						if (getValidatorToCheckModelMap().containsKey(validatorClassName)) {
+						if (getCheckValidatorClassNameToCheckValidatorDescriptorMap().containsKey(validatorClassName)) {
 							logWarning("Duplicate validator contribution found for: " + validatorClassName); //$NON-NLS-1$
 							continue;
 						}
-						getValidatorToCheckModelMap().put(validatorClassName, checkValidatorDescriptor);
+						getCheckValidatorClassNameToCheckValidatorDescriptorMap().put(validatorClassName, checkValidatorDescriptor);
 					} else if (NODE_EPACKAGE_MAPPING.equals(configElement.getName())) {
 						String javaPackageName = configElement.getAttribute(ATTR_EOBJECT_WRAPPER_PACKAGE_NAME);
 						String ePackageNsURI = configElement.getAttribute(ATTR_EPACKAGE_NS_URI);
@@ -153,7 +158,7 @@ public class CheckValidatorRegistry {
 			}
 
 			// Second iteration on the check map to register the validators
-			for (CheckValidatorDescriptor descriptor : getValidatorToCheckModelMap().values()) {
+			for (CheckValidatorDescriptor descriptor : getCheckValidatorClassNameToCheckValidatorDescriptorMap().values()) {
 				// load the validator class from the fully qualified name and register it
 				String bundleName = descriptor.getContributorName();
 				String validatorClassName = descriptor.getValidatorClassName();
@@ -323,8 +328,8 @@ public class CheckValidatorRegistry {
 		return eValidatorRegistry;
 	}
 
-	private Map<String, CheckValidatorDescriptor> getValidatorToCheckModelMap() {
-		return validatorToCheckModelMap;
+	private Map<String, CheckValidatorDescriptor> getCheckValidatorClassNameToCheckValidatorDescriptorMap() {
+		return checkValidatorClassNameToCheckValidatorDescriptorMap;
 	}
 
 	private Map<String, Object> getEPackageMappingsMap() {
