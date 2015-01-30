@@ -40,6 +40,7 @@
 		<module>../../plugins/org.eclipse.sphinx.emf.compare.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.incquery</module>
 		<module>../../plugins/org.eclipse.sphinx.emf.search.ui</module>
+		<module>../../plugins/org.eclipse.sphinx.emf.search.ui.incquery</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.runtime.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.gmf.workspace</module>
 		<module>../../plugins/org.eclipse.sphinx.jdt</module>
