@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     itemis - Initial API and implementation
  *     itemis - [455185] Check Framework incompatible with QVTO metamodel
  *     itemis - [458403] CheckValidatorRegistry.getCheckModelURI(String) should be null-safe
+ *     itemis - [458405] CheckValidatorRegistry.register(*) should be public
  *
  * </copyright>
  */
@@ -111,7 +112,7 @@ public class CheckValidatorRegistry {
 	public URI getCheckCatalogURI(String checkValidatorClassName) {
 		CheckValidatorDescriptor descriptor = getCheckValidatorClassNameToCheckValidatorDescriptorMap().get(checkValidatorClassName);
 		if (descriptor != null) {
-			return descriptor.getURI();
+			return descriptor.getCheckCatalogURI();
 		}
 		return null;
 	}
@@ -160,12 +161,12 @@ public class CheckValidatorRegistry {
 			// Second iteration on the check map to register the validators
 			for (CheckValidatorDescriptor descriptor : getCheckValidatorClassNameToCheckValidatorDescriptorMap().values()) {
 				// load the validator class from the fully qualified name and register it
-				String bundleName = descriptor.getContributorName();
+				String contributorPluginId = descriptor.getContributorPluginId();
 				String validatorClassName = descriptor.getValidatorClassName();
 				try {
-					Class<?> clazz = Platform.getBundle(bundleName).loadClass(validatorClassName);
+					Class<?> validatorClass = Platform.getBundle(contributorPluginId).loadClass(validatorClassName);
 					// register the ePackages within the scope of the validator
-					registerPackagesInScope(clazz);
+					addPackagesInScope(validatorClass);
 				} catch (ClassNotFoundException ex) {
 					logError(ex);
 				}
@@ -173,11 +174,11 @@ public class CheckValidatorRegistry {
 		}
 	}
 
-	private void registerPackagesInScope(Class<?> clazz) {
-		Set<Class<?>> classes = findClassesInScope(clazz);
-		Set<EPackage> packagesToRegister = findEPackagesInScope(classes);
-		for (EPackage p : packagesToRegister) {
-			register(p, clazz);
+	private void addPackagesInScope(Class<?> validatorClass) {
+		Set<Class<?>> validatorClasses = findClassesInScope(validatorClass);
+		Set<EPackage> ePackagesToRegisterUpon = findEPackagesInScope(validatorClasses);
+		for (EPackage ePackage : ePackagesToRegisterUpon) {
+			addValidator(ePackage, validatorClass);
 		}
 	}
 
@@ -266,45 +267,45 @@ public class CheckValidatorRegistry {
 		return javaPackageName;
 	}
 
-	private void register(EPackage ePackage, Class<?> clazz) {
+	private void addValidator(EPackage ePackage, Class<?> validatorClass) {
 		EValidator validatorInstance;
 		try {
-			validatorInstance = (EValidator) clazz.newInstance();
-			register(ePackage, validatorInstance);
+			validatorInstance = (EValidator) validatorClass.newInstance();
+			addValidator(ePackage, validatorInstance);
 		} catch (Exception ex) {
 			logError(ex);
 		}
 	}
 
-	private void register(EPackage ePackage, EValidator newValidator) {
+	public void addValidator(EPackage ePackage, EValidator validator) {
 
 		EValidator existingValidator = getRegistry().getEValidator(ePackage);
 
 		// there is no validator already registered, register the new validator
 		if (existingValidator == null) {
-			getRegistry().put(ePackage, newValidator);
+			getRegistry().put(ePackage, validator);
 		}
 
 		// there is a check-based validator already registered, replace it by the injected one
 		else if (existingValidator instanceof AbstractCheckValidator) {
 			// getRegistry().put(ePackage, newValidator);
-			CompositeValidator validator = new CompositeValidator();
-			validator.addChild(existingValidator);
-			validator.addChild(newValidator);
-			getRegistry().put(ePackage, validator);
+			CompositeValidator compositeValidator = new CompositeValidator();
+			compositeValidator.addChild(existingValidator);
+			compositeValidator.addChild(validator);
+			getRegistry().put(ePackage, compositeValidator);
 		}
 
 		// there is a composite validator already registered, get its delegates, find the check-based validator and
 		// replace it with the new one
 		else if (existingValidator instanceof CompositeValidator) {
-			((CompositeValidator) existingValidator).addChild(newValidator);
+			((CompositeValidator) existingValidator).addChild(validator);
 		}
 		// there is another type of validator registered, create a composite validator and wrap the validators
 		else {
-			CompositeValidator composite = new CompositeValidator();
-			composite.addChild(existingValidator);
-			composite.addChild(newValidator);
-			getRegistry().put(ePackage, composite);
+			CompositeValidator compositeValidator = new CompositeValidator();
+			compositeValidator.addChild(existingValidator);
+			compositeValidator.addChild(validator);
+			getRegistry().put(ePackage, compositeValidator);
 		}
 	}
 
