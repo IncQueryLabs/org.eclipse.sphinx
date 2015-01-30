@@ -21,7 +21,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.sphinx.emf.compare.ui.editor.ModelCompareEditor;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
-import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.ReflectUtil;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
@@ -36,21 +35,16 @@ import org.eclipse.ui.IWorkbenchPart;
 @SuppressWarnings("restriction")
 public class FileCompareAction implements IObjectActionDelegate {
 
+	private static final String ECLIPSE_COMPARE_ACTION_CLASS_NAME = "org.eclipse.team.internal.ui.actions.CompareAction"; //$NON-NLS-1$
+
 	private BasicCompareAction modelCompareActionDelegate = new BasicCompareAction();
 	private IObjectActionDelegate eclipseCompareActionDelegate;
 
 	@SuppressWarnings("unchecked")
 	public FileCompareAction() {
-		// Ensure backward compatibility with Eclipse 3.4.x and earlier
 		try {
-			String eclipseCompareActionClassName;
-			if (ExtendedPlatform.getFeatureVersionOrdinal() >= 35) {
-				eclipseCompareActionClassName = "org.eclipse.team.internal.ui.actions.CompareAction"; //$NON-NLS-1$
-			} else {
-				eclipseCompareActionClassName = "org.eclipse.compare.internal.CompareAction"; //$NON-NLS-1$
-			}
 			Class<IObjectActionDelegate> eclipseCompareActionClass = (Class<IObjectActionDelegate>) getClass().getClassLoader().loadClass(
-					eclipseCompareActionClassName);
+					ECLIPSE_COMPARE_ACTION_CLASS_NAME);
 			eclipseCompareActionDelegate = eclipseCompareActionClass.newInstance();
 		} catch (Exception ex) {
 			// Ignore exception
@@ -89,8 +83,8 @@ public class FileCompareAction implements IObjectActionDelegate {
 
 	private boolean isEclipseCompareActionEnabled() {
 		try {
-			// Retrieve Eclipse compare action enablement state reflectively to be compatible with Eclipse 3.4.x and
-			// Eclipse 3.5.x
+			// Retrieve Eclipse compare action enablement state reflectively to be compatible with Eclipse 3.5.x or
+			// later
 			if (eclipseCompareActionDelegate != null) {
 				return (Boolean) ReflectUtil.invokeMethod(eclipseCompareActionDelegate, "isEnabled"); //$NON-NLS-1$
 			}
