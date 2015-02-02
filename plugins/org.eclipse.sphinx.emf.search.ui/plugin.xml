@@ -20,10 +20,12 @@ Contributors:
    <extension
          point="org.eclipse.search.searchPages">
       <page
+            canSearchEnclosingProjects="true"
             class="org.eclipse.sphinx.emf.search.ui.pages.ModelSearchPage"
             icon="$nl$/icons/full/obj16/msearch_obj.gif"
             id="org.eclipse.sphinx.emf.search.ui.model.search"
-            label="Model Search">
+            label="Model Search"
+            showScopeSection="true">
       </page>
    </extension>
    <extension

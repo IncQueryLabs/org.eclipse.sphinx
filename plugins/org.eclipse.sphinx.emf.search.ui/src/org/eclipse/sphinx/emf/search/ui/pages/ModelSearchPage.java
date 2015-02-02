@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.DialogPage;
@@ -41,26 +42,27 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IEditorInput;
 
 public class ModelSearchPage extends DialogPage implements ISearchPage {
 
 	private final static String PAGE_NAME = "ModelSearchPage"; //$NON-NLS-1$
 
+	private static final int HISTORY_SIZE = 12;
 	private final static String STORE_CASE_SENSITIVE = "CASE_SENSITIVE"; //$NON-NLS-1$
 	private final static String STORE_HISTORY = "HISTORY"; //$NON-NLS-1$
 	private final static String STORE_HISTORY_SIZE = "HISTORY_SIZE"; //$NON-NLS-1$
 
-	private static final int HISTORY_SIZE = 12;
-
-	private ISearchPageContainer pageContainer;
-	private IDialogSettings dialogSettings;
+	private boolean firstTime = true;
 	private boolean isCaseSensitive;
+	private IDialogSettings dialogSettings;
+	private ISearchPageContainer pageContainer;
 
 	private Combo pattern;
 	private Button caseSensitive;
 
-	private final List<SearchPatternData> previousSearchPatterns;
 	private SearchPatternData initialData;
+	private final List<SearchPatternData> previousSearchPatterns;
 
 	public ModelSearchPage() {
 		super(PAGE_NAME);
@@ -158,6 +160,7 @@ public class ModelSearchPage extends DialogPage implements ISearchPage {
 		isCaseSensitive = initialData.isCaseSensitive();
 		caseSensitive.setEnabled(true);
 		caseSensitive.setSelection(isCaseSensitive);
+		getContainer().setSelectedScope(initialData.getScope());
 
 		this.initialData = initialData;
 	}
@@ -194,10 +197,42 @@ public class ModelSearchPage extends DialogPage implements ISearchPage {
 		if (match != null) {
 			previousSearchPatterns.remove(match);
 		}
-		match = new SearchPatternData(pattern, caseSensitive.getSelection());
+		match = new SearchPatternData(pattern, caseSensitive.getSelection(), getContainer().getSelectedScope());
 
 		previousSearchPatterns.add(0, match); // insert on top
 		return match;
+	}
+
+	/*
+	 * Implements method from IDialogPage
+	 */
+	@Override
+	public void setVisible(boolean visible) {
+		if (visible && pattern != null) {
+			if (firstTime) {
+				firstTime = false;
+				// Set item and text here to prevent page from resizing
+				pattern.setItems(getPreviousSearchPatterns());
+				// initSelections();
+			}
+			pattern.setFocus();
+		}
+		updateOKStatus();
+
+		IEditorInput editorInput = getContainer().getActiveEditorInput();
+		getContainer().setActiveEditorCanProvideScopeSelection(editorInput != null && editorInput.getAdapter(IFile.class) != null);
+
+		super.setVisible(visible);
+	}
+
+	private String[] getPreviousSearchPatterns() {
+		// Search results are not persistent
+		int patternCount = previousSearchPatterns.size();
+		String[] patterns = new String[patternCount];
+		for (int i = 0; i < patternCount; i++) {
+			patterns[i] = previousSearchPatterns.get(i).getPattern();
+		}
+		return patterns;
 	}
 
 	@Override
@@ -272,12 +307,24 @@ public class ModelSearchPage extends DialogPage implements ISearchPage {
 	}
 
 	private static class SearchPatternData {
-		private final String pattern;
-		private final boolean isCaseSensitive;
 
-		public SearchPatternData(String pattern, boolean isCaseSensitive) {
+		private final int scope;
+		private static final String SCOPE = "scope"; //$NON-NLS-1$
+
+		private final String pattern;
+		private static final String PATTERN = "pattern"; //$NON-NLS-1$
+
+		private final boolean isCaseSensitive;
+		private static final String IS_CASE_SENSITIVE = "isCaseSensitive"; //$NON-NLS-1$
+
+		public SearchPatternData(String pattern, boolean isCaseSensitive, int scope) {
+			this.scope = scope;
 			this.pattern = pattern;
 			this.isCaseSensitive = isCaseSensitive;
+		}
+
+		public int getScope() {
+			return scope;
 		}
 
 		public String getPattern() {
@@ -289,20 +336,28 @@ public class ModelSearchPage extends DialogPage implements ISearchPage {
 		}
 
 		public void store(IDialogSettings settings) {
-			settings.put("isCaseSensitive", isCaseSensitive); //$NON-NLS-1$
-			settings.put("pattern", pattern); //$NON-NLS-1$
+			settings.put(IS_CASE_SENSITIVE, isCaseSensitive);
+			settings.put(PATTERN, pattern);
+			settings.put(SCOPE, scope);
 		}
 
 		public static SearchPatternData create(IDialogSettings settings) {
 
-			String pattern = settings.get("pattern"); //$NON-NLS-1$
+			String pattern = settings.get(PATTERN);
 			if (pattern.length() == 0) {
 				return null;
 			}
 
-			boolean isCaseSensitive = settings.getBoolean("isCaseSensitive"); //$NON-NLS-1$
+			boolean isCaseSensitive = settings.getBoolean(IS_CASE_SENSITIVE);
+			int scope;
 
-			return new SearchPatternData(pattern, isCaseSensitive);
+			try {
+				scope = settings.getInt(SCOPE);
+			} catch (NumberFormatException ex) {
+				scope = ISearchPageContainer.WORKSPACE_SCOPE;
+			}
+
+			return new SearchPatternData(pattern, isCaseSensitive, scope);
 		}
 	}
 }
