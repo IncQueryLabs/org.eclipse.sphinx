@@ -183,7 +183,7 @@ public class LocalProxifyMechanismTest extends DefaultIntegrationTestCase {
 		assertNotNull(interface2.getRequiringPorts().get(0));
 		assertTrue(interface2.getRequiringPorts().get(0).eIsProxy());
 		internalEObject = (InternalEObject) interface2.getRequiringPorts().get(0);
-		assertEquals("hb:/#//ComponentType1/Port", internalEObject.eProxyURI().toString());
+		assertEquals("hb:/#//ComponentType1/Port1", internalEObject.eProxyURI().toString());
 
 		// Undo deleting
 		IUndoContext op = WorkspaceTransactionUtil.getUndoContext(refWks.editingDomain20);
@@ -233,13 +233,13 @@ public class LocalProxifyMechanismTest extends DefaultIntegrationTestCase {
 		assertNotNull(interface1.getRequiringPorts().get(0));
 		assertTrue(interface1.getRequiringPorts().get(0).eIsProxy());
 		InternalEObject internalEObject = (InternalEObject) interface1.getRequiringPorts().get(0);
-		assertEquals("hb:/#//@componentTypes.-1/@ports.1", internalEObject.eProxyURI().toString());
+		assertEquals("hb:/#//ComponentType1/Port2", internalEObject.eProxyURI().toString());
 
 		assertFalse(interface2.getRequiringPorts().isEmpty());
 		assertNotNull(interface2.getRequiringPorts().get(0));
 		assertTrue(interface2.getRequiringPorts().get(0).eIsProxy());
 		InternalEObject internalEObject2 = (InternalEObject) interface2.getRequiringPorts().get(0);
-		assertEquals("hb:/#//@componentTypes.-1/@ports.0", internalEObject2.eProxyURI().toString());
+		assertEquals("hb:/#//ComponentType1/Port1", internalEObject2.eProxyURI().toString());
 
 	}
 
@@ -274,13 +274,13 @@ public class LocalProxifyMechanismTest extends DefaultIntegrationTestCase {
 		assertNotNull(interface1.getRequiringPorts().get(0));
 		assertTrue(interface1.getRequiringPorts().get(0).eIsProxy());
 		InternalEObject internalEObject = (InternalEObject) interface1.getRequiringPorts().get(0);
-		assertEquals("hb:/#//@componentTypes.-1/@ports.1", internalEObject.eProxyURI().toString());
+		assertEquals("hb:/#//ComponentType1/Port2", internalEObject.eProxyURI().toString());
 
 		assertFalse(interface2.getRequiringPorts().isEmpty());
 		assertNotNull(interface2.getRequiringPorts().get(0));
 		assertTrue(interface2.getRequiringPorts().get(0).eIsProxy());
 		InternalEObject internalEObject2 = (InternalEObject) interface2.getRequiringPorts().get(0);
-		assertEquals("hb:/#//@componentTypes.-1/@ports.0", internalEObject2.eProxyURI().toString());
+		assertEquals("hb:/#//ComponentType1/Port1", internalEObject2.eProxyURI().toString());
 
 		// Undo
 		IUndoContext op = WorkspaceTransactionUtil.getUndoContext(refWks.editingDomain20);
@@ -326,7 +326,7 @@ public class LocalProxifyMechanismTest extends DefaultIntegrationTestCase {
 		assertNotNull(interface2.getRequiringPorts().get(0));
 		assertTrue(interface2.getRequiringPorts().get(0).eIsProxy());
 		InternalEObject internalEObject = (InternalEObject) interface2.getRequiringPorts().get(0);
-		assertEquals("hb:/#//ComponentType1/Port", internalEObject.eProxyURI().toString());
+		assertEquals("hb:/#//ComponentType1/Port1", internalEObject.eProxyURI().toString());
 
 		// Undo
 		IUndoContext op = WorkspaceTransactionUtil.getUndoContext(refWks.editingDomain20);
