@@ -25,6 +25,7 @@ public class Messages extends NLS {
 	 * Compare Actions
 	 */
 	public static String action_compareWithEachOther;
+	public static String action_compareWithEachOther_description;
 	public static String action_mergeWithEachOther;
 	public static String action_copyRightToLeft;
 	public static String action_copyLeftToRight;

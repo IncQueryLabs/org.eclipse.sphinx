@@ -80,8 +80,7 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 	 */
 	public BasicCompareAction() {
 		super(Messages.action_compareWithEachOther);
-		// TODO Add action description
-		// setDescription(TO BE DEFINED);
+		setDescription(Messages.action_compareWithEachOther_description);
 	}
 
 	/**
