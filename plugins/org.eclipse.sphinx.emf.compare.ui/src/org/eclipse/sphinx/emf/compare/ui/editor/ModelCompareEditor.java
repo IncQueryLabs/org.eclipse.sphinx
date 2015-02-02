@@ -244,7 +244,7 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 
 		@Override
 		public void handleEditorInputObjectRemoved(IEditorInput editorInput) {
-			// Close editor
+			// Close the editor
 			close(false);
 		}
 
@@ -260,7 +260,7 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 
 		@Override
 		public void handleEditorInputResourceRemoved(IEditorInput editorInput) {
-			// Close editor
+			// Close the editor
 			close(false);
 		}
 	}
