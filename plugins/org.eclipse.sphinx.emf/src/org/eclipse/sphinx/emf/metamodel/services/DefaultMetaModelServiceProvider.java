@@ -23,12 +23,12 @@ import org.eclipse.sphinx.emf.metamodel.providers.IMetaModelDescriptorProvider;
 public class DefaultMetaModelServiceProvider implements IMetaModelServiceProvider {
 
 	@Override
-	public <T extends IMetaModelService> T getService(IMetaModelDescriptor descriptor, Class<T> serviceType) {
-		return MetaModelServiceRegistry.INSTANCE.getService(descriptor, serviceType);
+	public <T extends IMetaModelService> T getService(IMetaModelDescriptor mmDescriptor, Class<T> mmServiceType) {
+		return MetaModelServiceRegistry.INSTANCE.getService(mmDescriptor, mmServiceType);
 	}
 
 	@Override
-	public <T extends IMetaModelService> T getService(IMetaModelDescriptorProvider provider, Class<T> serviceType) {
-		return getService(provider.getMetaModelDescriptor(), serviceType);
+	public <T extends IMetaModelService> T getService(IMetaModelDescriptorProvider mmDesciptorProvider, Class<T> mmServiceType) {
+		return getService(mmDesciptorProvider.getMetaModelDescriptor(), mmServiceType);
 	}
 }

@@ -46,7 +46,7 @@ public class ServiceClassDescriptor extends ExtensionClassDescriptor<IMetaModelS
 		super(configurationElement);
 
 		typeName = configurationElement.getAttribute(ATTR_TYPE);
-		Assert.isNotNull(typeName, Messages.metamodelservice_MissingServiceType);
+		Assert.isNotNull(typeName, Messages.error_missingMetaModelServiceType);
 
 		initMetaModelDescIdPatterns(configurationElement);
 	}

@@ -103,11 +103,11 @@ public class Messages extends NLS {
 	public static String error_problemOccurredWhenResolvingProxyURI;
 	public static String error_problemOccurredWhenSavingResource;
 
-	public static String metamodelservice_ServiceAlreadyExists;
-	public static String metamodelservice_UnknownMM;
-	public static String metamodelservice_InvalidServiceClass;
-	public static String metamodelservice_MissingServiceType;
-	public static String metamodelservice_MissingMMDescriptor;
+	public static String error_metaModelServiceAlreadyExists;
+	public static String error_unknownMetaModel;
+	public static String error_invalidMetaModelServiceClass;
+	public static String error_missingMetaModelServiceType;
+	public static String error_missingMetaModelDescriptor;
 
 	static {
 		// initialize resource bundle

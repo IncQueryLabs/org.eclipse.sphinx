@@ -18,6 +18,7 @@ package org.eclipse.sphinx.emf.mwe.dynamic;
 import static org.eclipse.sphinx.jdt.util.JavaExtensions.isDevModePluginClasspathLocation;
 import static org.eclipse.sphinx.jdt.util.JavaExtensions.isInstalledPluginClasspathRootLocation;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -57,7 +58,7 @@ public class WorkflowContributorRegistry {
 
 	public Set<String> getContributorPluginIds() {
 		initialize();
-		return contributorPluginIds;
+		return contributorPluginIds != null ? contributorPluginIds : Collections.<String> emptySet();
 	}
 
 	/**
