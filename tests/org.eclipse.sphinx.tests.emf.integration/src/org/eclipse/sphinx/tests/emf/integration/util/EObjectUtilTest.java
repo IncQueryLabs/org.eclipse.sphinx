@@ -859,7 +859,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 		assertNotNull(proxy_2);
 		assertTrue(proxy_2.eIsProxy());
 		assertTrue(proxy_2 instanceof InternalEObject);
-		assertEquals(URI.createURI("hb:/#//@componentTypes.1"), ((InternalEObject) proxy_2).eProxyURI());
+		assertEquals(URI.createURI("hb:/#//ComponentType2"), ((InternalEObject) proxy_2).eProxyURI());
 
 		assertNotNull(interface1);
 		assertFalse(interface1.getProvidingComponentTypes().isEmpty());
@@ -1152,7 +1152,7 @@ public class EObjectUtilTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for {@link EObjectUtil#deproxify(EObject)}
-	 * 
+	 *
 	 * @throws InterruptedException
 	 * @throws OperationCanceledException
 	 */
