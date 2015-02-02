@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [457521] Check MethodWrapper should be null safe wrt instance.getFilter()
  *
  * </copyright>
  */
@@ -18,6 +19,7 @@ import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -366,7 +368,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	 */
 	@Override
 	public Set<String> getFilter() {
-		return filter;
+		return filter != null ? filter : Collections.<String> emptySet();
 	}
 
 	/*
