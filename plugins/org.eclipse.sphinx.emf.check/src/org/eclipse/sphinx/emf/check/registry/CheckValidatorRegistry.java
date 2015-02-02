@@ -12,6 +12,7 @@
  *     itemis - [455185] Check Framework incompatible with QVTO metamodel
  *     itemis - [458403] CheckValidatorRegistry.getCheckModelURI(String) should be null-safe
  *     itemis - [458405] CheckValidatorRegistry.register(*) should be public
+ *     itemis - [458921] Newly introduced registries for metamodel serives, check validators and workflow contributors are not standalone-safe
  *
  * </copyright>
  */
@@ -71,7 +72,8 @@ public class CheckValidatorRegistry {
 	/**
 	 * The singleton instance of this registry.
 	 */
-	public static final CheckValidatorRegistry INSTANCE = new CheckValidatorRegistry(Platform.getExtensionRegistry(), Activator.getPlugin().getLog());
+	public static final CheckValidatorRegistry INSTANCE = new CheckValidatorRegistry(Platform.getExtensionRegistry(),
+			PlatformLogUtil.getLog(Activator.getPlugin()));
 
 	private Map<String, CheckValidatorDescriptor> checkValidatorClassNameToCheckValidatorDescriptorMap = Collections
 			.synchronizedMap(new LinkedHashMap<String, CheckValidatorDescriptor>());

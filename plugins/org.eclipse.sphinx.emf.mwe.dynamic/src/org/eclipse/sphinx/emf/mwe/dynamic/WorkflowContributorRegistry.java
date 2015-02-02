@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [458921] Newly introduced registries for metamodel serives, check validators and workflow contributors are not standalone-safe
  *
  * </copyright>
  */
@@ -30,6 +31,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.sphinx.emf.mwe.dynamic.internal.Activator;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 import org.osgi.framework.Bundle;
 
@@ -39,8 +41,8 @@ public class WorkflowContributorRegistry {
 	private static final String ELEM_CONTRIBUTOR = "contributor"; //$NON-NLS-1$
 	private static final String ATTR_PLUGIN_ID = "pluginId"; //$NON-NLS-1$
 
-	public static final WorkflowContributorRegistry INSTANCE = new WorkflowContributorRegistry(Platform.getExtensionRegistry(), Activator.getPlugin()
-			.getLog());
+	public static final WorkflowContributorRegistry INSTANCE = new WorkflowContributorRegistry(Platform.getExtensionRegistry(),
+			PlatformLogUtil.getLog(Activator.getPlugin()));
 
 	private Set<String> contributorPluginIds = null;
 

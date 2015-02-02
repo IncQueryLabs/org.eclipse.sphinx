@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) Continental Engineering Services, BMW Car IT and others.
+ * Copyright (c) 2014-2015 Continental Engineering Services, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Continental Engineering Services - Initial API and implementation
+ *     itemis - [458921] Newly introduced registries for metamodel serives, check validators and workflow contributors are not standalone-safe
  *
  * </copyright>
  */
@@ -33,6 +34,7 @@ import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.internal.metamodel.services.ServiceClassDescriptor;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
  * The registry for the metamodel services. Clients should use {@link DefaultMetaModelServiceProvider}.
@@ -40,7 +42,8 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 public class MetaModelServiceRegistry {
 
 	/** The singleton */
-	static final MetaModelServiceRegistry INSTANCE = new MetaModelServiceRegistry(Platform.getExtensionRegistry(), Activator.getPlugin().getLog());
+	static final MetaModelServiceRegistry INSTANCE = new MetaModelServiceRegistry(Platform.getExtensionRegistry(), PlatformLogUtil.getLog(Activator
+			.getPlugin()));
 
 	// private Map<String, ServiceClassDescriptor> idToMetaModelServiceMap;
 	private volatile Map<IMetaModelDescriptor, Map<Class<IMetaModelService>, ServiceClassDescriptor>> mmServices;
