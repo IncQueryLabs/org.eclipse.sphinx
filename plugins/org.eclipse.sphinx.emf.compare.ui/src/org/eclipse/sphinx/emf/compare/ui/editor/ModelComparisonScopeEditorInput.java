@@ -262,13 +262,15 @@ public class ModelComparisonScopeEditorInput extends ComparisonScopeEditorInput 
 	 * @return As specified above.
 	 */
 	protected String getLeftLabel() {
+		// FIXME use get URi resolve true ... trim fragment ...
 		String leftLabel = ""; //$NON-NLS-1$;
 		Object leftObject = getLeftObject();
 
 		if (leftObject instanceof EObject) {
 			Resource leftResource = ((EObject) leftObject).eResource();
 			String fragment = leftResource.getURIFragment((EObject) leftObject);
-			fragment = fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR) == -1 ? "" : fragment.substring(0, fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR)); //$NON-NLS-1$
+			fragment = fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR) == -1 ? fragment : fragment.substring(0,
+					fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR));
 			leftLabel = leftResource.getURI().toPlatformString(true).concat(ExtendedResource.URI_FRAGMENT_SEPARATOR + fragment);
 		} else if (leftObject instanceof IFile) {
 			leftLabel = ((IFile) leftObject).getName();

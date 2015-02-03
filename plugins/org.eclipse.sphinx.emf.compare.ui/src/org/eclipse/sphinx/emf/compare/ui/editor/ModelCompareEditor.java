@@ -250,12 +250,12 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 
 		@Override
 		public void handleEditorInputResourceLoaded(IEditorInput editorInput) {
-			// TODO
+			// Do nothing
 		}
 
 		@Override
 		public void handleEditorInputResourceMoved(IEditorInput editorInput, URI oldURI, URI newURI) {
-			// TODO
+			// TODO update
 		}
 
 		@Override

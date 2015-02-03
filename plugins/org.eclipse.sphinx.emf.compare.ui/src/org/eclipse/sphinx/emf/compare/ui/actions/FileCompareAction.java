@@ -21,7 +21,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.sphinx.emf.compare.ui.editor.ModelCompareEditor;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
-import org.eclipse.sphinx.platform.util.ReflectUtil;
+import org.eclipse.team.internal.ui.actions.CompareAction;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
@@ -35,35 +35,22 @@ import org.eclipse.ui.IWorkbenchPart;
 @SuppressWarnings("restriction")
 public class FileCompareAction implements IObjectActionDelegate {
 
-	private static final String ECLIPSE_COMPARE_ACTION_CLASS_NAME = "org.eclipse.team.internal.ui.actions.CompareAction"; //$NON-NLS-1$
+	private BasicCompareAction modelCompareActionDelegate;
+	private CompareAction eclipseCompareActionDelegate;
 
-	private BasicCompareAction modelCompareActionDelegate = new BasicCompareAction();
-	private IObjectActionDelegate eclipseCompareActionDelegate;
-
-	@SuppressWarnings("unchecked")
 	public FileCompareAction() {
-		try {
-			Class<IObjectActionDelegate> eclipseCompareActionClass = (Class<IObjectActionDelegate>) getClass().getClassLoader().loadClass(
-					ECLIPSE_COMPARE_ACTION_CLASS_NAME);
-			eclipseCompareActionDelegate = eclipseCompareActionClass.newInstance();
-		} catch (Exception ex) {
-			// Ignore exception
-		}
+		modelCompareActionDelegate = new BasicCompareAction();
+		eclipseCompareActionDelegate = new CompareAction();
 	}
 
 	@Override
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-		if (eclipseCompareActionDelegate != null) {
-			eclipseCompareActionDelegate.setActivePart(action, targetPart);
-		}
+		eclipseCompareActionDelegate.setActivePart(action, targetPart);
 	}
 
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
-		// Propagate selection to delegates
-		if (eclipseCompareActionDelegate != null) {
-			eclipseCompareActionDelegate.selectionChanged(action, selection);
-		}
+		eclipseCompareActionDelegate.selectionChanged(action, selection);
 		modelCompareActionDelegate.selectionChanged(SelectionUtil.getStructuredSelection(selection));
 
 		// Update enablement state
@@ -82,15 +69,6 @@ public class FileCompareAction implements IObjectActionDelegate {
 	}
 
 	private boolean isEclipseCompareActionEnabled() {
-		try {
-			// Retrieve Eclipse compare action enablement state reflectively to be compatible with Eclipse 3.5.x or
-			// later
-			if (eclipseCompareActionDelegate != null) {
-				return (Boolean) ReflectUtil.invokeMethod(eclipseCompareActionDelegate, "isEnabled"); //$NON-NLS-1$
-			}
-		} catch (Exception ex) {
-			// Ignore exception
-		}
-		return false;
+		return eclipseCompareActionDelegate.isEnabled();
 	}
 }

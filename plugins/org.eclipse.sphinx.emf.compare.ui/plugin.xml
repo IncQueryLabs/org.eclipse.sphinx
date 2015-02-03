@@ -24,16 +24,8 @@
       </editor>
    </extension>
    <!--
-   <extension
-         point="org.eclipse.compare.contentMergeViewers">
-      <viewer
-            class="org.eclipse.sphinx.emf.compare.ui.viewer.structuremerge.ModelElementStructureMergeViewerCreator"
-            extensions="*"
-            id="org.eclipse.sphinx.emf.compare.ui.viewer.content.modelElementContentMergeViewer">
-      </viewer>
-   </extension>
+   Uses deprecated org.eclipse.ui.popupMenus extension point instead of org.eclipse.ui.Menus to override existing compare with each other action.
    -->
-   
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
