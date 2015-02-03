@@ -44,7 +44,6 @@ public class ModelEditorUndoContextManager implements IDisposable {
 	public ModelEditorUndoContextManager(IWorkbenchPartSite site, IWorkbenchPart targetPart, TransactionalEditingDomain editingDomain) {
 		Assert.isNotNull(site);
 		Assert.isNotNull(targetPart);
-		Assert.isNotNull(editingDomain);
 
 		this.site = site;
 		this.targetPart = targetPart;
@@ -76,9 +75,11 @@ public class ModelEditorUndoContextManager implements IDisposable {
 	}
 
 	protected IOperationHistory getOperationHistory() {
-		CommandStack commandStack = editingDomain.getCommandStack();
-		if (commandStack instanceof IWorkspaceCommandStack) {
-			return ((IWorkspaceCommandStack) commandStack).getOperationHistory();
+		if (editingDomain != null) {
+			CommandStack commandStack = editingDomain.getCommandStack();
+			if (commandStack instanceof IWorkspaceCommandStack) {
+				return ((IWorkspaceCommandStack) commandStack).getOperationHistory();
+			}
 		}
 		return OperationHistoryFactory.getOperationHistory();
 	}
@@ -95,9 +96,11 @@ public class ModelEditorUndoContextManager implements IDisposable {
 	}
 
 	protected IUndoContext getDefaultUndoContext() {
-		CommandStack commandStack = editingDomain.getCommandStack();
-		if (commandStack instanceof IWorkspaceCommandStack) {
-			return ((IWorkspaceCommandStack) commandStack).getDefaultUndoContext();
+		if (editingDomain != null) {
+			CommandStack commandStack = editingDomain.getCommandStack();
+			if (commandStack instanceof IWorkspaceCommandStack) {
+				return ((IWorkspaceCommandStack) commandStack).getDefaultUndoContext();
+			}
 		}
 		return null;
 	}
