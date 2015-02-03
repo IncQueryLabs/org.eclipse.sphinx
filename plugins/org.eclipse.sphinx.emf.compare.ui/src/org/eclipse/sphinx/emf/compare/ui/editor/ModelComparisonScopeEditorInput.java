@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.compare.EMFCompare;
 import org.eclipse.emf.compare.domain.ICompareEditingDomain;
 import org.eclipse.emf.compare.ide.ui.internal.configuration.EMFCompareConfiguration;
@@ -43,7 +44,6 @@ import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.compare.util.ModelCompareUtil;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
@@ -62,11 +62,11 @@ public class ModelComparisonScopeEditorInput extends ComparisonScopeEditorInput 
 
 	private final IComparisonScope scope;
 
-	// Selected EObject or IFile
+	// Selected EObject or IFile objects being compared
 	private Object leftObject;
 	private Object rightObject;
 
-	// Input EMF resource if selected objects are IFile
+	// EMF resources if selected objects are IFile
 	private Resource leftResource;
 	private Resource rightResource;
 
@@ -210,8 +210,8 @@ public class ModelComparisonScopeEditorInput extends ComparisonScopeEditorInput 
 		Object input = super.doPrepareInput(progress.newChild(50));
 
 		String title;
-		String leftLabel = getLeftLabel();
-		String rightLabel = getRightLabel();
+		String leftLabel = getLabel(getLeftObject());
+		String rightLabel = getLabel(getRightObject());
 		String ancestorLabel = getAncestorLabel();
 		if (ancestorLabel == null) {
 			title = NLS.bind(Messages.twoWay_title, leftLabel, rightLabel);
@@ -257,47 +257,23 @@ public class ModelComparisonScopeEditorInput extends ComparisonScopeEditorInput 
 	}
 
 	/**
-	 * Returns the label of the right compared object to use it in the title and the tool tip of the compare editor.
+	 * Returns the label of the provided object to use it in the title and the tool tip of the compare editor.
 	 *
-	 * @return As specified above.
+	 * @param object
+	 *            an EMF object or a IFile.
+	 * @return the label of the provided object to use it in the title and the tool tip of the compare editor.
 	 */
-	protected String getLeftLabel() {
-		// FIXME use get URi resolve true ... trim fragment ...
-		String leftLabel = ""; //$NON-NLS-1$;
-		Object leftObject = getLeftObject();
+	protected String getLabel(Object object) {
+		String label = ""; //$NON-NLS-1$;
 
-		if (leftObject instanceof EObject) {
-			Resource leftResource = ((EObject) leftObject).eResource();
-			String fragment = leftResource.getURIFragment((EObject) leftObject);
-			fragment = fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR) == -1 ? fragment : fragment.substring(0,
-					fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR));
-			leftLabel = leftResource.getURI().toPlatformString(true).concat(ExtendedResource.URI_FRAGMENT_SEPARATOR + fragment);
-		} else if (leftObject instanceof IFile) {
-			leftLabel = ((IFile) leftObject).getName();
+		if (object instanceof EObject) {
+			URI uri = EcoreResourceUtil.getURI((EObject) object, true);
+			label = uri.trimQuery().toString();
+		} else if (object instanceof IFile) {
+			label = ((IFile) object).getName();
 		}
 
-		return leftLabel;
-	}
-
-	/**
-	 * Returns the label of the left compared object to use it in the title and the tool tip of the compare editor.
-	 *
-	 * @return As specified above.
-	 */
-	protected String getRightLabel() {
-		String rightLabel = ""; //$NON-NLS-1$
-		Object rightObject = getRightObject();
-
-		if (rightObject instanceof EObject) {
-			Resource rightResource = ((EObject) rightObject).eResource();
-			String fragment = rightResource.getURIFragment((EObject) rightObject);
-			fragment = fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR) == -1 ? "" : fragment.substring(0, fragment.lastIndexOf(ExtendedResource.URI_QUERY_SEPARATOR)); //$NON-NLS-1$
-			rightLabel = rightResource.getURI().toPlatformString(true).concat(ExtendedResource.URI_FRAGMENT_SEPARATOR + fragment);
-		} else if (rightObject instanceof IFile) {
-			rightLabel = ((IFile) rightObject).getName();
-		}
-
-		return rightLabel;
+		return label;
 	}
 
 	/**
@@ -306,11 +282,7 @@ public class ModelComparisonScopeEditorInput extends ComparisonScopeEditorInput 
 	 * @return As specified above.
 	 */
 	protected String getAncestorLabel() {
-		// TODO in case three way comparison supported
-		// Resource ancestorResource = preparedInput.getAncestorResource();
-		// if (ancestorResource != null) {
-		// return ancestorResource.getURI().toString();
-		// }
+		// Overrides this in case three way comparison supported
 		return null;
 	}
 
