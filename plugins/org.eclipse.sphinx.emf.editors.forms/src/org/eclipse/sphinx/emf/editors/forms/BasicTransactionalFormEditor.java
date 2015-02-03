@@ -1721,7 +1721,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IEditing
 							// the latter has been renamed)
 							Object editorInputObject = getEditorInputObject();
 							if (editorInputObject instanceof EObject) {
-								URI newEditorInputObjectURI = EcoreUtil.getURI((EObject) editorInputObject);
+								URI newEditorInputObjectURI = EcoreResourceUtil.getURI((EObject) editorInputObject);
 								updateEditorInput(newEditorInputObjectURI);
 							}
 
