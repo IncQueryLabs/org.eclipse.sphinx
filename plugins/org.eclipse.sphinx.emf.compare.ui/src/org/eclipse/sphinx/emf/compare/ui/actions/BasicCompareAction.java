@@ -49,6 +49,7 @@ import org.eclipse.sphinx.emf.compare.ui.editor.ModelComparisonScopeEditorInput;
 import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.compare.util.ModelCompareUtil;
+import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.widgets.Display;
@@ -120,6 +121,16 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 			}
 		}
 		return selectedFiles != null ? selectedFiles.size() == 2 : false ^ selectedEObjects != null ? selectedEObjects.size() == 2 : false;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		if (selectedFiles != null && selectedFiles.size() == 2) {
+			IFile leftFile = selectedFiles.get(0).get();
+			IFile rightFile = selectedFiles.get(1).get();
+			return ModelDescriptorRegistry.INSTANCE.isModelFile(leftFile) && ModelDescriptorRegistry.INSTANCE.isModelFile(rightFile);
+		}
+		return super.isEnabled();
 	}
 
 	@Override

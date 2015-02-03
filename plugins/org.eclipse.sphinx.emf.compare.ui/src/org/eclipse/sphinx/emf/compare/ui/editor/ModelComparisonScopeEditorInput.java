@@ -80,6 +80,14 @@ public class ModelComparisonScopeEditorInput extends ComparisonScopeEditorInput 
 		return scope;
 	}
 
+	public Resource getLeftResource() {
+		return leftResource;
+	}
+
+	public Resource getRightResource() {
+		return rightResource;
+	}
+
 	@Override
 	public boolean isDirty() {
 		boolean isDirty = false;
@@ -284,23 +292,6 @@ public class ModelComparisonScopeEditorInput extends ComparisonScopeEditorInput 
 	protected String getAncestorLabel() {
 		// Overrides this in case three way comparison supported
 		return null;
-	}
-
-	@Override
-	public String getToolTipText() {
-		// TODO
-		// if (preparedInput != null) {
-		// String leftLabel = getLeftLabel();
-		// String rightLabel = getRightLabel();
-		// String ancestorLabel = getAncestorLabel();
-		// if (ancestorLabel == null) {
-		// return NLS.bind(Messages.twoWay_tooltip, leftLabel, rightLabel);
-		// } else {
-		// return NLS.bind(Messages.threeWay_tooltip, new Object[] { ancestorLabel, leftLabel, rightLabel });
-		// }
-		// }
-		// Fall back
-		return super.getToolTipText();
 	}
 
 	@Override

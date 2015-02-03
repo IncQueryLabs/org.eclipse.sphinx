@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.eclipse.compare.internal.CompareEditor;
 import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -33,7 +34,6 @@ import org.eclipse.sphinx.emf.editors.IModelEditorInputChangeAnalyzer;
 import org.eclipse.sphinx.emf.editors.IModelEditorInputChangeHandler;
 import org.eclipse.sphinx.emf.editors.ModelEditorInputSynchronizer;
 import org.eclipse.sphinx.emf.editors.ModelEditorUndoContextManager;
-import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -71,7 +71,9 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 
 		undoContextManager = getModelEditorUndoContextManager();
 		TransactionalEditingDomain editingDomain = getEditingDomains()[0] != null ? getEditingDomains()[0] : getEditingDomains()[1];
-		editorInputSynchronizer = new ModelEditorInputSynchronizer(input, editingDomain, this, new ModelCompareEditorInputChangeHandler());
+		if (editingDomain != null) {
+			editorInputSynchronizer = new ModelEditorInputSynchronizer(input, editingDomain, this, new ModelCompareEditorInputChangeHandler());
+		}
 	}
 
 	protected ModelEditorUndoContextManager getModelEditorUndoContextManager() {
@@ -142,9 +144,6 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 		if (modelRoots[1] != null) {
 			editingDomains[1] = WorkspaceEditingDomainUtil.getEditingDomain(modelRoots[1]);
 		}
-		if (editingDomains[0] == null && editingDomains[1] == null) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), new RuntimeException("No editing domain found")); //$NON-NLS-1$
-		}
 		return editingDomains;
 	}
 
@@ -202,7 +201,7 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 
 	@Override
 	public boolean containEditorInputObject(IEditorInput editorInput, Set<EObject> removedObjects) {
-		if (editorInput instanceof ModelComparisonScopeEditorInput && removedObjects != null) {
+		if (removedObjects != null && editorInput instanceof ModelComparisonScopeEditorInput) {
 			Object leftObject = ((ModelComparisonScopeEditorInput) editorInput).getLeftObject();
 			Object rightObject = ((ModelComparisonScopeEditorInput) editorInput).getRightObject();
 			return removedObjects.contains(leftObject) || removedObjects.contains(rightObject);
@@ -212,13 +211,17 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 
 	@Override
 	public boolean containEditorInputResourceURI(IEditorInput editorInput, Set<URI> resourceURIs) {
-		if (editorInput instanceof ModelComparisonScopeEditorInput) {
+		if (resourceURIs != null && editorInput instanceof ModelComparisonScopeEditorInput) {
 			Set<URI> editorInputResourceURIs = new HashSet<URI>();
-			Resource leftResource = EcorePlatformUtil.getResource(((ModelComparisonScopeEditorInput) editorInput).getLeftObject());
+			Resource leftResource = ((ModelComparisonScopeEditorInput) editorInput).getLeftResource();
+			// FIXME Resource leftResource = EcorePlatformUtil.getResource(((ModelComparisonScopeEditorInput)
+			// editorInput).getLeftObject());
 			if (leftResource != null) {
 				editorInputResourceURIs.add(leftResource.getURI());
 			}
-			Resource rightResource = EcorePlatformUtil.getResource(((ModelComparisonScopeEditorInput) editorInput).getRightObject());
+			Resource rightResource = ((ModelComparisonScopeEditorInput) editorInput).getRightResource();
+			// FIXME Resource rightResource = EcorePlatformUtil.getResource(((ModelComparisonScopeEditorInput)
+			// editorInput).getRightObject());
 			if (rightResource != null) {
 				editorInputResourceURIs.add(rightResource.getURI());
 			}
@@ -244,8 +247,7 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 
 		@Override
 		public void handleEditorInputObjectRemoved(IEditorInput editorInput) {
-			// Close the editor
-			close(false);
+			close();
 		}
 
 		@Override
@@ -255,29 +257,40 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 
 		@Override
 		public void handleEditorInputResourceMoved(IEditorInput editorInput, URI oldURI, URI newURI) {
-			// TODO update
+			// Do nothing because resource removed listener will be called
 		}
 
 		@Override
 		public void handleEditorInputResourceRemoved(IEditorInput editorInput) {
-			// Close the editor
-			close(false);
+			close();
 		}
 	}
 
 	/**
 	 * Closes the editor programmatically.
-	 *
-	 * @param save
-	 *            if <code>true</code>, the content should be saved before closing.
 	 */
-	protected void close(final boolean save) {
+	protected void close() {
 		Display display = getSite().getShell().getDisplay();
 		display.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				getSite().getPage().closeEditor(ModelCompareEditor.this, save);
+				getSite().getPage().closeEditor(ModelCompareEditor.this, false);
 			}
 		});
+	}
+
+	/**
+	 * Updates the editor.
+	 */
+	protected void updateEditorInput(IEditorInput oldEditorInput, IEditorInput newEditorInput) {
+		Assert.isNotNull(newEditorInput);
+
+		if (!newEditorInput.equals(oldEditorInput)) {
+			// Set new editor input
+			setInputWithNotify(newEditorInput);
+
+			// Update editor part title
+			setTitleToolTip(getTitleToolTip());
+		}
 	}
 }

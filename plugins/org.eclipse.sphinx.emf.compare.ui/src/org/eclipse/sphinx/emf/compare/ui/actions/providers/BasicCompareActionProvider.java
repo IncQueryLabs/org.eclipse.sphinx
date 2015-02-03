@@ -19,11 +19,10 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.sphinx.emf.compare.ui.ICompareMenuConstants;
 import org.eclipse.sphinx.emf.compare.ui.actions.BasicCompareAction;
 import org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider;
+import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.ui.IWorkbenchActionConstants;
 
 public class BasicCompareActionProvider extends BasicActionProvider {
@@ -33,24 +32,15 @@ public class BasicCompareActionProvider extends BasicActionProvider {
 	 */
 	protected BasicCompareAction compareAction;
 
-	// FIXME check if auto merge is needed
-	// protected BasicAutoMergeAction mergeAutoAction;
-
 	@Override
 	protected void doInit() {
 		compareAction = new BasicCompareAction();
-		// FIXME mergeAutoAction = new BasicAutoMergeAction();
 
 		if (selectionProvider != null) {
 			selectionProvider.addSelectionChangedListener(compareAction);
-			// FIXME selectionProvider.addSelectionChangedListener(mergeAutoAction);
 
 			ISelection selection = selectionProvider.getSelection();
-			IStructuredSelection structuredSelection = selection instanceof IStructuredSelection ? (IStructuredSelection) selection
-					: StructuredSelection.EMPTY;
-
-			compareAction.updateSelection(structuredSelection);
-			// FIXME mergeAutoAction.updateSelection(structuredSelection);
+			compareAction.updateSelection(SelectionUtil.getStructuredSelection(selection));
 		}
 	}
 
@@ -77,19 +67,16 @@ public class BasicCompareActionProvider extends BasicActionProvider {
 	@Override
 	protected void fillSubMenu(IMenuManager subMenuManager) {
 		subMenuManager.add(compareAction);
-		// FIXME subMenuManager.add(new ActionContributionItem(mergeAutoAction));
 	}
 
 	@Override
 	public void dispose() {
 		super.dispose();
+
 		if (selectionProvider != null) {
 			if (compareAction != null) {
 				selectionProvider.removeSelectionChangedListener(compareAction);
 			}
-			// FIXME if (mergeAutoAction != null) {
-			// selectionProvider.removeSelectionChangedListener(mergeAutoAction);
-			// }
 		}
 	}
 }
