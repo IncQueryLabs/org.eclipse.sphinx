@@ -40,6 +40,12 @@ public class Messages extends NLS {
 	public static String RemoveMatchAction_label;
 	public static String RemoveMatchAction_tooltip;
 
+	public static String ScopePart_group_text;
+	public static String ScopePart_workspaceScope_text;
+	public static String ScopePart_selectedResourcesScope_text;
+	public static String ScopePart_selectedModelsScope_text;
+	public static String ScopePart_enclosingModelsScope_text;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

@@ -7,11 +7,12 @@ Bundle-Activator: org.eclipse.sphinx.emf.search.ui.internal.Activator$Implementa
 Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
+ org.eclipse.search,
+ org.eclipse.ui.views.properties.tabbed,
  org.eclipse.emf.common,
  org.eclipse.emf.common.ui,
- org.eclipse.search,
- org.eclipse.sphinx.emf;visibility:=reexport,
- org.eclipse.sphinx.platform.ui;visibility:=reexport
+ org.eclipse.emf.edit.ui,
+ org.eclipse.sphinx.emf.ui;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.sphinx.emf.search.ui,

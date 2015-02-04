@@ -53,7 +53,6 @@ public class ModelSearchTreeContentProvider extends AbstractModelSearchContentPr
 
 	@Override
 	public boolean hasChildren(Object element) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
@@ -97,11 +98,16 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.Page;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.progress.UIJob;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 @SuppressWarnings("restriction")
-public class ModelSearchResultViewPage extends Page implements ISearchResultPage {
+public class ModelSearchResultViewPage extends Page implements ISearchResultPage, ITabbedPropertySheetPageContributor, IAdaptable {
 
 	protected static final ModelSearchMatch[] EMPTY_MATCH_ARRAY = new ModelSearchMatch[0];
+
+	protected Set<IPropertySheetPage> propertySheetPages = new HashSet<IPropertySheetPage>();
 
 	private String pageId;
 
@@ -1152,6 +1158,28 @@ public class ModelSearchResultViewPage extends Page implements ISearchResultPage
 			return NewSearchUI.isQueryRunning(result.getQuery());
 		}
 		return false;
+	}
+
+	@Override
+	public Object getAdapter(Class adapter) {
+		if (IPropertySheetPage.class == adapter) {
+			return getPropertySheetPage();
+		}
+		return null;
+	}
+
+	/**
+	 * This creates a new property sheet page instance and manages it in the cache.
+	 */
+	public IPropertySheetPage getPropertySheetPage() {
+		IPropertySheetPage propertySheetPage = new TabbedPropertySheetPage(this);
+		propertySheetPages.add(propertySheetPage);
+		return propertySheetPage;
+	}
+
+	@Override
+	public String getContributorId() {
+		return viewPart.getViewSite().getId();
 	}
 
 	private class SelectionProviderAdapter implements ISelectionProvider, ISelectionChangedListener {
