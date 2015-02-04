@@ -35,7 +35,6 @@ import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelper;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelperAdapterFactory;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.blacklist.ModelIndex;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.lookupresolver.EcoreIndex;
-import org.eclipse.sphinx.emf.internal.resource.ResourceProblemMarkerService;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
@@ -380,9 +379,6 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 			// Clear lookup-based proxy resolver
 			lookupResolver.clear();
 		}
-
-		// Handle problems that may have been encountered during proxy resolution
-		ResourceProblemMarkerService.INSTANCE.addProblemMarkers(resources, progress.newChild(10));
 
 		// Perform a full garbage collection
 		ExtendedPlatform.performGarbageCollection();
