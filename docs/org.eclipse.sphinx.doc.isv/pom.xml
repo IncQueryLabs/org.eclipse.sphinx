@@ -12,7 +12,9 @@
 	<artifactId>org.eclipse.sphinx.doc.isv</artifactId>
 	<version>0.9.0-SNAPSHOT</version>
 	<packaging>eclipse-plugin</packaging>
-	
+	<properties>
+		<doc.output.folder>${project.build.directory}/javadoc/</doc.output.folder>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.sphinx.features</groupId>
@@ -30,9 +32,6 @@
 			<version>0.9.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
-	<properties>
-		<doc.output.folder>${project.build.directory}/gen-doc/</doc.output.folder>
-	</properties>
 	<build>
 		<plugins>
 			<plugin>

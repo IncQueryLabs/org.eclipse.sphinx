@@ -26,10 +26,13 @@ echo MERGE_UPDATE_SITE=$MERGE_UPDATE_SITE
 
 relengProjectPath=releng/org.eclipse.sphinx.releng.builds
 buildUpdateSitePath=$relengProjectPath/repository/target/repository
-releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+/\d+/$#\1#; print;')
+
+javadocProjectPath=docs/org.eclipse.sphinx.doc.isv
+buildJavadocSitePath=$javadocProjectPath/target/javadoc/reference/api
 
 projectUpdateSitesBasePath=sphinx/updates
 projectDownloadSitesBasePath=sphinx/downloads
+projectJavadocSiteBasePath=sphinx/javadoc
 updateSiteArchiveFileNamePrefix=sphinx-Update
 
 eclipsePackageVersion=4.4
@@ -42,7 +45,10 @@ eclipsePackageBuildId=201406061215
 buildLocation=${WORKSPACE}/../../$(echo "$BUILD_RUN" | perl -ne 's#.+/([^/]+)/(\d+)/$#\1/builds/\2#; print;')
 buildUpdateSiteLocation=$buildLocation/archive/$buildUpdateSitePath
 buildUpdateSiteURL=$BUILD_RUN/artifact/$buildUpdateSitePath
+buildJavadocSiteLocation=$buildLocation/archive/$buildJavadocSitePath
+buildJavadocSiteURL=$BUILD_RUN/artifact/$buildJavadocSitePath
 
+releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+/\d+/$#\1#; print;')
 releaseStreamName=$releaseStream.x
 release=$releaseStream.$SERVICE_RELEASE_NUMBER
 
@@ -65,18 +71,22 @@ case $BUILD_TYPE in
     I) applicableProjectUpdateSiteName=interim
        applicableProjectDownloadSiteName=integration
        applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release.$BUILD_TYPE$BUILD_ID.zip
+       applicableProjectJavadocSiteName=interim
        ;;
     M|RC) applicableProjectUpdateSiteName=interim
     	  applicableProjectDownloadSiteName=stable
     	  applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release$BUILD_TYPE$BUILD_ID.zip
+    	  applicableProjectJavadocSiteName=interim
     	  ;;
     R) applicableProjectUpdateSiteName=releases/$releaseStreamName
        applicableProjectDownloadSiteName=releases/$releaseStreamName
        applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release.zip
+       applicableProjectJavadocSiteName=releases/$releaseStreamName
        ;;
-    T) applicableProjectUpdateSiteName=test
-       applicableProjectDownloadSiteName=test
+    T) applicableProjectUpdateSiteName=test/$releaseStreamName
+       applicableProjectDownloadSiteName=test/$releaseStreamName
        applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release.$BUILD_TYPE$BUILD_ID.zip
+       applicableProjectJavadocSiteName=test/$releaseStreamName
        ;;
     *) exit 0
        ;;
@@ -86,6 +96,8 @@ applicableProjectUpdateSiteLocation="$eclipseDownloadsLocation/$applicableProjec
 applicableProjectDownloadSitePath="$projectDownloadSitesBasePath/$applicableProjectDownloadSiteName"
 applicableProjectDownloadSiteLocation="$eclipseDownloadsLocation/$applicableProjectDownloadSitePath"
 applicableLocalUpdateSiteArchiveLocation=$localDownloadSiteLocation/$applicableUpdateSiteArchiveFileName
+applicableProjectJavadocSitePath="$projectJavadocSiteBasePath/$applicableProjectJavadocSiteName"
+applicableProjectJavadocSiteLocation="$eclipseDownloadsLocation/$applicableProjectJavadocSitePath"
 
 #############################################################################################
 # Eclipse installation (required to create merged update site and set p2.mirrorsURL property)
@@ -201,3 +213,13 @@ rm -rf $applicableProjectUpdateSiteLocation
 echo "Copying $localUpdateSiteLocation/* to $applicableProjectUpdateSiteLocation"
 mkdir $applicableProjectUpdateSiteLocation
 cp -r $localUpdateSiteLocation/* $applicableProjectUpdateSiteLocation
+
+echo "------------------------------------------------------------------------"
+echo "Publishing javadoc site"
+echo "------------------------------------------------------------------------"
+
+echo "Removing $applicableProjectJavadocSiteLocation"
+rm -rf $applicableProjectJavadocSiteLocation
+echo "Copying $buildJavadocSiteLocation/* to $applicableProjectJavadocSiteLocation"
+mkdir $applicableProjectJavadocSiteLocation
+cp -r $buildJavadocSiteLocation/* $applicableProjectJavadocSiteLocation
