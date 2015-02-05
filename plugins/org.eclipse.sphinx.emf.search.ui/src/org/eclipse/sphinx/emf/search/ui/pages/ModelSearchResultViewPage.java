@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,13 +27,13 @@ import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.ui.viewer.IViewerProvider;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.util.OpenStrategy;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -44,6 +45,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -80,6 +82,8 @@ import org.eclipse.sphinx.emf.search.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.search.ui.providers.AbstractModelSearchContentProvider;
 import org.eclipse.sphinx.emf.search.ui.providers.ModelSearchLabelProvider;
 import org.eclipse.sphinx.emf.search.ui.providers.ModelSearchTreeContentProvider;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -90,11 +94,15 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.OpenAndLinkWithEditorHelper;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.part.Page;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.progress.UIJob;
@@ -877,13 +885,39 @@ public class ModelSearchResultViewPage extends Page implements ISearchResultPage
 			@Override
 			public void run() throws Exception {
 				// TODO aakar Implement this to show match in view or editor
-				MessageDialog.openInformation(getSite().getShell(), Messages.ModelSearchResultViewPage_show_match, "Not Yet Supported"); //$NON-NLS-1$
+				//MessageDialog.openInformation(getSite().getShell(), Messages.ModelSearchResultViewPage_show_match, "Not Yet Supported"); //$NON-NLS-1$
 				// ExtendedPlatformUI.showObjectsInView(objects, viewId);
-				// IRegion location = getCurrentMatchLocation(match);
-				// showMatch(match, location.getOffset(), location.getLength(), activateEditor);
+				// getViewer().setSelection(new StructuredSelection(match.getElement()), true);
+				IFile matchFile = getFile(match);
+				if (activateEditor && match != null) {
+					IEditorPart editor = getSite().getPage().getActiveEditor();
+					if (editor != null) {
+						IEditorInput input = editor.getEditorInput();
+						IFile file = ResourceUtil.getFile(input);
+						if (file != null) {
+							if (file.equals(match) && OpenStrategy.activateOnOpen()) {
+								getSite().getPage().activate(editor);
+							}
+						}
+					}
+
+					try {
+						editor = IDE.openEditor(getSite().getPage(), matchFile, OpenStrategy.activateOnOpen());
+					} catch (PartInitException ex) {
+						PlatformLogUtil.logAsWarning(Activator.getDefault(), ex);
+					}
+					if (editor != null && editor instanceof IViewerProvider) {
+						Viewer editorViewer = ((IViewerProvider) editor).getViewer();
+						editorViewer.setSelection(new StructuredSelection(match.getElement()), true);
+					}
+				}
 			}
 		};
 		SafeRunner.run(runnable);
+	}
+
+	private IFile getFile(ModelSearchMatch modelSearchMatch) {
+		return EcorePlatformUtil.getFile(modelSearchMatch.getElement());
 	}
 
 	/**
@@ -1084,6 +1118,7 @@ public class ModelSearchResultViewPage extends Page implements ISearchResultPage
 				}
 			}
 			viewPart.updateLabel();
+			viewer.refresh();
 			return Status.OK_STATUS;
 		}
 	}

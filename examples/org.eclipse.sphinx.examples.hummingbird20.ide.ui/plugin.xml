@@ -71,6 +71,15 @@ Contributors:
                         value="org\.eclipse\.sphinx\.examples\.hummingbird20\..*">
                   </test>
                </and>
+               <and>
+                  <instanceof
+                        value="org.eclipse.sphinx.emf.edit.TransientItemProvider">
+                  </instanceof>
+                  <test
+               		    property="org.eclipse.sphinx.emf.parentClassNameMatches"
+                        value="org\.eclipse\.sphinx\.examples\.hummingbird20\..*">
+                   </test>
+               </and>
             </or>
          </possibleChildren>
          <dropAssistant
