@@ -101,9 +101,6 @@
 		<module>../../tests/org.eclipse.sphinx.tests.emf.serialization.generators</module>
 		<module>../../tests/org.eclipse.sphinx.tests.emf.incquery</module>
 
-		<!-- Documentation -->
-		<module>../../docs/org.eclipse.sphinx.doc.isv</module>
-
 		<!-- Features -->
 		<module>../../features/org.eclipse.sphinx.core-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.compare-feature</module>
@@ -145,6 +142,9 @@
 		<module>../../features/org.eclipse.sphinx.sdk-feature</module>
 		<module>../../features/org.eclipse.sphinx.testutils-feature</module>
 		<module>../../features/org.eclipse.sphinx.thirdparty-feature</module>
+		
+		<!-- Documentation -->
+		<module>../../docs/org.eclipse.sphinx.doc.isv</module>
 
 		<module>./repository</module>
 	</modules>
