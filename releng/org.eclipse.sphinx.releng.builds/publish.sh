@@ -220,5 +220,5 @@ echo "------------------------------------------------------------------------"
 echo "Removing $applicableProjectJavadocSiteLocation"
 rm -rf $applicableProjectJavadocSiteLocation
 echo "Copying $buildJavadocSiteLocation/* to $applicableProjectJavadocSiteLocation"
-mkdir $applicableProjectJavadocSiteLocation
+mkdir -p $applicableProjectJavadocSiteLocation
 cp -r $buildJavadocSiteLocation/* $applicableProjectJavadocSiteLocation
