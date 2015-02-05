@@ -45,7 +45,7 @@ eclipsePackageBuildId=201406061215
 buildLocation=${WORKSPACE}/../../$(echo "$BUILD_RUN" | perl -ne 's#.+/([^/]+)/(\d+)/$#\1/builds/\2#; print;')
 buildUpdateSiteLocation=$buildLocation/archive/$buildUpdateSitePath
 buildUpdateSiteURL=$BUILD_RUN/artifact/$buildUpdateSitePath
-buildJavadocSiteLocation=$buildLocation/../../ws/$buildJavadocSitePath
+buildJavadocSiteLocation=$buildLocation/archive/$buildJavadocSitePath
 
 releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+/\d+/$#\1#; print;')
 releaseStreamName=$releaseStream.x
