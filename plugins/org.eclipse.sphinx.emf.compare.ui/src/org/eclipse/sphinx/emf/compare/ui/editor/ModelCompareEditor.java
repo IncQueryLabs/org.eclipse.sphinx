@@ -30,8 +30,8 @@ import org.eclipse.emf.edit.provider.AdapterFactoryItemDelegator;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
+import org.eclipse.sphinx.emf.editors.DefaultModelEditorInputChangeHandler;
 import org.eclipse.sphinx.emf.editors.IModelEditorInputChangeAnalyzer;
-import org.eclipse.sphinx.emf.editors.IModelEditorInputChangeHandler;
 import org.eclipse.sphinx.emf.editors.ModelEditorInputSynchronizer;
 import org.eclipse.sphinx.emf.editors.ModelEditorUndoContextManager;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
@@ -78,10 +78,14 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 
 	protected ModelEditorUndoContextManager getModelEditorUndoContextManager() {
 		if (undoContextManager == null) {
-			TransactionalEditingDomain editingDomain = getEditingDomains()[0] != null ? getEditingDomains()[0] : getEditingDomains()[1];
-			undoContextManager = new ModelEditorUndoContextManager(getSite(), this, editingDomain);
+			undoContextManager = createModelEditorUndoContextManager();
 		}
 		return undoContextManager;
+	}
+
+	protected ModelEditorUndoContextManager createModelEditorUndoContextManager() {
+		TransactionalEditingDomain editingDomain = getEditingDomains()[0] != null ? getEditingDomains()[0] : getEditingDomains()[1];
+		return new ModelEditorUndoContextManager(getSite(), this, editingDomain);
 	}
 
 	@Override
@@ -200,28 +204,24 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 	}
 
 	@Override
-	public boolean containEditorInputObject(IEditorInput editorInput, Set<EObject> removedObjects) {
-		if (removedObjects != null && editorInput instanceof ModelComparisonScopeEditorInput) {
+	public boolean containsEditorInputObject(IEditorInput editorInput, Set<EObject> objects) {
+		if (objects != null && editorInput instanceof ModelComparisonScopeEditorInput) {
 			Object leftObject = ((ModelComparisonScopeEditorInput) editorInput).getLeftObject();
 			Object rightObject = ((ModelComparisonScopeEditorInput) editorInput).getRightObject();
-			return removedObjects.contains(leftObject) || removedObjects.contains(rightObject);
+			return objects.contains(leftObject) || objects.contains(rightObject);
 		}
 		return false;
 	}
 
 	@Override
-	public boolean containEditorInputResourceURI(IEditorInput editorInput, Set<URI> resourceURIs) {
+	public boolean containsEditorInputResourceURI(IEditorInput editorInput, Set<URI> resourceURIs) {
 		if (resourceURIs != null && editorInput instanceof ModelComparisonScopeEditorInput) {
 			Set<URI> editorInputResourceURIs = new HashSet<URI>();
 			Resource leftResource = ((ModelComparisonScopeEditorInput) editorInput).getLeftResource();
-			// FIXME Resource leftResource = EcorePlatformUtil.getResource(((ModelComparisonScopeEditorInput)
-			// editorInput).getLeftObject());
 			if (leftResource != null) {
 				editorInputResourceURIs.add(leftResource.getURI());
 			}
 			Resource rightResource = ((ModelComparisonScopeEditorInput) editorInput).getRightResource();
-			// FIXME Resource rightResource = EcorePlatformUtil.getResource(((ModelComparisonScopeEditorInput)
-			// editorInput).getRightObject());
 			if (rightResource != null) {
 				editorInputResourceURIs.add(rightResource.getURI());
 			}
@@ -235,24 +235,16 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 		return false;
 	}
 
-	public class ModelCompareEditorInputChangeHandler implements IModelEditorInputChangeHandler {
-
-		public ModelCompareEditorInputChangeHandler() {
-		}
+	public class ModelCompareEditorInputChangeHandler extends DefaultModelEditorInputChangeHandler {
 
 		@Override
-		public void handleEditorInputObjectChanged(IEditorInput editorInput) {
-			// Do nothing
-		}
-
-		@Override
-		public void handleEditorInputObjectRemoved(IEditorInput editorInput) {
+		public void handleEditorInputObjectRemoved(IEditorInput editorInput, Set<EObject> removedObjects) {
 			close();
 		}
 
 		@Override
-		public void handleEditorInputResourceLoaded(IEditorInput editorInput) {
-			// Do nothing
+		public void handleEditorInputObjectMoved(IEditorInput editorInput, Set<EObject> movedObjects) {
+			close();
 		}
 
 		@Override
@@ -264,33 +256,33 @@ public class ModelCompareEditor extends CompareEditor implements IModelEditorInp
 		public void handleEditorInputResourceRemoved(IEditorInput editorInput) {
 			close();
 		}
-	}
 
-	/**
-	 * Closes the editor programmatically.
-	 */
-	protected void close() {
-		Display display = getSite().getShell().getDisplay();
-		display.asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				getSite().getPage().closeEditor(ModelCompareEditor.this, false);
+		/**
+		 * Closes the editor programmatically.
+		 */
+		protected void close() {
+			Display display = getSite().getShell().getDisplay();
+			display.asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					getSite().getPage().closeEditor(ModelCompareEditor.this, false);
+				}
+			});
+		}
+
+		/**
+		 * Updates the editor.
+		 */
+		protected void updateEditorInput(IEditorInput oldEditorInput, IEditorInput newEditorInput) {
+			Assert.isNotNull(newEditorInput);
+
+			if (!newEditorInput.equals(oldEditorInput)) {
+				// Set new editor input
+				setInputWithNotify(newEditorInput);
+
+				// Update editor part title
+				setTitleToolTip(getTitleToolTip());
 			}
-		});
-	}
-
-	/**
-	 * Updates the editor.
-	 */
-	protected void updateEditorInput(IEditorInput oldEditorInput, IEditorInput newEditorInput) {
-		Assert.isNotNull(newEditorInput);
-
-		if (!newEditorInput.equals(oldEditorInput)) {
-			// Set new editor input
-			setInputWithNotify(newEditorInput);
-
-			// Update editor part title
-			setTitleToolTip(getTitleToolTip());
 		}
 	}
 }
