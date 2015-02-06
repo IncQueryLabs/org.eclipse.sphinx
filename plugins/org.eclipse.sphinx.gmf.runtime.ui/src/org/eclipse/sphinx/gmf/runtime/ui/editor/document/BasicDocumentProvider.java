@@ -432,22 +432,20 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	}
 
 	/*
-	 * @see
-	 * org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChangeHandler#handleEditorInputObjectChanged
-	 * (org.eclipse.ui.IEditorInput)
+	 * @see org.eclipse.sphinx.emf.editors.IModelEditorInputChangeHandler#handleEditorInputObjectAdded(org.eclipse.ui.
+	 * IEditorInput, java.util.Set)
 	 */
 	@Override
-	public void handleEditorInputObjectChanged(final IEditorInput editorInput) {
+	public void handleEditorInputObjectAdded(IEditorInput editorInput, Set<EObject> addedObjects) {
 		// Do nothing
 	}
 
 	/*
-	 * @see
-	 * org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChangeHandler#handleEditorInputObjectRemoved
-	 * (org.eclipse.ui.IEditorInput)
+	 * @see org.eclipse.sphinx.emf.editors.IModelEditorInputChangeHandler#handleEditorInputObjectRemoved(org.eclipse.ui.
+	 * IEditorInput, java.util.Set)
 	 */
 	@Override
-	public void handleEditorInputObjectRemoved(final IEditorInput editorInput) {
+	public void handleEditorInputObjectRemoved(final IEditorInput editorInput, Set<EObject> removedObjects) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -457,12 +455,40 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 	}
 
 	/*
+	 * @see org.eclipse.sphinx.emf.editors.IModelEditorInputChangeHandler#handleEditorInputObjectMoved(org.eclipse.ui.
+	 * IEditorInput, java.util.Set)
+	 */
+	@Override
+	public void handleEditorInputObjectMoved(IEditorInput editorInput, Set<EObject> movedObjects) {
+		// Do nothing
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.editors.IModelEditorInputChangeHandler#handleEditorInputObjectChanged(org.eclipse.ui.
+	 * IEditorInput, java.util.Set)
+	 */
+	@Override
+	public void handleEditorInputObjectChanged(IEditorInput editorInput, Set<EObject> changedObjects) {
+		// Do nothing
+	}
+
+	/*
 	 * @see
 	 * org.eclipse.sphinx.gmf.runtime.ui.internal.editor.IModelEditorInputChangeHandler#handleEditorInputResourceLoaded
 	 * (org.eclipse.ui.IEditorInput)
 	 */
 	@Override
 	public void handleEditorInputResourceLoaded(final IEditorInput editorInput) {
+		// Do nothing
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.sphinx.emf.editors.IModelEditorInputChangeHandler#handleEditorInputResourceUnloaded(org.eclipse.ui
+	 * .IEditorInput)
+	 */
+	@Override
+	public void handleEditorInputResourceUnloaded(IEditorInput editorInput) {
 		// Do nothing
 	}
 
@@ -662,7 +688,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		 * (org.eclipse.ui.IEditorInput, java.util.Set)
 		 */
 		@Override
-		public boolean containEditorInputObject(IEditorInput editorInput, Set<EObject> removedObjects) {
+		public boolean containsEditorInputObject(IEditorInput editorInput, Set<EObject> removedObjects) {
 			return removedObjects.contains(diagramDocument.getDiagram());
 		}
 
@@ -672,7 +698,7 @@ public class BasicDocumentProvider extends AbstractDocumentProvider implements I
 		 * (org.eclipse.ui.IEditorInput, java.util.Set)
 		 */
 		@Override
-		public boolean containEditorInputResourceURI(IEditorInput editorInput, Set<URI> resourceURIs) {
+		public boolean containsEditorInputResourceURI(IEditorInput editorInput, Set<URI> resourceURIs) {
 			for (URI resourceURI : resourceURIs) {
 				if (resourceURI.equals(diagramResourceURI) || resourceURI.equals(domainModelResourceURI)) {
 					return true;
