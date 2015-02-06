@@ -8,7 +8,8 @@ Bundle-Vendor: %providerName
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.ui.ide;visibility:=reexport,
  org.eclipse.ui.views.properties.tabbed;visibility:=reexport,
- org.eclipse.sphinx.emf.workspace.ui;visibility:=reexport
+ org.eclipse.sphinx.emf.workspace.ui;visibility:=reexport,
+ org.eclipse.sphinx.emf.editors;visibility:=reexport
 Export-Package: org.eclipse.sphinx.emf.editors.forms,
  org.eclipse.sphinx.emf.editors.forms.internal;x-internal:=true,
  org.eclipse.sphinx.emf.editors.forms.internal.messages;x-internal:=true,
