@@ -14,14 +14,13 @@
  */
 package org.eclipse.sphinx.emf.editors;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.commands.operations.IOperationHistory;
-import org.eclipse.core.commands.operations.IOperationHistoryListener;
-import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.commands.operations.OperationHistoryFactory;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.CommandStack;
@@ -38,7 +37,6 @@ import org.eclipse.emf.transaction.ResourceSetListener;
 import org.eclipse.emf.transaction.ResourceSetListenerImpl;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.workspace.IWorkspaceCommandStack;
-import org.eclipse.emf.workspace.ResourceUndoContext;
 import org.eclipse.ui.IEditorInput;
 
 public class ModelEditorInputSynchronizer implements IDisposable {
@@ -46,8 +44,7 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 	private ResourceSetListener resourceLoadedListener;
 	private ResourceSetListener resourceMovedListener;
 	private ResourceSetListener resourceRemovedListener;
-	private IOperationHistoryListener objectChangedListener;
-	private ResourceSetListener objectRemovedListener;
+	private ResourceSetListener objectChangedListener;
 
 	protected IEditorInput editorInput;
 	protected TransactionalEditingDomain editingDomain;
@@ -88,20 +85,14 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 		// Create and register listener that detects changed objects
 		objectChangedListener = createObjectChangedListener();
 		Assert.isNotNull(objectChangedListener);
-		getOperationHistory().addOperationHistoryListener(objectChangedListener);
-
-		// Create and register listener that detects removed objects
-		objectRemovedListener = createObjectRemovedListener();
-		Assert.isNotNull(objectRemovedListener);
-		editingDomain.addResourceSetListener(objectRemovedListener);
+		editingDomain.addResourceSetListener(objectChangedListener);
 	}
 
 	protected void uninstallModelChangeListeners() {
 		editingDomain.removeResourceSetListener(resourceLoadedListener);
 		editingDomain.removeResourceSetListener(resourceMovedListener);
 		editingDomain.removeResourceSetListener(resourceRemovedListener);
-		getOperationHistory().removeOperationHistoryListener(objectChangedListener);
-		editingDomain.removeResourceSetListener(objectRemovedListener);
+		editingDomain.removeResourceSetListener(objectChangedListener);
 	}
 
 	protected ResourceSetListener createResourceLoadedListener() {
@@ -116,13 +107,15 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 						Notification notification = (Notification) object;
 						if (notification.getNewBooleanValue()) {
 							Resource loadedResource = (Resource) notification.getNotifier();
-							// Has loaded resource not been unloaded again subsequently?
-							if (loadedResource.isLoaded()) {
-								// Is loaded resource the resource containing editor input object?
-								if (editorInputChangeAnalyzer.containEditorInputResourceURI(editorInput,
-										Collections.singleton(loadedResource.getURI()))) {
+							// Is loaded resource containing editor input object?
+							if (editorInputChangeAnalyzer.containsEditorInputResourceURI(editorInput, Collections.singleton(loadedResource.getURI()))) {
+								// Has loaded resource not been unloaded again subsequently?
+								if (loadedResource.isLoaded()) {
 									// Handle (re-)loaded editor input resource
 									editorInputChangeHandler.handleEditorInputResourceLoaded(editorInput);
+									break;
+								} else {
+									editorInputChangeHandler.handleEditorInputResourceUnloaded(editorInput);
 									break;
 								}
 							}
@@ -151,7 +144,7 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 						if (notification.getOldValue() instanceof URI) {
 							URI oldResourceURI = (URI) notification.getOldValue();
 							if (oldResourceURI != null) {
-								if (editorInputChangeAnalyzer.containEditorInputResourceURI(editorInput, Collections.singleton(oldResourceURI))) {
+								if (editorInputChangeAnalyzer.containsEditorInputResourceURI(editorInput, Collections.singleton(oldResourceURI))) {
 									// Handle moved editor input resource
 									editorInputChangeHandler.handleEditorInputResourceMoved(editorInput, oldResourceURI,
 											(URI) notification.getNewValue());
@@ -171,32 +164,64 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 	}
 
 	protected ResourceSetListener createResourceRemovedListener() {
-		return new ResourceSetListenerImpl(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResourceSet(),
-				ResourceSet.RESOURCE_SET__RESOURCES).and(
-				NotificationFilter.createEventTypeFilter(Notification.REMOVE).or(NotificationFilter.createEventTypeFilter(Notification.REMOVE_MANY)))) {
+		return new ResourceSetListenerImpl(NotificationFilter
+				.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__IS_LOADED).or(
+						NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResourceSet(), ResourceSet.RESOURCE_SET__RESOURCES))) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
-				// Retrieve removed resources from notification
+				// Retrieve removed and added resources from notification
 				Set<Resource> removedResources = new HashSet<Resource>();
+				Set<Resource> addedResources = new HashSet<Resource>();
+
+				// Analyze notifications for changed resources; record only added and removed resources which have not
+				// got removed/added again later on
 				List<?> notifications = event.getNotifications();
 				for (Object object : notifications) {
 					if (object instanceof Notification) {
 						Notification notification = (Notification) object;
-						Object oldValue = notification.getOldValue();
-						if (oldValue instanceof Resource) {
-							Resource oldResource = (Resource) oldValue;
-							// Has old resource not been added back subsequently?
-							if (oldResource.getResourceSet() == null) {
-								removedResources.add(oldResource);
-							}
-						}
-						if (oldValue instanceof List<?>) {
-							@SuppressWarnings("unchecked")
-							List<Resource> oldResources = (List<Resource>) oldValue;
-							for (Resource oldResource : oldResources) {
-								// Has old resource not been added back subsequently?
-								if (oldResource.getResourceSet() == null) {
-									removedResources.add(oldResource);
+						Object notifier = notification.getNotifier();
+						if (notifier instanceof ResourceSet) {
+							if (notification.getEventType() == Notification.ADD || notification.getEventType() == Notification.ADD_MANY) {
+								List<Resource> newResources = new ArrayList<Resource>();
+								Object newValue = notification.getNewValue();
+								if (newValue instanceof List<?>) {
+									@SuppressWarnings("unchecked")
+									List<Resource> newResourcesValue = (List<Resource>) newValue;
+									newResources.addAll(newResourcesValue);
+								} else if (newValue instanceof Resource) {
+									newResources.add((Resource) newValue);
+								}
+
+								for (Resource newResource : newResources) {
+									Resource removedResource = findEquivalentResource(removedResources, newResource);
+									// If the newResource has been removed, then remove the equivalent resource from
+									// removedResource, otherwise add it to addedResources
+									if (removedResource != null) {
+										removedResources.remove(removedResource);
+									} else {
+										addedResources.add(newResource);
+									}
+								}
+							} else if (notification.getEventType() == Notification.REMOVE || notification.getEventType() == Notification.REMOVE_MANY) {
+								List<Resource> oldResources = new ArrayList<Resource>();
+								Object oldValue = notification.getOldValue();
+								if (oldValue instanceof List<?>) {
+									@SuppressWarnings("unchecked")
+									List<Resource> oldResourcesValue = (List<Resource>) oldValue;
+									oldResources.addAll(oldResourcesValue);
+								} else if (oldValue instanceof Resource) {
+									oldResources.add((Resource) oldValue);
+								}
+
+								for (Resource oldResource : oldResources) {
+									Resource oldAddedResource = findEquivalentResource(addedResources, oldResource);
+									// If the oldResource has been added, then remove the equivalent resource from
+									// addedResources, otherwise add it to removedResources
+									if (oldAddedResource != null) {
+										addedResources.remove(oldAddedResource);
+									} else {
+										removedResources.add(oldResource);
+									}
 								}
 							}
 						}
@@ -208,12 +233,27 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 				for (Resource removedResource : removedResources) {
 					removedResourceURIs.add(removedResource.getURI());
 				}
-				if (editorInputChangeAnalyzer.containEditorInputResourceURI(editorInput, removedResourceURIs)) {
+				if (editorInputChangeAnalyzer.containsEditorInputResourceURI(editorInput, removedResourceURIs)) {
 					// Handle removed editor input resource
 					editorInputChangeHandler.handleEditorInputResourceRemoved(editorInput);
 				}
 			}
 
+			/**
+			 * Returns a resource from the given set of resources that is "equal to" the indicated one. The "equals"
+			 * method detects an URI equivalence relation on non-null resources: if the resource URI equals to the URI
+			 * of the specified resource, then the resource is returned.
+			 */
+			protected Resource findEquivalentResource(Set<Resource> resources, Resource resource) {
+				URI uri = resource.getURI();
+				for (Resource equivalentResourceCandidate : resources) {
+					if (equivalentResourceCandidate.getURI().equals(uri)) {
+						return equivalentResourceCandidate;
+					}
+				}
+				return null;
+			}
+
 			@Override
 			public boolean isPostcommitOnly() {
 				return true;
@@ -221,68 +261,92 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 		};
 	}
 
-	protected ResourceSetListener createObjectRemovedListener() {
-		return new ResourceSetListenerImpl(NotificationFilter.createEventTypeFilter(Notification.REMOVE).or(
-				NotificationFilter.createEventTypeFilter(Notification.REMOVE_MANY))) {
+	protected ResourceSetListener createObjectChangedListener() {
+		return new ResourceSetListenerImpl(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__CONTENTS)
+				.or(NotificationFilter.createNotifierTypeFilter(EObject.class))) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
-				// Retrieve removed objects from notification
+				Set<EObject> addedObjects = new HashSet<EObject>();
 				Set<EObject> removedObjects = new HashSet<EObject>();
-				List<?> notifications = event.getNotifications();
-				for (Object object : notifications) {
-					if (object instanceof Notification) {
-						Notification notification = (Notification) object;
-						Object oldValue = notification.getOldValue();
-						if (oldValue instanceof EObject) {
-							EObject oldObject = (EObject) oldValue;
-							// Has old object not been added back subsequently?
-							if (oldObject.eResource() == null) {
-								removedObjects.add(oldObject);
+				Set<EObject> movedObjects = new HashSet<EObject>();
+				Set<EObject> changedObjects = new HashSet<EObject>();
+
+				// Analyze notifications for changed objects; record only set/added and unset/removed objects which have
+				// not got unset/removed or set/added again later on
+				for (Notification notification : event.getNotifications()) {
+					if (notification.getEventType() == Notification.SET || notification.getEventType() == Notification.ADD
+							|| notification.getEventType() == Notification.ADD_MANY) {
+						List<EObject> newValues = new ArrayList<EObject>();
+						Object newValue = notification.getNewValue();
+						if (newValue instanceof List<?>) {
+							@SuppressWarnings("unchecked")
+							List<EObject> newValueList = (List<EObject>) newValue;
+							newValues.addAll(newValueList);
+						} else if (newValue instanceof EObject) {
+							newValues.add((EObject) newValue);
+						}
+
+						for (EObject value : newValues) {
+							changedObjects.add(value);
+							if (removedObjects.contains(value)) {
+								movedObjects.add(value);
+								removedObjects.remove(value);
+							} else {
+								addedObjects.add(value);
 							}
 						}
+					} else if (notification.getEventType() == Notification.UNSET || notification.getEventType() == Notification.REMOVE
+							|| notification.getEventType() == Notification.REMOVE_MANY) {
+						List<EObject> oldValues = new ArrayList<EObject>();
+						Object oldValue = notification.getOldValue();
 						if (oldValue instanceof List<?>) {
-							for (Object oldValueItem : (List<?>) oldValue) {
-								if (oldValueItem instanceof EObject) {
-									EObject oldObject = (EObject) oldValueItem;
-									// Has old object not been added back subsequently?
-									if (oldObject.eResource() == null) {
-										removedObjects.add(oldObject);
-									}
-								}
+							@SuppressWarnings("unchecked")
+							List<EObject> oldValueList = (List<EObject>) oldValue;
+							oldValues.addAll(oldValueList);
+						} else if (oldValue instanceof EObject) {
+							oldValues.add((EObject) oldValue);
+						}
+
+						for (EObject value : oldValues) {
+							changedObjects.add(value);
+							if (addedObjects.contains(value)) {
+								movedObjects.add(value);
+								addedObjects.remove(value);
+							} else {
+								removedObjects.add(value);
 							}
 						}
 					}
+				}
+
+				// Was or did added object contain the editor input object?
+				if (editorInputChangeAnalyzer.containsEditorInputObject(editorInput, addedObjects)) {
+					// Handle added editor input object
+					editorInputChangeHandler.handleEditorInputObjectAdded(editorInput, addedObjects);
 				}
 
 				// Was or did removed object contain the editor input object?
-				if (editorInputChangeAnalyzer.containEditorInputObject(editorInput, removedObjects)) {
+				if (editorInputChangeAnalyzer.containsEditorInputObject(editorInput, removedObjects)) {
 					// Handle removed editor input object
-					editorInputChangeHandler.handleEditorInputObjectRemoved(editorInput);
+					editorInputChangeHandler.handleEditorInputObjectRemoved(editorInput, removedObjects);
+				}
+
+				// Was or did moved object contain the editor input object?
+				if (editorInputChangeAnalyzer.containsEditorInputObject(editorInput, movedObjects)) {
+					// Handle moved editor input object
+					editorInputChangeHandler.handleEditorInputObjectMoved(editorInput, movedObjects);
+				}
+
+				// Was or did changed object contain the editor input object?
+				if (editorInputChangeAnalyzer.containsEditorInputObject(editorInput, changedObjects)) {
+					// Handle changed editor input object
+					editorInputChangeHandler.handleEditorInputObjectChanged(editorInput, changedObjects);
 				}
 			}
 
 			@Override
 			public boolean isPostcommitOnly() {
 				return true;
-			}
-		};
-	}
-
-	protected IOperationHistoryListener createObjectChangedListener() {
-		return new IOperationHistoryListener() {
-			@Override
-			public void historyNotification(final OperationHistoryEvent event) {
-				if (event.getEventType() == OperationHistoryEvent.DONE || event.getEventType() == OperationHistoryEvent.UNDONE
-						|| event.getEventType() == OperationHistoryEvent.REDONE) {
-					Set<Resource> affectedResources = ResourceUndoContext.getAffectedResources(event.getOperation());
-					Set<URI> affectedResourceURIs = new HashSet<URI>(affectedResources.size());
-					for (Resource affectedResource : affectedResources) {
-						affectedResourceURIs.add(affectedResource.getURI());
-					}
-					if (editorInputChangeAnalyzer.containEditorInputResourceURI(editorInput, affectedResourceURIs)) {
-						editorInputChangeHandler.handleEditorInputObjectChanged(editorInput);
-					}
-				}
 			}
 		};
 	}

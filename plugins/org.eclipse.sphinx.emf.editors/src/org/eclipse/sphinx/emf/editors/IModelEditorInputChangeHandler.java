@@ -14,16 +14,25 @@
  */
 package org.eclipse.sphinx.emf.editors;
 
+import java.util.Set;
+
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.ui.IEditorInput;
 
 public interface IModelEditorInputChangeHandler {
 
-	void handleEditorInputObjectChanged(IEditorInput editorInput);
+	void handleEditorInputObjectAdded(IEditorInput editorInput, Set<EObject> addedObjects);
 
-	void handleEditorInputObjectRemoved(IEditorInput editorInput);
+	void handleEditorInputObjectRemoved(IEditorInput editorInput, Set<EObject> removedObjects);
+
+	void handleEditorInputObjectChanged(IEditorInput editorInput, Set<EObject> changedObjects);
+
+	void handleEditorInputObjectMoved(IEditorInput editorInput, Set<EObject> movedObjects);
 
 	void handleEditorInputResourceLoaded(IEditorInput editorInput);
+
+	void handleEditorInputResourceUnloaded(IEditorInput editorInput);
 
 	void handleEditorInputResourceMoved(IEditorInput editorInput, URI oldURI, URI newURI);
 
