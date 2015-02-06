@@ -49,7 +49,6 @@ import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.ui.viewer.IViewerProvider;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -498,44 +497,17 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 	 */
 	@Override
 	public boolean show(ShowInContext context) {
-		// Check if the show in context's input transports problem markers and reveal and selected underlying model
-		// objects if there are any such
+		// Check if the show in context's input transports a selection
 		Object input = context.getInput();
 		if (input instanceof IStructuredSelection) {
-			// Retrieve model objects behind problem markers
-			List<Object> objects = new ArrayList<Object>();
-			for (Object selected : ((IStructuredSelection) input).toList()) {
-				try {
-					if (selected instanceof IMarker) {
-						IMarker marker = (IMarker) selected;
-						if (marker.isSubtypeOf(EValidator.MARKER)) {
-							TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(marker.getResource());
-							if (editingDomain != null) {
-								String uriAttribute = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
-								if (uriAttribute != null) {
-									EObject object = EcorePlatformUtil.getEObject(editingDomain, URI.createURI(uriAttribute, true));
-									if (object != null) {
-										objects.add(object);
-									}
-								}
-							}
-						}
-					}
-				} catch (Exception ex) {
-					// Ignore exception, just continue with next marker
-				}
-			}
-
-			// Reveal and select model objects addressed by problem markers
-			if (objects.size() > 0) {
-				try {
-					StructuredSelection selection = new StructuredSelection(objects);
-					selectReveal(selection);
-					return true;
-				} catch (Exception ex) {
-					// Ignore exception, just return false
-					return false;
-				}
+			// Reveal and select model objects
+			try {
+				StructuredSelection selection = (StructuredSelection) input;
+				selectReveal(selection);
+				return true;
+			} catch (Exception ex) {
+				// Ignore exception, just return false
+				return false;
 			}
 		}
 
