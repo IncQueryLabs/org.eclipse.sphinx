@@ -28,6 +28,7 @@ import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.metamodel.services.IMetaModelService;
+import org.eclipse.sphinx.platform.util.ExtensionClassDescriptor;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public class ServiceClassDescriptor extends ExtensionClassDescriptor<IMetaModelService> {
@@ -49,11 +50,6 @@ public class ServiceClassDescriptor extends ExtensionClassDescriptor<IMetaModelS
 		Assert.isNotNull(typeName, Messages.error_missingMetaModelServiceType);
 
 		initMetaModelDescIdPatterns(configurationElement);
-	}
-
-	public ServiceClassDescriptor(Class<IMetaModelService> serviceType, Class<? extends IMetaModelService> serviceClass) {
-		super(serviceClass);
-		this.serviceType = serviceType;
 	}
 
 	private void initMetaModelDescIdPatterns(IConfigurationElement configurationElement) {
@@ -80,7 +76,7 @@ public class ServiceClassDescriptor extends ExtensionClassDescriptor<IMetaModelS
 	public Class<IMetaModelService> getServiceType() {
 		if (serviceType == null) {
 			try {
-				serviceType = (Class<IMetaModelService>) Platform.getBundle(getContributorName()).loadClass(typeName);
+				serviceType = (Class<IMetaModelService>) Platform.getBundle(getContributorPluginId()).loadClass(typeName);
 			} catch (Exception ex) {
 				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			}

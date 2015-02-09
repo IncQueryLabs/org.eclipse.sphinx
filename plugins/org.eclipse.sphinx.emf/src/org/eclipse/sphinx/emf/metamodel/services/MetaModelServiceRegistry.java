@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.ILog;
@@ -40,21 +41,23 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
  */
 public class MetaModelServiceRegistry {
 
+	private static final String EXTP_META_MODEL_SERVICES = Activator.INSTANCE.getSymbolicName() + ".metaModelServices"; //$NON-NLS-1$
+	private static final String NODE_SERVICE = "service"; //$NON-NLS-1$
+
 	/** The singleton */
 	static final MetaModelServiceRegistry INSTANCE = new MetaModelServiceRegistry(Platform.getExtensionRegistry(), PlatformLogUtil.getLog(Activator
 			.getPlugin()));
 
-	private Map<IMetaModelDescriptor, Map<Class<IMetaModelService>, ServiceClassDescriptor>> mmServices;
+	private Map<IMetaModelDescriptor, Map<Class<IMetaModelService>, ServiceClassDescriptor>> mmServices = null;
 
 	private IExtensionRegistry extensionRegistry;
 
 	private ILog logger;
 
-	private final static String MMS_EXTENSION_ID = Activator.INSTANCE.getSymbolicName() + ".metaModelServices"; //$NON-NLS-1$
-
-	private final static String NODE_SERVICE = "service"; //$NON-NLS-1$
-
 	private MetaModelServiceRegistry(IExtensionRegistry extensionRegistry, ILog logger) {
+		Assert.isNotNull(extensionRegistry);
+		Assert.isNotNull(logger);
+
 		this.extensionRegistry = extensionRegistry;
 		this.logger = logger;
 	}
@@ -75,50 +78,55 @@ public class MetaModelServiceRegistry {
 		if (mmServices == null) {
 			mmServices = new HashMap<IMetaModelDescriptor, Map<Class<IMetaModelService>, ServiceClassDescriptor>>();
 
-			// All configuration elements from all meta-model service extensions.
-			IConfigurationElement[] mmServiceConfigurationElements = extensionRegistry.getConfigurationElementsFor(MMS_EXTENSION_ID);
-
 			// Create a temporary map
 			Map<String, ServiceClassDescriptor> mmServiceIdToMMServiceClassDescriptorMap = new HashMap<String, ServiceClassDescriptor>();
 
-			// First iteration to detect duplicated service id and initialize the temporary map
-			for (IConfigurationElement mmServiceCfgElement : mmServiceConfigurationElements) {
-
-				if (!mmServiceCfgElement.getName().equals(NODE_SERVICE)) {
-					continue;
+			// First iteration to detect duplicated metamodel services and initialize the temporary map
+			for (IConfigurationElement mmServiceConfigurationElement : extensionRegistry.getConfigurationElementsFor(EXTP_META_MODEL_SERVICES)) {
+				try {
+					if (NODE_SERVICE.equals(mmServiceConfigurationElement.getName())) {
+						ServiceClassDescriptor mmServiceClassDescriptor = new ServiceClassDescriptor(mmServiceConfigurationElement);
+						String mmServiceId = mmServiceClassDescriptor.getId();
+						if (mmServiceIdToMMServiceClassDescriptorMap.containsKey(mmServiceId)) {
+							logWarning(Messages.warning_serviceIdNotUnique, mmServiceId);
+							continue;
+						}
+						mmServiceIdToMMServiceClassDescriptorMap.put(mmServiceId, mmServiceClassDescriptor);
+					}
+				} catch (Exception ex) {
+					logError(ex);
 				}
-				ServiceClassDescriptor serviceClassDescriptor = new ServiceClassDescriptor(mmServiceCfgElement);
-				String mmServiceId = serviceClassDescriptor.getId();
-				if (mmServiceIdToMMServiceClassDescriptorMap.containsKey(mmServiceId)) {
-					logWarning(Messages.warning_serviceIdNotUnique, mmServiceId);
-					continue;
-				}
-				mmServiceIdToMMServiceClassDescriptorMap.put(mmServiceId, serviceClassDescriptor);
 			}
 
-			// Second iteration to add services
+			// Second iteration to register metamodel services
 			for (ServiceClassDescriptor mmServiceClassDescriptor : mmServiceIdToMMServiceClassDescriptorMap.values()) {
-				String override = mmServiceClassDescriptor.getOverride();
-				if (override != null && !mmServiceIdToMMServiceClassDescriptorMap.containsKey(override)) {
-					logWarning(Messages.warning_noServiceToOverride, mmServiceClassDescriptor.getId(), override);
-					continue;
-				}
-				List<IMetaModelDescriptor> mmDescriptors = mmServiceClassDescriptor.getMetaModelDescriptors();
-				Set<String> unknownMMDescriptorIdPatterns = mmServiceClassDescriptor.getUnknownMetaModelDescIdPatterns();
-				// No descriptor, log warning
-				if (mmDescriptors.isEmpty() && unknownMMDescriptorIdPatterns.isEmpty()) {
-					logWarning(Messages.error_missingMetaModelDescriptor, mmServiceClassDescriptor.getContributorName());
-					continue;
-				}
-				if (!unknownMMDescriptorIdPatterns.isEmpty()) {
-					logWarning(Messages.error_unknownMetaModel, mmServiceClassDescriptor.getContributorName(), MMS_EXTENSION_ID,
-							unknownMMDescriptorIdPatterns);
-				}
-				// Add Services
-				for (IMetaModelDescriptor mmDescriptor : mmDescriptors) {
-					addService(mmDescriptor, mmServiceClassDescriptor);
+				try {
+					String override = mmServiceClassDescriptor.getOverride();
+					if (override != null && !mmServiceIdToMMServiceClassDescriptorMap.containsKey(override)) {
+						logWarning(Messages.warning_noServiceToOverride, mmServiceClassDescriptor.getId(), override);
+						continue;
+					}
+					List<IMetaModelDescriptor> mmDescriptors = mmServiceClassDescriptor.getMetaModelDescriptors();
+					Set<String> unknownMMDescriptorIdPatterns = mmServiceClassDescriptor.getUnknownMetaModelDescIdPatterns();
+					// No descriptor, log warning
+					if (mmDescriptors.isEmpty() && unknownMMDescriptorIdPatterns.isEmpty()) {
+						logWarning(Messages.error_missingMetaModelDescriptor, mmServiceClassDescriptor.getContributorPluginId());
+						continue;
+					}
+					if (!unknownMMDescriptorIdPatterns.isEmpty()) {
+						logWarning(Messages.error_unknownMetaModel, mmServiceClassDescriptor.getContributorPluginId(), EXTP_META_MODEL_SERVICES,
+								unknownMMDescriptorIdPatterns);
+					}
+					// Add Services
+					for (IMetaModelDescriptor mmDescriptor : mmDescriptors) {
+						addService(mmDescriptor, mmServiceClassDescriptor);
+					}
+				} catch (Exception ex) {
+					logError(ex);
 				}
 			}
+
+			// Clear temporary map
 			mmServiceIdToMMServiceClassDescriptorMap.clear();
 		}
 	}
