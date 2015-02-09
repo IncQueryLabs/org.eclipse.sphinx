@@ -7,10 +7,10 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     See4sys - added support for problem markers on model objects (rather than 
- *               only on workspace resources). Unfortunately, there was no other 
- *               choice than copying the whole code from 
- *               org.eclipse.ui.views.markers.internal for that purpose because 
+ *     See4sys - added support for problem markers on model objects (rather than
+ *               only on workspace resources). Unfortunately, there was no other
+ *               choice than copying the whole code from
+ *               org.eclipse.ui.views.markers.internal for that purpose because
  *               many of the relevant classes, methods, and fields are private or
  *               package private.
  *******************************************************************************/
@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.resources.IFile;
@@ -45,9 +46,11 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.help.HelpSystem;
 import org.eclipse.help.IContext;
 import org.eclipse.help.IContextProvider;
@@ -69,6 +72,8 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.validation.ui.Activator;
 import org.eclipse.sphinx.emf.validation.ui.util.Messages;
 import org.eclipse.sphinx.emf.validation.ui.views.MarkerAdapter.MarkerCategory;
@@ -308,7 +313,7 @@ public abstract class MarkerView extends TableView {
 
 		/**
 		 * Add the category to the list of expanded categories.
-		 * 
+		 *
 		 * @param category
 		 */
 		public void addExpandedCategory(MarkerCategory category) {
@@ -318,7 +323,7 @@ public abstract class MarkerView extends TableView {
 
 		/**
 		 * Remove the category from the list of expanded ones.
-		 * 
+		 *
 		 * @param category
 		 */
 		public void removeExpandedCategory(MarkerCategory category) {
@@ -337,7 +342,7 @@ public abstract class MarkerView extends TableView {
 
 		/**
 		 * Preserve the selection for reselection after the next update.
-		 * 
+		 *
 		 * @param selection
 		 */
 		public void saveSelection(ISelection selection) {
@@ -407,7 +412,7 @@ public abstract class MarkerView extends TableView {
 
 		/**
 		 * Returns whether or not the given even contains marker deltas for this view.
-		 * 
+		 *
 		 * @param event
 		 *            the resource change event
 		 * @return <code>true</code> if the event contains at least one relevant marker delta
@@ -448,7 +453,7 @@ public abstract class MarkerView extends TableView {
 
 		/**
 		 * Return the currently selected concrete marker or <code>null</code> if there isn't one.
-		 * 
+		 *
 		 * @return ConcreteMarker
 		 */
 		private ConcreteMarker getSelectedConcreteMarker() {
@@ -543,7 +548,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Get the current markers for the receiver.
-	 * 
+	 *
 	 * @return MarkerList
 	 */
 	public MarkerList getCurrentMarkers() {
@@ -552,7 +557,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Get the marker adapter for the receiver.
-	 * 
+	 *
 	 * @return MarkerAdapter
 	 */
 	protected MarkerAdapter getMarkerAdapter() {
@@ -561,7 +566,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Update for the change in the contents.
-	 * 
+	 *
 	 * @param monitor
 	 */
 	public void updateForContentsRefresh(IProgressMonitor monitor) {
@@ -634,7 +639,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Write the filter settings to the memento.
-	 * 
+	 *
 	 * @param memento
 	 */
 	protected void writeFiltersSettings(XMLMemento memento) {
@@ -647,14 +652,14 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Get the name of the filters preference for instances of the receiver.
-	 * 
+	 *
 	 * @return String
 	 */
 	abstract String getFiltersPreferenceName();
 
 	/**
 	 * Restore the filters from the memento.
-	 * 
+	 *
 	 * @param memento
 	 */
 	void restoreFilters(IMemento memento) {
@@ -700,7 +705,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Create a filter called name.
-	 * 
+	 *
 	 * @param name
 	 * @return MarkerFilter
 	 */
@@ -708,7 +713,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Return the memento tag for the receiver.
-	 * 
+	 *
 	 * @return String
 	 */
 	protected abstract String getSectionTag();
@@ -760,26 +765,46 @@ public abstract class MarkerView extends TableView {
 			return new IShowInSource() {
 				@Override
 				public ShowInContext getShowInContext() {
-					ISelection selection = getViewer().getSelection();
-					if (!(selection instanceof IStructuredSelection)) {
-						return null;
-					}
-					IStructuredSelection structured = (IStructuredSelection) selection;
-					Iterator markerIterator = structured.iterator();
-					List newSelection = new ArrayList();
-					while (markerIterator.hasNext()) {
-						Object obj = markerIterator.next();
-						if (obj instanceof ConcreteMarker) {
-							ConcreteMarker element = (ConcreteMarker) obj;
-							newSelection.add(element.getResource());
-						}
-					}
-					return new ShowInContext(getViewer().getInput(), new StructuredSelection(newSelection));
+					IMarker[] selectedMarkers = getSelectedMarkers();
+					return new ShowInContext(new StructuredSelection(retrieveModelObjects(selectedMarkers)), new StructuredSelection(
+							retrieveResources(selectedMarkers)));
 				}
 
 			};
 		}
 		return super.getAdapter(adaptable);
+	}
+
+	private IResource[] retrieveResources(IMarker[] markers) {
+		Set<IResource> resources = new HashSet<IResource>();
+		for (IMarker marker : markers) {
+			resources.add(marker.getResource());
+		}
+		return resources.toArray(new IResource[resources.size()]);
+	}
+
+	private Object[] retrieveModelObjects(IMarker[] markers) {
+		// Retrieve model objects behind problem markers
+		Set<Object> objects = new HashSet<Object>();
+		for (IMarker marker : markers) {
+			try {
+				if (marker.isSubtypeOf(EValidator.MARKER)) {
+					TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(marker.getResource());
+					if (editingDomain != null) {
+						String uriAttribute = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
+						if (uriAttribute != null) {
+							EObject object = EcorePlatformUtil.getEObject(editingDomain, URI.createURI(uriAttribute, true));
+							if (object != null) {
+								objects.add(object);
+							}
+						}
+					}
+				}
+			} catch (Exception ex) {
+				// Ignore exception, just continue with next marker
+			}
+		}
+		return objects.toArray();
 	}
 
 	/*
@@ -881,7 +906,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Open a dialog to set the preferences.
-	 * 
+	 *
 	 * @param markerEnablementPreferenceName
 	 * @param markerLimitPreferenceName
 	 */
@@ -897,7 +922,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Get the name of the marker enablement preference.
-	 * 
+	 *
 	 * @return String
 	 */
 	abstract String getMarkerLimitPreferenceName();
@@ -979,18 +1004,18 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Get the array of selected markers.
-	 * 
+	 *
 	 * @return IMarker[]
 	 */
 	private IMarker[] getSelectedMarkers() {
 		Object[] selection = ((IStructuredSelection) getViewer().getSelection()).toArray();
-		ArrayList markers = new ArrayList();
+		List<IMarker> markers = new ArrayList<IMarker>();
 		for (Object element : selection) {
 			if (element instanceof ConcreteMarker) {
 				markers.add(((ConcreteMarker) element).getMarker());
 			}
 		}
-		return (IMarker[]) markers.toArray(new IMarker[markers.size()]);
+		return markers.toArray(new IMarker[markers.size()]);
 	}
 
 	/*
@@ -1021,7 +1046,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Return whether or not any of the types in the receiver can be editable.
-	 * 
+	 *
 	 * @return <code>true</code> if it is possible to have an editable marker in this view.
 	 */
 	boolean canBeEditable() {
@@ -1030,14 +1055,14 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Fill the context menu for the receiver.
-	 * 
+	 *
 	 * @param manager
 	 */
 	abstract void fillContextMenuAdditions(IMenuManager manager);
 
 	/**
 	 * Get the filters for the receiver.
-	 * 
+	 *
 	 * @return MarkerFilter[]
 	 */
 	protected final MarkerFilter[] getUserFilters() {
@@ -1149,7 +1174,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Update the focus resources of the filters.
-	 * 
+	 *
 	 * @param elements
 	 */
 	protected final void updateFilterSelection(Object[] elements) {
@@ -1186,7 +1211,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Add the resources for the mapping to resources.
-	 * 
+	 *
 	 * @param resources
 	 * @param mapping
 	 */
@@ -1210,7 +1235,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Update the focus markers for the supplied elements.
-	 * 
+	 *
 	 * @param elements
 	 */
 	protected void updateFocusMarkers(Object[] elements) {
@@ -1312,7 +1337,7 @@ public abstract class MarkerView extends TableView {
 	 * <p>
 	 * This method is called whenever a selection changes in this view.
 	 * </p>
-	 * 
+	 *
 	 * @param selection
 	 *            a valid selection or <code>null</code>
 	 */
@@ -1383,7 +1408,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Set the filters to newFilters.
-	 * 
+	 *
 	 * @param newFilters
 	 */
 	void setFilters(MarkerFilter[] newFilters) {
@@ -1419,7 +1444,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Given a selection of IMarker, reveals the corresponding elements in the viewer
-	 * 
+	 *
 	 * @param structuredSelection
 	 * @param reveal
 	 */
@@ -1449,7 +1474,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Returns the total number of markers. Should not be called while the marker list is still updating.
-	 * 
+	 *
 	 * @return the total number of markers in the workspace (including everything that doesn't pass the filters)
 	 */
 	int getTotalMarkers() {
@@ -1484,7 +1509,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Get the filters that are currently enabled.
-	 * 
+	 *
 	 * @return MarkerFilter[]
 	 */
 	protected MarkerFilter[] getEnabledFilters() {
@@ -1501,7 +1526,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Find the filters enabled in the view.
-	 * 
+	 *
 	 * @return Collection of MarkerFilter
 	 */
 	protected Collection findEnabledFilters() {
@@ -1517,7 +1542,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Get all of the filters applied to the receiver.
-	 * 
+	 *
 	 * @return MarkerFilter[]
 	 */
 	MarkerFilter[] getAllFilters() {
@@ -1564,7 +1589,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Create the show in menu if there is a single selection.
-	 * 
+	 *
 	 * @param menu
 	 */
 	void createShowInMenu(IMenuManager menu) {
@@ -1614,7 +1639,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Refresh the marker counts
-	 * 
+	 *
 	 * @param monitor
 	 */
 	void refreshMarkerCounts(IProgressMonitor monitor) {
@@ -1630,7 +1655,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Returns the marker limit or -1 if unlimited
-	 * 
+	 *
 	 * @return int
 	 */
 	int getMarkerLimit() {
@@ -1646,7 +1671,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Get the name of the marker limit preference.
-	 * 
+	 *
 	 * @return String
 	 */
 	abstract String getMarkerEnablementPreferenceName();
@@ -1663,7 +1688,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Add a listener for the end of the update.
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void addUpdateFinishListener(IJobChangeListener listener) {
@@ -1673,7 +1698,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Remove a listener for the end of the update.
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void removeUpdateFinishListener(IJobChangeListener listener) {
@@ -1683,7 +1708,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Create a listener for working set changes.
-	 * 
+	 *
 	 * @return IPropertyChangeListener
 	 */
 	private IPropertyChangeListener getWorkingSetListener() {
@@ -1705,7 +1730,7 @@ public abstract class MarkerView extends TableView {
 
 	/**
 	 * Schedule an update of the markers with a delay of time
-	 * 
+	 *
 	 * @param time
 	 */
 	void scheduleMarkerUpdate(int time) {
