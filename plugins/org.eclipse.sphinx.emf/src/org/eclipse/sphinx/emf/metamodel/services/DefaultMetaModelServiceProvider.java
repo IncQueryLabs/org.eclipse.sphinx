@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) BMW Car IT and others.
+ * Copyright (c) 2010-2015 BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     BMW Car IT - Initial API and implementation
+ *     itemis - Moved from Artop to Sphinx, adapted method and variable naming to Sphinx conventions
+ *     itemis - [458921] Newly introduced registries for metamodel serives, check validators and workflow contributors are not standalone-safe
  *
  * </copyright>
  */
