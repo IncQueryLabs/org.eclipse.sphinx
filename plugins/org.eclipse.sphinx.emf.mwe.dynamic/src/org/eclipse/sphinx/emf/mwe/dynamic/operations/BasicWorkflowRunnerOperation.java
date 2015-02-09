@@ -131,8 +131,8 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 	public void run(final IProgressMonitor monitor) throws CoreException, OperationCanceledException {
 		try {
 			final SubMonitor progress = SubMonitor.convert(monitor, 100);
-			final Workflow workflow = getWorkflowInstance();
-			if (workflow == null) {
+			final Workflow workflowInstance = getWorkflowInstance();
+			if (workflowInstance == null) {
 				return;
 			}
 
@@ -143,15 +143,15 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 				@Override
 				public void run() {
 					ModelWorkflowContext context = new ModelWorkflowContext(model, progress.newChild(90));
-					workflow.run(context);
+					workflowInstance.run(context);
 				}
 			};
 
 			// Workflow dealing with some model?
 			TransactionalEditingDomain editingDomain = getEditingDomain(model);
-			if (editingDomain != null && hasModelWorkflowComponents(workflow)) {
+			if (editingDomain != null && hasModelWorkflowComponents(workflowInstance)) {
 				// Workflow intending to modify the model?
-				if (isModifyingModel(workflow)) {
+				if (isModifyingModel(workflowInstance)) {
 					// Execute in write transaction
 					WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable, getLabel());
 				} else {
@@ -171,6 +171,101 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 			}
 		} catch (OperationCanceledException ex) {
 			throw ex;
+		} catch (CoreException ex) {
+			throw ex;
+		} catch (Exception ex) {
+			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
+			throw new CoreException(status);
+		}
+	}
+
+	protected Workflow getWorkflowInstance() throws CoreException {
+		try {
+			if (workflowInstance == null) {
+				Class<Workflow> workflowClass = null;
+
+				IType workflowType = getWorkflowType();
+				if (workflowType != null) {
+					workflowClass = loadWorkflowClass(workflowType);
+				} else {
+					workflowClass = getWorkflowClass();
+				}
+
+				if (workflowClass != null) {
+					workflowInstance = workflowClass.newInstance();
+				}
+			}
+			return workflowInstance;
+		} catch (CoreException ex) {
+			throw ex;
+		} catch (Exception ex) {
+			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
+			throw new CoreException(status);
+		}
+	}
+
+	protected IType getWorkflowType() {
+		if (workflow instanceof IType) {
+			return (IType) workflow;
+		}
+		if (workflow instanceof ICompilationUnit) {
+			return ((ICompilationUnit) workflow).findPrimaryType();
+		}
+		if (workflow instanceof IFile) {
+			IJavaElement workflowJavaElement = XtendUtil.getJavaElement((IFile) workflow);
+			if (workflowJavaElement instanceof ICompilationUnit) {
+				return ((ICompilationUnit) workflowJavaElement).findPrimaryType();
+			}
+		}
+		return null;
+	}
+
+	protected Class<Workflow> getWorkflowClass() throws CoreException {
+		if (workflow instanceof Class<?>) {
+			Class<?> clazz = (Class<?>) workflow;
+			if (!Workflow.class.isAssignableFrom(clazz)) {
+				Exception ex = new IllegalStateException("Workflow class '" + clazz.getName() + "' is not a subclass of " + Workflow.class.getName()); //$NON-NLS-1$ //$NON-NLS-2$
+				IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
+				throw new CoreException(status);
+			}
+			@SuppressWarnings("unchecked")
+			Class<Workflow> workflowClass = (Class<Workflow>) clazz;
+			return workflowClass;
+		}
+		return null;
+	}
+
+	protected Class<Workflow> loadWorkflowClass(IType workflowType) throws CoreException {
+		Assert.isNotNull(workflowType);
+
+		try {
+			// Find out where given workflow type originates from
+			if (!workflowType.isBinary()) {
+				// Workflow type refers to an on-the-fly compiled Java class in the runtime workspace
+
+				// Create project class loader capable of loading Java class behind workflow type from underlying Java
+				// or plug-in project in runtime workspace
+				ProjectClassLoader projectClassLoader = new ProjectClassLoader(workflowType.getJavaProject());
+
+				// TODO Surround with appropriate tracing option
+				// ClassLoaderExtensions.printHierarchy(projectClassLoader);
+
+				// Use project class loader to load Java class behind workflow type
+				Class<?> clazz = projectClassLoader.loadClass(workflowType.getFullyQualifiedName());
+				if (!Workflow.class.isAssignableFrom(clazz)) {
+					throw new IllegalStateException("Workflow class '" + clazz.getName() + "' is not a subclass of " + Workflow.class.getName()); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+				@SuppressWarnings("unchecked")
+				Class<Workflow> workflowClass = (Class<Workflow>) clazz;
+				return workflowClass;
+			} else {
+				// Workflow type refers to a binary Java class from the running Eclipse instance
+
+				// Load Java class behind workflow type from underlying contributor plug-in
+				return WorkflowContributorRegistry.INSTANCE.loadContributedWorkflowClass(workflowType);
+			}
+		} catch (CoreException ex) {
+			throw ex;
 		} catch (Exception ex) {
 			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
 			throw new CoreException(status);
@@ -188,101 +283,6 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 			}
 		}
 		return null;
-	}
-
-	protected IType getWorkflowType() throws CoreException {
-		if (workflow instanceof IType) {
-			return (IType) workflow;
-		}
-		if (workflow instanceof ICompilationUnit) {
-			return ((ICompilationUnit) workflow).findPrimaryType();
-		}
-		if (workflow instanceof IFile) {
-			IJavaElement workflowJavaElement = XtendUtil.getJavaElement((IFile) workflow);
-			if (workflowJavaElement instanceof ICompilationUnit) {
-				return ((ICompilationUnit) workflowJavaElement).findPrimaryType();
-			}
-		}
-		return null;
-	}
-
-	protected Class<?> getWorkflowClass() {
-		if (workflow instanceof Class<?>) {
-			return (Class<?>) workflow;
-		}
-		return null;
-	}
-
-	protected Class<?> loadWorkflowClass(IType workflowType, Object model) throws ClassNotFoundException {
-		Assert.isNotNull(workflowType);
-
-		// Find out where given workflow type originates from
-		if (!workflowType.isBinary()) {
-			// Workflow type refers to an on-the-fly compiled Java class in the runtime workspace
-
-			// Create project class loader capable of loading Java class behind workflow type from underlying Java or
-			// plug-in project in runtime workspace
-			ProjectClassLoader projectClassLoader = new ProjectClassLoader(workflowType.getJavaProject());
-
-			// TODO Surround with appropriate tracing option
-			// ClassLoaderExtensions.printHierarchy(projectClassLoader);
-
-			// Use project class loader to load Java class behind workflow type
-			return projectClassLoader.loadClass(workflowType.getFullyQualifiedName());
-		} else {
-			// Workflow type refers to a binary Java class from the running Eclipse instance
-
-			// Load Java class behind workflow type from underlying contributor plug-in
-			return WorkflowContributorRegistry.INSTANCE.loadContributedClass(workflowType);
-		}
-	}
-
-	protected Workflow createWorkflowInstance(IType workflowType, Object model) throws CoreException {
-		try {
-			Class<?> workflowClass = loadWorkflowClass(workflowType, model);
-			return createWorkflowInstance(workflowClass);
-		} catch (CoreException ex) {
-			throw ex;
-		} catch (Exception ex) {
-			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
-			throw new CoreException(status);
-		}
-	}
-
-	protected Workflow createWorkflowInstance(Class<?> clazz) throws CoreException {
-		Assert.isNotNull(clazz);
-
-		try {
-			Object instance = clazz.newInstance();
-
-			if (!(instance instanceof Workflow)) {
-				IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), new IllegalStateException(
-						"Workflow to be executed must be an instance of " + Workflow.class.getName())); //$NON-NLS-1$
-				throw new CoreException(status);
-			}
-
-			return (Workflow) instance;
-		} catch (Exception ex) {
-			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
-			throw new CoreException(status);
-		}
-	}
-
-	protected Workflow getWorkflowInstance() throws CoreException {
-		if (workflowInstance == null) {
-			IType workflowType = getWorkflowType();
-			if (workflowType != null) {
-				// Workflow is a Java or Xtend source file
-				workflowInstance = createWorkflowInstance(workflowType, getModel());
-			} else {
-				Class<?> workflowClass = getWorkflowClass();
-				if (workflowClass != null) {
-					// Workflow is a binary Java class
-					workflowInstance = createWorkflowInstance(workflowClass);
-				}
-			}
-		}
-		return workflowInstance;
 	}
 
 	protected boolean hasModelWorkflowComponents(Workflow workflow) {

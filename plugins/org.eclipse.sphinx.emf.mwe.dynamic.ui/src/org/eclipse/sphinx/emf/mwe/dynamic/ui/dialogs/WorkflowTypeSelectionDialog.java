@@ -152,7 +152,7 @@ public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
 						} else {
 							// Matched type refers to a binary Java class from the running Eclipse instance
 
-							// Load Java class behind matched type from underlying contributor plug-in
+							// Test if Java class behind matched type is a known contributed workflow
 							/*
 							 * Performance optimization: Ignore class names with "bin" prefix. Such class names are
 							 * duplicates of the same class name without "bin" prefix. They occur when running in a
@@ -160,10 +160,7 @@ public class WorkflowTypeSelectionDialog extends OpenTypeSelectionDialog {
 							 * in the development workbench.
 							 */
 							if (!matchType.getFullyQualifiedName().startsWith(JavaExtensions.DEFAULT_OUTPUT_FOLDER_NAME)) {
-								Class<?> matchClazz = WorkflowContributorRegistry.INSTANCE.loadContributedClass(matchType);
-
-								// Check if matched class is a subclass of MWE2 Workflow
-								return Workflow.class.isAssignableFrom(matchClazz);
+								return WorkflowContributorRegistry.INSTANCE.matchesContributedWorkflowClass(matchType);
 							}
 						}
 					} catch (Exception ex) {

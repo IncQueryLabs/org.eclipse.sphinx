@@ -39,7 +39,7 @@ import org.eclipse.sphinx.platform.util.StatusUtil
 import org.osgi.framework.Bundle
 
 class JavaExtensions {
-	
+
 	// Ensure backward compatibility with Eclipse 4.3.x (Kepler) and earlier
 	public static final String VERSION_1_8 = "1.8"; //$NON-NLS-1$
 
@@ -90,13 +90,13 @@ class JavaExtensions {
 		JavaExtensions.DEFAULT_OUTPUT_FOLDER_NAME
 	}
 
-	static def boolean isInstalledPluginClasspathRootLocation(String pluginId, IPath classpathLocation) {
+	static def boolean isInstalledPluginClasspathRootLocationOf(String pluginId, IPath classpathLocation) {
 		Assert.isNotNull(classpathLocation)
 
 		pluginInstallLocation.isPrefixOf(classpathLocation) && classpathLocation.lastSegment.split(PLUGIN_ID_VERSION_SEPARATOR).get(0).equals(pluginId)
 	}
 
-	static def boolean isDevModePluginClasspathLocation(String pluginId, IPath classpathLocation) {
+	static def boolean isDevModePluginClasspathLocationOf(String pluginId, IPath classpathLocation) {
 		Assert.isNotNull(classpathLocation)
 
 		classpathLocation.toString().contains(new Path(pluginId).append(devModePluginClasspathRootLocationPostfix).toString())
