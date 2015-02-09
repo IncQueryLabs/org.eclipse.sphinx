@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,62 +9,53 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
  *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.check;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collections;
+import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Catalog;
-import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category;
-import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Constraint;
-import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Severity;
-import org.eclipse.sphinx.emf.check.registry.CheckValidatorRegistry;
+import org.eclipse.sphinx.emf.check.catalog.Catalog;
+import org.eclipse.sphinx.emf.check.catalog.Category;
+import org.eclipse.sphinx.emf.check.catalog.Constraint;
+import org.eclipse.sphinx.emf.check.catalog.Severity;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 
 public class CheckCatalogHelper {
 
-	private Catalog catalog;
+	private ICheckValidator checkValidator;
+	private Catalog catalog = null;
 
 	public CheckCatalogHelper(ICheckValidator checkValidator) {
-		String checkValidatorClassName = checkValidator.getClass().getName();
-		URI uri = CheckValidatorRegistry.INSTANCE.getCheckCatalogURI(checkValidatorClassName);
-		if (uri != null) {
-			Resource checkResource = new ResourceSetImpl().getResource(uri, true);
-			EObject eObject = checkResource.getContents().get(0);
-			Assert.isNotNull(eObject);
-			if (!(eObject instanceof Catalog)) {
-				throw new RuntimeException("Could not find the check model Catalogue!"); //$NON-NLS-1$
-			}
-			setCatalog((Catalog) eObject);
-		}
+		this.checkValidator = checkValidator;
 	}
 
-	public String getMessage(String constraint) {
+	public String getMessage(String constraintId) {
+		Catalog catalog = getCatalog();
 		if (catalog != null) {
 			EList<Constraint> constraints = catalog.getConstraints();
-			for (Constraint c : constraints) {
-				String name = c.getId();
-				if (name.equals(constraint)) {
-					return c.getMessage();
+			for (Constraint constraint : constraints) {
+				String id = constraint.getId();
+				if (id.equals(constraintId)) {
+					return constraint.getMessage();
 				}
 			}
 		}
 		return null;
 	}
 
-	public Set<Category> getCategories() {
+	public List<Category> getCategories() {
+		Catalog catalog = getCatalog();
 		if (catalog != null) {
-			return new HashSet<Category>(catalog.getCategories());
+			return Collections.unmodifiableList(catalog.getCategories());
 		}
-		return new HashSet<Category>();
+		return Collections.emptyList();
 	}
 
 	public Severity getSeverityType(String constraint) {
@@ -78,10 +69,17 @@ public class CheckCatalogHelper {
 	}
 
 	public Catalog getCatalog() {
+		if (catalog == null) {
+			URI uri = CheckValidatorRegistry.INSTANCE.getCheckCatalogURI(checkValidator);
+			if (uri != null) {
+				EObject eObject = EcoreResourceUtil.loadEObject(null, uri.appendFragment("/")); //$NON-NLS-1$
+				if (!(eObject instanceof Catalog)) {
+					throw new IllegalStateException(
+							"Unable to find the check catalog for check validator '" + checkValidator.getClass().getName() + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+				catalog = (Catalog) eObject;
+			}
+		}
 		return catalog;
-	}
-
-	public void setCatalog(Catalog catalog) {
-		this.catalog = catalog;
 	}
 }

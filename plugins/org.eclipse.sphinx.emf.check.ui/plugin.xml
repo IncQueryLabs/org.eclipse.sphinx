@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
+
+<!--
+ <copyright>
+
+ Copyright (c) 2014-2015 itemis and others.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+
+ Contributors:
+     itemis - Initial API and implementation
+
+ </copyright>
+-->
+
 <plugin>
 
    <extension point="org.eclipse.ui.navigator.viewer">
@@ -56,7 +72,7 @@
             defaultHandler="org.eclipse.sphinx.emf.check.ui.markers.tests.DeleteErrorMarkersHandler"
             id="org.eclipse.sphinx.emf.check.ui.commands.deleteErrorMarkers"
             name="Delete Error Markers">
-      </command> 
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -197,7 +213,7 @@
          </command>
       </menuContribution>
    </extension>
-   
+
    <extension
          point="org.eclipse.ui.ide.markerSupport">
       <markerContentGenerator
@@ -231,7 +247,7 @@
                id="org.eclipse.sphinx.emf.check.ui.source"
                visible="true">
          </markerFieldReference>
-         
+
          <markerFieldConfiguration
                id="org.eclipse.sphinx.emf.check.ui.markers.group"
                name="All Errors"
@@ -278,17 +294,17 @@
          </markerGrouping>
       </markerContentGenerator>
       <markerField
-            class="org.eclipse.sphinx.emf.check.ui.markers.field.DescriptionMarkerField"
+            class="org.eclipse.sphinx.emf.check.ui.markers.fields.DescriptionMarkerField"
             id="org.eclipse.sphinx.emf.check.ui.description"
             name="Description">
       </markerField>
       <markerField
-            class="org.eclipse.sphinx.emf.check.ui.markers.field.URIMarkerField"
+            class="org.eclipse.sphinx.emf.check.ui.markers.fields.URIMarkerField"
             id="org.eclipse.sphinx.emf.check.ui.description.uri"
             name="URI">
       </markerField>
       <markerField
-            class="org.eclipse.sphinx.emf.check.ui.markers.field.SourceIDMarkerField"
+            class="org.eclipse.sphinx.emf.check.ui.markers.fields.SourceIDMarkerField"
             id="org.eclipse.sphinx.emf.check.ui.source"
             name="Source">
       </markerField>

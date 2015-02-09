@@ -20,6 +20,7 @@
  *	   itemis - [425175] Resources that produce exceptions while being loaded should not get unloaded by Sphinx thereafter
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
+ *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
  *
  * </copyright>
  */
@@ -628,10 +629,14 @@ public final class EcoreResourceUtil {
 	}
 
 	private static EObject loadEObject(ResourceSet resourceSet, URI uri, boolean loadOnDemand) {
-		Assert.isNotNull(resourceSet);
 		Assert.isNotNull(uri);
 
 		if (uri.hasFragment()) {
+			// Create new ResourceSet if none has been provided
+			if (resourceSet == null) {
+				resourceSet = new ScopingResourceSetImpl();
+			}
+
 			// Try to convert given URI to platform:/resource URI if not yet so
 			/*
 			 * !! Important Note !! This is necessary in order to avoid that resources which are located inside the

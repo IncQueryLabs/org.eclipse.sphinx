@@ -15,26 +15,27 @@
  */
 package org.eclipse.sphinx.emf.mwe.dynamic;
 
-import static org.eclipse.sphinx.jdt.util.JavaExtensions.isDevModePluginClasspathLocation;
-import static org.eclipse.sphinx.jdt.util.JavaExtensions.isInstalledPluginClasspathRootLocation;
+import static org.eclipse.sphinx.jdt.util.JavaExtensions.isDevModePluginClasspathLocationOf;
+import static org.eclipse.sphinx.jdt.util.JavaExtensions.isInstalledPluginClasspathRootLocationOf;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.CommonPlugin;
+import org.eclipse.emf.mwe2.runtime.workflow.Workflow;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.sphinx.emf.mwe.dynamic.internal.Activator;
-import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.StatusUtil;
-import org.osgi.framework.Bundle;
 
 public class WorkflowContributorRegistry {
 
@@ -110,10 +111,10 @@ public class WorkflowContributorRegistry {
 		return getContributorPluginId(classpathLocation) != null;
 	}
 
-	public String getContributorPluginId(IPath classpathLocation) {
+	private String getContributorPluginId(IPath classpathLocation) {
 		if (classpathLocation != null && classpathLocation.segmentCount() > 1) {
 			for (String id : getContributorPluginIds()) {
-				if (isInstalledPluginClasspathRootLocation(id, classpathLocation) || isDevModePluginClasspathLocation(id, classpathLocation)) {
+				if (isInstalledPluginClasspathRootLocationOf(id, classpathLocation) || isDevModePluginClasspathLocationOf(id, classpathLocation)) {
 					return id;
 				}
 			}
@@ -121,16 +122,35 @@ public class WorkflowContributorRegistry {
 		return null;
 	}
 
-	public Class<?> loadContributedClass(IType contributedType) throws ClassNotFoundException {
-		Assert.isNotNull(contributedType);
-
-		String contributorPluginId = getContributorPluginId(contributedType.getPath());
-		if (contributorPluginId != null) {
-			Bundle contributorBundle = ExtendedPlatform.loadBundle(contributorPluginId);
-			if (contributorBundle != null) {
-				return contributorBundle.loadClass(contributedType.getFullyQualifiedName());
-			}
+	public boolean matchesContributedWorkflowClass(IType workflowType) {
+		try {
+			return loadContributedWorkflowClass(workflowType) != null;
+		} catch (Exception ex) {
+			// Ignore exception, just return false
+			return false;
 		}
-		throw new ClassNotFoundException(contributedType.getFullyQualifiedName());
+	}
+
+	public Class<Workflow> loadContributedWorkflowClass(IType workflowType) throws CoreException {
+		Assert.isNotNull(workflowType);
+
+		try {
+			String contributorPluginId = getContributorPluginId(workflowType.getPath());
+			if (contributorPluginId == null) {
+				throw new IllegalStateException(
+						"Workflow '" + workflowType.getFullyQualifiedName() + "' is not contained in any registered workflow contributor plug-in"); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+
+			Class<?> clazz = CommonPlugin.loadClass(contributorPluginId, workflowType.getFullyQualifiedName());
+			if (!Workflow.class.isAssignableFrom(clazz)) {
+				throw new IllegalStateException("Workflow class '" + clazz.getName() + "' is not a subclass of " + Workflow.class.getName()); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			@SuppressWarnings("unchecked")
+			Class<Workflow> workflowClass = (Class<Workflow>) clazz;
+			return workflowClass;
+		} catch (Exception ex) {
+			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
+			throw new CoreException(status);
+		}
 	}
 }

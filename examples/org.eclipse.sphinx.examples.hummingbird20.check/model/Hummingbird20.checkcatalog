@@ -2,7 +2,7 @@
 <checkcatalog:Catalog
     xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI"
-    xmlns:checkcatalog="http://www.eclipse.org/sphinx/check"
+    xmlns:checkcatalog="http://www.eclipse.org/sphinx/check/catalog"
     id="HummingbirdValidationRules"
     label="Hummingbird Validation Rules">
   <categories

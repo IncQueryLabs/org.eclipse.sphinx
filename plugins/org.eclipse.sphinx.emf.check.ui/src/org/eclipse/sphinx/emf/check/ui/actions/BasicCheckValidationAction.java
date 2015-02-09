@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [456869] Duplicated Check problem markers due to URI comparison
+ *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
  *
  * </copyright>
  */
@@ -36,15 +37,15 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.sphinx.emf.check.AbstractCheckValidator;
 import org.eclipse.sphinx.emf.check.CheckCatalogHelper;
+import org.eclipse.sphinx.emf.check.CheckValidatorRegistry;
 import org.eclipse.sphinx.emf.check.CompositeValidator;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
-import org.eclipse.sphinx.emf.check.catalog.checkcatalog.Category;
-import org.eclipse.sphinx.emf.check.registry.CheckValidatorRegistry;
+import org.eclipse.sphinx.emf.check.catalog.Category;
 import org.eclipse.sphinx.emf.check.services.CheckProblemMarkerService;
 import org.eclipse.sphinx.emf.check.ui.IValidationUIConstants;
-import org.eclipse.sphinx.emf.check.ui.actions.dialog.CategorySelectionContentProvider;
-import org.eclipse.sphinx.emf.check.ui.actions.dialog.CategorySelectionDialog;
-import org.eclipse.sphinx.emf.check.ui.actions.dialog.CategorySelectionLabelProvider;
+import org.eclipse.sphinx.emf.check.ui.dialogs.CategorySelectionContentProvider;
+import org.eclipse.sphinx.emf.check.ui.dialogs.CategorySelectionDialog;
+import org.eclipse.sphinx.emf.check.ui.dialogs.CategorySelectionLabelProvider;
 import org.eclipse.sphinx.emf.check.ui.internal.Activator;
 import org.eclipse.sphinx.emf.check.ui.internal.CheckValidationImageProvider;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;

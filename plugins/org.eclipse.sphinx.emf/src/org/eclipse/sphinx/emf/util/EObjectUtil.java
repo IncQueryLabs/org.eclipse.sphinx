@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2010 See4sys, BMW Car IT and others.
+ * Copyright (c) 2008-2015 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
+ *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
  *
  * </copyright>
  */
@@ -18,10 +19,13 @@ package org.eclipse.sphinx.emf.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.AbstractTreeIterator;
 import org.eclipse.emf.common.util.EList;
@@ -42,6 +46,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.ecore.ECrossReferenceAdapterFactory;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
@@ -50,6 +55,8 @@ import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.resource.ProxyURIIntegrityException;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.sphinx.platform.util.ReflectUtil;
 
 /**
  * An utility class which provides various methods for accessing EObjects in an EMF model.
@@ -59,6 +66,8 @@ public final class EObjectUtil {
 	// Prevent from instantiation
 	private EObjectUtil() {
 	}
+
+	public static final String DEFAULT_EMF_MODEL_IMPLEMENTATION_PACKAGE_SUFFIX = "impl"; //$NON-NLS-1$
 
 	/**
 	 * Depth constant (value 0) indicating this EObject, but not any of its members.
@@ -326,16 +335,87 @@ public final class EObjectUtil {
 	}
 
 	/**
+	 * TODO Javadoc
+	 *
+	 * @param eClassifierType
+	 * @return
+	 */
+	public static EPackage findEPackage(Class<?> eClassifierType) {
+		Assert.isNotNull(eClassifierType);
+
+		String eClassifierPackageName = eClassifierType.getPackage().getName();
+		Collection<Object> safeEPackageObjects = new HashSet<Object>(EPackage.Registry.INSTANCE.values());
+		for (Object ePackageObject : safeEPackageObjects) {
+			Class<?> ePackageType = null;
+
+			// Retrieve candidate EPackage from current EPackage object
+			if (ePackageObject instanceof EPackage) {
+				ePackageType = ((EPackage) ePackageObject).getClass();
+			} else if (ePackageObject instanceof EPackage.Descriptor) {
+				/*
+				 * !! Important note !! TODO
+				 */
+				try {
+					IConfigurationElement configurationElement = (IConfigurationElement) ReflectUtil
+							.getInvisibleFieldValue(ePackageObject, "element"); //$NON-NLS-1$
+					String ePackagePluginId = configurationElement.getDeclaringExtension().getContributor().getName();
+					String ePackageTypeName = configurationElement.getAttribute("class"); //$NON-NLS-1$
+					if (ePackageTypeName != null) {
+						ePackageType = CommonPlugin.loadClass(ePackagePluginId, ePackageTypeName);
+					}
+				} catch (NoSuchFieldException ex) {
+					// Unsupported EPackage.Descriptor implementation, ignore exception
+				} catch (Exception ex) {
+					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+				}
+			}
+
+			// Retrieve interface package of current candidate EPackage and test if it matches the package of given
+			// EClassifier
+			if (ePackageType != null) {
+				String interfacePackageName = getEMFModelInterfacePackageName(ePackageType);
+				if (eClassifierPackageName.equals(interfacePackageName)) {
+					return ePackageObject instanceof EPackage ? (EPackage) ePackageObject : ((EPackage.Descriptor) ePackageObject).getEPackage();
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the name of the Java package that contains the interfaces for the EMF metamodel elements defined in the
+	 * {@link EPackage} behind provided EPackage class.
+	 * <p>
+	 * Makes the assumption that the interface package is either the same package as the Java package that contains the
+	 * given EPackage class or its parent package in case that the provided EPackage class resides in a Java package
+	 * that is postfixed with ".impl" (which corresponds to the default behavior of the EMF code generator).
+	 * </p>
+	 *
+	 * @param ePackageType
+	 *            The EPackage to be processed.
+	 * @return The name of the Java package that contains the interfaces for the EMF metamodel elements defined in the
+	 *         EPackage behind provided EPackage class.
+	 */
+	public static String getEMFModelInterfacePackageName(Class<?> ePackageType) {
+		Assert.isNotNull(ePackageType);
+
+		String ePackageTypePackageName = ePackageType.getPackage().getName();
+		int implPackageIdx = ePackageTypePackageName.lastIndexOf('.' + DEFAULT_EMF_MODEL_IMPLEMENTATION_PACKAGE_SUFFIX);
+		if (implPackageIdx != -1) {
+			return ePackageTypePackageName.substring(0, implPackageIdx);
+		}
+		return ePackageTypePackageName;
+	}
+
+	/**
 	 * Return the EClassifier in the given EPakcage by Class
 	 *
 	 * @param rootEPackage
 	 *            The package container of return EClassifiers
 	 * @param type
 	 *            The specified class to find
-	 * @return <code><b>EClassifier</b></code> in the given rootPackage and its subPackages .
-	 *         <p>
-	 *         <code> null</code> if there isn't any EClassifier has the given <code><b>type</b></code>
-	 *         </p>
+	 * @return The EClassifier in the given root EPackage and its sub EPackages, or <code>null</code> if there isn't any
+	 *         EClassifier has the given <code>type</code>.
 	 */
 	public static EClassifier findEClassifier(EPackage rootEPackage, Class<?> type) {
 		Assert.isNotNull(type);
