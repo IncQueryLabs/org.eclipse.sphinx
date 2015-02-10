@@ -41,21 +41,18 @@
 				<executions>
 					<execution>
 						<id>javadoc</id>
-						<phase>generate-resources</phase>
+						<phase>verify</phase>
 						<goals>
 							<goal>javadoc</goal>
 						</goals>						
 						<configuration>
-							<basedir>${doc.output.folder}</basedir>
 							<outputDirectory>${doc.output.folder}/reference/api</outputDirectory>
 							<tocFile>${doc.output.folder}/toc/javadoc.xml</tocFile>
-						<javadocOptions>
+							<javadocOptions>
 								<additionalArguments>
-									<additionalArgument>-linkoffline
-										http://docs.oracle.com/javase/7/docs/api/
-										${basedir}/input/javase-7</additionalArgument>
-									<additionalArgument>-linkoffline
-										http://www.osgi.org/javadoc/r4v43/ ${basedir}/input/osgi-r4v43</additionalArgument>
+									<additionalArgument>-encoding UTF-8</additionalArgument>
+									<additionalArgument>-linkoffline http://docs.oracle.com/javase/7/docs/api/ ${doc.output.folder}/input/javase-7</additionalArgument>
+									<additionalArgument>-linkoffline http://www.osgi.org/javadoc/r4v43/ ${doc.output.folder}/input/osgi-r4v43</additionalArgument>
 								</additionalArguments>
 							</javadocOptions>
 						</configuration>
