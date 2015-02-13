@@ -12,12 +12,14 @@
  *     BMW Car IT - Added/Updated javadoc
  *     itemis - [446573] BasicExplorerContent/LabelProvider don't get refreshed upon changes on provided referenced elements
  *     itemis - [450882] Enable navigation to ancestor tree items in Model Explorer kind of model views
+ *     itemis - [459865] Enhance ExtendedItemProviderAdapter to support EDataType elements that are no EEnums but wrap org.eclipse.emf.common.util.Enumerator
  *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.edit;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -190,6 +192,13 @@ public class ExtendedItemProviderAdapter extends ItemProviderAdapter {
 							enumerators.add(EcoreUtil.createFromString(eDataType, enumerator));
 						}
 						return enumerators;
+					} else {
+						// Return enum constants from the EDataType's underlying Java enum type in case the latter is
+						// such one
+						Object[] javaEnumConstants = eDataType.getInstanceClass().getEnumConstants();
+						if (javaEnumConstants != null) {
+							return Arrays.asList(javaEnumConstants);
+						}
 					}
 				}
 			}
