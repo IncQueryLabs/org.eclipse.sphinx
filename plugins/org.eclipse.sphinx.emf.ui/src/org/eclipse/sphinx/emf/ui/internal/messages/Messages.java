@@ -30,16 +30,31 @@ public class Messages extends NLS {
 	public static String action_locateValue_label;
 	public static String action_locateValue_toolTip;
 
+	public static String action_toggleReferencesMode_references_label;
+	public static String action_toggleReferencesMode_references_toolTip;
+	public static String action_toggleReferencesMode_references_description;
+
+	public static String action_toggleReferencesMode_referents_label;
+	public static String action_toggleReferencesMode_referents_toolTip;
+	public static String action_toggleReferencesMode_referents_description;
+
 	public static String dialog_rename_title;
 	public static String dialog_rename_message;
 
 	public static String label_selectedNothing;
 	public static String label_multipleItemsSelected;
+	public static String label_ReferencesHierarchyEmpty;
 
 	public static String menu_openWith_label;
 
 	public static String label_editProxyURI;
 	public static String message_proxyURIMustNotReferenceAnAlreadyExistingListElement;
+
+	public static String error_UnsupportedMode;
+	public static String error_NoSuchVertex;
+	public static String error_LoopsNotAllowed;
+
+	public static String toString_Edge;
 
 	static {
 		// Initialize resource bundle

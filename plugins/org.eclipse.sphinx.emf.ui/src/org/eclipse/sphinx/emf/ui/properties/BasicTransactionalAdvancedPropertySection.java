@@ -162,7 +162,7 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 	 * This implementation calls {@link AdapterFactoryEditingDomain#unwrap()} for that purpose. Subclasses may override
 	 * and extend as appropriate.
 	 * </p>
-	 * 
+	 *
 	 * @param element
 	 *            The element to be unwrapped.
 	 * @return The extracted {@link Object element} if the original element could be successfully unwrapped or the
@@ -319,7 +319,7 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 	 * return any {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter
 	 * factory} will then be returned as result by this method.
 	 * </p>
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain editing domain} whose embedded {@link AdapterFactory adapter
 	 *            factory} is to be returned as default. May be left <code>null</code> if
@@ -352,7 +352,7 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 	 * {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter factory} will
 	 * then be returned as result by {@link #getAdapterFactory(TransactionalEditingDomain)}.
 	 * </p>
-	 * 
+	 *
 	 * @return The custom {@link AdapterFactory adapter factory} that is to be used by this
 	 *         {@link BasicModelEditActionProvider action provider}. <code>null</code> the default
 	 *         {@link AdapterFactory adapter factory} returned by {@link #getAdapterFactory(TransactionalEditingDomain)}
@@ -365,7 +365,7 @@ public class BasicTransactionalAdvancedPropertySection extends AdvancedPropertyS
 
 	/**
 	 * Return a custom {@link CellEditor cell editor} to be used for editing the value of given property.
-	 * 
+	 *
 	 * @param composite
 	 *            The parent control of the {@link CellEditor cell editor} to be created.
 	 * @param object

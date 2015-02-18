@@ -24,15 +24,13 @@ Contributors:
             id="org.eclipse.sphinx.examples.common.ui.views.category.sphinxExampleViews"
             name="%sphinx.examples.common.ui.views.category.sphinxExampleViews.name">
       </category>
-      <!--
       <view
             category="org.eclipse.sphinx.examples.common.ui.views.category.sphinxExampleViews"
             class="org.eclipse.sphinx.emf.ui.views.ReferencesView"
-            icon="icons/sample.gif"
+            icon="icons/full/eview16/ref_hierarchy.gif"
             id="org.eclipse.sphinx.emf.ui.views.references"
-            name="References View">
+            name="References Hierarchy">
       </view>
-      -->
    </extension>
    <extension point="org.eclipse.ui.newWizards">
       <category

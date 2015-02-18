@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2011 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     itemis - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.ui.views;
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.eclipse.core.runtime.Assert;
@@ -25,8 +26,10 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.provider.ComposedImage;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
+import org.eclipse.emf.edit.ui.provider.ExtendedImageRegistry;
 import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.ui.internal.Tracing;
@@ -38,28 +41,42 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.DelegatingDropAdapter;
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.sphinx.emf.ui.internal.Activator;
+import org.eclipse.sphinx.emf.ui.internal.messages.Messages;
+import org.eclipse.sphinx.emf.ui.util.DirectedGraph;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -67,23 +84,49 @@ import org.eclipse.ui.part.ViewPart;
  */
 public class ReferencesView extends ViewPart {
 
+	private static final String STORE_MODE = "MODE"; //$NON-NLS-1$
+
+	static final int REFERENCED_OBJECTS_MODE = 0;
+	static final int REFERENCING_OBJECTS_MODE = 1;
+
+	private static final int PAGE_EMPTY = 0;
+	private static final int PAGE_VIEWER = 1;
+
+	private static final Object EMPTY_ROOT = new Object();
+
 	private Object viewInput;
-	private IContentProvider contentProvider;
-	private ILabelProvider labelProvider;
+	private int currentMode;
+	private Label noRefsHierarchyShownLabel;
 	private TreeViewer viewer;
 
-	private boolean showInverseReferences = false;
+	private ILabelProvider labelProvider;
+	private IContentProvider contentProvider;
+	private IDialogSettings dialogSettings;
+	private ToggleReferencesModeAction[] toggleReferencesModeActions;
 
 	protected Map<TransactionalEditingDomain, IContentProvider> modelCrossReferenceContentProviders = new WeakHashMap<TransactionalEditingDomain, IContentProvider>();
 	protected Map<TransactionalEditingDomain, ILabelProvider> modelLabelProviders = new WeakHashMap<TransactionalEditingDomain, ILabelProvider>();
 
-	private Action action1;
-	private Action action2;
 	private Action doubleClickAction;
+
+	private PageBook pageBook;
+	private SashForm refsHierarchyInfosSplitter;
+
+	private DirectedGraph<EObject> graph;
+
+	public ReferencesView() {
+		dialogSettings = Activator.getDefault().getDialogSettings();
+		graph = new DirectedGraph<EObject>(false, false);
+	}
 
 	@Override
 	public void createPartControl(Composite parent) {
-		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+
+		pageBook = new PageBook(parent, SWT.NONE);
+
+		// First page: viewers
+		refsHierarchyInfosSplitter = new SashForm(pageBook, SWT.NONE);
+		viewer = new TreeViewer(refsHierarchyInfosSplitter, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		contentProvider = createModelCrossReferenceContentProvider();
 		if (contentProvider != null) {
 			viewer.setContentProvider(contentProvider);
@@ -92,10 +135,36 @@ public class ReferencesView extends ViewPart {
 			viewer.setLabelProvider(labelProvider);
 		}
 
+		// Second page: when nothing selected
+		noRefsHierarchyShownLabel = new Label(pageBook, SWT.TOP + SWT.LEFT + SWT.WRAP);
+		noRefsHierarchyShownLabel.setText(Messages.label_ReferencesHierarchyEmpty); //
+
+		showPage(PAGE_EMPTY);
+
 		makeActions();
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
+
+		// initDragAndDrop();
+
+		initMode();
+	}
+
+	private void showPage(int page) {
+		boolean isEmpty = page == PAGE_EMPTY;
+		Control control = isEmpty ? (Control) noRefsHierarchyShownLabel : refsHierarchyInfosSplitter;
+		if (isEmpty) {
+			setContentDescription(""); //$NON-NLS-1$
+			setTitleToolTip(getPartName());
+			getViewSite().getActionBars().getStatusLineManager().setMessage(""); //$NON-NLS-1$
+			viewer.setInput(EMPTY_ROOT);
+		}
+		pageBook.showPage(control);
+	}
+
+	protected TreeViewer getViewer() {
+		return viewer;
 	}
 
 	public void setViewInput(Object viewInput) {
@@ -105,6 +174,14 @@ public class ReferencesView extends ViewPart {
 			viewer.setLabelProvider(labelProvider);
 		}
 		viewer.setInput(viewInput);
+
+		updateView();
+	}
+
+	protected boolean isRecursive(Object element) {
+		Set<DirectedGraph<EObject>.Edge> outgoingEdgesOfElement = graph.outgoingEdgesOf((EObject) element);
+		Set<DirectedGraph<EObject>.Edge> incomingEdgesOfElement = graph.incomingEdgesOf((EObject) element);
+		return !outgoingEdgesOfElement.isEmpty() && incomingEdgesOfElement.size() > 1;
 	}
 
 	protected IContentProvider createModelCrossReferenceContentProvider() {
@@ -122,15 +199,17 @@ public class ReferencesView extends ViewPart {
 
 			@Override
 			public boolean hasChildren(Object element) {
-				return getChildren(element).length > 0;
+				return !isRecursive(element) && getChildren(element).length > 0;
 			}
 
 			// TODO Add defer and abort capability
-			// TODO Avoid infinite number of children in case of cyclic references
 			@Override
 			public Object[] getChildren(Object parentElement) {
 				if (parentElement instanceof EObject) {
 					final EObject parentEObject = (EObject) parentElement;
+
+					// Add the parent to the graph
+					graph.addVertex(parentEObject);
 
 					TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(parentEObject);
 					if (editingDomain != null) {
@@ -138,23 +217,33 @@ public class ReferencesView extends ViewPart {
 							return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<Object[]>() {
 								@Override
 								public void run() {
-									Collection<EObject> eCrossReferences = getECrossReferences(parentEObject, showInverseReferences);
+									Collection<EObject> eCrossReferences = getECrossReferences(parentEObject);
+									addEdges(parentEObject, eCrossReferences);
 									setResult(eCrossReferences.toArray(new EObject[eCrossReferences.size()]));
 								}
+
 							});
 						} catch (InterruptedException ex) {
 							PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 						}
 					} else {
-						Collection<EObject> eCrossReferences = getECrossReferences(parentEObject, showInverseReferences);
+						Collection<EObject> eCrossReferences = getECrossReferences(parentEObject);
+						addEdges(parentEObject, eCrossReferences);
 						return eCrossReferences.toArray(new EObject[eCrossReferences.size()]);
 					}
 				}
 				return new Object[0];
 			}
 
-			protected Collection<EObject> getECrossReferences(EObject eObject, boolean inverse) {
-				if (inverse) {
+			protected void addEdges(EObject parentEObject, Collection<EObject> eCrossReferences) {
+				for (EObject crossRef : eCrossReferences) {
+					graph.addVertex(crossRef);
+					graph.addEdge(parentEObject, crossRef);
+				}
+			}
+
+			protected Collection<EObject> getECrossReferences(EObject eObject) {
+				if (currentMode == REFERENCING_OBJECTS_MODE) {
 					List<EObject> eInverseCrossReferences = new ArrayList<EObject>();
 					Collection<Setting> inverseReferences = EObjectUtil.getInverseReferences(eObject, true);
 					for (Setting inverseReference : inverseReferences) {
@@ -200,7 +289,7 @@ public class ReferencesView extends ViewPart {
 	protected ILabelProvider createModelLabelProvider(final TransactionalEditingDomain editingDomain) {
 		Assert.isNotNull(editingDomain);
 		AdapterFactory adapterFactory = getAdapterFactory(editingDomain);
-		return new TransactionalAdapterFactoryLabelProvider(editingDomain, adapterFactory) {
+		return new DecorationAwareTransactionalAdapterFactoryLabelProvider(editingDomain, adapterFactory) {
 			@Override
 			// Overridden to avoid the somewhat annoying logging of Eclipse exceptions resulting from event queue
 			// dispatching that is done before transaction is acquired and actually starts to run
@@ -232,7 +321,7 @@ public class ReferencesView extends ViewPart {
 	 * return any {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter
 	 * factory} will then be returned as result by this method.
 	 * </p>
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain editing domain} whose embedded {@link AdapterFactory adapter
 	 *            factory} is to be returned as default. May be left <code>null</code> if
@@ -264,7 +353,7 @@ public class ReferencesView extends ViewPart {
 	 * {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter factory} will
 	 * then be returned as result by {@link #getAdapterFactory(TransactionalEditingDomain)}.
 	 * </p>
-	 * 
+	 *
 	 * @return The custom {@link AdapterFactory adapter factory} that is to be used by this
 	 *         {@link BasicExplorerLabelProvider label provider}. <code>null</code> the default {@link AdapterFactory
 	 *         adapter factory} returned by {@link #getAdapterFactory(TransactionalEditingDomain)} should be used
@@ -278,7 +367,7 @@ public class ReferencesView extends ViewPart {
 	}
 
 	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
 			@Override
@@ -298,45 +387,35 @@ public class ReferencesView extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(new Separator());
-		manager.add(action2);
+		for (ToggleReferencesModeAction toggleReferencesModeAction : toggleReferencesModeActions) {
+			manager.add(toggleReferencesModeAction);
+			if (toggleReferencesModeAction != toggleReferencesModeActions[toggleReferencesModeActions.length - 1]) {
+				manager.add(new Separator());
+			}
+		}
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		for (ToggleReferencesModeAction toggleAction : toggleReferencesModeActions) {
+			manager.add(toggleAction);
+		}
 		manager.add(new Separator());
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		for (ToggleReferencesModeAction toggleAction : toggleReferencesModeActions) {
+			manager.add(toggleAction);
+		}
 		manager.add(new Separator());
 	}
 
 	private void makeActions() {
-		action1 = new Action() {
-			@Override
-			public void run() {
-				showMessage("Action 1 executed");
-			}
-		};
-		action1.setText("Action 1");
-		action1.setToolTipText("Action 1 tooltip");
-		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 
-		action2 = new Action() {
-			@Override
-			public void run() {
-				showMessage("Action 2 executed");
-			}
-		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		toggleReferencesModeActions = new ToggleReferencesModeAction[] { new ToggleReferencesModeAction(this, REFERENCED_OBJECTS_MODE),
+				new ToggleReferencesModeAction(this, REFERENCING_OBJECTS_MODE) };
+
 		doubleClickAction = new Action() {
 			@Override
 			public void run() {
@@ -356,15 +435,134 @@ public class ReferencesView extends ViewPart {
 		});
 	}
 
+	private void initDragAndDrop() {
+		// TODO (aakar) Add Drag support if needed
+		// addDragAdapters(viewer);
+		addDropAdapters(viewer);
+
+		// DND on empty view
+		DropTarget dropTarget = new DropTarget(pageBook, DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK | DND.DROP_DEFAULT);
+		dropTarget.setTransfer(new Transfer[] { LocalSelectionTransfer.getTransfer() });
+		dropTarget.addDropListener(new ReferencesHierarchyTransferDropAdapter(this, viewer));
+	}
+
+	private void addDropAdapters(StructuredViewer viewer) {
+		Transfer[] transfers = new Transfer[] { LocalSelectionTransfer.getTransfer() };
+		int ops = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK | DND.DROP_DEFAULT;
+
+		DelegatingDropAdapter delegatingDropAdapter = new DelegatingDropAdapter();
+		delegatingDropAdapter.addDropTargetListener(new ReferencesHierarchyTransferDropAdapter(this, viewer));
+
+		viewer.addDropSupport(ops, transfers, delegatingDropAdapter);
+	}
+
+	private void initMode() {
+		int mode;
+
+		try {
+			mode = dialogSettings.getInt(STORE_MODE);
+
+			if (mode < 0 || mode > 1) {
+				mode = REFERENCED_OBJECTS_MODE;
+			}
+		} catch (NumberFormatException e) {
+			mode = REFERENCED_OBJECTS_MODE;
+		}
+
+		// force update in setMode(int)
+		currentMode = -1;
+
+		setMode(mode);
+	}
+
 	private void showMessage(String message) {
 		MessageDialog.openInformation(viewer.getControl().getShell(), "Sample View", message);
 	}
 
 	/**
-	 * Passing the focus request to the viewer's control.
+	 * Passing the focus request to the pageBook.
 	 */
 	@Override
 	public void setFocus() {
-		viewer.getControl().setFocus();
+		pageBook.setFocus();
+	}
+
+	/**
+	 * Called from {@link ToggleReferencesModeAction}.
+	 *
+	 * @param mode
+	 *            {@link REFERENCED_OBJECTS_MODE } or {@link REFERENCING_OBJECTS_MODE}
+	 */
+	public void setMode(int mode) {
+		if (currentMode != mode) {
+
+			for (ToggleReferencesModeAction toggleReferencesModeAction : toggleReferencesModeActions) {
+				toggleReferencesModeAction.setChecked(mode == toggleReferencesModeAction.getMode());
+			}
+
+			currentMode = mode;
+			dialogSettings.put(STORE_MODE, mode);
+
+			updateView();
+		}
+	}
+
+	private void updateView() {
+		if (viewInput != null && viewInput != EMPTY_ROOT) {
+			showPage(PAGE_VIEWER);
+			viewer.setInput(viewInput);
+			viewer.refresh();
+		} else {
+			showPage(PAGE_EMPTY);
+		}
+	}
+
+	protected class DecorationAwareTransactionalAdapterFactoryLabelProvider extends TransactionalAdapterFactoryLabelProvider implements
+			ILabelDecorator {
+
+		private final ImageDescriptor RECURSIVE = Activator.getPlugin().getImageDescriptor("full/over16/recursive_ref.gif"); //$NON-NLS-1$
+
+		public DecorationAwareTransactionalAdapterFactoryLabelProvider(TransactionalEditingDomain domain, AdapterFactory adapterFactory) {
+			super(domain, adapterFactory);
+		}
+
+		@Override
+		public Image getImage(Object object) {
+			Image image = super.getImage(object);
+			return decorateImage(image, object);
+		}
+
+		@Override
+		public Image decorateImage(Image image, Object element) {
+			if (image != null && element instanceof EObject && isRecursive(element)) {
+				List<Image> images = new ArrayList<Image>();
+				images.add(image);
+				images.add(RECURSIVE.createImage());
+				ComposedImage composedImage = new DecoratedComposedImage(images);
+				return ExtendedImageRegistry.INSTANCE.getImage(composedImage);
+			}
+			return image;
+		}
+
+		@Override
+		public String decorateText(String text, Object element) {
+			return null;
+		}
+	}
+
+	private static final class DecoratedComposedImage extends ComposedImage {
+		private DecoratedComposedImage(Collection<?> images) {
+			super(images);
+		}
+
+		@Override
+		public List<Point> getDrawPoints(Size size) {
+			List<Point> result = new ArrayList<Point>();
+			result.add(new Point());
+			Point overlay = new Point();
+			overlay.y = 7;
+			result.add(overlay);
+			return result;
+		}
 	}
 }

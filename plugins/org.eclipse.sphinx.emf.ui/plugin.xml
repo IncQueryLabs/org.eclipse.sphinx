@@ -37,7 +37,6 @@ Contributors:
             </or>
          </enablement>
       </actionProvider>
-      <!-- 
       <actionProvider
             class="org.eclipse.sphinx.emf.ui.actions.providers.CommonModelActionProvider"
             id="org.eclipse.sphinx.emf.ui.actions.commonModelActions">
@@ -52,6 +51,13 @@ Contributors:
             </or>
          </enablement>
       </actionProvider>
-      -->
+   </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            id="org.eclipse.sphinx.emf.ui.decorator1"
+            label="label"
+            lightweight="true">
+      </decorator>
    </extension>
 </plugin>
