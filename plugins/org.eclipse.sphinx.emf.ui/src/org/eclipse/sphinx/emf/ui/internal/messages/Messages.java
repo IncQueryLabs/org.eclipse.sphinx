@@ -51,10 +51,6 @@ public class Messages extends NLS {
 	public static String message_proxyURIMustNotReferenceAnAlreadyExistingListElement;
 
 	public static String error_UnsupportedMode;
-	public static String error_NoSuchVertex;
-	public static String error_LoopsNotAllowed;
-
-	public static String toString_Edge;
 
 	static {
 		// Initialize resource bundle

@@ -59,9 +59,11 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.sphinx.emf.ui.internal.Activator;
 import org.eclipse.sphinx.emf.ui.internal.messages.Messages;
-import org.eclipse.sphinx.emf.ui.util.DirectedGraph;
+import org.eclipse.sphinx.emf.ui.internal.views.ReferencesHierarchyTransferDropAdapter;
+import org.eclipse.sphinx.emf.ui.internal.views.ToggleReferencesModeAction;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
+import org.eclipse.sphinx.platform.util.DirectedGraph;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -86,8 +88,8 @@ public class ReferencesView extends ViewPart {
 
 	private static final String STORE_MODE = "MODE"; //$NON-NLS-1$
 
-	static final int REFERENCED_OBJECTS_MODE = 0;
-	static final int REFERENCING_OBJECTS_MODE = 1;
+	public static final int REFERENCED_OBJECTS_MODE = 0;
+	public static final int REFERENCING_OBJECTS_MODE = 1;
 
 	private static final int PAGE_EMPTY = 0;
 	private static final int PAGE_VIEWER = 1;
@@ -332,37 +334,9 @@ public class ReferencesView extends ViewPart {
 	 * @see #getCustomAdapterFactory()
 	 */
 	protected AdapterFactory getAdapterFactory(TransactionalEditingDomain editingDomain) {
-		AdapterFactory customAdapterFactory = getCustomAdapterFactory();
-		if (customAdapterFactory != null) {
-			return customAdapterFactory;
-		} else if (editingDomain != null) {
+		if (editingDomain != null) {
 			return ((AdapterFactoryEditingDomain) editingDomain).getAdapterFactory();
 		}
-		return null;
-	}
-
-	/**
-	 * Returns a custom {@link AdapterFactory adapter factory} to be used by this {@link BasicExplorerLabelProvider
-	 * label provider} for creating {@link ItemProviderAdapter item provider}s which control the way how {@link EObject
-	 * model element}s from given <code>editingDomain</code> are displayed and can be edited.
-	 * <p>
-	 * This implementation returns <code>null</code> as default. Clients which want to use their own
-	 * {@link AdapterFactory adapter factory} (e.g., an {@link AdapterFactory adapter factory} that creates
-	 * {@link ItemProviderAdapter item provider}s which are specifically designed for the {@link IEditorPart editor} in
-	 * which this {@link BasicExplorerLabelProvider label provider} is used) may override this method and return any
-	 * {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter factory} will
-	 * then be returned as result by {@link #getAdapterFactory(TransactionalEditingDomain)}.
-	 * </p>
-	 *
-	 * @return The custom {@link AdapterFactory adapter factory} that is to be used by this
-	 *         {@link BasicExplorerLabelProvider label provider}. <code>null</code> the default {@link AdapterFactory
-	 *         adapter factory} returned by {@link #getAdapterFactory(TransactionalEditingDomain)} should be used
-	 *         instead.
-	 * @see #getAdapterFactory(TransactionalEditingDomain)
-	 */
-	protected AdapterFactory getCustomAdapterFactory() {
-		// FIXME This API does't make sense like this. There must be a way to specify custom adapter factories on a per
-		// metamodel basis.
 		return null;
 	}
 

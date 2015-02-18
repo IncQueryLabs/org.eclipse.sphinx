@@ -29,7 +29,7 @@ Contributors:
             class="org.eclipse.sphinx.emf.ui.views.ReferencesView"
             icon="icons/full/eview16/ref_hierarchy.gif"
             id="org.eclipse.sphinx.emf.ui.views.references"
-            name="References Hierarchy">
+            name="References">
       </view>
    </extension>
    <extension point="org.eclipse.ui.newWizards">

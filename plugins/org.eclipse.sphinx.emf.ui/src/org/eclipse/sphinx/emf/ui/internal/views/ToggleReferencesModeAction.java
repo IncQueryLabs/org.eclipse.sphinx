@@ -1,11 +1,12 @@
-package org.eclipse.sphinx.emf.ui.views;
+package org.eclipse.sphinx.emf.ui.internal.views;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.ui.internal.Activator;
 import org.eclipse.sphinx.emf.ui.internal.messages.Messages;
+import org.eclipse.sphinx.emf.ui.views.ReferencesView;
 
-class ToggleReferencesModeAction extends Action {
+public class ToggleReferencesModeAction extends Action {
 
 	private ReferencesView referencesView;
 	private int mode;

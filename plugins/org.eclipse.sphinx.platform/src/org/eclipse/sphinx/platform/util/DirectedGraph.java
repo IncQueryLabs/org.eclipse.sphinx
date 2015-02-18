@@ -1,4 +1,4 @@
-package org.eclipse.sphinx.emf.ui.util;
+package org.eclipse.sphinx.platform.util;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.sphinx.emf.ui.internal.messages.Messages;
+import org.eclipse.sphinx.platform.internal.messages.Messages;
 
 public class DirectedGraph<V> {
 

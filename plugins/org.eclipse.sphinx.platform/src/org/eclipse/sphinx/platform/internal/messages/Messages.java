@@ -47,6 +47,11 @@ public class Messages extends NLS {
 	public static String cliOption_help;
 	public static String cliOption_workspaceLocation_argName;
 
+	public static String error_NoSuchVertex;
+	public static String error_LoopsNotAllowed;
+
+	public static String toString_Edge;
+
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
