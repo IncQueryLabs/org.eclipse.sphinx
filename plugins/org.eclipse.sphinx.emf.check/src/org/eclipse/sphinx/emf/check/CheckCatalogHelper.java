@@ -10,6 +10,7 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
+ *     itemis - [460445] CheckCatalogHelper error message when catalog not found
  *
  * </copyright>
  */
@@ -75,7 +76,7 @@ public class CheckCatalogHelper {
 				EObject eObject = EcoreResourceUtil.loadEObject(null, uri.appendFragment("/")); //$NON-NLS-1$
 				if (!(eObject instanceof Catalog)) {
 					throw new IllegalStateException(
-							"Unable to find the check catalog for check validator '" + checkValidator.getClass().getName() + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+							"Unable to find the check catalog '" + uri.toString() + "' for check validator '" + checkValidator.getClass().getName() + "'"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 				catalog = (Catalog) eObject;
 			}
