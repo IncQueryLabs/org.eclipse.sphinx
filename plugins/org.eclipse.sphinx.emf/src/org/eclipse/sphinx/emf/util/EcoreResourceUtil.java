@@ -21,6 +21,7 @@
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
+ *     itemis - [460534] Make sure that EcoreResourceUtil creates a ResourceSetImpl rather than a ScopingResourceSetImpl when no resource set is provided by the caller
  *
  * </copyright>
  */
@@ -63,6 +64,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.XMIException;
@@ -75,7 +77,6 @@ import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
-import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.platform.util.ExtendedPlatform;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.XMLRootElementHandler;
@@ -634,7 +635,7 @@ public final class EcoreResourceUtil {
 		if (uri.hasFragment()) {
 			// Create new ResourceSet if none has been provided
 			if (resourceSet == null) {
-				resourceSet = new ScopingResourceSetImpl();
+				resourceSet = new ResourceSetImpl();
 			}
 
 			// Try to convert given URI to platform:/resource URI if not yet so
@@ -875,7 +876,7 @@ public final class EcoreResourceUtil {
 			try {
 				// Create new ResourceSet if none has been provided
 				if (resourceSet == null) {
-					resourceSet = new ScopingResourceSetImpl();
+					resourceSet = new ResourceSetImpl();
 				}
 
 				// Unload and remove model resource if it is already loaded
@@ -914,7 +915,7 @@ public final class EcoreResourceUtil {
 		if (resource != null) {
 			// Create new ResourceSet if none has been provided
 			if (resourceSet == null) {
-				resourceSet = new ScopingResourceSetImpl();
+				resourceSet = new ResourceSetImpl();
 			}
 
 			// Add resource to resourceSet if not already present
@@ -1164,7 +1165,7 @@ public final class EcoreResourceUtil {
 
 		// Create new ResourceSet if none has been provided
 		if (resourceSet == null) {
-			resourceSet = new ScopingResourceSetImpl();
+			resourceSet = new ResourceSetImpl();
 		}
 
 		// Try to convert given URI to platform:/resource URI if not yet so
