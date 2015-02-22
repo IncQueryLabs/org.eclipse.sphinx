@@ -56,7 +56,6 @@ import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelper;
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.ProxyHelperAdapterFactory;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.internal.resource.ResourceProblemMarkerService;
-import org.eclipse.sphinx.emf.internal.resource.URIResourceCacheUpdater;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.metamodel.services.DefaultMetaModelServiceProvider;
@@ -182,8 +181,6 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 			super.didClear(size, oldObjects);
 		}
 	}
-
-	final protected URIResourceCacheUpdater resourceChangeListener = new URIResourceCacheUpdater();
 
 	final protected ContextAwareProxyURIHelper contextAwareProxyURIHelper;
 
