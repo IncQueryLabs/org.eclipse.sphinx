@@ -386,7 +386,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 			// Fragment-based proxy?
 			if (uri.segmentCount() == 0) {
 				// If lookup-based proxy resolution is possible then go ahead and try to do so
-				if (uri.segmentCount() == 0 && proxyHelper.getLookupResolver().isAvailable()) {
+				if (proxyHelper.getLookupResolver().isAvailable()) {
 					EObject resolvedEObject = proxyHelper.getLookupResolver().get(uri);
 					if (resolvedEObject != null) {
 						return resolvedEObject;
@@ -458,7 +458,7 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 			// Fragment-based proxy?
 			if (uri.segmentCount() == 0) {
 				// If lookup-based proxy resolution is possible then go ahead and try to do so
-				if (uri.segmentCount() == 0 && proxyHelper.getLookupResolver().isAvailable()) {
+				if (proxyHelper.getLookupResolver().isAvailable()) {
 					EObject resolvedEObject = proxyHelper.getLookupResolver().get(uri);
 					if (resolvedEObject != null) {
 						return resolvedEObject;
