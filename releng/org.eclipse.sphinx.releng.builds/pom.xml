@@ -100,6 +100,7 @@
 		<module>../../tests/org.eclipse.sphinx.tests.emf.serialization</module>
 		<module>../../tests/org.eclipse.sphinx.tests.emf.serialization.generators</module>
 		<module>../../tests/org.eclipse.sphinx.tests.emf.incquery</module>
+		<module>../../tests/org.eclipse.sphinx.tests.emf.editors.integration</module>
 
 		<!-- Features -->
 		<module>../../features/org.eclipse.sphinx.core-feature</module>
