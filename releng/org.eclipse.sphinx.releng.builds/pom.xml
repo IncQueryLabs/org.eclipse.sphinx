@@ -57,6 +57,8 @@
 		<module>../../examples/org.eclipse.sphinx.examples.codegen.xpand.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.common.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.explorer</module>
+		<module>../../examples/org.eclipse.sphinx.examples.emf.compare.report.csv</module>
+		<module>../../examples/org.eclipse.sphinx.examples.emf.compare.report.html</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.ide.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.ide</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.metamodelgen.ui</module>
@@ -122,6 +124,7 @@
 		<module>../../features/org.eclipse.sphinx.xtendxpand-feature</module>
 
 		<module>../../features/org.eclipse.sphinx.examples.core-feature</module>
+		<module>../../features/org.eclipse.sphinx.examples.emf.compare-feature</module>
 		<module>../../features/org.eclipse.sphinx.examples.incquery-feature</module>
 		<module>../../features/org.eclipse.sphinx.examples.metamodels.hummingbird-feature</module>
 		<module>../../features/org.eclipse.sphinx.examples.metamodels.hummingbird.incquery-feature</module>
