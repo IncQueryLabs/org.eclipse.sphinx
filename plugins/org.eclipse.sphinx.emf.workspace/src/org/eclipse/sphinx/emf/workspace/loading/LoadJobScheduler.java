@@ -65,7 +65,7 @@ public class LoadJobScheduler {
 		}
 		// Add the files to an existing scheduled job if any
 		for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
-			if (job instanceof ModelLoadJob) {
+			if (job instanceof ModelLoadJob && job.getState() != Job.RUNNING) {
 				AbstractLoadOperation operation = ((ModelLoadJob) job).getOperation();
 				if (operation instanceof FileLoadOperation) {
 					((FileLoadOperation) operation).addFiles(fileLoadOperation.getFiles());
@@ -88,7 +88,7 @@ public class LoadJobScheduler {
 		}
 		// Add the files to an existing scheduled job if any
 		for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
-			if (job instanceof ModelLoadJob) {
+			if (job instanceof ModelLoadJob && job.getState() != Job.RUNNING) {
 				AbstractLoadOperation operation = ((ModelLoadJob) job).getOperation();
 				if (operation instanceof ProjectLoadOperation) {
 					((ProjectLoadOperation) operation).addProjects(prjLoadOperation.getProjects());
@@ -112,7 +112,7 @@ public class LoadJobScheduler {
 		for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
 			if (job instanceof ModelLoadJob) {
 				AbstractLoadOperation operation = ((ModelLoadJob) job).getOperation();
-				if (operation instanceof ModelLoadOperation) {
+				if (operation instanceof ModelLoadOperation && job.getState() != Job.RUNNING) {
 					((ModelLoadOperation) operation).addFiles(modelLoadOperation.getFiles());
 					return;
 				}
@@ -135,7 +135,7 @@ public class LoadJobScheduler {
 		for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
 			if (job instanceof ModelLoadJob) {
 				AbstractLoadOperation operation = ((ModelLoadJob) job).getOperation();
-				if (operation instanceof FileReloadOperation) {
+				if (operation instanceof FileReloadOperation && job.getState() != Job.RUNNING) {
 					((FileReloadOperation) operation).addFiles(fileReloadOperation.getFiles());
 					return;
 				}
@@ -158,7 +158,7 @@ public class LoadJobScheduler {
 
 		// Add the files to an existing scheduled job if any
 		for (Job job : Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_MODEL_LOADING)) {
-			if (job instanceof ModelLoadJob) {
+			if (job instanceof ModelLoadJob && job.getState() != Job.RUNNING) {
 				AbstractLoadOperation operation = ((ModelLoadJob) job).getOperation();
 				if (operation instanceof ProjectReloadOperation) {
 					((ProjectReloadOperation) operation).addProjects(projectReloadOperation.getProjects());
