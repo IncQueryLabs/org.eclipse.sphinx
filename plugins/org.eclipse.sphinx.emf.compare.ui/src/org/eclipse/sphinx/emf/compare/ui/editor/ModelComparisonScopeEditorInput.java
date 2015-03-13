@@ -36,6 +36,7 @@ import org.eclipse.emf.compare.scope.IComparisonScope;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.edit.provider.IDisposable;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.compare.domain.DelegatingEMFCompareEditingDomain;
@@ -44,7 +45,6 @@ import org.eclipse.sphinx.emf.compare.ui.internal.Activator;
 import org.eclipse.sphinx.emf.compare.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.compare.util.ModelCompareUtil;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
@@ -233,7 +233,7 @@ public class ModelComparisonScopeEditorInput extends ComparisonScopeEditorInput 
 	protected void loadModel(IModelComparisonScope comparisonScope, IProgressMonitor monitor) {
 		if (comparisonScope != null && comparisonScope.isFileBasedComparison()) {
 			final Set<IFile> sphinxModelFiles = new HashSet<IFile>();
-			ResourceSet nonSphinxModelResouceSet = new ScopingResourceSetImpl();
+			ResourceSet nonSphinxModelResouceSet = new ResourceSetImpl();
 
 			IFile leftFile = comparisonScope.getLeftFile();
 			if (leftFile != null) {

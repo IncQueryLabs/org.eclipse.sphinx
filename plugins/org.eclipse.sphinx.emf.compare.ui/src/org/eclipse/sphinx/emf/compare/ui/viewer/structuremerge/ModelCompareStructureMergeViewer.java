@@ -24,9 +24,9 @@ import org.eclipse.emf.compare.ide.ui.internal.configuration.EMFCompareConfigura
 import org.eclipse.emf.compare.ide.ui.internal.structuremergeviewer.EMFCompareStructureMergeViewer;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.sphinx.emf.compare.scope.IModelComparisonScope;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
@@ -68,7 +68,7 @@ public class ModelCompareStructureMergeViewer extends EMFCompareStructureMergeVi
 	protected void loadModel(IModelComparisonScope comparisonScope, IProgressMonitor monitor) {
 		if (comparisonScope != null && comparisonScope.isFileBasedComparison()) {
 			final Set<IFile> sphinxModelFiles = new HashSet<IFile>();
-			ResourceSet nonSphinxModelResouceSet = new ScopingResourceSetImpl();
+			ResourceSet nonSphinxModelResouceSet = new ResourceSetImpl();
 
 			IFile leftFile = comparisonScope.getLeftFile();
 			if (leftFile != null) {

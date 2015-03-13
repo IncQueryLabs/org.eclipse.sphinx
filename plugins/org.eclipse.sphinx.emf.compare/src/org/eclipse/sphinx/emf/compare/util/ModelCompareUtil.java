@@ -15,13 +15,16 @@
 package org.eclipse.sphinx.emf.compare.util;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.notify.Notifier;
-import org.eclipse.emf.compare.command.ICompareCommandStack;
-import org.eclipse.emf.compare.command.impl.CompareCommandStack;
+import org.eclipse.emf.compare.Comparison;
+import org.eclipse.emf.compare.Diff;
+import org.eclipse.emf.compare.ReferenceChange;
+import org.eclipse.emf.compare.ResourceAttachmentChange;
 import org.eclipse.emf.compare.domain.ICompareEditingDomain;
 import org.eclipse.emf.compare.domain.impl.EMFCompareEditingDomain;
+import org.eclipse.emf.compare.utils.MatchUtil;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.compare.domain.DelegatingEMFCompareEditingDomain;
@@ -66,10 +69,13 @@ public final class ModelCompareUtil {
 		return editingDomain;
 	}
 
-	public static ICompareCommandStack createCompareCommandStack(final IFile left, final IFile right, Notifier origin) {
-		EditingDomain delegatingEditingDomain = getEditingDomain(left, right);
-		CommandStack delegatingCommandStack = delegatingEditingDomain != null ? delegatingEditingDomain.getCommandStack() : null;
-
-		return delegatingCommandStack != null ? new CompareCommandStack(delegatingCommandStack) : new CompareCommandStack(new BasicCommandStack());
+	public static EObject getValue(Comparison comparison, Diff diff) {
+		EObject value = null;
+		if (diff instanceof ReferenceChange) {
+			value = ((ReferenceChange) diff).getValue();
+		} else if (diff instanceof ResourceAttachmentChange) {
+			value = MatchUtil.getContainer(comparison, diff);
+		}
+		return value;
 	}
 }
