@@ -15,7 +15,9 @@
 package org.eclipse.sphinx.emf.workspace.loading.operations;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -24,7 +26,7 @@ import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 
 public abstract class AbstractFileLoadOperation extends AbstractLoadOperation {
 
-	private Collection<IFile> files;
+	private Set<IFile> files = Collections.synchronizedSet(new HashSet<IFile>());
 
 	public AbstractFileLoadOperation(String label, Collection<IFile> files, IMetaModelDescriptor mmDescriptor) {
 		super(label, mmDescriptor);
@@ -37,7 +39,9 @@ public abstract class AbstractFileLoadOperation extends AbstractLoadOperation {
 	}
 
 	public Collection<IFile> getFiles() {
-		return files;
+		synchronized (files) {
+			return Collections.unmodifiableSet(new HashSet<IFile>(files));
+		}
 	}
 
 	@Override
@@ -62,9 +66,6 @@ public abstract class AbstractFileLoadOperation extends AbstractLoadOperation {
 	}
 
 	public void addFiles(Collection<IFile> files) {
-		if (getFiles() == null) {
-			this.files = new HashSet<IFile>();
-		}
-		getFiles().addAll(files);
+		this.files.addAll(files);
 	}
 }

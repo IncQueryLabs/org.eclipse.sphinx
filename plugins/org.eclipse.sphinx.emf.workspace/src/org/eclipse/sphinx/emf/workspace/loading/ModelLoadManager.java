@@ -877,11 +877,8 @@ public final class ModelLoadManager {
 	public void loadModel(final IModelDescriptor modelDescriptor, boolean includeReferencedScopes, boolean async, IProgressMonitor monitor) {
 		Assert.isNotNull(modelDescriptor);
 
-		final Collection<IFile> persistedFiles = modelDescriptor.getPersistedFiles(includeReferencedScopes);
-		if (!persistedFiles.isEmpty()) {
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, persistedFiles);
-			LoadOperationRunnerHelper.run(modelLoadOperation, async, monitor);
-		}
+		ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, includeReferencedScopes);
+		LoadOperationRunnerHelper.run(modelLoadOperation, async, monitor);
 	}
 
 	/**

@@ -20,34 +20,47 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.workspace.Activator;
 import org.eclipse.sphinx.emf.workspace.internal.messages.Messages;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
-public class ModelLoadOperation extends AbstractFileLoadOperation {
+public class ModelLoadOperation extends AbstractLoadOperation {
 
 	private IModelDescriptor modelDescriptor;
+	private boolean includeReferencedScopes;
+	private Collection<IFile> persistedFiles;
 
-	public ModelLoadOperation(IModelDescriptor modelDescriptor, Collection<IFile> files) {
-		super(Messages.job_loadingModelResources, files, modelDescriptor.getMetaModelDescriptor());
+	public ModelLoadOperation(IModelDescriptor modelDescriptor, boolean includeReferencedScopes) {
+		super(Messages.job_loadingModelResources, modelDescriptor.getMetaModelDescriptor());
 		this.modelDescriptor = modelDescriptor;
+		this.includeReferencedScopes = includeReferencedScopes;
+		persistedFiles = getModelDescriptor().getPersistedFiles(includeReferencedScopes);
 	}
 
 	@Override
 	public void run(IProgressMonitor monitor) throws CoreException {
-		runCollectAndLoadModelFiles(getModelDescriptor().getEditingDomain(), getFiles(), monitor);
+		if (!persistedFiles.isEmpty()) {
+			runCollectAndLoadModelFiles(getModelDescriptor().getEditingDomain(), persistedFiles, monitor);
+		}
 	}
 
 	public IModelDescriptor getModelDescriptor() {
 		return modelDescriptor;
+	}
+
+	public boolean isIncludeReferencedScopes() {
+		return includeReferencedScopes;
 	}
 
 	private void runCollectAndLoadModelFiles(TransactionalEditingDomain editingDomain, Collection<IFile> files, IProgressMonitor monitor)
@@ -99,5 +112,31 @@ public class ModelLoadOperation extends AbstractFileLoadOperation {
 		// TODO Surround with appropriate tracing option
 		// System.out.println("[ModelLoadManager#runCollectAndLoadModelFiles()] Loaded " +
 		// getFilesToLoadCount(filesToLoad) + " model file(s)");
+	}
+
+	@Override
+	public ISchedulingRule getRule() {
+		return getSchedulingRuleFactory().createLoadSchedulingRule(persistedFiles);
+	}
+
+	@Override
+	public boolean covers(Collection<IProject> projects, boolean includeReferencedProjects, IMetaModelDescriptor mmDescriptor) {
+		return false;
+	}
+
+	@Override
+	public boolean covers(Collection<IFile> files, IMetaModelDescriptor mmDescriptor) {
+		int filesComparison = compare(persistedFiles, files);
+		int mmDescriptorsComparison = compare(getMetaModelDescriptor(), mmDescriptor);
+		if (filesComparison == EQUAL) {
+			if (mmDescriptorsComparison == EQUAL || mmDescriptorsComparison == GREATER_THAN) {
+				return true;
+			}
+		} else if (filesComparison == GREATER_THAN) {
+			if (mmDescriptorsComparison == EQUAL || mmDescriptorsComparison == GREATER_THAN) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
