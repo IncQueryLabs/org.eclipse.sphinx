@@ -54,7 +54,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain Hummingbird10MMDescriptor} as meta-model descriptor (consider or not its referenced projects is not
 	 * relevant in the context of this test and corresponding boolean will be kept to <code>false</code>).
 	 */
-	public void testCoveredByExistingJob_20B_hb20RD() {
+	public void testShouldCreateJob_20B_hb20RD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -139,7 +139,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain Hummingbird20MMDescriptor} as meta-model descriptor (consider or not its referenced projects is not
 	 * relevant in the context of this test and corresponding boolean will be kept to <code>false</code>).
 	 */
-	public void testCoveredByExistingJob_20B_Hb20RD() {
+	public void testShouldCreateJob_20B_Hb20RD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -224,7 +224,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain UML2MMDescriptor} as meta-model descriptor (consider or not its referenced projects is not relevant
 	 * in the context of this test and corresponding boolean will be kept to <code>false</code>).
 	 */
-	public void testCoveredByExistingJob_20B_UML2MMD() {
+	public void testShouldCreateJob_20B_UML2MMD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -311,7 +311,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 	 *
 	 * @throws Exception
 	 */
-	public void testCoveredByExistingJob_20B_ANYMM() throws Exception {
+	public void testShouldCreateJob_20B_ANYMM() throws Exception {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -395,7 +395,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 	 * <code>null</code> as meta-model descriptor (consider or not its referenced projects is not relevant in the
 	 * context of this test and corresponding boolean will be kept to <code>false</code>).
 	 */
-	public void testCoveredByExistingJob_20B_null() {
+	public void testShouldCreateJob_20B_null() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();

@@ -101,7 +101,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * Test made on loading of file {@linkplain DefaultTestReferenceWorkspace#HB_FILE_NAME_10_10A_1} specifying
 	 * {@linkplain MetaModelDescriptorRegistry#ANY_MM} as meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_10A_oneFile() {
+	public void testShouldCreateJob_10A_oneFile() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -380,7 +380,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * Test made on loading of files from project {@linkplain DefaultTestReferenceWorkspace#arProject10_A} specifying
 	 * {@linkplain Hummingbird10MMDescriptor} as meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_10A_Hb10RD() {
+	public void testShouldCreateJob_10A_Hb10RD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -556,7 +556,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * Test made on loading of files from project {@linkplain DefaultTestReferenceWorkspace#arProject10_A} specifying
 	 * {@linkplain UML2MMDescriptor} as meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_10A_UML2MMD() {
+	public void testShouldCreateJob_10A_UML2MMD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -650,7 +650,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * Test made on loading of files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain MetaModelDescriptorRegistry#ANY_MM} as meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_AllFiles_ANYMM() {
+	public void testShouldCreateJob_20B_AllFiles_ANYMM() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -876,7 +876,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * Test made on loading of files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain Hummingbird10MMDescriptor} as meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_AllFiles_Hb10RD() {
+	public void testShouldCreateJob_20B_AllFiles_Hb10RD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -1101,7 +1101,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * Test made on loading of files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain Hummingbird20MMDescriptor} as meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_AllFiles_Hb20RD() {
+	public void testShouldCreateJob_20B_AllFiles_Hb20RD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -1327,7 +1327,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * Test made on loading of files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain UML2MMDescriptor} as meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_AllFiles_UML2MMD() {
+	public void testShouldCreateJob_20B_AllFiles_UML2MMD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -1554,7 +1554,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain MetaModelDescriptorRegistry#ANY_MM} as meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_Hb10Files_ANYMM() {
+	public void testShouldCreateJob_20B_Hb10Files_ANYMM() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -1773,7 +1773,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying {@linkplain Hummingbird10MMDescriptor} as
 	 * meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_Hb10Files_Hb10RD() {
+	public void testShouldCreateJob_20B_Hb10Files_Hb10RD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -1992,7 +1992,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying {@linkplain Hummingbird20MMDescriptor} as
 	 * meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_Hb10Files_Hb20RD() {
+	public void testShouldCreateJob_20B_Hb10Files_Hb20RD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -2210,7 +2210,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying {@linkplain UML2MMDescriptor} as meta-model
 	 * descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_Hb10Files_UML2MMD() {
+	public void testShouldCreateJob_20B_Hb10Files_UML2MMD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -2428,7 +2428,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain MetaModelDescriptorRegistry#ANY_MM} as meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_Hb20Files_ANYMM() {
+	public void testShouldCreateJob_20B_Hb20Files_ANYMM() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -2651,7 +2651,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying {@linkplain Hummingbird10MMDescriptor} as
 	 * meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_Hb20Files_Hb10RD() {
+	public void testShouldCreateJob_20B_Hb20Files_Hb10RD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -2874,7 +2874,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying {@linkplain Hummingbird20MMDescriptor} as
 	 * meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_Hb20Files_Hb20RD() {
+	public void testShouldCreateJob_20B_Hb20Files_Hb20RD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -3097,7 +3097,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying {@linkplain UML2MMDescriptor} as meta-model
 	 * descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_Hb20Files_UML2MMD() {
+	public void testShouldCreateJob_20B_Hb20Files_UML2MMD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -3319,7 +3319,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * Test made on loading of Uml2 files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B}
 	 * specifying {@linkplain MetaModelDescriptorRegistry#ANY_MM} as meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_UML2Files_ANYMM() {
+	public void testShouldCreateJob_20B_UML2Files_ANYMM() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -3542,7 +3542,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * Test made on loading of Uml2 files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B}
 	 * specifying {@linkplain Hummingbird10MMDescriptor} as meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_Uml2Files_Hb10RD() {
+	public void testShouldCreateJob_20B_Uml2Files_Hb10RD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -3764,7 +3764,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * Test made on loading of Uml2 files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B}
 	 * specifying {@linkplain Hummingbird20MMDescriptor} as meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_Uml2Files_Hb20RD() {
+	public void testShouldCreateJob_20B_Uml2Files_Hb20RD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -3986,7 +3986,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 	 * Test made on loading of Uml2 files from project {@linkplain DefaultTestReferenceWorkspace#arProject20_B}
 	 * specifying {@linkplain UML2MMDescriptor} as meta-model descriptor.
 	 */
-	public void testCoveredByExistingJob_20B_Uml2Files_UML2MMD() {
+	public void testShouldCreateJob_20B_Uml2Files_UML2MMD() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();

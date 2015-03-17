@@ -54,7 +54,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#hbProject20_C} <b>with</b> its
 	 * referenced projects.
 	 */
-	public void testCoveredByExistingJob_20C_RefProjectsIncluded() {
+	public void testShouldCreateJob_20C_RefProjectsIncluded() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -231,7 +231,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#arProject20_C} <b>without</b> its
 	 * referenced projects.
 	 */
-	public void testCoveredByExistingJob_20C_RefProjectsExcluded() {
+	public void testShouldCreateJob_20C_RefProjectsExcluded() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -407,7 +407,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain DefaultTestReferenceWorkspace#getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B)}
 	 * <b>with</b> its referenced projects.
 	 */
-	public void testCoveredByExistingJob_20B_RefProjectsIncluded() {
+	public void testShouldCreateJob_20B_RefProjectsIncluded() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -580,7 +580,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain DefaultTestReferenceWorkspace#getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B)}
 	 * <b>without</b> its referenced projects.
 	 */
-	public void testCoveredByExistingJob_20B_RefProjectsExcluded() {
+	public void testShouldCreateJob_20B_RefProjectsExcluded() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -753,7 +753,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain DefaultTestReferenceWorkspace#getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A)}
 	 * <b>with</b> its referenced projects.
 	 */
-	public void testCoveredByExistingJob_20A_RefProjectsIncluded() {
+	public void testShouldCreateJob_20A_RefProjectsIncluded() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
@@ -926,7 +926,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 	 * {@linkplain DefaultTestReferenceWorkspace#getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A)}
 	 * <b>without</b> its referenced projects.
 	 */
-	public void testCoveredByExistingJob_20A_RefProjectsExcluded() {
+	public void testShouldCreateJob_20A_RefProjectsExcluded() {
 
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
