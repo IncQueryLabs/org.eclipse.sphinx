@@ -34,7 +34,6 @@ import org.eclipse.emf.compare.domain.ICompareEditingDomain;
 import org.eclipse.emf.compare.ide.ui.internal.configuration.EMFCompareConfiguration;
 import org.eclipse.emf.compare.match.IMatchEngine;
 import org.eclipse.emf.compare.rcp.EMFCompareRCPPlugin;
-import org.eclipse.emf.compare.rcp.internal.extension.impl.EMFCompareBuilderConfigurator;
 import org.eclipse.emf.compare.scope.IComparisonScope;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
@@ -190,10 +189,13 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 		matchEngineFactoryRegistry.add(matchEngineFactory);
 
 		Builder builder = EMFCompare.builder().setPostProcessorRegistry(EMFCompareRCPPlugin.getDefault().getPostProcessorRegistry());
-		if (enginePreferences != null) {
-			EMFCompareBuilderConfigurator engineProvider = new EMFCompareBuilderConfigurator(enginePreferences, matchEngineFactoryRegistry);
-			engineProvider.configure(builder);
-		}
+		// FIXME commented due to API changes in EMF compare available in Eclipse Mars platform.
+		// We need to check later if the same API is provided for Eclipse Luna SR2
+		// if (enginePreferences != null) {
+		// EMFCompareBuilderConfigurator engineProvider = new EMFCompareBuilderConfigurator(enginePreferences,
+		// matchEngineFactoryRegistry);
+		// engineProvider.configure(builder);
+		// }
 		builder.setMatchEngineFactoryRegistry(matchEngineFactoryRegistry);
 
 		EMFCompare comparator = builder.build();
