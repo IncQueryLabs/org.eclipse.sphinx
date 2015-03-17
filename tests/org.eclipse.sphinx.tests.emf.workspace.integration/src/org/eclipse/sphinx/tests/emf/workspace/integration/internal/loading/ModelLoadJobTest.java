@@ -40,6 +40,8 @@ import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestRe
 @SuppressWarnings({ "restriction" })
 public class ModelLoadJobTest extends AbstractLoadJobTest {
 
+	// FIXME should we load model or project in this test case?
+
 	public ModelLoadJobTest() {
 		// Set subset of projects to load
 		Set<String> projectsToLoad = getProjectSubsetToLoad();
@@ -59,6 +61,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
 
+		// FIXME should we load model or project?
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				Hummingbird10MMDescriptor.INSTANCE, true, null);
 
@@ -73,59 +76,67 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 		Collection<IModelDescriptor> modelDescriptors = ModelDescriptorRegistry.INSTANCE.getModels(refWks
 				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
-		IModelDescriptor modelDescriptor = modelDescriptors.iterator().next();
-
-		int index = -1;
-		{ // 0
-			IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 1
-			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 2
-			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 3
-			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
-
-			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 4
-			IMetaModelDescriptor mmDescriptor = null;
-
-			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+		IModelDescriptor modelDescriptor = null;
+		if (!modelDescriptors.isEmpty()) {
+			modelDescriptor = modelDescriptors.iterator().next();
 		}
 
-		// Wake up the model load job that we put sleeping before
-		wakeUp();
+		if (modelDescriptor != null) {
+			int index = -1;
+			{ // 0
+				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 
-		// Check assertions
-		assertFalse(messages[0], shouldCreateJob[0]);
-		assertTrue(messages[1], shouldCreateJob[1]);
-		assertTrue(messages[2], shouldCreateJob[2]);
-		assertTrue(messages[3], shouldCreateJob[3]);
-		assertTrue(messages[4], shouldCreateJob[4]);
+				messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 1
+				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
+
+				messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 2
+				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
+
+				messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 3
+				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
+
+				messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 4
+				IMetaModelDescriptor mmDescriptor = null;
+
+				messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+
+			// Wake up the model load job that we put sleeping before
+			wakeUp();
+
+			// Check assertions
+			assertFalse(messages[0], shouldCreateJob[0]);
+			assertTrue(messages[1], shouldCreateJob[1]);
+			assertTrue(messages[2], shouldCreateJob[2]);
+			assertTrue(messages[3], shouldCreateJob[3]);
+			assertTrue(messages[4], shouldCreateJob[4]);
+		} else {
+			// Wake up the model load job that we put sleeping before
+			wakeUp();
+		}
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -144,6 +155,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
 
+		// FIXME should we load model or project?
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				Hummingbird20MMDescriptor.INSTANCE, true, null);
 
@@ -158,59 +170,67 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 		Collection<IModelDescriptor> modelDescriptors = ModelDescriptorRegistry.INSTANCE.getModels(refWks
 				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
-		IModelDescriptor modelDescriptor = modelDescriptors.iterator().next();
-
-		int index = -1;
-		{ // 0
-			IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 1
-			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 2
-			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 3
-			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
-
-			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 4
-			IMetaModelDescriptor mmDescriptor = null;
-
-			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+		IModelDescriptor modelDescriptor = null;
+		if (!modelDescriptors.isEmpty()) {
+			modelDescriptor = modelDescriptors.iterator().next();
 		}
 
-		// Wake up the model load job that we put sleeping before
-		wakeUp();
+		if (modelDescriptor != null) {
+			int index = -1;
+			{ // 0
+				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 
-		// Check assertions
-		assertTrue(messages[0], shouldCreateJob[0]);
-		assertFalse(messages[1], shouldCreateJob[1]);
-		assertTrue(messages[2], shouldCreateJob[2]);
-		assertTrue(messages[3], shouldCreateJob[3]);
-		assertTrue(messages[4], shouldCreateJob[4]);
+				messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 1
+				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
+
+				messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 2
+				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
+
+				messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 3
+				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
+
+				messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 4
+				IMetaModelDescriptor mmDescriptor = null;
+
+				messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+
+			// Wake up the model load job that we put sleeping before
+			wakeUp();
+
+			// Check assertions
+			assertTrue(messages[0], shouldCreateJob[0]);
+			assertFalse(messages[1], shouldCreateJob[1]);
+			assertTrue(messages[2], shouldCreateJob[2]);
+			assertTrue(messages[3], shouldCreateJob[3]);
+			assertTrue(messages[4], shouldCreateJob[4]);
+		} else {
+			// Wake up the model load job that we put sleeping before
+			wakeUp();
+		}
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -229,6 +249,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
 
+		// FIXME should we load model or project?
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				UML2MMDescriptor.INSTANCE, true, null);
 
@@ -243,59 +264,67 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 		Collection<IModelDescriptor> modelDescriptors = ModelDescriptorRegistry.INSTANCE.getModels(refWks
 				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
-		IModelDescriptor modelDescriptor = modelDescriptors.iterator().next();
-
-		int index = -1;
-		{ // 0
-			IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 1
-			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 2
-			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 3
-			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
-
-			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 4
-			IMetaModelDescriptor mmDescriptor = null;
-
-			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+		IModelDescriptor modelDescriptor = null;
+		if (!modelDescriptors.isEmpty()) {
+			modelDescriptor = modelDescriptors.iterator().next();
 		}
 
-		// Wake up the model load job that we put sleeping before
-		wakeUp();
+		if (modelDescriptor != null) {
+			int index = -1;
+			{ // 0
+				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 
-		// Check assertions
-		assertTrue(messages[0], shouldCreateJob[0]);
-		assertTrue(messages[1], shouldCreateJob[1]);
-		assertFalse(messages[2], shouldCreateJob[2]);
-		assertTrue(messages[3], shouldCreateJob[3]);
-		assertTrue(messages[4], shouldCreateJob[4]);
+				messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 1
+				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
+
+				messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 2
+				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
+
+				messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 3
+				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
+
+				messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 4
+				IMetaModelDescriptor mmDescriptor = null;
+
+				messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+
+			// Wake up the model load job that we put sleeping before
+			wakeUp();
+
+			// Check assertions
+			assertTrue(messages[0], shouldCreateJob[0]);
+			assertTrue(messages[1], shouldCreateJob[1]);
+			assertFalse(messages[2], shouldCreateJob[2]);
+			assertTrue(messages[3], shouldCreateJob[3]);
+			assertTrue(messages[4], shouldCreateJob[4]);
+		} else {
+			// Wake up the model load job that we put sleeping before
+			wakeUp();
+		}
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -316,6 +345,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
 
+		// FIXME should we load model or project?
 		ModelLoadManager.INSTANCE.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false,
 				MetaModelDescriptorRegistry.ANY_MM, true, null);
 		// Verify prerequisites assertions
@@ -329,59 +359,67 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 		Collection<IModelDescriptor> modelDescriptors = ModelDescriptorRegistry.INSTANCE.getModels(refWks
 				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
-		IModelDescriptor modelDescriptor = modelDescriptors.iterator().next();
-
-		int index = -1;
-		{ // 0
-			IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 1
-			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 2
-			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 3
-			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
-
-			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 4
-			IMetaModelDescriptor mmDescriptor = null;
-
-			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+		IModelDescriptor modelDescriptor = null;
+		if (!modelDescriptors.isEmpty()) {
+			modelDescriptor = modelDescriptors.iterator().next();
 		}
 
-		// Wake up the model load job that we put sleeping before
-		wakeUp();
+		if (modelDescriptor != null) {
+			int index = -1;
+			{ // 0
+				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 
-		// Check assertions
-		assertFalse(messages[0], shouldCreateJob[0]);
-		assertFalse(messages[1], shouldCreateJob[1]);
-		assertFalse(messages[2], shouldCreateJob[2]);
-		assertFalse(messages[3], shouldCreateJob[3]);
-		assertFalse(messages[4], shouldCreateJob[4]);
+				messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 1
+				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
+
+				messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 2
+				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
+
+				messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 3
+				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
+
+				messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 4
+				IMetaModelDescriptor mmDescriptor = null;
+
+				messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+
+			// Wake up the model load job that we put sleeping before
+			wakeUp();
+
+			// Check assertions
+			assertFalse(messages[0], shouldCreateJob[0]);
+			assertFalse(messages[1], shouldCreateJob[1]);
+			assertFalse(messages[2], shouldCreateJob[2]);
+			assertFalse(messages[3], shouldCreateJob[3]);
+			assertFalse(messages[4], shouldCreateJob[4]);
+		} else {
+			// Wake up the model load job that we put sleeping before
+			wakeUp();
+		}
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -400,6 +438,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		// Local initialization of this test
 		LoadJobScheduler loadJobScheduler = new LoadJobScheduler();
 
+		// FIXME should we load model or project?
 		ModelLoadManager.INSTANCE
 				.loadProject(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B), false, null, true, null);
 
@@ -414,59 +453,67 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 		Collection<IModelDescriptor> modelDescriptors = ModelDescriptorRegistry.INSTANCE.getModels(refWks
 				.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
-		IModelDescriptor modelDescriptor = modelDescriptors.iterator().next();
-
-		int index = -1;
-		{ // 0
-			IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 1
-			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 2
-			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
-
-			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 3
-			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
-
-			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
-		}
-		{ // 4
-			IMetaModelDescriptor mmDescriptor = null;
-
-			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
-
-			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+		IModelDescriptor modelDescriptor = null;
+		if (!modelDescriptors.isEmpty()) {
+			modelDescriptor = modelDescriptors.iterator().next();
 		}
 
-		// Wake up the model load job that we put sleeping before
-		wakeUp();
+		if (modelDescriptor != null) {
+			int index = -1;
+			{ // 0
+				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 
-		// Check assertions
-		assertFalse(messages[0], shouldCreateJob[0]);
-		assertFalse(messages[1], shouldCreateJob[1]);
-		assertFalse(messages[2], shouldCreateJob[2]);
-		assertFalse(messages[3], shouldCreateJob[3]);
-		assertFalse(messages[4], shouldCreateJob[4]);
+				messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 1
+				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
+
+				messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 2
+				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
+
+				messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 3
+				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
+
+				messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+			{ // 4
+				IMetaModelDescriptor mmDescriptor = null;
+
+				messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
+
+				ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			}
+
+			// Wake up the model load job that we put sleeping before
+			wakeUp();
+
+			// Check assertions
+			assertFalse(messages[0], shouldCreateJob[0]);
+			assertFalse(messages[1], shouldCreateJob[1]);
+			assertFalse(messages[2], shouldCreateJob[2]);
+			assertFalse(messages[3], shouldCreateJob[3]);
+			assertFalse(messages[4], shouldCreateJob[4]);
+		} else {
+			// Wake up the model load job that we put sleeping before
+			wakeUp();
+		}
 
 		// Ends the test by verifying that everything is fine
 		finish();
