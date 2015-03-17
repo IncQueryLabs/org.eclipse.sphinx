@@ -127,7 +127,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 1
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_2);
@@ -135,7 +135,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 2
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_3);
@@ -143,7 +143,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 3
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -154,7 +154,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 4
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -165,7 +165,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 5
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -179,7 +179,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -234,7 +234,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 1
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_2);
@@ -242,7 +242,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 2
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_3);
@@ -250,7 +250,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 3
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -261,7 +261,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 4
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -272,7 +272,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 5
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -286,7 +286,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 
 		mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
@@ -297,7 +297,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 7
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_2);
@@ -305,7 +305,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 8
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_3);
@@ -313,7 +313,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 9
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -324,7 +324,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 10
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -335,7 +335,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 11
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -349,7 +349,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -410,7 +410,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 1
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_2);
@@ -418,7 +418,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 2
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_3);
@@ -426,7 +426,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 3
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -437,7 +437,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 4
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -448,7 +448,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 5
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -462,7 +462,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 
 		mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
@@ -473,7 +473,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 7
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_2);
@@ -481,7 +481,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 8
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_3);
@@ -489,7 +489,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 9
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -500,7 +500,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 10
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -511,7 +511,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 11
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -525,7 +525,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -583,19 +583,19 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_1);
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 1
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_2);
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 2
 			Collection<IFile> files = Collections.singletonList(hbFile10_10A_3);
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 3
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -604,7 +604,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			files.add(hbFile10_10A_3);
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 4
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -613,7 +613,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			files.add(hbFile10_10B_3);
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 		{ // 5
 			Collection<IFile> files = new ArrayList<IFile>();
@@ -625,7 +625,7 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 			files.add(uml2File_20B_3);
 			messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 			FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-			shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 		}
 
 		// Wake up the model load job that we put sleeping before
@@ -688,25 +688,25 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 			{ // 0.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 			{ // 0.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 			{ // 0.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 		}
 		{ // 1
@@ -719,25 +719,25 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 			{ // 1.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 			{ // 1.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 			{ // 1.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 		}
 		{ // 2
@@ -750,25 +750,25 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 			{ // 2.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 			{ // 2.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 			{ // 2.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_NOT_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 		}
 		{ // 3
@@ -787,19 +787,19 @@ public class FileLoadJobTest extends AbstractLoadJobTest {
 				IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 			{ // 3.1
 				IMetaModelDescriptor mmDescriptor = Hummingbird10MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 			{ // 3.2
 				IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
 				messages[++index] = getMessage(SHOULD_CREATE, files, mmDescriptor);
 				FileLoadOperation fileLoadOperation = new FileLoadOperation(files, mmDescriptor);
-				shouldCreateJob[index] = !!loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
+				shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(fileLoadOperation);
 			}
 			{ // 3.3
 				IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
