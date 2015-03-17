@@ -49,7 +49,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain ModelLoadJob#coveredByExistingJobs(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#hbProject20_C} <b>with</b> its
 	 * referenced projects.
@@ -68,7 +68,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
-		boolean[] coveredByExistingJobs = new boolean[14];
+		boolean[] shouldCreateJob = new boolean[14];
 		// The messages to display in case of violated assertions
 		String[] messages = new String[14];
 
@@ -81,7 +81,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 1
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
@@ -89,7 +89,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 2
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
@@ -97,7 +97,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 3
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
@@ -105,21 +105,21 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 4
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 5
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 6
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -129,7 +129,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 			;
 		}
 		{ // 7
@@ -140,7 +140,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 8
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -149,7 +149,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 9
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -158,7 +158,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 10
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -167,7 +167,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 11
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -176,7 +176,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 12
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -187,7 +187,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 13
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -198,27 +198,27 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 
 		// Check assertions
-		assertFalse(messages[0], coveredByExistingJobs[0]);
-		assertFalse(messages[1], coveredByExistingJobs[1]);
-		assertTrue(messages[2], coveredByExistingJobs[2]);
-		assertTrue(messages[3], coveredByExistingJobs[3]);
-		assertTrue(messages[4], coveredByExistingJobs[4]);
-		assertTrue(messages[5], coveredByExistingJobs[5]);
-		assertTrue(messages[6], coveredByExistingJobs[6]);
-		assertTrue(messages[7], coveredByExistingJobs[7]);
-		assertTrue(messages[8], coveredByExistingJobs[8]);
-		assertTrue(messages[9], coveredByExistingJobs[9]);
-		assertTrue(messages[10], coveredByExistingJobs[10]);
-		assertTrue(messages[11], coveredByExistingJobs[11]);
-		assertTrue(messages[12], coveredByExistingJobs[12]);
-		assertTrue(messages[13], coveredByExistingJobs[13]);
+		assertFalse(messages[0], shouldCreateJob[0]);
+		assertFalse(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -226,7 +226,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain ModelLoadJob#coveredByExistingJobs(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#arProject20_C} <b>without</b> its
 	 * referenced projects.
@@ -245,7 +245,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
-		boolean[] coveredByExistingJobs = new boolean[14];
+		boolean[] shouldCreateJob = new boolean[14];
 		// The messages to display in case of violated assertions
 		String[] messages = new String[14];
 
@@ -258,14 +258,14 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 1
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 2
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
@@ -273,14 +273,14 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 3
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 4
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
@@ -288,14 +288,14 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 5
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 6
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -305,7 +305,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 7
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -315,7 +315,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 8
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -324,7 +324,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 9
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -333,7 +333,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 10
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -342,7 +342,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 11
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -351,7 +351,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 12
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -362,7 +362,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 13
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -373,27 +373,27 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 
 		// Check assertions
-		assertFalse(messages[0], coveredByExistingJobs[0]);
-		assertFalse(messages[1], coveredByExistingJobs[1]);
-		assertTrue(messages[2], coveredByExistingJobs[2]);
-		assertTrue(messages[3], coveredByExistingJobs[3]);
-		assertTrue(messages[4], coveredByExistingJobs[4]);
-		assertTrue(messages[5], coveredByExistingJobs[5]);
-		assertTrue(messages[6], coveredByExistingJobs[6]);
-		assertTrue(messages[7], coveredByExistingJobs[7]);
-		assertTrue(messages[8], coveredByExistingJobs[8]);
-		assertTrue(messages[9], coveredByExistingJobs[9]);
-		assertTrue(messages[10], coveredByExistingJobs[10]);
-		assertTrue(messages[11], coveredByExistingJobs[11]);
-		assertTrue(messages[12], coveredByExistingJobs[12]);
-		assertTrue(messages[13], coveredByExistingJobs[13]);
+		assertFalse(messages[0], shouldCreateJob[0]);
+		assertFalse(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -401,7 +401,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain ModelLoadJob#coveredByExistingJobs(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project
 	 * {@linkplain DefaultTestReferenceWorkspace#getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B)}
@@ -421,7 +421,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
-		boolean[] coveredByExistingJobs = new boolean[14];
+		boolean[] shouldCreateJob = new boolean[14];
 		// The messages to display in case of violated assertions
 		String[] messages = new String[14];
 
@@ -433,42 +433,42 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 1
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 2
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 3
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 4
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 5
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 6
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -478,7 +478,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 7
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -488,7 +488,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 8
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -497,7 +497,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 9
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -506,7 +506,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 10
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -515,7 +515,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 11
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -524,7 +524,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 12
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -535,7 +535,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 13
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -546,27 +546,27 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 
 		// Check assertions
-		assertTrue(messages[0], coveredByExistingJobs[0]);
-		assertTrue(messages[1], coveredByExistingJobs[1]);
-		assertFalse(messages[2], coveredByExistingJobs[2]);
-		assertFalse(messages[3], coveredByExistingJobs[3]);
-		assertTrue(messages[4], coveredByExistingJobs[4]);
-		assertTrue(messages[5], coveredByExistingJobs[5]);
-		assertTrue(messages[6], coveredByExistingJobs[6]);
-		assertTrue(messages[7], coveredByExistingJobs[7]);
-		assertTrue(messages[8], coveredByExistingJobs[8]);
-		assertTrue(messages[9], coveredByExistingJobs[9]);
-		assertTrue(messages[10], coveredByExistingJobs[10]);
-		assertTrue(messages[11], coveredByExistingJobs[11]);
-		assertTrue(messages[12], coveredByExistingJobs[12]);
-		assertTrue(messages[13], coveredByExistingJobs[13]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertFalse(messages[2], shouldCreateJob[2]);
+		assertFalse(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -574,7 +574,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain ModelLoadJob#coveredByExistingJobs(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project
 	 * {@linkplain DefaultTestReferenceWorkspace#getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B)}
@@ -594,7 +594,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
-		boolean[] coveredByExistingJobs = new boolean[14];
+		boolean[] shouldCreateJob = new boolean[14];
 		// The messages to display in case of violated assertions
 		String[] messages = new String[14];
 
@@ -606,42 +606,42 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 1
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 2
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 3
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 4
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 5
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 6
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -651,7 +651,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 7
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -661,7 +661,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 8
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -670,7 +670,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 9
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -679,7 +679,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 10
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -688,7 +688,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 11
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -697,7 +697,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 12
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -708,7 +708,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 13
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -719,27 +719,27 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 
 		// Check assertions
-		assertTrue(messages[0], coveredByExistingJobs[0]);
-		assertTrue(messages[1], coveredByExistingJobs[1]);
-		assertFalse(messages[2], coveredByExistingJobs[2]);
-		assertFalse(messages[3], coveredByExistingJobs[3]);
-		assertTrue(messages[4], coveredByExistingJobs[4]);
-		assertTrue(messages[5], coveredByExistingJobs[5]);
-		assertTrue(messages[6], coveredByExistingJobs[6]);
-		assertTrue(messages[7], coveredByExistingJobs[7]);
-		assertTrue(messages[8], coveredByExistingJobs[8]);
-		assertTrue(messages[9], coveredByExistingJobs[9]);
-		assertTrue(messages[10], coveredByExistingJobs[10]);
-		assertTrue(messages[11], coveredByExistingJobs[11]);
-		assertTrue(messages[12], coveredByExistingJobs[12]);
-		assertTrue(messages[13], coveredByExistingJobs[13]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertFalse(messages[2], shouldCreateJob[2]);
+		assertFalse(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
+		assertTrue(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -747,7 +747,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain ModelLoadJob#coveredByExistingJobs(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project
 	 * {@linkplain DefaultTestReferenceWorkspace#getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A)}
@@ -767,7 +767,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
-		boolean[] coveredByExistingJobs = new boolean[14];
+		boolean[] shouldCreateJob = new boolean[14];
 		// The messages to display in case of violated assertions
 		String[] messages = new String[14];
 
@@ -779,42 +779,42 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 1
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 2
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 3
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 4
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 5
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 6
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -824,7 +824,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 7
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -834,7 +834,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 8
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -843,7 +843,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 9
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -852,7 +852,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 10
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -861,7 +861,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 11
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -870,7 +870,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 12
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -881,7 +881,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 13
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -892,27 +892,27 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 
 		// Check assertions
-		assertTrue(messages[0], coveredByExistingJobs[0]);
-		assertTrue(messages[1], coveredByExistingJobs[1]);
-		assertTrue(messages[2], coveredByExistingJobs[2]);
-		assertTrue(messages[3], coveredByExistingJobs[3]);
-		assertFalse(messages[4], coveredByExistingJobs[4]);
-		assertFalse(messages[5], coveredByExistingJobs[5]);
-		assertTrue(messages[6], coveredByExistingJobs[6]);
-		assertTrue(messages[7], coveredByExistingJobs[7]);
-		assertTrue(messages[8], coveredByExistingJobs[8]);
-		assertTrue(messages[9], coveredByExistingJobs[9]);
-		assertTrue(messages[10], coveredByExistingJobs[10]);
-		assertTrue(messages[11], coveredByExistingJobs[11]);
-		assertTrue(messages[12], coveredByExistingJobs[12]);
-		assertTrue(messages[13], coveredByExistingJobs[13]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertFalse(messages[4], shouldCreateJob[4]);
+		assertFalse(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -920,7 +920,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain ModelLoadJob#coveredByExistingJobs(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project
 	 * {@linkplain DefaultTestReferenceWorkspace#getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A)}
@@ -940,7 +940,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
-		boolean[] coveredByExistingJobs = new boolean[14];
+		boolean[] shouldCreateJob = new boolean[14];
 		// The messages to display in case of violated assertions
 		String[] messages = new String[14];
 
@@ -952,42 +952,42 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 1
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_C));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 2
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 3
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_B));
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 4
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 5
 			Collection<IProject> projects = Collections.singletonList(refWks.getReferenceProject(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_A));
 
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 6
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -997,7 +997,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 7
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -1007,7 +1007,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 8
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -1016,7 +1016,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 9
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -1025,7 +1025,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 10
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -1034,7 +1034,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 11
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -1043,7 +1043,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 12
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -1054,7 +1054,7 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, true, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 		{ // 13
 			Collection<IProject> projects = new ArrayList<IProject>();
@@ -1065,27 +1065,27 @@ public class ProjectLoadJobTest extends AbstractLoadJobTest {
 
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 			ProjectLoadOperation projectLoadOpertaion = new ProjectLoadOperation(projects, false, mmDescriptor);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(projectLoadOpertaion);
 		}
 
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 
 		// Check assertions
-		assertTrue(messages[0], coveredByExistingJobs[0]);
-		assertTrue(messages[1], coveredByExistingJobs[1]);
-		assertTrue(messages[2], coveredByExistingJobs[2]);
-		assertTrue(messages[3], coveredByExistingJobs[3]);
-		assertFalse(messages[4], coveredByExistingJobs[4]);
-		assertFalse(messages[5], coveredByExistingJobs[5]);
-		assertTrue(messages[6], coveredByExistingJobs[6]);
-		assertTrue(messages[7], coveredByExistingJobs[7]);
-		assertTrue(messages[8], coveredByExistingJobs[8]);
-		assertTrue(messages[9], coveredByExistingJobs[9]);
-		assertTrue(messages[10], coveredByExistingJobs[10]);
-		assertTrue(messages[11], coveredByExistingJobs[11]);
-		assertTrue(messages[12], coveredByExistingJobs[12]);
-		assertTrue(messages[13], coveredByExistingJobs[13]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertFalse(messages[4], shouldCreateJob[4]);
+		assertFalse(messages[5], shouldCreateJob[5]);
+		assertTrue(messages[6], shouldCreateJob[6]);
+		assertTrue(messages[7], shouldCreateJob[7]);
+		assertTrue(messages[8], shouldCreateJob[8]);
+		assertTrue(messages[9], shouldCreateJob[9]);
+		assertTrue(messages[10], shouldCreateJob[10]);
+		assertTrue(messages[11], shouldCreateJob[11]);
+		assertTrue(messages[12], shouldCreateJob[12]);
+		assertTrue(messages[13], shouldCreateJob[13]);
 
 		// Ends the test by verifying that everything is fine
 		finish();

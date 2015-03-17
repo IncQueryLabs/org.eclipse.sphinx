@@ -48,7 +48,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain ModelLoadJob#coveredByExistingJobs(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain Hummingbird10MMDescriptor} as meta-model descriptor (consider or not its referenced projects is not
@@ -66,7 +66,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
-		boolean[] coveredByExistingJobs = new boolean[5];
+		boolean[] shouldCreateJob = new boolean[5];
 		// The messages to display in case of violated assertions
 		String[] messages = new String[5];
 
@@ -82,7 +82,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 1
 			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
@@ -90,7 +90,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 2
 			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
@@ -98,7 +98,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 3
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
@@ -106,7 +106,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 4
 			IMetaModelDescriptor mmDescriptor = null;
@@ -114,18 +114,18 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 
 		// Check assertions
-		assertFalse(messages[0], coveredByExistingJobs[0]);
-		assertTrue(messages[1], coveredByExistingJobs[1]);
-		assertTrue(messages[2], coveredByExistingJobs[2]);
-		assertTrue(messages[3], coveredByExistingJobs[3]);
-		assertTrue(messages[4], coveredByExistingJobs[4]);
+		assertFalse(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -133,7 +133,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain ModelLoadJob#coveredByExistingJobs(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain Hummingbird20MMDescriptor} as meta-model descriptor (consider or not its referenced projects is not
@@ -151,7 +151,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
-		boolean[] coveredByExistingJobs = new boolean[5];
+		boolean[] shouldCreateJob = new boolean[5];
 		// The messages to display in case of violated assertions
 		String[] messages = new String[5];
 
@@ -167,7 +167,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 1
 			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
@@ -175,7 +175,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 2
 			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
@@ -183,7 +183,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 3
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
@@ -191,7 +191,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 4
 			IMetaModelDescriptor mmDescriptor = null;
@@ -199,18 +199,18 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 
 		// Check assertions
-		assertTrue(messages[0], coveredByExistingJobs[0]);
-		assertFalse(messages[1], coveredByExistingJobs[1]);
-		assertTrue(messages[2], coveredByExistingJobs[2]);
-		assertTrue(messages[3], coveredByExistingJobs[3]);
-		assertTrue(messages[4], coveredByExistingJobs[4]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertFalse(messages[1], shouldCreateJob[1]);
+		assertTrue(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -218,7 +218,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain ModelLoadJob#coveredByExistingJobs(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain UML2MMDescriptor} as meta-model descriptor (consider or not its referenced projects is not relevant
@@ -236,7 +236,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
-		boolean[] coveredByExistingJobs = new boolean[5];
+		boolean[] shouldCreateJob = new boolean[5];
 		// The messages to display in case of violated assertions
 		String[] messages = new String[5];
 
@@ -252,7 +252,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 1
 			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
@@ -260,7 +260,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 2
 			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
@@ -268,7 +268,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 3
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
@@ -276,7 +276,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 4
 			IMetaModelDescriptor mmDescriptor = null;
@@ -284,18 +284,18 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 
 		// Check assertions
-		assertTrue(messages[0], coveredByExistingJobs[0]);
-		assertTrue(messages[1], coveredByExistingJobs[1]);
-		assertFalse(messages[2], coveredByExistingJobs[2]);
-		assertTrue(messages[3], coveredByExistingJobs[3]);
-		assertTrue(messages[4], coveredByExistingJobs[4]);
+		assertTrue(messages[0], shouldCreateJob[0]);
+		assertTrue(messages[1], shouldCreateJob[1]);
+		assertFalse(messages[2], shouldCreateJob[2]);
+		assertTrue(messages[3], shouldCreateJob[3]);
+		assertTrue(messages[4], shouldCreateJob[4]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -303,7 +303,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain ModelLoadJob#coveredByExistingJobs(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * {@linkplain MetaModelDescriptorRegistry#ANY_MM} as meta-model descriptor (consider or not its referenced projects
@@ -322,7 +322,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
-		boolean[] coveredByExistingJobs = new boolean[5];
+		boolean[] shouldCreateJob = new boolean[5];
 		// The messages to display in case of violated assertions
 		String[] messages = new String[5];
 
@@ -338,7 +338,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 1
 			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
@@ -346,7 +346,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 2
 			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
@@ -354,7 +354,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 3
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
@@ -362,7 +362,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 4
 			IMetaModelDescriptor mmDescriptor = null;
@@ -370,18 +370,18 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 
 		// Check assertions
-		assertFalse(messages[0], coveredByExistingJobs[0]);
-		assertFalse(messages[1], coveredByExistingJobs[1]);
-		assertFalse(messages[2], coveredByExistingJobs[2]);
-		assertFalse(messages[3], coveredByExistingJobs[3]);
-		assertFalse(messages[4], coveredByExistingJobs[4]);
+		assertFalse(messages[0], shouldCreateJob[0]);
+		assertFalse(messages[1], shouldCreateJob[1]);
+		assertFalse(messages[2], shouldCreateJob[2]);
+		assertFalse(messages[3], shouldCreateJob[3]);
+		assertFalse(messages[4], shouldCreateJob[4]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
@@ -389,7 +389,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 
 	/**
 	 * Test method for
-	 * {@linkplain ModelLoadJob#coveredByExistingJobs(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
+	 * {@linkplain ModelLoadJob#shouldCreateJob(java.util.Collection, boolean, org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor)}
 	 * <p>
 	 * Test made on loading of project {@linkplain DefaultTestReferenceWorkspace#arProject20_B} specifying
 	 * <code>null</code> as meta-model descriptor (consider or not its referenced projects is not relevant in the
@@ -407,7 +407,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 		assertOnlyOneLoadJobIsSleeping(ProjectLoadOperation.class);
 
 		// The results of the method under test
-		boolean[] coveredByExistingJobs = new boolean[5];
+		boolean[] shouldCreateJob = new boolean[5];
 		// The messages to display in case of violated assertions
 		String[] messages = new String[5];
 
@@ -423,7 +423,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 1
 			IMetaModelDescriptor mmDescriptor = Hummingbird20MMDescriptor.INSTANCE;
@@ -431,7 +431,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 2
 			IMetaModelDescriptor mmDescriptor = UML2MMDescriptor.INSTANCE;
@@ -439,7 +439,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 3
 			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.ANY_MM;
@@ -447,7 +447,7 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 		{ // 4
 			IMetaModelDescriptor mmDescriptor = null;
@@ -455,18 +455,18 @@ public class ModelLoadJobTest extends AbstractLoadJobTest {
 			messages[++index] = getMessage(SHOULD_NOT_CREATE, projects, mmDescriptor);
 
 			ModelLoadOperation modelLoadOperation = new ModelLoadOperation(modelDescriptor, false);
-			coveredByExistingJobs[index] = loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
+			shouldCreateJob[index] = !loadJobScheduler.coveredByExistingLoadJob(modelLoadOperation);
 		}
 
 		// Wake up the model load job that we put sleeping before
 		wakeUp();
 
 		// Check assertions
-		assertFalse(messages[0], coveredByExistingJobs[0]);
-		assertFalse(messages[1], coveredByExistingJobs[1]);
-		assertFalse(messages[2], coveredByExistingJobs[2]);
-		assertFalse(messages[3], coveredByExistingJobs[3]);
-		assertFalse(messages[4], coveredByExistingJobs[4]);
+		assertFalse(messages[0], shouldCreateJob[0]);
+		assertFalse(messages[1], shouldCreateJob[1]);
+		assertFalse(messages[2], shouldCreateJob[2]);
+		assertFalse(messages[3], shouldCreateJob[3]);
+		assertFalse(messages[4], shouldCreateJob[4]);
 
 		// Ends the test by verifying that everything is fine
 		finish();
