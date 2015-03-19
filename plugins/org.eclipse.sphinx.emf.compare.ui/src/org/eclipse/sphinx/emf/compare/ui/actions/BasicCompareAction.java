@@ -33,6 +33,7 @@ import org.eclipse.emf.compare.EMFCompare.Builder;
 import org.eclipse.emf.compare.domain.ICompareEditingDomain;
 import org.eclipse.emf.compare.ide.ui.internal.configuration.EMFCompareConfiguration;
 import org.eclipse.emf.compare.match.IMatchEngine;
+import org.eclipse.emf.compare.postprocessor.IPostProcessor;
 import org.eclipse.emf.compare.rcp.EMFCompareRCPPlugin;
 import org.eclipse.emf.compare.scope.IComparisonScope;
 import org.eclipse.emf.ecore.EObject;
@@ -41,7 +42,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.sphinx.emf.compare.match.ModelMatchEngineFactory;
 import org.eclipse.sphinx.emf.compare.scope.ModelComparisonScope;
 import org.eclipse.sphinx.emf.compare.ui.editor.ModelCompareEditor;
 import org.eclipse.sphinx.emf.compare.ui.editor.ModelComparisonScopeEditorInput;
@@ -72,8 +72,6 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 	 * The selected files that must be compared.
 	 */
 	protected List<WeakReference<IFile>> selectedFiles = null;
-
-	private IMatchEngine.Factory matchEngineFactory;
 
 	/**
 	 * Constructor.
@@ -159,6 +157,14 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 		return new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
 	}
 
+	protected IMatchEngine.Factory.Registry getMatchEngineFactoryRegistry() {
+		return EMFCompareRCPPlugin.getDefault().getMatchEngineFactoryRegistry();
+	}
+
+	protected IPostProcessor.Descriptor.Registry<?> getPostProcessorRegistry() {
+		return EMFCompareRCPPlugin.getDefault().getPostProcessorRegistry();
+	}
+
 	protected CompareEditorInput getCompareEditorInput(Object leftObject, Object rightObject) {
 		Assert.isTrue(leftObject instanceof Notifier || leftObject instanceof IFile);
 		Assert.isTrue(rightObject instanceof Notifier || rightObject instanceof IFile);
@@ -181,14 +187,7 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 
 	protected CompareEditorInput createCompareEditorInput(AdapterFactory adapterFactory, Object left, Object right, Notifier origin,
 			IEclipsePreferences enginePreferences) {
-		CompareEditorInput input = null;
-
-		IMatchEngine.Factory matchEngineFactory = getModelMatchEngineFactory();
-		matchEngineFactory.setRanking(Integer.MAX_VALUE);
-		final IMatchEngine.Factory.Registry matchEngineFactoryRegistry = EMFCompareRCPPlugin.getDefault().getMatchEngineFactoryRegistry();
-		matchEngineFactoryRegistry.add(matchEngineFactory);
-
-		Builder builder = EMFCompare.builder().setPostProcessorRegistry(EMFCompareRCPPlugin.getDefault().getPostProcessorRegistry());
+		Builder builder = EMFCompare.builder().setPostProcessorRegistry(getPostProcessorRegistry());
 		// FIXME commented due to API changes in EMF compare available in Eclipse Mars platform.
 		// We need to check later if the same API is provided for Eclipse Luna SR2
 		// if (enginePreferences != null) {
@@ -196,30 +195,16 @@ public class BasicCompareAction extends BaseSelectionListenerAction implements I
 		// matchEngineFactoryRegistry);
 		// engineProvider.configure(builder);
 		// }
-		builder.setMatchEngineFactoryRegistry(matchEngineFactoryRegistry);
+		builder.setMatchEngineFactoryRegistry(getMatchEngineFactoryRegistry());
 
 		EMFCompare comparator = builder.build();
 		final ICompareEditingDomain editingDomain = ModelCompareUtil.createEMFCompareEditingDomain(left, right, origin);
 		final EMFCompareConfiguration configuration = getEMFCompareConfiguration();
 		IComparisonScope scope = getComparisonScope(left, right, origin);
 
-		input = new ModelComparisonScopeEditorInput(configuration, editingDomain, adapterFactory, comparator, scope) {
-			@Override
-			protected void handleDispose() {
-				super.handleDispose();
-				matchEngineFactoryRegistry.remove(getModelMatchEngineFactory().getClass().getName());
-			}
-		};
-
+		CompareEditorInput input = new ModelComparisonScopeEditorInput(configuration, editingDomain, adapterFactory, comparator, scope);
 		configuration.setContainer(input);
 		return input;
-	}
-
-	protected IMatchEngine.Factory getModelMatchEngineFactory() {
-		if (matchEngineFactory == null) {
-			matchEngineFactory = new ModelMatchEngineFactory();
-		}
-		return matchEngineFactory;
 	}
 
 	protected EMFCompareConfiguration getEMFCompareConfiguration() {
