@@ -59,6 +59,7 @@
 		<module>../../examples/org.eclipse.sphinx.examples.explorer</module>
 		<module>../../examples/org.eclipse.sphinx.examples.emf.compare.report.csv</module>
 		<module>../../examples/org.eclipse.sphinx.examples.emf.compare.report.html</module>
+		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.emf.compare</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.ide.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.ide</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.metamodelgen.ui</module>
