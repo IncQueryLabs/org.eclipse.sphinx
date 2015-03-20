@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,6 +37,7 @@ import org.eclipse.sphinx.platform.util.ExtendedPlatform
 import org.eclipse.sphinx.platform.util.PlatformLogUtil
 import org.eclipse.sphinx.platform.util.StatusUtil
 import org.osgi.framework.Bundle
+import java.util.regex.Pattern
 
 class JavaExtensions {
 
@@ -44,6 +45,9 @@ class JavaExtensions {
 	public static final String VERSION_1_8 = "1.8"; //$NON-NLS-1$
 
 	public static final String DEFAULT_OUTPUT_FOLDER_NAME = "bin"
+
+	// See http://stackoverflow.com/a/18667639 for details
+	public static final Pattern CLASS_NAME_PATTERN = Pattern.compile("([a-z][a-z_0-9]*\\.)*[A-Z_]($[A-Z_]|[\\w_])*");
 
 	private static final String PLUGIN_ID_VERSION_SEPARATOR = "_"; //$NON-NLS-1$
 
