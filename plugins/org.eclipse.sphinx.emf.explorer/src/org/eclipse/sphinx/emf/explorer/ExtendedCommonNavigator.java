@@ -11,16 +11,15 @@
  *     See4sys - Initial API and implementation
  *     itemis - [420520] Model explorer view state not restored completely when affected model objects are added lately
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
+ *     itemis - [460260] Expanded paths are collapsed on resource reload
  *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.explorer;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
@@ -29,17 +28,14 @@ import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -47,12 +43,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.ui.viewer.IViewerProvider;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.emf.workspace.EMFCommandOperation;
 import org.eclipse.emf.workspace.IWorkspaceCommandStack;
 import org.eclipse.jface.viewers.ISelection;
@@ -63,18 +55,16 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.domain.factory.EditingDomainFactoryListenerRegistry;
 import org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener;
 import org.eclipse.sphinx.emf.explorer.internal.Activator;
+import org.eclipse.sphinx.emf.explorer.internal.state.TreeElementStateMementoHandler;
 import org.eclipse.sphinx.emf.messages.EMFMessages;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.emf.workspace.domain.WorkspaceEditingDomainManager;
 import org.eclipse.sphinx.emf.workspace.internal.saving.ModelSavingPerformanceStats;
 import org.eclipse.sphinx.emf.workspace.internal.saving.ModelSavingPerformanceStats.ModelEvent;
-import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
@@ -82,7 +72,6 @@ import org.eclipse.sphinx.platform.messages.PlatformMessages;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISaveablesLifecycleListener;
@@ -93,7 +82,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.Saveable;
 import org.eclipse.ui.SaveablesLifecycleEvent;
-import org.eclipse.ui.XMLMemento;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.navigator.SaveablesProvider;
@@ -110,12 +98,6 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 @SuppressWarnings("restriction")
 public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedPropertySheetPageContributor, IViewerProvider,
 		ITransactionalEditingDomainFactoryListener {
-
-	private static final String TAG_SELECTED = Activator.getPlugin().getSymbolicName() + ".selection"; //$NON-NLS-1$
-	private static final String TAG_EXPANDED = Activator.getPlugin().getSymbolicName() + ".expanded"; //$NON-NLS-1$
-	private static final String TAG_ELEMENT = Activator.getPlugin().getSymbolicName() + ".element"; //$NON-NLS-1$
-	private static final String TAG_PATH = Activator.getPlugin().getSymbolicName() + ".path"; //$NON-NLS-1$
-	private static final String TAG_URI = Activator.getPlugin().getSymbolicName() + ".uri"; //$NON-NLS-1$
 
 	private IOperationHistoryListener affectedObjectsListener;
 	private IResourceChangeListener resourceMarkerChangeListener;
@@ -150,8 +132,9 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 		@Override
 		public void partOpened(IWorkbenchPart part) {
 		}
-
 	};
+
+	protected TreeElementStateMementoHandler treeElementStateMementoHandler = new TreeElementStateMementoHandler();
 
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
@@ -188,7 +171,7 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 
 	@Override
 	protected CommonViewer createCommonViewerObject(Composite aParent) {
-		return new CommonViewer(getViewSite().getId(), aParent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL) {
+		CommonViewer viewer = new CommonViewer(getViewSite().getId(), aParent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL) {
 			@Override
 			public void refresh() {
 				super.refresh();
@@ -201,6 +184,10 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 				restoreState(memento);
 			}
 		};
+
+		treeElementStateMementoHandler.setViewer(viewer);
+
+		return viewer;
 	}
 
 	@Override
@@ -348,147 +335,12 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 	}
 
 	public void restoreState(IMemento memento) {
-		final CommonViewer viewer = getCommonViewer();
-		if (viewer == null || memento == null) {
-			return;
-		}
-
-		XMLMemento deferredMemento = XMLMemento.createWriteRoot(memento.getType());
-
-		// Retrieve visible expanded elements to be restored
-		final List<Object> expandedElements = new ArrayList<Object>();
-		XMLMemento deferredExpandedMemento = (XMLMemento) deferredMemento.createChild(TAG_EXPANDED);
-		IMemento expandedMemento = memento.getChild(TAG_EXPANDED);
-		if (expandedMemento != null) {
-			for (IMemento elementMemento : expandedMemento.getChildren(TAG_ELEMENT)) {
-
-				String path = elementMemento.getString(TAG_PATH);
-				if (path != null) {
-					IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
-					if (resource instanceof IFile) {
-						IFile file = (IFile) resource;
-						if (EcorePlatformUtil.isFileLoaded(file)) {
-							expandedElements.add(resource);
-						} else {
-							IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel((IFile) resource);
-							if (modelDescriptor != null) {
-								// Request asynchronous loading of model behind given workspace file
-								ModelLoadManager.INSTANCE.loadModel(modelDescriptor, true, null);
-							}
-							deferredExpandedMemento.copyChild(elementMemento);
-						}
-					} else if (resource != null) {
-						expandedElements.add(resource);
-					}
-					continue;
-				}
-
-				String uriString = elementMemento.getString(TAG_URI);
-				if (uriString != null) {
-					URI uri = URI.createURI(uriString, true);
-					if (EcoreResourceUtil.exists(uri)) {
-						EObject eObject = EcorePlatformUtil.getEObject(uri);
-						if (eObject != null) {
-							expandedElements.add(eObject);
-						} else {
-							deferredExpandedMemento.copyChild(elementMemento);
-						}
-					}
-				}
-			}
-		}
-
-		// Retrieve selected element(s) to be restored
-		final List<Object> selectedElements = new ArrayList<Object>();
-		XMLMemento deferredSelectedMemento = (XMLMemento) deferredMemento.createChild(TAG_SELECTED);
-		IMemento selectedMemento = memento.getChild(TAG_SELECTED);
-		if (selectedMemento != null) {
-			for (IMemento elementMemento : selectedMemento.getChildren(TAG_ELEMENT)) {
-
-				String uriString = elementMemento.getString(TAG_URI);
-				if (uriString != null) {
-					URI uri = URI.createURI(uriString, true);
-					EObject eObject = EcorePlatformUtil.getEObject(uri);
-					if (eObject != null) {
-						selectedElements.add(eObject);
-					} else {
-						deferredSelectedMemento.copyChild(elementMemento);
-					}
-				}
-			}
-		}
-
-		// Perform restoration of expanded elements and selection asynchronously within UI thread
-		if (!expandedElements.isEmpty() || !selectedElements.isEmpty()) {
-			if (viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-				Display display = viewer.getControl().getDisplay();
-				if (display != null) {
-					display.asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-								for (Object element : expandedElements) {
-									viewer.setExpandedState(element, true);
-								}
-
-								if (!selectedElements.isEmpty()) {
-									viewer.setSelection(new StructuredSelection(selectedElements));
-								}
-							}
-						}
-					});
-				}
-			}
-		}
-
-		// Switch root memento to deferred mementos if any such are still around or null otherwise
-		if (deferredExpandedMemento.getChildren().length > 0 || deferredSelectedMemento.getChildren().length > 0) {
-			this.memento = deferredMemento;
-		} else {
-			this.memento = null;
-		}
+		treeElementStateMementoHandler.restoreState(memento);
 	}
 
 	@Override
 	public void saveState(IMemento memento) {
-		CommonViewer viewer = getCommonViewer();
-		if (viewer != null && memento != null) {
-			// Save visible expanded elements
-			Object expandedElements[] = viewer.getVisibleExpandedElements();
-			if (expandedElements.length > 0) {
-				IMemento expandedMemento = memento.createChild(TAG_EXPANDED);
-				for (Object expandedElement : expandedElements) {
-					if (expandedElement instanceof IResource) {
-						IPath path = ((IResource) expandedElement).getFullPath();
-						IMemento elementMemento = expandedMemento.createChild(TAG_ELEMENT);
-						elementMemento.putString(TAG_PATH, path.toString());
-					}
-					if (expandedElement instanceof EObject) {
-						URI uri = getURI((EObject) expandedElement);
-						if (uri != null) {
-							IMemento elementMemento = expandedMemento.createChild(TAG_ELEMENT);
-							elementMemento.putString(TAG_URI, uri.toString());
-						}
-					}
-				}
-			}
-
-			// Save selection
-			Object selectedElements[] = ((IStructuredSelection) viewer.getSelection()).toArray();
-			if (selectedElements.length > 0) {
-				IMemento selectedMemento = memento.createChild(TAG_SELECTED);
-				for (Object selectedElement : selectedElements) {
-					if (selectedElement instanceof EObject) {
-						URI uri = getURI((EObject) selectedElement);
-						if (uri != null) {
-							IMemento elementMemento = selectedMemento.createChild(TAG_ELEMENT);
-							elementMemento.putString(TAG_URI, uri.toString());
-						}
-					}
-				}
-			}
-		}
-
+		treeElementStateMementoHandler.saveState(memento);
 		super.saveState(memento);
 	}
 
@@ -543,26 +395,6 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 			}
 		}
 		return editingDomains;
-	}
-
-	protected URI getURI(final EObject eObject) {
-		if (eObject != null) {
-			final TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(eObject);
-			if (editingDomain != null) {
-				try {
-					return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<URI>() {
-						@Override
-						public void run() {
-							// FIXME Consider to use EcoreResourceUtil.getURI(eObject, true)
-							setResult(EcoreUtil.getURI(eObject));
-						}
-					});
-				} catch (InterruptedException ex) {
-					PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
-				}
-			}
-		}
-		return null;
 	}
 
 	/**

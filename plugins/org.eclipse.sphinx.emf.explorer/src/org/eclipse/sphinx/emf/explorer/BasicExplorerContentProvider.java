@@ -1,18 +1,19 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2013 See4sys, itemis and others.
+ *
+ * Copyright (c) 2008-2015 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [348822] Enable BasicExplorerContentProvider to be used for displaying model content under folders and projects
  *     itemis - [418005] Add support for model files with multiple root elements
  *     itemis - [420505] Editor shows no content when editor input object is added lately
- *      
+ *     itemis - [460260] Expanded paths are collapsed on resource reload
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.explorer;
@@ -68,6 +69,9 @@ import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.XMLMemento;
+import org.eclipse.ui.navigator.CommonNavigator;
+import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonContentProvider;
 import org.eclipse.ui.navigator.INavigatorContentDescriptor;
@@ -94,18 +98,29 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 
 	protected ResourceSetListener resourceMovedListener;
 
-	protected ResourceSetListener nonContainmentReferenceChangedListener;
+	protected ResourceSetListener crossReferenceChangedListener;
 
 	protected ResourceSetListener modelContentRootChangedListener;
 
 	/**
 	 * Returns the viewer whose content is provided by this content provider.
-	 * 
+	 *
 	 * @return the viewer for this content provider
 	 */
 	@Override
 	public Viewer getViewer() {
 		return viewer;
+	}
+
+	protected ExtendedCommonNavigator getCommonNavigator() {
+		if (viewer instanceof CommonViewer) {
+			CommonViewer commonViewer = (CommonViewer) viewer;
+			CommonNavigator commonNavigator = commonViewer.getCommonNavigator();
+			if (commonNavigator instanceof ExtendedCommonNavigator) {
+				return (ExtendedCommonNavigator) commonNavigator;
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -145,7 +160,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * <p>
 	 * Clients may override this method so as to add support for other resource types (e.g., {@link IProject project}s
 	 * or {@link IFolder folder}s) or implement different lazy or eager loading strategies.
-	 * 
+	 *
 	 * @param workspaceResource
 	 *            The workspace resource of which the model resource is to be retrieved.
 	 * @return The model resource behind specified workspace resource or <code>null</code> if no such is available or
@@ -191,7 +206,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * This implementation returns a list containing the provided model resource itself as default. Clients are free to
 	 * override and implement alternative behaviors as appropriate.
 	 * </p>
-	 * 
+	 *
 	 * @param modelResource
 	 *            The model resource of which the model content roots are to be retrieved.
 	 * @return The list of notifier objects which are to be used as roots of the model content provided by this
@@ -221,7 +236,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 
 	/**
 	 * Returns the {@link IResource resource} corresponding to given model {@link Resource resource}.
-	 * 
+	 *
 	 * @param modelResource
 	 *            The model resource of which the workspace resource it to be returned.
 	 * @return The workspace {@link IResource resource} corresponding to given model resource.
@@ -244,7 +259,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * <p>
 	 * Clients may override this method so as to add support for other resource types (e.g., {@link IProject project}s
 	 * or {@link IFolder folder}s) or implement different lazy or eager loading strategies.
-	 * 
+	 *
 	 * @param resource
 	 *            The {@link IResource resource} whose model root is to be retrieved.
 	 * @return The model root behind specified resource or <code>null</code> if no such is available or the model behind
@@ -295,7 +310,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * model elements inside the expanded model file become visible.
 	 * <p>
 	 * Clients may override this method in order to provide a custom lazy or eager loading strategy.
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The {@linkplain TransactionalEditingDomain editing domain} owning the {@linkplain ResourceSet resource
 	 *            set} inside which the {@linkplain Resource resource} corresponding to the specified {@link IFile file}
@@ -321,7 +336,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * given model object is made visible. It may or may not be the actual root object of the model. The model content
 	 * root itself will not become visible in the underlying viewer, only the workspace resource it is mapped to and its
 	 * children will.
-	 * 
+	 *
 	 * @param object
 	 *            An arbitrary model object to be investigated.
 	 * @return The {@link EObject object} or {@link Resource resource} which is used as root of the model content
@@ -363,7 +378,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * <blockquote><code>return EcoreUtil.getRootContainer(object);</code></blockquote></li>
 	 * </ul>
 	 * </p>
-	 * 
+	 *
 	 * @param object
 	 *            An arbitrary {@link EObject object} to be investigated.
 	 * @return The {@link EObject object} or {@link Resource resource} which is used as root of the model content
@@ -422,7 +437,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	/**
 	 * Returns the {@link IResource resource} corresponding to given {@link #getModelContentRoot(Object) model content
 	 * root}.
-	 * 
+	 *
 	 * @param modelContentRoot
 	 *            The {@link #getModelContentRoot(Object) model content root} object in question.
 	 * @return The {@link IResource resource} corresponding to given model content root.
@@ -485,7 +500,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * and return any {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter
 	 * factory} will then be returned as result by this method.
 	 * </p>
-	 * 
+	 *
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain editing domain} whose embedded {@link AdapterFactory adapter
 	 *            factory} is to be returned as default. May be left <code>null</code> if
@@ -517,7 +532,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * {@link AdapterFactory adapter factory} of their choice. This custom {@link AdapterFactory adapter factory} will
 	 * then be returned as result by {@link #getAdapterFactory(TransactionalEditingDomain)}.
 	 * </p>
-	 * 
+	 *
 	 * @return The custom {@link AdapterFactory adapter factory} that is to be used by this
 	 *         {@link BasicExplorerContentProvider content provider}. <code>null</code> the default
 	 *         {@link AdapterFactory adapter factory} returned by {@link #getAdapterFactory(TransactionalEditingDomain)}
@@ -625,11 +640,11 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		}
 		editingDomain.addResourceSetListener(resourceMovedListener);
 
-		if (nonContainmentReferenceChangedListener == null) {
-			nonContainmentReferenceChangedListener = createNonContainmentReferenceChangedListener();
-			Assert.isNotNull(nonContainmentReferenceChangedListener);
+		if (crossReferenceChangedListener == null) {
+			crossReferenceChangedListener = createCrossReferenceChangedListener();
+			Assert.isNotNull(crossReferenceChangedListener);
 		}
-		editingDomain.addResourceSetListener(nonContainmentReferenceChangedListener);
+		editingDomain.addResourceSetListener(crossReferenceChangedListener);
 
 		if (modelContentRootChangedListener == null) {
 			modelContentRootChangedListener = createModelContentRootChangedListener();
@@ -647,8 +662,8 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		if (resourceMovedListener != null) {
 			editingDomain.removeResourceSetListener(resourceMovedListener);
 		}
-		if (nonContainmentReferenceChangedListener != null) {
-			editingDomain.removeResourceSetListener(nonContainmentReferenceChangedListener);
+		if (crossReferenceChangedListener != null) {
+			editingDomain.removeResourceSetListener(crossReferenceChangedListener);
 		}
 		if (modelContentRootChangedListener != null) {
 			editingDomain.removeResourceSetListener(modelContentRootChangedListener);
@@ -764,7 +779,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		};
 	}
 
-	protected ResourceSetListener createNonContainmentReferenceChangedListener() {
+	protected ResourceSetListener createCrossReferenceChangedListener() {
 		return new ResourceSetListenerImpl(NotificationFilter.createNotifierTypeFilter(EObject.class)) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
@@ -796,7 +811,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * affect the model content root objects but not the corresponding workspace resources. As the former are not
 	 * represented by any tree item in the viewer none of these refreshes performed will have any visible effect.
 	 * </p>
-	 * 
+	 *
 	 * @return
 	 */
 	protected ResourceSetListener createModelContentRootChangedListener() {
@@ -879,7 +894,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 
 	/**
 	 * Refreshes viewer on specified workspace resources.
-	 * 
+	 *
 	 * @param resources
 	 */
 	protected void refreshViewerOnWorkspaceResources(Set<? extends IResource> resources) {
@@ -905,7 +920,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 
 	/**
 	 * Refreshes viewer on specified model resources.
-	 * 
+	 *
 	 * @param resources
 	 */
 	protected void refreshViewerOnModelResources(Set<? extends Resource> resources) {
@@ -948,7 +963,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 
 	/**
 	 * Refreshes viewer on specified model objects.
-	 * 
+	 *
 	 * @param objects
 	 */
 	protected void refreshViewerOnModelObjects(Set<?> objects) {
@@ -986,7 +1001,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 
 	/**
 	 * Refreshes viewer on specified object.
-	 * 
+	 *
 	 * @param object
 	 */
 	protected void refreshViewerOnObject(final Object object) {
@@ -997,8 +1012,13 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 					public void run() {
 						if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
 							if (viewer instanceof StructuredViewer) {
+								XMLMemento memento = XMLMemento.createWriteRoot("view"); //$NON-NLS-1$
+								getCommonNavigator().saveState(memento);
+
 								StructuredViewer stucturedViewer = (StructuredViewer) viewer;
 								stucturedViewer.refresh(object, true);
+
+								getCommonNavigator().restoreState(memento);
 							}
 						}
 					}
@@ -1017,8 +1037,13 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 				public void run() {
 					if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
 						if (viewer instanceof StructuredViewer) {
+							XMLMemento memento = XMLMemento.createWriteRoot("view"); //$NON-NLS-1$
+							getCommonNavigator().saveState(memento);
+
 							StructuredViewer stucturedViewer = (StructuredViewer) viewer;
 							stucturedViewer.refresh();
+
+							getCommonNavigator().restoreState(memento);
 						}
 					}
 				}
