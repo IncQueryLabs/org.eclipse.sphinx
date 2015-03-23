@@ -1,0 +1,87 @@
+/**
+ * <copyright>
+ *
+ * Copyright (c) 2015 itemis and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     itemis - Initial API and implementation
+ *
+ * </copyright>
+ */
+package org.eclipse.sphinx.emf.explorer.internal.state.providers;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.navigator.CommonViewer;
+
+public class ProjectElementStateProvider extends AbstractTreeElementStateProvider implements ITreeElementStateProvider {
+
+	private IProject project = null;
+
+	public ProjectElementStateProvider(CommonViewer viewer, IMemento memento) {
+		super(viewer);
+
+		Assert.isNotNull(memento);
+		String name = memento.getString(TreeElementStateProviderFactory.MEMENTO_KEY_NAME);
+		if (name != null) {
+			project = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
+		}
+	}
+
+	public ProjectElementStateProvider(CommonViewer viewer, IProject project) {
+		super(viewer);
+		this.project = project;
+	}
+
+	@Override
+	public boolean hasUnderlyingModel() {
+		return false;
+	}
+
+	@Override
+	public boolean canUnderlyingModelBeLoaded() {
+		return false;
+	}
+
+	@Override
+	public boolean isUnderlyingModelLoaded() {
+		return false;
+	}
+
+	@Override
+	public void loadUnderlyingModel() {
+		// Do nothing
+	}
+
+	@Override
+	public boolean isStale() {
+		if (project != null) {
+			return !project.exists();
+		}
+		return true;
+	}
+
+	@Override
+	public Object getTreeElement() {
+		return project;
+	}
+
+	@Override
+	public void appendToMemento(IMemento parentMemento) {
+		if (project != null) {
+			IMemento memento = parentMemento.createChild(TreeElementStateProviderFactory.MEMENTO_TYPE_ELEMENT_PROJECT);
+			memento.putString(TreeElementStateProviderFactory.MEMENTO_KEY_NAME, project.getName());
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "ProjectElementProvider [project=" + project + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+	}
+}

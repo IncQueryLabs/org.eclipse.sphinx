@@ -22,6 +22,7 @@
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
  *     itemis - [460534] Make sure that EcoreResourceUtil creates a ResourceSetImpl rather than a ScopingResourceSetImpl when no resource set is provided by the caller
+ *     itemis - [460260] Expanded paths are collapsed on resource reload
  *
  * </copyright>
  */
@@ -214,6 +215,80 @@ public final class EcoreResourceUtil {
 			return getURIConverter().exists(uri, null);
 		}
 		return false;
+	}
+
+	/**
+	 * Check if provided URI representing a file or object is an EMF model or not.
+	 *
+	 * @param uri
+	 *            the URI representing a model file or model object.
+	 * @return <code>true</code> if provided URI correspond to an EMF model. Otherwise <code>false</code>.
+	 */
+	public static boolean isEMFModelURI(URI uri) {
+		String namespace = readModelNamespace(null, uri);
+		return EPackage.Registry.INSTANCE.get(namespace) != null;
+	}
+
+	/**
+	 * Returns the URI of the provided model object.
+	 *
+	 * @param eObject
+	 *            a model object.
+	 * @return the URI of the provided model object.
+	 */
+	public static URI getURI(EObject eObject) {
+		return getURI(null, eObject, false);
+	}
+
+	/**
+	 * Returns the URI of the provided model object.
+	 *
+	 * @param eObject
+	 *            a model object.
+	 * @param resolve
+	 *            indicates whether the URI should resolved against the URI of the resource which contains the provided
+	 *            model object. This is useful is cases where the native model object URI evaluates in some sort of
+	 *            fragment-based URI which does not contain any information about the resource that contains the model
+	 *            object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true, such fragment-based
+	 *            URIs will be automatically expanded to a URI that starts with the URI of the model object's resource
+	 *            and is followed by the fragment of the model object's native URI (e.g.,
+	 *            platform:/resource/MyProject/MyResource/#//MyComponent/MyParameterValue).
+	 * @return the URI of the provided model object.
+	 */
+	public static URI getURI(EObject eObject, boolean resolve) {
+		return getURI(null, eObject, resolve);
+	}
+
+	/**
+	 * Returns the URI of the provided model object.
+	 *
+	 * @param oldResource
+	 *            the resource which did contain the given model object in case that the latter is a proxy or has been
+	 *            removed from its resource, i.e., is no longer directly or indirectly contained in any resource
+	 * @param eObject
+	 *            a model object.
+	 * @param resolve
+	 *            indicates whether the URI should resolved against the URI of the resource which contains or did
+	 *            contain the provided model object. This is useful is cases where the native model object URI evaluates
+	 *            in some sort of fragment-based URI which does not contain any information about the resource that
+	 *            contains the model object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true,
+	 *            such fragment-based URIs will be automatically expanded to a URI that starts with the URI of the model
+	 *            object's resource or old resource and is followed by the fragment of the model object's native URI
+	 *            (e.g., platform:/resource/MyProject/MyResource/#//MyComponent/MyParameterValue).
+	 * @return the URI of the provided model object.
+	 */
+	public static URI getURI(Resource oldResource, EObject eObject, boolean resolve) {
+		Assert.isNotNull(eObject);
+
+		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(eObject.eResource());
+		if (extendedResource == null) {
+			extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(oldResource);
+		}
+		if (extendedResource != null) {
+			return extendedResource.getURI(eObject, resolve);
+		} else {
+			return EcoreUtil.getURI(eObject);
+		}
 	}
 
 	/**
@@ -1094,55 +1169,6 @@ public final class EcoreResourceUtil {
 			validator.validate(source);
 		} finally {
 			ExtendedPlatform.safeClose(stream);
-		}
-	}
-
-	/**
-	 * Check if provided URI representing a file or object is an EMF model or not.
-	 *
-	 * @param uri
-	 *            the URI representing a model file or model object.
-	 * @return <code>true</code> if provided URI correspond to an EMF model. Otherwise <code>false</code>.
-	 */
-	public static boolean isEMFModelURI(URI uri) {
-		String namespace = readModelNamespace(null, uri);
-		return EPackage.Registry.INSTANCE.get(namespace) != null;
-	}
-
-	/**
-	 * Returns the URI of the provided model object.
-	 *
-	 * @param modelObject
-	 *            a model object.
-	 * @return the URI associated to the provided model object.
-	 */
-	public static URI getURI(EObject modelObject) {
-		return getURI(modelObject, false);
-	}
-
-	/**
-	 * Returns the URI of the provided model object.
-	 *
-	 * @param modelObject
-	 *            a model object.
-	 * @param resolve
-	 *            indicates whether the URI should resolved against the URI of the resource which contains the provided
-	 *            model object. This is useful is cases where the native model object URI evaluates in some sort of
-	 *            fragment-based URI which does not contain any information about the resource that contains the model
-	 *            object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true, such fragment-based
-	 *            URIs will be automatically expanded to a URI that starts with the URI of the model object's resource
-	 *            and is followed by the fragment of the model object's native URI (e.g.,
-	 *            platform:/resource/MyProject/MyResource/#//MyComponent/MyParameterValue).
-	 * @return the URI associated to the provided model object.
-	 */
-	public static URI getURI(EObject modelObject, boolean resolve) {
-		Assert.isNotNull(modelObject);
-
-		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(modelObject.eResource());
-		if (extendedResource != null) {
-			return extendedResource.getURI(modelObject, resolve);
-		} else {
-			return EcoreUtil.getURI(modelObject);
 		}
 	}
 
