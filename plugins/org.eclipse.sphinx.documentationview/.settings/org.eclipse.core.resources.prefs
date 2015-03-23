@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
 encoding//design/default.ecore=UTF-8
 encoding//design/resources.ecore_diagram=UTF-8
+encoding//src/org/eclipse/sphinx/documentationview/bootstrap/BootstrapFormatterHTML.xtend=UTF-8
 encoding/<project>=UTF-8

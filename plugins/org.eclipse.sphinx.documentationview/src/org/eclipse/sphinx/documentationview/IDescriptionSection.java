@@ -15,6 +15,7 @@
 package org.eclipse.sphinx.documentationview;
 
 public interface IDescriptionSection {
-	public String getSectionTitle();
-	public String getSectionBody();
+	String getSectionTitle();
+
+	String getSectionBody();
 }

@@ -1,8 +1,22 @@
+/**
+ * <copyright>
+ *
+ * Copyright (c) 2014-2015 itemis and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     itemis - Initial API and implementation
+ *
+ * </copyright>
+ */
 package org.eclipse.sphinx.documentationview.bootstrap
 
 import org.eclipse.sphinx.documentationview.IDescriptionSection
 
-class BootstrapFormatterHTML {
+public class BootstrapFormatterHTML {
     
 	def static String pre(String title, Iterable<IDescriptionSection> sections)  '''
 		<html lang="en">
@@ -16,7 +30,7 @@ class BootstrapFormatterHTML {
 	    <title>Sticky Footer Navbar Template for Bootstrap</title>
 	
 	    <!-- Bootstrap core CSS -->
-	    <link href="«""+org.eclipse.sphinx.documentationview.bootstrap.Activator.bootstrapDir»/css/bootstrap.css" rel="stylesheet">
+	    <link href="«""+org.eclipse.sphinx.documentationview.bootstrap.internal.Activator.bootstrapDir»/css/bootstrap.css" rel="stylesheet">
 	
 	    <!-- Custom styles for this template -->
 	    <link href="sticky-footer-navbar.css" rel="stylesheet">
@@ -75,8 +89,8 @@ class BootstrapFormatterHTML {
 	      </div>
 	    </div>
 	
-	    <script src="«""+ org.eclipse.sphinx.documentationview.bootstrap.Activator.jqueryDir»/jquery-1.11.1.js"></script>
-	    <script src="«""+ org.eclipse.sphinx.documentationview.bootstrap.Activator.bootstrapDir»/js/bootstrap.min.js"></script>
+	    <script src="«""+ org.eclipse.sphinx.documentationview.bootstrap.internal.Activator.jqueryDir»/jquery-1.11.1.js"></script>
+	    <script src="«""+ org.eclipse.sphinx.documentationview.bootstrap.internal.Activator.bootstrapDir»/js/bootstrap.min.js"></script>
 	  </body>
 	</html>
 	'''

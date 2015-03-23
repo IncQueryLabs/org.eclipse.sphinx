@@ -1,19 +1,22 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Documentationview
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.sphinx.documentationview;singleton:=true
-Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: org.eclipse.sphinx.documentationview.Activator
-Require-Bundle: org.apache.log4j;bundle-version="1.2.15",
- org.eclipse.sphinx.documentationview.bootstrap;bundle-version="1.0.0",
- org.eclipse.xtend2.lib;bundle-version="2.5.3",
- org.eclipse.ui.workbench,
- org.eclipse.core.runtime;bundle-version="3.10.0",
+Bundle-Version: 0.9.0.qualifier
+Bundle-Activator: org.eclipse.sphinx.documentationview.internal.Activator
+Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface,
- org.eclipse.emf.ecore
+ org.apache.log4j,
+ org.eclipse.ui.workbench,
+ org.eclipse.emf.common.ui,
+ org.eclipse.emf.ecore,
+ org.eclipse.xtend2.lib,
+ org.eclipse.sphinx.documentationview.bootstrap
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.sphinx.documentationview,
- org.eclipse.sphinx.documentationview.bootstrap
+ org.eclipse.sphinx.documentationview.bootstrap,
+ org.eclipse.sphinx.documentationview.internal;x-internal:=true
 Import-Package: org.eclipse.core.expressions
+Bundle-Vendor: %pluginProvider
 

@@ -24,12 +24,13 @@ public abstract class AbstractDescriptionFormatter implements IDescriptionFormat
 		List<IDescriptionSection> newArrayList = new ArrayList<IDescriptionSection>();
 		try {
 			newArrayList.add(new DescriptionSection(formatHeader(o), format(o)));
-		} catch(Exception e) {
-			newArrayList.add(new DescriptionSection("Error", "<pre>"+e.getMessage()+"</pre>"));
+		} catch (Exception ex) {
+			newArrayList.add(new DescriptionSection("Error", "<pre>" + ex.getMessage() + "</pre>"));
 		}
 		return newArrayList;
 	}
-	
-	public abstract  String format(Object o);
-	public abstract  String formatHeader(Object o);
+
+	public abstract String format(Object o);
+
+	public abstract String formatHeader(Object o);
 }

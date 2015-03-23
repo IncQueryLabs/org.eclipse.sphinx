@@ -17,6 +17,5 @@ package org.eclipse.sphinx.documentationview;
 import java.util.List;
 
 public interface IDescriptionFormatter {
-	public List<IDescriptionSection> descriptionSections(Object o);
-	
+	List<IDescriptionSection> descriptionSections(Object o);
 }

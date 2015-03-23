@@ -24,8 +24,7 @@ public class DescriptionSection implements IDescriptionSection {
 
 	protected String title;
 	protected String body;
-	
-	
+
 	@Override
 	public String getSectionTitle() {
 		return title;
@@ -35,5 +34,4 @@ public class DescriptionSection implements IDescriptionSection {
 	public String getSectionBody() {
 		return body;
 	}
-
 }

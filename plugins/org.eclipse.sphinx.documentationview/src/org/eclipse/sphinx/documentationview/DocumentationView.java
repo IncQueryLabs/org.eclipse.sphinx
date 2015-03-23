@@ -63,21 +63,15 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.primitives.Ints;
 
-
-
 /**
- * The view to show any additional documentation. It collects the data to actually display
- * Through various extension points.
- * 
- * @author graf
- *
+ * The view to show any additional documentation. It collects the data to actually display Through various extension
+ * points.
  */
 public class DocumentationView extends ViewPart {
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = Logger
-			.getLogger(DocumentationView.class);
+	private static final Logger logger = Logger.getLogger(DocumentationView.class);
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -90,189 +84,165 @@ public class DocumentationView extends ViewPart {
 
 	private Browser browser;
 	protected IDescriptionWrapper descWrapper = new BootstrapDescriptionWrapper();
-	
 
 	protected Ordering<IConfigurationElement> configOrdering = new Ordering<IConfigurationElement>() {
-		public int compare(IConfigurationElement left,
-				IConfigurationElement right) {
+		@Override
+		public int compare(IConfigurationElement left, IConfigurationElement right) {
 			String lorder = left.getAttribute("order");
 			String rorder = right.getAttribute("order");
 			int ileft = 0;
 			int iright = 0;
-			if (lorder.length() > 0)
+			if (lorder.length() > 0) {
 				ileft = Integer.parseInt(lorder);
-			if (rorder.length() > 0)
+			}
+			if (rorder.length() > 0) {
 				iright = Integer.parseInt(rorder);
+			}
 			return Ints.compare(ileft, iright);
 		}
 	};
 
 	/*
-	 * The content provider class is responsible for providing objects to the
-	 * view. It can wrap existing objects in adapters or simply return objects
-	 * as-is. These objects may be sensitive to the current input of the view,
-	 * or ignore it and always show the same content (like Task List, for
-	 * example).
+	 * The content provider class is responsible for providing objects to the view. It can wrap existing objects in
+	 * adapters or simply return objects as-is. These objects may be sensitive to the current input of the view, or
+	 * ignore it and always show the same content (like Task List, for example).
 	 */
 
 	ISelectionListener listener = new ISelectionListener() {
+		@Override
 		public void selectionChanged(IWorkbenchPart part, ISelection sel) {
-			if (!(sel instanceof IStructuredSelection))
+			if (!(sel instanceof IStructuredSelection)) {
 				return;
+			}
 			IStructuredSelection ss = (IStructuredSelection) sel;
 			StringBuilder builder = new StringBuilder();
 			Iterator iterator = ss.iterator();
 			String topTitle = "Documentation";
-			ArrayList<IDescriptionSection> sections = Lists
-					.<IDescriptionSection> newArrayList();
+			ArrayList<IDescriptionSection> sections = Lists.<IDescriptionSection> newArrayList();
 			while (iterator.hasNext()) {
 				Object xo = iterator.next();
-//				ImmutableList<EObject> ol = SemanticResolver.INSTANCE
-//						.resolveSemanticObjects(xo);
+				// ImmutableList<EObject> ol = SemanticResolver.INSTANCE
+				// .resolveSemanticObjects(xo);
 
+				// for (final EObject o : Iterables.filter(ol,
+				// Predicates.notNull())) {
+				final Object o = xo;
+				IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
+				IConfigurationElement[] configurationElementsFor = extensionRegistry
+						.getConfigurationElementsFor("org.eclipse.sphinx.documentationview.contribution");
 
-//					for (final EObject o : Iterables.filter(ol,
-//							Predicates.notNull())) {
-						final Object o =  xo;
-						IExtensionRegistry extensionRegistry = Platform
-								.getExtensionRegistry();
-						IConfigurationElement[] configurationElementsFor = extensionRegistry
-								.getConfigurationElementsFor("org.eclipse.sphinx.documentationview.contribution");
+				ArrayList<IConfigurationElement> cels = Lists.newArrayList(configurationElementsFor);
+				Iterable<IConfigurationElement> applicable = Iterables.filter(cels, new Predicate<IConfigurationElement>() {
+					@Override
+					public boolean apply(IConfigurationElement input) {
+						String targetC = input.getAttribute("targetClass");
 
-						ArrayList<IConfigurationElement> cels = Lists
-								.newArrayList(configurationElementsFor);
-						Iterable<IConfigurationElement> applicable = Iterables
-								.filter(cels,
-										new Predicate<IConfigurationElement>() {
-											@Override
-											public boolean apply(
-													IConfigurationElement input) {
-												String targetC = input
-														.getAttribute("targetClass");
+						if (logger.isDebugEnabled()) {
 
-												if (logger.isDebugEnabled()) {
+							logger.debug(targetC);
+							logger.debug(o.getClass().getCanonicalName());
+						}
+						try {
+							Expression expression = ExpressionConverter.getDefault().perform(input.getChildren("instanceof")[0]);
+							if (logger.isDebugEnabled()) {
+								logger.debug(expression);
+							}
+							EvaluationContext context = new EvaluationContext(null, o);
+							EvaluationResult evaluate = expression.evaluate(new EvaluationContext(null, o));
+							if (logger.isDebugEnabled()) {
+								logger.debug(evaluate);
+							}
+							return evaluate.equals(EvaluationResult.TRUE);
+						} catch (InvalidRegistryObjectException e) {
 
-													logger.debug(targetC);
-													logger.debug(o.getClass()
-															.getCanonicalName());
-												}
-												try {
-													Expression expression = ExpressionConverter
-															.getDefault()
-															.perform(
-																	input.getChildren("instanceof")[0]);
-													if (logger.isDebugEnabled()) {
-														logger.debug(expression);
-													}
-													EvaluationContext context = new EvaluationContext(
-															null, o);
-													EvaluationResult evaluate = expression
-															.evaluate(new EvaluationContext(
-																	null, o));
-													if (logger.isDebugEnabled()) {
-														logger.debug(evaluate);
-													}
-													return evaluate
-															.equals(EvaluationResult.TRUE);
-												} catch (InvalidRegistryObjectException e) {
+							e.printStackTrace();
+							return false;
+						} catch (CoreException e) {
 
-													e.printStackTrace();
-													return false;
-												} catch (CoreException e) {
+							e.printStackTrace();
+							return false;
+						}
 
-													e.printStackTrace();
-													return false;
-												}
+					}
+				});
 
-											}
-										});
-
-						List<IConfigurationElement> sortedApplicable = configOrdering
-								.sortedCopy(applicable);
-						Iterable<IDescriptionFormatter> formatters = Iterables
-								.transform(
-										sortedApplicable,
-										new Function<IConfigurationElement, IDescriptionFormatter>() {
-											@Override
-											public IDescriptionFormatter apply(
-													IConfigurationElement input) {
-												try {
-													if (logger.isDebugEnabled())
-														logger.debug("Mapping "
-																+ input);
-													return (IDescriptionFormatter) input
-															.createExecutableExtension("contributingFormatter");
-												} catch (CoreException e) {
-													e.printStackTrace();
-													return null;
-												}
-											}
-										});
-
-						for (IDescriptionFormatter formatter : formatters) {
-							if (logger.isDebugEnabled())
-								logger.debug("Formatter " + formatter);
-							if (formatter != null) {
-								sections.addAll(formatter
-										.descriptionSections(o));
-								for (IDescriptionSection s : formatter
-										.descriptionSections(o)) {
-									builder.append(descWrapper.textPre());
-									if (s.getSectionTitle() != null
-											&& s.getSectionTitle().length() > 0
-											&& s.getSectionBody() != null
-											&& s.getSectionBody().trim()
-													.length() > 0) {
-										builder.append("<h3>"
-												+ s.getSectionTitle() + "</h3>");
-										builder.append(s.getSectionBody()
-												+ descWrapper.textPost());
+				List<IConfigurationElement> sortedApplicable = configOrdering.sortedCopy(applicable);
+				Iterable<IDescriptionFormatter> formatters = Iterables.transform(sortedApplicable,
+						new Function<IConfigurationElement, IDescriptionFormatter>() {
+							@Override
+							public IDescriptionFormatter apply(IConfigurationElement input) {
+								try {
+									if (logger.isDebugEnabled()) {
+										logger.debug("Mapping " + input);
 									}
+									return (IDescriptionFormatter) input.createExecutableExtension("contributingFormatter");
+								} catch (CoreException e) {
+									e.printStackTrace();
+									return null;
 								}
 							}
-							if (formatter instanceof ITitleProvider) {
-								ITitleProvider tp = (ITitleProvider) formatter;
-								topTitle = tp.getObjectTitle(o);
+						});
 
+				for (IDescriptionFormatter formatter : formatters) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("Formatter " + formatter);
+					}
+					if (formatter != null) {
+						sections.addAll(formatter.descriptionSections(o));
+						for (IDescriptionSection s : formatter.descriptionSections(o)) {
+							builder.append(descWrapper.textPre());
+							if (s.getSectionTitle() != null && s.getSectionTitle().length() > 0 && s.getSectionBody() != null
+									&& s.getSectionBody().trim().length() > 0) {
+								builder.append("<h3>" + s.getSectionTitle() + "</h3>");
+								builder.append(s.getSectionBody() + descWrapper.textPost());
 							}
 						}
 					}
-		
-			if (logger.isDebugEnabled())
+					if (formatter instanceof ITitleProvider) {
+						ITitleProvider tp = (ITitleProvider) formatter;
+						topTitle = tp.getObjectTitle(o);
+
+					}
+				}
+			}
+
+			if (logger.isDebugEnabled()) {
 				logger.debug(builder);
-			String documentationText = BootstrapFormatterHTML.pre(topTitle,
-					sections)
-					+ builder.toString()
-					+ BootstrapFormatterHTML.post();
+			}
+			String documentationText = BootstrapFormatterHTML.pre(topTitle, sections) + builder.toString() + BootstrapFormatterHTML.post();
 			browser.setText(documentationText);
 		}
 	};
 
 	class ViewContentProvider implements IStructuredContentProvider {
+		@Override
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
 		}
 
+		@Override
 		public void dispose() {
 		}
 
+		@Override
 		public Object[] getElements(Object parent) {
 			return new String[] { "One", "Two", "Three" };
 		}
 	}
 
-	class ViewLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
+	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
+		@Override
 		public String getColumnText(Object obj, int index) {
 			return getText(obj);
 		}
 
+		@Override
 		public Image getColumnImage(Object obj, int index) {
 			return getImage(obj);
 		}
 
+		@Override
 		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().getSharedImages()
-					.getImage(ISharedImages.IMG_OBJ_ELEMENT);
+			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
 		}
 	}
 
@@ -286,9 +256,9 @@ public class DocumentationView extends ViewPart {
 	}
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * This is a callback that will allow us to create the viewer and initialize it.
 	 */
+	@Override
 	public void createPartControl(Composite parent) {
 		try {
 			browser = new Browser(parent, SWT.NONE);
@@ -310,6 +280,7 @@ public class DocumentationView extends ViewPart {
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
+			@Override
 			public void menuAboutToShow(IMenuManager manager) {
 				DocumentationView.this.fillContextMenu(manager);
 			}
@@ -345,25 +316,26 @@ public class DocumentationView extends ViewPart {
 
 	private void makeActions() {
 		action1 = new Action() {
+			@Override
 			public void run() {
 				showMessage("Action 1 executed");
 			}
 		};
 		action1.setText("Action 1");
 		action1.setToolTipText("Action 1 tooltip");
-		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 
 		action2 = new Action() {
+			@Override
 			public void run() {
 				showMessage("Action 2 executed");
 			}
 		};
 		action2.setText("Action 2");
 		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		doubleClickAction = new Action() {
+			@Override
 			public void run() {
 				// ISelection selection = viewer.getSelection();
 				// Object obj =
@@ -391,6 +363,7 @@ public class DocumentationView extends ViewPart {
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
+	@Override
 	public void setFocus() {
 		browser.setFocus();
 	}
@@ -400,5 +373,4 @@ public class DocumentationView extends ViewPart {
 		getSite().getPage().removeSelectionListener(listener);
 		super.dispose();
 	}
-
 }

@@ -16,6 +16,7 @@ package org.eclipse.sphinx.documentationview;
 
 public interface IDescriptionWrapper {
 
-	public String textPre();
-	public String textPost();
+	String textPre();
+
+	String textPost();
 }
