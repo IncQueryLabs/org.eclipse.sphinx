@@ -14,6 +14,7 @@
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *     itemis - [443647] Enable HREF representing serialized cross-document references to be customized through ExtendedResource of resource being serialized
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
+ *     itemis - [460260] Expanded paths are collapsed on resource reload
  *
  * </copyright>
  */
@@ -40,6 +41,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.sphinx.emf.Activator;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.util.ReflectUtil;
 
 /**
@@ -173,7 +175,7 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 			// it was removed?
 			if (oldOwner != null && oldFeature != null) {
 				// Retrieve the oldOwner's URI fragment
-				URI oldOwnerURI = EcoreUtil.getURI(oldOwner);
+				URI oldOwnerURI = EcoreResourceUtil.getURI(oldOwner);
 				String oldOwnerURIFragment = oldOwnerURI.fragment();
 
 				// Restore URI fragment segment that pointed from oldOwner to removed eObject (which may be the given
@@ -240,19 +242,24 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 		URI uri = getURI(oldOwner, oldFeature, eObject);
 
 		// URI to be resolved against underlying resource?
-		if (resolve && !eObject.eIsProxy()) {
+		if (resolve) {
 			// Retrieve the resource of given model object
 			Resource resource = eObject.eResource();
-
-			// Model object that has been removed, i.e., is no longer directly or indirectly contained in any resource?
 			if (resource == null) {
-				// Use target resource to substitute former model object's resource
-				resource = (Resource) getTarget();
+				// Retrieve the given model object's old resource by referring to the model object's old owner if any or
+				// to target resource otherwise
+				if (oldOwner != null) {
+					resource = oldOwner.eResource();
+				} else {
+					resource = (Resource) getTarget();
+				}
 			}
 
 			// Construct resolved model object URI by using resource URI as prefix and model object URI fragment as
 			// postfix
-			uri = resource.getURI().appendFragment(uri.fragment());
+			if (resource != null) {
+				uri = resource.getURI().appendFragment(uri.fragment());
+			}
 		}
 
 		return uri;
