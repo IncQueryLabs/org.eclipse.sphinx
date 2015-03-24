@@ -246,12 +246,12 @@ public final class EcoreResourceUtil {
 	 * @param eObject
 	 *            a model object.
 	 * @param resolve
-	 *            indicates whether the URI should resolved against the URI of the resource which contains the provided
-	 *            model object. This is useful is cases where the native model object URI evaluates in some sort of
-	 *            fragment-based URI which does not contain any information about the resource that contains the model
-	 *            object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true, such fragment-based
-	 *            URIs will be automatically expanded to a URI that starts with the URI of the model object's resource
-	 *            and is followed by the fragment of the model object's native URI (e.g.,
+	 *            indicates whether the URI should be resolved against the URI of the resource which contains the
+	 *            provided model object. This is useful is cases where the native model object URI evaluates in some
+	 *            sort of fragment-based URI which does not contain any information about the resource that contains the
+	 *            model object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true, such
+	 *            fragment-based URIs will be automatically expanded to a URI that starts with the URI of the model
+	 *            object's resource and is followed by the fragment of the model object's native URI (e.g.,
 	 *            platform:/resource/MyProject/MyResource/#//MyComponent/MyParameterValue).
 	 * @return the URI of the provided model object.
 	 */
@@ -268,7 +268,7 @@ public final class EcoreResourceUtil {
 	 * @param eObject
 	 *            a model object.
 	 * @param resolve
-	 *            indicates whether the URI should resolved against the URI of the resource which contains or did
+	 *            indicates whether the URI should be resolved against the URI of the resource which contains or did
 	 *            contain the provided model object. This is useful is cases where the native model object URI evaluates
 	 *            in some sort of fragment-based URI which does not contain any information about the resource that
 	 *            contains the model object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true,

@@ -53,6 +53,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.domain.IEditingDomainProvider;
@@ -477,6 +478,8 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 			IEditorInput newInput = new URIEditorInput(newInputURI);
 
 			// Set new editor input
+			// FIXME Let ModelEditorInputSynchronizer become a IPropertyListener listening for PROP_INPUT and updating
+			// the ModelEditorInputSynchronizer's editorInput field
 			setInputWithNotify(newInput);
 
 			// Update editor part title
@@ -1355,8 +1358,9 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 			IFile file = EcoreUIUtil.getFileFromEditorInput(getEditorInput());
 			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(file);
 			if (modelDescriptor == null) {
-				MessageDialog.openError(getSite().getShell(), Messages.error_editorInitialization_title,
-						NLS.bind(Messages.error_editorInitialization_modelNotLoaded, file.getFullPath().toString()));
+				MessageDialog.openError(getSite().getShell(), Messages.error_editorInitialization_title, NLS
+						.bind(Messages.error_editorInitialization_modelNotLoaded, file != null ? file.getFullPath().toString() : getEditorInput()
+								.getName()));
 				showProblemsView();
 				close(false);
 				return;
@@ -1533,7 +1537,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 	public String toString() {
 		Object editorInputObject = getEditorInputObject();
 		if (editorInputObject instanceof EObject) {
-			URI uri = EcoreResourceUtil.getURI((EObject) editorInputObject);
+			URI uri = EcoreUtil.getURI((EObject) editorInputObject);
 			if (uri != null) {
 				return uri.toString();
 			}
@@ -1607,8 +1611,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 								reset();
 
 								// Finish page creation if editor is currently visible; otherwise mark that as to be
-								// done when
-								// editor gets activated the next time
+								// done when editor gets activated the next time
 								if (getSite().getPage().isPartVisible(BasicTransactionalFormEditor.this)) {
 									finishCreatePages();
 								} else {
@@ -1674,7 +1677,7 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 						// the latter has been renamed)
 						Object editorInputObject = getEditorInputObject();
 						if (editorInputObject instanceof EObject) {
-							URI newEditorInputObjectURI = EcoreResourceUtil.getURI((EObject) editorInputObject);
+							URI newEditorInputObjectURI = EcoreUtil.getURI((EObject) editorInputObject);
 							updateEditorInput(newEditorInputObjectURI);
 						}
 
