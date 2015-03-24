@@ -16,14 +16,14 @@ package org.eclipse.sphinx.documentationview;
 
 public class DescriptionSection implements IDescriptionSection {
 
+	protected String title;
+	protected String body;
+
 	public DescriptionSection(String title, String body) {
 		super();
 		this.title = title;
 		this.body = body;
 	}
-
-	protected String title;
-	protected String body;
 
 	@Override
 	public String getSectionTitle() {

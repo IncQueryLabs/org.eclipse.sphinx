@@ -15,5 +15,6 @@
 package org.eclipse.sphinx.documentationview;
 
 public interface ITitleProvider {
+
 	String getObjectTitle(Object o);
 }

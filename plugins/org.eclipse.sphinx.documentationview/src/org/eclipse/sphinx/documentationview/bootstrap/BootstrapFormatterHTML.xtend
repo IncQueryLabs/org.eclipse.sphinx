@@ -16,7 +16,7 @@ package org.eclipse.sphinx.documentationview.bootstrap
 
 import org.eclipse.sphinx.documentationview.IDescriptionSection
 
-public class BootstrapFormatterHTML {
+class BootstrapFormatterHTML {
     
 	def static String pre(String title, Iterable<IDescriptionSection> sections)  '''
 		<html lang="en">

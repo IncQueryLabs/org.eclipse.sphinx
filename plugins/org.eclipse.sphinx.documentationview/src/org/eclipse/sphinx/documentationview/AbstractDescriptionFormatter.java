@@ -19,6 +19,10 @@ import java.util.List;
 
 public abstract class AbstractDescriptionFormatter implements IDescriptionFormatter {
 
+	public abstract String format(Object o);
+
+	public abstract String formatHeader(Object o);
+
 	@Override
 	public List<IDescriptionSection> descriptionSections(Object o) {
 		List<IDescriptionSection> newArrayList = new ArrayList<IDescriptionSection>();
@@ -29,8 +33,4 @@ public abstract class AbstractDescriptionFormatter implements IDescriptionFormat
 		}
 		return newArrayList;
 	}
-
-	public abstract String format(Object o);
-
-	public abstract String formatHeader(Object o);
 }

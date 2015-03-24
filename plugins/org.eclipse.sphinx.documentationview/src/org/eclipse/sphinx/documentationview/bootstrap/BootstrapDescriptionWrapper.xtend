@@ -16,7 +16,7 @@ package org.eclipse.sphinx.documentationview.bootstrap
 
 import org.eclipse.sphinx.documentationview.IDescriptionWrapper
 
-public class BootstrapDescriptionWrapper implements IDescriptionWrapper{
+class BootstrapDescriptionWrapper implements IDescriptionWrapper {
 	
 	override textPost() '''
 		 </div>
