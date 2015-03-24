@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
@@ -31,17 +32,14 @@ import org.eclipse.ui.navigator.IMementoAware;
 public class TreeElementStateMementoHandler implements IMementoAware {
 
 	protected CommonViewer viewer;
+	protected IMemento deferredMemento;
 
 	public void setViewer(CommonViewer viewer) {
 		this.viewer = viewer;
 	}
 
-	/*
-	 * @see org.eclipse.ui.navigator.IMementoAware#restoreState(org.eclipse.ui.IMemento)
-	 */
-	@Override
-	public void restoreState(IMemento memento) {
-		// Be sure that viewer's input has already been initialized
+	public boolean canRestoreState() {
+		// Check if viewer and the viewer's input have already been initialized
 		/*
 		 * !! Important Note !! CommonNavigator#createPartControl() indirectly calls #restoreState() at a moment where
 		 * the viewer's input has not yet been set, and, consequently, the viewer has not yet had any chance to create
@@ -49,9 +47,16 @@ public class TreeElementStateMementoHandler implements IMementoAware {
 		 * org.eclipse.jface.viewers.StructuredViewer#elementMap for details). However, the latter are a prerequisite
 		 * and must exist before the restoration of expansion state and selection can be started.
 		 */
-		if (memento != null && viewer != null && viewer.getInput() != null) {
+		return viewer != null && viewer.getInput() != null;
+	}
+
+	/*
+	 * @see org.eclipse.ui.navigator.IMementoAware#restoreState(org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void restoreState(IMemento memento) {
+		if (canRestoreState() && memento != null) {
 			TreeElementStateProviderFactory treeElementFactory = new TreeElementStateProviderFactory(viewer);
-			XMLMemento deferredMemento = XMLMemento.createWriteRoot(memento.getType());
 
 			// Retrieve expanded element(s) to be restored
 			List<ITreeElementStateProvider> expandableProviders = new ArrayList<ITreeElementStateProvider>();
@@ -70,7 +75,12 @@ public class TreeElementStateMementoHandler implements IMementoAware {
 				}
 
 				// Iteratively restore expanded element(s)
-				while (!expandableProviders.isEmpty()) {
+				/*
+				 * !! Important Note !! Restrict number of iterative restoration attempts to total number of expandable
+				 * elements to avoid endless loops when some expandable elements appear to be permanently unresolvable
+				 * for some reason.
+				 */
+				for (int i = expandableProviders.size(); i > 0; i--) {
 					Iterator<ITreeElementStateProvider> iter = expandableProviders.iterator();
 					while (iter.hasNext()) {
 						ITreeElementStateProvider provider = iter.next();
@@ -109,29 +119,38 @@ public class TreeElementStateMementoHandler implements IMementoAware {
 				setSelectedElements(selectableProviders);
 			}
 
-			// Save elements that can not be expanded yet back to deferred memento
-			XMLMemento deferredExpandedMemento = (XMLMemento) deferredMemento
-					.createChild(TreeElementStateProviderFactory.MEMENTO_TYPE_GROUP_EXPANDED);
-			for (ITreeElementStateProvider provider : deferredExpandableProviders) {
-				if (provider.canUnderlyingModelBeLoaded()) {
-					provider.loadUnderlyingModel();
-					provider.appendToMemento(deferredExpandedMemento);
-				}
-			}
+			// Handle elements that could not yet be expanded or selected
+			processDeferredElements(memento.getType(), deferredExpandableProviders, deferredSelectableProviders);
+		}
+	}
 
-			// Save elements that can not be selected yet back to deferred memento
-			XMLMemento deferredSelectedMemento = (XMLMemento) deferredMemento
-					.createChild(TreeElementStateProviderFactory.MEMENTO_TYPE_GROUP_SELECTED);
-			for (ITreeElementStateProvider provider : deferredSelectableProviders) {
-				provider.appendToMemento(deferredSelectedMemento);
-			}
+	protected void processDeferredElements(String deferredMementoType, List<ITreeElementStateProvider> deferredExpandableProviders,
+			List<ITreeElementStateProvider> deferredSelectableProviders) {
+		Assert.isNotNull(deferredExpandableProviders);
+		Assert.isNotNull(deferredSelectableProviders);
 
-			// Switch root memento to deferred memento if needed
-			if (deferredExpandedMemento.getChildren().length > 0 || deferredSelectedMemento.getChildren().length > 0) {
-				memento = deferredMemento;
-			} else {
-				memento = null;
+		IMemento newDeferredMemento = XMLMemento.createWriteRoot(deferredMementoType);
+
+		// Save elements that can not be expanded yet back to deferred memento
+		IMemento newDeferredExpandedMemento = newDeferredMemento.createChild(TreeElementStateProviderFactory.MEMENTO_TYPE_GROUP_EXPANDED);
+		for (ITreeElementStateProvider provider : deferredExpandableProviders) {
+			if (provider.canUnderlyingModelBeLoaded()) {
+				provider.loadUnderlyingModel();
+				provider.appendToMemento(newDeferredExpandedMemento);
 			}
+		}
+
+		// Save elements that can not be selected yet back to deferred memento
+		IMemento newDeferredSelectedMemento = newDeferredMemento.createChild(TreeElementStateProviderFactory.MEMENTO_TYPE_GROUP_SELECTED);
+		for (ITreeElementStateProvider provider : deferredSelectableProviders) {
+			provider.appendToMemento(newDeferredSelectedMemento);
+		}
+
+		// Store deferred memento if needed
+		if (newDeferredExpandedMemento.getChildren().length > 0 || newDeferredSelectedMemento.getChildren().length > 0) {
+			deferredMemento = newDeferredMemento;
+		} else {
+			deferredMemento = null;
 		}
 	}
 
@@ -179,12 +198,21 @@ public class TreeElementStateMementoHandler implements IMementoAware {
 		}
 	}
 
+	public IMemento getDeferredMemento() {
+		return deferredMemento;
+	}
+
+	public boolean canSaveState() {
+		// Check if viewer has already been initialized
+		return viewer != null;
+	}
+
 	/*
 	 * @see org.eclipse.ui.navigator.IMementoAware#saveState(org.eclipse.ui.IMemento)
 	 */
 	@Override
 	public void saveState(IMemento memento) {
-		if (memento != null && viewer != null) {
+		if (canSaveState() && memento != null) {
 			TreeElementStateProviderFactory treeElementFactory = new TreeElementStateProviderFactory(viewer);
 
 			// Save expanded elements

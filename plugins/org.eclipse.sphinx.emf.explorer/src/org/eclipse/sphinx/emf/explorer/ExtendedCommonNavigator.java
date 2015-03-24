@@ -335,12 +335,18 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 	}
 
 	public void restoreState(IMemento memento) {
-		treeElementStateMementoHandler.restoreState(memento);
+		if (treeElementStateMementoHandler.canRestoreState()) {
+			treeElementStateMementoHandler.restoreState(memento);
+			this.memento = treeElementStateMementoHandler.getDeferredMemento();
+		}
 	}
 
 	@Override
 	public void saveState(IMemento memento) {
-		treeElementStateMementoHandler.saveState(memento);
+		if (treeElementStateMementoHandler.canSaveState()) {
+			treeElementStateMementoHandler.saveState(memento);
+		}
+
 		super.saveState(memento);
 	}
 
