@@ -52,12 +52,4 @@ Contributors:
          </enablement>
       </actionProvider>
    </extension>
-   <extension
-         point="org.eclipse.ui.decorators">
-      <decorator
-            id="org.eclipse.sphinx.emf.ui.decorator1"
-            label="label"
-            lightweight="true">
-      </decorator>
-   </extension>
 </plugin>

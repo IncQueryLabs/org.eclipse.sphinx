@@ -1,31 +1,23 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 Continental, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     Continental - Initial API and implementation
  *     See4sys - Enhance name feature handling, JavaDoc adds
  *     itemis - [408536] BasicRenameAction not working for non-String attributes
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.ui.actions;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
-
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
@@ -41,6 +33,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.sphinx.emf.ui.internal.messages.Messages;
+import org.eclipse.sphinx.emf.ui.util.RetrieveNameAttributeHelper;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
@@ -61,11 +54,9 @@ import org.eclipse.ui.actions.BaseSelectionListenerAction;
  */
 public class BasicRenameAction extends BaseSelectionListenerAction {
 
-	private static final String NAME = "name"; //$NON-NLS-1$
-	private static final String ID = "id"; //$NON-NLS-1$
+	private RetrieveNameAttributeHelper helper = new RetrieveNameAttributeHelper();
 
 	private TreeViewer viewer;
-	private Map<EClass, NameAttributeInfo> nameAttributeCache = new WeakHashMap<EClass, NameAttributeInfo>();
 	private Composite textEditorParent;
 	private Text textEditor;
 	private TreeEditor treeEditor;
@@ -80,12 +71,12 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 	}
 
 	public BasicRenameAction(TreeViewer viewer) {
-		super(Messages.action_rename_label);
+		this(Messages.action_rename_label);
 		this.viewer = viewer;
 	}
 
 	public BasicRenameAction(String text, TreeViewer viewer) {
-		super(text);
+		this(text);
 		this.viewer = viewer;
 	}
 
@@ -119,7 +110,7 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 		// Enable only for single selection, which are instance of EObject or IWrapperItemProvider wrapping an EObject
 		if (selection.size() == 1) {
 			Object selected = selection.getFirstElement();
-			if (selected instanceof EObject && hasNameAttribute((EObject) selected)) {
+			if (selected instanceof EObject && helper.hasNameAttribute((EObject) selected)) {
 				return true;
 			} else if (selected instanceof IWrapperItemProvider) {
 				Object unwrap = AdapterFactoryEditingDomain.unwrap(selected);
@@ -130,85 +121,16 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 	}
 
 	protected String getOldName(EObject object) {
-		if (hasNameAttribute(object)) {
-			Object nameAttributeValue = object.eGet(getNameAttribute(object));
+		if (helper.hasNameAttribute(object)) {
+			Object nameAttributeValue = object.eGet(helper.getNameAttribute(object));
 			return nameAttributeValue.toString();
 		}
 		return ""; //$NON-NLS-1$
 	}
 
-	/**
-	 * Retrieves the name attribute for the given model object. That name attribute may differ from one meta-model to
-	 * another; this method contains a default behaviour allowing to retrieve that name attribute event though.
-	 * 
-	 * @param object
-	 *            The model element whose name attribute must be returned.
-	 * @return The name attribute of the specified model element.
-	 */
-	protected EAttribute getNameAttribute(EObject object) {
-		List<EClass> eTypes = new ArrayList<EClass>();
-		eTypes.add(object.eClass());
-		eTypes.addAll(object.eClass().getEAllSuperTypes());
-		for (EClass eType : eTypes) {
-			if (nameAttributeCache.containsKey(eType)) {
-				NameAttributeInfo info = nameAttributeCache.get(eType);
-				if (!info.isFallback()) {
-					return info.getEAttribute();
-				}
-			}
-		}
-
-		NameAttributeInfo info = getNameAttribute(object.eClass().getEAllAttributes());
-		if (info != null) {
-			if (!nameAttributeCache.containsKey(info.getEAttribute().getEContainingClass())) {
-				nameAttributeCache.put(info.getEAttribute().getEContainingClass(), info);
-			}
-			return info.getEAttribute();
-		}
-		return null;
-	}
-
-	protected NameAttributeInfo getNameAttribute(List<EAttribute> nameAttributeCandidates) {
-		EAttribute nameAttribute = null;
-		boolean isFallback = true;
-		for (EAttribute attribute : nameAttributeCandidates) {
-			String attributeName = attribute.getName();
-			if (attributeName != null) {
-				if (attributeName.equalsIgnoreCase(NAME)) {
-					nameAttribute = attribute;
-					isFallback = false;
-				} else if (attributeName.equalsIgnoreCase(ID)) {
-					if (nameAttribute == null || !nameAttribute.getName().toLowerCase().endsWith(NAME)) {
-						nameAttribute = attribute;
-						isFallback = false;
-					}
-				} else if (attributeName.toLowerCase().endsWith(NAME)) {
-					if (nameAttribute == null || !nameAttribute.getName().toLowerCase().endsWith(NAME)
-							&& !nameAttribute.getName().equalsIgnoreCase(ID)) {
-						nameAttribute = attribute;
-						isFallback = false;
-					}
-				} else if (attributeName.toLowerCase().indexOf(NAME) != -1) {
-					if (nameAttribute == null || nameAttribute.getName().toLowerCase().indexOf(NAME) == -1
-							&& !nameAttribute.getName().equalsIgnoreCase(ID)) {
-						nameAttribute = attribute;
-						isFallback = false;
-					}
-				} else if (nameAttribute == null) {
-					nameAttribute = attribute;
-				}
-			}
-		}
-		return nameAttribute != null ? new NameAttributeInfo(nameAttribute, isFallback) : null;
-	}
-
-	protected boolean hasNameAttribute(EObject object) {
-		return getNameAttribute(object) != null;
-	}
-
 	protected void execRename(EObject objectToRename, String newName) {
 		TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(objectToRename);
-		EAttribute attribute = getNameAttribute(objectToRename);
+		EAttribute attribute = helper.getNameAttribute(objectToRename);
 		EFactory attributeValueFactory = attribute.getEType().getEPackage().getEFactoryInstance();
 		Object attributeValue = attributeValueFactory.createFromString((EDataType) attribute.getEType(), newName);
 		Command command = editingDomain.createCommand(SetCommand.class, new CommandParameter(objectToRename, attribute, attributeValue));
@@ -259,7 +181,7 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 
 	/**
 	 * Create the text editor widget.
-	 * 
+	 *
 	 * @param objectToRename
 	 *            the resource to rename
 	 */
@@ -383,13 +305,6 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 		ExtendedPlatformUI.getDisplay().asyncExec(runnable);
 	}
 
-	protected EAttribute cacheAttribute(NameAttributeInfo nameAttribute) {
-		if (!nameAttributeCache.containsKey(nameAttribute.getEAttribute().getEContainingClass())) {
-			nameAttributeCache.put(nameAttribute.getEAttribute().getEContainingClass(), nameAttribute);
-		}
-		return nameAttribute.getEAttribute();
-	}
-
 	protected Composite createParent() {
 		Tree tree = viewer.getTree();
 		Composite result = new Composite(tree, SWT.NONE);
@@ -399,25 +314,5 @@ public class BasicRenameAction extends BaseSelectionListenerAction {
 		treeEditor.grabHorizontal = true;
 		treeEditor.setEditor(result, selectedItems[0]);
 		return result;
-	}
-
-	private class NameAttributeInfo {
-
-		private WeakReference<EAttribute> eAttribute;
-		private boolean isFallback;
-
-		public NameAttributeInfo(EAttribute attr, boolean isFallback) {
-			Assert.isNotNull(attr);
-			eAttribute = new WeakReference<EAttribute>(attr);
-			this.isFallback = isFallback;
-		}
-
-		public EAttribute getEAttribute() {
-			return eAttribute.get();
-		}
-
-		public boolean isFallback() {
-			return isFallback;
-		}
 	}
 }
