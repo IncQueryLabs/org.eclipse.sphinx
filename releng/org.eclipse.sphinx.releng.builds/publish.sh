@@ -35,8 +35,8 @@ projectDownloadSitesBasePath=sphinx/downloads
 projectJavadocSiteBasePath=sphinx/javadoc
 updateSiteArchiveFileNamePrefix=sphinx-Update
 
-eclipsePackageVersion=4.4
-eclipsePackageBuildId=201406061215
+eclipsePackageVersion=4.4.2
+eclipsePackageBuildId=201502041700
 
 ##################
 # Derived settings
