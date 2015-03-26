@@ -131,15 +131,15 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			return;
 		}
 		collectMethodsImpl(validator, clazz, selectedCategories, visitedClasses, result);
-		Class<? extends ICheckValidator> k = clazz;
-		while (k != null) {
+		Class<?> k = clazz;
+		while (k.isAssignableFrom(ICheckValidator.class)) {
 			ComposedChecks checks = k.getAnnotation(ComposedChecks.class);
 			if (checks != null) {
 				for (Class<? extends ICheckValidator> external : checks.validators()) {
 					collectMethods(null, external, selectedCategories, visitedClasses, result);
 				}
 			}
-			k = clazz.getSuperclass().asSubclass(ICheckValidator.class);
+			k = k.getSuperclass();
 		}
 	}
 
@@ -160,16 +160,18 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 				String[] categories = annotation.categories();
 				// If no categories for the check annotation, Other category should be selected to add this method to
 				// the result.(https://bugs.eclipse.org/bugs/show_bug.cgi?id=458982)
-				if (categories.length == 1 && categories[0].isEmpty() && isOtherCategorySelected(selectedCategories)) {
-					result.add(createMethodWrapper(instanceToUse, method, selectedCategories));
+				if (categories.length == 1 && categories[0].isEmpty()) {
+					if (isOtherCategorySelected(selectedCategories)) {
+						result.add(createMethodWrapper(instanceToUse, method, selectedCategories));
+					}
 				} else {
 					result.add(createMethodWrapper(instanceToUse, method, selectedCategories));
 				}
 			}
 		}
-		Class<? extends ICheckValidator> superClass = clazz.getSuperclass().asSubclass(ICheckValidator.class);
-		if (superClass != null) {
-			collectMethodsImpl(instanceToUse, superClass, selectedCategories, visitedClasses, result);
+		Class<?> superClass = clazz.getSuperclass();
+		if (superClass != null && superClass.isAssignableFrom(ICheckValidator.class)) {
+			collectMethodsImpl(instanceToUse, (Class<? extends ICheckValidator>) superClass, selectedCategories, visitedClasses, result);
 		}
 	}
 

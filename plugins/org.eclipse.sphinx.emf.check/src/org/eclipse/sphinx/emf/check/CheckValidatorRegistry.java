@@ -277,10 +277,10 @@ public class CheckValidatorRegistry {
 	 * @return
 	 * @throws CoreException
 	 */
-	public ICheckValidator getValidator(EPackage ePackage) {
+	public EValidator getValidator(EPackage ePackage) {
 		EValidator eValidator = getEValidatorRegistry().getEValidator(ePackage);
-		if (eValidator instanceof ICheckValidator) {
-			return (ICheckValidator) eValidator;
+		if (eValidator instanceof ICheckValidator || eValidator instanceof CompositeValidator) {
+			return eValidator;
 		}
 		return null;
 	}

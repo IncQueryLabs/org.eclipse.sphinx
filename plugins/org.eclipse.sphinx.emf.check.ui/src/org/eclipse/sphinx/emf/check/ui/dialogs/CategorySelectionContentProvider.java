@@ -31,6 +31,9 @@ import org.eclipse.sphinx.emf.check.ui.internal.messages.Messages;
 
 public class CategorySelectionContentProvider implements IStructuredContentProvider {
 
+	private Category otherCategory;
+	private Category intrinsicChecksCategory;
+
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		// Do nothing
@@ -46,11 +49,10 @@ public class CategorySelectionContentProvider implements IStructuredContentProvi
 		}
 
 		// Add Intrinsic Model Integrity Checks Category
-		elements.add(createCategory(IValidationConstants.intrinsic_model_integrity_checks_category_id,
-				Messages.intrinsic_model_integrity_checks_category_label, Messages.intrinsic_model_integrity_checks_category_desc));
+		elements.add(getIntrinsicChecksCategory());
 
 		// Add Other Category
-		elements.add(createCategory(IValidationConstants.other_category_id, Messages.other_category_label, Messages.other_category_desc));
+		elements.add(getOtherCategory());
 
 		return elements.toArray(new Category[elements.size()]);
 	}
@@ -58,6 +60,21 @@ public class CategorySelectionContentProvider implements IStructuredContentProvi
 	@Override
 	public void dispose() {
 		// Do nothing
+	}
+
+	protected Category getOtherCategory() {
+		if (otherCategory == null) {
+			otherCategory = createCategory(IValidationConstants.other_category_id, Messages.other_category_label, Messages.other_category_desc);
+		}
+		return otherCategory;
+	}
+
+	protected Category getIntrinsicChecksCategory() {
+		if (intrinsicChecksCategory == null) {
+			intrinsicChecksCategory = createCategory(IValidationConstants.intrinsic_model_integrity_checks_category_id,
+					Messages.intrinsic_model_integrity_checks_category_label, Messages.intrinsic_model_integrity_checks_category_desc);
+		}
+		return intrinsicChecksCategory;
 	}
 
 	private Category createCategory(String id, String label, String desc) {

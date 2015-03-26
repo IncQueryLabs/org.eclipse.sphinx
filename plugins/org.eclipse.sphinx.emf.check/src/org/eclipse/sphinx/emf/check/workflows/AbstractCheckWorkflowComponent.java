@@ -21,15 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.util.Diagnostician;
 import org.eclipse.emf.mwe.core.WorkflowContext;
 import org.eclipse.emf.mwe.core.issues.Issues;
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitor;
-import org.eclipse.sphinx.emf.check.CheckValidatorRegistry;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.services.CheckProblemMarkerService;
 import org.eclipse.sphinx.emf.mwe.dynamic.IWorkflowSlots;
@@ -41,16 +38,16 @@ import org.eclipse.sphinx.emf.mwe.dynamic.components.IModelWorkflowComponent;
  */
 public abstract class AbstractCheckWorkflowComponent extends AbstractModelWorkflowComponent implements IModelWorkflowComponent {
 
-	private ICheckValidator validator = null;
+	// private ICheckValidator validator = null;
 
 	protected Set<String> categories = new HashSet<String>();
 
-	public ICheckValidator getValidator(EPackage ePackage) throws CoreException {
-		if (validator == null) {
-			validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
-		}
-		return validator;
-	}
+	// public ICheckValidator getValidator(EPackage ePackage) throws CoreException {
+	// if (validator == null) {
+	// validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
+	// }
+	// return validator;
+	// }
 
 	@Override
 	protected void invokeInternal(WorkflowContext ctx, ProgressMonitor monitor, Issues issues) {

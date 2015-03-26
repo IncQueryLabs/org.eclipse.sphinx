@@ -25,13 +25,13 @@ import java.util.Set;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.sphinx.emf.check.CheckValidatorRegistry;
-import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.catalog.Category;
 import org.eclipse.sphinx.emf.check.operations.BasicCheckValidationOperation;
 import org.eclipse.sphinx.emf.check.ui.IValidationUIConstants;
@@ -91,7 +91,7 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 		List<EObject> validationInputs = getValidationInputs();
 		for (EObject validationInput : validationInputs) {
 			final EPackage ePackage = validationInput.eClass().getEPackage();
-			ICheckValidator validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
+			EValidator validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
 			if (validator == null) {
 				return false;
 			}
