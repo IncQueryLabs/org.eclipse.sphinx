@@ -16,10 +16,8 @@
 package org.eclipse.sphinx.emf.check;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.emf.ecore.EClass;
@@ -34,14 +32,12 @@ import org.eclipse.emf.ecore.EValidator;
  * it delegates the validation to all its children and returns the logical <em>AND</em> of the delegated diagnostics
  * results.
  */
-public class CompositeValidator implements ICheckValidator {
+public class CompositeValidator implements EValidator {
 
 	private List<EValidator> children;
-	private Set<String> validationSets;
 
 	public CompositeValidator() {
 		children = new ArrayList<EValidator>();
-		validationSets = new HashSet<String>();
 	}
 
 	public CompositeValidator(EValidator delegate) {
@@ -98,25 +94,5 @@ public class CompositeValidator implements ICheckValidator {
 			result = result && validate;
 		}
 		return result;
-	}
-
-	@Override
-	public CheckCatalogHelper getCheckCatalogHelper() {
-		return null;
-	}
-
-	@Override
-	public void setFilter(Set<String> validationSets) {
-		this.validationSets = validationSets;
-		for (EValidator delegate : children) {
-			if (delegate instanceof ICheckValidator) {
-				((ICheckValidator) delegate).setFilter(validationSets);
-			}
-		}
-	}
-
-	@Override
-	public Set<String> getFilter() {
-		return validationSets;
 	}
 }

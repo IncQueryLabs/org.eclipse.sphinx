@@ -10,27 +10,26 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
+ *     itemis - [458982] Improve check validation user experience
  *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.check.ui.dialogs;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.sphinx.emf.check.CheckCatalogHelper;
+import org.eclipse.sphinx.emf.check.CheckValidatorRegistry;
+import org.eclipse.sphinx.emf.check.IValidationConstants;
+import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.catalog.Category;
+import org.eclipse.sphinx.emf.check.catalog.CheckCatalogFactory;
+import org.eclipse.sphinx.emf.check.ui.internal.messages.Messages;
 
 public class CategorySelectionContentProvider implements IStructuredContentProvider {
-
-	private final Set<CheckCatalogHelper> helpers;
-
-	public CategorySelectionContentProvider(Set<CheckCatalogHelper> helpers) {
-		this.helpers = helpers;
-	}
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
@@ -39,17 +38,33 @@ public class CategorySelectionContentProvider implements IStructuredContentProvi
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		Map<String, Category> categories = new HashMap<String, Category>();
-		for (CheckCatalogHelper helper : helpers) {
-			for (Category category : helper.getCategories()) {
-				categories.put(category.getId(), category);
-			}
+		List<Category> elements = new ArrayList<Category>();
+
+		Collection<Catalog> checkCatalogs = CheckValidatorRegistry.INSTANCE.getCheckCatalogs();
+		for (Catalog catalog : checkCatalogs) {
+			elements.addAll(catalog.getCategories());
 		}
-		return categories.values().toArray(new Category[categories.size()]);
+
+		// Add Intrinsic Model Integrity Checks Category
+		elements.add(createCategory(IValidationConstants.intrinsic_model_integrity_checks_category_id,
+				Messages.intrinsic_model_integrity_checks_category_label, Messages.intrinsic_model_integrity_checks_category_desc));
+
+		// Add Other Category
+		elements.add(createCategory(IValidationConstants.other_category_id, Messages.other_category_label, Messages.other_category_desc));
+
+		return elements.toArray(new Category[elements.size()]);
 	}
 
 	@Override
 	public void dispose() {
 		// Do nothing
+	}
+
+	private Category createCategory(String id, String label, String desc) {
+		Category category = CheckCatalogFactory.eINSTANCE.createCategory();
+		category.setId(id);
+		category.setLabel(label);
+		category.setDescription(desc);
+		return category;
 	}
 }

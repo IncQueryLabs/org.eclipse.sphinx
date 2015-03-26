@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.ecore.resource.Resource;
 
-public interface IProblemMarkerFactory {
+public interface ICheckValidationProblemMarkerFactory {
 
 	public void createMarker(IResource resource, Diagnostic diagnostic) throws CoreException;
 

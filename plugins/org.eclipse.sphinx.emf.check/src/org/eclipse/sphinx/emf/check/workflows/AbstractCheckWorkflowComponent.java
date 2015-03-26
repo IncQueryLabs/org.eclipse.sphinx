@@ -15,8 +15,10 @@
  */
 package org.eclipse.sphinx.emf.check.workflows;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
@@ -41,7 +43,7 @@ public abstract class AbstractCheckWorkflowComponent extends AbstractModelWorkfl
 
 	private ICheckValidator validator = null;
 
-	protected Set<String> filters = new HashSet<String>();
+	protected Set<String> categories = new HashSet<String>();
 
 	public ICheckValidator getValidator(EPackage ePackage) throws CoreException {
 		if (validator == null) {
@@ -57,17 +59,13 @@ public abstract class AbstractCheckWorkflowComponent extends AbstractModelWorkfl
 		if (models != null && !models.isEmpty()) {
 			for (EObject model : models) {
 				try {
-					// Get the epackage from the model input
-					EPackage ePackage = model.eClass().getEPackage();
 
-					// Get the validator specific to epackage
-					ICheckValidator checkValidator = getValidator(ePackage);
-
-					// Set manually a filter for categories of constraints to validate
-					checkValidator.setFilter(filters);
+					// Put the categories in the context entries
+					Map<Object, Object> contextEntries = new HashMap<Object, Object>();
+					contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories.toArray(new String[categories.size()]));
 
 					// Run validation (use standard validation entry point)
-					Diagnostic diagnostic = Diagnostician.INSTANCE.validate(model);
+					Diagnostic diagnostic = Diagnostician.INSTANCE.validate(model, contextEntries);
 
 					// Generate error markers and update check validation view
 					CheckProblemMarkerService.INSTANCE.updateProblemMarkers(model, diagnostic);

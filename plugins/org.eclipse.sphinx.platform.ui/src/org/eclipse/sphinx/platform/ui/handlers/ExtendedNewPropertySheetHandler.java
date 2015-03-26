@@ -35,8 +35,8 @@ public class ExtendedNewPropertySheetHandler extends NewPropertySheetHandler {
 	private static final boolean PIN_NEW_PROPERTY_VIEW = Boolean.valueOf(
 			System.getProperty("org.eclipse.ui.views.properties.pinNewPV", Boolean.FALSE.toString())).booleanValue(); //$NON-NLS-1$
 
-	private static final String MARKERS_VIEW_ID = "org.eclipse.sphinx.emf.check.ui.markersView";
-	private static final String SEARCH_VIEW_ID = "org.eclipse.search.ui.views.SearchView";
+	private static final String MARKERS_VIEW_ID = "org.eclipse.sphinx.emf.check.ui.markersView"; //$NON-NLS-1$
+	private static final String SEARCH_VIEW_ID = "org.eclipse.search.ui.views.SearchView"; //$NON-NLS-1$
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
