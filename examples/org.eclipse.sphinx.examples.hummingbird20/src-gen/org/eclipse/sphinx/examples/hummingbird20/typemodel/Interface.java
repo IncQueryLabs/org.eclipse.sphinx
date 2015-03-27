@@ -21,6 +21,10 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Interface</b></em>'. <!-- end-user-doc -->
  *
+ * <!-- begin-model-doc -->
+ * Represents an Interface model object
+ * <!-- end-model-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
@@ -44,6 +48,9 @@ public interface Interface extends Identifiable {
 	 * more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Specifies the providing component types
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Providing Component Types</em>' reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getInterface_ProvidingComponentTypes()
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType#getProvidedInterfaces
@@ -62,6 +69,9 @@ public interface Interface extends Identifiable {
 	 * description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Specifies the requiring ports
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Requiring Ports</em>' reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getInterface_RequiringPorts()
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getRequiredInterface

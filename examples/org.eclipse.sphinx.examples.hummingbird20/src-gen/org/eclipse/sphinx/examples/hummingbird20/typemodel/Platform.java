@@ -23,6 +23,10 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Platform</b></em>'. <!-- end-user-doc -->
  *
+ * <!-- begin-model-doc -->
+ * Represents a Platform model object
+ * <!-- end-model-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
@@ -47,6 +51,9 @@ public interface Platform extends Identifiable {
 	 * more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Aggregates all Component Types with this Platform...
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Component Types</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getPlatform_ComponentTypes()
 	 * @model containment="true" required="true"
@@ -63,6 +70,9 @@ public interface Platform extends Identifiable {
 	 * of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Aggregates all Interfaces with this Platform...
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Interfaces</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getPlatform_Interfaces()
 	 * @model containment="true"

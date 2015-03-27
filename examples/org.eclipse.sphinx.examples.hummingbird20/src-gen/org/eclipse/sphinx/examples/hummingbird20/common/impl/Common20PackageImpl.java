@@ -236,8 +236,44 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 		createResource(eNS_URI);
 
 		// Create annotations
+		// http://www.eclipse.org/emf/2002/GenModel
+		createGenModelAnnotations();
 		// http:///org/eclipse/emf/ecore/util/ExtendedMetaData
 		createExtendedMetaDataAnnotations();
+	}
+
+	/**
+	 * Initializes the annotations for <b>http://www.eclipse.org/emf/2002/GenModel</b>.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void createGenModelAnnotations() {
+		String source = "http://www.eclipse.org/emf/2002/GenModel"; //$NON-NLS-1$	
+		addAnnotation
+		  (identifiableEClass, 
+		   source, 
+		   new String[] {
+			 "documentation", "Represents an Identifiable model object" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getIdentifiable_Name(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Specifies the name of this Identifiable model object" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getIdentifiable_Description(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Specifies the description of this Identifiable model object" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (descriptionEClass, 
+		   source, 
+		   new String[] {
+			 "documentation", "Represents a Description model object" //$NON-NLS-1$ //$NON-NLS-2$
+		   });
 	}
 
 	/**

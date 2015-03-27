@@ -5,13 +5,27 @@
   <eSubpackages name="common" nsURI="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common"
       nsPrefix="cn">
     <eClassifiers xsi:type="ecore:EClass" name="Identifiable" abstract="true">
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Represents an Identifiable model object"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Specifies the name of this Identifiable model object"/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="description" eType="#//common/Description"
-          containment="true"/>
+          containment="true">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Specifies the description of this Identifiable model object"/>
+        </eAnnotations>
+      </eStructuralFeatures>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Description">
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="mixed"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Represents a Description model object"/>
       </eAnnotations>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="mixed" unique="false"
           upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFeatureMapEntry">
@@ -28,10 +42,21 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="mixed"/>
       </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Represents a Platform model object"/>
+      </eAnnotations>
       <eStructuralFeatures xsi:type="ecore:EReference" name="componentTypes" lowerBound="1"
-          upperBound="-1" eType="#//typemodel/ComponentType" containment="true"/>
+          upperBound="-1" eType="#//typemodel/ComponentType" containment="true">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Aggregates all Component Types with this Platform..."/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="interfaces" upperBound="-1"
-          eType="#//typemodel/Interface" containment="true"/>
+          eType="#//typemodel/Interface" containment="true">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Aggregates all Interfaces with this Platform..."/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="mixed" unique="false"
           upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFeatureMapEntry">
         <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
@@ -49,28 +74,64 @@
       </eStructuralFeatures>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="ComponentType" eSuperTypes="#//common/Identifiable">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Represents a ComponentType model object"/>
+      </eAnnotations>
       <eStructuralFeatures xsi:type="ecore:EReference" name="providedInterfaces" upperBound="-1"
           eType="#//typemodel/Interface" unsettable="true" eOpposite="#//typemodel/Interface/providingComponentTypes"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="ports" upperBound="-1"
-          eType="#//typemodel/Port" containment="true" eOpposite="#//typemodel/Port/owner"/>
+          eType="#//typemodel/Port" containment="true" eOpposite="#//typemodel/Port/owner">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Aggregates all Ports with this ComponentType..."/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
-          eType="#//typemodel/Parameter" containment="true"/>
+          eType="#//typemodel/Parameter" containment="true">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Aggregates all Parameters with this ComponentType..."/>
+        </eAnnotations>
+      </eStructuralFeatures>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Port" eSuperTypes="#//common/Identifiable">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Represents a Port model object"/>
+      </eAnnotations>
       <eStructuralFeatures xsi:type="ecore:EReference" name="owner" lowerBound="1"
-          eType="#//typemodel/ComponentType" eOpposite="#//typemodel/ComponentType/ports"/>
+          eType="#//typemodel/ComponentType" eOpposite="#//typemodel/ComponentType/ports">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Specifies the component type owner"/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="requiredInterface" lowerBound="1"
-          eType="#//typemodel/Interface" eOpposite="#//typemodel/Interface/requiringPorts"/>
+          eType="#//typemodel/Interface" eOpposite="#//typemodel/Interface/requiringPorts">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Specifies the required interface"/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="minProviderCount" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="maxProviderCount" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Interface" eSuperTypes="#//common/Identifiable">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Represents an Interface model object"/>
+      </eAnnotations>
       <eStructuralFeatures xsi:type="ecore:EReference" name="providingComponentTypes"
-          upperBound="-1" eType="#//typemodel/ComponentType" eOpposite="#//typemodel/ComponentType/providedInterfaces"/>
+          upperBound="-1" eType="#//typemodel/ComponentType" eOpposite="#//typemodel/ComponentType/providedInterfaces">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Specifies the providing component types"/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="requiringPorts" upperBound="-1"
-          eType="#//typemodel/Port" eOpposite="#//typemodel/Port/requiredInterface"/>
+          eType="#//typemodel/Port" eOpposite="#//typemodel/Port/requiredInterface">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Specifies the requiring ports"/>
+        </eAnnotations>
+      </eStructuralFeatures>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Parameter" eSuperTypes="#//common/Identifiable">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Represents a Parameter model object"/>
+      </eAnnotations>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="dataType" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="optional" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     </eClassifiers>
@@ -81,8 +142,15 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="mixed"/>
       </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Represents an Application model object"/>
+      </eAnnotations>
       <eStructuralFeatures xsi:type="ecore:EReference" name="components" lowerBound="1"
-          upperBound="-1" eType="#//instancemodel/Component" containment="true"/>
+          upperBound="-1" eType="#//instancemodel/Component" containment="true">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Aggregates all Components with this Application..."/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="mixed" unique="false"
           upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFeatureMapEntry">
         <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
@@ -111,28 +179,65 @@
       </eStructuralFeatures>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Component" eSuperTypes="#//common/Identifiable">
-      <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="#//typemodel/ComponentType"/>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Represents a Component model object"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="#//typemodel/ComponentType">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Reference to the type of this Component"/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingConnections"
           upperBound="-1" eType="#//instancemodel/Connection" containment="true" eOpposite="#//instancemodel/Connection/sourceComponent"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="incomingConnections"
           upperBound="-1" eType="#//instancemodel/Connection" eOpposite="#//instancemodel/Connection/targetComponent"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="parameterValues" upperBound="-1"
-          eType="#//instancemodel/ParameterValue" containment="true"/>
+          eType="#//instancemodel/ParameterValue" containment="true">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Aggregates all ParameterValues with this Component..."/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="parameterExpressions"
           upperBound="-1" eType="#//instancemodel/ParameterExpression" containment="true"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Connection" eSuperTypes="#//common/Identifiable">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Represents a Connection model object"/>
+      </eAnnotations>
       <eStructuralFeatures xsi:type="ecore:EReference" name="sourceComponent" lowerBound="1"
-          eType="#//instancemodel/Component" transient="true" eOpposite="#//instancemodel/Component/outgoingConnections"/>
+          eType="#//instancemodel/Component" transient="true" eOpposite="#//instancemodel/Component/outgoingConnections">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Specifies the source component"/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="sourcePort" lowerBound="1"
-          eType="#//typemodel/Port"/>
+          eType="#//typemodel/Port">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Specifies the source port"/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="targetComponent" lowerBound="1"
-          eType="#//instancemodel/Component" eOpposite="#//instancemodel/Component/incomingConnections"/>
+          eType="#//instancemodel/Component" eOpposite="#//instancemodel/Component/incomingConnections">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Specifies the target component"/>
+        </eAnnotations>
+      </eStructuralFeatures>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="ParameterValue" eSuperTypes="#//common/Identifiable">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Represents a Parameter Value model object"/>
+      </eAnnotations>
       <eStructuralFeatures xsi:type="ecore:EReference" name="type" lowerBound="1"
-          eType="#//typemodel/Parameter"/>
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+          eType="#//typemodel/Parameter">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Reference to the type of this Parameter"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="Specifies the value of this ParameterValue"/>
+        </eAnnotations>
+      </eStructuralFeatures>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="ParameterExpression">
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">

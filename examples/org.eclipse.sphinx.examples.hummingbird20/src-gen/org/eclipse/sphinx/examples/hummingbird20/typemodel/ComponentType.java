@@ -21,6 +21,10 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Component Type</b></em>'. <!-- end-user-doc -->
  *
+ * <!-- begin-model-doc -->
+ * Represents a ComponentType model object
+ * <!-- end-model-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
@@ -85,6 +89,9 @@ public interface ComponentType extends Identifiable {
 	 * description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Aggregates all Ports with this ComponentType...
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Ports</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getComponentType_Ports()
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getOwner
@@ -102,6 +109,9 @@ public interface ComponentType extends Identifiable {
 	 * of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Aggregates all Parameters with this ComponentType...
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Parameters</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getComponentType_Parameters()
 	 * @model containment="true"

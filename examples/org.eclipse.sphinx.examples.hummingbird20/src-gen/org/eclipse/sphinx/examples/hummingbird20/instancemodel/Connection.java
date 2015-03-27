@@ -21,6 +21,10 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.Port;
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Connection</b></em>'. <!-- end-user-doc -->
  *
+ * <!-- begin-model-doc -->
+ * Represents a Connection model object
+ * <!-- end-model-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
@@ -44,6 +48,9 @@ public interface Connection extends Identifiable {
 	 * a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Specifies the source component
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Source Component</em>' container reference.
 	 * @see #setSourceComponent(Component)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getConnection_SourceComponent()
@@ -70,6 +77,9 @@ public interface Connection extends Identifiable {
 	 * here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Specifies the source port
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Source Port</em>' reference.
 	 * @see #setSourcePort(Port)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getConnection_SourcePort()
@@ -96,6 +106,9 @@ public interface Connection extends Identifiable {
 	 * description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Specifies the target component
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Target Component</em>' reference.
 	 * @see #setTargetComponent(Component)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getConnection_TargetComponent()
