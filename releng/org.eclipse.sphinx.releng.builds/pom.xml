@@ -86,6 +86,7 @@
 		<module>../../examples/org.eclipse.sphinx.examples.validation.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.workflows</module>
 		<module>../../examples/org.eclipse.sphinx.examples.workflows.lib</module>
+		<module>../../examples/org.eclipse.sphinx.examples.views.documentation</module>
 
 		<!-- Tests -->
 		<module>../../tests/org.eclipse.sphinx.tests.emf</module>
