@@ -14,11 +14,13 @@
  */
 package org.eclipse.sphinx.emf.explorer.internal.actions;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.util.SafeRunnable;
@@ -49,7 +51,7 @@ public class CloseResourceOverrideAction extends CloseResourceAction {
 
 	/**
 	 * Creates a new action.
-	 * 
+	 *
 	 * @param provider
 	 *            the shell provider for any dialogs
 	 */
@@ -59,7 +61,7 @@ public class CloseResourceOverrideAction extends CloseResourceAction {
 
 	/**
 	 * Creates a new action.
-	 * 
+	 *
 	 * @param provider
 	 *            the shell provider for any dialogs
 	 * @param text
@@ -93,9 +95,20 @@ public class CloseResourceOverrideAction extends CloseResourceAction {
 	 */
 	protected boolean saveDirtyModels() {
 		// Get the items to close
-		@SuppressWarnings("unchecked")
-		final List<IProject> projects = getSelectedResources();
-		if (projects == null || projects.isEmpty()) {
+		final List<IResource> resources = getSelectedResources();
+		if (resources == null || resources.isEmpty()) {
+			// No action needs to be taken since no resources are selected
+			return false;
+		}
+
+		final List<IProject> projects = new ArrayList<IProject>();
+		for (IResource resource : resources) {
+			if (resource instanceof IProject) {
+				projects.add((IProject) resource);
+			}
+		}
+
+		if (projects.isEmpty()) {
 			// No action needs to be taken since no projects are selected
 			return false;
 		}

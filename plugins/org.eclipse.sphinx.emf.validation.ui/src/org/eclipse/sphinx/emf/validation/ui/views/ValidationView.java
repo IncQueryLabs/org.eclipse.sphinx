@@ -48,15 +48,14 @@ import org.eclipse.ui.handlers.IHandlerActivation;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.ide.IDEInternalPreferences;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
-import org.eclipse.ui.views.markers.internal.ProblemView;
 
 import com.ibm.icu.text.MessageFormat;
 
 /**
  * The Validation view is the view that displays problem markers on model objects.
  * <p>
- * Unfortunately, there was no other choice than copying the whole code from {@link ProblemView} for that purpose
- * because most of the relevant methods and fields of the latter are private or package private.
+ * Unfortunately, there was no other choice than copying the whole code from ProblemView for that purpose because most
+ * of the relevant methods and fields of the latter are private or package private.
  * </p>
  */
 public class ValidationView extends MarkerView {
@@ -272,7 +271,7 @@ public class ValidationView extends MarkerView {
 		String quickFixId = "org.eclipse.jdt.ui.edit.text.java.correction.assist.proposals"; //$NON-NLS-1$
 		resolveMarkerAction.setActionDefinitionId(quickFixId);
 
-		handlerService = (IHandlerService) getViewSite().getService(IHandlerService.class);
+		handlerService = getViewSite().getService(IHandlerService.class);
 		if (handlerService != null) {
 			resolveMarkerHandlerActivation = handlerService.activateHandler(quickFixId, new ActionHandler(resolveMarkerAction));
 		}
