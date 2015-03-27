@@ -21,6 +21,9 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.platform.ui.internal.messages.messages"; //$NON-NLS-1$
 
 	public static String error_whileRunningOperation;
+	public static String title_section_error;
+	public static String title_documentation;
+	public static String desc_model_object_selection;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

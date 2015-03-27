@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014-2015 itemis and others.
+ * Copyright (c) 2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,11 +18,11 @@ import org.eclipse.sphinx.platform.ui.views.documentation.IDescriptionWrapper
 
 class BootstrapDescriptionWrapper implements IDescriptionWrapper {
 	
-	override textPost() '''
-		 </div>
-	'''
-	
 	override textPre() '''
 		<div class="col-md-6">
+	'''
+	
+	override textPost() '''
+		 </div>
 	'''
 }
