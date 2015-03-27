@@ -22,9 +22,12 @@ public class SourceLocation {
 
 	private Method checkMethod;
 
-	public SourceLocation(Class<?> checkValidator, Method checkMethod) {
+	private String constraintId;
+
+	public SourceLocation(Class<?> checkValidator, Method checkMethod, String constraintId) {
 		this.checkValidator = checkValidator;
 		this.checkMethod = checkMethod;
+		this.constraintId = constraintId;
 	}
 
 	public Class<?> getCheckValidator() {
@@ -41,5 +44,13 @@ public class SourceLocation {
 
 	public void setCheckMethod(Method checkMethod) {
 		this.checkMethod = checkMethod;
+	}
+
+	public String getConstraintId() {
+		return constraintId;
+	}
+
+	public void setConstraintId(String constraintId) {
+		this.constraintId = constraintId;
 	}
 }

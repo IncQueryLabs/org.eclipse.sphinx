@@ -122,11 +122,15 @@ public class CheckProblemMarkerFactory implements ICheckValidationProblemMarkerF
 		for (Object obj : data) {
 			if (obj instanceof SourceLocation) {
 				SourceLocation sourceLocation = (SourceLocation) obj;
-				StringBuilder sourceBuilder = new StringBuilder();
-				sourceBuilder.append(sourceLocation.getCheckValidator().getSimpleName());
-				sourceBuilder.append("#"); //$NON-NLS-1$
-				sourceBuilder.append(sourceLocation.getCheckMethod().getName());
-				return sourceBuilder.toString();
+				if (sourceLocation.getConstraintId() != null && !sourceLocation.getConstraintId().isEmpty()) {
+					return sourceLocation.getConstraintId();
+				} else {
+					StringBuilder sourceBuilder = new StringBuilder();
+					sourceBuilder.append(sourceLocation.getCheckValidator().getSimpleName());
+					sourceBuilder.append("#"); //$NON-NLS-1$
+					sourceBuilder.append(sourceLocation.getCheckMethod().getName());
+					return sourceBuilder.toString();
+				}
 			}
 		}
 		return diagnostic.getSource();

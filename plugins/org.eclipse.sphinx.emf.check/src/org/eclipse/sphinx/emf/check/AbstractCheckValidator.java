@@ -307,7 +307,8 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void warning(String message, EObject object, EStructuralFeature feature, int index) {
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature), new SourceLocation(this.getClass(), getState().get().currentMethod) };
+		Object[] data = new Object[] { new DiagnosticLocation(object, feature),
+				new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint) };
 		warning(message, object, feature, index, data);
 	}
 
@@ -320,7 +321,8 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void error(String message, EObject object, EStructuralFeature feature, int index) {
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature), new SourceLocation(this.getClass(), getState().get().currentMethod) };
+		Object[] data = new Object[] { new DiagnosticLocation(object, feature),
+				new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint) };
 		error(message, object, feature, index, data);
 	}
 
@@ -334,7 +336,8 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void info(String message, EObject object, EStructuralFeature feature, int index) {
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature), new SourceLocation(this.getClass(), getState().get().currentMethod) };
+		Object[] data = new Object[] { new DiagnosticLocation(object, feature),
+				new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint) };
 		info(message, object, feature, index, data);
 	}
 
