@@ -271,7 +271,7 @@ public class ValidationView extends MarkerView {
 		String quickFixId = "org.eclipse.jdt.ui.edit.text.java.correction.assist.proposals"; //$NON-NLS-1$
 		resolveMarkerAction.setActionDefinitionId(quickFixId);
 
-		handlerService = getViewSite().getService(IHandlerService.class);
+		handlerService = (IHandlerService) getViewSite().getService(IHandlerService.class);
 		if (handlerService != null) {
 			resolveMarkerHandlerActivation = handlerService.activateHandler(quickFixId, new ActionHandler(resolveMarkerAction));
 		}
