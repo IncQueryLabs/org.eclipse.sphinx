@@ -14,16 +14,18 @@
  */
 package org.eclipse.sphinx.emf.check;
 
-import java.util.Set;
-
 import org.eclipse.emf.ecore.EValidator;
+import org.eclipse.sphinx.emf.check.AbstractCheckValidator.CheckValidatorState;
 
 public interface ICheckValidator extends EValidator {
 
-	void setFilter(Set<String> validationSets);
-
-	Set<String> getFilter();
+	/**
+	 * An option to be used to provide the categories, as a table of String, for the validation context.
+	 */
+	String OPTION_CATEGORIES = "CATEGORIES"; //$NON-NLS-1$
 
 	CheckCatalogHelper getCheckCatalogHelper();
+
+	ThreadLocal<CheckValidatorState> getState();
 
 }

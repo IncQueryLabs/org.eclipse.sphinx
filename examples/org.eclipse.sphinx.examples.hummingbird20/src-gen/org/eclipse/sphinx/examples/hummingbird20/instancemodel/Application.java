@@ -23,6 +23,10 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Application</b></em>'. <!-- end-user-doc -->
  *
+ * <!-- begin-model-doc -->
+ * Represents an Application model object
+ * <!-- end-model-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
@@ -49,6 +53,9 @@ public interface Application extends Identifiable {
 	 * of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Aggregates all Components with this Application...
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Components</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getApplication_Components()
 	 * @model containment="true" required="true"

@@ -27,7 +27,7 @@ class CheckHummingbird20Workflow extends WorkspaceWorkflow {
 class CheckHummingbird20WorkflowComponent extends AbstractCheckWorkflowComponent {
 
 	new() { 
-		filters+="Category1"
-		filters+="Category2"
+		categories+="Category1"
+		categories+="Category2"
 	}
 }

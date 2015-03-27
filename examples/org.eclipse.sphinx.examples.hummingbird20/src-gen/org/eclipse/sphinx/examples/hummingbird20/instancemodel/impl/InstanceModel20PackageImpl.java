@@ -481,6 +481,8 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 		// Create annotations
 		// http:///org/eclipse/emf/ecore/util/ExtendedMetaData
 		createExtendedMetaDataAnnotations();
+		// http://www.eclipse.org/emf/2002/GenModel
+		createGenModelAnnotations();
 	}
 
 	/**
@@ -536,6 +538,94 @@ public class InstanceModel20PackageImpl extends EPackageImpl implements Instance
 		   source, 
 		   new String[] {
 			 "kind", "element" //$NON-NLS-1$ //$NON-NLS-2$
+		   });
+	}
+
+	/**
+	 * Initializes the annotations for <b>http://www.eclipse.org/emf/2002/GenModel</b>.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void createGenModelAnnotations() {
+		String source = "http://www.eclipse.org/emf/2002/GenModel"; //$NON-NLS-1$	
+		addAnnotation
+		  (applicationEClass, 
+		   source, 
+		   new String[] {
+			 "documentation", "Represents an Application model object" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getApplication_Components(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Aggregates all Components with this Application..." //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getApplication_MixedOuterContent(), 
+		   source, 
+		   new String[] {
+			 "suppressedGetVisibility", "true" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (componentEClass, 
+		   source, 
+		   new String[] {
+			 "documentation", "Represents a Component model object" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getComponent_Type(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Reference to the type of this Component" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getComponent_ParameterValues(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Aggregates all ParameterValues with this Component..." //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (connectionEClass, 
+		   source, 
+		   new String[] {
+			 "documentation", "Represents a Connection model object" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getConnection_SourceComponent(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Specifies the source component" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getConnection_SourcePort(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Specifies the source port" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getConnection_TargetComponent(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Specifies the target component" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (parameterValueEClass, 
+		   source, 
+		   new String[] {
+			 "documentation", "Represents a Parameter Value model object" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getParameterValue_Type(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Reference to the type of this Parameter" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getParameterValue_Value(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Specifies the value of this ParameterValue" //$NON-NLS-1$ //$NON-NLS-2$
 		   });
 	}
 

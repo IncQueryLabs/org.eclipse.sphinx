@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.sphinx.emf.check.AbstractCheckValidator.State;
+import org.eclipse.sphinx.emf.check.AbstractCheckValidator.CheckValidatorState;
 import org.eclipse.sphinx.emf.check.internal.Activator;
 import org.eclipse.sphinx.emf.check.util.Exceptions;
 import org.eclipse.sphinx.emf.check.util.GuardException;
@@ -29,65 +29,78 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public class MethodWrapper {
 
-	private final AbstractCheckValidator instance;
+	private final ICheckValidator validator;
 
 	private final Method method;
 	private final String signature;
-	private final String constraint;
-	private final String[] categories;
+	private final Check checkAnnotation;
+	private final String[] selectedCategories;
 
-	protected MethodWrapper(AbstractCheckValidator instance, Method method, String constraint, String[] categories) {
-		this.instance = instance;
+	protected MethodWrapper(ICheckValidator validator, Method method, String[] selectedCategories) {
+		this.validator = validator;
 		this.method = method;
-		this.constraint = constraint;
-		this.categories = categories;
+		this.selectedCategories = selectedCategories;
 		signature = method.getName() + ":" + method.getParameterTypes()[0].getName(); //$NON-NLS-1$
+		checkAnnotation = method.getAnnotation(Check.class);
 	}
 
-	@Override
-	public int hashCode() {
-		return signature.hashCode() ^ instance.hashCode();
+	public ICheckValidator getValidator() {
+		return validator;
 	}
 
-	public boolean isMatching(Class<?> param) {
+	public Method getMethod() {
+		return method;
+	}
+
+	public String getConstraint() {
+		return checkAnnotation.constraint();
+	}
+
+	public String[] getCategories() {
+		return checkAnnotation.categories();
+	}
+
+	public boolean matches(Class<?> param) {
 		return method.getParameterTypes()[0].isAssignableFrom(param);
 	}
 
-	public void invoke(State state) {
-		if (instance.getState().get() != null && instance.getState().get() != state) {
+	public void invoke(CheckValidatorState state) {
+		if (validator.getState().get() != null && validator.getState().get() != state) {
 			throw new IllegalStateException("State is already assigned."); //$NON-NLS-1$
 		}
-		boolean wasNull = instance.getState().get() == null;
+		boolean wasNull = validator.getState().get() == null;
 		if (wasNull) {
-			instance.getState().set(state);
+			validator.getState().set(state);
 		}
 		try {
-			Check annotation = method.getAnnotation(Check.class);
-			if (!state.checkMode.shouldCheck(annotation.value())) {
+			if (!state.checkMode.shouldCheck(checkAnnotation.value())) {
 				return;
 			}
 
-			String[] categories = annotation.categories();
-			Set<String> categoriesSet = new HashSet<String>(Arrays.asList(categories));
-			Set<String> filter = instance.getFilter();
-			Set<String> scope = new HashSet<String>(filter);
-
-			// If no categories are specified, invoke the @Check method on all the categories defined in the check
-			// catalog, otherwise invoke the @Check method on the intersection of categories provided by the user, and
-			// the categories defined in the check catalog.
-			if (categoriesSet.size() == 0) {
-				scope = filter;
+			Set<String> annotatedCategoriesSet = null;
+			String[] categories = getCategories();
+			if (categories.length == 1 && categories[0].isEmpty()) {
+				annotatedCategoriesSet = new HashSet<String>();
 			} else {
-				scope.retainAll(categoriesSet);
+				annotatedCategoriesSet = new HashSet<String>(Arrays.asList(categories));
+			}
+			Set<String> selectedCategoriesSet = new HashSet<String>(Arrays.asList(selectedCategories));
+
+			// If no categories are specified in the check method's @Check annotation, invoke the check method on all
+			// categories as per the underlying constraint in the check catalog; otherwise invoke the check method on
+			// the intersection of categories provided by the user, and the categories defined in the check
+			// catalog.
+			if (!annotatedCategoriesSet.isEmpty()) {
+				selectedCategoriesSet.retainAll(annotatedCategoriesSet);
 			}
 			// go ahead if scope is not empty or if validator has no check catalog
-			if (!scope.isEmpty() || instance.getCheckCatalogHelper().getCatalog() == null) {
+			if (!selectedCategoriesSet.isEmpty() || validator.getCheckCatalogHelper().getCatalog() == null) {
 				try {
 					state.currentMethod = method;
-					state.currentCheckType = annotation.value();
-					state.constraint = annotation.constraint();
+					state.currentCheckType = checkAnnotation.value();
+					state.constraint = getConstraint();
 					method.setAccessible(true);
-					method.invoke(instance, state.currentObject);
+					method.invoke(validator, state.currentObject);
 
 				} catch (IllegalArgumentException e) {
 					PlatformLogUtil.logAsError(Activator.getPlugin(), e);
@@ -100,12 +113,12 @@ public class MethodWrapper {
 			}
 		} finally {
 			if (wasNull) {
-				instance.getState().set(null);
+				validator.getState().set(null);
 			}
 		}
 	}
 
-	protected void handleInvocationTargetException(Throwable targetException, State state) {
+	protected void handleInvocationTargetException(Throwable targetException, CheckValidatorState state) {
 		// ignore GuardException, check is just not evaluated if guard is false
 		// ignore NullPointerException, as not having to check for NPEs all the time is a convenience feature
 		if (!(targetException instanceof GuardException) && !(targetException instanceof NullPointerException)) {
@@ -119,22 +132,11 @@ public class MethodWrapper {
 			return false;
 		}
 		MethodWrapper mw = (MethodWrapper) obj;
-		return signature.equals(mw.signature) && instance == mw.instance;
+		return signature.equals(mw.signature) && validator == mw.validator;
 	}
 
-	public ICheckValidator getInstance() {
-		return instance;
-	}
-
-	public Method getMethod() {
-		return method;
-	}
-
-	public String getConstraint() {
-		return constraint;
-	}
-
-	public String[] getCategories() {
-		return categories;
+	@Override
+	public int hashCode() {
+		return signature.hashCode() ^ validator.hashCode();
 	}
 }

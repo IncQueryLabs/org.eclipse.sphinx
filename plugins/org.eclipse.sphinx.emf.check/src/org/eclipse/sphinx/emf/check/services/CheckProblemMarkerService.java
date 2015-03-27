@@ -36,31 +36,34 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.sphinx.emf.check.ICheckValidationMarker;
 import org.eclipse.sphinx.emf.check.IValidationConstants;
 import org.eclipse.sphinx.emf.check.internal.Activator;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
-import org.eclipse.sphinx.emf.validation.markers.IValidationMarker;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
 public class CheckProblemMarkerService {
 
+	// TODO aak Move to an another class or keep here
+	public static final String UPDATE_CHECK_PROBLEM_MARKER = "UPDATE_CHECK_PROBLEM_MARKER"; //$NON-NLS-1$
+
 	public static CheckProblemMarkerService INSTANCE = new CheckProblemMarkerService();
 
-	private IProblemMarkerFactory markerFactory = null;
+	private ICheckValidationProblemMarkerFactory markerFactory = null;
 
 	protected CheckProblemMarkerService() {
 	}
 
-	private IProblemMarkerFactory getProblemMarkerFactory() {
+	private ICheckValidationProblemMarkerFactory getProblemMarkerFactory() {
 		if (markerFactory == null) {
 			markerFactory = createProblemMarkerFactory();
 		}
 		return markerFactory;
 	}
 
-	private IProblemMarkerFactory createProblemMarkerFactory() {
+	private ICheckValidationProblemMarkerFactory createProblemMarkerFactory() {
 		return new CheckProblemMarkerFactory();
 	}
 
@@ -76,6 +79,11 @@ public class CheckProblemMarkerService {
 					return StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
 				}
 				return Status.OK_STATUS;
+			}
+
+			@Override
+			public boolean belongsTo(Object family) {
+				return UPDATE_CHECK_PROBLEM_MARKER.equals(family);
 			}
 		};
 		ArrayList<ISchedulingRule> myRules = new ArrayList<ISchedulingRule>();
@@ -132,7 +140,7 @@ public class CheckProblemMarkerService {
 	}
 
 	private void deleteMarkers(EObject eObject, int depth) throws CoreException {
-		deleteMarkers(eObject, depth, IValidationMarker.MODEL_VALIDATION_PROBLEM);
+		deleteMarkers(eObject, depth, ICheckValidationMarker.CHECK_VALIDATION_PROBLEM);
 	}
 
 	private void deleteMarkers(EObject eObject, int depth, String markerType) throws CoreException {
@@ -154,13 +162,19 @@ public class CheckProblemMarkerService {
 	}
 
 	public IMarker[] getValidationMarkers(final EObject eObject) throws CoreException, InterruptedException {
-		return getValidationMarkers(eObject, IResource.DEPTH_INFINITE, IValidationMarker.MODEL_VALIDATION_PROBLEM);
+		return getValidationMarkers(eObject, IResource.DEPTH_INFINITE, ICheckValidationMarker.CHECK_VALIDATION_PROBLEM);
 	}
 
 	public IMarker[] getValidationMarkers(EObject eObject, int depth) throws CoreException {
-		// TODO: check if any update problem markers jobs is still running, and in such a case,
-		// wait until the job is finished.
-		return getValidationMarkers(eObject, depth, IValidationMarker.MODEL_VALIDATION_PROBLEM);
+		Job[] jobs = Job.getJobManager().find(UPDATE_CHECK_PROBLEM_MARKER);
+		if (jobs.length > 0) {
+			try {
+				jobs[0].join();
+			} catch (InterruptedException ex) {
+				// Nothing to do
+			}
+		}
+		return getValidationMarkers(eObject, depth, ICheckValidationMarker.CHECK_VALIDATION_PROBLEM);
 	}
 
 	private IMarker[] getValidationMarkers(EObject eObject, int depth, String markerType) throws CoreException {

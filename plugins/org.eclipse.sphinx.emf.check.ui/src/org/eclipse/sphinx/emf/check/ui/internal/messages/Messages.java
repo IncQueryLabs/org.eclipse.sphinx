@@ -22,6 +22,12 @@ public class Messages extends NLS {
 
 	public static String menu_validation_label;
 
+	public static String intrinsic_model_integrity_checks_category_label;
+	public static String intrinsic_model_integrity_checks_category_desc;
+
+	public static String other_category_label;
+	public static String other_category_desc;
+
 	static {
 		// Initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

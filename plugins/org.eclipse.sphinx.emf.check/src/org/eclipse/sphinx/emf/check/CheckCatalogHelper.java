@@ -19,19 +19,14 @@ package org.eclipse.sphinx.emf.check;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.catalog.Category;
 import org.eclipse.sphinx.emf.check.catalog.Constraint;
 import org.eclipse.sphinx.emf.check.catalog.Severity;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 
 public class CheckCatalogHelper {
 
 	private ICheckValidator checkValidator;
-	private Catalog catalog = null;
 
 	public CheckCatalogHelper(ICheckValidator checkValidator) {
 		this.checkValidator = checkValidator;
@@ -40,10 +35,9 @@ public class CheckCatalogHelper {
 	public String getMessage(String constraintId) {
 		Catalog catalog = getCatalog();
 		if (catalog != null) {
-			EList<Constraint> constraints = catalog.getConstraints();
-			for (Constraint constraint : constraints) {
+			for (Constraint constraint : catalog.getConstraints()) {
 				String id = constraint.getId();
-				if (id.equals(constraintId)) {
+				if (id != null && id.equals(constraintId)) {
 					return constraint.getMessage();
 				}
 			}
@@ -59,28 +53,20 @@ public class CheckCatalogHelper {
 		return Collections.emptyList();
 	}
 
-	public Severity getSeverityType(String constraint) {
-		for (Constraint contraintInCatalog : catalog.getConstraints()) {
-			String name = contraintInCatalog.getId();
-			if (name.equals(constraint)) {
-				return contraintInCatalog.getSeverity();
+	public Severity getSeverity(String constraintId) {
+		Catalog catalog = getCatalog();
+		if (catalog != null) {
+			for (Constraint contraint : catalog.getConstraints()) {
+				String id = contraint.getId();
+				if (id != null && id.equals(constraintId)) {
+					return contraint.getSeverity();
+				}
 			}
 		}
 		return Severity.ERROR;
 	}
 
 	public Catalog getCatalog() {
-		if (catalog == null) {
-			URI uri = CheckValidatorRegistry.INSTANCE.getCheckCatalogURI(checkValidator);
-			if (uri != null) {
-				EObject eObject = EcoreResourceUtil.loadEObject(null, uri.appendFragment("/")); //$NON-NLS-1$
-				if (!(eObject instanceof Catalog)) {
-					throw new IllegalStateException(
-							"Unable to find the check catalog '" + uri.toString() + "' for check validator '" + checkValidator.getClass().getName() + "'"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				}
-				catalog = (Catalog) eObject;
-			}
-		}
-		return catalog;
+		return CheckValidatorRegistry.INSTANCE.getCheckCatalog(checkValidator);
 	}
 }

@@ -21,6 +21,7 @@ package org.eclipse.sphinx.emf.check;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,13 +35,16 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.internal.Activator;
 import org.eclipse.sphinx.emf.check.internal.CheckValidatorDescriptor;
 import org.eclipse.sphinx.emf.check.internal.EPackageMappings;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
@@ -67,7 +71,10 @@ public class CheckValidatorRegistry {
 	public static final CheckValidatorRegistry INSTANCE = new CheckValidatorRegistry(Platform.getExtensionRegistry(), EValidator.Registry.INSTANCE,
 			PlatformLogUtil.getLog(Activator.getPlugin()));
 
-	private Map<ICheckValidator, URI> checkCatalogURIs = null;
+	private Map<ICheckValidator, URI> checkValidatorToCheckCatalogURIMap = null;
+	private Map<URI, Set<ICheckValidator>> checkCatalogURIToCheckValidatorsMap = null;
+
+	private Map<URI, Catalog> uriToCheckCatalogMap = new HashMap<URI, Catalog>();
 
 	private IExtensionRegistry extensionRegistry;
 
@@ -90,9 +97,14 @@ public class CheckValidatorRegistry {
 		return eValidatorRegistry;
 	}
 
-	private Map<ICheckValidator, URI> getCheckCatalogURIs() {
+	private Map<ICheckValidator, URI> getCheckValidatorToCheckCatalogURIMap() {
 		initialize();
-		return checkCatalogURIs != null ? checkCatalogURIs : Collections.<ICheckValidator, URI> emptyMap();
+		return checkValidatorToCheckCatalogURIMap != null ? checkValidatorToCheckCatalogURIMap : Collections.<ICheckValidator, URI> emptyMap();
+	}
+
+	private Map<URI, Set<ICheckValidator>> getCheckCatalogURIToCheckValidatorsMap() {
+		initialize();
+		return checkCatalogURIToCheckValidatorsMap != null ? checkCatalogURIToCheckValidatorsMap : Collections.<URI, Set<ICheckValidator>> emptyMap();
 	}
 
 	private void initialize() {
@@ -100,8 +112,9 @@ public class CheckValidatorRegistry {
 			return;
 		}
 
-		if (checkCatalogURIs == null) {
-			checkCatalogURIs = new HashMap<ICheckValidator, URI>();
+		if (checkValidatorToCheckCatalogURIMap == null || checkCatalogURIToCheckValidatorsMap == null) {
+			checkValidatorToCheckCatalogURIMap = new HashMap<ICheckValidator, URI>();
+			checkCatalogURIToCheckValidatorsMap = new HashMap<URI, Set<ICheckValidator>>();
 
 			// Create a temporary objects
 			Map<String, CheckValidatorDescriptor> checkValidatorClassNameToCheckValidatorDescriptorMap = new HashMap<String, CheckValidatorDescriptor>();
@@ -147,7 +160,16 @@ public class CheckValidatorRegistry {
 						addValidator(affectedEPackage, validator);
 					}
 
-					checkCatalogURIs.put(validator, checkValidatorDescriptor.getCatalogURI());
+					URI catalogURI = checkValidatorDescriptor.getCatalogURI();
+					checkValidatorToCheckCatalogURIMap.put(validator, catalogURI);
+					if (catalogURI != null) {
+						Set<ICheckValidator> checkValidators = checkCatalogURIToCheckValidatorsMap.get(catalogURI);
+						if (checkValidators == null) {
+							checkValidators = new HashSet<ICheckValidator>();
+							checkCatalogURIToCheckValidatorsMap.put(catalogURI, checkValidators);
+						}
+						checkValidators.add(validator);
+					}
 				} catch (Exception ex) {
 					logError(ex);
 				}
@@ -166,7 +188,6 @@ public class CheckValidatorRegistry {
 	 * @param validatorClass
 	 * @return
 	 */
-	// TODO Consider to look only at first parameter
 	private Set<Class<?>> findClassesUnderCheck(Class<?> validatorClass) {
 		Assert.isNotNull(validatorClass);
 
@@ -178,8 +199,8 @@ public class CheckValidatorRegistry {
 				Class<? extends Annotation> annotationType = annotation.annotationType();
 				if (annotationType.equals(Check.class)) {
 					Class<?>[] parameterTypes = method.getParameterTypes();
-					for (Class<?> parameterType : parameterTypes) {
-						classesUnderCheck.add(parameterType);
+					if (parameterTypes.length > 0) {
+						classesUnderCheck.add(parameterTypes[0]);
 					}
 				}
 			}
@@ -256,10 +277,10 @@ public class CheckValidatorRegistry {
 	 * @return
 	 * @throws CoreException
 	 */
-	public ICheckValidator getValidator(EPackage ePackage) throws CoreException {
+	public EValidator getValidator(EPackage ePackage) {
 		EValidator eValidator = getEValidatorRegistry().getEValidator(ePackage);
-		if (eValidator instanceof ICheckValidator) {
-			return (ICheckValidator) eValidator;
+		if (eValidator instanceof ICheckValidator || eValidator instanceof CompositeValidator) {
+			return eValidator;
 		}
 		return null;
 	}
@@ -271,7 +292,38 @@ public class CheckValidatorRegistry {
 	 * @return
 	 */
 	public URI getCheckCatalogURI(ICheckValidator checkValidator) {
-		return getCheckCatalogURIs().get(checkValidator);
+		return getCheckValidatorToCheckCatalogURIMap().get(checkValidator);
+	}
+
+	public Catalog getCheckCatalog(ICheckValidator checkValidator) {
+		URI checkCatalogURI = getCheckCatalogURI(checkValidator);
+		if (checkCatalogURI != null) {
+			return loadCheckCatalog(checkCatalogURI);
+		}
+		return null;
+	}
+
+	private Catalog loadCheckCatalog(URI checkCatalogURI) {
+		Catalog catalog = uriToCheckCatalogMap.get(checkCatalogURI);
+		if (catalog == null) {
+			EObject eObject = EcoreResourceUtil.loadEObject(null, checkCatalogURI.appendFragment("/")); //$NON-NLS-1$
+			if (!(eObject instanceof Catalog)) {
+				throw new IllegalStateException("Unable to find the check catalog for URI '" + checkCatalogURI + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			catalog = (Catalog) eObject;
+			uriToCheckCatalogMap.put(checkCatalogURI, catalog);
+		}
+		return catalog;
+	}
+
+	public Collection<Catalog> getCheckCatalogs() {
+		Set<URI> allCalalogURIs = getCheckCatalogURIToCheckValidatorsMap().keySet();
+		for (URI uri : allCalalogURIs) {
+			if (uriToCheckCatalogMap.get(uri) == null) {
+				loadCheckCatalog(uri);
+			}
+		}
+		return uriToCheckCatalogMap.values();
 	}
 
 	private void logWarning(String msgId, Object... objects) {

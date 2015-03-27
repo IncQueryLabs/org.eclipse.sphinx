@@ -20,6 +20,10 @@ import org.eclipse.emf.ecore.EObject;
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Identifiable</b></em>'. <!-- end-user-doc -->
  *
+ * <!-- begin-model-doc -->
+ * Represents an Identifiable model object
+ * <!-- end-model-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
@@ -40,6 +44,9 @@ public interface Identifiable extends EObject {
 	 * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Specifies the name of this Identifiable model object
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Name</em>' attribute.
 	 * @see #setName(String)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.common.Common20Package#getIdentifiable_Name()
@@ -65,6 +72,9 @@ public interface Identifiable extends EObject {
 	 * description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Specifies the description of this Identifiable model object
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Description</em>' containment reference.
 	 * @see #setDescription(Description)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.common.Common20Package#getIdentifiable_Description()

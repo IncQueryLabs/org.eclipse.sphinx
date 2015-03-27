@@ -15,19 +15,18 @@
  */
 package org.eclipse.sphinx.emf.check.workflows;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.util.Diagnostician;
 import org.eclipse.emf.mwe.core.WorkflowContext;
 import org.eclipse.emf.mwe.core.issues.Issues;
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitor;
-import org.eclipse.sphinx.emf.check.CheckValidatorRegistry;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.services.CheckProblemMarkerService;
 import org.eclipse.sphinx.emf.mwe.dynamic.IWorkflowSlots;
@@ -39,16 +38,16 @@ import org.eclipse.sphinx.emf.mwe.dynamic.components.IModelWorkflowComponent;
  */
 public abstract class AbstractCheckWorkflowComponent extends AbstractModelWorkflowComponent implements IModelWorkflowComponent {
 
-	private ICheckValidator validator = null;
+	// private ICheckValidator validator = null;
 
-	protected Set<String> filters = new HashSet<String>();
+	protected Set<String> categories = new HashSet<String>();
 
-	public ICheckValidator getValidator(EPackage ePackage) throws CoreException {
-		if (validator == null) {
-			validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
-		}
-		return validator;
-	}
+	// public ICheckValidator getValidator(EPackage ePackage) throws CoreException {
+	// if (validator == null) {
+	// validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
+	// }
+	// return validator;
+	// }
 
 	@Override
 	protected void invokeInternal(WorkflowContext ctx, ProgressMonitor monitor, Issues issues) {
@@ -57,17 +56,13 @@ public abstract class AbstractCheckWorkflowComponent extends AbstractModelWorkfl
 		if (models != null && !models.isEmpty()) {
 			for (EObject model : models) {
 				try {
-					// Get the epackage from the model input
-					EPackage ePackage = model.eClass().getEPackage();
 
-					// Get the validator specific to epackage
-					ICheckValidator checkValidator = getValidator(ePackage);
-
-					// Set manually a filter for categories of constraints to validate
-					checkValidator.setFilter(filters);
+					// Put the categories in the context entries
+					Map<Object, Object> contextEntries = new HashMap<Object, Object>();
+					contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories.toArray(new String[categories.size()]));
 
 					// Run validation (use standard validation entry point)
-					Diagnostic diagnostic = Diagnostician.INSTANCE.validate(model);
+					Diagnostic diagnostic = Diagnostician.INSTANCE.validate(model, contextEntries);
 
 					// Generate error markers and update check validation view
 					CheckProblemMarkerService.INSTANCE.updateProblemMarkers(model, diagnostic);

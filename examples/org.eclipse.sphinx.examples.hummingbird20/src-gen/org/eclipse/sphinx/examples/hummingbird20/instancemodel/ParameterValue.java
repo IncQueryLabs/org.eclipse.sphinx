@@ -21,6 +21,10 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter;
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Parameter Value</b></em>'. <!-- end-user-doc -->
  *
+ * <!-- begin-model-doc -->
+ * Represents a Parameter Value model object
+ * <!-- end-model-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
@@ -41,6 +45,9 @@ public interface ParameterValue extends Identifiable {
 	 * If the meaning of the '<em>Type</em>' reference isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Reference to the type of this Parameter
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Type</em>' reference.
 	 * @see #setType(Parameter)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getParameterValue_Type()
@@ -66,6 +73,9 @@ public interface ParameterValue extends Identifiable {
 	 * here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Specifies the value of this ParameterValue
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Value</em>' attribute.
 	 * @see #setValue(String)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getParameterValue_Value()

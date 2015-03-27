@@ -439,6 +439,8 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 		// Create annotations
 		// http:///org/eclipse/emf/ecore/util/ExtendedMetaData
 		createExtendedMetaDataAnnotations();
+		// http://www.eclipse.org/emf/2002/GenModel
+		createGenModelAnnotations();
 	}
 
 	/**
@@ -468,6 +470,94 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 		   new String[] {
 			 "name", "xsi:schemaLocation", //$NON-NLS-1$ //$NON-NLS-2$
 			 "kind", "element" //$NON-NLS-1$ //$NON-NLS-2$
+		   });
+	}
+
+	/**
+	 * Initializes the annotations for <b>http://www.eclipse.org/emf/2002/GenModel</b>.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void createGenModelAnnotations() {
+		String source = "http://www.eclipse.org/emf/2002/GenModel"; //$NON-NLS-1$	
+		addAnnotation
+		  (platformEClass, 
+		   source, 
+		   new String[] {
+			 "documentation", "Represents a Platform model object" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getPlatform_ComponentTypes(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Aggregates all Component Types with this Platform..." //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getPlatform_Interfaces(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Aggregates all Interfaces with this Platform..." //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (componentTypeEClass, 
+		   source, 
+		   new String[] {
+			 "documentation", "Represents a ComponentType model object" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getComponentType_Ports(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Aggregates all Ports with this ComponentType..." //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getComponentType_Parameters(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Aggregates all Parameters with this ComponentType..." //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (portEClass, 
+		   source, 
+		   new String[] {
+			 "documentation", "Represents a Port model object" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getPort_Owner(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Specifies the component type owner" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getPort_RequiredInterface(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Specifies the required interface" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (interfaceEClass, 
+		   source, 
+		   new String[] {
+			 "documentation", "Represents an Interface model object" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getInterface_ProvidingComponentTypes(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Specifies the providing component types" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getInterface_RequiringPorts(), 
+		   source, 
+		   new String[] {
+			 "documentation", "Specifies the requiring ports" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (parameterEClass, 
+		   source, 
+		   new String[] {
+			 "documentation", "Represents a Parameter model object" //$NON-NLS-1$ //$NON-NLS-2$
 		   });
 	}
 

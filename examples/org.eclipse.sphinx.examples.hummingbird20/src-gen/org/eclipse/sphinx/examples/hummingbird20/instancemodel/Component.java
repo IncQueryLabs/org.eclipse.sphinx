@@ -22,6 +22,10 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Component</b></em>'. <!-- end-user-doc -->
  *
+ * <!-- begin-model-doc -->
+ * Represents a Component model object
+ * <!-- end-model-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
@@ -45,6 +49,9 @@ public interface Component extends Identifiable {
 	 * If the meaning of the '<em>Type</em>' reference isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Reference to the type of this Component
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Type</em>' reference.
 	 * @see #setType(ComponentType)
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getComponent_Type()
@@ -107,6 +114,9 @@ public interface Component extends Identifiable {
 	 * more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * Aggregates all ParameterValues with this Component...
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Parameter Values</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getComponent_ParameterValues()
 	 * @model containment="true"
