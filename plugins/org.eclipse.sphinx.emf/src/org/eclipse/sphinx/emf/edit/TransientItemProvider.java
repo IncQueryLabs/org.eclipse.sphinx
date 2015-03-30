@@ -276,7 +276,7 @@ public class TransientItemProvider extends ExtendedItemProviderAdapter implement
 	/**
 	 * This allows creating a command and overriding the {@link
 	 * org.eclipse.emf.common.command.CommandWrapper.getAffectedObjects()#getAffectedObjects()} method to return the
-	 * appropriate transient item provider whenever the �real� affected object is the owner.
+	 * appropriate transient item provider whenever the real affected object is the owner.
 	 *
 	 * @param command
 	 *            an command.
