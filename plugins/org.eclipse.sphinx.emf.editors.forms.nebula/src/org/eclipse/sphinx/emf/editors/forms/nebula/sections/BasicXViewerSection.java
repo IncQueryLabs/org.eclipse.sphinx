@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2012-2014 itemis and others.
+ * Copyright (c) 2012-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@
  *     itemis - [434230] ParseException when trying to sort BasicXViewerSection for columns displaying Date-typed EAttributes
  *     itemis - [436313] Enable BasicXViewerSection also to be used for EReference-based properties
  *     itemis - [436429] Enable custom layout data to be passed to BasicXViewerSection
+ *     itemis - [460260] Expanded paths are collapsed on resource reload
  *
  * </copyright>
  */
@@ -116,7 +117,6 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 
 		// Create table viewer
 		XViewer xViewer = createXViewer(sectionClient, xViewerFactory);
-		viewer = xViewer;
 		xViewer.getTree().setLayoutData(getLayoutData());
 
 		// Provide table content
@@ -124,6 +124,8 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 		xViewer.setLabelProvider(createLabelProvider());
 
 		xViewer.setInput(sectionInput);
+
+		setViewer(xViewer);
 	}
 
 	protected XViewerFactory createXViewerFactory() {
@@ -254,6 +256,6 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 
 	@Override
 	protected IBaseLabelProvider createLabelProvider() {
-		return new BasicModelXViewerLabelProvider((XViewer) viewer, formPage.getItemDelegator());
+		return new BasicModelXViewerLabelProvider((XViewer) getViewer(), formPage.getItemDelegator());
 	}
 }

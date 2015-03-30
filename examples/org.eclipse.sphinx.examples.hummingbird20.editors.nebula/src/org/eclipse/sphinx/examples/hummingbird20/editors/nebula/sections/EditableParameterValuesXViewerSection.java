@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2012 itemis and others.
+ *
+ * Copyright (c) 2012-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     itemis - Initial API and implementation
- * 
+ *     itemis - [460260] Expanded paths are collapsed on resource reload
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird20.editors.nebula.sections;
@@ -54,6 +55,6 @@ public class EditableParameterValuesXViewerSection extends BasicXViewerSection {
 
 	@Override
 	protected IBaseLabelProvider createLabelProvider() {
-		return new ParameterValuesXViewerLabelProvider((XViewer) viewer);
+		return new ParameterValuesXViewerLabelProvider((XViewer) getViewer());
 	}
 }

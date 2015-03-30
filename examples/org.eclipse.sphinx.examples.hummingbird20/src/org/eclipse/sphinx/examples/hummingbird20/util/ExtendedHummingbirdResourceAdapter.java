@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2014 See4sys, itemis and others.
+ * Copyright (c) 2008-2015 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [441970] Result returned by ExtendedResourceAdapter#getHREF(EObject) must default to complete object URI (edit)
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
+ *     itemis - [460260] Expanded paths are collapsed on resource reload
  *
  * </copyright>
  */
@@ -51,15 +52,21 @@ public class ExtendedHummingbirdResourceAdapter extends ExtendedResourceAdapter 
 
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResourceAdapter#getURI(org.eclipse.emf.ecore.EObject,
-	 * org.eclipse.emf.ecore.EStructuralFeature, org.eclipse.emf.ecore.EObject)
+	 * org.eclipse.emf.ecore.EStructuralFeature, org.eclipse.emf.ecore.EObject, boolean)
 	 */
 	@Override
-	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
+	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject, boolean resolve) {
 		// Get full URI
-		URI uri = super.getURI(oldOwner, oldFeature, eObject);
+		URI uri = super.getURI(oldOwner, oldFeature, eObject, resolve);
 
-		// Convert full URI into a fragment-based Hummingbird 2.0 URI
-		return createHummingbirdURI(uri);
+		// No need for URI to be resolved against underlying resource?
+		if (!resolve) {
+			// Return fragment-based Hummingbird 2.0 URI
+			return createHummingbirdURI(uri);
+		}
+
+		// Return full URI
+		return uri;
 	}
 
 	/*

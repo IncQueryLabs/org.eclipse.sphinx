@@ -129,6 +129,9 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	 */
 	@Override
 	public void unloaded(EObject eObject) {
+		// Remove all adapters from unloaded eObject
+		eObject.eAdapters().clear();
+
 		// Memory-optimized unload to be performed?
 		if (getDefaultLoadOptions().get(ExtendedResource.OPTION_UNLOAD_MEMORY_OPTIMIZED) == Boolean.TRUE) {
 			// Turn unloaded eObject into a proxy using an as short as possible dummy URI
@@ -144,13 +147,17 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 		} else {
 			// Turn unloaded eObject into a proxy using the regular full proxy URI; enable proxy URI creation to be
 			// customized by delegating it to #getURI()
+			URI uri = getURI(eObject);
 			if (!eObject.eIsProxy()) {
-				((InternalEObject) eObject).eSetProxyURI(getURI(eObject));
+				((InternalEObject) eObject).eSetProxyURI(uri);
 			}
 
+			// Is proxy URI a fragment-based URI not knowing the resource containing the eObject it refers to?
+			if (uri != null && uri.segmentCount() == 0) {
+				// Add adapter to unloaded eObject keeping track of the resource which formerly contained it
+				eObject.eAdapters().add(new OldResourceProviderAdapter((Resource) getTarget()));
+			}
 		}
-		// Remove all adapters from unloaded eObject
-		eObject.eAdapters().clear();
 	}
 
 	/*
@@ -158,69 +165,7 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	 */
 	@Override
 	public URI getURI(EObject eObject) {
-		return getURI(null, null, eObject);
-	}
-
-	/*
-	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getURI(org.eclipse.emf.ecore.EObject,
-	 * org.eclipse.emf.ecore.EStructuralFeature, org.eclipse.emf.ecore.EObject)
-	 */
-	@Override
-	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
-		Assert.isNotNull(eObject);
-
-		// Non-proxy object that has been removed, i.e., is no longer directly or indirectly contained in any resource?
-		if (!eObject.eIsProxy() && eObject.eResource() == null) {
-			// oldOwner and oldFeature provided enabling restoration of the given eObject's old URI that it had before
-			// it was removed?
-			if (oldOwner != null && oldFeature != null) {
-				// Retrieve the oldOwner's URI fragment
-				URI oldOwnerURI = EcoreResourceUtil.getURI(oldOwner);
-				String oldOwnerURIFragment = oldOwnerURI.fragment();
-
-				// Restore URI fragment segment that pointed from oldOwner to removed eObject (which may be the given
-				// eObject itself or some other eObject that directly or indirectly contains given eObject
-				EObject eObjectRootContainer = EcoreUtil.getRootContainer(eObject);
-				String eObjectRootContainerURIFragmentSegment = ((InternalEObject) oldOwner).eURIFragmentSegment(oldFeature, eObjectRootContainer);
-
-				// Calculate URI fragment segments for given eObject in case that it is an eObject that is directly or
-				// indirectly contained by the removed eObject
-				List<String> eObjectURIFragmentSegments = new ArrayList<String>();
-				InternalEObject internalEObject = (InternalEObject) eObject;
-				for (InternalEObject container = internalEObject.eInternalContainer(); container != null; container = internalEObject
-						.eInternalContainer()) {
-					eObjectURIFragmentSegments.add(container.eURIFragmentSegment(internalEObject.eContainingFeature(), internalEObject));
-					internalEObject = container;
-				}
-
-				// Compose and return the eObject' old URI
-				StringBuilder oldEObjectURIFragment = new StringBuilder();
-				oldEObjectURIFragment.append(oldOwnerURIFragment);
-				oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
-				oldEObjectURIFragment.append(eObjectRootContainerURIFragmentSegment);
-				for (int i = eObjectURIFragmentSegments.size() - 1; i >= 0; --i) {
-					oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
-					oldEObjectURIFragment.append(eObjectURIFragmentSegments.get(i));
-				}
-				return oldOwnerURI.trimFragment().appendFragment(oldEObjectURIFragment.toString());
-			} else {
-				// Try to calculate the given eObject's URI in the same way as
-				// EcoreUtil#getURI()/ResourceImpl#getURIFragment() would, but use target resource rather than object
-				// resource for that purpose
-				Resource targetResource = (Resource) getTarget();
-
-				String id = EcoreUtil.getID(eObject);
-				if (id != null) {
-					return targetResource.getURI().appendFragment(id);
-				} else {
-					URI uri = targetResource.getURI();
-					String uriFragment = targetResource.getURIFragment(eObject);
-					return uri == null ? URI.createURI(URI_FRAGMENT_SEPARATOR + uriFragment) : uri.appendFragment(uriFragment);
-				}
-			}
-		}
-
-		return EcoreUtil.getURI(eObject);
+		return getURI(null, null, eObject, false);
 	}
 
 	/*
@@ -233,36 +178,101 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 
 	/*
 	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getURI(org.eclipse.emf.ecore.EObject,
+	 * org.eclipse.emf.ecore.EStructuralFeature, org.eclipse.emf.ecore.EObject)
+	 */
+	@Override
+	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
+		return getURI(oldOwner, oldFeature, eObject, false);
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#getURI(org.eclipse.emf.ecore.EObject,
 	 * org.eclipse.emf.ecore.EStructuralFeature, org.eclipse.emf.ecore.EObject, boolean)
 	 */
 	@Override
 	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject, boolean resolve) {
 		Assert.isNotNull(eObject);
+		URI uri;
 
-		URI uri = getURI(oldOwner, oldFeature, eObject);
+		// eObject not yet removed?
+		if (eObject.eResource() != null || eObject.eIsProxy()) {
+			// Compute the given eObject's URI in the same way as EMF would do normally
+			uri = EcoreUtil.getURI(eObject);
+		} else {
+			// Restore the given eObject's old URI that it had before it was removed
+			uri = restoreURI(oldOwner, oldFeature, eObject);
+		}
 
-		// URI to be resolved against underlying resource?
-		if (resolve) {
-			// Retrieve the resource of given model object
-			Resource resource = eObject.eResource();
-			if (resource == null) {
-				// Retrieve the given model object's old resource by referring to the model object's old owner if any or
-				// to target resource otherwise
-				if (oldOwner != null) {
-					resource = oldOwner.eResource();
-				} else {
-					resource = (Resource) getTarget();
-				}
-			}
-
-			// Construct resolved model object URI by using resource URI as prefix and model object URI fragment as
-			// postfix
-			if (resource != null) {
-				uri = resource.getURI().appendFragment(uri.fragment());
-			}
+		// Is URI a fragment-based URI not knowing the resource containing the eObject it refers to but expected to be
+		// resolved against its underlying resource?
+		if (uri.segmentCount() == 0 && resolve) {
+			uri = resolveURI(oldOwner, eObject, uri);
 		}
 
 		return uri;
+	}
+
+	protected URI restoreURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
+		Assert.isNotNull(eObject);
+
+		if (oldOwner != null && oldFeature != null) {
+			// Retrieve the oldOwner's URI fragment
+			URI oldOwnerURI = EcoreResourceUtil.getURI(oldOwner);
+			String oldOwnerURIFragment = oldOwnerURI.fragment();
+
+			// Restore URI fragment segment that pointed from oldOwner to removed eObject (which may be the
+			// given eObject itself or some other eObject that directly or indirectly contains given eObject
+			EObject eObjectRootContainer = EcoreUtil.getRootContainer(eObject);
+			String eObjectRootContainerURIFragmentSegment = ((InternalEObject) oldOwner).eURIFragmentSegment(oldFeature, eObjectRootContainer);
+
+			// Calculate URI fragment segments for given eObject in case that it is an eObject that is directly
+			// or indirectly contained by the removed eObject
+			List<String> eObjectURIFragmentSegments = new ArrayList<String>();
+			InternalEObject internalEObject = (InternalEObject) eObject;
+			for (InternalEObject container = internalEObject.eInternalContainer(); container != null; container = internalEObject
+					.eInternalContainer()) {
+				eObjectURIFragmentSegments.add(container.eURIFragmentSegment(internalEObject.eContainingFeature(), internalEObject));
+				internalEObject = container;
+			}
+
+			// Compose and return the eObject' old URI
+			StringBuilder oldEObjectURIFragment = new StringBuilder();
+			oldEObjectURIFragment.append(oldOwnerURIFragment);
+			oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
+			oldEObjectURIFragment.append(eObjectRootContainerURIFragmentSegment);
+			for (int i = eObjectURIFragmentSegments.size() - 1; i >= 0; --i) {
+				oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
+				oldEObjectURIFragment.append(eObjectURIFragmentSegments.get(i));
+			}
+			return oldOwnerURI.trimFragment().appendFragment(oldEObjectURIFragment.toString());
+		} else {
+			// Try to calculate the given eObject's URI in the same way as EcoreUtil#getURI() would, but use target
+			// resource rather than object resource for that purpose
+			Resource targetResource = (Resource) getTarget();
+			URI targetResourceURI = targetResource.getURI();
+			String uriFragment = targetResource.getURIFragment(eObject);
+			return targetResourceURI == null ? URI.createURI(URI_FRAGMENT_SEPARATOR + uriFragment) : targetResourceURI.appendFragment(uriFragment);
+		}
+	}
+
+	protected URI resolveURI(EObject oldOwner, EObject eObject, URI uri) {
+		Assert.isNotNull(eObject);
+		Assert.isNotNull(uri);
+
+		// Retrieve the resource of given eObject
+		Resource resource = eObject.eResource();
+		if (resource == null) {
+			// Retrieve the given eObject's old resource by referring to the eObject's old owner if any or to target
+			// resource otherwise
+			if (oldOwner != null) {
+				resource = oldOwner.eResource();
+			} else {
+				resource = (Resource) getTarget();
+			}
+		}
+
+		// Construct resolved eObject URI by using the URI of its resource as prefix and its URI fragment as postfix
+		return resource.getURI().appendFragment(uri.fragment());
 	}
 
 	/*

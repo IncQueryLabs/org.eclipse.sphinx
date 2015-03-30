@@ -12,31 +12,32 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.explorer.internal.state.providers;
+package org.eclipse.sphinx.emf.workspace.ui.viewers.state.providers;
 
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IMemento;
-import org.eclipse.ui.navigator.CommonViewer;
 
-public class ProjectElementStateProvider extends AbstractTreeElementStateProvider implements ITreeElementStateProvider {
+public class FolderElementStateProvider extends AbstractTreeElementStateProvider implements ITreeElementStateProvider {
 
-	private IProject project = null;
+	private IFolder folder = null;
 
-	public ProjectElementStateProvider(CommonViewer viewer, IMemento memento) {
+	public FolderElementStateProvider(TreeViewer viewer, IMemento memento) {
 		super(viewer);
 
 		Assert.isNotNull(memento);
-		String name = memento.getString(TreeElementStateProviderFactory.MEMENTO_KEY_NAME);
-		if (name != null) {
-			project = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
+		String pathAsString = memento.getString(TreeElementStateProviderFactory.MEMENTO_KEY_PATH);
+		if (pathAsString != null) {
+			folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(pathAsString));
 		}
 	}
 
-	public ProjectElementStateProvider(CommonViewer viewer, IProject project) {
+	public FolderElementStateProvider(TreeViewer viewer, IFolder folder) {
 		super(viewer);
-		this.project = project;
+		this.folder = folder;
 	}
 
 	@Override
@@ -61,27 +62,27 @@ public class ProjectElementStateProvider extends AbstractTreeElementStateProvide
 
 	@Override
 	public boolean isStale() {
-		if (project != null) {
-			return !project.exists();
+		if (folder != null) {
+			return !folder.exists();
 		}
 		return true;
 	}
 
 	@Override
 	public Object getTreeElement() {
-		return project;
+		return folder;
 	}
 
 	@Override
 	public void appendToMemento(IMemento parentMemento) {
-		if (project != null) {
-			IMemento memento = parentMemento.createChild(TreeElementStateProviderFactory.MEMENTO_TYPE_ELEMENT_PROJECT);
-			memento.putString(TreeElementStateProviderFactory.MEMENTO_KEY_NAME, project.getName());
+		if (folder != null) {
+			IMemento memento = parentMemento.createChild(TreeElementStateProviderFactory.MEMENTO_TYPE_ELEMENT_FOLDER);
+			memento.putString(TreeElementStateProviderFactory.MEMENTO_KEY_PATH, folder.getFullPath().toString());
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "ProjectElementProvider [project=" + project + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+		return "FolderElementProvider [folder=" + folder + "]"; //$NON-NLS-1$//$NON-NLS-2$
 	}
 }

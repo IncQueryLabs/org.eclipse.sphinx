@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.explorer.internal.state.providers;
+package org.eclipse.sphinx.emf.workspace.ui.viewers.state.providers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +28,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
@@ -35,7 +36,6 @@ import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.ui.IMemento;
-import org.eclipse.ui.navigator.CommonViewer;
 
 public class TransientElementStateProvider extends AbstractTreeElementStateProvider implements ITreeElementStateProvider {
 
@@ -46,7 +46,7 @@ public class TransientElementStateProvider extends AbstractTreeElementStateProvi
 	private List<Object> transientChildren;
 	private boolean stale = false;
 
-	public TransientElementStateProvider(CommonViewer viewer, IMemento memento) {
+	public TransientElementStateProvider(TreeViewer viewer, IMemento memento) {
 		super(viewer);
 		Assert.isNotNull(memento);
 
@@ -59,12 +59,12 @@ public class TransientElementStateProvider extends AbstractTreeElementStateProvi
 		transientChildren = readTransientChildrenFromString(transientChildrenAsString);
 	}
 
-	public TransientElementStateProvider(CommonViewer viewer, URI parentURI, List<Object> transientChildren) {
+	public TransientElementStateProvider(TreeViewer viewer, URI parentURI, List<Object> transientChildren) {
 		super(viewer);
 		Assert.isNotNull(transientChildren);
 
 		this.parentURI = parentURI;
-		this.transientChildren = transientChildren;
+		this.transientChildren = deresolveTransientChildren(transientChildren);
 	}
 
 	protected EObject getParentEObject() {
@@ -87,30 +87,15 @@ public class TransientElementStateProvider extends AbstractTreeElementStateProvi
 		return Collections.emptyList();
 	}
 
-	protected String writeTransientChildrenToString(List<?> transientChildren) {
+	protected String writeTransientChildrenToString(List<Object> transientChildren) {
 		Assert.isNotNull(transientChildren);
 
+		List<Object> deresolvedTransientChildren = deresolveTransientChildren(transientChildren);
 		StringBuilder transientChildrenAsString = new StringBuilder();
-		Iterator<?> iter = transientChildren.iterator();
+		Iterator<?> iter = deresolvedTransientChildren.iterator();
 		while (iter.hasNext()) {
-			Object element = iter.next();
-
-			if (element instanceof TransientItemProvider) {
-				transientChildrenAsString.append(element.getClass().getName());
-			} else if (element instanceof IWrapperItemProvider) {
-				IWrapperItemProvider wrapperItemProvider = (IWrapperItemProvider) element;
-				Object value = wrapperItemProvider.getValue();
-				if (value instanceof EObject) {
-					EStructuralFeature feature = wrapperItemProvider.getFeature();
-					if (feature != null) {
-						transientChildrenAsString.append(feature.getName());
-					}
-				} else if (value instanceof TransientItemProvider) {
-					transientChildrenAsString.append(value.getClass().getName());
-				}
-			} else if (element instanceof String) {
-				transientChildrenAsString.append(element);
-			}
+			Object transientChild = iter.next();
+			transientChildrenAsString.append(transientChild);
 
 			if (iter.hasNext()) {
 				transientChildrenAsString.append(TRANSIENT_CHILDREN_SEPARATOR);
@@ -119,41 +104,42 @@ public class TransientElementStateProvider extends AbstractTreeElementStateProvi
 		return transientChildrenAsString.toString();
 	}
 
-	protected void resolveTransientChildren() {
+	protected List<Object> resolveTransientChildren(List<Object> transientChildren) {
+		Assert.isNotNull(transientChildren);
+
 		// Transient children already fully resolved?
 		if (transientChildren.isEmpty() || !(transientChildren.get(transientChildren.size() - 1) instanceof String)) {
-			return;
+			return transientChildren;
 		}
 		if (stale) {
-			return;
+			return transientChildren;
 		}
 
 		// Get the transient children's parent EObject
 		Object parent = getParentEObject();
 		if (parent == null) {
-			return;
+			return transientChildren;
 		}
 
-		// Resolve transient children as far as possible
-		for (int i = 0; i < transientChildren.size(); i++) {
-			// Get first/next transient child
-			Object transientChild = transientChildren.get(i);
-
+		// Resolve transient children
+		List<Object> resolvedTransientChildren = new ArrayList<Object>();
+		for (Object transientChild : transientChildren) {
 			// Current transient child not yet resolved?
 			if (transientChild instanceof String) {
 				// Resolve ...
 				Object resolvedTransientChild = resolveTransientChild(parent, (String) transientChild);
-				if (resolvedTransientChild == null) {
-					return;
-				}
 
 				// ... and store current transient child
-				transientChildren.set(i, resolvedTransientChild);
+				resolvedTransientChildren.add(resolvedTransientChild);
+			} else {
+				// Store current transient child as is
+				resolvedTransientChildren.add(transientChild);
 			}
 
 			// Let current transient child be next parent
 			parent = transientChild;
 		}
+		return resolvedTransientChildren;
 	}
 
 	protected Object resolveTransientChild(Object parent, String transientChildAsString) {
@@ -189,7 +175,46 @@ public class TransientElementStateProvider extends AbstractTreeElementStateProvi
 				stale = true;
 			}
 		}
-		return null;
+		return transientChildAsString;
+	}
+
+	protected List<Object> deresolveTransientChildren(List<Object> transientChildren) {
+		Assert.isNotNull(transientChildren);
+
+		// Deresolve transient children
+		List<Object> deresolvedTransientChildren = new ArrayList<Object>();
+		for (Object transientChild : transientChildren) {
+			// Current transient child not yet deresolved?
+			if (!(transientChild instanceof String)) {
+				// Deresolve ...
+				Object deresolvedTransientChild = deresolveTransientChild(transientChild);
+
+				// ... and store current transient child
+				deresolvedTransientChildren.add(deresolvedTransientChild);
+			} else {
+				// Store current transient child as is
+				deresolvedTransientChildren.add(transientChild);
+			}
+		}
+		return deresolvedTransientChildren;
+	}
+
+	protected Object deresolveTransientChild(Object transientChild) {
+		if (transientChild instanceof TransientItemProvider) {
+			return transientChild.getClass().getName();
+		} else if (transientChild instanceof IWrapperItemProvider) {
+			IWrapperItemProvider wrapperItemProvider = (IWrapperItemProvider) transientChild;
+			Object value = wrapperItemProvider.getValue();
+			if (value instanceof EObject) {
+				EStructuralFeature feature = wrapperItemProvider.getFeature();
+				if (feature != null) {
+					return feature.getName();
+				}
+			} else if (value instanceof TransientItemProvider) {
+				return value.getClass().getName();
+			}
+		}
+		return transientChild;
 	}
 
 	protected Object getLastTransientChild() {
@@ -234,7 +259,7 @@ public class TransientElementStateProvider extends AbstractTreeElementStateProvi
 
 	@Override
 	public Object getTreeElement() {
-		resolveTransientChildren();
+		transientChildren = resolveTransientChildren(transientChildren);
 		return getLastTransientChild();
 	}
 

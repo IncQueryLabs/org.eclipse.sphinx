@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     BMW Car IT - Added/Updated javadoc
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
+ *     itemis - [460260] Expanded paths are collapsed on resource reload
  *
  * </copyright>
  */
@@ -335,10 +336,13 @@ public final class EObjectUtil {
 	}
 
 	/**
-	 * TODO Javadoc
+	 * Finds the {@link EPackage} that contains the {@link EClassifier} behind given Java <code>eClassifierType</code>.
 	 *
 	 * @param eClassifierType
-	 * @return
+	 *            The Java type of the {@link EClassifier} in question.
+	 * @return The {@link EPackage} that contains the {@link EClassifier} behind <code>eClassifierType</code> or
+	 *         <code>null</code> if <code>eClassifierType</code> refers to a Java type that is not an EClassifier or
+	 *         EPackage for the EClassifier cannot be found.
 	 */
 	public static EPackage findEPackage(Class<?> eClassifierType) {
 		Assert.isNotNull(eClassifierType);
@@ -353,7 +357,10 @@ public final class EObjectUtil {
 				ePackageType = ((EPackage) ePackageObject).getClass();
 			} else if (ePackageObject instanceof EPackage.Descriptor) {
 				/*
-				 * !! Important note !! TODO
+				 * Performance optimization: Don't call org.eclipse.emf.ecore.EPackage.Descriptor#getEPackage() to
+				 * retrieve the EPackage behind given EPackage.Descriptor and then its Java class. This would
+				 * unnecessarily entail a full initialization of this EPackage.Descriptor's EPackage and the EPackages
+				 * of all other EPackage.Descriptors we are about to iterate over.
 				 */
 				try {
 					IConfigurationElement configurationElement = (IConfigurationElement) ReflectUtil
@@ -727,17 +734,14 @@ public final class EObjectUtil {
 	 */
 	public static EObject proxify(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
 		if (eObject != null) {
-			// Try to use the old owner's resource if given eObject itself is in no resource
-			Resource resource = eObject.eResource();
-			if (resource == null && oldOwner != null) {
-				resource = oldOwner.eResource();
-			}
-
 			// Proxify given EObject; use ExtendedResource for calculating proxy URI to enable metamodel-dependent
 			// URI formats to be used
 			if (!eObject.eIsProxy()) {
 				URI uri;
-				ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
+				ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.getExtendedResource(eObject);
+				if (extendedResource == null) {
+					extendedResource = ExtendedResourceAdapterFactory.INSTANCE.getExtendedResource(oldOwner);
+				}
 				if (extendedResource != null) {
 					uri = extendedResource.getURI(oldOwner, oldFeature, eObject);
 				} else {

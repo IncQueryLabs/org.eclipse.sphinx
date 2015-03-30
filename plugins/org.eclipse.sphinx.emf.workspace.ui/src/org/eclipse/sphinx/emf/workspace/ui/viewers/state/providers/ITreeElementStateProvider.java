@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.explorer.internal.state.providers;
+package org.eclipse.sphinx.emf.workspace.ui.viewers.state.providers;
 
 import org.eclipse.ui.IMemento;
 

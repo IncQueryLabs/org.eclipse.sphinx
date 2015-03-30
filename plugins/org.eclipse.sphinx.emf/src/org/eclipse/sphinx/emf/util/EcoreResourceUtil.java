@@ -237,7 +237,7 @@ public final class EcoreResourceUtil {
 	 * @return the URI of the provided model object.
 	 */
 	public static URI getURI(EObject eObject) {
-		return getURI(null, eObject, false);
+		return getURI(eObject, false);
 	}
 
 	/**
@@ -256,34 +256,9 @@ public final class EcoreResourceUtil {
 	 * @return the URI of the provided model object.
 	 */
 	public static URI getURI(EObject eObject, boolean resolve) {
-		return getURI(null, eObject, resolve);
-	}
-
-	/**
-	 * Returns the URI of the provided model object.
-	 *
-	 * @param oldResource
-	 *            the resource which did contain the given model object in case that the latter is a proxy or has been
-	 *            removed from its resource, i.e., is no longer directly or indirectly contained in any resource
-	 * @param eObject
-	 *            a model object.
-	 * @param resolve
-	 *            indicates whether the URI should be resolved against the URI of the resource which contains or did
-	 *            contain the provided model object. This is useful is cases where the native model object URI evaluates
-	 *            in some sort of fragment-based URI which does not contain any information about the resource that
-	 *            contains the model object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true,
-	 *            such fragment-based URIs will be automatically expanded to a URI that starts with the URI of the model
-	 *            object's resource or old resource and is followed by the fragment of the model object's native URI
-	 *            (e.g., platform:/resource/MyProject/MyResource/#//MyComponent/MyParameterValue).
-	 * @return the URI of the provided model object.
-	 */
-	public static URI getURI(Resource oldResource, EObject eObject, boolean resolve) {
 		Assert.isNotNull(eObject);
 
-		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(eObject.eResource());
-		if (extendedResource == null) {
-			extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(oldResource);
-		}
+		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.getExtendedResource(eObject);
 		if (extendedResource != null) {
 			return extendedResource.getURI(eObject, resolve);
 		} else {

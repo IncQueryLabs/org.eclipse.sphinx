@@ -20,6 +20,7 @@
  *     itemis - [434842] BasicTransactionalFormEditor does not close loadingEditorInputPage for empty resources
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
  *     itemis - [459054] Rework the implementation of BasicTransactionalFormsEditor to reuse common functionalities provided the Sphinx Common Editor Logic plugin
+ *     itemis - [460260] Expanded paths are collapsed on resource reload
  *
  * </copyright>
  */
@@ -163,7 +164,7 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 public class BasicTransactionalFormEditor extends FormEditor implements IModelEditorInputChangeAnalyzer, IEditingDomainProvider, ISelectionProvider,
 		IMenuListener, IViewerProvider, IGotoMarker, IPersistableEditor, ITabbedPropertySheetPageContributor, ISaveablesSource, ISaveablePart2 {
 
-	private static final String TAG_EDITOR_DIRTY_ON_WORKBENCH_CLOSE = "editorDirtyOnWorkbenchClose"; //$NON-NLS-1$
+	private static final String MEMENTO_KEY_EDITOR_DIRTY_ON_WORKBENCH_CLOSE = "editorDirtyOnWorkbenchClose"; //$NON-NLS-1$
 
 	/**
 	 * The editor input object that is currently being edited.
@@ -1500,14 +1501,14 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 	@Override
 	public void saveState(IMemento memento) {
 		// Save editor dirty state; required upon editor restoration
-		memento.putBoolean(TAG_EDITOR_DIRTY_ON_WORKBENCH_CLOSE, isDirty());
+		memento.putBoolean(MEMENTO_KEY_EDITOR_DIRTY_ON_WORKBENCH_CLOSE, isDirty());
 	}
 
 	@Override
 	public void restoreState(IMemento memento) {
 		// Close editor if it has been left dirty upon last workbench close; in this case the editor input URI might be
 		// pointing at some model element that hasn't been saved and therefore doesn't exist upon editor restoration
-		if (memento.getBoolean(TAG_EDITOR_DIRTY_ON_WORKBENCH_CLOSE)) {
+		if (memento.getBoolean(MEMENTO_KEY_EDITOR_DIRTY_ON_WORKBENCH_CLOSE)) {
 			close(false);
 		}
 	}

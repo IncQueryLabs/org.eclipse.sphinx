@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2014 See4sys, itemis and others.
+ * Copyright (c) 2008-2015 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@
  *     itemis - [393310] Viewer input for GenericContentsTreeSection should be calculated using content provider
  *     itemis - [421585] Form Editor silently closes if model is not loaded via Sphinx
  *     itemis - [425173] Form editor closes when the input resource are changed externally
+ *     itemis - [460260] Expanded paths are collapsed on resource reload
  *
  * </copyright>
  */
@@ -99,8 +100,14 @@ public class GenericContentsTreeSection extends AbstractViewerFormSection {
 				selection = !SelectionUtil.getStructuredSelection(selection).isEmpty() ? selection : formEditor.getDefaultSelection();
 				super.setSelection(selection);
 			}
+
+			@Override
+			public void refresh(Object element, boolean updateLabels) {
+				GenericContentsTreeSection.this.recordViewerState();
+				super.refresh(element, updateLabels);
+			}
 		};
-		viewer = treeViewer;
+
 		IContentProvider contentProvider = getContentProvider();
 		if (contentProvider != null) {
 			treeViewer.setContentProvider(getContentProvider());
@@ -109,6 +116,7 @@ public class GenericContentsTreeSection extends AbstractViewerFormSection {
 		if (labelProvider != null) {
 			treeViewer.setLabelProvider(labelProvider);
 		}
+
 		treeViewer.addFilter(new ViewerFilter() {
 			@Override
 			public boolean select(Viewer viewer, Object parentElement, Object element) {
@@ -116,7 +124,11 @@ public class GenericContentsTreeSection extends AbstractViewerFormSection {
 				return parentElement != getSectionInputParent() || element == sectionInput;
 			}
 		});
+
 		treeViewer.setInput(getViewerInput());
+
+		setViewer(treeViewer);
+
 		formEditor.createContextMenuFor(treeViewer);
 	}
 

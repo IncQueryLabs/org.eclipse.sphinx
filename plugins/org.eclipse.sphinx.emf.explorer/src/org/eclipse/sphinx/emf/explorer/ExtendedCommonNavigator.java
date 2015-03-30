@@ -55,7 +55,6 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.domain.factory.EditingDomainFactoryListenerRegistry;
 import org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener;
 import org.eclipse.sphinx.emf.explorer.internal.Activator;
-import org.eclipse.sphinx.emf.explorer.internal.state.TreeElementStateMementoHandler;
 import org.eclipse.sphinx.emf.messages.EMFMessages;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
@@ -67,6 +66,8 @@ import org.eclipse.sphinx.emf.workspace.internal.saving.ModelSavingPerformanceSt
 import org.eclipse.sphinx.emf.workspace.internal.saving.ModelSavingPerformanceStats.ModelEvent;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
+import org.eclipse.sphinx.emf.workspace.ui.viewers.state.ITreeViewerState;
+import org.eclipse.sphinx.emf.workspace.ui.viewers.state.TreeViewerStateRecorder;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
 import org.eclipse.sphinx.platform.messages.PlatformMessages;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -134,7 +135,9 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 		}
 	};
 
-	protected TreeElementStateMementoHandler treeElementStateMementoHandler = new TreeElementStateMementoHandler();
+	protected TreeViewerStateRecorder treeViewerStateRecorder = new TreeViewerStateRecorder();
+
+	protected ITreeViewerState deferredViewerState = null;
 
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
@@ -175,17 +178,19 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 			@Override
 			public void refresh() {
 				super.refresh();
-				restoreState(memento);
+				treeViewerStateRecorder.applyState(deferredViewerState);
+				deferredViewerState = treeViewerStateRecorder.getDeferredState();
 			}
 
 			@Override
 			public void refresh(Object element, boolean updateLabels) {
 				super.refresh(element, updateLabels);
-				restoreState(memento);
+				treeViewerStateRecorder.applyState(deferredViewerState);
+				deferredViewerState = treeViewerStateRecorder.getDeferredState();
 			}
 		};
 
-		treeElementStateMementoHandler.setViewer(viewer);
+		treeViewerStateRecorder.setViewer(viewer);
 
 		return viewer;
 	}
@@ -304,6 +309,10 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 		return getCommonViewer();
 	}
 
+	public TreeViewerStateRecorder getViewerStateRecorder() {
+		return treeViewerStateRecorder;
+	}
+
 	@Override
 	public void dispose() {
 		if (modelSaveablesProvider != null) {
@@ -335,18 +344,13 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 	}
 
 	public void restoreState(IMemento memento) {
-		if (treeElementStateMementoHandler.canRestoreState()) {
-			treeElementStateMementoHandler.restoreState(memento);
-			this.memento = treeElementStateMementoHandler.getDeferredMemento();
-		}
+		treeViewerStateRecorder.restoreState(memento);
+		deferredViewerState = treeViewerStateRecorder.getDeferredState();
 	}
 
 	@Override
 	public void saveState(IMemento memento) {
-		if (treeElementStateMementoHandler.canSaveState()) {
-			treeElementStateMementoHandler.saveState(memento);
-		}
-
+		treeViewerStateRecorder.saveState(memento);
 		super.saveState(memento);
 	}
 

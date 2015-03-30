@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.explorer.internal.state.providers;
+package org.eclipse.sphinx.emf.workspace.ui.viewers.state.providers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +24,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -32,13 +31,12 @@ import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ITreePathContentProvider;
 import org.eclipse.jface.viewers.TreePath;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
-import org.eclipse.sphinx.emf.explorer.internal.Activator;
-import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
+import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.IMemento;
-import org.eclipse.ui.navigator.CommonViewer;
 
 public class TreeElementStateProviderFactory {
 
@@ -57,9 +55,9 @@ public class TreeElementStateProviderFactory {
 	public static final String MEMENTO_KEY_PARENT_URI = "parentURI"; //$NON-NLS-1$
 	public static final String MEMENTO_KEY_TRANSIENT_CHILDREN = "transientChildren"; //$NON-NLS-1$
 
-	private CommonViewer viewer;
+	private TreeViewer viewer;
 
-	public TreeElementStateProviderFactory(CommonViewer viewer) {
+	public TreeElementStateProviderFactory(TreeViewer viewer) {
 		Assert.isNotNull(viewer);
 		this.viewer = viewer;
 	}
@@ -68,22 +66,14 @@ public class TreeElementStateProviderFactory {
 		return create(getParentPath(element), element);
 	}
 
-	protected TreePath getParentPath(Object element) {
-		IContentProvider contentProvider = viewer.getContentProvider();
-		if (contentProvider instanceof ITreePathContentProvider) {
-			TreePath[] parents = ((ITreePathContentProvider) contentProvider).getParents(element);
-			if (parents.length > 0) {
-				return parents[0];
-			}
-		}
-		return null;
-	}
-
 	public ITreeElementStateProvider create(TreePath treePath) {
+		Assert.isNotNull(treePath);
 		return create(treePath.getParentPath(), treePath.getLastSegment());
 	}
 
 	protected ITreeElementStateProvider create(TreePath parentPath, Object element) {
+		Assert.isNotNull(parentPath != null);
+
 		if (element instanceof IProject) {
 			return new ProjectElementStateProvider(viewer, (IProject) element);
 		} else if (element instanceof IFolder) {
@@ -91,75 +81,28 @@ public class TreeElementStateProviderFactory {
 		} else if (element instanceof IFile) {
 			return new FileElementStateProvider(viewer, (IFile) element);
 		} else if (element instanceof EObject) {
-			URI uri = getURI(getParentResource(parentPath, element), (EObject) element);
+			URI uri = getURI((EObject) element);
 			return new EObjectElementStateProvider(viewer, uri);
 		} else if (isTransientElement(element)) {
-			if (parentPath != null) {
-				Object regularParent = null;
-				List<Object> transientChildren = new ArrayList<Object>();
-				transientChildren.add(element);
-				for (int i = parentPath.getSegmentCount() - 1; i >= 0; i--) {
-					Object parent = parentPath.getSegment(i);
-					if (!isTransientElement(parent)) {
-						regularParent = parent;
-						break;
-					}
-					transientChildren.add(parent);
+			Object eObjectParent = null;
+			List<Object> transientChildren = new ArrayList<Object>();
+			transientChildren.add(element);
+			for (int i = parentPath.getSegmentCount() - 1; i >= 0; i--) {
+				Object parent = parentPath.getSegment(i);
+				if (!isTransientElement(parent)) {
+					eObjectParent = parent;
+					break;
 				}
-				Collections.reverse(transientChildren);
+				transientChildren.add(parent);
+			}
+			Collections.reverse(transientChildren);
 
-				if (regularParent instanceof EObject) {
-					URI regularParentURI = getURI(getParentResource(parentPath, element), (EObject) regularParent);
-					return createTransientElementProvider(transientChildren, regularParentURI);
-				}
+			if (eObjectParent instanceof EObject) {
+				URI eObjectParentURI = getURI((EObject) eObjectParent);
+				return createTransientElementProvider(eObjectParentURI, transientChildren);
 			}
 		}
 		return null;
-	}
-
-	protected Resource getParentResource(TreePath parentPath, Object element) {
-		if (element instanceof EObject || element instanceof TransientItemProvider || element instanceof IWrapperItemProvider) {
-			if (parentPath != null) {
-				for (int i = parentPath.getSegmentCount() - 1; i > 0; i--) {
-					Object parent = parentPath.getSegment(i);
-					if (parent instanceof IFile) {
-						return EcorePlatformUtil.getResource((IFile) parent);
-					}
-				}
-			} else {
-				return EcorePlatformUtil.getResource(element);
-			}
-		}
-		return null;
-	}
-
-	protected URI getURI(final Resource parentResource, final EObject eObject) {
-		if (eObject != null) {
-			final TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(eObject);
-			if (editingDomain != null) {
-				try {
-					return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<URI>() {
-						@Override
-						public void run() {
-							setResult(EcoreResourceUtil.getURI(parentResource, eObject, true));
-						}
-					});
-				} catch (InterruptedException ex) {
-					PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
-				}
-			} else {
-				return EcoreResourceUtil.getURI(parentResource, eObject, true);
-			}
-		}
-		return null;
-	}
-
-	protected boolean isTransientElement(Object element) {
-		return element instanceof TransientItemProvider || element instanceof IWrapperItemProvider;
-	}
-
-	protected TransientElementStateProvider createTransientElementProvider(List<Object> transientChildren, URI regularParentURI) {
-		return new TransientElementStateProvider(viewer, regularParentURI, transientChildren);
 	}
 
 	public ITreeElementStateProvider createFromMemento(IMemento elementMemento) {
@@ -172,7 +115,51 @@ public class TreeElementStateProviderFactory {
 		} else if (MEMENTO_TYPE_ELEMENT_EOBJECT.equals(elementMemento.getType())) {
 			return new EObjectElementStateProvider(viewer, elementMemento);
 		} else if (MEMENTO_TYPE_ELEMENT_TRANSIENT.equals(elementMemento.getType())) {
-			return new TransientElementStateProvider(viewer, elementMemento);
+			return createTransientElementStateProvider(elementMemento);
+		}
+		return null;
+	}
+
+	protected boolean isTransientElement(Object element) {
+		return element instanceof TransientItemProvider || element instanceof IWrapperItemProvider;
+	}
+
+	protected TransientElementStateProvider createTransientElementProvider(URI eObjectParentURI, List<Object> transientChildren) {
+		return new TransientElementStateProvider(viewer, eObjectParentURI, transientChildren);
+	}
+
+	protected TransientElementStateProvider createTransientElementStateProvider(IMemento elementMemento) {
+		return new TransientElementStateProvider(viewer, elementMemento);
+	}
+
+	protected TreePath getParentPath(Object element) {
+		IContentProvider contentProvider = viewer.getContentProvider();
+		if (contentProvider instanceof ITreePathContentProvider) {
+			TreePath[] parents = ((ITreePathContentProvider) contentProvider).getParents(element);
+			if (parents.length > 0) {
+				return parents[0];
+			}
+		}
+		return TreePath.EMPTY;
+	}
+
+	protected URI getURI(final EObject eObject) {
+		if (eObject != null) {
+			final TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(eObject);
+			if (editingDomain != null) {
+				try {
+					return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<URI>() {
+						@Override
+						public void run() {
+							setResult(EcoreResourceUtil.getURI(eObject, true));
+						}
+					});
+				} catch (InterruptedException ex) {
+					PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
+				}
+			} else {
+				return EcoreResourceUtil.getURI(eObject, true);
+			}
 		}
 		return null;
 	}

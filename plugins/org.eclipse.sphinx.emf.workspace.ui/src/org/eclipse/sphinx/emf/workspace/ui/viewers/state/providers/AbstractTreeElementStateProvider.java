@@ -12,29 +12,35 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.explorer.internal.state.providers;
+package org.eclipse.sphinx.emf.workspace.ui.viewers.state.providers;
 
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.navigator.CommonViewer;
 
 public abstract class AbstractTreeElementStateProvider implements ITreeElementStateProvider {
 
-	protected CommonViewer viewer;
+	protected TreeViewer viewer;
 
-	public AbstractTreeElementStateProvider(CommonViewer viewer) {
+	public AbstractTreeElementStateProvider(TreeViewer viewer) {
 		Assert.isNotNull(viewer);
 
 		this.viewer = viewer;
 	}
 
 	protected boolean canGetChildren(Object element) {
-		if (element != null) {
-			Set<?> contentExtensions = viewer.getNavigatorContentService().findContentExtensionsByTriggerPoint(element);
+		if (element == null) {
+			return false;
+		}
+
+		if (viewer instanceof CommonViewer) {
+			Set<?> contentExtensions = ((CommonViewer) viewer).getNavigatorContentService().findContentExtensionsByTriggerPoint(element);
 			return !contentExtensions.isEmpty();
 		}
-		return false;
+
+		return true;
 	}
 
 	@Override

@@ -66,10 +66,10 @@ import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
+import org.eclipse.sphinx.emf.workspace.ui.viewers.state.ITreeViewerState;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
-import org.eclipse.ui.XMLMemento;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
@@ -121,6 +121,21 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 			}
 		}
 		return null;
+	}
+
+	protected ITreeViewerState recordViewerState() {
+		ExtendedCommonNavigator navigator = getCommonNavigator();
+		if (navigator != null) {
+			return navigator.getViewerStateRecorder().recordState();
+		}
+		return null;
+	}
+
+	protected void applyViewerState(ITreeViewerState state) {
+		ExtendedCommonNavigator navigator = getCommonNavigator();
+		if (navigator != null) {
+			navigator.getViewerStateRecorder().applyState(state);
+		}
 	}
 
 	@Override
@@ -1012,13 +1027,9 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 					public void run() {
 						if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
 							if (viewer instanceof StructuredViewer) {
-								XMLMemento memento = XMLMemento.createWriteRoot("view"); //$NON-NLS-1$
-								getCommonNavigator().saveState(memento);
-
-								StructuredViewer stucturedViewer = (StructuredViewer) viewer;
-								stucturedViewer.refresh(object, true);
-
-								getCommonNavigator().restoreState(memento);
+								ITreeViewerState state = recordViewerState();
+								((StructuredViewer) viewer).refresh(object, true);
+								applyViewerState(state);
 							}
 						}
 					}
@@ -1037,13 +1048,9 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 				public void run() {
 					if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
 						if (viewer instanceof StructuredViewer) {
-							XMLMemento memento = XMLMemento.createWriteRoot("view"); //$NON-NLS-1$
-							getCommonNavigator().saveState(memento);
-
-							StructuredViewer stucturedViewer = (StructuredViewer) viewer;
-							stucturedViewer.refresh();
-
-							getCommonNavigator().restoreState(memento);
+							ITreeViewerState state = recordViewerState();
+							((StructuredViewer) viewer).refresh();
+							applyViewerState(state);
 						}
 					}
 				}

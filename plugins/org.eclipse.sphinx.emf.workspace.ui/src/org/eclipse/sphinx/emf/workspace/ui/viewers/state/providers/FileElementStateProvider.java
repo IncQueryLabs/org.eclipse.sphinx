@@ -12,88 +12,85 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.explorer.internal.state.providers;
+package org.eclipse.sphinx.emf.workspace.ui.viewers.state.providers;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.ui.IMemento;
-import org.eclipse.ui.navigator.CommonViewer;
 
-public class EObjectElementStateProvider extends AbstractTreeElementStateProvider implements ITreeElementStateProvider {
+public class FileElementStateProvider extends AbstractTreeElementStateProvider implements ITreeElementStateProvider {
 
-	private URI uri = null;
-	private EObject eObject = null;
+	private IFile file = null;
 
-	public EObjectElementStateProvider(CommonViewer viewer, IMemento memento) {
+	public FileElementStateProvider(TreeViewer viewer, IMemento memento) {
 		super(viewer);
 
 		Assert.isNotNull(memento);
-		String uriAsString = memento.getString(TreeElementStateProviderFactory.MEMENTO_KEY_URI);
-		if (uriAsString != null) {
-			uri = URI.createURI(uriAsString, true);
+		String pathAsString = memento.getString(TreeElementStateProviderFactory.MEMENTO_KEY_PATH);
+		if (pathAsString != null) {
+			file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(pathAsString));
 		}
 	}
 
-	public EObjectElementStateProvider(CommonViewer viewer, URI uri) {
+	public FileElementStateProvider(TreeViewer viewer, IFile file) {
 		super(viewer);
-		this.uri = uri;
+		this.file = file;
 	}
 
 	@Override
 	public boolean hasUnderlyingModel() {
-		return true;
+		return ModelDescriptorRegistry.INSTANCE.isModelFile(file);
 	}
 
 	@Override
 	public boolean canUnderlyingModelBeLoaded() {
-		return EcoreResourceUtil.exists(uri);
+		return !isStale();
 	}
 
 	@Override
 	public boolean isUnderlyingModelLoaded() {
-		return EcorePlatformUtil.getResource(uri) != null;
+		return EcorePlatformUtil.isFileLoaded(file);
 	}
 
 	@Override
 	public void loadUnderlyingModel() {
-		IFile file = EcorePlatformUtil.getFile(uri);
 		IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(file);
 		if (modelDescriptor != null) {
-			// Request asynchronous loading of model behind given model object
+			// Request asynchronous loading of model behind given workspace file
 			ModelLoadManager.INSTANCE.loadModel(modelDescriptor, true, null);
 		}
 	}
 
 	@Override
 	public boolean isStale() {
-		return getTreeElement() == null;
+		if (file != null) {
+			return !file.exists();
+		}
+		return true;
 	}
 
 	@Override
 	public Object getTreeElement() {
-		if (eObject == null) {
-			eObject = EcorePlatformUtil.getEObject(uri);
-		}
-		return eObject;
+		return file;
 	}
 
 	@Override
 	public void appendToMemento(IMemento parentMemento) {
-		if (uri != null) {
-			IMemento memento = parentMemento.createChild(TreeElementStateProviderFactory.MEMENTO_TYPE_ELEMENT_EOBJECT);
-			memento.putString(TreeElementStateProviderFactory.MEMENTO_KEY_URI, uri.toString());
+		if (file != null) {
+			IMemento memento = parentMemento.createChild(TreeElementStateProviderFactory.MEMENTO_TYPE_ELEMENT_FILE);
+			memento.putString(TreeElementStateProviderFactory.MEMENTO_KEY_PATH, file.getFullPath().toString());
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "EObjectElementProvider [uri=" + uri + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+		return "FileElementProvider [file=" + file + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }

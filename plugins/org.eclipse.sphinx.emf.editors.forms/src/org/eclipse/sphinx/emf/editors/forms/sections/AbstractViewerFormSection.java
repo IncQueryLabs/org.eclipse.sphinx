@@ -1,16 +1,17 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2012 itemis, See4sys and others.
+ *
+ * Copyright (c) 2008-2015 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [393310] Viewer input for GenericContentsTreeSection should be calculated using content provider
- * 
+ *     itemis - [460260] Expanded paths are collapsed on resource reload
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.editors.forms.sections;
@@ -26,9 +27,12 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.sphinx.emf.editors.forms.BasicTransactionalEditorActionBarContributor;
 import org.eclipse.sphinx.emf.editors.forms.pages.AbstractFormPage;
+import org.eclipse.sphinx.emf.workspace.ui.viewers.state.ITreeViewerState;
+import org.eclipse.sphinx.emf.workspace.ui.viewers.state.TreeViewerStateRecorder;
 import org.eclipse.sphinx.platform.util.ReflectUtil;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.widgets.Composite;
@@ -37,8 +41,9 @@ import org.eclipse.ui.forms.SectionPart;
 
 public abstract class AbstractViewerFormSection extends AbstractFormSection implements IViewerProvider {
 
-	protected StructuredViewer viewer;
-
+	private Viewer viewer;
+	private ITreeViewerState viewerState = null;
+	private TreeViewerStateRecorder treeViewerStateRecorder = new TreeViewerStateRecorder();
 	private IContentProvider contentProvider;
 	private IBaseLabelProvider labelProvider;
 
@@ -50,17 +55,43 @@ public abstract class AbstractViewerFormSection extends AbstractFormSection impl
 		super(formPage, sectionInput, style);
 	}
 
-	@Override
-	public void setSectionInput(Object sectionInput) {
-		super.setSectionInput(sectionInput);
-		if (viewer != null) {
-			viewer.setInput(getViewerInput());
+	protected void recordViewerState() {
+		if (viewerState == null) {
+			viewerState = treeViewerStateRecorder.recordState();
 		}
 	}
 
+	protected void applyViewerState() {
+		treeViewerStateRecorder.applyState(viewerState);
+		viewerState = null;
+	}
+
 	@Override
-	public StructuredViewer getViewer() {
+	public void setSectionInput(Object sectionInput) {
+		super.setSectionInput(sectionInput);
+
+		if (viewer != null) {
+			Object oldViewerInput = viewer.getInput();
+			Object newViewerInput = getViewerInput();
+			if (newViewerInput != oldViewerInput) {
+				viewer.setInput(newViewerInput);
+			}
+		}
+
+		applyViewerState();
+	}
+
+	@Override
+	public Viewer getViewer() {
 		return viewer;
+	}
+
+	public void setViewer(Viewer viewer) {
+		this.viewer = viewer;
+
+		if (viewer instanceof TreeViewer) {
+			treeViewerStateRecorder.setViewer((TreeViewer) viewer);
+		}
 	}
 
 	public Object getViewerInput() {
