@@ -7,7 +7,7 @@ Bundle-ClassPath: .
 Bundle-Activator: org.eclipse.sphinx.examples.hummingbird10.Activator$Implementation
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.eclipse.sphinx.examples.hummingbird10,
  org.eclipse.sphinx.examples.hummingbird10.impl,
  org.eclipse.sphinx.examples.hummingbird10.util

@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sphinx.emf.metamodelgen,
  org.eclipse.sphinx.emf.serialization.generators
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.eclipse.sphinx.examples.hummingbird.metamodelgen.internal;x-internal:=true,
  org.eclipse.sphinx.examples.hummingbird.metamodelgen.internal.messages;x-friends:="org.eclipse.sphinx.examples.hummingbird.metamodelgen.ui",
  org.eclipse.sphinx.examples.hummingbird.metamodelgen.operations

@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.eclipse.sphinx.tests.emf.ui.integration;singleton:=true
 Bundle-Version: 0.9.0.qualifier
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.sphinx.emf.ui,
  org.eclipse.sphinx.emf.editors.forms,
  org.eclipse.sphinx.testutils.integration.referenceworkspace

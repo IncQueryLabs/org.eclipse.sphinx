@@ -20,7 +20,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sphinx.emf,
  org.eclipse.sphinx.emf.check.catalog,
  org.eclipse.sphinx.emf.mwe.dynamic
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.sphinx.emf.check,
  org.eclipse.sphinx.emf.check.internal,

@@ -11,7 +11,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sphinx.platform;visibility:=reexport,
  org.eclipse.sphinx.emf;visibility:=reexport
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.eclipse.sphinx.emf.metamodelgen.internal;x-internal:=true,
  org.eclipse.sphinx.emf.metamodelgen.operations
 Bundle-Localization: plugin

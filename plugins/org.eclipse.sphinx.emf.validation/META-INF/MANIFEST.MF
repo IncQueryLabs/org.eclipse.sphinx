@@ -24,4 +24,4 @@ Export-Package: org.eclipse.sphinx.emf.validation,
  org.eclipse.sphinx.emf.validation.preferences,
  org.eclipse.sphinx.emf.validation.stats,
  org.eclipse.sphinx.emf.validation.util
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

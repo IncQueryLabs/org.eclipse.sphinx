@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.eclipse.sphinx.tests.platform;singleton:=true
 Bundle-Version: 0.9.0.qualifier
 Require-Bundle: org.eclipse.sphinx.testutils,
  org.eclipse.sphinx.examples.hummingbird20
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.eclipse.sphinx.tests.platform.internal;x-internal:=true,
  org.eclipse.sphinx.tests.platform.util
 Bundle-Localization: plugin

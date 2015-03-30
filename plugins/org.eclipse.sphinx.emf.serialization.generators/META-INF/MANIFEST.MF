@@ -11,7 +11,7 @@ Require-Bundle: org.eclipse.emf.codegen.ecore,
  org.eclipse.sphinx.emf,
  org.eclipse.sphinx.emf.serialization
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.eclipse.sphinx.emf.serialization.generators.internal,
  org.eclipse.sphinx.emf.serialization.generators.persistencemapping,
  org.eclipse.sphinx.emf.serialization.generators.util,

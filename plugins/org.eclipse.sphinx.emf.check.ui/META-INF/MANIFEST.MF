@@ -15,7 +15,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sphinx.emf.check,
  org.eclipse.sphinx.emf.check.catalog
 Bundle-Activator: org.eclipse.sphinx.emf.check.ui.internal.Activator
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.eclipse.sphinx.emf.check.ui,
  org.eclipse.sphinx.emf.check.ui.actions,
  org.eclipse.sphinx.emf.check.ui.dialogs,

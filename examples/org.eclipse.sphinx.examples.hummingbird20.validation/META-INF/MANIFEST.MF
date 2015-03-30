@@ -9,7 +9,7 @@ Require-Bundle: org.eclipse.emf.validation.ocl,
  org.eclipse.sphinx.emf.validation,
  org.eclipse.sphinx.examples.hummingbird20
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.eclipse.sphinx.examples.hummingbird20.validation.constraints,
  org.eclipse.sphinx.examples.hummingbird20.validation.internal;x-internal:=true
 Bundle-Localization: plugin

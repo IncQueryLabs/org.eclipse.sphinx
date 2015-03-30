@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.ui.ide;visibility:=reexport,
  org.eclipse.sphinx.emf.ui;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.emf.workspace.ui.internal.Activator$Implementation
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.eclipse.sphinx.emf.workspace.ui.internal;x-internal:=true,
  org.eclipse.sphinx.emf.workspace.ui.internal.messages;x-internal:=true,
  org.eclipse.sphinx.emf.workspace.ui.internal.saving;x-internal:=true,

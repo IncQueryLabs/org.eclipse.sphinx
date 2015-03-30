@@ -47,4 +47,4 @@ Export-Package: org.eclipse.sphinx.emf,
  org.eclipse.sphinx.emf.validation
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.emf.Activator$Implementation
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

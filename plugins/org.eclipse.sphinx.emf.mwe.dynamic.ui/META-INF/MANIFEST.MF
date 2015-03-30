@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.pde.core,
  org.eclipse.sphinx.emf.ui,
  org.eclipse.sphinx.emf.mwe.dynamic
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.sphinx.emf.mwe.dynamic.ui,
  org.eclipse.sphinx.emf.mwe.dynamic.ui.actions,

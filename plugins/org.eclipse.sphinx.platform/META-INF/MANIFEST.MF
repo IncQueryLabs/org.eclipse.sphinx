@@ -26,4 +26,4 @@ Export-Package: org.eclipse.sphinx.platform,
  org.eclipse.sphinx.platform.resources.syncing,
  org.eclipse.sphinx.platform.stats,
  org.eclipse.sphinx.platform.util
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
