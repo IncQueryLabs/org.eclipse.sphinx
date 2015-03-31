@@ -41,9 +41,7 @@ public class WorkflowHandlerRegistry {
 
 	private static final String EXTP_WORKFLOW_HANDLERS = Activator.INSTANCE.getSymbolicName() + ".workflowHandlers"; //$NON-NLS-1$
 	private static final String ELEM_HANDLER = "handler"; //$NON-NLS-1$
-	private static final String ELEM_APPLICABLE_FOR = "applicableFor";
 	private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
-	private static final String ATTR_PRIORITY = "priority";
 
 	private IExtensionRegistry extensionRegistry;
 	private ILog log;

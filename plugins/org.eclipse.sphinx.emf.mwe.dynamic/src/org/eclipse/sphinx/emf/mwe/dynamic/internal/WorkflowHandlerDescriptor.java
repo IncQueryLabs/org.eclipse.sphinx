@@ -17,36 +17,24 @@ package org.eclipse.sphinx.emf.mwe.dynamic.internal;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.mwe2.runtime.workflow.IWorkflow;
 import org.eclipse.sphinx.emf.mwe.dynamic.IWorkflowHandler;
-import org.osgi.framework.Bundle;
+import org.eclipse.sphinx.platform.util.ExtensionClassDescriptor;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
-public class WorkflowHandlerDescriptor {
+public class WorkflowHandlerDescriptor extends ExtensionClassDescriptor<IWorkflowHandler> {
 
-	private final static String ATTR_CLASS = "class"; //$NON-NLS-1$
-	private final static String ATTR_PRIORITY = "priority"; //$NON-NLS-1$
 	private final static String NODE_APPLICABLE_FOR = "applicableFor"; //$NON-NLS-1$
 	private final static String NODE_INSTANCEOF = "instanceof"; //$NON-NLS-1$
+	private final static String ATTR_PRIORITY = "priority"; //$NON-NLS-1$
 	private final static String ATTR_VALUE = "value"; //$NON-NLS-1$
 
-	private String contributorPluginId;
-	private String className;
 	private int priority = -1;
-	private Set<String> applicableForWorkflows;
-
-	private IWorkflowHandler instance;
+	private Set<String> applicableWorkflowClassNames;
 
 	public WorkflowHandlerDescriptor(IConfigurationElement configurationElement) {
-		Assert.isNotNull(configurationElement);
-
-		contributorPluginId = configurationElement.getContributor().getName();
-		Assert.isNotNull(contributorPluginId);
-
-		className = configurationElement.getAttribute(ATTR_CLASS);
-		Assert.isNotNull(className);
+		super(configurationElement);
 
 		String prioAttr = configurationElement.getAttribute(ATTR_PRIORITY);
 		if (prioAttr != null && !prioAttr.isEmpty()) {
@@ -61,7 +49,7 @@ public class WorkflowHandlerDescriptor {
 	}
 
 	private void initApplicableWorkflows(IConfigurationElement configurationElement) {
-		applicableForWorkflows = new HashSet<String>();
+		applicableWorkflowClassNames = new HashSet<String>();
 
 		IConfigurationElement[] applicableForElements = configurationElement.getChildren(NODE_APPLICABLE_FOR);
 		for (IConfigurationElement applicableFor : applicableForElements) {
@@ -71,7 +59,7 @@ public class WorkflowHandlerDescriptor {
 				if (workflowClass == null) {
 					continue;
 				}
-				applicableForWorkflows.add(workflowClass);
+				applicableWorkflowClassNames.add(workflowClass);
 			}
 		}
 	}
@@ -82,40 +70,23 @@ public class WorkflowHandlerDescriptor {
 
 	public boolean isApplicableFor(Class<? extends IWorkflow> workflowClass) {
 		String workflowClassName = workflowClass.getName();
-		for (String applicableForWorkflow : applicableForWorkflows) {
-			if (workflowClassName.equals(applicableForWorkflow)) {
-				return true;
+		for (String applicableWorkflowClassName : applicableWorkflowClassNames) {
+			try {
+				/*
+				 * Performance optimization: Check is the class names are equals before calling Class#forName
+				 */
+				if (workflowClassName.equals(applicableWorkflowClassName)) {
+					return true;
+				} else {
+					Class<?> applicableWorkflowClass = Class.forName(applicableWorkflowClassName);
+					if (applicableWorkflowClass.isAssignableFrom(workflowClass)) {
+						return true;
+					}
+				}
+			} catch (ClassNotFoundException ex) {
+				PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Returns a cached instance of the {@code IWorkflowHandler}
-	 *
-	 * @return The handler class instance
-	 * @throws Exception
-	 */
-	public IWorkflowHandler getInstance() throws Exception {
-		if (instance == null) {
-			synchronized (this) {
-				instance = newInstance();
-			}
-		}
-		return instance;
-	}
-
-	/**
-	 * Creates a new handler class instance.
-	 *
-	 * @return
-	 */
-	public IWorkflowHandler newInstance() throws Exception {
-		Bundle bundle = Platform.getBundle(contributorPluginId);
-		if (bundle == null) {
-			throw new IllegalStateException("Cannot locate contributor plug-in '" + contributorPluginId + "'"); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		Class<?> clazz = bundle.loadClass(className);
-		return (IWorkflowHandler) clazz.newInstance();
 	}
 }

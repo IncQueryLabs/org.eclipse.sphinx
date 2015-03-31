@@ -33,6 +33,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.mwe2.runtime.workflow.IWorkflow;
 import org.eclipse.emf.mwe2.runtime.workflow.IWorkflowComponent;
+import org.eclipse.emf.mwe2.runtime.workflow.IWorkflowContext;
 import org.eclipse.emf.mwe2.runtime.workflow.Workflow;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
@@ -131,7 +132,7 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 	 * @see org.eclipse.core.resources.IWorkspaceRunnable#run(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
-	public void run(final IProgressMonitor monitor) throws CoreException, OperationCanceledException {
+	public final void run(final IProgressMonitor monitor) throws CoreException, OperationCanceledException {
 		try {
 			final SubMonitor progress = SubMonitor.convert(monitor, 100);
 			final Workflow workflowInstance = getWorkflowInstance();
@@ -142,7 +143,7 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 			// Load selected Sphinx/EMF model file (if any)
 			model = loadModel(progress.newChild(5));
 
-			final ModelWorkflowContext context = new ModelWorkflowContext(model, progress.newChild(90));
+			final IWorkflowContext context = createWorkflowContext(model, progress.newChild(90));
 
 			// Pre-run handers sorted by their priority
 			List<IWorkflowHandler> sortedHandlers = WorkflowHandlerRegistry.INSTANCE.getSortedHandlers(workflowInstance.getClass().asSubclass(
@@ -193,6 +194,10 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
 			throw new CoreException(status);
 		}
+	}
+
+	protected IWorkflowContext createWorkflowContext(Object model, IProgressMonitor monitor) {
+		return new ModelWorkflowContext(model, monitor);
 	}
 
 	protected Workflow getWorkflowInstance() throws CoreException {

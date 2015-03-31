@@ -50,10 +50,10 @@ public class ExtensionClassDescriptor<T> {
 		contributorPluginId = configurationElement.getContributor().getName();
 		Assert.isNotNull(contributorPluginId);
 
-		id = configurationElement.getAttribute(ATTR_ID);
-
 		className = configurationElement.getAttribute(ATTR_CLASS);
 		Assert.isNotNull(className);
+
+		id = configurationElement.getAttribute(ATTR_ID);
 
 		override = configurationElement.getAttribute(ATTR_OVERRIDE);
 	}
