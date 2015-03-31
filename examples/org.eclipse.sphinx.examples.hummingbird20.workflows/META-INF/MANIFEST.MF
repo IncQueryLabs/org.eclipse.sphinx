@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: org.eclipse.sphinx.examples.hummingbird20.workflows
+Bundle-SymbolicName: org.eclipse.sphinx.examples.hummingbird20.workflows;singleton:=true
 Bundle-Version: 0.9.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.xtend.lib,
@@ -12,4 +12,5 @@ Require-Bundle: org.eclipse.xtend.lib,
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: org.eclipse.sphinx.examples.hummingbird20.workflows.check,
- org.eclipse.sphinx.examples.hummingbird20.workflows.naming
+ org.eclipse.sphinx.examples.hummingbird20.workflows.naming,
+ org.eclipse.sphinx.examples.hummingbird20.workflows.util

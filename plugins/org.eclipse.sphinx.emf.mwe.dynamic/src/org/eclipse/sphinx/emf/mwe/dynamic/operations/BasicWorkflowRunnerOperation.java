@@ -31,6 +31,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.mwe2.runtime.workflow.IWorkflow;
 import org.eclipse.emf.mwe2.runtime.workflow.IWorkflowComponent;
 import org.eclipse.emf.mwe2.runtime.workflow.Workflow;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -41,8 +42,10 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.mwe.dynamic.IWorkflowHandler;
 import org.eclipse.sphinx.emf.mwe.dynamic.ModelWorkflowContext;
 import org.eclipse.sphinx.emf.mwe.dynamic.WorkflowContributorRegistry;
+import org.eclipse.sphinx.emf.mwe.dynamic.WorkflowHandlerRegistry;
 import org.eclipse.sphinx.emf.mwe.dynamic.WorkspaceWorkflow;
 import org.eclipse.sphinx.emf.mwe.dynamic.components.IModelWorkflowComponent;
 import org.eclipse.sphinx.emf.mwe.dynamic.internal.Activator;
@@ -139,10 +142,18 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 			// Load selected Sphinx/EMF model file (if any)
 			model = loadModel(progress.newChild(5));
 
+			final ModelWorkflowContext context = new ModelWorkflowContext(model, progress.newChild(90));
+
+			// Pre-run handers sorted by their priority
+			List<IWorkflowHandler> sortedHandlers = WorkflowHandlerRegistry.INSTANCE.getSortedHandlers(workflowInstance.getClass().asSubclass(
+					IWorkflow.class));
+			for (IWorkflowHandler workflowHandler : sortedHandlers) {
+				workflowHandler.preRun(workflowInstance, context);
+			}
+
 			Runnable runnable = new Runnable() {
 				@Override
 				public void run() {
-					ModelWorkflowContext context = new ModelWorkflowContext(model, progress.newChild(90));
 					workflowInstance.run(context);
 				}
 			};
@@ -161,6 +172,11 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 			} else {
 				// Execute right away
 				runnable.run();
+			}
+
+			// Post-run handlers
+			for (IWorkflowHandler workflowHandler : sortedHandlers) {
+				workflowHandler.postRun(workflowInstance, context);
 			}
 
 			// Save model if needed
