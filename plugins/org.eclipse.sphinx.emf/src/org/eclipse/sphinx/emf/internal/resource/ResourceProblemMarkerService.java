@@ -28,7 +28,6 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Platform;
@@ -84,96 +83,6 @@ public class ResourceProblemMarkerService {
 
 	// Private default constructor for singleton pattern
 	private ResourceProblemMarkerService() {
-	}
-
-	/**
-	 * Creates problem markers for {@link IFile}s in given map based on the {@link Exception exception} which is
-	 * associated with each of them.
-	 * <p>
-	 * The type of the problem marker being created depends on the type of exception associated with the {@link IFile
-	 * file} and can be one of the following:
-	 * </p>
-	 * <table>
-	 * <tr align="left">
-	 * <th>{@link Exception Exception type}</th>
-	 * <th>{@link Exception#getCause() Exception cause}</th>
-	 * <th>Problem marker type</th>
-	 * </tr>
-	 * <tr>
-	 * <td>{@link XMLIntegrityException}</td>
-	 * <td>any</td>
-	 * <td>{@link IXMLMarker#XML_INTEGRITY_PROBLEM}</td>
-	 * </tr>
-	 * <tr>
-	 * <td>{@link ProxyURIIntegrityException}</td>
-	 * <td>any</td>
-	 * <td>{@link #PROXY_URI_INTEGRITY_PROBLEM}</td>
-	 * </tr>
-	 * <tr>
-	 * <td>{@link XMIException}</td>
-	 * <td>{@link XMLWellformednessException}</td>
-	 * <td>{@link IXMLMarker#XML_WELLFORMEDNESS_PROBLEM}</td>
-	 * </tr>
-	 * <tr>
-	 * <td>{@link XMIException}</td>
-	 * <td>{@link XMLValidityException}</td>
-	 * <td>{@link IXMLMarker#XML_VALIDITY_PROBLEM}</td>
-	 * </tr>
-	 * <tr>
-	 * <td>{@link XMIException}</td>
-	 * <td>any other</td>
-	 * <td>{@link IMarker#PROBLEM}</td>
-	 * </tr>
-	 * <tr>
-	 * <td>any other</td>
-	 * <td>any</td>
-	 * <td>{@link IMarker#PROBLEM}</td>
-	 * </tr>
-	 * </table>
-	 *
-	 * @param filesWithErrors
-	 *            Map of {@link IFile file}s to create problem markers for and {@link Exception exceptions} to be used
-	 *            as basis for that.
-	 * @param async
-	 *            <code>true</code> if this operation is required to be run asynchronously, or <code>false</code> if
-	 *            synchronous execution is desired.
-	 * @param monitor
-	 *            A {@link IProgressMonitor progress monitor}, or <code>null</code> if progress reporting is not
-	 *            desired.
-	 * @see IMarker#PROBLEM
-	 */
-	public void updateProblemMarkers(final Map<IFile, Exception> filesWithErrors, final IProgressMonitor monitor) {
-		Assert.isNotNull(filesWithErrors);
-
-		if (!filesWithErrors.isEmpty() && Platform.isRunning()) {
-			SubMonitor progress = SubMonitor.convert(monitor, filesWithErrors.size());
-
-			for (IFile file : filesWithErrors.keySet()) {
-				if (progress.isCanceled()) {
-					return;
-				}
-
-				try {
-					// Remove old problem makers
-					if (file.isAccessible()) {
-						getResourceProblemMarkerFactory(file).deleteMarkers(file);
-					}
-
-					Exception error = filesWithErrors.get(file);
-					if (error instanceof Resource.Diagnostic) {
-						createProblemMarkerForDiagnostic(file, null, (Resource.Diagnostic) error, IMarker.SEVERITY_ERROR);
-					} else {
-						createProblemMarkerForException(file, error, IMarker.SEVERITY_ERROR);
-					}
-				} catch (CoreException ex) {
-					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-				}
-
-				progress.worked(1);
-			}
-
-			MarkerJob.INSTANCE.schedule();
-		}
 	}
 
 	/**
@@ -371,16 +280,16 @@ public class ResourceProblemMarkerService {
 				for (Resource resource : resourcesToUpdateInEditingDomain) {
 					IFile file = EcorePlatformUtil.getFile(resource);
 					if (file != null) {
-						ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
-						int maxCount = extendedResource != null ? (Integer) extendedResource.getProblemHandlingOptions().get(
-								ExtendedResource.OPTION_MAX_PROBLEM_MARKER_COUNT) : ExtendedResource.OPTION_MAX_PROBLEM_MARKER_COUNT_UNLIMITED;
+						Map<Object, Object> options = getProblemHandlingOptions(resource);
+						IResourceProblemMarkerFactory factory = getResourceProblemMarkerFactory(resource, options);
+						int maxCount = getMaxProblemMarkerCount(options);
 						int count = 0;
 
 						// Handle errors
 						ArrayList<Diagnostic> safeErrors = new ArrayList<Diagnostic>(resource.getErrors());
 						for (Iterator<Diagnostic> iter = safeErrors.iterator(); iter.hasNext() && count != maxCount; count++) {
 							try {
-								createProblemMarkerForDiagnostic(file, extendedResource, iter.next(), IMarker.SEVERITY_ERROR);
+								factory.createProblemMarker(file, iter.next(), IMarker.SEVERITY_ERROR, options);
 							} catch (Exception ex) {
 								PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 							}
@@ -390,7 +299,7 @@ public class ResourceProblemMarkerService {
 						ArrayList<Diagnostic> safeWarnings = new ArrayList<Diagnostic>(resource.getWarnings());
 						for (Iterator<Diagnostic> iter = safeWarnings.iterator(); iter.hasNext() && count != maxCount; count++) {
 							try {
-								createProblemMarkerForDiagnostic(file, extendedResource, iter.next(), IMarker.SEVERITY_WARNING);
+								factory.createProblemMarker(file, iter.next(), IMarker.SEVERITY_WARNING, options);
 							} catch (Exception ex) {
 								PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 							}
@@ -416,43 +325,7 @@ public class ResourceProblemMarkerService {
 		}
 	}
 
-	protected void createProblemMarkerForDiagnostic(IFile file, ExtendedResource extendedResource, Resource.Diagnostic diagnostic, int severity)
-			throws CoreException {
-		Assert.isNotNull(file);
-		Assert.isNotNull(diagnostic);
-
-		IResourceProblemMarkerFactory resourceProblemMarkerFactory = getResourceProblemMarkerFactory(file);
-		resourceProblemMarkerFactory.createProblemMarker(file, diagnostic, severity, getProblemHandlingOptions(file));
-	}
-
-	protected void createProblemMarkerForException(IFile file, Exception exception, int severity) throws CoreException {
-		Assert.isNotNull(file);
-		Assert.isNotNull(exception);
-
-		IResourceProblemMarkerFactory resourceProblemMarkerFactory = getResourceProblemMarkerFactory(file);
-		resourceProblemMarkerFactory.createProblemMarker(file, exception, severity);
-	}
-
-	private IResourceProblemMarkerFactory getResourceProblemMarkerFactory(IFile file) {
-		Map<Object, Object> problemHandlingOptions = getProblemHandlingOptions(file);
-		if (problemHandlingOptions != null) {
-			Object markerFactory = problemHandlingOptions.get(ExtendedResource.OPTION_PROBLEM_MARKER_FACTORY);
-			if (markerFactory instanceof IResourceProblemMarkerFactory) {
-				return (IResourceProblemMarkerFactory) markerFactory;
-			}
-		}
-		return createResourceProblemMarkerFactory(file);
-	}
-
-	private IResourceProblemMarkerFactory createResourceProblemMarkerFactory(IFile file) {
-		if (EcorePlatformUtil.getResource(file) instanceof XMLResource) {
-			return new XMLResourceProblemMarkerFactory();
-		}
-		return new BasicResourceProblemMarkerFactory();
-	}
-
-	private Map<Object, Object> getProblemHandlingOptions(IFile file) {
-		Resource resource = EcorePlatformUtil.getResource(file);
+	private Map<Object, Object> getProblemHandlingOptions(Resource resource) {
 		if (resource != null) {
 			ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
 			if (extendedResource != null) {
@@ -460,5 +333,45 @@ public class ResourceProblemMarkerService {
 			}
 		}
 		return null;
+	}
+
+	private int getMaxProblemMarkerCount(Map<Object, Object> problemHandlingOptions) {
+		if (problemHandlingOptions != null) {
+			Object count = problemHandlingOptions.get(ExtendedResource.OPTION_MAX_PROBLEM_MARKER_COUNT);
+			if (count instanceof Integer) {
+				return (Integer) count;
+			}
+		}
+		return ExtendedResource.OPTION_MAX_PROBLEM_MARKER_COUNT_UNLIMITED;
+	}
+
+	private IResourceProblemMarkerFactory getResourceProblemMarkerFactory(IFile file) {
+		Resource resource = EcorePlatformUtil.getResource(file);
+		if (resource != null) {
+			Map<Object, Object> problemHandlingOptions = getProblemHandlingOptions(resource);
+			return getResourceProblemMarkerFactory(resource, problemHandlingOptions);
+		}
+		return createDefaultResourceProblemMarkerFactory();
+	}
+
+	private IResourceProblemMarkerFactory getResourceProblemMarkerFactory(Resource resource, Map<Object, Object> problemHandlingOptions) {
+		if (problemHandlingOptions != null) {
+			Object factory = problemHandlingOptions.get(ExtendedResource.OPTION_PROBLEM_MARKER_FACTORY);
+			if (factory instanceof IResourceProblemMarkerFactory) {
+				return (IResourceProblemMarkerFactory) factory;
+			}
+		}
+		return createResourceProblemMarkerFactory(resource);
+	}
+
+	private IResourceProblemMarkerFactory createResourceProblemMarkerFactory(Resource resource) {
+		if (resource instanceof XMLResource) {
+			return new XMLResourceProblemMarkerFactory();
+		}
+		return createDefaultResourceProblemMarkerFactory();
+	}
+
+	private BasicResourceProblemMarkerFactory createDefaultResourceProblemMarkerFactory() {
+		return new BasicResourceProblemMarkerFactory();
 	}
 }
