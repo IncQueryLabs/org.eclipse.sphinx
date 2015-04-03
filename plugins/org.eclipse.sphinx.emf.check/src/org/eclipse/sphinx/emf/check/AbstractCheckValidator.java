@@ -143,6 +143,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void collectMethodsImpl(ICheckValidator instance, Class<? extends ICheckValidator> clazz, String[] selectedCategories,
 			Collection<Class<?>> visitedClasses, Collection<MethodWrapper> result) {
 		if (!visitedClasses.add(clazz)) {
@@ -171,7 +172,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		}
 		Class<?> superClass = clazz.getSuperclass();
 		if (superClass != null && superClass.isAssignableFrom(ICheckValidator.class)) {
-			collectMethodsImpl(instanceToUse, (Class<? extends ICheckValidator>) superClass, selectedCategories, visitedClasses, result);
+			collectMethodsImpl(instanceToUse, (Class<ICheckValidator>) superClass, selectedCategories, visitedClasses, result);
 		}
 	}
 
@@ -307,12 +308,15 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void warning(String message, EObject object, EStructuralFeature feature, int index) {
+		// FIXME Add index to DiagnosticLocation
 		Object[] data = new Object[] { new DiagnosticLocation(object, feature),
 				new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint) };
 		warning(message, object, feature, index, data);
 	}
 
 	protected void warning(String message, EObject object, EStructuralFeature feature, int index, Object[] issueData) {
+		// FIXME Test if issueData contains DiagnosticLocation and create one from object/feature/index and add it to
+		// issueData if not so
 		getState().get().chain.add(createDiagnostic(Severity.WARNING, message, index, issueData));
 	}
 
@@ -321,12 +325,15 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void error(String message, EObject object, EStructuralFeature feature, int index) {
+		// FIXME Add index to DiagnosticLocation
 		Object[] data = new Object[] { new DiagnosticLocation(object, feature),
 				new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint) };
 		error(message, object, feature, index, data);
 	}
 
-	protected void error(String message, EObject source, EStructuralFeature feature, int index, Object[] issueData) {
+	protected void error(String message, EObject object, EStructuralFeature feature, int index, Object[] issueData) {
+		// FIXME Test if issueData contains DiagnosticLocation and create one from object/feature/index and add it to
+		// issueData if not so
 		getState().get().hasErrors = true;
 		getState().get().chain.add(createDiagnostic(Severity.ERROR, message, index, issueData));
 	}
@@ -336,15 +343,19 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void info(String message, EObject object, EStructuralFeature feature, int index) {
+		// FIXME Add index to DiagnosticLocation
 		Object[] data = new Object[] { new DiagnosticLocation(object, feature),
 				new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint) };
 		info(message, object, feature, index, data);
 	}
 
 	protected void info(String message, EObject object, EStructuralFeature feature, int index, Object[] issueData) {
+		// FIXME Test if issueData contains DiagnosticLocation and create one from object/feature/index and add it to
+		// issueData if not so
 		getState().get().chain.add(createDiagnostic(Severity.INFO, message, index, issueData));
 	}
 
+	// FIXME Remove index from parameter list
 	protected Diagnostic createDiagnostic(Severity severity, String message, int index, Object[] issueData) {
 		int diagnosticSeverity = toDiagnosticSeverity(severity);
 		Diagnostic result = new BasicDiagnostic(diagnosticSeverity, this.getClass().getName(), 0, message, issueData);
