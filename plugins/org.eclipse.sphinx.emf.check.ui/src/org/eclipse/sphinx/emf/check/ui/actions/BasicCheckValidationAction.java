@@ -18,14 +18,17 @@ package org.eclipse.sphinx.emf.check.ui.actions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EValidator;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -41,6 +44,7 @@ import org.eclipse.sphinx.emf.check.ui.dialogs.CategorySelectionLabelProvider;
 import org.eclipse.sphinx.emf.check.ui.internal.Activator;
 import org.eclipse.sphinx.emf.check.ui.internal.CheckValidationImageProvider;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.IWrapper;
 import org.eclipse.sphinx.platform.jobs.WorkspaceOperationWorkspaceJob;
 import org.eclipse.sphinx.platform.ui.operations.RunnableWithProgressAdapter;
@@ -101,31 +105,52 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 
 	protected List<EObject> getValidationInputs() {
 		IStructuredSelection structuredSelection = getStructuredSelection();
-		List<EObject> result = new ArrayList<EObject>();
-		for (Object obj : structuredSelection.toList()) {
-			EObject unwrappedObj = unwrap(obj);
-			if (unwrappedObj != null) {
-				result.add(unwrappedObj);
+		if (structuredSelection != null) {
+			List<EObject> eObjects = new ArrayList<EObject>();
+			for (Object selected : structuredSelection.toList()) {
+				eObjects.addAll(getEObjects(selected));
 			}
+			return eObjects;
 		}
-		return result;
+		return Collections.emptyList();
 	}
 
-	protected EObject unwrap(Object object) {
+	protected List<EObject> getEObjects(Object object) {
+		// Wrapped model object or model object
+		object = AdapterFactoryEditingDomain.unwrap(object);
+		if (object instanceof EObject) {
+			return Collections.singletonList((EObject) object);
+		}
 		if (object instanceof IWrapper<?>) {
 			Object target = ((IWrapper<?>) object).getTarget();
 			if (target instanceof EObject) {
-				return (EObject) target;
-			}
-		} else if (object instanceof EObject) {
-			return (EObject) object;
-		} else if (object instanceof TransientItemProvider) {
-			Notifier target = ((TransientItemProvider) object).getTarget();
-			if (target instanceof EObject) {
-				return (EObject) target;
+				return Collections.singletonList((EObject) target);
 			}
 		}
-		return null;
+
+		// Group of model objects
+		if (object instanceof TransientItemProvider) {
+			TransientItemProvider provider = (TransientItemProvider) object;
+			List<EObject> eObjects = new ArrayList<EObject>();
+			for (Object child : provider.getChildren(object)) {
+				eObjects.addAll(getEObjects(child));
+			}
+			return eObjects;
+		}
+
+		// Model file or model resource
+		Resource resource = null;
+		if (object instanceof IFile) {
+			resource = EcorePlatformUtil.getResource((IFile) object);
+		}
+		if (object instanceof Resource) {
+			resource = (Resource) object;
+		}
+		if (resource != null) {
+			return resource.getContents();
+		}
+
+		return Collections.emptyList();
 	}
 
 	@Override
