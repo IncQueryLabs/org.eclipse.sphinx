@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [463895] org.eclipse.sphinx.emf.check.AbstractCheckValidator.validate(EClass, EObject, DiagnosticChain, Map<Object, Object>) throws NPE
  *
  * </copyright>
  */
@@ -17,9 +18,11 @@ package org.eclipse.sphinx.emf.check;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.sphinx.emf.check.AbstractCheckValidator.CheckValidatorState;
 import org.eclipse.sphinx.emf.check.internal.Activator;
 import org.eclipse.sphinx.emf.check.util.Exceptions;
@@ -28,14 +31,31 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public class MethodWrapper {
 
-	private final ICheckValidator validator;
+	public static Set<String> getAnnotatedCategories(Check checkAnnotation) {
+		if (checkAnnotation != null) {
+			String[] categories = checkAnnotation.categories();
+			if (categories.length > 0) {
+				// Ignore isolate empty categories
+				if (categories.length > 1 || !categories[0].isEmpty()) {
+					return new HashSet<String>(Arrays.asList(categories));
+				}
+			}
+		}
+		return Collections.emptySet();
+	}
 
-	private final Method method;
-	private final String signature;
-	private final Check checkAnnotation;
-	private final String[] selectedCategories;
+	private ICheckValidator validator;
 
-	protected MethodWrapper(ICheckValidator validator, Method method, String[] selectedCategories) {
+	private Method method;
+	private String signature;
+	private Check checkAnnotation;
+	private Set<String> selectedCategories;
+
+	protected MethodWrapper(ICheckValidator validator, Method method, Set<String> selectedCategories) {
+		Assert.isNotNull(validator);
+		Assert.isNotNull(method);
+		Assert.isNotNull(selectedCategories);
+
 		this.validator = validator;
 		this.method = method;
 		this.selectedCategories = selectedCategories;
@@ -51,12 +71,12 @@ public class MethodWrapper {
 		return method;
 	}
 
-	public String getConstraint() {
+	public String getAnnotatedConstraint() {
 		return checkAnnotation.constraint();
 	}
 
-	public String[] getCategories() {
-		return checkAnnotation.categories();
+	public Set<String> getAnnotatedCategories() {
+		return getAnnotatedCategories(checkAnnotation);
 	}
 
 	public boolean matches(Class<?> param) {
@@ -76,28 +96,22 @@ public class MethodWrapper {
 				return;
 			}
 
-			Set<String> annotatedCategoriesSet = null;
-			String[] categories = getCategories();
-			if (categories.length == 1 && categories[0].isEmpty()) {
-				annotatedCategoriesSet = new HashSet<String>();
-			} else {
-				annotatedCategoriesSet = new HashSet<String>(Arrays.asList(categories));
-			}
-			Set<String> selectedCategoriesSet = new HashSet<String>(Arrays.asList(selectedCategories));
-
+			Set<String> categories = new HashSet<String>();
+			categories.addAll(selectedCategories);
 			// If no categories are specified in the check method's @Check annotation, invoke the check method on all
 			// categories as per the underlying constraint in the check catalog; otherwise invoke the check method on
 			// the intersection of categories provided by the user, and the categories defined in the check
 			// catalog.
-			if (!annotatedCategoriesSet.isEmpty()) {
-				selectedCategoriesSet.retainAll(annotatedCategoriesSet);
+			Set<String> annotatedCategories = getAnnotatedCategories();
+			if (!annotatedCategories.isEmpty()) {
+				categories.retainAll(annotatedCategories);
 			}
-			// go ahead if scope is not empty or if validator has no check catalog
-			if (!selectedCategoriesSet.isEmpty() || validator.getCheckCatalogHelper().getCatalog() == null) {
+			// Go ahead if scope is not empty or if validator has no check catalog
+			if (!categories.isEmpty() || validator.getCheckCatalogHelper().getCatalog() == null) {
 				try {
 					state.currentMethod = method;
 					state.currentCheckType = checkAnnotation.value();
-					state.constraint = getConstraint();
+					state.constraint = getAnnotatedConstraint();
 					method.setAccessible(true);
 					method.invoke(validator, state.currentObject);
 

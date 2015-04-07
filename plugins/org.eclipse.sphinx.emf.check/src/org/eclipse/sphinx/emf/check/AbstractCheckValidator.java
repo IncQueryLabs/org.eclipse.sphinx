@@ -11,6 +11,7 @@
  *     itemis - Initial API and implementation
  *     itemis - [457521] Check MethodWrapper should be null safe wrt instance.getFilter()
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
+ *     itemis - [463895] org.eclipse.sphinx.emf.check.AbstractCheckValidator.validate(EClass, EObject, DiagnosticChain, Map<Object, Object>) throws NPE
  *
  * </copyright>
  */
@@ -20,6 +21,7 @@ import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +42,6 @@ import org.eclipse.sphinx.emf.util.IWrapper;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Sets;
 
 /**
  * An abstract implementation of a check-based validator. Depending on the type of the object under validation, the set
@@ -51,7 +52,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	private int NO_INDEX = -1;
 
-	private volatile Set<MethodWrapper> checkMethods = null;
+	private volatile List<MethodWrapper> checkMethods = null;
 
 	private final ThreadLocal<CheckValidatorState> state;
 
@@ -118,65 +119,59 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		state.currentObject = object;
 	}
 
-	private List<MethodWrapper> collectMethods(String[] selectedCategories) {
+	private List<MethodWrapper> collectMethods(Set<String> selectedCategories) {
 		List<MethodWrapper> checkMethods = new ArrayList<MethodWrapper>();
-		Set<Class<?>> visitedClasses = new HashSet<Class<?>>(4);
-		collectMethods(this, getClass(), selectedCategories, visitedClasses, checkMethods);
+		Set<Class<?>> visitedValidatorTypes = new HashSet<Class<?>>();
+		collectMethods(this, getClass(), selectedCategories, visitedValidatorTypes, checkMethods);
 		return checkMethods;
 	}
 
-	private void collectMethods(ICheckValidator validator, Class<? extends ICheckValidator> clazz, String[] selectedCategories,
-			Collection<Class<?>> visitedClasses, Collection<MethodWrapper> result) {
-		if (visitedClasses.contains(clazz)) {
-			return;
-		}
-		collectMethodsImpl(validator, clazz, selectedCategories, visitedClasses, result);
-		Class<?> k = clazz;
-		while (k.isAssignableFrom(ICheckValidator.class)) {
-			ComposedChecks checks = k.getAnnotation(ComposedChecks.class);
-			if (checks != null) {
-				for (Class<? extends ICheckValidator> external : checks.validators()) {
-					collectMethods(null, external, selectedCategories, visitedClasses, result);
-				}
-			}
-			k = k.getSuperclass();
-		}
-	}
-
 	@SuppressWarnings("unchecked")
-	private void collectMethodsImpl(ICheckValidator instance, Class<? extends ICheckValidator> clazz, String[] selectedCategories,
-			Collection<Class<?>> visitedClasses, Collection<MethodWrapper> result) {
-		if (!visitedClasses.add(clazz)) {
+	private void collectMethods(ICheckValidator validator, Class<? extends ICheckValidator> validatorType, Set<String> selectedCategories,
+			Collection<Class<?>> visitedValidatorTypes, Collection<MethodWrapper> result) {
+		Assert.isNotNull(validatorType);
+		Assert.isNotNull(visitedValidatorTypes);
+		Assert.isNotNull(result);
+
+		if (!visitedValidatorTypes.add(validatorType)) {
 			return;
 		}
-		ICheckValidator instanceToUse;
-		instanceToUse = instance;
-		if (instanceToUse == null) {
-			instanceToUse = newInstance(clazz);
+		if (validator == null) {
+			try {
+				validator = validatorType.newInstance();
+			} catch (InstantiationException | IllegalAccessException ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+				return;
+			}
 		}
-		Method[] methods = clazz.getDeclaredMethods();
+
+		Method[] methods = validatorType.getDeclaredMethods();
 		for (Method method : methods) {
+			// Current method being a check method, i.e. a method annotated with @Check and having one parameter?
 			Check annotation = method.getAnnotation(Check.class);
 			if (annotation != null && method.getParameterTypes().length == 1) {
-				String[] categories = annotation.categories();
-				// If no categories for the check annotation, Other category should be selected to add this method to
-				// the result.(https://bugs.eclipse.org/bugs/show_bug.cgi?id=458982)
-				if (categories.length == 1 && categories[0].isEmpty()) {
-					if (isOtherCategorySelected(selectedCategories)) {
-						result.add(createMethodWrapper(instanceToUse, method, selectedCategories));
-					}
+				// FIXME This should not be decided only based on the annotated categories but take also the categories
+				// from the check catalog into account
+				Set<String> categories = MethodWrapper.getAnnotatedCategories(annotation);
+				if (!categories.isEmpty()) {
+					result.add(createMethodWrapper(validator, method, selectedCategories));
 				} else {
-					result.add(createMethodWrapper(instanceToUse, method, selectedCategories));
+					// Retain this method if "Other" category is selected
+					if (isOtherCategorySelected(selectedCategories)) {
+						result.add(createMethodWrapper(validator, method, selectedCategories));
+					}
 				}
 			}
 		}
-		Class<?> superClass = clazz.getSuperclass();
+		Class<?> superClass = validatorType.getSuperclass();
 		if (superClass != null && superClass.isAssignableFrom(ICheckValidator.class)) {
-			collectMethodsImpl(instanceToUse, (Class<ICheckValidator>) superClass, selectedCategories, visitedClasses, result);
+			collectMethods(validator, (Class<ICheckValidator>) superClass, selectedCategories, visitedValidatorTypes, result);
 		}
 	}
 
-	private boolean isIntrinsicCategorySelected(String[] selectedCategories) {
+	private boolean isIntrinsicCategorySelected(Set<String> selectedCategories) {
+		Assert.isNotNull(selectedCategories);
+
 		for (String categoryId : selectedCategories) {
 			if (categoryId.equals(IValidationConstants.CATEGORY_ID_INTRINSIC)) {
 				return true;
@@ -185,7 +180,9 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		return false;
 	}
 
-	private boolean isOtherCategorySelected(String[] selectedCategories) {
+	private boolean isOtherCategorySelected(Set<String> selectedCategories) {
+		Assert.isNotNull(selectedCategories);
+
 		for (String categoryId : selectedCategories) {
 			if (categoryId.equals(IValidationConstants.CATEGORY_ID_OTHER)) {
 				return true;
@@ -194,20 +191,8 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		return false;
 	}
 
-	private MethodWrapper createMethodWrapper(ICheckValidator instanceToUse, Method method, String[] selectedCategories) {
-		return new MethodWrapper(instanceToUse, method, selectedCategories);
-	}
-
-	private ICheckValidator newInstance(Class<? extends ICheckValidator> clazz) {
-		ICheckValidator instanceToUse = null;
-		try {
-			instanceToUse = clazz.newInstance();
-		} catch (InstantiationException ex) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-		} catch (IllegalAccessException ex) {
-			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-		}
-		return instanceToUse;
+	private MethodWrapper createMethodWrapper(ICheckValidator validator, Method method, Set<String> selectedCategories) {
+		return new MethodWrapper(validator, method, selectedCategories);
 	}
 
 	@Override
@@ -217,13 +202,12 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	@Override
 	public boolean validate(EClass eClass, EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
-		String[] selectedCategories = (String[]) context.get(ICheckValidator.OPTION_CATEGORIES);
+		Set<String> selectedCategories = getCategoriesFromContext(context);
+
 		if (checkMethods == null) {
 			synchronized (this) {
 				if (checkMethods == null) {
-					Set<MethodWrapper> checkMethods = Sets.newLinkedHashSet();
-					checkMethods.addAll(collectMethods(selectedCategories));
-					this.checkMethods = checkMethods;
+					checkMethods = collectMethods(selectedCategories);
 				}
 			}
 		}
@@ -240,10 +224,21 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		}
 
 		for (MethodWrapper method : methodsForType.get(getMethodWrapperType(eObject))) {
+			// FIXME log all exceptions here
 			method.invoke(state);
 		}
 
 		return !state.hasErrors;
+	}
+
+	protected Set<String> getCategoriesFromContext(Map<Object, Object> context) {
+		Object categories = context.get(ICheckValidator.OPTION_CATEGORIES);
+		if (categories instanceof Set<?>) {
+			@SuppressWarnings("unchecked")
+			Set<String> castedCategories = (Set<String>) categories;
+			return castedCategories;
+		}
+		return Collections.emptySet();
 	}
 
 	@Override

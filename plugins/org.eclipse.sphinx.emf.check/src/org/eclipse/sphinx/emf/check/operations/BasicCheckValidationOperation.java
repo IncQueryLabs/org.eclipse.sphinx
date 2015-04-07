@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [463895] org.eclipse.sphinx.emf.check.AbstractCheckValidator.validate(EClass, EObject, DiagnosticChain, Map<Object, Object>) throws NPE
  *
  * </copyright>
  */
@@ -67,7 +68,7 @@ public class BasicCheckValidationOperation extends AbstractWorkspaceOperation {
 				@Override
 				public void run() {
 					Map<Object, Object> contextEntries = new HashMap<Object, Object>();
-					contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories.toArray(new String[categories.size()]));
+					contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories);
 					for (EObject input : inputs) {
 						Diagnostic diagnostic = Diagnostician.INSTANCE.validate(input, contextEntries);
 						updateProblemMarkers(input, diagnostic);

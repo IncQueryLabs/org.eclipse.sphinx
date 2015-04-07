@@ -10,6 +10,7 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
+ *     itemis - [463895] org.eclipse.sphinx.emf.check.AbstractCheckValidator.validate(EClass, EObject, DiagnosticChain, Map<Object, Object>) throws NPE
  *
  * </copyright>
  */
@@ -38,16 +39,7 @@ import org.eclipse.sphinx.emf.mwe.dynamic.components.IModelWorkflowComponent;
  */
 public abstract class AbstractCheckWorkflowComponent extends AbstractModelWorkflowComponent implements IModelWorkflowComponent {
 
-	// private ICheckValidator validator = null;
-
 	protected Set<String> categories = new HashSet<String>();
-
-	// public ICheckValidator getValidator(EPackage ePackage) throws CoreException {
-	// if (validator == null) {
-	// validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
-	// }
-	// return validator;
-	// }
 
 	@Override
 	protected void invokeInternal(WorkflowContext ctx, ProgressMonitor monitor, Issues issues) {
@@ -59,7 +51,7 @@ public abstract class AbstractCheckWorkflowComponent extends AbstractModelWorkfl
 
 					// Put the categories in the context entries
 					Map<Object, Object> contextEntries = new HashMap<Object, Object>();
-					contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories.toArray(new String[categories.size()]));
+					contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories);
 
 					// Run validation (use standard validation entry point)
 					Diagnostic diagnostic = Diagnostician.INSTANCE.validate(model, contextEntries);
