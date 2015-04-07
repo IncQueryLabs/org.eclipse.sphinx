@@ -10,6 +10,7 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [454532] NPE in BasicWorkflowRunnerApplication
+ *     itemis - [463978] org.eclipse.sphinx.emf.mwe.dynamic.headless.BasicWorkflowRunnerApplication.interrogate() handling of null URI
  *
  * </copyright>
  */
@@ -128,32 +129,27 @@ public class BasicWorkflowRunnerApplication extends AbstractCLIApplication {
 		String modelOptionValue = commandLine.getOptionValue(IWorkflowRunnerCLIConstants.OPTION_MODEL);
 		boolean skipSaveOption = commandLine.hasOption(IWorkflowRunnerCLIConstants.OPTION_SKIP_SAVE);
 
-		final URI modelURI = modelOptionValue != null ? EcorePlatformUtil.createURI(new Path(modelOptionValue).makeAbsolute()) : null;
+		final URI modelURI = getModelURI(modelOptionValue);
 		if (modelURI != null) {
+			// Check if model resource exists
 			URI uri = modelURI.trimFragment();
-			// Validate model resource existence
 			if (!EcoreResourceUtil.exists(uri)) {
 				throw new FileNotFoundException(NLS.bind(Messages.cliError_modelResourceDoesNotExist, uri.toPlatformString(true)));
 			}
 		}
 
 		// Create the workflow operation
-		IWorkflowRunnerOperation operation = createWorkflowRunnerOperation(getWorkflow(workflowOptionValue));
-		operation.getModelURIs().add(modelURI);
+		Object workflow = getWorkflow(workflowOptionValue);
+		IWorkflowRunnerOperation operation = createWorkflowRunnerOperation(workflow);
+		if (modelURI != null) {
+			operation.getModelURIs().add(modelURI);
+		}
 		operation.setAutoSave(!skipSaveOption);
 
 		// Run workflow operation
 		operation.run(createProgressMonitor());
 
 		return ERROR_NO;
-	}
-
-	protected IProgressMonitor createProgressMonitor() {
-		return new NullProgressMonitor();
-	}
-
-	protected BasicWorkflowRunnerOperation createWorkflowRunnerOperation(Object workflow) {
-		return new BasicWorkflowRunnerOperation(IWorkflowRunnerCLIConstants.APPLICATION_NAME, workflow);
 	}
 
 	protected Object getWorkflow(String workflowOptionValue) throws ClassNotFoundException, FileNotFoundException {
@@ -177,5 +173,17 @@ public class BasicWorkflowRunnerApplication extends AbstractCLIApplication {
 			}
 			return workflowFile;
 		}
+	}
+
+	protected URI getModelURI(String modelOptionValue) {
+		return modelOptionValue != null ? EcorePlatformUtil.createURI(new Path(modelOptionValue).makeAbsolute()) : null;
+	}
+
+	protected BasicWorkflowRunnerOperation createWorkflowRunnerOperation(Object workflow) {
+		return new BasicWorkflowRunnerOperation(IWorkflowRunnerCLIConstants.APPLICATION_NAME, workflow);
+	}
+
+	protected IProgressMonitor createProgressMonitor() {
+		return new NullProgressMonitor();
 	}
 }
