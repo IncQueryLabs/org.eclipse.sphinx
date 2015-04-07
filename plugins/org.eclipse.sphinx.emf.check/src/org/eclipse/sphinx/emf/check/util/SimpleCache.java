@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.check;
+package org.eclipse.sphinx.emf.check.util;
 
 import java.util.Map;
 import java.util.WeakHashMap;

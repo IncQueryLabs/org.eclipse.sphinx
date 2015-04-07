@@ -27,10 +27,10 @@ import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.sphinx.emf.check.DiagnosticLocation;
 import org.eclipse.sphinx.emf.check.ICheckValidationMarker;
-import org.eclipse.sphinx.emf.check.SourceLocation;
 import org.eclipse.sphinx.emf.check.internal.messages.Messages;
+import org.eclipse.sphinx.emf.check.util.DiagnosticLocation;
+import org.eclipse.sphinx.emf.check.util.SourceLocation;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 

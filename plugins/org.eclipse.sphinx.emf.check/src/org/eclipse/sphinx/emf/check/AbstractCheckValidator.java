@@ -37,7 +37,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.sphinx.emf.check.catalog.Severity;
 import org.eclipse.sphinx.emf.check.internal.Activator;
+import org.eclipse.sphinx.emf.check.internal.MethodWrapper;
+import org.eclipse.sphinx.emf.check.util.DiagnosticLocation;
 import org.eclipse.sphinx.emf.check.util.ExtendedEObjectValidator;
+import org.eclipse.sphinx.emf.check.util.SimpleCache;
+import org.eclipse.sphinx.emf.check.util.SourceLocation;
 import org.eclipse.sphinx.emf.util.IWrapper;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
@@ -59,17 +63,6 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	private final CheckCatalogHelper checkCatalogHelper;
 
 	private ExtendedEObjectValidator extendedEObjectValidator;
-
-	protected static class CheckValidatorState {
-		public DiagnosticChain chain = null;
-		public Object currentObject = null;
-		public Method currentMethod = null;
-		public CheckMode checkMode = null;
-		public CheckType currentCheckType = null;
-		public boolean hasErrors = false;
-		public Map<Object, Object> context;
-		public String constraint = null;
-	}
 
 	protected static class CheckValidatorStateAccess {
 

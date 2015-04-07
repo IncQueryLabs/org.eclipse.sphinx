@@ -15,7 +15,6 @@
 package org.eclipse.sphinx.emf.check;
 
 import org.eclipse.emf.ecore.EValidator;
-import org.eclipse.sphinx.emf.check.AbstractCheckValidator.CheckValidatorState;
 
 public interface ICheckValidator extends EValidator {
 

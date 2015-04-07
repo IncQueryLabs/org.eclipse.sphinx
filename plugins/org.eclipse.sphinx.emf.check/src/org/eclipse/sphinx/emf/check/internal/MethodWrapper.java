@@ -13,7 +13,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.check;
+package org.eclipse.sphinx.emf.check.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,7 +23,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.sphinx.emf.check.AbstractCheckValidator.CheckValidatorState;
+import org.eclipse.sphinx.emf.check.Check;
+import org.eclipse.sphinx.emf.check.CheckValidatorState;
+import org.eclipse.sphinx.emf.check.ICheckValidator;
 
 public class MethodWrapper {
 
@@ -47,7 +49,7 @@ public class MethodWrapper {
 	private Check checkAnnotation;
 	private Set<String> selectedCategories;
 
-	protected MethodWrapper(ICheckValidator validator, Method method, Set<String> selectedCategories) {
+	public MethodWrapper(ICheckValidator validator, Method method, Set<String> selectedCategories) {
 		Assert.isNotNull(validator);
 		Assert.isNotNull(method);
 		Assert.isNotNull(selectedCategories);
@@ -107,6 +109,7 @@ public class MethodWrapper {
 				state.currentMethod = method;
 				state.currentCheckType = checkAnnotation.value();
 				state.constraint = getAnnotatedConstraint();
+				method.setAccessible(true);
 				method.invoke(validator, state.currentObject);
 			}
 		} finally {
