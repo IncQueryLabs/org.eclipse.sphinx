@@ -19,5 +19,5 @@ public interface ICheckValidationMarker {
 	/**
 	 * Check Validation problem marker type.
 	 */
-	String CHECK_VALIDATION_PROBLEM = "sphinx.emf.check.problemmarker"; //$NON-NLS-1$
+	String CHECK_VALIDATION_PROBLEM = "org.eclipse.sphinx.emf.check.checkvalidationproblemmarker"; //$NON-NLS-1$
 }

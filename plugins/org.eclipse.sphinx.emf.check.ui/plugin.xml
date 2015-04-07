@@ -233,7 +233,7 @@
                visible="true">
          </markerFieldReference>
          <markerTypeReference
-               id="sphinx.emf.check.problemmarker">
+               id="org.eclipse.sphinx.emf.check.checkvalidationproblemmarker">
          </markerTypeReference>
          <markerFieldReference
                id="org.eclipse.ui.ide.markerType"

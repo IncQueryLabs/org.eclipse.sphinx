@@ -18,10 +18,10 @@
 
 <plugin>
    <extension-point id="checkvalidators" name="org.eclipse.sphinx.emf.check" schema="schema/checkvalidators.exsd"/>
-   
+
    <extension
-         id="sphinx.emf.check.problemmarker"
-         name="%sphinx.emf.check.problemmarker.name"
+         id="checkvalidationproblemmarker"
+         name="%checkvalidationproblemmarker.name"
          point="org.eclipse.core.resources.markers">
       <super type="org.eclipse.emf.ecore.diagnostic"/>
       <persistent value="true" />
