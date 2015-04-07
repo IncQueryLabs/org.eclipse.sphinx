@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.check.ui.markers.tests;
 
 import org.eclipse.core.commands.AbstractHandler;

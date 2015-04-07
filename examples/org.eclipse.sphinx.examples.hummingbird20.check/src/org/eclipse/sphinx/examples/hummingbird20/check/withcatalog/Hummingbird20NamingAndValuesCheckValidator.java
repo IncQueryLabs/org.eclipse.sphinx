@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.examples.hummingbird20.check.withcatalog;
 
 import java.util.regex.Pattern;

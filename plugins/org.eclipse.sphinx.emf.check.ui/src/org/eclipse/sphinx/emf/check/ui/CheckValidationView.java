@@ -13,7 +13,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.check.ui;
 
 import java.util.HashSet;

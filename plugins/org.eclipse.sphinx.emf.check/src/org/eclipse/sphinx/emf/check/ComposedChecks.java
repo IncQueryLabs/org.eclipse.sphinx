@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.check;
 
 import java.lang.annotation.ElementType;

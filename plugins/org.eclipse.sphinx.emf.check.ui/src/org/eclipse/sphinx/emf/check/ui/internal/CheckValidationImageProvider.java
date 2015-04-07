@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.check.ui.internal;
 
 public class CheckValidationImageProvider {

@@ -13,7 +13,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.check.services;
 
 import java.util.ArrayList;

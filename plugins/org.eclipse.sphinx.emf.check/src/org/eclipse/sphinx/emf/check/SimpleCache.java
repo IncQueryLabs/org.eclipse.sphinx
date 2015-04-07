@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.check;
 
 import java.util.Map;
@@ -27,7 +26,7 @@ import com.google.common.base.Function;
  * A primitive cache implementation. The SimpleCache allows to cache lazily computable values. Subsequent calls to the
  * computation algorithm with equal parameters have to yield equal results. Attention: The algorithm may not depend on
  * itself in a circular manner. E.g. the following will lead to a stack overflow:
- * 
+ *
  * <pre>
  * SimpleCache&lt;K, V&gt; cache = new SimpleCache&lt;K, V&gt;(new Function&lt;K, V&gt;() {
  * 	public V apply(K k) {
@@ -41,12 +40,12 @@ import com.google.common.base.Function;
  * 	}
  * });
  * </pre>
- * 
+ *
  * The cache uses weak references to the keys but the values are strongly referenced. This leads to the conclusion, that
  * the computed values should not refer to the keys because no cache entry will be reclaimend automatically. In such
  * cases, clients have to discard the values for a key explicitly. Please note that {@link Function#apply(Object)} may
  * be invoked concurrently while the cache itself is threadsafe.
- * 
+ *
  * @author Sebastian Zarnekow - Initial contribution and API
  */
 public class SimpleCache<Key, Value> {

@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.platform.ui.handlers;
 
 import org.eclipse.core.commands.ExecutionEvent;

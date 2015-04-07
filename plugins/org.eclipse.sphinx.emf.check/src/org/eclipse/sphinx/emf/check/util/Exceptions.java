@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.check.util;
 
 import org.eclipse.emf.common.util.WrappedException;

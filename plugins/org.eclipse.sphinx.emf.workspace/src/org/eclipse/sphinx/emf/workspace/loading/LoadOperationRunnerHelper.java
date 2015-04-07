@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.workspace.loading;
 
 import org.eclipse.core.runtime.CoreException;

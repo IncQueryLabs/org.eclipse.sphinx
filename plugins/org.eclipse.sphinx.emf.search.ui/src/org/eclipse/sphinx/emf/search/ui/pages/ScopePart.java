@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.search.ui.pages;
 
 import org.eclipse.core.runtime.Assert;

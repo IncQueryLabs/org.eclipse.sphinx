@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.mwe.dynamic.ui;
 
 import org.eclipse.sphinx.emf.mwe.dynamic.ui.internal.Activator;

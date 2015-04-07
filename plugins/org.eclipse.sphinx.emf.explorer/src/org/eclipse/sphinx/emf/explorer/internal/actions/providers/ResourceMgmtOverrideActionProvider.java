@@ -7,10 +7,9 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     See4sys - copied from org.eclipse.ui.internal.navigator.resources.actions.ResourceMgmtActionProvider 
+ *     See4sys - copied from org.eclipse.ui.internal.navigator.resources.actions.ResourceMgmtActionProvider
  *               for overriding {@link CloseResourceAction}
  *******************************************************************************/
-
 package org.eclipse.sphinx.emf.explorer.internal.actions.providers;
 
 import java.lang.reflect.InvocationTargetException;
@@ -125,7 +124,7 @@ public class ResourceMgmtOverrideActionProvider extends CommonActionProvider {
 	 * <p>
 	 * No disabled action should be on the context menu.
 	 * </p>
-	 * 
+	 *
 	 * @param menu
 	 *            context menu to add actions to
 	 */
@@ -145,7 +144,7 @@ public class ResourceMgmtOverrideActionProvider extends CommonActionProvider {
 			if (next instanceof IProject) {
 				project = (IProject) next;
 			} else if (next instanceof IAdaptable) {
-				project = (IProject) ((IAdaptable) next).getAdapter(IProject.class);
+				project = ((IAdaptable) next).getAdapter(IProject.class);
 			}
 
 			if (project == null) {
@@ -189,7 +188,7 @@ public class ResourceMgmtOverrideActionProvider extends CommonActionProvider {
 
 	/**
 	 * Returns whether there are builders configured on the given project.
-	 * 
+	 *
 	 * @return <code>true</code> if it has builders, <code>false</code> if not, or if this could not be determined
 	 */
 	boolean hasBuilder(IProject project) {
@@ -217,7 +216,7 @@ public class ResourceMgmtOverrideActionProvider extends CommonActionProvider {
 
 		refreshAction = createRefreshAction(provider);
 		refreshAction.setDisabledImageDescriptor(getImageDescriptor("dlcl16/refresh_nav.gif"));//$NON-NLS-1$
-		refreshAction.setImageDescriptor(getImageDescriptor("elcl16/refresh_nav.gif"));//$NON-NLS-1$       
+		refreshAction.setImageDescriptor(getImageDescriptor("elcl16/refresh_nav.gif"));//$NON-NLS-1$
 		refreshAction.setActionDefinitionId("org.eclipse.ui.file.refresh"); //$NON-NLS-1$
 
 		buildAction = createBuildAction(provider);
@@ -229,7 +228,7 @@ public class ResourceMgmtOverrideActionProvider extends CommonActionProvider {
 	 * <p>
 	 * Clients may override this method if they need to use a custom implementation of {@link OpenResourceAction}.
 	 * </p>
-	 * 
+	 *
 	 * @param provider
 	 *            The {@link IShellProvider shell provider} for any dialogs that could be opened by the action.
 	 * @return The open resource action to be used.
@@ -243,7 +242,7 @@ public class ResourceMgmtOverrideActionProvider extends CommonActionProvider {
 	 * <p>
 	 * Clients may override this method if they need to use a custom implementation of {@link CloseResourceAction}.
 	 * </p>
-	 * 
+	 *
 	 * @param provider
 	 *            The {@link IShellProvider shell provider} for any dialogs that could be opened by the action.
 	 * @return The close resource action to be used.
@@ -257,7 +256,7 @@ public class ResourceMgmtOverrideActionProvider extends CommonActionProvider {
 	 * <p>
 	 * Clients may override this method if they need to use a custom implementation of {@link RefreshAction}.
 	 * </p>
-	 * 
+	 *
 	 * @param provider
 	 *            The {@link IShellProvider shell provider} for any dialogs that could be opened by the action.
 	 * @return The refresh action to be used.
@@ -313,7 +312,7 @@ public class ResourceMgmtOverrideActionProvider extends CommonActionProvider {
 	 * <p>
 	 * Clients may override this method if they need to use a custom implementation of {@link BuildAction}.
 	 * </p>
-	 * 
+	 *
 	 * @param provider
 	 *            The {@link IShellProvider shell provider} for any dialogs that could be opened by the action.
 	 * @return The build action to be used.

@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.check.services;
 
 import org.eclipse.core.resources.IResource;
@@ -22,11 +21,11 @@ import org.eclipse.emf.ecore.resource.Resource;
 
 public interface ICheckValidationProblemMarkerFactory {
 
-	public void createMarker(IResource resource, Diagnostic diagnostic) throws CoreException;
+	void createMarker(IResource resource, Diagnostic diagnostic) throws CoreException;
 
-	public void createMarker(IResource resource, Diagnostic diagnostic, String markerType) throws CoreException;
+	void createMarker(IResource resource, Diagnostic diagnostic, String markerType) throws CoreException;
 
-	public void deleteMarkers(Resource resource) throws CoreException;
+	void deleteMarkers(Resource resource) throws CoreException;
 
-	public void deleteMarkers(Resource resource, String markerType) throws CoreException;
+	void deleteMarkers(Resource resource, String markerType) throws CoreException;
 }
