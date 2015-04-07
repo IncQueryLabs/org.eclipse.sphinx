@@ -224,8 +224,11 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		}
 
 		for (MethodWrapper method : methodsForType.get(getMethodWrapperType(eObject))) {
-			// FIXME log all exceptions here
-			method.invoke(state);
+			try {
+				method.invoke(state);
+			} catch (Exception ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			}
 		}
 
 		return !state.hasErrors;

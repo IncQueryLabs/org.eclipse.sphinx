@@ -24,10 +24,6 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.sphinx.emf.check.AbstractCheckValidator.CheckValidatorState;
-import org.eclipse.sphinx.emf.check.internal.Activator;
-import org.eclipse.sphinx.emf.check.util.Exceptions;
-import org.eclipse.sphinx.emf.check.util.GuardException;
-import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 public class MethodWrapper {
 
@@ -83,7 +79,7 @@ public class MethodWrapper {
 		return method.getParameterTypes()[0].isAssignableFrom(param);
 	}
 
-	public void invoke(CheckValidatorState state) {
+	public void invoke(CheckValidatorState state) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (validator.getState().get() != null && validator.getState().get() != state) {
 			throw new IllegalStateException("State is already assigned."); //$NON-NLS-1$
 		}
@@ -108,34 +104,15 @@ public class MethodWrapper {
 			}
 			// Go ahead if scope is not empty or if validator has no check catalog
 			if (!categories.isEmpty() || validator.getCheckCatalogHelper().getCatalog() == null) {
-				try {
-					state.currentMethod = method;
-					state.currentCheckType = checkAnnotation.value();
-					state.constraint = getAnnotatedConstraint();
-					method.setAccessible(true);
-					method.invoke(validator, state.currentObject);
-
-				} catch (IllegalArgumentException e) {
-					PlatformLogUtil.logAsError(Activator.getPlugin(), e);
-				} catch (IllegalAccessException e) {
-					PlatformLogUtil.logAsError(Activator.getPlugin(), e);
-				} catch (InvocationTargetException e) {
-					Throwable targetException = e.getTargetException();
-					handleInvocationTargetException(targetException, state);
-				}
+				state.currentMethod = method;
+				state.currentCheckType = checkAnnotation.value();
+				state.constraint = getAnnotatedConstraint();
+				method.invoke(validator, state.currentObject);
 			}
 		} finally {
 			if (wasNull) {
 				validator.getState().set(null);
 			}
-		}
-	}
-
-	protected void handleInvocationTargetException(Throwable targetException, CheckValidatorState state) {
-		// ignore GuardException, check is just not evaluated if guard is false
-		// ignore NullPointerException, as not having to check for NPEs all the time is a convenience feature
-		if (!(targetException instanceof GuardException) && !(targetException instanceof NullPointerException)) {
-			Exceptions.throwUncheckedException(targetException);
 		}
 	}
 
