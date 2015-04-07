@@ -44,20 +44,6 @@ public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckVal
 	private static final Pattern ILLEGAL_CHARACTERS_PATTERN = Pattern.compile("[ \\t\\.,;]"); //$NON-NLS-1$
 
 	/**
-	 * In the following method, the @Check annotation references a constraint with Id equals to
-	 * "ApplicationNameNotValid" in the associated check catalog. In the check catalog, the constraint is applicable for
-	 * the set {"Category1", "Category2"}. The scope of the constraint for this validator, as specified in the
-	 * annotation below, is also { "Category1", "Category2" }, which means the following method is called when the user
-	 * selects either Category1, Category2, or both.
-	 *
-	 * @param application
-	 */
-	@Check(constraint = "ApplicationNameNotValid", categories = { "Category1", "Category2" })
-	void checkApplicationNameForAllCategories(Application application) {
-		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, "(part of Category1, Category2, as per check catalog and annotation)"); //$NON-NLS-1$
-	}
-
-	/**
 	 * If no categories are explicitly specified in the @Check annotation, the associated constraint is supposed to be
 	 * applicable for all the categories referenced by the constraint in the associated check catalog. For example, the
 	 * following annotation (constraint = "ApplicationNameNotValid") is equivalent to (constraint =
@@ -68,7 +54,23 @@ public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckVal
 	// FIXME Checks without any annotated category are completely ignored
 	@Check(constraint = "ApplicationNameNotValid")
 	void checkApplicationName(Application application) {
-		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, "(part of Category1, Category2, as per check catalog)"); //$NON-NLS-1$
+		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME,
+				"(Case #1: part of Category1 and Category2 as per check catalog and blank check annotation)"); //$NON-NLS-1$
+	}
+
+	/**
+	 * In the following method, the @Check annotation references a constraint with Id equals to
+	 * "ApplicationNameNotValid" in the associated check catalog. In the check catalog, the constraint is applicable for
+	 * the set {"Category1", "Category2"}. The scope of the constraint for this validator, as specified in the
+	 * annotation below, is also { "Category1", "Category2" }, which means the following method is called when the user
+	 * selects either Category1, Category2, or both.
+	 *
+	 * @param application
+	 */
+	@Check(constraint = "ApplicationNameNotValid", categories = { "Category1", "Category2" })
+	void checkApplicationNameForCategories1And2(Application application) {
+		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME,
+				"(Case #2: part of Category1 and Category2 as per check catalog and check annotation)"); //$NON-NLS-1$
 	}
 
 	/**
@@ -80,18 +82,31 @@ public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckVal
 	@Check(constraint = "ApplicationNameNotValid", categories = { "Category1" })
 	void checkApplicationNameForCategory1(Application application) {
 		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME,
-				"(only part of Category1, as per check catalog and narrowed down by check annotation)"); //$NON-NLS-1$
+				"(Case #3: only part of Category1 as per check catalog and narrowed down by check annotation)"); //$NON-NLS-1$
 	}
 
 	/**
-	 * This method is *never* called by this validator because Category3 does not exist in the catalog.
+	 * This method is called by this validator only when the user selects "Category2" even though the associated
+	 * constraint is applicable for the set {"Category1", "Category2"}. The annotation of "Category3" does not exist in
+	 * the check catalog and therefore has no effect.
+	 *
+	 * @param application
+	 */
+	@Check(constraint = "ApplicationNameNotValid", categories = { "Category2", "Category3" })
+	void checkApplicationNameForCategory2And3(Application application) {
+		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME,
+				"(Case #4: only part of Category2 as per intersection of check catalog with partly disjunct check annotation)"); //$NON-NLS-1$
+	}
+
+	/**
+	 * This method is *never* called by this validator because "Category3" does not exist in the catalog.
 	 *
 	 * @param application
 	 */
 	@Check(constraint = "ApplicationNameNotValid", categories = { "Category3" })
 	void checkApplicationNameForCategory3(Application application) {
 		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME,
-				"(part of Category3, not defined in check catalog and therefore invalid check annotation)"); //$NON-NLS-1$
+				"(Case #5: not part of any category due to check catalog and check annotation being completely disjunct)"); //$NON-NLS-1$
 	}
 
 	/**
