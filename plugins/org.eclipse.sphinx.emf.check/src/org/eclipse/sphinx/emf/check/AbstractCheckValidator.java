@@ -176,9 +176,9 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		}
 	}
 
-	private boolean isEMFIntrinsicCheckCategorySelected(String[] selectedCategories) {
+	private boolean isIntrinsicCategorySelected(String[] selectedCategories) {
 		for (String categoryId : selectedCategories) {
-			if (categoryId.equals(IValidationConstants.intrinsic_model_integrity_checks_category_id)) {
+			if (categoryId.equals(IValidationConstants.CATEGORY_ID_INTRINSIC)) {
 				return true;
 			}
 		}
@@ -187,7 +187,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	private boolean isOtherCategorySelected(String[] selectedCategories) {
 		for (String categoryId : selectedCategories) {
-			if (categoryId.equals(IValidationConstants.other_category_id)) {
+			if (categoryId.equals(IValidationConstants.CATEGORY_ID_OTHER)) {
 				return true;
 			}
 		}
@@ -235,7 +235,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		state.checkMode = checkMode;
 		state.context = context;
 
-		if (isEMFIntrinsicCheckCategorySelected(selectedCategories)) {
+		if (isIntrinsicCategorySelected(selectedCategories)) {
 			extendedEObjectValidator.validate(eObject.eClass().getClassifierID(), eObject, diagnostics, context);
 		}
 

@@ -37,8 +37,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sphinx.emf.check.ICheckValidationMarker;
-import org.eclipse.sphinx.emf.check.IValidationConstants;
 import org.eclipse.sphinx.emf.check.internal.Activator;
+import org.eclipse.sphinx.emf.check.internal.messages.Messages;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
@@ -67,8 +67,9 @@ public class CheckProblemMarkerService {
 		return new CheckProblemMarkerFactory();
 	}
 
+	// FIXME Use org.eclipse.sphinx.platform.resources.MarkerJob instead of local WorkspaceJob instance
 	public void updateProblemMarkers(EObject validationInput, final Diagnostic diagnostic) {
-		WorkspaceJob job = new WorkspaceJob(IValidationConstants.HANDLE_PROBLEM_MARKERS_JOB_LABEL) {
+		WorkspaceJob job = new WorkspaceJob(Messages.job_handlingDiagnostics_label) {
 			@Override
 			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 				try {

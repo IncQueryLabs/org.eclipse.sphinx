@@ -44,7 +44,7 @@ public class BasicCheckValidationOperation extends AbstractWorkspaceOperation {
 	private Set<String> categories;
 
 	public BasicCheckValidationOperation(List<EObject> inputs, Set<String> categories) {
-		super(Messages.label_basicCheckValidationOperation);
+		super(Messages.operation_checkValidation_label);
 		Assert.isNotNull(inputs);
 		Assert.isNotNull(categories);
 

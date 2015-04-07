@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.emf.check;
 
 import java.lang.annotation.ElementType;
@@ -29,5 +28,4 @@ public @interface Check {
 	String constraint() default "";
 
 	String[] categories() default "";
-
 }

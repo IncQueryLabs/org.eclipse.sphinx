@@ -20,8 +20,9 @@ public class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.emf.check.internal.messages.Messages"; //$NON-NLS-1$
 
-	public static String label_basicCheckValidationOperation;
+	public static String operation_checkValidation_label;
 	public static String noMessageAvailableForThisMarker;
+	public static String job_handlingDiagnostics_label;
 
 	static {
 		// initialize resource bundle

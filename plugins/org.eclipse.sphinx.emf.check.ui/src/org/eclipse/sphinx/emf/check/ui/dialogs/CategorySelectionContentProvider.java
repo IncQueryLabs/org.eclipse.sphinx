@@ -64,14 +64,14 @@ public class CategorySelectionContentProvider implements IStructuredContentProvi
 
 	protected Category getOtherCategory() {
 		if (otherCategory == null) {
-			otherCategory = createCategory(IValidationConstants.other_category_id, Messages.other_category_label, Messages.other_category_desc);
+			otherCategory = createCategory(IValidationConstants.CATEGORY_ID_OTHER, Messages.other_category_label, Messages.other_category_desc);
 		}
 		return otherCategory;
 	}
 
 	protected Category getIntrinsicChecksCategory() {
 		if (intrinsicChecksCategory == null) {
-			intrinsicChecksCategory = createCategory(IValidationConstants.intrinsic_model_integrity_checks_category_id,
+			intrinsicChecksCategory = createCategory(IValidationConstants.CATEGORY_ID_INTRINSIC,
 					Messages.intrinsic_model_integrity_checks_category_label, Messages.intrinsic_model_integrity_checks_category_desc);
 		}
 		return intrinsicChecksCategory;

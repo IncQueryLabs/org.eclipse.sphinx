@@ -20,7 +20,7 @@ import org.eclipse.sphinx.emf.check.AbstractCheckValidator.CheckValidatorState;
 public interface ICheckValidator extends EValidator {
 
 	/**
-	 * An option to be used to provide the categories, as a table of String, for the validation context.
+	 * An option to be used to provide the categories, as a Set of String, for the validation context.
 	 */
 	String OPTION_CATEGORIES = "CATEGORIES"; //$NON-NLS-1$
 
