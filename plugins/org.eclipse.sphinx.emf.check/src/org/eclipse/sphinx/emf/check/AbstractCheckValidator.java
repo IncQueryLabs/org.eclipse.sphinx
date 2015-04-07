@@ -158,8 +158,9 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			// Current method being a check method, i.e. a method annotated with @Check and having one parameter?
 			Check annotation = method.getAnnotation(Check.class);
 			if (annotation != null && method.getParameterTypes().length == 1) {
-				// FIXME This should not be decided only based on the annotated categories but take also the categories
-				// from the check catalog into account
+				// FIXME Applicability to categories must be decided upon invocation of the check method wrapper but
+				// not here. Otherwise the decision is taken based on categories selected at the very first time and
+				// will never ever change again because the result will get cached.
 				Set<String> categories = CheckMethodWrapper.getAnnotatedCategories(annotation);
 				if (!categories.isEmpty()) {
 					result.add(createCheckMethodWrapper(validator, method, selectedCategories));
@@ -212,6 +213,8 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	public boolean validate(EClass eClass, EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		Set<String> selectedCategories = getCategoriesFromContext(context);
 
+		// FIXME Don't pass selected categories via collect methods to CheckMethodWrapper but pass them to invoke
+		// method. Otherwise the categories selected at the very first time get cached and will never ever change again.
 		if (checkMethods == null) {
 			synchronized (this) {
 				if (checkMethods == null) {
