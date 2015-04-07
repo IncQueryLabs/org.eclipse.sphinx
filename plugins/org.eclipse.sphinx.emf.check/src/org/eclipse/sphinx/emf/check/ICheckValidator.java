@@ -27,5 +27,4 @@ public interface ICheckValidator extends EValidator {
 	CheckCatalogHelper getCheckCatalogHelper();
 
 	ThreadLocal<CheckValidatorState> getState();
-
 }

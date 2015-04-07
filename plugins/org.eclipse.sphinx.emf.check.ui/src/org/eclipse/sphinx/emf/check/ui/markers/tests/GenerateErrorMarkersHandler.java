@@ -29,7 +29,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.sphinx.emf.check.IValidationConstants;
+import org.eclipse.sphinx.emf.check.ICheckValidationMarker;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.eclipse.ui.views.markers.MarkerViewUtil;
 
@@ -54,7 +54,7 @@ public class GenerateErrorMarkersHandler extends AbstractHandler {
 						attribs.put(IMarker.MESSAGE, "Error message " + i); //$NON-NLS-1$
 						attribs.put(IMarker.LOCATION, "Location " + i); //$NON-NLS-1$
 						attribs.put("testAttribute", String.valueOf(i / 2)); //$NON-NLS-1$
-						MarkerUtilities.createMarker(root, attribs, IValidationConstants.MODEL_VALIDATION_PROBLEM);
+						MarkerUtilities.createMarker(root, attribs, ICheckValidationMarker.CHECK_VALIDATION_PROBLEM);
 					}
 				} catch (CoreException e) {
 					return e.getStatus();

@@ -18,11 +18,6 @@ package org.eclipse.sphinx.emf.check;
 public class IValidationConstants {
 
 	/**
-	 * Validation problem marker type.
-	 */
-	public static final String MODEL_VALIDATION_PROBLEM = "sphinx.emf.validation.problem.marker"; //$NON-NLS-1$
-
-	/**
 	 * Label of the Problem markers handler job
 	 */
 	public static final String HANDLE_PROBLEM_MARKERS_JOB_LABEL = "Handling diagnostics"; //$NON-NLS-1$

@@ -23,7 +23,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.sphinx.emf.check.IValidationConstants;
+import org.eclipse.sphinx.emf.check.ICheckValidationMarker;
 import org.eclipse.ui.statushandlers.StatusManager;
 
 public class DeleteErrorMarkersHandler extends AbstractHandler {
@@ -32,7 +32,7 @@ public class DeleteErrorMarkersHandler extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-			IMarker[] markers = root.findMarkers(IValidationConstants.MODEL_VALIDATION_PROBLEM, false, IResource.DEPTH_INFINITE);
+			IMarker[] markers = root.findMarkers(ICheckValidationMarker.CHECK_VALIDATION_PROBLEM, false, IResource.DEPTH_INFINITE);
 			for (IMarker marker : markers) {
 				marker.delete();
 			}
