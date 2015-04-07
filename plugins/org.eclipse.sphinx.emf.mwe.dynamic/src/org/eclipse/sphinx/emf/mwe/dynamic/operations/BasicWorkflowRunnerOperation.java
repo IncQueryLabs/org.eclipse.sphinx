@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [463980] org.eclipse.sphinx.emf.mwe.dynamic.operations.BasicWorkflowRunnerOperation.run(IProgressMonitor) should not be final
  *
  * </copyright>
  */
@@ -132,7 +133,7 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 	 * @see org.eclipse.core.resources.IWorkspaceRunnable#run(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
-	public final void run(final IProgressMonitor monitor) throws CoreException, OperationCanceledException {
+	public void run(final IProgressMonitor monitor) throws CoreException, OperationCanceledException {
 		try {
 			final SubMonitor progress = SubMonitor.convert(monitor, 100);
 			final Workflow workflowInstance = getWorkflowInstance();
