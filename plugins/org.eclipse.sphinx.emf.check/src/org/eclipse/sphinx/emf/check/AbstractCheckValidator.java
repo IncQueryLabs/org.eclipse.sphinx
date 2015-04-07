@@ -37,7 +37,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.sphinx.emf.check.catalog.Severity;
 import org.eclipse.sphinx.emf.check.internal.Activator;
-import org.eclipse.sphinx.emf.check.internal.MethodWrapper;
+import org.eclipse.sphinx.emf.check.internal.CheckMethodWrapper;
 import org.eclipse.sphinx.emf.check.util.DiagnosticLocation;
 import org.eclipse.sphinx.emf.check.util.ExtendedEObjectValidator;
 import org.eclipse.sphinx.emf.check.util.SimpleCache;
@@ -56,7 +56,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	private int NO_INDEX = -1;
 
-	private volatile List<MethodWrapper> checkMethods = null;
+	private volatile List<CheckMethodWrapper> checkMethods = null;
 
 	private final ThreadLocal<CheckValidatorState> state;
 
@@ -88,12 +88,12 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		extendedEObjectValidator = new ExtendedEObjectValidator();
 	}
 
-	private final SimpleCache<Class<?>, List<MethodWrapper>> methodsForType = new SimpleCache<Class<?>, List<MethodWrapper>>(
-			new Function<Class<?>, List<MethodWrapper>>() {
+	private final SimpleCache<Class<?>, List<CheckMethodWrapper>> methodsForType = new SimpleCache<Class<?>, List<CheckMethodWrapper>>(
+			new Function<Class<?>, List<CheckMethodWrapper>>() {
 				@Override
-				public List<MethodWrapper> apply(Class<?> param) {
-					List<MethodWrapper> result = new ArrayList<MethodWrapper>();
-					for (MethodWrapper mw : checkMethods) {
+				public List<CheckMethodWrapper> apply(Class<?> param) {
+					List<CheckMethodWrapper> result = new ArrayList<CheckMethodWrapper>();
+					for (CheckMethodWrapper mw : checkMethods) {
 						if (mw.matches(param)) {
 							result.add(mw);
 						}
@@ -112,16 +112,16 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		state.currentObject = object;
 	}
 
-	private List<MethodWrapper> collectMethods(Set<String> selectedCategories) {
-		List<MethodWrapper> checkMethods = new ArrayList<MethodWrapper>();
+	private List<CheckMethodWrapper> collectCheckMethods(Set<String> selectedCategories) {
+		List<CheckMethodWrapper> checkMethods = new ArrayList<CheckMethodWrapper>();
 		Set<Class<?>> visitedValidatorTypes = new HashSet<Class<?>>();
-		collectMethods(this, getClass(), selectedCategories, visitedValidatorTypes, checkMethods);
+		collectCheckMethods(this, getClass(), selectedCategories, visitedValidatorTypes, checkMethods);
 		return checkMethods;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void collectMethods(ICheckValidator validator, Class<? extends ICheckValidator> validatorType, Set<String> selectedCategories,
-			Collection<Class<?>> visitedValidatorTypes, Collection<MethodWrapper> result) {
+	private void collectCheckMethods(ICheckValidator validator, Class<? extends ICheckValidator> validatorType, Set<String> selectedCategories,
+			Collection<Class<?>> visitedValidatorTypes, Collection<CheckMethodWrapper> result) {
 		Assert.isNotNull(validatorType);
 		Assert.isNotNull(visitedValidatorTypes);
 		Assert.isNotNull(result);
@@ -145,20 +145,20 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			if (annotation != null && method.getParameterTypes().length == 1) {
 				// FIXME This should not be decided only based on the annotated categories but take also the categories
 				// from the check catalog into account
-				Set<String> categories = MethodWrapper.getAnnotatedCategories(annotation);
+				Set<String> categories = CheckMethodWrapper.getAnnotatedCategories(annotation);
 				if (!categories.isEmpty()) {
-					result.add(createMethodWrapper(validator, method, selectedCategories));
+					result.add(createCheckMethodWrapper(validator, method, selectedCategories));
 				} else {
 					// Retain this method if "Other" category is selected
 					if (isOtherCategorySelected(selectedCategories)) {
-						result.add(createMethodWrapper(validator, method, selectedCategories));
+						result.add(createCheckMethodWrapper(validator, method, selectedCategories));
 					}
 				}
 			}
 		}
 		Class<?> superClass = validatorType.getSuperclass();
 		if (superClass != null && superClass.isAssignableFrom(ICheckValidator.class)) {
-			collectMethods(validator, (Class<ICheckValidator>) superClass, selectedCategories, visitedValidatorTypes, result);
+			collectCheckMethods(validator, (Class<ICheckValidator>) superClass, selectedCategories, visitedValidatorTypes, result);
 		}
 	}
 
@@ -184,8 +184,8 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		return false;
 	}
 
-	private MethodWrapper createMethodWrapper(ICheckValidator validator, Method method, Set<String> selectedCategories) {
-		return new MethodWrapper(validator, method, selectedCategories);
+	private CheckMethodWrapper createCheckMethodWrapper(ICheckValidator validator, Method method, Set<String> selectedCategories) {
+		return new CheckMethodWrapper(validator, method, selectedCategories);
 	}
 
 	@Override
@@ -200,7 +200,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		if (checkMethods == null) {
 			synchronized (this) {
 				if (checkMethods == null) {
-					checkMethods = collectMethods(selectedCategories);
+					checkMethods = collectCheckMethods(selectedCategories);
 				}
 			}
 		}
@@ -216,7 +216,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			extendedEObjectValidator.validate(eObject.eClass().getClassifierID(), eObject, diagnostics, context);
 		}
 
-		for (MethodWrapper method : methodsForType.get(getMethodWrapperType(eObject))) {
+		for (CheckMethodWrapper method : methodsForType.get(getMethodWrapperType(eObject))) {
 			try {
 				method.invoke(state);
 			} catch (Exception ex) {

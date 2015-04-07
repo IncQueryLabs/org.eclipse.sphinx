@@ -27,7 +27,7 @@ import org.eclipse.sphinx.emf.check.Check;
 import org.eclipse.sphinx.emf.check.CheckValidatorState;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
 
-public class MethodWrapper {
+public class CheckMethodWrapper {
 
 	public static Set<String> getAnnotatedCategories(Check checkAnnotation) {
 		if (checkAnnotation != null) {
@@ -49,7 +49,7 @@ public class MethodWrapper {
 	private Check checkAnnotation;
 	private Set<String> selectedCategories;
 
-	public MethodWrapper(ICheckValidator validator, Method method, Set<String> selectedCategories) {
+	public CheckMethodWrapper(ICheckValidator validator, Method method, Set<String> selectedCategories) {
 		Assert.isNotNull(validator);
 		Assert.isNotNull(method);
 		Assert.isNotNull(selectedCategories);
@@ -121,15 +121,20 @@ public class MethodWrapper {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof MethodWrapper)) {
+		if (!(obj instanceof CheckMethodWrapper)) {
 			return false;
 		}
-		MethodWrapper mw = (MethodWrapper) obj;
+		CheckMethodWrapper mw = (CheckMethodWrapper) obj;
 		return signature.equals(mw.signature) && validator == mw.validator;
 	}
 
 	@Override
 	public int hashCode() {
 		return signature.hashCode() ^ validator.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return "CheckMethodWrapper [method=" + method + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }
