@@ -88,23 +88,38 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		extendedEObjectValidator = new ExtendedEObjectValidator();
 	}
 
-	private final SimpleCache<Class<?>, List<CheckMethodWrapper>> methodsForType = new SimpleCache<Class<?>, List<CheckMethodWrapper>>(
+	// TODO Replace by a modelObjectTypeToCheckMethodsMap initialized by the collectCheckMethods methods
+	private final SimpleCache<Class<?>, List<CheckMethodWrapper>> checkMethodsForModelObjectType = new SimpleCache<Class<?>, List<CheckMethodWrapper>>(
 			new Function<Class<?>, List<CheckMethodWrapper>>() {
 				@Override
-				public List<CheckMethodWrapper> apply(Class<?> param) {
+				public List<CheckMethodWrapper> apply(Class<?> clazz) {
 					List<CheckMethodWrapper> result = new ArrayList<CheckMethodWrapper>();
-					for (CheckMethodWrapper mw : checkMethods) {
-						if (mw.matches(param)) {
-							result.add(mw);
+					for (CheckMethodWrapper checkMethod : checkMethods) {
+						if (checkMethod.matches(clazz)) {
+							result.add(checkMethod);
 						}
 					}
 					return result;
 				}
 			});
 
-	protected Class<?> getMethodWrapperType(EObject eObject) {
+	protected Class<?> getModelObjectType(EObject eObject) {
+		// Ensure backward compatibility
+		Class<?> parameterType = getMethodWrapperType(eObject);
+		if (parameterType != null) {
+			return parameterType;
+		}
+
 		Assert.isNotNull(eObject);
 		return eObject.getClass();
+	}
+
+	/**
+	 * @deprecated Use {@link #getModelObjectType(EObject)} instead.
+	 */
+	@Deprecated
+	protected Class<?> getMethodWrapperType(EObject eObject) {
+		return null;
 	}
 
 	protected void setCurrentObject(CheckValidatorState state, Object object) {
@@ -216,7 +231,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			extendedEObjectValidator.validate(eObject.eClass().getClassifierID(), eObject, diagnostics, context);
 		}
 
-		for (CheckMethodWrapper method : methodsForType.get(getMethodWrapperType(eObject))) {
+		for (CheckMethodWrapper method : checkMethodsForModelObjectType.get(getModelObjectType(eObject))) {
 			try {
 				method.invoke(state);
 			} catch (Exception ex) {
