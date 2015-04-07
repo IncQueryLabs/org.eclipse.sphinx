@@ -204,7 +204,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 				}
 			}
 		}
-		CheckMode checkMode = CheckMode.getCheckMode(context);
+		CheckMode checkMode = CheckMode.getFromContext(context);
 
 		CheckValidatorState state = new CheckValidatorState();
 		state.chain = diagnostics;
@@ -228,11 +228,13 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected Set<String> getCategoriesFromContext(Map<Object, Object> context) {
-		Object categories = context.get(ICheckValidator.OPTION_CATEGORIES);
-		if (categories instanceof Set<?>) {
-			@SuppressWarnings("unchecked")
-			Set<String> castedCategories = (Set<String>) categories;
-			return castedCategories;
+		if (context != null) {
+			Object categories = context.get(ICheckValidator.OPTION_CATEGORIES);
+			if (categories instanceof Set<?>) {
+				@SuppressWarnings("unchecked")
+				Set<String> castedCategories = (Set<String>) categories;
+				return castedCategories;
+			}
 		}
 		return Collections.emptySet();
 	}
