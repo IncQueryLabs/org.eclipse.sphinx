@@ -24,6 +24,7 @@ import org.eclipse.sphinx.emf.check.catalog.Category;
 import org.eclipse.sphinx.emf.check.catalog.Constraint;
 import org.eclipse.sphinx.emf.check.catalog.Severity;
 
+// TODO Move these method to CheckCatalog by using GenModel annotations or operation invocation delegates
 public class CheckCatalogHelper {
 
 	private ICheckValidator checkValidator;
