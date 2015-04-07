@@ -23,7 +23,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.sphinx.emf.check.CheckValidatorRegistry;
-import org.eclipse.sphinx.emf.check.IValidationConstants;
+import org.eclipse.sphinx.emf.check.ICheckValidationConstants;
 import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.catalog.Category;
 import org.eclipse.sphinx.emf.check.catalog.CheckCatalogFactory;
@@ -64,14 +64,14 @@ public class CategorySelectionContentProvider implements IStructuredContentProvi
 
 	protected Category getOtherCategory() {
 		if (otherCategory == null) {
-			otherCategory = createCategory(IValidationConstants.CATEGORY_ID_OTHER, Messages.other_category_label, Messages.other_category_desc);
+			otherCategory = createCategory(ICheckValidationConstants.CATEGORY_ID_OTHER, Messages.other_category_label, Messages.other_category_desc);
 		}
 		return otherCategory;
 	}
 
 	protected Category getIntrinsicChecksCategory() {
 		if (intrinsicChecksCategory == null) {
-			intrinsicChecksCategory = createCategory(IValidationConstants.CATEGORY_ID_INTRINSIC,
+			intrinsicChecksCategory = createCategory(ICheckValidationConstants.CATEGORY_ID_INTRINSIC,
 					Messages.intrinsic_model_integrity_checks_category_label, Messages.intrinsic_model_integrity_checks_category_desc);
 		}
 		return intrinsicChecksCategory;

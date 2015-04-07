@@ -14,7 +14,7 @@
  */
 package org.eclipse.sphinx.emf.check;
 
-public class IValidationConstants {
+public class ICheckValidationConstants {
 
 	/**
 	 * Id of the category named "Other" that enable users to switch on or off validators that are not associated with

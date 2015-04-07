@@ -166,7 +166,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		Assert.isNotNull(selectedCategories);
 
 		for (String categoryId : selectedCategories) {
-			if (categoryId.equals(IValidationConstants.CATEGORY_ID_INTRINSIC)) {
+			if (categoryId.equals(ICheckValidationConstants.CATEGORY_ID_INTRINSIC)) {
 				return true;
 			}
 		}
@@ -177,7 +177,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		Assert.isNotNull(selectedCategories);
 
 		for (String categoryId : selectedCategories) {
-			if (categoryId.equals(IValidationConstants.CATEGORY_ID_OTHER)) {
+			if (categoryId.equals(ICheckValidationConstants.CATEGORY_ID_OTHER)) {
 				return true;
 			}
 		}
