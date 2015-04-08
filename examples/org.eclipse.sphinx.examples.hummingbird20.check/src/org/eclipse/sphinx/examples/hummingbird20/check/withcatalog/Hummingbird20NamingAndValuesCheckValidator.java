@@ -38,7 +38,6 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
  *
  * @see org.eclipse.sphinx.emf.check.AbstractCheckValidator
  */
-// TODO Consolidate issue(Object, ...)/issue(EObject, ...) methods, see how EMF Edit handles this
 public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckValidator {
 
 	private static final Pattern ILLEGAL_CHARACTERS_PATTERN = Pattern.compile("[ \\t\\.,;]"); //$NON-NLS-1$
