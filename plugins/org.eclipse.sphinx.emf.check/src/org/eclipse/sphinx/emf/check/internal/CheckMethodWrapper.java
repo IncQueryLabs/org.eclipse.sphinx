@@ -90,12 +90,15 @@ public class CheckMethodWrapper {
 			validator.getState().set(state);
 		}
 		try {
-			if (!state.checkMode.shouldCheck(checkAnnotation.value())) {
+			if (!state.checkValidationMode.shouldCheck(checkAnnotation.value())) {
 				return;
 			}
 
 			Set<String> categories = new HashSet<String>();
 			categories.addAll(selectedCategories);
+
+			// FIXME Make intersection with categories associated with this validator in check catalog
+
 			// If no categories are specified in the check method's @Check annotation, invoke the check method on all
 			// categories as per the underlying constraint in the check catalog; otherwise invoke the check method on
 			// the intersection of categories provided by the user, and the categories defined in the check

@@ -88,7 +88,8 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		extendedEObjectValidator = new ExtendedEObjectValidator();
 	}
 
-	// TODO Replace by a modelObjectTypeToCheckMethodsMap initialized by the collectCheckMethods methods
+	// TODO Replace by a modelObjectTypeToCheckMethodsMap initialized by the collectCheckMethods methods and delete
+	// SimpleCache as it has been copied from Xtext
 	private final SimpleCache<Class<?>, List<CheckMethodWrapper>> checkMethodsForModelObjectType = new SimpleCache<Class<?>, List<CheckMethodWrapper>>(
 			new Function<Class<?>, List<CheckMethodWrapper>>() {
 				@Override
@@ -222,12 +223,12 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 				}
 			}
 		}
-		CheckMode checkMode = CheckMode.getFromContext(context);
+		CheckValidationMode mode = CheckValidationMode.getFromContext(context);
 
 		CheckValidatorState state = new CheckValidatorState();
 		state.chain = diagnostics;
 		setCurrentObject(state, eObject);
-		state.checkMode = checkMode;
+		state.checkValidationMode = mode;
 		state.context = context;
 
 		if (isIntrinsicCategorySelected(selectedCategories)) {
@@ -314,23 +315,6 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		}
 	}
 
-	protected void warning(String message, EObject object, EStructuralFeature feature) {
-		warning(message, object, feature, NO_INDEX);
-	}
-
-	protected void warning(String message, EObject object, EStructuralFeature feature, int index) {
-		// FIXME Add index to DiagnosticLocation
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature),
-				new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint) };
-		warning(message, object, feature, index, data);
-	}
-
-	protected void warning(String message, EObject object, EStructuralFeature feature, int index, Object[] issueData) {
-		// FIXME Test if issueData contains DiagnosticLocation and create one from object/feature/index and add it to
-		// issueData if not so
-		getState().get().chain.add(createDiagnostic(Severity.WARNING, message, index, issueData));
-	}
-
 	protected void error(String message, EObject object, EStructuralFeature feature) {
 		error(message, object, feature, NO_INDEX);
 	}
@@ -347,6 +331,23 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		// issueData if not so
 		getState().get().hasErrors = true;
 		getState().get().chain.add(createDiagnostic(Severity.ERROR, message, index, issueData));
+	}
+
+	protected void warning(String message, EObject object, EStructuralFeature feature) {
+		warning(message, object, feature, NO_INDEX);
+	}
+
+	protected void warning(String message, EObject object, EStructuralFeature feature, int index) {
+		// FIXME Add index to DiagnosticLocation
+		Object[] data = new Object[] { new DiagnosticLocation(object, feature),
+				new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint) };
+		warning(message, object, feature, index, data);
+	}
+
+	protected void warning(String message, EObject object, EStructuralFeature feature, int index, Object[] issueData) {
+		// FIXME Test if issueData contains DiagnosticLocation and create one from object/feature/index and add it to
+		// issueData if not so
+		getState().get().chain.add(createDiagnostic(Severity.WARNING, message, index, issueData));
 	}
 
 	protected void info(String message, EObject object, EStructuralFeature feature) {

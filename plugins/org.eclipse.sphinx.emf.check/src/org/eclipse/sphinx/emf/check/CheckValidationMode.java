@@ -16,25 +16,9 @@ package org.eclipse.sphinx.emf.check;
 
 import java.util.Map;
 
-public abstract class CheckMode {
+public enum CheckValidationMode {
 
-	public static CheckMode getFromContext(Map<Object, Object> context) {
-		CheckMode checkMode = CheckMode.ALL;
-		if (context != null) {
-			Object object2 = context.get(CheckMode.KEY);
-			if (object2 instanceof CheckMode) {
-				checkMode = (CheckMode) object2;
-			} else if (object2 != null) {
-				throw new IllegalArgumentException("Context object for key " + CheckMode.KEY + " should be of Type " + CheckMode.class.getName() //$NON-NLS-1$//$NON-NLS-2$
-						+ " but was " + object2.getClass().getName()); //$NON-NLS-1$
-			}
-		}
-		return checkMode;
-	}
-
-	public final static String KEY = "check.mode"; //$NON-NLS-1$
-
-	public final static CheckMode FAST_ONLY = new CheckMode() {
+	FAST_ONLY {
 		@Override
 		public boolean shouldCheck(CheckType type) {
 			return type == CheckType.FAST;
@@ -44,9 +28,9 @@ public abstract class CheckMode {
 		public String toString() {
 			return CheckType.FAST.toString();
 		}
-	};
+	},
 
-	public final static CheckMode NORMAL_ONLY = new CheckMode() {
+	NORMAL_ONLY {
 		@Override
 		public boolean shouldCheck(CheckType type) {
 			return type == CheckType.NORMAL;
@@ -56,9 +40,9 @@ public abstract class CheckMode {
 		public String toString() {
 			return CheckType.NORMAL.toString();
 		}
-	};
+	},
 
-	public final static CheckMode EXPENSIVE_ONLY = new CheckMode() {
+	EXPENSIVE_ONLY {
 		@Override
 		public boolean shouldCheck(CheckType type) {
 			return type == CheckType.EXPENSIVE;
@@ -68,9 +52,9 @@ public abstract class CheckMode {
 		public String toString() {
 			return CheckType.EXPENSIVE.toString();
 		}
-	};
+	},
 
-	public final static CheckMode NORMAL_AND_FAST = new CheckMode() {
+	NORMAL_AND_FAST {
 		@Override
 		public boolean shouldCheck(CheckType type) {
 			return type == CheckType.NORMAL || type == CheckType.FAST;
@@ -80,9 +64,9 @@ public abstract class CheckMode {
 		public String toString() {
 			return CheckType.NORMAL + "|" + CheckType.FAST; //$NON-NLS-1$
 		}
-	};
+	},
 
-	public final static CheckMode ALL = new CheckMode() {
+	ALL {
 		@Override
 		public boolean shouldCheck(CheckType type) {
 			return true;
@@ -93,6 +77,23 @@ public abstract class CheckMode {
 			return "ALL"; //$NON-NLS-1$
 		}
 	};
+
+	public static CheckValidationMode getFromContext(Map<Object, Object> context) {
+		CheckValidationMode mode = CheckValidationMode.ALL;
+		if (context != null) {
+			Object object2 = context.get(CheckValidationMode.KEY);
+			if (object2 instanceof CheckValidationMode) {
+				mode = (CheckValidationMode) object2;
+			} else if (object2 != null) {
+				throw new IllegalArgumentException(
+						"Context object for key " + CheckValidationMode.KEY + " should be of Type " + CheckValidationMode.class.getName() //$NON-NLS-1$//$NON-NLS-2$
+								+ " but was " + object2.getClass().getName()); //$NON-NLS-1$
+			}
+		}
+		return mode;
+	}
+
+	public final static String KEY = "check.mode"; //$NON-NLS-1$
 
 	public abstract boolean shouldCheck(CheckType type);
 }

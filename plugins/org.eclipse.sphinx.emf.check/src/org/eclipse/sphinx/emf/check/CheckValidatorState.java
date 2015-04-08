@@ -23,7 +23,7 @@ public class CheckValidatorState {
 	public DiagnosticChain chain = null;
 	public Object currentObject = null;
 	public Method currentMethod = null;
-	public CheckMode checkMode = null;
+	public CheckValidationMode checkValidationMode = null;
 	public CheckType currentCheckType = null;
 	public boolean hasErrors = false;
 	public Map<Object, Object> context;
