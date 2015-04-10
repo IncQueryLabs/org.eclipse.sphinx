@@ -52,7 +52,7 @@ public class WorkflowContributorRegistry {
 
 	private ILog log;
 
-	private WorkflowContributorRegistry(IExtensionRegistry extensionRegistry, ILog log) {
+	protected WorkflowContributorRegistry(IExtensionRegistry extensionRegistry, ILog log) {
 		this.extensionRegistry = extensionRegistry;
 		this.log = log;
 	}
@@ -96,16 +96,23 @@ public class WorkflowContributorRegistry {
 		}
 	}
 
-	/*
-	 * pluginId = org.eclipse.sphinx.examples.workflows => expected to match:
-	 * W:/eclipse-sphinx/org.eclipse.sphinx/plugins/org.eclipse.sphinx.examples.workflows/bin/, W:/eclipse
-	 * -sphinx/org.eclipse.sphinx/examples/org.eclipse.sphinx.examples.workflows/bin/org/eclipse/sphinx/examples
-	 * /workflows/model/PrintModelContentWorkflow.class
-	 * W:/eclipse-sphinx/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool
-	 * /plugins/org.eclipse.sphinx.examples.workflows_0.9.0.v20141209-1519.jar, expected to ignore: /External Plug-in
-	 * Libraries, /MyProject, C:/Program%20Files/Java/jdk1.7.0_55/jre/lib/resources.jar,
-	 * W:/eclipse-sphinx/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool
-	 * /plugins/org.eclipse.sphinx.examples.workflows.lib_0.9.0.v20141209-1519.jar
+	/**
+	 * Checks if the provided classpath location is a contributed via an installed plug-in or in a development mode
+	 * plug-in. Examples:
+	 * <p>pluginId = org.eclipse.sphinx.examples.workflows</p>
+	 * <p>Expected to match:</p>
+	 * <ul>
+	 * <li>W:/eclipse-sphinx/org.eclipse.sphinx/plugins/org.eclipse.sphinx.examples.workflows/bin/</li>
+	 * <li>W:/eclipse-sphinx/org.eclipse.sphinx/examples/org.eclipse.sphinx.examples.workflows/bin/org/eclipse/sphinx/examples/workflows/model/PrintModelContentWorkflow.class</li>
+	 * <li>W:/eclipse-sphinx/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.sphinx.examples.workflows_0.9.0.v20141209-1519.jar</li>
+	 * <ul>
+	 * <p>Expected to ignore:</p>
+	 * <ul>
+	 * <li>/External Plug-in Libraries</li>
+	 * <li>/MyProject</li>
+	 * <li>C:/Program%20Files/Java/jdk1.7.0_55/jre/lib/resources.jar</li>
+	 * <li>W:/eclipse-sphinx/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.sphinx.examples.workflows.lib_0.9.0.v20141209-1519.jar</li>
+	 * </ul>
 	 */
 	public boolean isContributorClasspathLocation(IPath classpathLocation) {
 		return getContributorPluginId(classpathLocation) != null;

@@ -1,16 +1,16 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [418005] Add support for model files with multiple root elements
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.util;
@@ -66,7 +66,7 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 	/**
 	 * Test method for {@link EcoreResourceUtil#readModelNamespace(ResourceSet resourceSet,URI modelURI)} .
 	 * {@link EcoreResourceUtil#readModelNamespace(Resource)}
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testReadModelNamespace() throws Exception {
@@ -133,7 +133,7 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 
 	/**
 	 * Test method for {@link EcoreResourceUtil#getModelName(Notifier modelRoot)} .
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testGetModelName() throws Exception {
@@ -224,7 +224,7 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 
 	/**
 	 * Test method for {@link EcoreResourceUtil#readTargetNamespace(Resource)}
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testReadTargetNamespaceFromResource() throws Exception {
@@ -354,7 +354,7 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 
 	/**
 	 * Test method for {@link EcoreResourceUtil#getResourceContents(Resource)}
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testGetResourceContents() throws Exception {
@@ -385,5 +385,23 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		// Input is NULL
 		assertNotNull(EcoreResourceUtil.getResourceContents(null));
 		assertEquals(0, EcoreResourceUtil.getResourceContents(null).size());
+	}
+
+	public void testGetURI() throws Exception {
+		Hummingbird20ResourceFactoryImpl hb20ResourceFactory = new Hummingbird20ResourceFactoryImpl();
+
+		// Hummingbird 20 Resource
+		EObject modelRoot20 = loadInputFile("hbFile20.instancemodel", hb20ResourceFactory, null);
+		assertNotNull(modelRoot20);
+		Resource resource20 = modelRoot20.eResource();
+		assertNotNull(resource20);
+
+		URI uri = EcoreResourceUtil.getURI(modelRoot20);
+		assertNotNull(uri);
+		assertTrue("hb:/#/".equals(uri.toString()));
+
+		uri = EcoreResourceUtil.getURI(modelRoot20, true);
+		assertNotNull(uri);
+		assertTrue("platform:/plugin/org.eclipse.sphinx.tests.emf/resources/input/hbFile20.instancemodel#/".equals(uri.toString()));
 	}
 }
