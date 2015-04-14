@@ -25,7 +25,9 @@ import java.util.Set;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.sphinx.emf.check.Check;
 import org.eclipse.sphinx.emf.check.CheckValidatorState;
+import org.eclipse.sphinx.emf.check.ICheckValidationConstants;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
+import org.eclipse.sphinx.emf.check.catalog.Catalog;
 
 public class CheckMethodWrapper {
 
@@ -47,16 +49,13 @@ public class CheckMethodWrapper {
 	private Method method;
 	private String signature;
 	private Check checkAnnotation;
-	private Set<String> selectedCategories;
 
-	public CheckMethodWrapper(ICheckValidator validator, Method method, Set<String> selectedCategories) {
+	public CheckMethodWrapper(ICheckValidator validator, Method method) {
 		Assert.isNotNull(validator);
 		Assert.isNotNull(method);
-		Assert.isNotNull(selectedCategories);
 
 		this.validator = validator;
 		this.method = method;
-		this.selectedCategories = selectedCategories;
 		signature = method.getName() + ":" + method.getParameterTypes()[0].getName(); //$NON-NLS-1$
 		checkAnnotation = method.getAnnotation(Check.class);
 	}
@@ -81,7 +80,20 @@ public class CheckMethodWrapper {
 		return method.getParameterTypes()[0].isAssignableFrom(param);
 	}
 
-	public void invoke(CheckValidatorState state) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private boolean isOtherCategorySelected(Set<String> selectedCategories) {
+		Assert.isNotNull(selectedCategories);
+
+		for (String categoryId : selectedCategories) {
+			if (categoryId.equals(ICheckValidationConstants.CATEGORY_ID_OTHER)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void invoke(CheckValidatorState state, Set<String> selectedCategories) throws IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException {
+
 		if (validator.getState().get() != null && validator.getState().get() != state) {
 			throw new IllegalStateException("State is already assigned."); //$NON-NLS-1$
 		}
@@ -90,6 +102,7 @@ public class CheckMethodWrapper {
 			validator.getState().set(state);
 		}
 		try {
+
 			if (!state.checkValidationMode.shouldCheck(checkAnnotation.value())) {
 				return;
 			}
@@ -97,18 +110,24 @@ public class CheckMethodWrapper {
 			Set<String> categories = new HashSet<String>();
 			categories.addAll(selectedCategories);
 
-			// FIXME Make intersection with categories associated with this validator in check catalog
-
 			// If no categories are specified in the check method's @Check annotation, invoke the check method on all
 			// categories as per the underlying constraint in the check catalog; otherwise invoke the check method on
 			// the intersection of categories provided by the user, and the categories defined in the check
 			// catalog.
+			Catalog catalog = validator.getCheckCatalogHelper().getCatalog();
 			Set<String> annotatedCategories = getAnnotatedCategories();
+			if (annotatedCategories.isEmpty() && !isOtherCategorySelected(selectedCategories)) {
+				return;
+			}
 			if (!annotatedCategories.isEmpty()) {
 				categories.retainAll(annotatedCategories);
 			}
+			// Make intersection with categories associated with this validator in check catalog
+			if (catalog != null && !catalog.getCategories().isEmpty()) {
+				categories.retainAll(catalog.getCategories());
+			}
 			// Go ahead if scope is not empty or if validator has no check catalog
-			if (!categories.isEmpty() || validator.getCheckCatalogHelper().getCatalog() == null) {
+			if (!categories.isEmpty() || catalog == null) {
 				state.currentMethod = method;
 				state.currentCheckType = checkAnnotation.value();
 				state.constraint = getAnnotatedConstraint();

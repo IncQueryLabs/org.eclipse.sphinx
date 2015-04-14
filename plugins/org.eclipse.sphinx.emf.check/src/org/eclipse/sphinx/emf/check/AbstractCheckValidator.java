@@ -128,15 +128,15 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		state.currentObject = object;
 	}
 
-	private List<CheckMethodWrapper> collectCheckMethods(Set<String> selectedCategories) {
+	private List<CheckMethodWrapper> collectCheckMethods() {
 		List<CheckMethodWrapper> checkMethods = new ArrayList<CheckMethodWrapper>();
 		Set<Class<?>> visitedValidatorTypes = new HashSet<Class<?>>();
-		collectCheckMethods(this, getClass(), selectedCategories, visitedValidatorTypes, checkMethods);
+		collectCheckMethods(this, getClass(), visitedValidatorTypes, checkMethods);
 		return checkMethods;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void collectCheckMethods(ICheckValidator validator, Class<? extends ICheckValidator> validatorType, Set<String> selectedCategories,
+	private void collectCheckMethods(ICheckValidator validator, Class<? extends ICheckValidator> validatorType,
 			Collection<Class<?>> visitedValidatorTypes, Collection<CheckMethodWrapper> result) {
 		Assert.isNotNull(validatorType);
 		Assert.isNotNull(visitedValidatorTypes);
@@ -159,23 +159,12 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			// Current method being a check method, i.e. a method annotated with @Check and having one parameter?
 			Check annotation = method.getAnnotation(Check.class);
 			if (annotation != null && method.getParameterTypes().length == 1) {
-				// FIXME Applicability to categories must be decided upon invocation of the check method wrapper but
-				// not here. Otherwise the decision is taken based on categories selected at the very first time and
-				// will never ever change again because the result will get cached.
-				Set<String> categories = CheckMethodWrapper.getAnnotatedCategories(annotation);
-				if (!categories.isEmpty()) {
-					result.add(createCheckMethodWrapper(validator, method, selectedCategories));
-				} else {
-					// Retain this method if "Other" category is selected
-					if (isOtherCategorySelected(selectedCategories)) {
-						result.add(createCheckMethodWrapper(validator, method, selectedCategories));
-					}
-				}
+				result.add(createCheckMethodWrapper(validator, method));
 			}
 		}
 		Class<?> superClass = validatorType.getSuperclass();
 		if (superClass != null && superClass.isAssignableFrom(ICheckValidator.class)) {
-			collectCheckMethods(validator, (Class<ICheckValidator>) superClass, selectedCategories, visitedValidatorTypes, result);
+			collectCheckMethods(validator, (Class<ICheckValidator>) superClass, visitedValidatorTypes, result);
 		}
 	}
 
@@ -190,19 +179,8 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		return false;
 	}
 
-	private boolean isOtherCategorySelected(Set<String> selectedCategories) {
-		Assert.isNotNull(selectedCategories);
-
-		for (String categoryId : selectedCategories) {
-			if (categoryId.equals(ICheckValidationConstants.CATEGORY_ID_OTHER)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private CheckMethodWrapper createCheckMethodWrapper(ICheckValidator validator, Method method, Set<String> selectedCategories) {
-		return new CheckMethodWrapper(validator, method, selectedCategories);
+	private CheckMethodWrapper createCheckMethodWrapper(ICheckValidator validator, Method method) {
+		return new CheckMethodWrapper(validator, method);
 	}
 
 	@Override
@@ -214,12 +192,10 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	public boolean validate(EClass eClass, EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		Set<String> selectedCategories = getCategoriesFromContext(context);
 
-		// FIXME Don't pass selected categories via collect methods to CheckMethodWrapper but pass them to invoke
-		// method. Otherwise the categories selected at the very first time get cached and will never ever change again.
 		if (checkMethods == null) {
 			synchronized (this) {
 				if (checkMethods == null) {
-					checkMethods = collectCheckMethods(selectedCategories);
+					checkMethods = collectCheckMethods();
 				}
 			}
 		}
@@ -237,7 +213,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 		for (CheckMethodWrapper method : checkMethodsForModelObjectType.get(getModelObjectType(eObject))) {
 			try {
-				method.invoke(state);
+				method.invoke(state, selectedCategories);
 			} catch (Exception ex) {
 				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			}
