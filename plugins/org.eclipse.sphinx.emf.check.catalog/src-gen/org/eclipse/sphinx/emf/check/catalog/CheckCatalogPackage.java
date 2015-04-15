@@ -17,6 +17,7 @@ package org.eclipse.sphinx.emf.check.catalog;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -189,13 +190,31 @@ public interface CheckCatalogPackage extends EPackage {
 	int CATALOG_FEATURE_COUNT = IDENTIFIABLE_FEATURE_COUNT + 2;
 
 	/**
+	 * The operation id for the '<em>Get Message</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CATALOG___GET_MESSAGE__STRING = IDENTIFIABLE_OPERATION_COUNT + 0;
+
+	/**
+	 * The operation id for the '<em>Get Severity</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CATALOG___GET_SEVERITY__STRING = IDENTIFIABLE_OPERATION_COUNT + 1;
+
+	/**
 	 * The number of operations of the '<em>Catalog</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CATALOG_OPERATION_COUNT = IDENTIFIABLE_OPERATION_COUNT + 0;
+	int CATALOG_OPERATION_COUNT = IDENTIFIABLE_OPERATION_COUNT + 2;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.sphinx.emf.check.catalog.impl.ConstraintImpl <em>Constraint</em>}' class.
@@ -430,6 +449,26 @@ public interface CheckCatalogPackage extends EPackage {
 	EReference getCatalog_Constraints();
 
 	/**
+	 * Returns the meta object for the '{@link org.eclipse.sphinx.emf.check.catalog.Catalog#getMessage(java.lang.String) <em>Get Message</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Get Message</em>' operation.
+	 * @see org.eclipse.sphinx.emf.check.catalog.Catalog#getMessage(java.lang.String)
+	 * @generated
+	 */
+	EOperation getCatalog__GetMessage__String();
+
+	/**
+	 * Returns the meta object for the '{@link org.eclipse.sphinx.emf.check.catalog.Catalog#getSeverity(java.lang.String) <em>Get Severity</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Get Severity</em>' operation.
+	 * @see org.eclipse.sphinx.emf.check.catalog.Catalog#getSeverity(java.lang.String)
+	 * @generated
+	 */
+	EOperation getCatalog__GetSeverity__String();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.sphinx.emf.check.catalog.Constraint <em>Constraint</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -585,6 +624,22 @@ public interface CheckCatalogPackage extends EPackage {
 		 * @generated
 		 */
 		EReference CATALOG__CONSTRAINTS = eINSTANCE.getCatalog_Constraints();
+
+		/**
+		 * The meta object literal for the '<em><b>Get Message</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation CATALOG___GET_MESSAGE__STRING = eINSTANCE.getCatalog__GetMessage__String();
+
+		/**
+		 * The meta object literal for the '<em><b>Get Severity</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation CATALOG___GET_SEVERITY__STRING = eINSTANCE.getCatalog__GetSeverity__String();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.sphinx.emf.check.catalog.impl.ConstraintImpl <em>Constraint</em>}' class.

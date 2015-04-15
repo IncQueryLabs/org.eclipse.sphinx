@@ -17,6 +17,7 @@ package org.eclipse.sphinx.emf.check.catalog.impl;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -201,6 +202,24 @@ public class CheckCatalogPackageImpl extends EPackageImpl implements CheckCatalo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EOperation getCatalog__GetMessage__String() {
+		return catalogEClass.getEOperations().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EOperation getCatalog__GetSeverity__String() {
+		return catalogEClass.getEOperations().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getConstraint() {
 		return constraintEClass;
 	}
@@ -295,6 +314,8 @@ public class CheckCatalogPackageImpl extends EPackageImpl implements CheckCatalo
 		catalogEClass = createEClass(CATALOG);
 		createEReference(catalogEClass, CATALOG__CATEGORIES);
 		createEReference(catalogEClass, CATALOG__CONSTRAINTS);
+		createEOperation(catalogEClass, CATALOG___GET_MESSAGE__STRING);
+		createEOperation(catalogEClass, CATALOG___GET_SEVERITY__STRING);
 
 		constraintEClass = createEClass(CONSTRAINT);
 		createEAttribute(constraintEClass, CONSTRAINT__SEVERITY);
@@ -349,6 +370,12 @@ public class CheckCatalogPackageImpl extends EPackageImpl implements CheckCatalo
 		initEClass(catalogEClass, Catalog.class, "Catalog", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getCatalog_Categories(), this.getCategory(), null, "categories", null, 0, -1, Catalog.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getCatalog_Constraints(), this.getConstraint(), null, "constraints", null, 0, -1, Catalog.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		EOperation op = initEOperation(getCatalog__GetMessage__String(), ecorePackage.getEString(), "getMessage", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, ecorePackage.getEString(), "constraintId", 0, 1, IS_UNIQUE, IS_ORDERED);
+
+		op = initEOperation(getCatalog__GetSeverity__String(), this.getSeverity(), "getSeverity", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, ecorePackage.getEString(), "constraintId", 0, 1, IS_UNIQUE, IS_ORDERED);
 
 		initEClass(constraintEClass, Constraint.class, "Constraint", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getConstraint_Severity(), this.getSeverity(), "severity", null, 0, 1, Constraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

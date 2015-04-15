@@ -18,7 +18,9 @@ package org.eclipse.sphinx.emf.check.ui.dialogs;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -44,9 +46,13 @@ public class CategorySelectionContentProvider implements IStructuredContentProvi
 		List<Category> elements = new ArrayList<Category>();
 
 		Collection<Catalog> checkCatalogs = CheckValidatorRegistry.INSTANCE.getCheckCatalogs();
+		Map<String, Category> categories = new HashMap<String, Category>();
 		for (Catalog catalog : checkCatalogs) {
-			elements.addAll(catalog.getCategories());
+			for (Category category : catalog.getCategories()) {
+				categories.put(category.getId(), category);
+			}
 		}
+		elements.addAll(categories.values());
 
 		// Add Intrinsic Model Integrity Checks Category
 		elements.add(getIntrinsicChecksCategory());

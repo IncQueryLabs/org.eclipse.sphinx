@@ -14,6 +14,7 @@
  */
 package org.eclipse.sphinx.emf.check.catalog.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -30,6 +31,7 @@ import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.catalog.Category;
 import org.eclipse.sphinx.emf.check.catalog.CheckCatalogPackage;
 import org.eclipse.sphinx.emf.check.catalog.Constraint;
+import org.eclipse.sphinx.emf.check.catalog.Severity;
 
 /**
  * <!-- begin-user-doc -->
@@ -107,6 +109,36 @@ public class CatalogImpl extends IdentifiableImpl implements Catalog {
 			constraints = new EObjectContainmentEList<Constraint>(Constraint.class, this, CheckCatalogPackage.CATALOG__CONSTRAINTS);
 		}
 		return constraints;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getMessage(final String constraintId) {
+		for (Constraint constraint : getConstraints()) {
+			String id = constraint.getId();
+			if (id != null && id.equals(constraintId)) {
+				return constraint.getMessage();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Severity getSeverity(final String constraintId) {
+		for (Constraint contraint : getConstraints()) {
+			String id = contraint.getId();
+			if (id != null && id.equals(constraintId)) {
+				return contraint.getSeverity();
+			}
+		}
+		return Severity.ERROR;
 	}
 
 	/**
@@ -194,6 +226,22 @@ public class CatalogImpl extends IdentifiableImpl implements Catalog {
 				return constraints != null && !constraints.isEmpty();
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
+		switch (operationID) {
+			case CheckCatalogPackage.CATALOG___GET_MESSAGE__STRING:
+				return getMessage((String)arguments.get(0));
+			case CheckCatalogPackage.CATALOG___GET_SEVERITY__STRING:
+				return getSeverity((String)arguments.get(0));
+		}
+		return super.eInvoke(operationID, arguments);
 	}
 
 } //CatalogImpl

@@ -45,7 +45,6 @@ import org.eclipse.sphinx.platform.util.StatusUtil;
 
 public class CheckProblemMarkerService {
 
-	// TODO aak Move to an another class or keep here
 	public static final String UPDATE_CHECK_PROBLEM_MARKER = "UPDATE_CHECK_PROBLEM_MARKER"; //$NON-NLS-1$
 
 	public static CheckProblemMarkerService INSTANCE = new CheckProblemMarkerService();

@@ -23,11 +23,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.sphinx.emf.check.Check;
+import org.eclipse.sphinx.emf.check.CheckValidatorRegistry;
 import org.eclipse.sphinx.emf.check.CheckValidatorState;
 import org.eclipse.sphinx.emf.check.ICheckValidationConstants;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.catalog.Catalog;
+import org.eclipse.sphinx.emf.check.catalog.Category;
 
 public class CheckMethodWrapper {
 
@@ -76,10 +79,6 @@ public class CheckMethodWrapper {
 		return getAnnotatedCategories(checkAnnotation);
 	}
 
-	public boolean matches(Class<?> param) {
-		return method.getParameterTypes()[0].isAssignableFrom(param);
-	}
-
 	private boolean isOtherCategorySelected(Set<String> selectedCategories) {
 		Assert.isNotNull(selectedCategories);
 
@@ -114,7 +113,7 @@ public class CheckMethodWrapper {
 			// categories as per the underlying constraint in the check catalog; otherwise invoke the check method on
 			// the intersection of categories provided by the user, and the categories defined in the check
 			// catalog.
-			Catalog catalog = validator.getCheckCatalogHelper().getCatalog();
+			Catalog catalog = CheckValidatorRegistry.INSTANCE.getCheckCatalog(validator);
 			Set<String> annotatedCategories = getAnnotatedCategories();
 			if (annotatedCategories.isEmpty() && !isOtherCategorySelected(selectedCategories)) {
 				return;
@@ -124,7 +123,7 @@ public class CheckMethodWrapper {
 			}
 			// Make intersection with categories associated with this validator in check catalog
 			if (catalog != null && !catalog.getCategories().isEmpty()) {
-				categories.retainAll(catalog.getCategories());
+				retainAll(categories, catalog.getCategories());
 			}
 			// Go ahead if scope is not empty or if validator has no check catalog
 			if (!categories.isEmpty() || catalog == null) {
@@ -139,6 +138,14 @@ public class CheckMethodWrapper {
 				validator.getState().set(null);
 			}
 		}
+	}
+
+	private void retainAll(Set<String> categories, EList<Category> categoryList) {
+		Set<String> categoryIDs = new HashSet<String>();
+		for (Category category : categoryList) {
+			categoryIDs.add(category.getId());
+		}
+		categories.retainAll(categoryIDs);
 	}
 
 	@Override

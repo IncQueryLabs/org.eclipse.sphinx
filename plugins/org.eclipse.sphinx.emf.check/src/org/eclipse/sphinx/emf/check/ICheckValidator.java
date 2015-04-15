@@ -23,7 +23,5 @@ public interface ICheckValidator extends EValidator {
 	 */
 	String OPTION_CATEGORIES = "CATEGORIES"; //$NON-NLS-1$
 
-	CheckCatalogHelper getCheckCatalogHelper();
-
 	ThreadLocal<CheckValidatorState> getState();
 }

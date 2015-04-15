@@ -66,4 +66,20 @@ public interface Catalog extends Identifiable {
 	 */
 	EList<Constraint> getConstraints();
 
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model annotation="http://www.eclipse.org/emf/2002/GenModel body='for (Constraint constraint : getConstraints()) {\n\tString id = constraint.getId();\n\tif (id != null && id.equals(constraintId)) {\n\t\treturn constraint.getMessage();\n\t}\n}\nreturn null;'"
+	 * @generated
+	 */
+	String getMessage(String constraintId);
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model annotation="http://www.eclipse.org/emf/2002/GenModel body='for (Constraint contraint : getConstraints()) {\n\tString id = contraint.getId();\n\tif (id != null && id.equals(constraintId)) {\n\t\treturn contraint.getSeverity();\n\t}\n}\nreturn Severity.ERROR;'"
+	 * @generated
+	 */
+	Severity getSeverity(String constraintId);
+
 } // Catalog

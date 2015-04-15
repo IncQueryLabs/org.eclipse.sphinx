@@ -59,7 +59,11 @@ public class CheckProblemMarkerFactory implements ICheckValidationProblemMarkerF
 		// Location attribute
 		DiagnosticLocation affectedLocation = getAffectedLocation(diagnostic);
 		if (affectedLocation != null) {
-			attributes.put(IMarker.LOCATION, affectedLocation.getObject().eClass().getName() + "#" + affectedLocation.getFeature().getName()); //$NON-NLS-1$
+			String value = affectedLocation.getObject().eClass().getName() + "#" + affectedLocation.getFeature().getName(); //$NON-NLS-1$
+			if (affectedLocation.getIndex() != -1) {
+				value = value.concat("." + affectedLocation.getIndex()); //$NON-NLS-1$
+			}
+			attributes.put(IMarker.LOCATION, value);
 		}
 
 		// Severity attribute

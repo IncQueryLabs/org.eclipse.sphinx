@@ -20,8 +20,10 @@ package org.eclipse.sphinx.emf.check;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,17 +37,15 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.catalog.Severity;
 import org.eclipse.sphinx.emf.check.internal.Activator;
 import org.eclipse.sphinx.emf.check.internal.CheckMethodWrapper;
 import org.eclipse.sphinx.emf.check.util.DiagnosticLocation;
 import org.eclipse.sphinx.emf.check.util.ExtendedEObjectValidator;
-import org.eclipse.sphinx.emf.check.util.SimpleCache;
 import org.eclipse.sphinx.emf.check.util.SourceLocation;
 import org.eclipse.sphinx.emf.util.IWrapper;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
-
-import com.google.common.base.Function;
 
 /**
  * An abstract implementation of a check-based validator. Depending on the type of the object under validation, the set
@@ -56,13 +56,15 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	private int NO_INDEX = -1;
 
-	private volatile List<CheckMethodWrapper> checkMethods = null;
+	private boolean initialized = false;
 
 	private final ThreadLocal<CheckValidatorState> state;
 
-	private final CheckCatalogHelper checkCatalogHelper;
-
 	private ExtendedEObjectValidator extendedEObjectValidator;
+
+	private Map<Class<?>, List<CheckMethodWrapper>> collectedModelObjectTypeToCheckMethodsMap;
+
+	private Map<Class<?>, List<CheckMethodWrapper>> actualModelObjectTypeToCheckMethodsMap;
 
 	protected static class CheckValidatorStateAccess {
 
@@ -84,25 +86,10 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	public AbstractCheckValidator() {
 		state = new ThreadLocal<CheckValidatorState>();
-		checkCatalogHelper = new CheckCatalogHelper(this);
 		extendedEObjectValidator = new ExtendedEObjectValidator();
+		collectedModelObjectTypeToCheckMethodsMap = new HashMap<Class<?>, List<CheckMethodWrapper>>();
+		actualModelObjectTypeToCheckMethodsMap = new HashMap<Class<?>, List<CheckMethodWrapper>>();
 	}
-
-	// TODO Replace by a modelObjectTypeToCheckMethodsMap initialized by the collectCheckMethods methods and delete
-	// SimpleCache as it has been copied from Xtext
-	private final SimpleCache<Class<?>, List<CheckMethodWrapper>> checkMethodsForModelObjectType = new SimpleCache<Class<?>, List<CheckMethodWrapper>>(
-			new Function<Class<?>, List<CheckMethodWrapper>>() {
-				@Override
-				public List<CheckMethodWrapper> apply(Class<?> clazz) {
-					List<CheckMethodWrapper> result = new ArrayList<CheckMethodWrapper>();
-					for (CheckMethodWrapper checkMethod : checkMethods) {
-						if (checkMethod.matches(clazz)) {
-							result.add(checkMethod);
-						}
-					}
-					return result;
-				}
-			});
 
 	protected Class<?> getModelObjectType(EObject eObject) {
 		// Ensure backward compatibility
@@ -112,7 +99,9 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		}
 
 		Assert.isNotNull(eObject);
-		return eObject.getClass();
+		// Return eObject.eClass().getInstanceClass() which is the interface and it's used as the key in the
+		// modelObjectTypeToCheckMethodsMap
+		return eObject.eClass().getInstanceClass();
 	}
 
 	/**
@@ -128,19 +117,19 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		state.currentObject = object;
 	}
 
-	private List<CheckMethodWrapper> collectCheckMethods() {
-		List<CheckMethodWrapper> checkMethods = new ArrayList<CheckMethodWrapper>();
-		Set<Class<?>> visitedValidatorTypes = new HashSet<Class<?>>();
-		collectCheckMethods(this, getClass(), visitedValidatorTypes, checkMethods);
-		return checkMethods;
+	private synchronized void initCheckMethods() {
+		if (!initialized) {
+			initialized = true;
+			Set<Class<?>> visitedValidatorTypes = new HashSet<Class<?>>();
+			initCheckMethods(this, getClass(), visitedValidatorTypes);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void collectCheckMethods(ICheckValidator validator, Class<? extends ICheckValidator> validatorType,
-			Collection<Class<?>> visitedValidatorTypes, Collection<CheckMethodWrapper> result) {
+	private void initCheckMethods(ICheckValidator validator, Class<? extends ICheckValidator> validatorType,
+			Collection<Class<?>> visitedValidatorTypes) {
 		Assert.isNotNull(validatorType);
 		Assert.isNotNull(visitedValidatorTypes);
-		Assert.isNotNull(result);
 
 		if (!visitedValidatorTypes.add(validatorType)) {
 			return;
@@ -159,16 +148,30 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			// Current method being a check method, i.e. a method annotated with @Check and having one parameter?
 			Check annotation = method.getAnnotation(Check.class);
 			if (annotation != null && method.getParameterTypes().length == 1) {
-				result.add(createCheckMethodWrapper(validator, method));
+				addCheckMethod(validator, method);
 			}
 		}
 		Class<?> superClass = validatorType.getSuperclass();
 		if (superClass != null && superClass.isAssignableFrom(ICheckValidator.class)) {
-			collectCheckMethods(validator, (Class<ICheckValidator>) superClass, visitedValidatorTypes, result);
+			initCheckMethods(validator, (Class<ICheckValidator>) superClass, visitedValidatorTypes);
 		}
 	}
 
-	private boolean isIntrinsicCategorySelected(Set<String> selectedCategories) {
+	protected void addCheckMethod(ICheckValidator validator, Method method) {
+		Class<?> modelObjectType = method.getParameterTypes()[0];
+		List<CheckMethodWrapper> value = collectedModelObjectTypeToCheckMethodsMap.get(modelObjectType);
+		if (value == null) {
+			value = new ArrayList<CheckMethodWrapper>();
+			collectedModelObjectTypeToCheckMethodsMap.put(modelObjectType, value);
+		}
+		value.add(createCheckMethodWrapper(validator, method));
+	}
+
+	protected CheckMethodWrapper createCheckMethodWrapper(ICheckValidator validator, Method method) {
+		return new CheckMethodWrapper(validator, method);
+	}
+
+	protected boolean isIntrinsicCategorySelected(Set<String> selectedCategories) {
 		Assert.isNotNull(selectedCategories);
 
 		for (String categoryId : selectedCategories) {
@@ -177,10 +180,6 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			}
 		}
 		return false;
-	}
-
-	private CheckMethodWrapper createCheckMethodWrapper(ICheckValidator validator, Method method) {
-		return new CheckMethodWrapper(validator, method);
 	}
 
 	@Override
@@ -192,13 +191,8 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	public boolean validate(EClass eClass, EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		Set<String> selectedCategories = getCategoriesFromContext(context);
 
-		if (checkMethods == null) {
-			synchronized (this) {
-				if (checkMethods == null) {
-					checkMethods = collectCheckMethods();
-				}
-			}
-		}
+		initCheckMethods();
+
 		CheckValidationMode mode = CheckValidationMode.getFromContext(context);
 
 		CheckValidatorState state = new CheckValidatorState();
@@ -211,7 +205,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			extendedEObjectValidator.validate(eObject.eClass().getClassifierID(), eObject, diagnostics, context);
 		}
 
-		for (CheckMethodWrapper method : checkMethodsForModelObjectType.get(getModelObjectType(eObject))) {
+		for (CheckMethodWrapper method : getCheckMethodsForModelObjectType(getModelObjectType(eObject))) {
 			try {
 				method.invoke(state, selectedCategories);
 			} catch (Exception ex) {
@@ -220,6 +214,21 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		}
 
 		return !state.hasErrors;
+	}
+
+	protected List<CheckMethodWrapper> getCheckMethodsForModelObjectType(Class<?> modelObjectType) {
+		List<CheckMethodWrapper> actualCheckMethodsForModelObjectType = actualModelObjectTypeToCheckMethodsMap.get(modelObjectType);
+		if (actualCheckMethodsForModelObjectType == null) {
+			actualCheckMethodsForModelObjectType = new ArrayList<CheckMethodWrapper>();
+			// Add Check method for current model object type and its super types
+			for (Class<?> collectedModelObjectType : collectedModelObjectTypeToCheckMethodsMap.keySet()) {
+				if (collectedModelObjectType.isAssignableFrom(modelObjectType)) {
+					actualCheckMethodsForModelObjectType.addAll(collectedModelObjectTypeToCheckMethodsMap.get(collectedModelObjectType));
+				}
+			}
+			actualModelObjectTypeToCheckMethodsMap.put(modelObjectType, actualCheckMethodsForModelObjectType);
+		}
+		return actualCheckMethodsForModelObjectType;
 	}
 
 	protected Set<String> getCategoriesFromContext(Map<Object, Object> context) {
@@ -271,11 +280,12 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	 */
 	protected void issue(EObject object, EStructuralFeature feature, int index, Object... arguments) {
 		String constraint = getState().get().constraint;
-		if (checkCatalogHelper == null) {
+		Catalog checkCatalog = getCheckCatalog();
+		if (checkCatalog == null) {
 			return;
 		}
-		String severityMessage = MessageFormat.format(checkCatalogHelper.getMessage(constraint), arguments);
-		Severity severity = checkCatalogHelper.getSeverity(constraint);
+		String severityMessage = MessageFormat.format(checkCatalog.getMessage(constraint), arguments);
+		Severity severity = checkCatalog.getSeverity(constraint);
 		switch (severity) {
 		case ERROR:
 			error(severityMessage, object, feature, index);
@@ -296,17 +306,16 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void error(String message, EObject object, EStructuralFeature feature, int index) {
-		// FIXME Add index to DiagnosticLocation
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature),
-				new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint) };
-		error(message, object, feature, index, data);
+		error(message, object, feature, index, createIssueData(object, feature, index));
 	}
 
 	protected void error(String message, EObject object, EStructuralFeature feature, int index, Object[] issueData) {
-		// FIXME Test if issueData contains DiagnosticLocation and create one from object/feature/index and add it to
-		// issueData if not so
 		getState().get().hasErrors = true;
-		getState().get().chain.add(createDiagnostic(Severity.ERROR, message, index, issueData));
+		if (!containsDiagnosticLocation(issueData)) {
+			getState().get().chain.add(createDiagnostic(Severity.INFO, message, addDiagnosticLocation(object, feature, index, issueData)));
+		} else {
+			getState().get().chain.add(createDiagnostic(Severity.ERROR, message, issueData));
+		}
 	}
 
 	protected void warning(String message, EObject object, EStructuralFeature feature) {
@@ -314,16 +323,15 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void warning(String message, EObject object, EStructuralFeature feature, int index) {
-		// FIXME Add index to DiagnosticLocation
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature),
-				new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint) };
-		warning(message, object, feature, index, data);
+		warning(message, object, feature, index, createIssueData(object, feature, index));
 	}
 
 	protected void warning(String message, EObject object, EStructuralFeature feature, int index, Object[] issueData) {
-		// FIXME Test if issueData contains DiagnosticLocation and create one from object/feature/index and add it to
-		// issueData if not so
-		getState().get().chain.add(createDiagnostic(Severity.WARNING, message, index, issueData));
+		if (!containsDiagnosticLocation(issueData)) {
+			getState().get().chain.add(createDiagnostic(Severity.INFO, message, addDiagnosticLocation(object, feature, index, issueData)));
+		} else {
+			getState().get().chain.add(createDiagnostic(Severity.WARNING, message, issueData));
+		}
 	}
 
 	protected void info(String message, EObject object, EStructuralFeature feature) {
@@ -331,20 +339,39 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void info(String message, EObject object, EStructuralFeature feature, int index) {
-		// FIXME Add index to DiagnosticLocation
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature),
-				new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint) };
-		info(message, object, feature, index, data);
+		info(message, object, feature, index, createIssueData(object, feature, index));
 	}
 
 	protected void info(String message, EObject object, EStructuralFeature feature, int index, Object[] issueData) {
-		// FIXME Test if issueData contains DiagnosticLocation and create one from object/feature/index and add it to
-		// issueData if not so
-		getState().get().chain.add(createDiagnostic(Severity.INFO, message, index, issueData));
+		if (!containsDiagnosticLocation(issueData)) {
+			getState().get().chain.add(createDiagnostic(Severity.INFO, message, addDiagnosticLocation(object, feature, index, issueData)));
+		} else {
+			getState().get().chain.add(createDiagnostic(Severity.INFO, message, issueData));
+		}
 	}
 
-	// FIXME Remove index from parameter list
-	protected Diagnostic createDiagnostic(Severity severity, String message, int index, Object[] issueData) {
+	protected Object[] addDiagnosticLocation(EObject object, EStructuralFeature feature, int index, Object[] issueData) {
+		Object[] result = Arrays.copyOf(issueData, issueData.length + 1);
+		result[issueData.length] = new DiagnosticLocation(object, feature, index);
+		return result;
+	}
+
+	protected boolean containsDiagnosticLocation(Object[] issueData) {
+		for (Object obj : issueData) {
+			if (obj instanceof DiagnosticLocation) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected Object[] createIssueData(EObject object, EStructuralFeature feature, int index) {
+		Object[] data = new Object[] { new DiagnosticLocation(object, feature, index),
+				new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint) };
+		return data;
+	}
+
+	protected Diagnostic createDiagnostic(Severity severity, String message, Object[] issueData) {
 		int diagnosticSeverity = toDiagnosticSeverity(severity);
 		Diagnostic result = new BasicDiagnostic(diagnosticSeverity, this.getClass().getName(), 0, message, issueData);
 		return result;
@@ -373,11 +400,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		return state;
 	}
 
-	/*
-	 * @see org.eclipse.sphinx.emf.check.ICheckValidator#getCheckModelHelper()
-	 */
-	@Override
-	public CheckCatalogHelper getCheckCatalogHelper() {
-		return checkCatalogHelper;
+	public Catalog getCheckCatalog() {
+		return CheckValidatorRegistry.INSTANCE.getCheckCatalog(this);
 	}
 }

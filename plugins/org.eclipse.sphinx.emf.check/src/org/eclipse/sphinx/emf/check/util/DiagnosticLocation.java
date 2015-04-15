@@ -23,9 +23,12 @@ public class DiagnosticLocation {
 
 	private EStructuralFeature feature;
 
-	public DiagnosticLocation(EObject object, EStructuralFeature feature) {
+	private int index;
+
+	public DiagnosticLocation(EObject object, EStructuralFeature feature, int index) {
 		setObject(object);
 		setFeature(feature);
+		setIndex(index);
 	}
 
 	public EObject getObject() {
@@ -42,5 +45,13 @@ public class DiagnosticLocation {
 
 	public void setFeature(EStructuralFeature feature) {
 		this.feature = feature;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 }
