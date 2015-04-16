@@ -41,16 +41,16 @@ import org.eclipse.sphinx.platform.operations.AbstractWorkspaceOperation;
 
 public class BasicCheckValidationOperation extends AbstractWorkspaceOperation {
 
-	private List<EObject> inputs;
+	private List<Object> modelObjects;
 	private Set<String> categories;
 
-	public BasicCheckValidationOperation(List<EObject> inputs, Set<String> categories) {
+	public BasicCheckValidationOperation(List<Object> modelObjects, Set<String> categories) {
 		super(Messages.operation_checkValidation_label);
-		Assert.isNotNull(inputs);
+		Assert.isNotNull(modelObjects);
 		Assert.isNotNull(categories);
 
 		this.categories = categories;
-		this.inputs = inputs;
+		this.modelObjects = modelObjects;
 	}
 
 	@Override
@@ -61,7 +61,6 @@ public class BasicCheckValidationOperation extends AbstractWorkspaceOperation {
 
 	@Override
 	public void run(IProgressMonitor monitor) throws CoreException {
-
 		try {
 			Runnable runnable = new Runnable() {
 
@@ -69,14 +68,13 @@ public class BasicCheckValidationOperation extends AbstractWorkspaceOperation {
 				public void run() {
 					Map<Object, Object> contextEntries = new HashMap<Object, Object>();
 					contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories);
-					for (EObject input : inputs) {
-						Diagnostic diagnostic = Diagnostician.INSTANCE.validate(input, contextEntries);
-						updateProblemMarkers(input, diagnostic);
+					for (Object modelObject : modelObjects) {
+						validate(modelObject, contextEntries);
 					}
 				}
 			};
 
-			TransactionalEditingDomain editingDomain = getEditingDomain(inputs.get(0));
+			TransactionalEditingDomain editingDomain = getEditingDomain(modelObjects.get(0));
 			if (editingDomain != null) {
 				editingDomain.runExclusive(runnable);
 			} else {
@@ -89,7 +87,14 @@ public class BasicCheckValidationOperation extends AbstractWorkspaceOperation {
 		}
 	}
 
-	protected TransactionalEditingDomain getEditingDomain(EObject input) {
+	protected void validate(Object modelObject, Map<Object, Object> contextEntries) {
+		if (modelObject instanceof EObject) {
+			Diagnostic diagnostic = Diagnostician.INSTANCE.validate((EObject) modelObject, contextEntries);
+			updateProblemMarkers((EObject) modelObject, diagnostic);
+		}
+	}
+
+	protected TransactionalEditingDomain getEditingDomain(Object input) {
 		return TransactionUtil.getEditingDomain(input);
 	}
 

@@ -92,50 +92,52 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 	}
 
 	protected boolean existsValidator() {
-		List<EObject> validationInputs = getValidationInputs();
-		for (EObject validationInput : validationInputs) {
-			final EPackage ePackage = validationInput.eClass().getEPackage();
-			EValidator validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
-			if (validator == null) {
-				return false;
+		List<Object> modelObjects = getModelObjects();
+		for (Object modelObject : modelObjects) {
+			if (modelObject instanceof EObject) {
+				final EPackage ePackage = ((EObject) modelObject).eClass().getEPackage();
+				EValidator validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
+				if (validator == null) {
+					return false;
+				}
 			}
 		}
-		return !validationInputs.isEmpty();
+		return !modelObjects.isEmpty();
 	}
 
-	protected List<EObject> getValidationInputs() {
+	protected List<Object> getModelObjects() {
 		IStructuredSelection structuredSelection = getStructuredSelection();
 		if (structuredSelection != null) {
-			List<EObject> eObjects = new ArrayList<EObject>();
+			List<Object> objects = new ArrayList<Object>();
 			for (Object selected : structuredSelection.toList()) {
-				eObjects.addAll(getEObjects(selected));
+				objects.addAll(getModelObjects(selected));
 			}
-			return eObjects;
+			return objects;
 		}
 		return Collections.emptyList();
 	}
 
-	protected List<EObject> getEObjects(Object object) {
+	protected List<Object> getModelObjects(Object object) {
 		// Wrapped model object or model object
 		object = AdapterFactoryEditingDomain.unwrap(object);
 		if (object instanceof EObject) {
-			return Collections.singletonList((EObject) object);
+			return Collections.singletonList(object);
 		}
 		if (object instanceof IWrapper<?>) {
 			Object target = ((IWrapper<?>) object).getTarget();
 			if (target instanceof EObject) {
-				return Collections.singletonList((EObject) target);
+				return Collections.singletonList(target);
 			}
 		}
 
 		// Group of model objects
 		if (object instanceof TransientItemProvider) {
 			TransientItemProvider provider = (TransientItemProvider) object;
-			List<EObject> eObjects = new ArrayList<EObject>();
+			List<Object> objects = new ArrayList<Object>();
 			for (Object child : provider.getChildren(object)) {
-				eObjects.addAll(getEObjects(child));
+				objects.addAll(getModelObjects(child));
 			}
-			return eObjects;
+			return objects;
 		}
 
 		// Model file or model resource
@@ -147,7 +149,9 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 			resource = (Resource) object;
 		}
 		if (resource != null) {
-			return resource.getContents();
+			List<Object> objects = new ArrayList<Object>();
+			objects.addAll(resource.getContents());
+			return objects;
 		}
 
 		return Collections.emptyList();
@@ -161,10 +165,10 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 			return;
 		}
 
-		final List<EObject> validationInputs = getValidationInputs();
+		final List<Object> modelObjects = getModelObjects();
 
 		// Create the check validation operation
-		final BasicCheckValidationOperation operation = createCheckValidationOperation(validationInputs, categories);
+		final BasicCheckValidationOperation operation = createCheckValidationOperation(modelObjects, categories);
 
 		if (isRunInBackground()) {
 			// Run the check validation operation in a workspace job
@@ -187,8 +191,8 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 		return new WorkspaceOperationWorkspaceJob(operation);
 	}
 
-	protected BasicCheckValidationOperation createCheckValidationOperation(List<EObject> validationInputs, Set<String> categories) {
-		return new BasicCheckValidationOperation(validationInputs, categories);
+	protected BasicCheckValidationOperation createCheckValidationOperation(List<Object> modelObjects, Set<String> categories) {
+		return new BasicCheckValidationOperation(modelObjects, categories);
 	}
 
 	// @return empty set (=> no check catalog), set with selected category ids, or null (=> check catalog but nothing
