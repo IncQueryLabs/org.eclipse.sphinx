@@ -41,7 +41,12 @@ import org.eclipse.ui.forms.SectionPart;
 
 public abstract class AbstractViewerFormSection extends AbstractFormSection implements IViewerProvider {
 
-	private Viewer viewer;
+	/**
+	 * @deprecated Use {@link #getViewer()} instead.
+	 */
+	@Deprecated
+	protected Viewer viewer;
+
 	private ITreeViewerState viewerState = null;
 	private TreeViewerStateRecorder treeViewerStateRecorder = new TreeViewerStateRecorder();
 	private IContentProvider contentProvider;
