@@ -109,4 +109,8 @@ class ProjectClassLoader extends URLClassLoader {
 	override toString() {
 		class.name + " [project=" + javaProject.project.name + "]";
 	}
+	
+	public def IJavaProject getProject() {
+		javaProject
+	}
 }

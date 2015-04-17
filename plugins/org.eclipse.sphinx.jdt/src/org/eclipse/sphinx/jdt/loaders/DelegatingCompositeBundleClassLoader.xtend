@@ -15,12 +15,11 @@
 package org.eclipse.sphinx.jdt.loaders
 
 import java.security.SecureClassLoader
-import java.util.Collections
+import java.util.Arrays
 import java.util.List
 import org.eclipse.core.runtime.Assert
 import org.osgi.framework.Bundle
 import org.osgi.framework.wiring.BundleWiring
-import java.util.Arrays
 
 class DelegatingCompositeBundleClassLoader extends SecureClassLoader {
 
@@ -34,7 +33,7 @@ class DelegatingCompositeBundleClassLoader extends SecureClassLoader {
 		this.bundles = bundles;
 	}
 
-	protected def List<ClassLoader> getBundleClassLoaders() {
+	public def List<ClassLoader> getBundleClassLoaders() {
 		if (bundleClassLoaders == null) {
 			// Retrieve original bundle class loaders for give set of bundles
 			bundleClassLoaders = bundles.map[adapt(BundleWiring)].filterNull.map[classLoader].toList
