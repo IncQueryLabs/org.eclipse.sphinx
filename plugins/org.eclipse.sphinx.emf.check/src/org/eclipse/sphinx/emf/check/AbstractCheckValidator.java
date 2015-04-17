@@ -117,7 +117,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		state.currentObject = object;
 	}
 
-	private synchronized void initCheckMethods() {
+	protected synchronized void initCheckMethods() {
 		if (!initialized) {
 			initialized = true;
 			Set<Class<?>> visitedValidatorTypes = new HashSet<Class<?>>();
@@ -152,7 +152,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			}
 		}
 		Class<?> superClass = validatorType.getSuperclass();
-		if (superClass != null && superClass.isAssignableFrom(ICheckValidator.class)) {
+		if (superClass != null && ICheckValidator.class.isAssignableFrom(superClass)) {
 			initCheckMethods(validator, (Class<ICheckValidator>) superClass, visitedValidatorTypes);
 		}
 	}

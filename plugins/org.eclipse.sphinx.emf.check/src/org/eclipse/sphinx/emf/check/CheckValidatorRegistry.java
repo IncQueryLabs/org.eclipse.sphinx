@@ -82,7 +82,7 @@ public class CheckValidatorRegistry {
 
 	private ILog logger;
 
-	private CheckValidatorRegistry(IExtensionRegistry extensionRegistry, EValidator.Registry eValidatorRegistry, ILog logger) {
+	protected CheckValidatorRegistry(IExtensionRegistry extensionRegistry, EValidator.Registry eValidatorRegistry, ILog logger) {
 		Assert.isNotNull(extensionRegistry);
 		Assert.isNotNull(eValidatorRegistry);
 		Assert.isNotNull(logger);
