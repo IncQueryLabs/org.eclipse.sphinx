@@ -27,6 +27,7 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.sphinx.emf.editors.forms.BasicTransactionalEditorActionBarContributor;
@@ -45,8 +46,10 @@ public abstract class AbstractViewerFormSection extends AbstractFormSection impl
 	 * @deprecated Use {@link #getViewer()} instead.
 	 */
 	@Deprecated
-	protected Viewer viewer;
+	protected StructuredViewer viewer;
 
+	// TODO Rename to "viewer" once deprectated protected viewer field can be removed
+	private Viewer privateViewer;
 	private ITreeViewerState viewerState = null;
 	private TreeViewerStateRecorder treeViewerStateRecorder = new TreeViewerStateRecorder();
 	private IContentProvider contentProvider;
@@ -75,11 +78,11 @@ public abstract class AbstractViewerFormSection extends AbstractFormSection impl
 	public void setSectionInput(Object sectionInput) {
 		super.setSectionInput(sectionInput);
 
-		if (viewer != null) {
-			Object oldViewerInput = viewer.getInput();
+		if (privateViewer != null) {
+			Object oldViewerInput = privateViewer.getInput();
 			Object newViewerInput = getViewerInput();
 			if (newViewerInput != oldViewerInput) {
-				viewer.setInput(newViewerInput);
+				privateViewer.setInput(newViewerInput);
 			}
 		}
 
@@ -88,11 +91,14 @@ public abstract class AbstractViewerFormSection extends AbstractFormSection impl
 
 	@Override
 	public Viewer getViewer() {
-		return viewer;
+		return privateViewer;
 	}
 
 	public void setViewer(Viewer viewer) {
-		this.viewer = viewer;
+		privateViewer = viewer;
+		if (viewer instanceof StructuredViewer) {
+			this.viewer = (StructuredViewer) viewer;
+		}
 
 		if (viewer instanceof TreeViewer) {
 			treeViewerStateRecorder.setViewer((TreeViewer) viewer);
@@ -107,14 +113,14 @@ public abstract class AbstractViewerFormSection extends AbstractFormSection impl
 	protected Composite doCreateSectionClient(final IManagedForm managedForm, final SectionPart sectionPart) {
 		Composite composite = super.doCreateSectionClient(managedForm, sectionPart);
 
-		if (viewer != null) {
+		if (privateViewer != null) {
 			// Register viewer as selection provider
-			formPage.getTransactionalFormEditor().setSelectionProvider(viewer);
-			viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			formPage.getTransactionalFormEditor().setSelectionProvider(privateViewer);
+			privateViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 				@Override
 				public void selectionChanged(SelectionChangedEvent event) {
 					managedForm.fireSelectionChanged(sectionPart, event.getSelection());
-					formPage.getTransactionalFormEditor().setSelectionProvider(viewer);
+					formPage.getTransactionalFormEditor().setSelectionProvider(privateViewer);
 				}
 			});
 
@@ -126,9 +132,9 @@ public abstract class AbstractViewerFormSection extends AbstractFormSection impl
 
 	@Override
 	public boolean isEmpty() {
-		if (viewer != null) {
+		if (privateViewer != null) {
 			try {
-				Object[] filteredChildren = (Object[]) ReflectUtil.invokeInvisibleMethod(viewer, "getFilteredChildren", getViewerInput()); //$NON-NLS-1$
+				Object[] filteredChildren = (Object[]) ReflectUtil.invokeInvisibleMethod(privateViewer, "getFilteredChildren", getViewerInput()); //$NON-NLS-1$
 				return filteredChildren.length == 0;
 			} catch (Exception ex) {
 				// Ignore exception
