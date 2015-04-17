@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Sphinx Mars Target" sequenceNumber="18">
+<?pde version="3.8"?><target name="Sphinx Mars Target" sequenceNumber="19">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="4.5.0.I20150320-0800"/>
@@ -22,7 +22,7 @@
 <unit id="org.eclipse.mylyn.wikitext_feature.feature.group" version="2.4.0.v20150316-1818"/>
 <unit id="org.eclipse.xpand.sdk.feature.group" version="2.1.0.v201503240650"/>
 <unit id="org.eclipse.xsd.sdk.feature.group" version="2.10.0.v20150323-0420"/>
-<unit id="org.eclipse.xtext.sdk.feature.group" version="2.8.1.v201503230617"/>
+<unit id="org.eclipse.xtext.sdk.feature.group" version="2.8.2.v201504100559"/>
 <repository location="http://download.eclipse.org/releases/staging"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
