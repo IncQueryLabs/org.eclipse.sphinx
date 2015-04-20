@@ -22,6 +22,10 @@ import org.eclipse.sphinx.examples.hummingbird20.check.simple.SimpleHummingbird2
 
 public class TestableSimpleHummingbird20NamingCheckValidator extends SimpleHummingbird20NamingCheckValidator {
 
+	public TestableSimpleHummingbird20NamingCheckValidator() {
+		super(TestableCheckValidatorRegistry.INSTANCE);
+	}
+
 	@Override
 	public void initCheckMethods() {
 		super.initCheckMethods();

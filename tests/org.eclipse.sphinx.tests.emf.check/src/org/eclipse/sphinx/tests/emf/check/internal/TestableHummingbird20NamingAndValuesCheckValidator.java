@@ -25,6 +25,12 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 
 public class TestableHummingbird20NamingAndValuesCheckValidator extends Hummingbird20NamingAndValuesCheckValidator {
 
+	public static final String ISSUE_MSG_TEST1 = "(#test1: part of Category1 and Category2 as per check catalog and blank check annotation)"; //$NON-NLS-1$
+
+	public TestableHummingbird20NamingAndValuesCheckValidator() {
+		super(TestableCheckValidatorRegistry.INSTANCE);
+	}
+
 	@Override
 	public void initCheckMethods() {
 		super.initCheckMethods();
@@ -37,7 +43,6 @@ public class TestableHummingbird20NamingAndValuesCheckValidator extends Hummingb
 
 	@Check(constraint = "ApplicationNameNotValid")
 	void checkIdentifiableName(Identifiable identifiable) {
-		issue(identifiable, Common20Package.Literals.IDENTIFIABLE__NAME,
-				"(#test: part of Category1 and Category2 as per check catalog and blank check annotation)"); //$NON-NLS-1$
+		issue(identifiable, Common20Package.Literals.IDENTIFIABLE__NAME, ISSUE_MSG_TEST1);
 	}
 }

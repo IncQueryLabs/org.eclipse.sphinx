@@ -15,7 +15,21 @@
 
 package org.eclipse.sphinx.tests.emf.check.internal.mocks;
 
+import org.eclipse.sphinx.tests.emf.check.internal.TestableHummingbird20ConnectionsCheckValidator;
+import org.eclipse.sphinx.tests.emf.check.internal.TestableHummingbird20NamingAndValuesCheckValidator;
+import org.eclipse.sphinx.tests.emf.check.internal.TestableSimpleHummingbird20NamingCheckValidator;
+
 public class ValidatorContribution {
+
+	public static final ValidatorContribution testableSimpleHummingbird20NamingCheckValidator = new ValidatorContribution(
+			TestableSimpleHummingbird20NamingCheckValidator.class.getName(), null);
+
+	public static final ValidatorContribution testableHummingbird20NamingAndValuesCheckValidator = new ValidatorContribution(
+			TestableHummingbird20NamingAndValuesCheckValidator.class.getName(), "resources/input/Hummingbird20.checkcatalog"); //$NON-NLS-1$
+
+	public static final ValidatorContribution testableHummingbird20ConnectionsCheckValidator = new ValidatorContribution(
+			TestableHummingbird20ConnectionsCheckValidator.class.getName(),
+			"platform:/plugin/org.eclipse.sphinx.examples.hummingbird20.check/model/Hummingbird20.checkcatalog"); //$NON-NLS-1$
 
 	private String validatorClass;
 

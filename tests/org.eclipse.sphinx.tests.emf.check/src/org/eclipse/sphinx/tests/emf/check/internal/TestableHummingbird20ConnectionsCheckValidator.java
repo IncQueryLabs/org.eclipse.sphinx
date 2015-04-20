@@ -22,6 +22,10 @@ import org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20
 
 public class TestableHummingbird20ConnectionsCheckValidator extends Hummingbird20ConnectionsCheckValidator {
 
+	public TestableHummingbird20ConnectionsCheckValidator() {
+		super(TestableCheckValidatorRegistry.INSTANCE);
+	}
+
 	@Override
 	public void initCheckMethods() {
 		super.initCheckMethods();

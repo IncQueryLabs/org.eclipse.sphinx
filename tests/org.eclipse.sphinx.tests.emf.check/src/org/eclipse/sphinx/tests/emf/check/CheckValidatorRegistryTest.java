@@ -14,7 +14,9 @@
  */
 package org.eclipse.sphinx.tests.emf.check;
 
-import static org.junit.Assert.assertNotNull;
+import static org.eclipse.sphinx.tests.emf.check.internal.mocks.ValidatorContribution.testableHummingbird20ConnectionsCheckValidator;
+import static org.eclipse.sphinx.tests.emf.check.internal.mocks.ValidatorContribution.testableHummingbird20NamingAndValuesCheckValidator;
+import static org.eclipse.sphinx.tests.emf.check.internal.mocks.ValidatorContribution.testableSimpleHummingbird20NamingCheckValidator;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,39 +29,24 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Pa
 import org.eclipse.sphinx.tests.emf.check.internal.Activator;
 import org.eclipse.sphinx.tests.emf.check.internal.TestableCheckValidatorRegistry;
 import org.eclipse.sphinx.tests.emf.check.internal.mocks.CheckValidatorRegistryMockFactory;
-import org.eclipse.sphinx.tests.emf.check.internal.mocks.ValidatorContribution;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-@SuppressWarnings("nls")
 public class CheckValidatorRegistryTest {
 
 	private static CheckValidatorRegistryMockFactory mockFactory = new CheckValidatorRegistryMockFactory();
 
-	private static TestableCheckValidatorRegistry checkValidatorRegistry;
-
-	private static final ValidatorContribution simpleHummingbird20NamingCheckValidator = new ValidatorContribution(
-			"org.eclipse.sphinx.examples.hummingbird20.check.simple.SimpleHummingbird20NamingCheckValidator", null);
-
-	private static final ValidatorContribution hummingbird20NamingAndValuesCheckValidator = new ValidatorContribution(
-			"org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator",
-			"resources/input/Hummingbird20.checkcatalog");
-
-	private static final ValidatorContribution hummingbird20ConnectionsCheckValidator = new ValidatorContribution(
-			"org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20ConnectionsCheckValidator",
-			"platform:/plugin/org.eclipse.sphinx.examples.hummingbird20.check/model/Hummingbird20.checkcatalog");
-
-	@BeforeClass
-	public static void initCheckValidatorRegistry() {
-		IExtensionRegistry extensionRegistry = mockFactory.createExtensionRegistryMock(Activator.getPlugin(),
-				simpleHummingbird20NamingCheckValidator, hummingbird20NamingAndValuesCheckValidator, hummingbird20ConnectionsCheckValidator);
-		checkValidatorRegistry = new TestableCheckValidatorRegistry(extensionRegistry, new org.eclipse.emf.ecore.impl.EValidatorRegistryImpl());
-	}
-
 	@Test
 	public void testContributedValidators() {
-		assertNotNull(checkValidatorRegistry);
+		IExtensionRegistry extensionRegistry = mockFactory.createExtensionRegistryMock(Activator.getPlugin(),
+				testableSimpleHummingbird20NamingCheckValidator, testableHummingbird20NamingAndValuesCheckValidator,
+				testableHummingbird20ConnectionsCheckValidator);
+		EValidator.Registry eValidatorRegistry = new org.eclipse.emf.ecore.impl.EValidatorRegistryImpl();
+
+		TestableCheckValidatorRegistry checkValidatorRegistry = TestableCheckValidatorRegistry.INSTANCE;
+		checkValidatorRegistry.clear();
+		checkValidatorRegistry.setExtensionRegistry(extensionRegistry);
+		checkValidatorRegistry.setEValidatorRegistry(eValidatorRegistry);
 
 		EValidator validator = checkValidatorRegistry.getValidator(InstanceModel20Package.eINSTANCE);
 		Assert.assertNotNull(validator);
@@ -72,7 +59,16 @@ public class CheckValidatorRegistryTest {
 
 	@Test
 	public void testCheckCatalogs() {
-		assertNotNull(checkValidatorRegistry);
+		IExtensionRegistry extensionRegistry = mockFactory.createExtensionRegistryMock(Activator.getPlugin(),
+				testableSimpleHummingbird20NamingCheckValidator, testableHummingbird20NamingAndValuesCheckValidator,
+				testableHummingbird20ConnectionsCheckValidator);
+		EValidator.Registry eValidatorRegistry = new org.eclipse.emf.ecore.impl.EValidatorRegistryImpl();
+
+		TestableCheckValidatorRegistry checkValidatorRegistry = TestableCheckValidatorRegistry.INSTANCE;
+		checkValidatorRegistry.clear();
+		checkValidatorRegistry.setExtensionRegistry(extensionRegistry);
+		checkValidatorRegistry.setEValidatorRegistry(eValidatorRegistry);
+
 		Collection<Catalog> checkCatalogs = checkValidatorRegistry.getCheckCatalogs();
 		Assert.assertEquals(2, checkCatalogs.size());
 	}

@@ -43,6 +43,7 @@ import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.internal.Activator;
 import org.eclipse.sphinx.emf.check.internal.CheckValidatorDescriptor;
 import org.eclipse.sphinx.emf.check.internal.EPackageMappings;
+import org.eclipse.sphinx.emf.check.util.CheckUtil;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -71,14 +72,14 @@ public class CheckValidatorRegistry {
 	public static final CheckValidatorRegistry INSTANCE = new CheckValidatorRegistry(Platform.getExtensionRegistry(), EValidator.Registry.INSTANCE,
 			PlatformLogUtil.getLog(Activator.getPlugin()));
 
-	private Map<ICheckValidator, URI> checkValidatorToCheckCatalogURIMap = null;
-	private Map<URI, Set<ICheckValidator>> checkCatalogURIToCheckValidatorsMap = null;
+	protected Map<ICheckValidator, URI> checkValidatorToCheckCatalogURIMap = null;
+	protected Map<URI, Set<ICheckValidator>> checkCatalogURIToCheckValidatorsMap = null;
 
-	private Map<URI, Catalog> uriToCheckCatalogMap = new HashMap<URI, Catalog>();
+	protected Map<URI, Catalog> uriToCheckCatalogMap = new HashMap<URI, Catalog>();
 
-	private IExtensionRegistry extensionRegistry;
+	protected IExtensionRegistry extensionRegistry;
 
-	private EValidator.Registry eValidatorRegistry;
+	protected EValidator.Registry eValidatorRegistry;
 
 	private ILog logger;
 
@@ -188,11 +189,11 @@ public class CheckValidatorRegistry {
 	 * @param validatorClass
 	 * @return
 	 */
-	private Set<Class<?>> findClassesUnderCheck(Class<?> validatorClass) {
+	private Set<Class<?>> findClassesUnderCheck(Class<? extends ICheckValidator> validatorClass) {
 		Assert.isNotNull(validatorClass);
 
 		Set<Class<?>> classesUnderCheck = new HashSet<Class<?>>();
-		Method[] methods = validatorClass.getDeclaredMethods();
+		Collection<Method> methods = CheckUtil.getDeclaredCheckMethods(validatorClass);
 		for (Method method : methods) {
 			Annotation[] annotations = method.getAnnotations();
 			for (Annotation annotation : annotations) {

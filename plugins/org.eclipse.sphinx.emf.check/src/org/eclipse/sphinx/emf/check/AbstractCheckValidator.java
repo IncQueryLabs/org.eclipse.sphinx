@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +40,7 @@ import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.catalog.Severity;
 import org.eclipse.sphinx.emf.check.internal.Activator;
 import org.eclipse.sphinx.emf.check.internal.CheckMethodWrapper;
+import org.eclipse.sphinx.emf.check.util.CheckUtil;
 import org.eclipse.sphinx.emf.check.util.DiagnosticLocation;
 import org.eclipse.sphinx.emf.check.util.ExtendedEObjectValidator;
 import org.eclipse.sphinx.emf.check.util.SourceLocation;
@@ -66,6 +66,8 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	private Map<Class<?>, List<CheckMethodWrapper>> actualModelObjectTypeToCheckMethodsMap;
 
+	private CheckValidatorRegistry checkValidatorRegistry;
+
 	protected static class CheckValidatorStateAccess {
 
 		private ICheckValidator validator;
@@ -85,10 +87,15 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	public AbstractCheckValidator() {
+		this(CheckValidatorRegistry.INSTANCE);
+	}
+
+	public AbstractCheckValidator(CheckValidatorRegistry checkValidatorRegistry) {
 		state = new ThreadLocal<CheckValidatorState>();
 		extendedEObjectValidator = new ExtendedEObjectValidator();
 		collectedModelObjectTypeToCheckMethodsMap = new HashMap<Class<?>, List<CheckMethodWrapper>>();
 		actualModelObjectTypeToCheckMethodsMap = new HashMap<Class<?>, List<CheckMethodWrapper>>();
+		this.checkValidatorRegistry = checkValidatorRegistry;
 	}
 
 	protected Class<?> getModelObjectType(EObject eObject) {
@@ -120,40 +127,10 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	protected synchronized void initCheckMethods() {
 		if (!initialized) {
 			initialized = true;
-			Set<Class<?>> visitedValidatorTypes = new HashSet<Class<?>>();
-			initCheckMethods(this, getClass(), visitedValidatorTypes);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void initCheckMethods(ICheckValidator validator, Class<? extends ICheckValidator> validatorType,
-			Collection<Class<?>> visitedValidatorTypes) {
-		Assert.isNotNull(validatorType);
-		Assert.isNotNull(visitedValidatorTypes);
-
-		if (!visitedValidatorTypes.add(validatorType)) {
-			return;
-		}
-		if (validator == null) {
-			try {
-				validator = validatorType.newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-				return;
+			Collection<Method> declaredCheckMethods = CheckUtil.getDeclaredCheckMethods(getClass());
+			for (Method method : declaredCheckMethods) {
+				addCheckMethod(this, method);
 			}
-		}
-
-		Method[] methods = validatorType.getDeclaredMethods();
-		for (Method method : methods) {
-			// Current method being a check method, i.e. a method annotated with @Check and having one parameter?
-			Check annotation = method.getAnnotation(Check.class);
-			if (annotation != null && method.getParameterTypes().length == 1) {
-				addCheckMethod(validator, method);
-			}
-		}
-		Class<?> superClass = validatorType.getSuperclass();
-		if (superClass != null && ICheckValidator.class.isAssignableFrom(superClass)) {
-			initCheckMethods(validator, (Class<ICheckValidator>) superClass, visitedValidatorTypes);
 		}
 	}
 
@@ -168,7 +145,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected CheckMethodWrapper createCheckMethodWrapper(ICheckValidator validator, Method method) {
-		return new CheckMethodWrapper(validator, method);
+		return new CheckMethodWrapper(validator, method, checkValidatorRegistry);
 	}
 
 	protected boolean isIntrinsicCategorySelected(Set<String> selectedCategories) {
@@ -401,6 +378,6 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	public Catalog getCheckCatalog() {
-		return CheckValidatorRegistry.INSTANCE.getCheckCatalog(this);
+		return checkValidatorRegistry.getCheckCatalog(this);
 	}
 }

@@ -34,33 +34,21 @@ import org.eclipse.sphinx.emf.check.catalog.Category;
 
 public class CheckMethodWrapper {
 
-	public static Set<String> getAnnotatedCategories(Check checkAnnotation) {
-		if (checkAnnotation != null) {
-			String[] categories = checkAnnotation.categories();
-			if (categories.length > 0) {
-				// Ignore isolate empty categories
-				if (categories.length > 1 || !categories[0].isEmpty()) {
-					return new HashSet<String>(Arrays.asList(categories));
-				}
-			}
-		}
-		return Collections.emptySet();
-	}
-
-	private ICheckValidator validator;
-
 	private Method method;
-	private String signature;
 	private Check checkAnnotation;
+	private ICheckValidator validator;
+	private CheckValidatorRegistry checkValidatorRegistry;
 
-	public CheckMethodWrapper(ICheckValidator validator, Method method) {
+	public CheckMethodWrapper(ICheckValidator validator, Method method, CheckValidatorRegistry checkValidatorRegistry) {
 		Assert.isNotNull(validator);
 		Assert.isNotNull(method);
+		Assert.isNotNull(checkValidatorRegistry);
+		Assert.isNotNull(method.getAnnotation(Check.class));
 
 		this.validator = validator;
 		this.method = method;
-		signature = method.getName() + ":" + method.getParameterTypes()[0].getName(); //$NON-NLS-1$
 		checkAnnotation = method.getAnnotation(Check.class);
+		this.checkValidatorRegistry = checkValidatorRegistry;
 	}
 
 	public ICheckValidator getValidator() {
@@ -76,7 +64,14 @@ public class CheckMethodWrapper {
 	}
 
 	public Set<String> getAnnotatedCategories() {
-		return getAnnotatedCategories(checkAnnotation);
+		String[] categories = checkAnnotation.categories();
+		if (categories.length > 0) {
+			// Ignore isolate empty categories
+			if (categories.length > 1 || !categories[0].isEmpty()) {
+				return new HashSet<String>(Arrays.asList(categories));
+			}
+		}
+		return Collections.emptySet();
 	}
 
 	private boolean isOtherCategorySelected(Set<String> selectedCategories) {
@@ -108,36 +103,61 @@ public class CheckMethodWrapper {
 
 			Set<String> categories = new HashSet<String>();
 			categories.addAll(selectedCategories);
+			Set<String> annotatedCategories = getAnnotatedCategories();
+			Catalog catalog = checkValidatorRegistry.getCheckCatalog(validator);
 
 			// If no categories are specified in the check method's @Check annotation, invoke the check method on all
 			// categories as per the underlying constraint in the check catalog; otherwise invoke the check method on
 			// the intersection of categories provided by the user, and the categories defined in the check
 			// catalog.
-			Catalog catalog = CheckValidatorRegistry.INSTANCE.getCheckCatalog(validator);
-			Set<String> annotatedCategories = getAnnotatedCategories();
-			if (annotatedCategories.isEmpty() && !isOtherCategorySelected(selectedCategories)) {
-				return;
+
+			// Case 1: Only @Check annotation without constraint
+			if (getAnnotatedConstraint().isEmpty()) {
+				if (isOtherCategorySelected(selectedCategories)) {
+					invokeInternal(state);
+				}
 			}
-			if (!annotatedCategories.isEmpty()) {
+
+			// Case 2: @Check annotation with a constraint and without any category
+			else if (annotatedCategories.isEmpty()) {
+				if (catalog != null && !catalog.getCategories().isEmpty()) {
+					retainAll(categories, catalog.getCategories());
+					// Go ahead if scope is not empty
+					if (!categories.isEmpty()) {
+						invokeInternal(state);
+					}
+				}
+			}
+
+			// Case 3: @Check annotation with a constraint and categories
+			else {
+				// Make intersection with annotated categories
 				categories.retainAll(annotatedCategories);
+
+				// Make intersection with categories associated with this validator in check catalog
+				if (catalog != null && !catalog.getCategories().isEmpty()) {
+					retainAll(categories, catalog.getCategories());
+				}
+
+				// Go ahead if scope is not empty
+				if (!categories.isEmpty()) {
+					invokeInternal(state);
+				}
 			}
-			// Make intersection with categories associated with this validator in check catalog
-			if (catalog != null && !catalog.getCategories().isEmpty()) {
-				retainAll(categories, catalog.getCategories());
-			}
-			// Go ahead if scope is not empty or if validator has no check catalog
-			if (!categories.isEmpty() || catalog == null) {
-				state.currentMethod = method;
-				state.currentCheckType = checkAnnotation.value();
-				state.constraint = getAnnotatedConstraint();
-				method.setAccessible(true);
-				method.invoke(validator, state.currentObject);
-			}
+
 		} finally {
 			if (wasNull) {
 				validator.getState().set(null);
 			}
 		}
+	}
+
+	protected void invokeInternal(CheckValidatorState state) throws IllegalAccessException, InvocationTargetException {
+		state.currentMethod = method;
+		state.currentCheckType = checkAnnotation.value();
+		state.constraint = getAnnotatedConstraint();
+		method.setAccessible(true);
+		method.invoke(validator, state.currentObject);
 	}
 
 	private void retainAll(Set<String> categories, EList<Category> categoryList) {
@@ -150,16 +170,32 @@ public class CheckMethodWrapper {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof CheckMethodWrapper)) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
 			return false;
 		}
-		CheckMethodWrapper mw = (CheckMethodWrapper) obj;
-		return signature.equals(mw.signature) && validator == mw.validator;
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		CheckMethodWrapper other = (CheckMethodWrapper) obj;
+		if (!method.equals(other.method)) {
+			return false;
+		}
+		if (!validator.equals(other.validator)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		return signature.hashCode() ^ validator.hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + method.hashCode();
+		result = prime * result + validator.hashCode();
+		return result;
 	}
 
 	@Override
