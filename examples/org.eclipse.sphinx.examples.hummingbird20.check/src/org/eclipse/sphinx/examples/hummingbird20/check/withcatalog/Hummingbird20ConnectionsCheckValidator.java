@@ -16,6 +16,7 @@ package org.eclipse.sphinx.examples.hummingbird20.check.withcatalog;
 
 import org.eclipse.sphinx.emf.check.AbstractCheckValidator;
 import org.eclipse.sphinx.emf.check.Check;
+import org.eclipse.sphinx.emf.check.CheckValidatorRegistry;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
@@ -24,6 +25,14 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Port;
 
 public class Hummingbird20ConnectionsCheckValidator extends AbstractCheckValidator {
+
+	public Hummingbird20ConnectionsCheckValidator() {
+		super();
+	}
+
+	public Hummingbird20ConnectionsCheckValidator(CheckValidatorRegistry checkValidatorRegistry) {
+		super(checkValidatorRegistry);
+	}
 
 	@Check(constraint = "ConnectionTargetComponentNotValid", categories = { "Category1" })
 	void checkConnectionTargetComponent(Connection connection) {

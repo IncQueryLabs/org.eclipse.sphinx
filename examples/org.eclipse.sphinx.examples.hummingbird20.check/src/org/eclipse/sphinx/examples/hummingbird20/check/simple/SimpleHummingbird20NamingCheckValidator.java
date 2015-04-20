@@ -2,6 +2,7 @@ package org.eclipse.sphinx.examples.hummingbird20.check.simple;
 
 import org.eclipse.sphinx.emf.check.AbstractCheckValidator;
 import org.eclipse.sphinx.emf.check.Check;
+import org.eclipse.sphinx.emf.check.CheckValidatorRegistry;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 
@@ -17,13 +18,22 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 public class SimpleHummingbird20NamingCheckValidator extends AbstractCheckValidator {
 
 	private final static String INVALID_NAME_PREFIX = "_"; //$NON-NLS-1$
+	public static final String ISSUE_MSG_CASE1 = "(Case #1: The application name has an invalid prefix)"; //$NON-NLS-1$
+
+	public SimpleHummingbird20NamingCheckValidator() {
+
+	}
+
+	public SimpleHummingbird20NamingCheckValidator(CheckValidatorRegistry checkValidatorRegistry) {
+		super(checkValidatorRegistry);
+	}
 
 	@Check
 	void checkApplicationName(Application application) {
 		String name = application.getName();
 		if (name != null && name.startsWith(INVALID_NAME_PREFIX)) {
 			//error("The application name has an invalid prefix", application, Common20Package.Literals.IDENTIFIABLE__NAME); //$NON-NLS-1$
-			warning("The application name has an invalid prefix", application, Common20Package.Literals.IDENTIFIABLE__NAME); //$NON-NLS-1$
+			warning(ISSUE_MSG_CASE1, application, Common20Package.Literals.IDENTIFIABLE__NAME);
 			//info("The application name has an invalid prefix", application, Common20Package.Literals.IDENTIFIABLE__NAME); //$NON-NLS-1$
 		}
 	}
