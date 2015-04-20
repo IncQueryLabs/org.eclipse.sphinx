@@ -139,6 +139,12 @@ public class DefaultTestReferenceWorkspace extends AbstractReferenceWorkspace {
 	public static final String UML2_FILE_NAME_20E_2 = "uml2File_20E_2.uml";
 	public static final String UML2_FILE_NAME_20E_3 = "uml2File_20E_3.uml";
 
+	/* ----- HUMMINGBIRD 20 Workflows ----- */
+	public static final String HB_PROJECT_NAME_20_WORKFLOWS = "hbProject20.workflows";
+
+	public static final String HB_FILE_NAME_20_SAMPLE_1 = "model/sample.instancemodel";
+	public static final String HB_FILE_NAME_20_SAMPLE_2 = "model/sample2.instancemodel";
+
 	/* ----- Projects ----- */
 	public IProject hbProject10_A;
 	public IProject hbProject10_B;
@@ -151,6 +157,7 @@ public class DefaultTestReferenceWorkspace extends AbstractReferenceWorkspace {
 	public IProject hbProject20_C;
 	public IProject hbProject20_D;
 	public IProject hbProject20_E;
+	public IProject hbProject20_Workflows;
 
 	/* ----- EditingDomains ----- */
 	public TransactionalEditingDomain editingDomain10;
@@ -189,6 +196,7 @@ public class DefaultTestReferenceWorkspace extends AbstractReferenceWorkspace {
 		hbProject20_C = getReferenceProject(HB_PROJECT_NAME_20_C);
 		hbProject20_D = getReferenceProject(HB_PROJECT_NAME_20_D);
 		hbProject20_E = getReferenceProject(HB_PROJECT_NAME_20_E);
+		hbProject20_Workflows = getReferenceProject(HB_PROJECT_NAME_20_WORKFLOWS);
 	}
 
 	protected void initReferenceEditingDomainAccessors() {
@@ -233,11 +241,14 @@ public class DefaultTestReferenceWorkspace extends AbstractReferenceWorkspace {
 				Hummingbird20MMDescriptor.INSTANCE);
 		addFileDescriptors(HB_PROJECT_NAME_20_E, new String[] { UML2_FILE_NAME_20E_1, UML2_FILE_NAME_20E_2, UML2_FILE_NAME_20E_3 },
 				UML2MMDescriptor.INSTANCE);
+		addFileDescriptors(HB_PROJECT_NAME_20_WORKFLOWS, new String[] { HB_FILE_NAME_20_SAMPLE_1, HB_FILE_NAME_20_SAMPLE_2 },
+				Hummingbird20MMDescriptor.INSTANCE);
 	}
 
 	@Override
 	protected String[] getReferenceProjectsNames() {
 		return new String[] { HB_PROJECT_NAME_10_A, HB_PROJECT_NAME_10_B, HB_PROJECT_NAME_10_C, HB_PROJECT_NAME_10_D, HB_PROJECT_NAME_10_E,
-				HB_PROJECT_NAME_10_F, HB_PROJECT_NAME_20_A, HB_PROJECT_NAME_20_B, HB_PROJECT_NAME_20_C, HB_PROJECT_NAME_20_D, HB_PROJECT_NAME_20_E };
+				HB_PROJECT_NAME_10_F, HB_PROJECT_NAME_20_A, HB_PROJECT_NAME_20_B, HB_PROJECT_NAME_20_C, HB_PROJECT_NAME_20_D, HB_PROJECT_NAME_20_E,
+				HB_PROJECT_NAME_20_WORKFLOWS };
 	}
 }
