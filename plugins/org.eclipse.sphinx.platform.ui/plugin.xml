@@ -7,11 +7,22 @@
             class="org.eclipse.sphinx.platform.ui.handlers.ExtendedNewPropertySheetHandler"
             commandId="org.eclipse.ui.views.properties.NewPropertySheetCommand">
          <activeWhen>
-            <instanceof
-                  value="java.lang.Object">
-            </instanceof>
+            <or>
+               <with
+                     variable="activePartId">
+                  <equals
+                        value="org.eclipse.search.ui.views.SearchView">
+                  </equals>
+               </with>
+               <with
+                     variable="activePartId">
+                  <equals
+                        value="org.eclipse.sphinx.emf.check.ui.markersView">
+                  </equals>
+               </with>
+            </or>
          </activeWhen>
-      </handler>
+     </handler>
    </extension>
    
    <extension-point id="documentationViewFormatters" name="%documentationViewFormatters.name" schema="schema/documentationViewFormatters.exsd"/>

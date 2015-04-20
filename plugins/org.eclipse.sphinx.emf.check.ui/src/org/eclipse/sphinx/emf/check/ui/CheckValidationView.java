@@ -87,7 +87,8 @@ public class CheckValidationView extends MarkerSupportView implements ITabbedPro
 		for (IMarker marker : markers) {
 			try {
 				if (marker.isSubtypeOf(EValidator.MARKER)) {
-					TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(marker.getResource());
+					IResource resource = marker.getResource();
+					TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(resource);
 					if (editingDomain != null) {
 						String uriAttribute = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
 						if (uriAttribute != null) {
