@@ -41,7 +41,7 @@ public class ProjectClassLoaderTest extends DefaultIntegrationTestCase {
 		projectsToLoad.add(DefaultTestReferenceWorkspace.HB_PROJECT_NAME_20_WORKFLOWS);
 	}
 
-	protected List<ClassLoader> getClassLoaderHierarchy() {
+	protected List<ClassLoader> getClassLoaderHierarchy() throws Exception {
 		List<ClassLoader> classLoaderHierarchy = new ArrayList<ClassLoader>();
 		ProjectClassLoader projectClassLoader = new ProjectClassLoader(getProject());
 		classLoaderHierarchy.add(projectClassLoader);
@@ -55,8 +55,9 @@ public class ProjectClassLoaderTest extends DefaultIntegrationTestCase {
 		return classLoaderHierarchy;
 	}
 
-	protected IJavaProject getProject() {
+	protected IJavaProject getProject() throws Exception {
 		if (javaProject == null) {
+			synchronizedOpenProject(refWks.hbProject20_Workflows);
 			javaProject = JavaCore.create(refWks.hbProject20_Workflows);
 		}
 		return javaProject;
