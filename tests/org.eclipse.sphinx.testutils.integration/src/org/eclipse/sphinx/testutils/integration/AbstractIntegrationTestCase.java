@@ -1466,8 +1466,8 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 				final String fileName = file.getName();
 				final String fileExtension = file.getFileExtension();
 				if (!fileName.startsWith(".") && !hasDotParent(file) && !fileExtension.equals("java") && !fileExtension.equals("xtend")
-						&& !fileExtension.equals("MF") && !fileName.equals("pom.xml") && !fileName.equals("plugin.xml")
-						&& !fileName.equals("plugin.properties")) {
+						&& !fileExtension.equals("_trace") && !fileExtension.equals("class") && !fileExtension.equals("MF")
+						&& !fileName.equals("pom.xml") && !fileName.equals("plugin.xml") && !fileName.equals("plugin.properties")) {
 					allFiles.add(file);
 				}
 			}
