@@ -36,7 +36,7 @@ public class ModelManagementTest extends DefaultIntegrationTestCase {
 		int modelsCount = ModelDescriptorRegistry.INSTANCE.getModels(ResourcesPlugin.getWorkspace().getRoot()).size();
 
 		// All non dot files must be present in file meta-model descriptor cache
-		assertInFileMetaModelDescriptorCache(getAllNonDotFiles());
+		assertInFileMetaModelDescriptorCache(getAllModelFiles());
 		assertOldFileMetaModelDescriptorCacheSizeEquals(0);
 
 		// Unload all models from one project
@@ -44,7 +44,7 @@ public class ModelManagementTest extends DefaultIntegrationTestCase {
 		// All models of unloaded project must stay in place
 		assertWorkspaceModelsSizeEquals(modelsCount);
 		// Underlying files must still be present in file meta-model descriptor cache
-		assertInFileMetaModelDescriptorCache(getAllNonDotFiles());
+		assertInFileMetaModelDescriptorCache(getAllModelFiles());
 		assertOldFileMetaModelDescriptorCacheSizeEquals(0);
 
 		// Delete one file from one project
@@ -75,7 +75,7 @@ public class ModelManagementTest extends DefaultIntegrationTestCase {
 		// All models should stay in place
 		assertWorkspaceModelsSizeEquals(modelsCount);
 		// Underlying files must still be present in file meta-model descriptor cache
-		assertInFileMetaModelDescriptorCache(getAllNonDotFiles());
+		assertInFileMetaModelDescriptorCache(getAllModelFiles());
 		assertOldFileMetaModelDescriptorCacheSizeEquals(0);
 
 		// Delete all other projects
@@ -91,7 +91,7 @@ public class ModelManagementTest extends DefaultIntegrationTestCase {
 		int modelsCount = ModelDescriptorRegistry.INSTANCE.getModels(ResourcesPlugin.getWorkspace().getRoot()).size();
 
 		// All non dot files must be present in file meta-model descriptor cache
-		assertInFileMetaModelDescriptorCache(getAllNonDotFiles());
+		assertInFileMetaModelDescriptorCache(getAllModelFiles());
 		assertOldFileMetaModelDescriptorCacheSizeEquals(0);
 
 		// Delete one file from one project
@@ -170,7 +170,7 @@ public class ModelManagementTest extends DefaultIntegrationTestCase {
 	public void testCreateWorkspaceLoadModels() throws Exception {
 
 		// All non dot files must be present in file meta-model descriptor cache
-		assertInFileMetaModelDescriptorCache(getAllNonDotFiles());
+		assertInFileMetaModelDescriptorCache(getAllModelFiles());
 		assertOldFileMetaModelDescriptorCacheSizeEquals(0);
 	}
 

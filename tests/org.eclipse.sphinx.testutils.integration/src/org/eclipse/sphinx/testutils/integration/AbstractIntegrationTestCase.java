@@ -1459,11 +1459,15 @@ public abstract class AbstractIntegrationTestCase<T extends IReferenceWorkspace>
 		return EcorePlatformUtil.getResource(file);
 	}
 
-	protected Collection<IFile> getAllNonDotFiles() {
+	protected Collection<IFile> getAllModelFiles() {
 		Collection<IFile> allFiles = new HashSet<IFile>();
 		for (IProject project : ExtendedPlatform.getRootProjects()) {
 			for (IFile file : ExtendedPlatform.getAllFiles(project, true)) {
-				if (!file.getName().startsWith(".") && !hasDotParent(file)) {
+				final String fileName = file.getName();
+				final String fileExtension = file.getFileExtension();
+				if (!fileName.startsWith(".") && !hasDotParent(file) && !fileExtension.equals("java") && !fileExtension.equals("xtend")
+						&& !fileExtension.equals("MF") && !fileName.equals("pom.xml") && !fileName.equals("plugin.xml")
+						&& !fileName.equals("plugin.properties")) {
 					allFiles.add(file);
 				}
 			}
