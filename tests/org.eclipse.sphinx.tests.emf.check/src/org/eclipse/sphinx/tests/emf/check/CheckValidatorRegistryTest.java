@@ -24,6 +24,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.sphinx.emf.check.CompositeValidator;
+import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
 import org.eclipse.sphinx.tests.emf.check.internal.Activator;
@@ -58,7 +59,7 @@ public class CheckValidatorRegistryTest {
 	}
 
 	@Test
-	public void testCheckCatalogs() {
+	public void test_getCheckCatalogs() {
 		IExtensionRegistry extensionRegistry = mockFactory.createExtensionRegistryMock(Activator.getPlugin(),
 				testableSimpleHummingbird20NamingCheckValidator, testableHummingbird20NamingAndValuesCheckValidator,
 				testableHummingbird20ConnectionsCheckValidator);
@@ -71,5 +72,21 @@ public class CheckValidatorRegistryTest {
 
 		Collection<Catalog> checkCatalogs = checkValidatorRegistry.getCheckCatalogs();
 		Assert.assertEquals(2, checkCatalogs.size());
+	}
+
+	@Test
+	public void test_getCheckValidators() {
+		IExtensionRegistry extensionRegistry = mockFactory.createExtensionRegistryMock(Activator.getPlugin(),
+				testableSimpleHummingbird20NamingCheckValidator, testableHummingbird20NamingAndValuesCheckValidator,
+				testableHummingbird20ConnectionsCheckValidator);
+		EValidator.Registry eValidatorRegistry = new org.eclipse.emf.ecore.impl.EValidatorRegistryImpl();
+
+		TestableCheckValidatorRegistry checkValidatorRegistry = TestableCheckValidatorRegistry.INSTANCE;
+		checkValidatorRegistry.clear();
+		checkValidatorRegistry.setExtensionRegistry(extensionRegistry);
+		checkValidatorRegistry.setEValidatorRegistry(eValidatorRegistry);
+
+		Collection<ICheckValidator> validators = checkValidatorRegistry.getCheckValidators();
+		Assert.assertEquals(3, validators.size());
 	}
 }

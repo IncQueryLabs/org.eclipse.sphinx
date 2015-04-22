@@ -14,6 +14,7 @@
  *     itemis - [458405] CheckValidatorRegistry.register(*) should be public
  *     itemis - [458921] Newly introduced registries for metamodel serives, check validators and workflow contributors are not standalone-safe
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
+ *     itemis - [461051] API to get all registered check validators
  *
  * </copyright>
  */
@@ -325,6 +326,10 @@ public class CheckValidatorRegistry {
 			}
 		}
 		return uriToCheckCatalogMap.values();
+	}
+
+	public Collection<ICheckValidator> getCheckValidators() {
+		return getCheckValidatorToCheckCatalogURIMap().keySet();
 	}
 
 	private void logWarning(String msgId, Object... objects) {
