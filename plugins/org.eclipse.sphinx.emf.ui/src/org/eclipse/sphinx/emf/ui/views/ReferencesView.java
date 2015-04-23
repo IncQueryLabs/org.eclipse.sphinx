@@ -8,7 +8,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     itemis - Initial API and implementation
+ *     itemis - Initial API and implementatio
+ *     itemis - [463119] References View navigation
  *
  * </copyright>
  */
@@ -16,11 +17,13 @@ package org.eclipse.sphinx.emf.ui.views;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
@@ -42,7 +45,6 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.DelegatingDropAdapter;
 import org.eclipse.jface.util.LocalSelectionTransfer;
@@ -54,6 +56,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -61,7 +64,10 @@ import org.eclipse.sphinx.emf.ui.internal.Activator;
 import org.eclipse.sphinx.emf.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.ui.internal.views.ReferencesHierarchyTransferDropAdapter;
 import org.eclipse.sphinx.emf.ui.internal.views.ToggleReferencesModeAction;
+import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
+import org.eclipse.sphinx.emf.ui.util.OpenStrategy;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.platform.util.DirectedGraph;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -78,7 +84,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.part.IShowInSource;
 import org.eclipse.ui.part.PageBook;
+import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -394,8 +402,10 @@ public class ReferencesView extends ViewPart {
 			@Override
 			public void run() {
 				ISelection selection = viewer.getSelection();
-				Object obj = ((IStructuredSelection) selection).getFirstElement();
-				showMessage("Double-click detected on " + obj.toString());
+				if (selection instanceof IStructuredSelection) {
+					Object obj = ((IStructuredSelection) selection).getFirstElement();
+					EcoreUIUtil.openEditor(getSite().getPage(), obj, OpenStrategy.OPEN_ON_RESOURCE);
+				}
 			}
 		};
 	}
@@ -449,8 +459,34 @@ public class ReferencesView extends ViewPart {
 		setMode(mode);
 	}
 
-	private void showMessage(String message) {
-		MessageDialog.openInformation(viewer.getControl().getShell(), "Sample View", message);
+	@Override
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+		if (adapter.equals(IShowInSource.class)) {
+			return new IShowInSource() {
+				@Override
+				public ShowInContext getShowInContext() {
+					// Set the selection as input for the context so that the ExtendedCommonNavigator will show it and
+					// set the IFile behind the selection as the selection of the context so that the ProjectExplorer
+					// will be able to show the file.
+					return new ShowInContext(getViewer().getSelection(), getSelectedFiles(getViewer().getSelection()));
+				}
+
+				private ISelection getSelectedFiles(ISelection selection) {
+					if (selection instanceof IStructuredSelection) {
+						Set<IFile> selectedFiles = new HashSet<IFile>();
+						for (Object obj : ((IStructuredSelection) selection).toList()) {
+							IFile file = EcorePlatformUtil.getFile(obj);
+							if (file != null) {
+								selectedFiles.add(file);
+							}
+						}
+						return new StructuredSelection(selectedFiles.toArray());
+					}
+					return selection;
+				}
+			};
+		}
+		return super.getAdapter(adapter);
 	}
 
 	/**

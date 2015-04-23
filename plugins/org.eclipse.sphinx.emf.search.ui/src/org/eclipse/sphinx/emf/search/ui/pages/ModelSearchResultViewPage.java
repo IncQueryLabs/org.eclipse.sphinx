@@ -895,7 +895,7 @@ public class ModelSearchResultViewPage extends Page implements ISearchResultPage
 						IEditorInput input = editor.getEditorInput();
 						IFile file = ResourceUtil.getFile(input);
 						if (file != null) {
-							if (file.equals(match) && OpenStrategy.activateOnOpen()) {
+							if (file.equals(matchFile) && OpenStrategy.activateOnOpen()) {
 								getSite().getPage().activate(editor);
 							}
 						}

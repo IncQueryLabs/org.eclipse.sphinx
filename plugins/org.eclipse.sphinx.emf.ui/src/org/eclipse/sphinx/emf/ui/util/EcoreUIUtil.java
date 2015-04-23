@@ -24,6 +24,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.emf.common.ui.URIEditorInput;
+import org.eclipse.emf.common.ui.viewer.IViewerProvider;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -33,6 +34,9 @@ import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.jface.util.OpenStrategy;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -44,8 +48,12 @@ import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IURIEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 
 /**
@@ -55,6 +63,48 @@ public class EcoreUIUtil {
 
 	// Prevent from instantiation
 	private EcoreUIUtil() {
+	}
+
+	/**
+	 * Open the editor using the active workbench page for the given object. If {@link OpenStrategy#OPEN_ON_RESOURCE} is
+	 * given, the method will retrieve the resource behind the object before opening the editor.
+	 *
+	 * @param object
+	 *            The object for which to open the editor or the resource behind it.
+	 * @param openStrategy
+	 *            A flag to indicate whether to open the editor on the given object or on the resource behind it.
+	 * @see org.eclipse.sphinx.emf.ui.util.OpenStrategy
+	 */
+	public static void openEditor(Object object, int openStrategy) {
+		openEditor(ExtendedPlatformUI.getActivePage(), object, openStrategy);
+	}
+
+	public static void openEditor(IWorkbenchPage page, Object object, int openStrategy) {
+		Assert.isLegal(openStrategy == org.eclipse.sphinx.emf.ui.util.OpenStrategy.OPEN_ON_OBJECT
+				|| openStrategy == org.eclipse.sphinx.emf.ui.util.OpenStrategy.OPEN_ON_RESOURCE);
+
+		try {
+			IEditorPart editor = null;
+			if (openStrategy == org.eclipse.sphinx.emf.ui.util.OpenStrategy.OPEN_ON_OBJECT) {
+				IEditorInput editorInput = EcoreUIUtil.createURIEditorInput(object);
+				IEditorDescriptor defaultEditor = getDefaultEditor(object);
+				if (defaultEditor != null) {
+					editor = page.openEditor(editorInput, defaultEditor.getId());
+				}
+
+			} else if (openStrategy == org.eclipse.sphinx.emf.ui.util.OpenStrategy.OPEN_ON_RESOURCE) {
+				IFile file = EcorePlatformUtil.getFile(object);
+				editor = IDE.openEditor(page, file, OpenStrategy.activateOnOpen());
+
+			}
+			if (editor != null && editor instanceof IViewerProvider) {
+				Viewer editorViewer = ((IViewerProvider) editor).getViewer();
+				editorViewer.setSelection(new StructuredSelection(object), true);
+			}
+
+		} catch (PartInitException ex) {
+			PlatformLogUtil.logAsError(Activator.getDefault(), ex);
+		}
 	}
 
 	public static void openWizardDialog(final IWizard wizard) throws OperationCanceledException, ExecutionException {
@@ -139,7 +189,7 @@ public class EcoreUIUtil {
 
 	/**
 	 * A convenience method usually used to populate an {@linkplain OpenWithMenu}
-	 * 
+	 *
 	 * @param object
 	 * @return
 	 */
@@ -228,7 +278,7 @@ public class EcoreUIUtil {
 
 	/**
 	 * Returns the file behind the editor input
-	 * 
+	 *
 	 * @param editorInput
 	 * @return as specified above
 	 */

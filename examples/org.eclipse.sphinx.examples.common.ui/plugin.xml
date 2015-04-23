@@ -63,4 +63,21 @@ Contributors:
             name="%sphinx.examples.common.ui.perspectives.sphinx.name">
       </perspective>
    </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.sphinx.emf.ui.views.references">
+         <menu
+               commandId="org.eclipse.ui.navigate.showInQuickMenu"
+               id="org.eclipse.sphinx.ide.markers.showInMenu"
+               label="%menu.showIn.label"
+               mnemonic="%menu.showIn.mnemonic">
+            <dynamic
+                  class="org.eclipse.ui.ExtensionFactory:showInContribution"
+                  id="org.eclipse.sphinx.examples.common.ui.menus.dynamicShowInMenu">
+            </dynamic>
+         </menu>
+      </menuContribution>
+   </extension>
 </plugin>
