@@ -20,6 +20,12 @@
                         value="org.eclipse.sphinx.emf.check.ui.markersView">
                   </equals>
                </with>
+               <with
+                     variable="activePartId">
+                  <equals
+                        value="org.eclipse.sphinx.emf.ui.views.references">
+                  </equals>
+               </with>
             </or>
          </activeWhen>
      </handler>

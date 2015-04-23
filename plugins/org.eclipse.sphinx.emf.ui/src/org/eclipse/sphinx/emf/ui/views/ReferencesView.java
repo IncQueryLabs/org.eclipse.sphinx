@@ -88,11 +88,14 @@ import org.eclipse.ui.part.IShowInSource;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 /**
  *
  */
-public class ReferencesView extends ViewPart {
+public class ReferencesView extends ViewPart implements ITabbedPropertySheetPageContributor {
 
 	private static final String STORE_MODE = "MODE"; //$NON-NLS-1$
 
@@ -103,6 +106,8 @@ public class ReferencesView extends ViewPart {
 	private static final int PAGE_VIEWER = 1;
 
 	private static final Object EMPTY_ROOT = new Object();
+
+	protected Set<IPropertySheetPage> propertySheetPages = new HashSet<IPropertySheetPage>();
 
 	private Object viewInput;
 	private int currentMode;
@@ -486,7 +491,20 @@ public class ReferencesView extends ViewPart {
 				}
 			};
 		}
+
+		if (IPropertySheetPage.class == adapter) {
+			return getPropertySheetPage();
+		}
 		return super.getAdapter(adapter);
+	}
+
+	/**
+	 * This creates a new property sheet page instance and manages it in the cache.
+	 */
+	protected IPropertySheetPage getPropertySheetPage() {
+		IPropertySheetPage propertySheetPage = new TabbedPropertySheetPage(this);
+		propertySheetPages.add(propertySheetPage);
+		return propertySheetPage;
 	}
 
 	/**
@@ -574,5 +592,10 @@ public class ReferencesView extends ViewPart {
 			result.add(overlay);
 			return result;
 		}
+	}
+
+	@Override
+	public String getContributorId() {
+		return "org.eclipse.sphinx.emf.ui.views.references"; //$NON-NLS-1$
 	}
 }
