@@ -13,7 +13,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.ui.views;
+package org.eclipse.sphinx.emf.workspace.ui.views;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +27,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.ComposedImage;
@@ -35,7 +37,6 @@ import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.emf.edit.ui.provider.ExtendedImageRegistry;
 import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.emf.transaction.ui.internal.Tracing;
 import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryLabelProvider;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.jface.action.Action;
@@ -60,15 +61,17 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.sphinx.emf.ui.internal.Activator;
-import org.eclipse.sphinx.emf.ui.internal.messages.Messages;
-import org.eclipse.sphinx.emf.ui.internal.views.ReferencesHierarchyTransferDropAdapter;
-import org.eclipse.sphinx.emf.ui.internal.views.ToggleReferencesModeAction;
 import org.eclipse.sphinx.emf.ui.util.EcoreUIUtil;
 import org.eclipse.sphinx.emf.ui.util.OpenStrategy;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
+import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
+import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
+import org.eclipse.sphinx.emf.workspace.ui.internal.views.ReferencesHierarchyTransferDropAdapter;
+import org.eclipse.sphinx.emf.workspace.ui.internal.views.ToggleReferencesModeAction;
+import org.eclipse.sphinx.emf.workspace.ui.util.ICommonModelUIConstants;
+import org.eclipse.sphinx.emf.workspace.ui.util.TransactionalDelegatingTreeContentProvider;
 import org.eclipse.sphinx.platform.util.DirectedGraph;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.SWT;
@@ -105,8 +108,6 @@ public class ReferencesView extends ViewPart implements ITabbedPropertySheetPage
 	private static final int PAGE_EMPTY = 0;
 	private static final int PAGE_VIEWER = 1;
 
-	private static final Object EMPTY_ROOT = new Object();
-
 	protected Set<IPropertySheetPage> propertySheetPages = new HashSet<IPropertySheetPage>();
 
 	private Object viewInput;
@@ -131,7 +132,7 @@ public class ReferencesView extends ViewPart implements ITabbedPropertySheetPage
 
 	public ReferencesView() {
 		dialogSettings = Activator.getDefault().getDialogSettings();
-		graph = new DirectedGraph<EObject>(false, false);
+		graph = new DirectedGraph<EObject>(false, true);
 	}
 
 	@Override
@@ -142,7 +143,6 @@ public class ReferencesView extends ViewPart implements ITabbedPropertySheetPage
 		// First page: viewers
 		refsHierarchyInfosSplitter = new SashForm(pageBook, SWT.NONE);
 		viewer = new TreeViewer(refsHierarchyInfosSplitter, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		contentProvider = createModelCrossReferenceContentProvider();
 		if (contentProvider != null) {
 			viewer.setContentProvider(contentProvider);
 		}
@@ -173,7 +173,6 @@ public class ReferencesView extends ViewPart implements ITabbedPropertySheetPage
 			setContentDescription(""); //$NON-NLS-1$
 			setTitleToolTip(getPartName());
 			getViewSite().getActionBars().getStatusLineManager().setMessage(""); //$NON-NLS-1$
-			viewer.setInput(EMPTY_ROOT);
 		}
 		pageBook.showPage(control);
 	}
@@ -184,23 +183,46 @@ public class ReferencesView extends ViewPart implements ITabbedPropertySheetPage
 
 	public void setViewInput(Object viewInput) {
 		this.viewInput = viewInput;
+		contentProvider = getModelContentProvider(viewInput);
+		if (contentProvider != null) {
+			viewer.setContentProvider(contentProvider);
+		}
 		labelProvider = getModelLabelProvider(viewInput);
 		if (labelProvider != null) {
 			viewer.setLabelProvider(labelProvider);
 		}
-		viewer.setInput(viewInput);
+		viewer.setInput(getViewerInput());
 
 		updateView();
+	}
+
+	protected Object getViewerInput() {
+		return new WrappedViewInput(viewInput);
 	}
 
 	protected boolean isRecursive(Object element) {
 		Set<DirectedGraph<EObject>.Edge> outgoingEdgesOfElement = graph.outgoingEdgesOf((EObject) element);
 		Set<DirectedGraph<EObject>.Edge> incomingEdgesOfElement = graph.incomingEdgesOf((EObject) element);
-		return !outgoingEdgesOfElement.isEmpty() && incomingEdgesOfElement.size() > 1;
+		return !outgoingEdgesOfElement.isEmpty() && incomingEdgesOfElement.size() >= 1;
 	}
 
-	protected IContentProvider createModelCrossReferenceContentProvider() {
-		return new ITreeContentProvider() {
+	protected IContentProvider getModelContentProvider(Object element) {
+		// Retrieve editing domain behind specified object
+		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(element);
+		if (editingDomain != null) {
+			// Retrieve model content provider for given editing domain; create new one if not existing yet
+			IContentProvider modelContentProvider = modelCrossReferenceContentProviders.get(editingDomain);
+			if (modelContentProvider == null) {
+				modelContentProvider = createModelCrossReferenceContentProvider(editingDomain);
+				modelCrossReferenceContentProviders.put(editingDomain, modelContentProvider);
+			}
+			return modelContentProvider;
+		}
+		return null;
+	}
+
+	protected ITreeContentProvider createModelCrossReferenceContentProvider(TransactionalEditingDomain editingDomain) {
+		return new TransactionalDelegatingTreeContentProvider(new ITreeContentProvider() {
 
 			@Override
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
@@ -209,12 +231,22 @@ public class ReferencesView extends ViewPart implements ITabbedPropertySheetPage
 
 			@Override
 			public Object[] getElements(Object inputElement) {
-				return getChildren(inputElement);
+				if (inputElement instanceof WrappedViewInput) {
+					EObject input = (EObject) ((WrappedViewInput) inputElement).getInput();
+					// As it's the first element to be displayed in the view, add it to the graph
+					graph.addVertex(input);
+					return new Object[] { input };
+				} else {
+					return getChildren(inputElement);
+				}
 			}
 
 			@Override
 			public boolean hasChildren(Object element) {
-				return !isRecursive(element) && getChildren(element).length > 0;
+				if (element instanceof EObject) {
+					return !isRecursive(element) && getChildren(element).length > 0;
+				}
+				return false;
 			}
 
 			// TODO Add defer and abort capability
@@ -236,7 +268,6 @@ public class ReferencesView extends ViewPart implements ITabbedPropertySheetPage
 									addEdges(parentEObject, eCrossReferences);
 									setResult(eCrossReferences.toArray(new EObject[eCrossReferences.size()]));
 								}
-
 							});
 						} catch (InterruptedException ex) {
 							PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
@@ -262,7 +293,14 @@ public class ReferencesView extends ViewPart implements ITabbedPropertySheetPage
 					List<EObject> eInverseCrossReferences = new ArrayList<EObject>();
 					Collection<Setting> inverseReferences = EObjectUtil.getInverseReferences(eObject, true);
 					for (Setting inverseReference : inverseReferences) {
-						eInverseCrossReferences.add(inverseReference.getEObject());
+						EStructuralFeature eStructuralFeature = inverseReference.getEStructuralFeature();
+						if (eStructuralFeature instanceof EReference) {
+							if (!((EReference) eStructuralFeature).isContainment()) {
+								eInverseCrossReferences.add(inverseReference.getEObject());
+							}
+						} else {
+							eInverseCrossReferences.add(inverseReference.getEObject());
+						}
 					}
 					return eInverseCrossReferences;
 				} else {
@@ -272,6 +310,9 @@ public class ReferencesView extends ViewPart implements ITabbedPropertySheetPage
 
 			@Override
 			public Object getParent(Object element) {
+				if (element instanceof EObject) {
+					return ((EObject) element).eContainer();
+				}
 				return null;
 			}
 
@@ -279,7 +320,7 @@ public class ReferencesView extends ViewPart implements ITabbedPropertySheetPage
 			public void dispose() {
 				// Do nothing
 			}
-		};
+		}, editingDomain);
 	}
 
 	protected ILabelProvider getModelLabelProvider(Object element) {
@@ -312,8 +353,6 @@ public class ReferencesView extends ViewPart implements ITabbedPropertySheetPage
 				try {
 					return TransactionUtil.runExclusive(editingDomain, run);
 				} catch (Exception e) {
-					Tracing.catching(TransactionalAdapterFactoryLabelProvider.class, "run", e); //$NON-NLS-1$
-
 					// propagate interrupt status because we are not throwing
 					Thread.currentThread().interrupt();
 
@@ -536,12 +575,32 @@ public class ReferencesView extends ViewPart implements ITabbedPropertySheetPage
 	}
 
 	private void updateView() {
-		if (viewInput != null && viewInput != EMPTY_ROOT) {
+		if (viewInput != null) {
 			showPage(PAGE_VIEWER);
-			viewer.setInput(viewInput);
+			// Clear the Graph so that when we switch between view modes, we will start from an empty graph.
+			graph.clear();
+			viewer.setInput(getViewerInput());
 			viewer.refresh();
 		} else {
 			showPage(PAGE_EMPTY);
+		}
+	}
+
+	@Override
+	public String getContributorId() {
+		return ICommonModelUIConstants.VIEW_REFERENCES_ID;
+	}
+
+	protected class WrappedViewInput {
+
+		private Object input;
+
+		protected WrappedViewInput(Object input) {
+			this.input = input;
+		}
+
+		public Object getInput() {
+			return input;
 		}
 	}
 
@@ -592,10 +651,5 @@ public class ReferencesView extends ViewPart implements ITabbedPropertySheetPage
 			result.add(overlay);
 			return result;
 		}
-	}
-
-	@Override
-	public String getContributorId() {
-		return "org.eclipse.sphinx.emf.ui.views.references"; //$NON-NLS-1$
 	}
 }

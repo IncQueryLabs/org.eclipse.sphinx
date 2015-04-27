@@ -26,9 +26,9 @@ Contributors:
       </category>
       <view
             category="org.eclipse.sphinx.examples.common.ui.views.category.sphinxExampleViews"
-            class="org.eclipse.sphinx.emf.ui.views.ReferencesView"
+            class="org.eclipse.sphinx.emf.workspace.ui.views.ReferencesView"
             icon="icons/full/eview16/ref_hierarchy.gif"
-            id="org.eclipse.sphinx.emf.ui.views.references"
+            id="org.eclipse.sphinx.emf.workspace.ui.views.references"
             name="References">
       </view>
    </extension>
@@ -67,7 +67,7 @@ Contributors:
          point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
-            locationURI="popup:org.eclipse.sphinx.emf.ui.views.references">
+            locationURI="popup:org.eclipse.sphinx.emf.workspace.ui.views.references">
          <menu
                commandId="org.eclipse.ui.navigate.showInQuickMenu"
                id="org.eclipse.sphinx.ide.markers.showInMenu"
@@ -83,7 +83,7 @@ Contributors:
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
       <propertyContributor
-            contributorId="org.eclipse.sphinx.emf.ui.views.references">
+            contributorId="org.eclipse.sphinx.emf.workspace.ui.views.references">
          <propertyCategory
                category="advanced"></propertyCategory>
       </propertyContributor>
@@ -91,10 +91,10 @@ Contributors:
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
       <propertyTabs
-            contributorId="org.eclipse.sphinx.emf.ui.views.references">
+            contributorId="org.eclipse.sphinx.emf.workspace.ui.views.references">
          <propertyTab
                category="advanced"
-               id="org.eclipse.sphinx.emf.ui.views.references.propertyTabs.advanced"
+               id="org.eclipse.sphinx.emf.workspace.ui.views.references.propertyTabs.advanced"
                label="Advanced">
          </propertyTab>
       </propertyTabs>
@@ -102,11 +102,11 @@ Contributors:
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertySections">
       <propertySections
-            contributorId="org.eclipse.sphinx.emf.ui.views.references">
+            contributorId="org.eclipse.sphinx.workspace.emf.ui.views.references">
          <propertySection
                class="org.eclipse.sphinx.emf.ui.properties.BasicTransactionalAdvancedPropertySection"
-               id="org.eclipse.sphinx.emf.ui.views.references.propertySections.advanced"
-               tab="org.eclipse.sphinx.emf.ui.views.references.propertyTabs.advanced">
+               id="org.eclipse.sphinx.emf.workspace.ui.views.references.propertySections.advanced"
+               tab="org.eclipse.sphinx.emf.workspace.ui.views.references.propertyTabs.advanced">
             <input
                   type="java.lang.Object">
             </input>

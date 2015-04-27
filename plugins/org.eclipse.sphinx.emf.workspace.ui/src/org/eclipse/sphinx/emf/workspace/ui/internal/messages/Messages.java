@@ -102,6 +102,21 @@ public class Messages extends NLS {
 	public static String default_metamodelName;
 	public static String default_metamodelName_cap;
 
+	public static String contentProviderInterrupted;
+
+	public static String action_toggleReferencesMode_referenced_label;
+	public static String action_toggleReferencesMode_referenced_toolTip;
+	public static String action_toggleReferencesMode_referenced_description;
+
+	public static String action_toggleReferencesMode_referencing_label;
+	public static String action_toggleReferencesMode_referencing_toolTip;
+	public static String action_toggleReferencesMode_referencing_description;
+
+	public static String action_basicOpenReferencesAction_label;
+
+	public static String error_UnsupportedMode;
+	public static String label_ReferencesHierarchyEmpty;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

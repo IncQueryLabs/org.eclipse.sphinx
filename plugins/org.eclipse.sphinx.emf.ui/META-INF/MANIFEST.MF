@@ -5,28 +5,25 @@ Bundle-SymbolicName: org.eclipse.sphinx.emf.ui;singleton:=true
 Bundle-Version: 0.9.0.qualifier
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.ui.navigator;visibility:=reexport,
- org.eclipse.ui.views.properties.tabbed,
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.navigator;visibility:=reexport,
+ org.eclipse.ui.views.properties.tabbed;visibility:=reexport,
  org.eclipse.emf.transaction.ui;visibility:=reexport,
  org.eclipse.emf.workspace.ui;visibility:=reexport,
  org.eclipse.sphinx.platform.ui;visibility:=reexport,
- org.eclipse.sphinx.emf;visibility:=reexport,
- org.eclipse.core.runtime,
- org.eclipse.ui,
- org.eclipse.ui.ide
+ org.eclipse.sphinx.emf;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.emf.ui.internal.Activator$Implementation
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Export-Package: org.eclipse.sphinx.emf.ui,
- org.eclipse.sphinx.emf.ui.actions,
+Export-Package: org.eclipse.sphinx.emf.ui.actions,
  org.eclipse.sphinx.emf.ui.actions.providers,
  org.eclipse.sphinx.emf.ui.forms.messages,
  org.eclipse.sphinx.emf.ui.internal;x-internal:=true,
  org.eclipse.sphinx.emf.ui.internal.messages;x-internal:=true,
- org.eclipse.sphinx.emf.ui.internal.views;x-internal:=true,
  org.eclipse.sphinx.emf.ui.properties,
  org.eclipse.sphinx.emf.ui.properties.descriptors,
  org.eclipse.sphinx.emf.ui.properties.filters,
  org.eclipse.sphinx.emf.ui.util,
- org.eclipse.sphinx.emf.ui.viewers.filters,
- org.eclipse.sphinx.emf.ui.views
+ org.eclipse.sphinx.emf.ui.viewers.filters

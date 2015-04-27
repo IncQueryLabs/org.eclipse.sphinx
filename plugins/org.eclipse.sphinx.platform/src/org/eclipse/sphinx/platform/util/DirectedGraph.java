@@ -102,6 +102,11 @@ public class DirectedGraph<V> {
 		return graphInternal.getEdge(srcVertex, trgtVertex);
 	}
 
+	public void clear() {
+		edges.clear();
+		graphInternal.clear();
+	}
+
 	protected class DirectedGraphInternal {
 
 		private Map<V, DirectedEdgeContainer> verticesMap = new LinkedHashMap<V, DirectedEdgeContainer>();
@@ -167,6 +172,10 @@ public class DirectedGraph<V> {
 			} else {
 				throw new IllegalArgumentException(NLS.bind(Messages.error_NoSuchVertex, vertex));
 			}
+		}
+
+		public void clear() {
+			verticesMap.clear();
 		}
 	}
 

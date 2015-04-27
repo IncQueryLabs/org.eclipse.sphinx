@@ -12,12 +12,13 @@
  * 
  * </copyright>
  */
-package org.eclipse.sphinx.emf.ui.actions.providers;
+package org.eclipse.sphinx.emf.workspace.ui.actions.providers;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.sphinx.emf.ui.actions.BasicOpenReferencesAction;
+import org.eclipse.sphinx.emf.ui.actions.providers.BasicActionProvider;
+import org.eclipse.sphinx.emf.workspace.ui.actions.BasicOpenReferencesAction;
 import org.eclipse.sphinx.platform.ui.util.SelectionUtil;
 import org.eclipse.ui.navigator.ICommonMenuConstants;
 

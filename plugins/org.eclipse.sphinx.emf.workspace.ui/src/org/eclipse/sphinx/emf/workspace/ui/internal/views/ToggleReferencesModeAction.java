@@ -1,10 +1,10 @@
-package org.eclipse.sphinx.emf.ui.internal.views;
+package org.eclipse.sphinx.emf.workspace.ui.internal.views;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.sphinx.emf.ui.internal.Activator;
-import org.eclipse.sphinx.emf.ui.internal.messages.Messages;
-import org.eclipse.sphinx.emf.ui.views.ReferencesView;
+import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
+import org.eclipse.sphinx.emf.workspace.ui.internal.messages.Messages;
+import org.eclipse.sphinx.emf.workspace.ui.views.ReferencesView;
 
 public class ToggleReferencesModeAction extends Action {
 
@@ -14,15 +14,15 @@ public class ToggleReferencesModeAction extends Action {
 	public ToggleReferencesModeAction(ReferencesView referencesView, int mode) {
 		super("", AS_RADIO_BUTTON); //$NON-NLS-1$
 		if (mode == ReferencesView.REFERENCED_OBJECTS_MODE) {
-			setText(Messages.action_toggleReferencesMode_references_label);
-			setToolTipText(Messages.action_toggleReferencesMode_references_toolTip);
-			setDescription(Messages.action_toggleReferencesMode_references_description);
+			setText(Messages.action_toggleReferencesMode_referenced_label);
+			setToolTipText(Messages.action_toggleReferencesMode_referenced_toolTip);
+			setDescription(Messages.action_toggleReferencesMode_referenced_description);
 			Activator.getPlugin().setLocalImageDescriptors(this, "rv_references.gif"); //$NON-NLS-1$
 
 		} else if (mode == ReferencesView.REFERENCING_OBJECTS_MODE) {
-			setText(Messages.action_toggleReferencesMode_referents_label);
-			setToolTipText(Messages.action_toggleReferencesMode_referents_toolTip);
-			setDescription(Messages.action_toggleReferencesMode_referents_description);
+			setText(Messages.action_toggleReferencesMode_referencing_label);
+			setToolTipText(Messages.action_toggleReferencesMode_referencing_toolTip);
+			setDescription(Messages.action_toggleReferencesMode_referencing_description);
 			Activator.getPlugin().setLocalImageDescriptors(this, "rv_referents.gif"); //$NON-NLS-1$
 
 		} else {
