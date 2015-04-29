@@ -223,6 +223,12 @@ public interface ExtendedResource {
 	 */
 	String OPTION_PROGRESS_MONITOR = "PROGRESS_MONITOR"; //$NON-NLS-1$
 
+	String OPTION_RECORD_LINE_AND_COLUMN_NUMBERS = "OPTION_RECORD_LINE_AND_COLUMN_NUMBERS"; //$NON-NLS-1$
+
+	String LINE_NUMBER_KEY_NAME = "lineNumber"; //$NON-NLS-1$
+
+	String COLUMN_NUMBER_KEY_NAME = "columnNumber"; //$NON-NLS-1$
+
 	/**
 	 * Returns the map of options that, in addition to the overriding options specified during load, are used to to
 	 * control load behavior.

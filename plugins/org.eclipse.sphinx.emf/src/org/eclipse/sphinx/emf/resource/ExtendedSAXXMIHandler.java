@@ -32,6 +32,7 @@ import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.SAXXMIHandler;
+import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.ecore.xml.type.util.XMLTypeUtil;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
@@ -45,6 +46,8 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 	protected ExtendedResource extendedResource;
 
 	protected IMetaModelDescriptor resourceVersion = null;
+
+	protected boolean recordLineAndColumnNumbers;
 
 	public ExtendedSAXXMIHandler(XMLResource xmiResource, XMLHelper helper, Map<?, ?> options) {
 		super(xmiResource, helper, options);
@@ -60,6 +63,10 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 		// XMLAttributes, XSAttributeGroupDecl) (line 3027) which attempts to add xmi:version as default attribute if
 		// not present yet but misses to initialize the attribute's prefix field
 		notFeatures.add(XMIResource.VERSION_NAME);
+
+		if (options.get(ExtendedResource.OPTION_RECORD_LINE_AND_COLUMN_NUMBERS) == Boolean.TRUE) {
+			recordLineAndColumnNumbers = true;
+		}
 	}
 
 	/*
@@ -229,6 +236,19 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 
 		if (extendedResource != null) {
 			extendedResource.augmentToContextAwareProxy(proxy);
+		}
+	}
+
+	@Override
+	protected void handleObjectAttribs(EObject obj) {
+		super.handleObjectAttribs(obj);
+
+		if (recordLineAndColumnNumbers) {
+			AnyType extension = getExtension(obj);
+			EStructuralFeature lineNumberAttribute = extendedMetaData.demandFeature(null, ExtendedResource.LINE_NUMBER_KEY_NAME, false);
+			extension.eSet(lineNumberAttribute, getLineNumber());
+			EStructuralFeature columnAttribute = extendedMetaData.demandFeature(null, ExtendedResource.COLUMN_NUMBER_KEY_NAME, false);
+			extension.eSet(columnAttribute, getColumnNumber());
 		}
 	}
 }

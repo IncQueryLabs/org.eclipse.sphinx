@@ -212,6 +212,10 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 		return uri;
 	}
 
+	protected URI internalGetURI(EObject eObject) {
+		return EcoreUtil.getURI(eObject);
+	}
+
 	protected URI restoreURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
 		Assert.isNotNull(eObject);
 
