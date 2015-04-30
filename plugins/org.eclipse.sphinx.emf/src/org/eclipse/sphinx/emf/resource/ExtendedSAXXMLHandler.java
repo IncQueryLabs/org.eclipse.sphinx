@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2014 See4sys, itemis and others.
+ * Copyright (c) 2008-2015 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,6 +31,7 @@ import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.SAXXMLHandler;
+import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.ecore.xml.type.util.XMLTypeUtil;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
@@ -44,6 +45,8 @@ public class ExtendedSAXXMLHandler extends SAXXMLHandler {
 	protected ExtendedResource extendedResource;
 
 	protected IMetaModelDescriptor resourceVersion = null;
+	
+	protected boolean recordLineAndColumnNumbers;
 
 	public ExtendedSAXXMLHandler(XMLResource xmlResource, XMLHelper helper, Map<?, ?> options) {
 		super(xmlResource, helper, options);
@@ -53,6 +56,10 @@ public class ExtendedSAXXMLHandler extends SAXXMLHandler {
 		Object value = options.get(ExtendedResource.OPTION_RESOURCE_VERSION_DESCRIPTOR);
 		if (value instanceof IMetaModelDescriptor) {
 			resourceVersion = (IMetaModelDescriptor) value;
+		}
+		
+		if (options.get(ExtendedResource.OPTION_RECORD_LINE_AND_COLUMN_NUMBERS) == Boolean.TRUE) {
+			recordLineAndColumnNumbers = true;
 		}
 	}
 
@@ -223,6 +230,19 @@ public class ExtendedSAXXMLHandler extends SAXXMLHandler {
 
 		if (extendedResource != null) {
 			extendedResource.augmentToContextAwareProxy(proxy);
+		}
+	}
+	
+	@Override
+	protected void handleObjectAttribs(EObject obj) {
+		super.handleObjectAttribs(obj);
+
+		if (recordLineAndColumnNumbers) {
+			AnyType extension = getExtension(obj);
+			EStructuralFeature lineNumberAttribute = extendedMetaData.demandFeature(null, ExtendedResource.LINE_NUMBER_KEY_NAME, false);
+			extension.eSet(lineNumberAttribute, getLineNumber());
+			EStructuralFeature columnAttribute = extendedMetaData.demandFeature(null, ExtendedResource.COLUMN_NUMBER_KEY_NAME, false);
+			extension.eSet(columnAttribute, getColumnNumber());
 		}
 	}
 }
