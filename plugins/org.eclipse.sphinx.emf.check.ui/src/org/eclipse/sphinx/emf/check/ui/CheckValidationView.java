@@ -36,6 +36,8 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 public class CheckValidationView extends MarkerSupportView implements ITabbedPropertySheetPageContributor {
 
+	public static final String ID = "org.eclipse.sphinx.emf.check.ui.markersView"; //$NON-NLS-1$
+
 	protected Set<IPropertySheetPage> propertySheetPages = new HashSet<IPropertySheetPage>();
 
 	public CheckValidationView() {
