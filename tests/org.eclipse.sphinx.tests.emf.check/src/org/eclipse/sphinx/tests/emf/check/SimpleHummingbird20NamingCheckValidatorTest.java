@@ -92,7 +92,7 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 	}
 
 	@Test
-	public void testOtherCategoryNotSelected() {
+	public void testNoCategoriesSelected() {
 		EValidator.Registry eValidatorRegistry = new org.eclipse.emf.ecore.impl.EValidatorRegistryImpl();
 		Diagnostician diagnostician = new Diagnostician(eValidatorRegistry);
 
@@ -155,7 +155,7 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 	}
 
 	@Test
-	public void testNullContext() {
+	public void testWithoutContextEntries() {
 		EValidator.Registry eValidatorRegistry = new org.eclipse.emf.ecore.impl.EValidatorRegistryImpl();
 		Diagnostician diagnostician = new Diagnostician(eValidatorRegistry);
 
