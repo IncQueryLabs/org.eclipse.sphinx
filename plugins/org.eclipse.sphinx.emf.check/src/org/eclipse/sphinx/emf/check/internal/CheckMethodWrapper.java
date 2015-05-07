@@ -87,7 +87,6 @@ public class CheckMethodWrapper {
 
 	public void invoke(CheckValidatorState state, Set<String> selectedCategories) throws IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException {
-
 		if (validator.getState().get() != null && validator.getState().get() != state) {
 			throw new IllegalStateException("State is already assigned."); //$NON-NLS-1$
 		}
@@ -96,55 +95,58 @@ public class CheckMethodWrapper {
 			validator.getState().set(state);
 		}
 		try {
-
 			if (!state.checkValidationMode.shouldCheck(checkAnnotation.value())) {
 				return;
 			}
 
-			Set<String> categories = new HashSet<String>();
-			categories.addAll(selectedCategories);
-			Set<String> annotatedCategories = getAnnotatedCategories();
-			Catalog catalog = checkValidatorRegistry.getCheckCatalog(validator);
+			if (selectedCategories.isEmpty()) {
+				// Invoke the validation using all existing categories if no categories are selected
+				invokeInternal(state);
+			} else {
+				Set<String> categories = new HashSet<String>();
+				categories.addAll(selectedCategories);
+				Set<String> annotatedCategories = getAnnotatedCategories();
+				Catalog catalog = checkValidatorRegistry.getCheckCatalog(validator);
 
-			// If no categories are specified in the check method's @Check annotation, invoke the check method on all
-			// categories as per the underlying constraint in the check catalog; otherwise invoke the check method on
-			// the intersection of categories provided by the user, and the categories defined in the check
-			// catalog.
+				// If no categories are specified in the check method's @Check annotation, invoke the check method on
+				// all categories as per the underlying constraint in the check catalog; otherwise invoke the check
+				// method on the intersection of categories provided by the user, and the categories defined in the
+				// check catalog.
 
-			// Case 1: Only @Check annotation without constraint
-			if (getAnnotatedConstraint().isEmpty()) {
-				if (isOtherCategorySelected(selectedCategories)) {
-					invokeInternal(state);
+				// Case 1: Only @Check annotation without constraint
+				if (getAnnotatedConstraint().isEmpty()) {
+					if (isOtherCategorySelected(selectedCategories)) {
+						invokeInternal(state);
+					}
 				}
-			}
 
-			// Case 2: @Check annotation with a constraint and without any category
-			else if (annotatedCategories.isEmpty()) {
-				if (catalog != null && !catalog.getCategories().isEmpty()) {
-					retainAll(categories, catalog.getCategories());
+				// Case 2: @Check annotation with a constraint and without any category
+				else if (annotatedCategories.isEmpty()) {
+					if (catalog != null && !catalog.getCategories().isEmpty()) {
+						retainAll(categories, catalog.getCategories());
+						// Go ahead if scope is not empty
+						if (!categories.isEmpty()) {
+							invokeInternal(state);
+						}
+					}
+				}
+
+				// Case 3: @Check annotation with a constraint and categories
+				else {
+					// Make intersection with annotated categories
+					categories.retainAll(annotatedCategories);
+
+					// Make intersection with categories associated with this validator in check catalog
+					if (catalog != null && !catalog.getCategories().isEmpty()) {
+						retainAll(categories, catalog.getCategories());
+					}
+
 					// Go ahead if scope is not empty
 					if (!categories.isEmpty()) {
 						invokeInternal(state);
 					}
 				}
 			}
-
-			// Case 3: @Check annotation with a constraint and categories
-			else {
-				// Make intersection with annotated categories
-				categories.retainAll(annotatedCategories);
-
-				// Make intersection with categories associated with this validator in check catalog
-				if (catalog != null && !catalog.getCategories().isEmpty()) {
-					retainAll(categories, catalog.getCategories());
-				}
-
-				// Go ahead if scope is not empty
-				if (!categories.isEmpty()) {
-					invokeInternal(state);
-				}
-			}
-
 		} finally {
 			if (wasNull) {
 				validator.getState().set(null);

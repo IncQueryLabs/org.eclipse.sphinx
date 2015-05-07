@@ -178,7 +178,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		state.checkValidationMode = mode;
 		state.context = context;
 
-		if (isIntrinsicCategorySelected(selectedCategories)) {
+		if (selectedCategories.isEmpty() || isIntrinsicCategorySelected(selectedCategories)) {
 			extendedEObjectValidator.validate(eObject.eClass().getClassifierID(), eObject, diagnostics, context);
 		}
 

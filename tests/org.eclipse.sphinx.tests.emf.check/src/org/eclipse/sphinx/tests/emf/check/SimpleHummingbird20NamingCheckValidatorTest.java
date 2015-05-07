@@ -93,7 +93,6 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 
 	@Test
 	public void testOtherCategoryNotSelected() {
-
 		EValidator.Registry eValidatorRegistry = new org.eclipse.emf.ecore.impl.EValidatorRegistryImpl();
 		Diagnostician diagnostician = new Diagnostician(eValidatorRegistry);
 
@@ -118,7 +117,7 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 		contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories);
 
 		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
-		Assert.assertEquals(0, diagnostic.getChildren().size());
+		Assert.assertEquals(2, diagnostic.getChildren().size());
 	}
 
 	@Test
@@ -153,5 +152,29 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 		// Expected messages
 		String errorMsg = "The feature 'components' of"; //$NON-NLS-1$
 		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), errorMsg).size());
+	}
+
+	@Test
+	public void testNullContext() {
+		EValidator.Registry eValidatorRegistry = new org.eclipse.emf.ecore.impl.EValidatorRegistryImpl();
+		Diagnostician diagnostician = new Diagnostician(eValidatorRegistry);
+
+		// Create Mock extension registry
+		IExtensionRegistry extensionRegistry = mockFactory.createExtensionRegistryMock(Activator.getPlugin(),
+				testableSimpleHummingbird20NamingCheckValidator);
+		TestableCheckValidatorRegistry checkValidatorRegistry = TestableCheckValidatorRegistry.INSTANCE;
+
+		// Clear the registry
+		checkValidatorRegistry.clear();
+		// Set the created mock extension registry on the TestableCheckValidatorRegistry
+		checkValidatorRegistry.setExtensionRegistry(extensionRegistry);
+		// Set the locally create EValidator.Registry
+		checkValidatorRegistry.setEValidatorRegistry(eValidatorRegistry);
+
+		Collection<Catalog> checkCatalogs = checkValidatorRegistry.getCheckCatalogs();
+		Assert.assertEquals(0, checkCatalogs.size());
+
+		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp")); //$NON-NLS-1$
+		Assert.assertEquals(2, diagnostic.getChildren().size());
 	}
 }
