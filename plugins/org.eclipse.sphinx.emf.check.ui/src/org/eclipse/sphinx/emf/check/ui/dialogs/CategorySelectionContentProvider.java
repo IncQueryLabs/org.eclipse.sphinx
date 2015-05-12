@@ -34,7 +34,6 @@ import org.eclipse.sphinx.emf.check.ui.internal.messages.Messages;
 public class CategorySelectionContentProvider implements IStructuredContentProvider {
 
 	private Category otherCategory;
-	private Category intrinsicChecksCategory;
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
@@ -54,9 +53,6 @@ public class CategorySelectionContentProvider implements IStructuredContentProvi
 		}
 		elements.addAll(categories.values());
 
-		// Add Intrinsic Model Integrity Checks Category
-		elements.add(getIntrinsicChecksCategory());
-
 		// Add Other Category
 		elements.add(getOtherCategory());
 
@@ -73,14 +69,6 @@ public class CategorySelectionContentProvider implements IStructuredContentProvi
 			otherCategory = createCategory(ICheckValidationConstants.CATEGORY_ID_OTHER, Messages.other_category_label, Messages.other_category_desc);
 		}
 		return otherCategory;
-	}
-
-	protected Category getIntrinsicChecksCategory() {
-		if (intrinsicChecksCategory == null) {
-			intrinsicChecksCategory = createCategory(ICheckValidationConstants.CATEGORY_ID_INTRINSIC,
-					Messages.intrinsic_model_integrity_checks_category_label, Messages.intrinsic_model_integrity_checks_category_desc);
-		}
-		return intrinsicChecksCategory;
 	}
 
 	private Category createCategory(String id, String label, String desc) {

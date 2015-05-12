@@ -16,7 +16,7 @@
 package org.eclipse.sphinx.emf.check.operations;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +34,6 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.util.Diagnostician;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
-import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.internal.messages.Messages;
 import org.eclipse.sphinx.emf.check.services.CheckProblemMarkerService;
 import org.eclipse.sphinx.platform.operations.AbstractWorkspaceOperation;
@@ -42,14 +41,13 @@ import org.eclipse.sphinx.platform.operations.AbstractWorkspaceOperation;
 public class BasicCheckValidationOperation extends AbstractWorkspaceOperation {
 
 	private List<Object> modelObjects;
-	private Set<String> categories;
+	private Map<Object, Object> options;
 
-	public BasicCheckValidationOperation(List<Object> modelObjects, Set<String> categories) {
+	public BasicCheckValidationOperation(List<Object> modelObjects, Map<Object, Object> options) {
 		super(Messages.operation_checkValidation_label);
 		Assert.isNotNull(modelObjects);
-		Assert.isNotNull(categories);
 
-		this.categories = categories;
+		this.options = options != null ? options : Collections.emptyMap();
 		this.modelObjects = modelObjects;
 	}
 
@@ -66,10 +64,8 @@ public class BasicCheckValidationOperation extends AbstractWorkspaceOperation {
 
 				@Override
 				public void run() {
-					Map<Object, Object> contextEntries = new HashMap<Object, Object>();
-					contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories);
 					for (Object modelObject : modelObjects) {
-						validate(modelObject, contextEntries);
+						validate(modelObject, options);
 					}
 				}
 			};

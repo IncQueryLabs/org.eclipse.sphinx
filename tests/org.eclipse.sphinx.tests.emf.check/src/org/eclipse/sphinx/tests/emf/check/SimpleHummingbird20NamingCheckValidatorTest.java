@@ -33,6 +33,7 @@ import org.eclipse.sphinx.emf.check.ICheckValidationConstants;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.internal.CheckMethodWrapper;
+import org.eclipse.sphinx.examples.hummingbird20.check.simple.SimpleHummingbird20NamingCheckValidator;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 import org.eclipse.sphinx.tests.emf.check.internal.Activator;
 import org.eclipse.sphinx.tests.emf.check.internal.TestableCheckValidatorRegistry;
@@ -92,7 +93,7 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 	}
 
 	@Test
-	public void testNoCategoriesSelected() {
+	public void testCheckIntrinsicConstraintsFalse() {
 		EValidator.Registry eValidatorRegistry = new org.eclipse.emf.ecore.impl.EValidatorRegistryImpl();
 		Diagnostician diagnostician = new Diagnostician(eValidatorRegistry);
 
@@ -116,42 +117,47 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 		Map<Object, Object> contextEntries = new HashMap<Object, Object>();
 		contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories);
 
-		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
-		Assert.assertEquals(2, diagnostic.getChildren().size());
-	}
-
-	@Test
-	public void testIntrinsicCategorySelected() {
-		EValidator.Registry eValidatorRegistry = new org.eclipse.emf.ecore.impl.EValidatorRegistryImpl();
-		Diagnostician diagnostician = new Diagnostician(eValidatorRegistry);
-
-		// Create Mock extension registry
-		IExtensionRegistry extensionRegistry = mockFactory.createExtensionRegistryMock(Activator.getPlugin(),
-				testableSimpleHummingbird20NamingCheckValidator);
-		TestableCheckValidatorRegistry checkValidatorRegistry = TestableCheckValidatorRegistry.INSTANCE;
-
-		// Clear the registry
-		checkValidatorRegistry.clear();
-		// Set the created mock extension registry on the TestableCheckValidatorRegistry
-		checkValidatorRegistry.setExtensionRegistry(extensionRegistry);
-		// Set the locally create EValidator.Registry
-		checkValidatorRegistry.setEValidatorRegistry(eValidatorRegistry);
-
-		Collection<Catalog> checkCatalogs = checkValidatorRegistry.getCheckCatalogs();
-		Assert.assertEquals(0, checkCatalogs.size());
-
-		Set<String> categories = new HashSet<String>();
-		categories.add(ICheckValidationConstants.CATEGORY_ID_INTRINSIC);
-
-		Map<Object, Object> contextEntries = new HashMap<Object, Object>();
-		contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories);
+		contextEntries.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, false);
 
 		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
 		Assert.assertEquals(1, diagnostic.getChildren().size());
 
+		Assert.assertEquals(1, CheckTestUtil
+				.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG_CASE1).size());
+	}
+
+	@Test
+	public void testCheckIntrinsicConstraintsTrue() {
+		EValidator.Registry eValidatorRegistry = new org.eclipse.emf.ecore.impl.EValidatorRegistryImpl();
+		Diagnostician diagnostician = new Diagnostician(eValidatorRegistry);
+
+		// Create Mock extension registry
+		IExtensionRegistry extensionRegistry = mockFactory.createExtensionRegistryMock(Activator.getPlugin(),
+				testableSimpleHummingbird20NamingCheckValidator);
+		TestableCheckValidatorRegistry checkValidatorRegistry = TestableCheckValidatorRegistry.INSTANCE;
+
+		// Clear the registry
+		checkValidatorRegistry.clear();
+		// Set the created mock extension registry on the TestableCheckValidatorRegistry
+		checkValidatorRegistry.setExtensionRegistry(extensionRegistry);
+		// Set the locally create EValidator.Registry
+		checkValidatorRegistry.setEValidatorRegistry(eValidatorRegistry);
+
+		Collection<Catalog> checkCatalogs = checkValidatorRegistry.getCheckCatalogs();
+		Assert.assertEquals(0, checkCatalogs.size());
+
+		Map<Object, Object> contextEntries = new HashMap<Object, Object>();
+		contextEntries.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, true);
+
+		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
+		Assert.assertEquals(2, diagnostic.getChildren().size());
+
 		// Expected messages
 		String errorMsg = "The feature 'components' of"; //$NON-NLS-1$
 		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), errorMsg).size());
+
+		Assert.assertEquals(1, CheckTestUtil
+				.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG_CASE1).size());
 	}
 
 	@Test
@@ -175,6 +181,6 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 		Assert.assertEquals(0, checkCatalogs.size());
 
 		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp")); //$NON-NLS-1$
-		Assert.assertEquals(2, diagnostic.getChildren().size());
+		Assert.assertEquals(1, diagnostic.getChildren().size());
 	}
 }

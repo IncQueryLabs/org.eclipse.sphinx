@@ -148,15 +148,11 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		return new CheckMethodWrapper(validator, method, checkValidatorRegistry);
 	}
 
-	protected boolean isIntrinsicCategorySelected(Set<String> selectedCategories) {
-		Assert.isNotNull(selectedCategories);
+	protected boolean isIntrinsicModelIntegrityConstraintsEnabled(Map<Object, Object> context) {
+		Assert.isNotNull(context);
 
-		for (String categoryId : selectedCategories) {
-			if (categoryId.equals(ICheckValidationConstants.CATEGORY_ID_INTRINSIC)) {
-				return true;
-			}
-		}
-		return false;
+		Object value = context.get(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS);
+		return value != null && Boolean.parseBoolean(value.toString());
 	}
 
 	@Override
@@ -178,8 +174,10 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		state.checkValidationMode = mode;
 		state.context = context;
 
-		if (selectedCategories.isEmpty() || isIntrinsicCategorySelected(selectedCategories)) {
-			extendedEObjectValidator.validate(eObject.eClass().getClassifierID(), eObject, diagnostics, context);
+		boolean intrinsicConstraintsValidattionResult = true;
+		if (isIntrinsicModelIntegrityConstraintsEnabled(context)) {
+			intrinsicConstraintsValidattionResult = extendedEObjectValidator.validate(eObject.eClass().getClassifierID(), eObject, diagnostics,
+					context);
 		}
 
 		for (CheckMethodWrapper method : getCheckMethodsForModelObjectType(getModelObjectType(eObject))) {
@@ -190,7 +188,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			}
 		}
 
-		return !state.hasErrors;
+		return !state.hasErrors && intrinsicConstraintsValidattionResult;
 	}
 
 	protected List<CheckMethodWrapper> getCheckMethodsForModelObjectType(Class<?> modelObjectType) {

@@ -19,8 +19,10 @@ package org.eclipse.sphinx.emf.check.ui.actions;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -35,12 +37,13 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.sphinx.emf.check.CheckValidatorRegistry;
+import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.catalog.Category;
 import org.eclipse.sphinx.emf.check.operations.BasicCheckValidationOperation;
 import org.eclipse.sphinx.emf.check.ui.IValidationUIConstants;
 import org.eclipse.sphinx.emf.check.ui.dialogs.CategorySelectionContentProvider;
-import org.eclipse.sphinx.emf.check.ui.dialogs.CategorySelectionDialog;
 import org.eclipse.sphinx.emf.check.ui.dialogs.CategorySelectionLabelProvider;
+import org.eclipse.sphinx.emf.check.ui.dialogs.CheckValidationOptionsSelectionDialog;
 import org.eclipse.sphinx.emf.check.ui.internal.Activator;
 import org.eclipse.sphinx.emf.check.ui.internal.CheckValidationImageProvider;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
@@ -159,16 +162,16 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 
 	@Override
 	public void run() {
-		// Let the use select the categories
-		Set<String> categories = promptForCheckCategories();
-		if (categories == null) {
+		// Let the user select the options
+		Map<Object, Object> options = promptForCheckValidationOptions();
+		if (options == null) {
 			return;
 		}
 
 		final List<Object> modelObjects = getModelObjects();
 
 		// Create the check validation operation
-		final BasicCheckValidationOperation operation = createCheckValidationOperation(modelObjects, categories);
+		final BasicCheckValidationOperation operation = createCheckValidationOperation(modelObjects, options);
 
 		if (isRunInBackground()) {
 			// Run the check validation operation in a workspace job
@@ -191,20 +194,20 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 		return new WorkspaceOperationWorkspaceJob(operation);
 	}
 
-	protected BasicCheckValidationOperation createCheckValidationOperation(List<Object> modelObjects, Set<String> categories) {
-		return new BasicCheckValidationOperation(modelObjects, categories);
+	protected BasicCheckValidationOperation createCheckValidationOperation(List<Object> modelObjects, Map<Object, Object> options) {
+		return new BasicCheckValidationOperation(modelObjects, options);
 	}
 
 	// @return empty set (=> no check catalog), set with selected category ids, or null (=> check catalog but nothing
 	// selected)
-	private Set<String> promptForCheckCategories() {
+	private Map<Object, Object> promptForCheckValidationOptions() {
 		Set<String> selectedCategories = new HashSet<String>();
 
 		// Creates the dialog allowing user to choose categories of constraints to validate
 		IStructuredContentProvider contentProvider = createContentProvider();
 		ILabelProvider labelProvider = createLabelProvider();
-		CategorySelectionDialog dialog = new CategorySelectionDialog(ExtendedPlatformUI.getActiveShell(), new Object(), contentProvider,
-				labelProvider, IValidationUIConstants.CONSTRAINT_CATEGORIES_SELECTION_MESSAGE);
+		CheckValidationOptionsSelectionDialog dialog = new CheckValidationOptionsSelectionDialog(ExtendedPlatformUI.getActiveShell(), new Object(),
+				contentProvider, labelProvider, IValidationUIConstants.CONSTRAINT_CATEGORIES_SELECTION_MESSAGE);
 		dialog.setTitle(IValidationUIConstants.CONSTRAINT_CATEGORIES_SELECTION_TITLE);
 		dialog.setBlockOnOpen(true);
 
@@ -215,7 +218,11 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 					selectedCategories.add(((Category) resultObject).getId());
 				}
 			}
-			return selectedCategories;
+
+			Map<Object, Object> options = new HashMap<Object, Object>();
+			options.put(ICheckValidator.OPTION_CATEGORIES, selectedCategories);
+			options.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, dialog.enableIntrinsicModelIntegrityConstraints());
+			return options;
 		}
 
 		return null;

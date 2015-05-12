@@ -18,11 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
+import org.eclipse.sphinx.emf.check.util.ExtendedEObjectValidator;
 
 /**
  * A delegating validator. This validator is automatically created when multiple check
@@ -34,9 +36,11 @@ import org.eclipse.emf.ecore.EValidator;
 public class CompositeValidator implements EValidator {
 
 	private List<EValidator> children;
+	private ExtendedEObjectValidator extendedEObjectValidator;
 
 	public CompositeValidator() {
 		children = new ArrayList<EValidator>();
+		extendedEObjectValidator = new ExtendedEObjectValidator();
 	}
 
 	public CompositeValidator(EValidator delegate) {
@@ -69,8 +73,20 @@ public class CompositeValidator implements EValidator {
 	@Override
 	public boolean validate(EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		boolean result = true;
+		boolean contextNeedRestore = false;
+		if (isIntrinsicModelIntegrityConstraintsEnabled(context)) {
+			result = result && extendedEObjectValidator.validate(eObject.eClass().getClassifierID(), eObject, diagnostics, context);
+			contextNeedRestore = true;
+			context.remove(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS);
+		}
+
+		// Delegate to children with modified context if intrinsic are enabled so that children will not invoke
+		// intrinsic validation.
 		for (EValidator validator : getChildren()) {
 			result = result && validator.validate(eObject, diagnostics, context);
+		}
+		if (contextNeedRestore) {
+			context.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, true);
 		}
 		return result;
 	}
@@ -78,9 +94,18 @@ public class CompositeValidator implements EValidator {
 	@Override
 	public boolean validate(EClass eClass, EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		boolean result = true;
+		boolean contextNeedRestore = false;
+		if (isIntrinsicModelIntegrityConstraintsEnabled(context)) {
+			result = result && extendedEObjectValidator.validate(eClass.getClassifierID(), eObject, diagnostics, context);
+			contextNeedRestore = true;
+			context.remove(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS);
+		}
 		for (EValidator validator : getChildren()) {
 			boolean validate = validator.validate(eClass, eObject, diagnostics, context);
 			result = result && validate;
+		}
+		if (contextNeedRestore) {
+			context.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, true);
 		}
 		return result;
 	}
@@ -88,10 +113,26 @@ public class CompositeValidator implements EValidator {
 	@Override
 	public boolean validate(EDataType eDataType, Object value, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		boolean result = true;
+		boolean contextNeedRestore = false;
+		if (isIntrinsicModelIntegrityConstraintsEnabled(context)) {
+			result = result && extendedEObjectValidator.validate(eDataType, value, diagnostics, context);
+			contextNeedRestore = true;
+			context.remove(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS);
+		}
 		for (EValidator validator : getChildren()) {
 			boolean validate = validator.validate(eDataType, value, diagnostics, context);
 			result = result && validate;
 		}
+		if (contextNeedRestore) {
+			context.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, true);
+		}
 		return result;
+	}
+
+	protected boolean isIntrinsicModelIntegrityConstraintsEnabled(Map<Object, Object> context) {
+		Assert.isNotNull(context);
+
+		Object value = context.get(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS);
+		return value != null && Boolean.parseBoolean(value.toString());
 	}
 }

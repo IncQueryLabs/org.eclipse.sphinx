@@ -21,10 +21,4 @@ public class ICheckValidationConstants {
 	 * any category.
 	 */
 	public static final String CATEGORY_ID_OTHER = "org.eclipse.sphinx.emf.check.categories.other"; //$NON-NLS-1$
-
-	/**
-	 * Id of the category named "Intrinsic Model Integrity Checks" that enable users to switch on or off EMF-provided
-	 * basic validators.
-	 */
-	public static final String CATEGORY_ID_INTRINSIC = "org.eclipse.sphinx.emf.check.categories.intrinsic"; //$NON-NLS-1$
 }

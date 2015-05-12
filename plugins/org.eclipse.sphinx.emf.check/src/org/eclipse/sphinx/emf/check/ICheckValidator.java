@@ -19,9 +19,16 @@ import org.eclipse.emf.ecore.EValidator;
 public interface ICheckValidator extends EValidator {
 
 	/**
-	 * An option to be used to provide the categories, as a Set of String, for the validation context.
+	 * An option to be used, for the validation context, to restrict the scope of the validated categories. If the
+	 * option is not present, all the categories will be validated.
 	 */
 	String OPTION_CATEGORIES = "CATEGORIES"; //$NON-NLS-1$
+
+	/**
+	 * Specifies whether to validate the intrinsic EMF default constraints or not. The default value of this option is
+	 * <code>Boolean.FALSE</code>.
+	 */
+	String OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS = "ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS"; //$NON-NLS-1$
 
 	ThreadLocal<CheckValidatorState> getState();
 }

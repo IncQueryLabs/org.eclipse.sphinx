@@ -22,6 +22,7 @@ public class Messages extends NLS {
 
 	public static String menu_validation_label;
 
+	public static String text_enable_intrinsic_constraints;
 	public static String intrinsic_model_integrity_checks_category_label;
 	public static String intrinsic_model_integrity_checks_category_desc;
 
