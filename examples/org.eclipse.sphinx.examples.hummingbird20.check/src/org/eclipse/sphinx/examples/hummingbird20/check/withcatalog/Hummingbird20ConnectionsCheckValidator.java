@@ -14,9 +14,11 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.check.withcatalog;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.sphinx.emf.check.AbstractCheckValidator;
 import org.eclipse.sphinx.emf.check.Check;
 import org.eclipse.sphinx.emf.check.CheckValidatorRegistry;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
@@ -25,6 +27,8 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Port;
 
 public class Hummingbird20ConnectionsCheckValidator extends AbstractCheckValidator {
+
+	public static final String ISSUE_MSG_1 = "(Case #1: The application does not contains any component with at least one outgoing connection)"; //$NON-NLS-1$
 
 	public Hummingbird20ConnectionsCheckValidator() {
 		super();
@@ -53,6 +57,26 @@ public class Hummingbird20ConnectionsCheckValidator extends AbstractCheckValidat
 				issue(connection, InstanceModel20Package.eINSTANCE.getConnection_TargetComponent(), targetComponent.getName(), connection.getName(),
 						requiredInterface.getName());
 			}
+		}
+	}
+
+	/**
+	 * This method is called by this validator only when the user selects "Category1" even though the associated
+	 * constraint is applicable for the set {"Category1", "Category2"}.
+	 *
+	 * @param application
+	 */
+	@Check(constraint = "ApplicationNameNotValid", categories = { "Category1" })
+	void checkApplicationContainsComponentWithConnection(Application application) {
+		boolean foundComponentWithOutgoingConnection = false;
+		EList<Component> components = application.getComponents();
+		for (Component component : components) {
+			if (component.getOutgoingConnections().size() > 0) {
+				foundComponentWithOutgoingConnection = true;
+			}
+		}
+		if (!foundComponentWithOutgoingConnection) {
+			issue(application, InstanceModel20Package.Literals.APPLICATION__COMPONENTS, ISSUE_MSG_1);
 		}
 	}
 }
