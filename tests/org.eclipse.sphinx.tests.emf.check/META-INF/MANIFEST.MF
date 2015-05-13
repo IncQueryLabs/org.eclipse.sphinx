@@ -16,4 +16,5 @@ Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.tests.emf.check.internal.Activator$Implementation
 Export-Package: org.eclipse.sphinx.tests.emf.check,
  org.eclipse.sphinx.tests.emf.check.internal;x-internal:=true,
- org.eclipse.sphinx.tests.emf.check.internal.mocks;x-internal:=true
+ org.eclipse.sphinx.tests.emf.check.internal.mocks;x-internal:=true,
+ org.eclipse.sphinx.tests.emf.check.util

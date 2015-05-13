@@ -17,15 +17,10 @@ package org.eclipse.sphinx.tests.emf.check.internal;
 
 import java.util.List;
 
-import org.eclipse.sphinx.emf.check.Check;
 import org.eclipse.sphinx.emf.check.internal.CheckMethodWrapper;
 import org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator;
-import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
-import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 
 public class TestableHummingbird20NamingAndValuesCheckValidator extends Hummingbird20NamingAndValuesCheckValidator {
-
-	public static final String ISSUE_MSG_TEST1 = "(#test1: part of Category1 and Category2 as per check catalog and blank check annotation)"; //$NON-NLS-1$
 
 	public TestableHummingbird20NamingAndValuesCheckValidator() {
 		super(TestableCheckValidatorRegistry.INSTANCE);
@@ -39,10 +34,5 @@ public class TestableHummingbird20NamingAndValuesCheckValidator extends Hummingb
 	@Override
 	public List<CheckMethodWrapper> getCheckMethodsForModelObjectType(Class<?> modelObjectType) {
 		return super.getCheckMethodsForModelObjectType(modelObjectType);
-	}
-
-	@Check(constraint = "ApplicationNameNotValid")
-	void checkIdentifiableName(Identifiable identifiable) {
-		issue(identifiable, Common20Package.Literals.IDENTIFIABLE__NAME, ISSUE_MSG_TEST1);
 	}
 }

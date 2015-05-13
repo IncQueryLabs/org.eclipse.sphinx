@@ -15,13 +15,14 @@
 
 package org.eclipse.sphinx.tests.emf.check;
 
-import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CASE1;
-import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CASE2;
-import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CASE3;
-import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CASE4;
-import static org.eclipse.sphinx.tests.emf.check.internal.TestableHummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_TEST1;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CATEGORIES_CASE1;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CATEGORIES_CASE2;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CATEGORIES_CASE3;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CATEGORIES_CASE4;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_SUPERTYPE;
 import static org.eclipse.sphinx.tests.emf.check.internal.mocks.ValidatorContribution.testableHummingbird20NamingAndValuesCheckValidator;
 
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,7 +40,6 @@ import org.eclipse.sphinx.emf.check.internal.CheckMethodWrapper;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
-import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Factory;
 import org.eclipse.sphinx.tests.emf.check.internal.Activator;
 import org.eclipse.sphinx.tests.emf.check.internal.TestableCheckValidatorRegistry;
 import org.eclipse.sphinx.tests.emf.check.internal.TestableHummingbird20NamingAndValuesCheckValidator;
@@ -90,14 +90,17 @@ public class Hummingbird20NamingAndValuesCheckValidatorTest {
 		Map<Object, Object> contextEntries = new HashMap<Object, Object>();
 		contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories);
 
-		Diagnostic diagnostic = diagnostician.validate(InstanceModel20Factory.eINSTANCE.createApplication(), contextEntries);
+		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries);
 		Assert.assertEquals(4, diagnostic.getChildren().size());
 
 		// Expected messages
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE1).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE2).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE3).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_TEST1).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE1).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE2).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE3).size());
+		Assert.assertEquals(
+				1,
+				CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
+						MessageFormat.format(ISSUE_MSG_SUPERTYPE, Application.class.getSimpleName())).size());
 	}
 
 	@Test
@@ -123,13 +126,16 @@ public class Hummingbird20NamingAndValuesCheckValidatorTest {
 		contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories);
 
 		// Expected messages
-		Diagnostic diagnostic = diagnostician.validate(InstanceModel20Factory.eINSTANCE.createApplication(), contextEntries);
+		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries);
 		Assert.assertEquals(4, diagnostic.getChildren().size());
 
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE1).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE2).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE4).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_TEST1).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE1).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE2).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE4).size());
+		Assert.assertEquals(
+				1,
+				CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
+						MessageFormat.format(ISSUE_MSG_SUPERTYPE, Application.class.getSimpleName())).size());
 	}
 
 	@Test
@@ -155,14 +161,17 @@ public class Hummingbird20NamingAndValuesCheckValidatorTest {
 		Map<Object, Object> contextEntries = new HashMap<Object, Object>();
 		contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories);
 
-		Diagnostic diagnostic = diagnostician.validate(InstanceModel20Factory.eINSTANCE.createApplication(), contextEntries);
+		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries);
 		Assert.assertEquals(5, diagnostic.getChildren().size());
 
 		// Expected messages
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE1).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE2).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE3).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE4).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_TEST1).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE1).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE2).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE3).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE4).size());
+		Assert.assertEquals(
+				1,
+				CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
+						MessageFormat.format(ISSUE_MSG_SUPERTYPE, Application.class.getSimpleName())).size());
 	}
 }

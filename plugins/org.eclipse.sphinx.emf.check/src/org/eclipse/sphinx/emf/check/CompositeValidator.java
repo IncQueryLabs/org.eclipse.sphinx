@@ -24,6 +24,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
+import org.eclipse.emf.ecore.util.EObjectValidator;
 import org.eclipse.sphinx.emf.check.util.ExtendedEObjectValidator;
 
 /**
@@ -73,20 +74,20 @@ public class CompositeValidator implements EValidator {
 	@Override
 	public boolean validate(EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		boolean result = true;
-		boolean contextNeedRestore = false;
-		if (isIntrinsicModelIntegrityConstraintsEnabled(context)) {
-			result = result && extendedEObjectValidator.validate(eObject.eClass().getClassifierID(), eObject, diagnostics, context);
-			contextNeedRestore = true;
-			context.remove(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS);
+		Object oldIntrinsicModelIntegrityConstraintsEnabled = null;
+		if (needsToValidateIntrinsicConstraints(context)) {
+			result &= extendedEObjectValidator.validate(eObject.eClass().getClassifierID(), eObject, diagnostics, context);
+			oldIntrinsicModelIntegrityConstraintsEnabled = context.remove(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS);
 		}
 
 		// Delegate to children with modified context if intrinsic are enabled so that children will not invoke
 		// intrinsic validation.
 		for (EValidator validator : getChildren()) {
-			result = result && validator.validate(eObject, diagnostics, context);
+			result &= validator.validate(eObject, diagnostics, context);
 		}
-		if (contextNeedRestore) {
-			context.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, true);
+		// Restore OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS state
+		if (oldIntrinsicModelIntegrityConstraintsEnabled != null) {
+			context.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, oldIntrinsicModelIntegrityConstraintsEnabled);
 		}
 		return result;
 	}
@@ -94,18 +95,19 @@ public class CompositeValidator implements EValidator {
 	@Override
 	public boolean validate(EClass eClass, EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		boolean result = true;
-		boolean contextNeedRestore = false;
-		if (isIntrinsicModelIntegrityConstraintsEnabled(context)) {
-			result = result && extendedEObjectValidator.validate(eClass.getClassifierID(), eObject, diagnostics, context);
-			contextNeedRestore = true;
-			context.remove(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS);
+		Object oldIntrinsicModelIntegrityConstraintsEnabled = null;
+		if (needsToValidateIntrinsicConstraints(context)) {
+			result &= extendedEObjectValidator.validate(eClass.getClassifierID(), eObject, diagnostics, context);
+			oldIntrinsicModelIntegrityConstraintsEnabled = context.remove(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS);
 		}
+		// Delegate to children with modified context if intrinsic are enabled so that children will not invoke
+		// intrinsic validation.
 		for (EValidator validator : getChildren()) {
-			boolean validate = validator.validate(eClass, eObject, diagnostics, context);
-			result = result && validate;
+			result &= validator.validate(eClass, eObject, diagnostics, context);
 		}
-		if (contextNeedRestore) {
-			context.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, true);
+		// Restore OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS state
+		if (oldIntrinsicModelIntegrityConstraintsEnabled != null) {
+			context.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, oldIntrinsicModelIntegrityConstraintsEnabled);
 		}
 		return result;
 	}
@@ -113,20 +115,25 @@ public class CompositeValidator implements EValidator {
 	@Override
 	public boolean validate(EDataType eDataType, Object value, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		boolean result = true;
-		boolean contextNeedRestore = false;
-		if (isIntrinsicModelIntegrityConstraintsEnabled(context)) {
-			result = result && extendedEObjectValidator.validate(eDataType, value, diagnostics, context);
-			contextNeedRestore = true;
-			context.remove(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS);
+		Object oldIntrinsicModelIntegrityConstraintsEnabled = null;
+		if (needsToValidateIntrinsicConstraints(context)) {
+			result &= extendedEObjectValidator.validate(eDataType, value, diagnostics, context);
+			oldIntrinsicModelIntegrityConstraintsEnabled = context.remove(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS);
 		}
+		// Delegate to children with modified context if intrinsic are enabled so that children will not invoke
+		// intrinsic validation.
 		for (EValidator validator : getChildren()) {
-			boolean validate = validator.validate(eDataType, value, diagnostics, context);
-			result = result && validate;
+			result &= validator.validate(eDataType, value, diagnostics, context);
 		}
-		if (contextNeedRestore) {
-			context.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, true);
+		// Restore OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS state
+		if (oldIntrinsicModelIntegrityConstraintsEnabled != null) {
+			context.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, oldIntrinsicModelIntegrityConstraintsEnabled);
 		}
 		return result;
+	}
+
+	protected boolean needsToValidateIntrinsicConstraints(Map<Object, Object> context) {
+		return isIntrinsicModelIntegrityConstraintsEnabled(context) && !containsEObjectValidator();
 	}
 
 	protected boolean isIntrinsicModelIntegrityConstraintsEnabled(Map<Object, Object> context) {
@@ -134,5 +141,14 @@ public class CompositeValidator implements EValidator {
 
 		Object value = context.get(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS);
 		return value != null && Boolean.parseBoolean(value.toString());
+	}
+
+	protected boolean containsEObjectValidator() {
+		for (EValidator validator : getChildren()) {
+			if (validator instanceof EObjectValidator) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

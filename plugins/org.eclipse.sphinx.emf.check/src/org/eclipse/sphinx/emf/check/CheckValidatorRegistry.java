@@ -246,7 +246,7 @@ public class CheckValidatorRegistry {
 		return ePackage;
 	}
 
-	public void addValidator(EPackage ePackage, ICheckValidator validator) {
+	public void addValidator(EPackage ePackage, EValidator validator) {
 		// Retrieve existing validator for given EPackage if any
 		EValidator existingValidator = eValidatorRegistry.getEValidator(ePackage);
 

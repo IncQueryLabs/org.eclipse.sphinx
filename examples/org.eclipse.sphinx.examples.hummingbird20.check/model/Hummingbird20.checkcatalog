@@ -18,6 +18,12 @@
       message="The application name is not valid {0}."
       categories="Category1 Category2"/>
   <constraints
+      id="IdentifiableNameNotValid"
+      label="Identifiable Name Not Valid"
+      description="Checks if the name of an identifiable is valid"
+      message="The identifiable name is not valid {0}."
+      categories="Category1 Category2"/>
+  <constraints
       id="ComponentNameNotValid"
       label="Component Name Not Valid"
       description="Checks if the name of an application is valid"

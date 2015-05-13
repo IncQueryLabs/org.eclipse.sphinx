@@ -19,7 +19,11 @@ import java.util.List;
 
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Factory;
+import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
+import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Factory;
 
 public class CheckTestUtil {
 
@@ -37,5 +41,23 @@ public class CheckTestUtil {
 		Application app = InstanceModel20Factory.eINSTANCE.createApplication();
 		app.setName(appName);
 		return app;
+	}
+
+	public static Interface createInterface(String interfaceName) {
+		Interface interfacce = TypeModel20Factory.eINSTANCE.createInterface();
+		interfacce.setName(interfaceName);
+		return interfacce;
+	}
+
+	public static Component createComponent(String componentName) {
+		Component component = InstanceModel20Factory.eINSTANCE.createComponent();
+		component.setName(componentName);
+		return component;
+	}
+
+	public static Connection createConnection(String connectionName) {
+		Connection connection = InstanceModel20Factory.eINSTANCE.createConnection();
+		connection.setName(connectionName);
+		return connection;
 	}
 }

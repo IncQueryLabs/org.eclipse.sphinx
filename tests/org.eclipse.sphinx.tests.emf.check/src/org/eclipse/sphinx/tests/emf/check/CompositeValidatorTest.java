@@ -1,13 +1,15 @@
 package org.eclipse.sphinx.tests.emf.check;
 
-import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20ConnectionsCheckValidator.ISSUE_MSG_1;
-import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CASE1;
-import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CASE2;
-import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CASE3;
-import static org.eclipse.sphinx.tests.emf.check.internal.TestableHummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_TEST1;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CATEGORIES_CASE1;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CATEGORIES_CASE2;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CATEGORIES_CASE3;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CATEGORIES_CASE4;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CATEGORIES_CASE5;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_SUPERTYPE;
 import static org.eclipse.sphinx.tests.emf.check.internal.mocks.ValidatorContribution.testableHummingbird20ConnectionsCheckValidator;
 import static org.eclipse.sphinx.tests.emf.check.internal.mocks.ValidatorContribution.testableHummingbird20NamingAndValuesCheckValidator;
 
+import java.text.MessageFormat;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -15,7 +17,9 @@ import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.util.Diagnostician;
 import org.eclipse.sphinx.emf.check.catalog.Catalog;
-import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Factory;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component;
+import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection;
 import org.eclipse.sphinx.tests.emf.check.internal.Activator;
 import org.eclipse.sphinx.tests.emf.check.internal.TestableCheckValidatorRegistry;
 import org.eclipse.sphinx.tests.emf.check.internal.mocks.CheckValidatorRegistryMockFactory;
@@ -46,15 +50,33 @@ public class CompositeValidatorTest {
 		Assert.assertNotNull(checkCatalogs);
 		Assert.assertEquals(2, checkCatalogs.size());
 
-		Diagnostic diagnostic = diagnostician.validate(InstanceModel20Factory.eINSTANCE.createApplication());
-		Assert.assertEquals(7, diagnostic.getChildren().size());
+		Application application = CheckTestUtil.createApplication("_myApp"); //$NON-NLS-1$
+		Component component = CheckTestUtil.createComponent("_myCompo"); //$NON-NLS-1$
+		application.getComponents().add(component);
+		component.getOutgoingConnections().add(CheckTestUtil.createConnection("myOutConnection")); //$NON-NLS-1$
+
+		Diagnostic diagnostic = diagnostician.validate(application);
+		Assert.assertEquals(8, diagnostic.getChildren().size());
 
 		// Expected messages
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE1).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE2).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE3).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_TEST1).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_1).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE1).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE2).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE3).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE4).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE5).size());
+
+		Assert.assertEquals(
+				1,
+				CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
+						MessageFormat.format(ISSUE_MSG_SUPERTYPE, Application.class.getSimpleName())).size());
+		Assert.assertEquals(
+				1,
+				CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
+						MessageFormat.format(ISSUE_MSG_SUPERTYPE, Component.class.getSimpleName())).size());
+		Assert.assertEquals(
+				1,
+				CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
+						MessageFormat.format(ISSUE_MSG_SUPERTYPE, Connection.class.getSimpleName())).size());
 
 		Assert.assertEquals(0, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ERROR_MSG_CIRCULAR_CONTAINMENT).size());
 
