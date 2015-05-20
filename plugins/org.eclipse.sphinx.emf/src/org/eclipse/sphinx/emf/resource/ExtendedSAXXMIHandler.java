@@ -27,6 +27,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.URIConverter;
+import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
@@ -64,22 +65,6 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 		if (options.get(ExtendedResource.OPTION_RECORD_LINE_AND_COLUMN_NUMBERS) == Boolean.TRUE) {
 			recordLineAndColumnNumbers = true;
 		}
-	}
-
-	/*
-	 * Overridden to provide a workaround for potential bug in
-	 * org.apache.xerces.impl.xs.XMLSchemaValidator.addDefaultAttributes(QName, XMLAttributes, XSAttributeGroupDecl)
-	 * (line 3027) which attempts to add xmi:version as default attribute if not present yet but misses to initialize
-	 * the attribute's prefix field
-	 * @see org.eclipse.emf.ecore.xmi.impl.XMLHandler#setAttribValue(org.eclipse.emf.ecore.EObject, java.lang.String,
-	 * java.lang.String)
-	 */
-	@Override
-	protected void setAttribValue(EObject object, String name, String value) {
-		if (XMI_VERSION_ATTRIBUTE.equals(name)) {
-			return;
-		}
-		super.setAttribValue(object, name, value);
 	}
 
 	/*
@@ -252,9 +237,38 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 		}
 	}
 
+	/*
+	 * @see org.eclipse.emf.ecore.xmi.impl.SAXXMIHandler#handleObjectAttribs(org.eclipse.emf.ecore.EObject)
+	 */
 	@Override
 	protected void handleObjectAttribs(EObject obj) {
-		super.handleObjectAttribs(obj);
+		if (attribs != null) {
+			InternalEObject internalEObject = (InternalEObject) obj;
+			for (int i = 0, size = attribs.getLength(); i < size; ++i) {
+				String name = attribs.getQName(i);
+				if (name.equals(ID_ATTRIB)) {
+					xmlResource.setID(internalEObject, attribs.getValue(i));
+				} else if (name.equals(hrefAttribute) && (!recordUnknownFeature || types.peek() != UNKNOWN_FEATURE_TYPE || obj.eClass() != anyType)) {
+					handleProxy(internalEObject, attribs.getValue(i));
+				} else if (isNamespaceAware) {
+					String namespace = attribs.getURI(i);
+					/*
+					 * Provides a workaround for potential bug in
+					 * org.apache.xerces.impl.xs.XMLSchemaValidator.addDefaultAttributes(QName, XMLAttributes,
+					 * XSAttributeGroupDecl) (line 3027) which attempts to add xmi:version as default attribute if not
+					 * present yet but misses to initialize the attribute's prefix field
+					 */
+					if (ExtendedMetaData.XMI_URI.equals(namespace) && XMIResource.VERSION_NAME.equals(name)) {
+						continue;
+					}
+					if (!ExtendedMetaData.XSI_URI.equals(namespace) && !notFeatures.contains(name)) {
+						setAttribValue(obj, name, attribs.getValue(i));
+					}
+				} else if (!name.startsWith(XMLResource.XML_NS) && !notFeatures.contains(name)) {
+					setAttribValue(obj, name, attribs.getValue(i));
+				}
+			}
+		}
 
 		if (recordLineAndColumnNumbers) {
 			AnyType extension = getExtension(obj);

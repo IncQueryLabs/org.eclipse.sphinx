@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.tests.emf.util;
@@ -263,7 +263,7 @@ public class EObjectUtilTest extends AbstractTestCase {
 
 	/**
 	 * Test method for {@link EObjectUtil#findESubTypesOf(EClass, boolean)}
-	 * 
+	 *
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
@@ -519,12 +519,11 @@ public class EObjectUtilTest extends AbstractTestCase {
 			}
 		}
 		assertTrue("Exception when the given reference is NULL" + message, flag);
-
 	}
 
 	/**
 	 * Test method for {@link EObjectUtil#getMixedText(org.eclipse.emf.ecore.util.FeatureMap)}
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testGetMixedText() throws Exception {
@@ -535,12 +534,11 @@ public class EObjectUtilTest extends AbstractTestCase {
 
 		String mixedText = EObjectUtil.getMixedText(description.getMixed());
 		assertEquals("DescriptionText", mixedText);
-
 	}
 
 	/**
 	 * Test method for {@link EObjectUtil#setMixedText(FeatureMap, String)}
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testSetMixedText() throws Exception {
