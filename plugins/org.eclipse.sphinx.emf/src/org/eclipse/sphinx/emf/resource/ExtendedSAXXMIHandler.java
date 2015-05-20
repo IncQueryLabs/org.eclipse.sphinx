@@ -43,6 +43,8 @@ import org.xml.sax.SAXParseException;
 
 public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 
+	protected static final String XMI_VERSION_ATTRIBUTE = XMIResource.XMI_NS + ":" + XMIResource.VERSION_NAME; //$NON-NLS-1$
+
 	protected ExtendedResource extendedResource;
 
 	protected IMetaModelDescriptor resourceVersion = null;
@@ -59,14 +61,25 @@ public class ExtendedSAXXMIHandler extends SAXXMIHandler {
 			resourceVersion = (IMetaModelDescriptor) value;
 		}
 
-		// Workaround for potential bug in org.apache.xerces.impl.xs.XMLSchemaValidator.addDefaultAttributes(QName,
-		// XMLAttributes, XSAttributeGroupDecl) (line 3027) which attempts to add xmi:version as default attribute if
-		// not present yet but misses to initialize the attribute's prefix field
-		notFeatures.add(XMIResource.VERSION_NAME);
-
 		if (options.get(ExtendedResource.OPTION_RECORD_LINE_AND_COLUMN_NUMBERS) == Boolean.TRUE) {
 			recordLineAndColumnNumbers = true;
 		}
+	}
+
+	/*
+	 * Overridden to provide a workaround for potential bug in
+	 * org.apache.xerces.impl.xs.XMLSchemaValidator.addDefaultAttributes(QName, XMLAttributes, XSAttributeGroupDecl)
+	 * (line 3027) which attempts to add xmi:version as default attribute if not present yet but misses to initialize
+	 * the attribute's prefix field
+	 * @see org.eclipse.emf.ecore.xmi.impl.XMLHandler#setAttribValue(org.eclipse.emf.ecore.EObject, java.lang.String,
+	 * java.lang.String)
+	 */
+	@Override
+	protected void setAttribValue(EObject object, String name, String value) {
+		if (XMI_VERSION_ATTRIBUTE.equals(name)) {
+			return;
+		}
+		super.setAttribValue(object, name, value);
 	}
 
 	/*
