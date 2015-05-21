@@ -192,31 +192,43 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	@Override
 	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject, boolean resolve) {
 		Assert.isNotNull(eObject);
-		URI uri;
 
-		// eObject not yet removed?
-		if (eObject.eResource() != null || eObject.eIsProxy()) {
-			// Compute the given eObject's URI in the same way as EMF would do normally
-			uri = EcoreUtil.getURI(eObject);
-		} else {
-			// Restore the given eObject's old URI that it had before it was removed
-			uri = restoreURI(oldOwner, oldFeature, eObject);
+		// eObject being a proxy?
+		if (eObject.eIsProxy()) {
+			// Use proxy URI
+			URI uri = ((InternalEObject) eObject).eProxyURI();
+
+			// Be sure that it gets resolved when needed
+			if (resolve) {
+				return resolveURI(uri);
+			}
+
+			return uri;
 		}
 
-		// Is URI a fragment-based URI not knowing the resource containing the eObject it refers to but expected to be
-		// resolved against its underlying resource?
-		if (uri.segmentCount() == 0 && resolve) {
-			uri = resolveURI(oldOwner, eObject, uri);
+		// Removed eObject?
+		else if (eObject.eResource() == null) {
+			// Restore the given eObject's old URI that it had before it got removed from its resource
+			return getOldURI(oldOwner, oldFeature, eObject, resolve);
 		}
 
-		return uri;
+		// Normal eObject
+		else {
+			// Form the given eObject's URI relative to its resource
+			Resource resource = eObject.eResource();
+			return getURI(resource.getURI(), resource.getURIFragment(eObject), resolve);
+		}
 	}
 
-	protected URI internalGetURI(EObject eObject) {
-		return EcoreUtil.getURI(eObject);
+	protected URI getURI(URI resourceURI, String eObjectURIFragment, boolean resolve) {
+		return getURI(resourceURI, eObjectURIFragment);
 	}
 
-	protected URI restoreURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
+	protected URI getURI(URI resourceURI, String eObjectURIFragment) {
+		return resourceURI == null ? URI.createURI(URI_FRAGMENT_SEPARATOR + eObjectURIFragment) : resourceURI.appendFragment(eObjectURIFragment);
+	}
+
+	protected URI getOldURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject, boolean resolve) {
 		Assert.isNotNull(eObject);
 
 		if (oldOwner != null && oldFeature != null) {
@@ -248,35 +260,25 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 				oldEObjectURIFragment.append(URI_SEGMENT_SEPARATOR);
 				oldEObjectURIFragment.append(eObjectURIFragmentSegments.get(i));
 			}
-			return oldOwnerURI.trimFragment().appendFragment(oldEObjectURIFragment.toString());
+			return getURI(oldOwnerURI.trimFragment(), oldEObjectURIFragment.toString(), resolve);
 		} else {
-			// Try to calculate the given eObject's URI in the same way as EcoreUtil#getURI() would, but use target
-			// resource rather than object resource for that purpose
-			Resource targetResource = (Resource) getTarget();
-			URI targetResourceURI = targetResource.getURI();
-			String uriFragment = targetResource.getURIFragment(eObject);
-			return targetResourceURI == null ? URI.createURI(URI_FRAGMENT_SEPARATOR + uriFragment) : targetResourceURI.appendFragment(uriFragment);
+			// Form the given eObject's URI relative to this adapter's target resource
+			Resource oldResource = (Resource) getTarget();
+			return getURI(oldResource.getURI(), oldResource.getURIFragment(eObject), resolve);
 		}
 	}
 
-	protected URI resolveURI(EObject oldOwner, EObject eObject, URI uri) {
-		Assert.isNotNull(eObject);
-		Assert.isNotNull(uri);
-
-		// Retrieve the resource of given eObject
-		Resource resource = eObject.eResource();
-		if (resource == null) {
-			// Retrieve the given eObject's old resource by referring to the eObject's old owner if any or to target
-			// resource otherwise
-			if (oldOwner != null) {
-				resource = oldOwner.eResource();
-			} else {
-				resource = (Resource) getTarget();
-			}
+	protected URI resolveURI(URI uri) {
+		// Is URI a fragment-based URI not knowing the resource that contains the eObject it refers to?
+		if (uri.segmentCount() == 0) {
+			// Form resolved URI by using the URI of this adapter's target resource as prefix and URI fragment as
+			// postfix
+			Resource oldResource = (Resource) getTarget();
+			URI oldResourceURI = oldResource.getURI();
+			String eObjectURIFragment = uri.fragment();
+			return getURI(oldResourceURI, eObjectURIFragment);
 		}
-
-		// Construct resolved eObject URI by using the URI of its resource as prefix and its URI fragment as postfix
-		return resource.getURI().appendFragment(uri.fragment());
+		return uri;
 	}
 
 	/*

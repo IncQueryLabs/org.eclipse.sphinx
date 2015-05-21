@@ -21,7 +21,6 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapter;
 
@@ -37,36 +36,25 @@ public class ExtendedHummingbirdResourceAdapter extends ExtendedResourceAdapter 
 	public static final String HB_SCHEME = "hb"; //$NON-NLS-1$
 
 	/**
-	 * Creates a fragment-based Hummingbird 2.0 {@link URI} from given original {@link URI}.
+	 * Creates a fragment-based Hummingbird 2.0 {@link URI} from given {@link URI#fragment() URI fragment}.
 	 *
 	 * @param uri
-	 *            The original {@link URI} to be handled.
+	 *            The URI fragment to be processed.
 	 * @return The resulting fragment-based Hummingbird 2.0 {@link URI}.
 	 */
-	protected URI createHummingbirdURI(URI uri) {
-		if (uri != null && !HB_SCHEME.equals(uri.scheme())) {
-			return URI.createURI(HB_SCHEME + URI_SCHEME_SEPARATOR + URI_SEGMENT_SEPARATOR + URI_FRAGMENT_SEPARATOR + uri.fragment(), true);
-		}
-		return uri;
+	protected URI createHummingbirdURI(String uriFragment) {
+		return URI.createURI(HB_SCHEME + URI_SCHEME_SEPARATOR + URI_SEGMENT_SEPARATOR + URI_FRAGMENT_SEPARATOR + uriFragment, true);
 	}
 
-	/*
-	 * @see org.eclipse.sphinx.emf.resource.ExtendedResourceAdapter#getURI(org.eclipse.emf.ecore.EObject,
-	 * org.eclipse.emf.ecore.EStructuralFeature, org.eclipse.emf.ecore.EObject, boolean)
-	 */
 	@Override
-	public URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject, boolean resolve) {
-		// Get full URI
-		URI uri = super.getURI(oldOwner, oldFeature, eObject, resolve);
-
-		// No need for URI to be resolved against underlying resource?
+	protected URI getURI(URI resourceURI, String eObjectURIFragment, boolean resolve) {
 		if (!resolve) {
 			// Return fragment-based Hummingbird 2.0 URI
-			return createHummingbirdURI(uri);
+			return createHummingbirdURI(eObjectURIFragment);
 		}
 
-		// Return full URI
-		return uri;
+		// Return regular full URI
+		return getURI(resourceURI, eObjectURIFragment);
 	}
 
 	/*
@@ -77,20 +65,14 @@ public class ExtendedHummingbirdResourceAdapter extends ExtendedResourceAdapter 
 	public URI createURI(String uriLiteral, EClass eClass) {
 		// Is given URI literal a fragment-only URI string?
 		if (uriLiteral.startsWith(URI_FRAGMENT_SEPARATOR)) {
-			// Create corresponding fragment-only URI object
-			URI uri = URI.createURI(uriLiteral);
-
 			// Create and return corresponding fragment-based Hummingbird 2.0 URI
-			return createHummingbirdURI(uri);
+			return createHummingbirdURI(uriLiteral.substring(1));
 		}
 
 		// Backward compatibility: Is given URI literal a fragment-only URI string without leading fragment separator?
 		if (!uriLiteral.contains(URI_FRAGMENT_SEPARATOR)) {
-			// Create corresponding fragment-only URI object
-			URI uri = URI.createURI(URI_FRAGMENT_SEPARATOR + uriLiteral);
-
 			// Create and return corresponding fragment-based Hummingbird 2.0 URI
-			return createHummingbirdURI(uri);
+			return createHummingbirdURI(uriLiteral);
 		}
 
 		return super.createURI(uriLiteral, eClass);
