@@ -69,4 +69,15 @@ Contributors:
          </propertySection>
       </propertySections>
    </extension>
+   <extension
+         point="org.eclipse.sphinx.emf.metaModelServices">
+      <service
+            class="org.eclipse.sphinx.emf.search.ui.services.BasicModelSearchService"
+            id="org.eclipse.sphinx.emf.search.ui.basicModelSearch"
+            type="org.eclipse.sphinx.emf.search.ui.services.IModelSearchService">
+         <applicableFor
+               metaModelDescriptorIdPattern=".*">
+         </applicableFor>
+      </service>
+   </extension>
 </plugin>

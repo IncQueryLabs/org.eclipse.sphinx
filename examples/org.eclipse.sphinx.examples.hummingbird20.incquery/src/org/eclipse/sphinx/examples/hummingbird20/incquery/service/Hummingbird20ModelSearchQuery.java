@@ -8,13 +8,13 @@ import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.sphinx.emf.search.ui.ModelSearchMatch;
 import org.eclipse.sphinx.emf.search.ui.QuerySpecification;
-import org.eclipse.sphinx.emf.search.ui.incquery.services.AbstractModelSearchService;
+import org.eclipse.sphinx.emf.search.ui.incquery.services.AbstractIncQueryModelSearchService;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.common.IdentifiablesByNameMatcher;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
-public class Hummingbird20ModelSearchQuery extends AbstractModelSearchService {
+public class Hummingbird20ModelSearchQuery extends AbstractIncQueryModelSearchService {
 
 	@Override
 	protected List<ModelSearchMatch> getMatches(IncQueryEngine engine, QuerySpecification querySpec) {

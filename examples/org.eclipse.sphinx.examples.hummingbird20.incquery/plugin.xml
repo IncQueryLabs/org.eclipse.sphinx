@@ -23,13 +23,22 @@ Contributors:
       <applicableFor metaModelDescriptorIdPattern="org.eclipse.sphinx.examples.hummingbird20"/>
     </service>
   </extension>
+  <extension id="org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.Typemodel" point="org.eclipse.incquery.runtime.queryspecification">
+    <group group="org.eclipse.incquery.runtime.extensibility.SingletonExtensionFactory:org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.Typemodel" id="org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.Typemodel"/>
+  </extension>
+  <extension id="org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.Typemodel" point="org.eclipse.incquery.runtime.queryspecification">
+    <group group="org.eclipse.incquery.runtime.extensibility.SingletonExtensionFactory:org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.Typemodel" id="org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.Typemodel"/>
+  </extension>
+  <extension id="org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common" point="org.eclipse.incquery.runtime.queryspecification">
+    <group group="org.eclipse.incquery.runtime.extensibility.SingletonExtensionFactory:org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common" id="org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common"/>
+  </extension>
   <extension id="org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common" point="org.eclipse.incquery.runtime.queryspecification">
     <group group="org.eclipse.incquery.runtime.extensibility.SingletonExtensionFactory:org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common" id="org.eclipse.sphinx.examples.hummingbird20.incquery.common.Common"/>
   </extension>
   <extension id="org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.Instancemodel" point="org.eclipse.incquery.runtime.queryspecification">
     <group group="org.eclipse.incquery.runtime.extensibility.SingletonExtensionFactory:org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.Instancemodel" id="org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.Instancemodel"/>
   </extension>
-  <extension id="org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.Typemodel" point="org.eclipse.incquery.runtime.queryspecification">
-    <group group="org.eclipse.incquery.runtime.extensibility.SingletonExtensionFactory:org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.Typemodel" id="org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.Typemodel"/>
+  <extension id="org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.Instancemodel" point="org.eclipse.incquery.runtime.queryspecification">
+    <group group="org.eclipse.incquery.runtime.extensibility.SingletonExtensionFactory:org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.Instancemodel" id="org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.Instancemodel"/>
   </extension>
 </plugin>

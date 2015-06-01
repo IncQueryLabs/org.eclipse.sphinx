@@ -29,7 +29,7 @@ import org.eclipse.sphinx.emf.search.ui.incquery.internal.Activator;
 import org.eclipse.sphinx.emf.search.ui.services.IModelSearchService;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
-public abstract class AbstractModelSearchService implements IModelSearchService {
+public abstract class AbstractIncQueryModelSearchService implements IModelSearchService {
 
 	protected abstract List<ModelSearchMatch> getMatches(IncQueryEngine engine, QuerySpecification querySpec);
 

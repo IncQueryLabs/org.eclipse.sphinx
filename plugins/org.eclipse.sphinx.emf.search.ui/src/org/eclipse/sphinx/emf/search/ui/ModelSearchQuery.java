@@ -28,6 +28,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.ISearchResult;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
+import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.metamodel.services.DefaultMetaModelServiceProvider;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
@@ -94,10 +95,14 @@ public class ModelSearchQuery implements ISearchQuery {
 	}
 
 	protected IModelSearchService getModelSearchService(IMetaModelDescriptor descriptor) {
+		IModelSearchService modelSearchService = null;
 		if (descriptor != null) {
-			return new DefaultMetaModelServiceProvider().getService(descriptor, IModelSearchService.class);
+			modelSearchService = new DefaultMetaModelServiceProvider().getService(descriptor, IModelSearchService.class);
 		}
-		return null;
+		if (modelSearchService == null) {
+			modelSearchService = new DefaultMetaModelServiceProvider().getService(MetaModelDescriptorRegistry.ANY_MM, IModelSearchService.class);
+		}
+		return modelSearchService;
 	}
 
 	@Override

@@ -78,8 +78,8 @@ public final class InterfacesByNameQuerySpecification extends BaseGeneratedQuery
         new ExportedParameter(body, var_name, "name")
       ));
       
-      
       new TypeUnary(body, var_interface, getClassifierLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel", "Interface"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel/Interface");
+      
       new TypeBinary(body, CONTEXT, var_interface, var_name, getFeatureLiteral("http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common", "Identifiable", "name"), "http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/common/Identifiable.name");
       bodies.add(body);
     }

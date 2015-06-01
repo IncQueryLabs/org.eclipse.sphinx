@@ -29,7 +29,7 @@ import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.sphinx.emf.search.ui.ModelSearchMatch;
 import org.eclipse.sphinx.emf.search.ui.QuerySpecification;
 
-public class GenericModelSearchService extends AbstractModelSearchService {
+public class GenericModelSearchService extends AbstractIncQueryModelSearchService {
 
 	private Map<IncQueryEngine, Set<EStructuralFeature>> engineToFeaturesMap = new HashMap<IncQueryEngine, Set<EStructuralFeature>>();
 
