@@ -1622,7 +1622,7 @@ public final class EcorePlatformUtil {
 
 							// Add new resource
 							Resource resource = EcoreResourceUtil.addNewModelResource(editingDomain.getResourceSet(), uri,
-									descriptor.getContentTypeId(), descriptor.getModelRoot());
+									descriptor.getContentTypeId(), descriptor.getModelRoots());
 
 							// Mark new resource as dirty
 							SaveIndicatorUtil.setDirty(editingDomain, resource);
@@ -1763,10 +1763,10 @@ public final class EcorePlatformUtil {
 								 * saved at all.
 								 */
 								EcoreResourceUtil.saveNewModelResource(editingDomain.getResourceSet(), uri, descriptor.getContentTypeId(),
-										descriptor.getModelRoot(), optionsWithProgressMonitor);
+										descriptor.getModelRoots(), optionsWithProgressMonitor);
 
 								// Mark resource as freshly saved in order to avoid that it gets automatically reloaded
-								SaveIndicatorUtil.setSaved(editingDomain, descriptor.getModelRoot().eResource());
+								SaveIndicatorUtil.setSaved(editingDomain, descriptor.getModelRoots().iterator().next().eResource());
 							} catch (Exception ex) {
 								// Log exception in error log
 								/*

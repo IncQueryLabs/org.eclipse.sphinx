@@ -922,7 +922,26 @@ public final class EcoreResourceUtil {
 	 * @since 0.7.0
 	 */
 	public static Resource addNewModelResource(ResourceSet resourceSet, URI uri, String contentTypeId, EObject modelRoot) {
-		if (uri != null && modelRoot != null) {
+		return addNewModelResource(resourceSet, uri, contentTypeId, Collections.singleton(modelRoot));
+	}
+
+	/**
+	 * Create the new model given by the set of {@link EObject modelRoots} parameter. The method will create a new
+	 * Resource specified by a given URI and content type id. The new created resource will be added to a given
+	 * ResourceSet.
+	 *
+	 * @param resourceSet
+	 *            The ResourceSet to which the new Resource is added.
+	 * @param uri
+	 *            The URI specifying the location to which the Resource is to be saved to.
+	 * @param contentTypeId
+	 *            The id of the content type of which new created Resource shall be of.
+	 * @param modelRoots
+	 *            The set of EObjects to be use as model root objects.
+	 * @since 0.9.0
+	 */
+	public static Resource addNewModelResource(ResourceSet resourceSet, URI uri, String contentTypeId, Collection<EObject> modelRoots) {
+		if (uri != null && modelRoots != null) {
 			try {
 				// Create new ResourceSet if none has been provided
 				if (resourceSet == null) {
@@ -942,7 +961,7 @@ public final class EcoreResourceUtil {
 				// Create and add new model resource to the resourceSet
 				resource = resourceSet.createResource(uri, contentTypeId);
 				if (resource != null) {
-					resource.getContents().add(modelRoot);
+					resource.getContents().addAll(modelRoots);
 				}
 				return resource;
 			} catch (Exception ex) {
@@ -993,8 +1012,30 @@ public final class EcoreResourceUtil {
 	 * @see #getDefaultSaveOptions()
 	 */
 	public static void saveNewModelResource(ResourceSet resourceSet, URI uri, String contentTypeId, EObject modelRoot, Map<?, ?> options) {
+		saveNewModelResource(resourceSet, uri, contentTypeId, Collections.singleton(modelRoot), options);
+	}
+
+	/**
+	 * Saves the new model given by the set of {@link EObject modelRoot} parameter. The method will create a new
+	 * Resource specified by a given URI and content type id. The new created resource will be added to a given
+	 * ResourceSet and saved.
+	 *
+	 * @param resourceSet
+	 *            The ResourceSet to which the new Resource is added.
+	 * @param uri
+	 *            The URI specifying the location to which the Resource is to be saved to.
+	 * @param contentTypeId
+	 *            The id of the content type of which new created Resource shall be of.
+	 * @param modelRoots
+	 *            The set of EObjects to be use as model root objects.
+	 * @param options
+	 *            The save options.
+	 * @see #getDefaultSaveOptions()
+	 * @since 0.9.0
+	 */
+	public static void saveNewModelResource(ResourceSet resourceSet, URI uri, String contentTypeId, Collection<EObject> modelRoots, Map<?, ?> options) {
 		// Create new model resource and add it to the provided ResourceSet
-		Resource resource = addNewModelResource(resourceSet, uri, contentTypeId, modelRoot);
+		Resource resource = addNewModelResource(resourceSet, uri, contentTypeId, modelRoots);
 
 		// Save the newly created resource
 		saveModelResource(resource, options);

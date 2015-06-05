@@ -1,17 +1,17 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2011 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - Extracted AbstractResultObjectHandler and derived SaveAsNewFileHandler from it.
  *     itemis - [358591] ResultObjectHandler and ResultMessageHandler used by M2xConfigurationWizards are difficult to customize and should be usable in BasicM2xActions too
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.xtendxpand.jobs;
@@ -42,7 +42,7 @@ import org.eclipse.sphinx.xtendxpand.internal.Activator;
  * An {@link IJobChangeListener} implementation that can be registered on an {@link XtendJob} instance or a
  * {@link M2MJob} instance that encloses the latter and saves the {@link XtendJob#getResultObjects() result objects}
  * produced by the {@link XtendJob} as new files in the workspace.
- * 
+ *
  * @see XtendJob
  * @see M2MJob
  */
@@ -73,7 +73,8 @@ public class SaveAsNewFileHandler extends AbstractResultObjectHandler {
 		// Sort model resource descriptors according to editing domain which they should belong to
 		Map<TransactionalEditingDomain, Collection<ModelResourceDescriptor>> modelResourceDescriptors = new HashMap<TransactionalEditingDomain, Collection<ModelResourceDescriptor>>();
 		for (ModelResourceDescriptor modelResourceDescriptor : allModelResourceDescriptors) {
-			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(modelResourceDescriptor.getModelRoot());
+			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(modelResourceDescriptor.getModelRoots().iterator()
+					.next());
 			IFile modelFile = ResourcesPlugin.getWorkspace().getRoot().getFile(modelResourceDescriptor.getPath());
 			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(modelFile.getParent(), mmDescriptor);
 
