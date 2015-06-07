@@ -119,13 +119,20 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 		XViewer xViewer = createXViewer(sectionClient, xViewerFactory);
 		xViewer.getTree().setLayoutData(getLayoutData());
 
+		// Make table viewer this section's viewer
+		/*
+		 * !! Important Note !! This must be done before initializing the table viewer's content/label providers because
+		 * the latter are likely to require the table viewer and may want to retrieve it by calling #getViewer() (see
+		 * #createLabelProvider() for details).
+		 */
+		setViewer(xViewer);
+
 		// Provide table content
 		xViewer.setContentProvider(createContentProvider());
 		xViewer.setLabelProvider(createLabelProvider());
 
+		// Set table input
 		xViewer.setInput(sectionInput);
-
-		setViewer(xViewer);
 	}
 
 	protected XViewerFactory createXViewerFactory() {
