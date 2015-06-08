@@ -21,6 +21,7 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.examples.hummingbird20.splitting.ui.internal.messages.Messages"; //$NON-NLS-1$
 
 	public static String menu_splitting_label;
+	public static String menu_typemodel_splitting_label;
 
 	static {
 		// Initialize resource bundle

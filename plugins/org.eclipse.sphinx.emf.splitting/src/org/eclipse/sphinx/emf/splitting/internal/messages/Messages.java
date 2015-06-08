@@ -21,6 +21,7 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.emf.splitting.internal.messages.Messages"; //$NON-NLS-1$
 
 	public static String operation_modelElementSplitting_label;
+	public static String subTask_savingModels;
 
 	static {
 		// initialize resource bundle

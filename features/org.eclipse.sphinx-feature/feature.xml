@@ -79,4 +79,8 @@
          id="org.eclipse.sphinx.emf.search"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.sphinx.emf.splitting"
+         version="0.0.0"/>
+
 </feature>

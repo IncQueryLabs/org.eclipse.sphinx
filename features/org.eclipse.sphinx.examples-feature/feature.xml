@@ -78,5 +78,13 @@
    <includes
          id="org.eclipse.sphinx.examples.emf.compare.source"
          version="0.0.0"/>
+         
+   <includes
+         id="org.eclipse.sphinx.examples.emf.splitting"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.sphinx.examples.emf.splitting.source"
+         version="0.0.0"/>
 
 </feature>

@@ -22,4 +22,8 @@ public interface IModelElementSplittingOperation extends IWorkspaceOperation {
 	IModelElementSplittingListener getModelElementSplittingListener();
 
 	void setModelElementSplittingListener(IModelElementSplittingListener modelElementSplittingListener);
+
+	void setDeleteOriginalResources(boolean deleteOriginalResources);
+
+	boolean isDeleteOriginalResources();
 }

@@ -17,13 +17,14 @@ package org.eclipse.sphinx.examples.hummingbird20.splitting.ui.actions;
 import org.eclipse.sphinx.emf.splitting.IModelElementSplittingListener;
 import org.eclipse.sphinx.emf.splitting.ui.actions.AbstractModelElementSplittingAction;
 import org.eclipse.sphinx.examples.hummingbird20.splitting.Hummingbird20TypeModelElementSplittingListener;
+import org.eclipse.sphinx.examples.hummingbird20.splitting.ui.internal.messages.Messages;
 
 public class Hummingbirg20ModelElementSplittingAction extends AbstractModelElementSplittingAction {
 
 	private IModelElementSplittingListener modelElementSplittingListener;
 
 	public Hummingbirg20ModelElementSplittingAction() {
-		this("Model Element Splitting");
+		this(Messages.menu_typemodel_splitting_label);
 	}
 
 	public Hummingbirg20ModelElementSplittingAction(String text) {
