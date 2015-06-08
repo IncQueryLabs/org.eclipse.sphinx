@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -136,7 +137,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for {@link EcoreResourceUtil#exists(URI uri)} .
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
@@ -206,7 +207,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for {@link EcoreResourceUtil#getContentTypeId(URI uri)} .
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testGetContentTypeId() throws Exception {
@@ -532,7 +533,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for {@link EcoreResourceUtil#isResourceLoaded(ResourceSet resourceSet,URI modelURI)} .
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testIsResourceLoaded() throws Exception {
@@ -590,7 +591,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for {@link EcoreResourceUtil#unloadResource(Resource)}
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testUnloadResource() throws Exception {
@@ -1149,7 +1150,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 
 	/**
 	 * Test method for {@link EcoreResourceUtil#saveNewModelResource(ResourceSet, URI, String, EObject, java.util.Map)}
-	 * 
+	 *
 	 * @throws Exception
 	 */
 
@@ -1591,7 +1592,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			IPath existingFilePath = refWks.hbProject10_A.getFullPath().append(newResourceName);
 			final URI newResourceURI = URI.createPlatformResourceURI(existingFilePath.toString(), true);
 
-			final EObject modelToSave = null;
+			final Collection<EObject> modelRootsToSave = null;
 
 			ISchedulingRule rule = ExtendedPlatform.createSaveNewSchedulingRule(existingFilePath);
 
@@ -1603,7 +1604,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 							@Override
 							public void run() {
 								EcoreResourceUtil.saveNewModelResource(resourceSet10, newResourceURI, Hummingbird10Package.eCONTENT_TYPE,
-										modelToSave, Collections.emptyMap());
+										modelRootsToSave, Collections.emptyMap());
 							}
 						}, "Save new model resource");
 
@@ -1627,7 +1628,6 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			// Verify that there is an underlying file
 			IFile newFile = refWks.hbProject10_A.getFile(newResourceName);
 			assertFalse(newFile.isAccessible());
-
 		}
 	}
 
