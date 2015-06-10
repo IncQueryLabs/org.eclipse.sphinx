@@ -51,8 +51,6 @@
 		<module>../../plugins/org.eclipse.sphinx.xtend.typesystem.emf</module>
 		<module>../../plugins/org.eclipse.sphinx.xtendxpand.ui</module>
 		<module>../../plugins/org.eclipse.sphinx.xtendxpand</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.splitting</module>
-		<module>../../plugins/org.eclipse.sphinx.emf.splitting.ui</module>
 
 		<!-- Examples -->
 		<module>../../examples/org.eclipse.sphinx.examples.actions</module>
@@ -89,8 +87,6 @@
 		<module>../../examples/org.eclipse.sphinx.examples.workflows</module>
 		<module>../../examples/org.eclipse.sphinx.examples.workflows.lib</module>
 		<module>../../examples/org.eclipse.sphinx.examples.views.documentation</module>
-		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.splitting</module>
-		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.splitting.ui</module>
 
 		<!-- Tests -->
 		<module>../../tests/org.eclipse.sphinx.tests.emf</module>
@@ -117,7 +113,6 @@
 		<!-- Features -->
 		<module>../../features/org.eclipse.sphinx.core-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.compare-feature</module>
-		<module>../../features/org.eclipse.sphinx.emf.splitting-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms-feature</module>
 		<module>../../features/org.eclipse.sphinx.emf.editors.forms.nebula-feature</module>
@@ -136,7 +131,6 @@
 
 		<module>../../features/org.eclipse.sphinx.examples.core-feature</module>
 		<module>../../features/org.eclipse.sphinx.examples.emf.compare-feature</module>
-		<module>../../features/org.eclipse.sphinx.examples.emf.splitting-feature</module>
 		<module>../../features/org.eclipse.sphinx.examples.incquery-feature</module>
 		<module>../../features/org.eclipse.sphinx.examples.metamodels.hummingbird-feature</module>
 		<module>../../features/org.eclipse.sphinx.examples.metamodels.hummingbird.incquery-feature</module>
@@ -158,7 +152,7 @@
 		<module>../../features/org.eclipse.sphinx.sdk-feature</module>
 		<module>../../features/org.eclipse.sphinx.testutils-feature</module>
 		<module>../../features/org.eclipse.sphinx.thirdparty-feature</module>
-		
+
 		<!-- Documentation -->
 		<module>../../docs/org.eclipse.sphinx.doc.isv</module>
 
