@@ -17,6 +17,7 @@
  *     itemis - [423687] Synchronize ExtendedPlatformContentHandlerImpl wrt latest changes in EMF's PlatformContentHandlerImpl
  *     itemis - [427461] Add progress monitor to resource load options (useful for loading large models)
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
+ *     itemis - [468171] Model element splitting service
  *
  * </copyright>
  */
@@ -39,6 +40,7 @@ import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -1589,7 +1591,7 @@ public final class EcorePlatformUtil {
 					}
 				};
 				try {
-					ResourcesPlugin.getWorkspace().run(runnable, rule, 0, monitor);
+					ResourcesPlugin.getWorkspace().run(runnable, rule, IResource.NONE, monitor);
 				} catch (CoreException ex) {
 					PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 				}
@@ -1610,42 +1612,26 @@ public final class EcorePlatformUtil {
 		final IUndoableOperation operation = new AbstractEMFOperation(editingDomain, label, transactionOptions) {
 			@Override
 			protected IStatus doExecute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-					@Override
-					public void run(IProgressMonitor monitor) throws CoreException {
-						SubMonitor progress = SubMonitor.convert(monitor, modelResourceDescriptors.size());
-						for (ModelResourceDescriptor descriptor : modelResourceDescriptors) {
-							progress.subTask(NLS.bind(Messages.subtask_addingResource, descriptor.getPath().toString()));
-
-							// Convert path to URI
-							URI uri = URI.createPlatformResourceURI(descriptor.getPath().toString(), true);
-
-							// Add new resource
-							Resource resource = EcoreResourceUtil.addNewModelResource(editingDomain.getResourceSet(), uri,
-									descriptor.getContentTypeId(), descriptor.getModelRoots());
-
-							// Mark new resource as dirty
-							SaveIndicatorUtil.setDirty(editingDomain, resource);
-
-							progress.worked(1);
-						}
-					}
-				};
-
 				try {
-					// Execute save operation as IWorkspaceRunnable on workspace in order to avoid resource change
-					// notifications during transaction execution
-					/*
-					 * !! Important Note !! Only set IWorkspace.AVOID_UPDATE flag but don't define any scheduling
-					 * restrictions for the save operation right here (this must only be done on outer workspace jobs or
-					 * workspace runnables from which this method is called). Otherwise it would be likely to end up in
-					 * deadlocks with operations which already have acquired exclusive access to the workspace but are
-					 * waiting for exclusive access to the model (i.e. for the transaction).
-					 */
-					ResourcesPlugin.getWorkspace().run(runnable, null, IWorkspace.AVOID_UPDATE, monitor);
+					SubMonitor progress = SubMonitor.convert(monitor, modelResourceDescriptors.size());
+					for (ModelResourceDescriptor descriptor : modelResourceDescriptors) {
+						progress.subTask(NLS.bind(Messages.subtask_addingResource, descriptor.getPath().toString()));
+
+						// Convert path to URI
+						URI uri = URI.createPlatformResourceURI(descriptor.getPath().toString(), true);
+
+						// Add new resource
+						Resource resource = EcoreResourceUtil.addNewModelResource(editingDomain.getResourceSet(), uri, descriptor.getContentTypeId(),
+								descriptor.getModelRoots());
+
+						// Mark new resource as dirty
+						SaveIndicatorUtil.setDirty(editingDomain, resource);
+
+						progress.worked(1);
+					}
 					return Status.OK_STATUS;
-				} catch (CoreException ex) {
-					return ex.getStatus();
+				} catch (Exception ex) {
+					return StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
 				}
 
 			}
@@ -1710,7 +1696,11 @@ public final class EcorePlatformUtil {
 					}
 				};
 				try {
-					ResourcesPlugin.getWorkspace().run(runnable, rule, 0, monitor);
+					/*
+					 * !! Important Note !! No need to set the IWorkspace.AVOID_UPDATE flag here because the transaction
+					 * created inside the runnable to be executed suppresses its effect.
+					 */
+					ResourcesPlugin.getWorkspace().run(runnable, rule, IResource.NONE, monitor);
 				} catch (CoreException ex) {
 					PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 				}
@@ -1790,11 +1780,16 @@ public final class EcorePlatformUtil {
 					// Execute save operation as IWorkspaceRunnable on workspace in order to avoid resource change
 					// notifications during transaction execution
 					/*
+					 * !! Important Note !! Setting the IWorkspace.AVOID_UPDATE flag on the outer workspace job or
+					 * workspace runnable from which this method is called doesn't help because the matter of executing
+					 * a transaction inside suppresses its effect.
+					 */
+					/*
 					 * !! Important Note !! Only set IWorkspace.AVOID_UPDATE flag but don't define any scheduling
-					 * restrictions for the save operation right here (this must only be done on outer workspace jobs or
-					 * workspace runnables from which this method is called). Otherwise it would be likely to end up in
-					 * deadlocks with operations which already have acquired exclusive access to the workspace but are
-					 * waiting for exclusive access to the model (i.e. for the transaction).
+					 * restrictions for the save operation right here (this must only be done on the outer workspace job
+					 * or workspace runnable from which this method is called). Otherwise it would be likely to end up
+					 * in deadlocks with operations which already have acquired exclusive access to the workspace but
+					 * are waiting for exclusive access to the model (i.e. for the transaction).
 					 */
 					ResourcesPlugin.getWorkspace().run(runnable, null, IWorkspace.AVOID_UPDATE, monitor);
 					return Status.OK_STATUS;
@@ -1883,7 +1878,11 @@ public final class EcorePlatformUtil {
 					}
 				};
 				try {
-					ResourcesPlugin.getWorkspace().run(runnable, rule, 0, progress.newChild(95));
+					/*
+					 * !! Important Note !! No need to set the IWorkspace.AVOID_UPDATE flag here because the transaction
+					 * created inside the runnable to be executed suppresses its effect.
+					 */
+					ResourcesPlugin.getWorkspace().run(runnable, rule, IResource.NONE, progress.newChild(95));
 				} catch (CoreException ex) {
 					PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 				}
@@ -1949,7 +1948,11 @@ public final class EcorePlatformUtil {
 					}
 				};
 				try {
-					ResourcesPlugin.getWorkspace().run(runnable, rule, 0, progress.newChild(95));
+					/*
+					 * !! Important Note !! No need to set the IWorkspace.AVOID_UPDATE flag here because the transaction
+					 * created inside the runnable to be executed suppresses its effect.
+					 */
+					ResourcesPlugin.getWorkspace().run(runnable, rule, IResource.NONE, progress.newChild(95));
 				} catch (CoreException ex) {
 					PlatformLogUtil.logAsError(Activator.getDefault(), ex);
 				}
@@ -1998,7 +2001,7 @@ public final class EcorePlatformUtil {
 	private static void runSaveModelResources(final Map<TransactionalEditingDomain, Collection<Resource>> resourcesToSave, final Map<?, ?> options,
 			IProgressMonitor monitor) throws CoreException {
 		Assert.isNotNull(resourcesToSave);
-		final SubMonitor progress = SubMonitor.convert(monitor, resourcesToSave.size());
+		SubMonitor progress = SubMonitor.convert(monitor, resourcesToSave.size());
 
 		for (final TransactionalEditingDomain editingDomain : resourcesToSave.keySet()) {
 			progress.setTaskName(resourcesToSave.get(editingDomain).size() == 1 ? Messages.task_savingModelResource
@@ -2060,16 +2063,21 @@ public final class EcorePlatformUtil {
 					};
 
 					try {
-						// Execute save operation as IWorkspaceRunnable on workspace in order to avoid resource
-						// change notifications during transaction execution
+						// Execute save operation as IWorkspaceRunnable on workspace in order to avoid resource change
+						// notifications during transaction execution
+						/*
+						 * !! Important Note !! Setting the IWorkspace.AVOID_UPDATE flag on the outer workspace job or
+						 * workspace runnable from which this method is called doesn't help because the matter of
+						 * executing a transaction inside suppresses its effect.
+						 */
 						/*
 						 * !! Important Note !! Only set IWorkspace.AVOID_UPDATE flag but don't define any scheduling
-						 * restrictions for the save operation right here (this must only be done on outer workspace
-						 * jobs or workspace runnables from which this method is called). Otherwise it would be likely
-						 * to end up in deadlocks with operations which already have acquired exclusive access to the
+						 * restrictions for the save operation right here (this must only be done on the outer workspace
+						 * job or workspace runnable from which this method is called). Otherwise it would be likely to
+						 * end up in deadlocks with operations which already have acquired exclusive access to the
 						 * workspace but are waiting for exclusive access to the model (i.e. for the transaction).
 						 */
-						ResourcesPlugin.getWorkspace().run(runnable, null, IWorkspace.AVOID_UPDATE, progress.newChild(1));
+						ResourcesPlugin.getWorkspace().run(runnable, null, IWorkspace.AVOID_UPDATE, monitor);
 						return Status.OK_STATUS;
 					} catch (CoreException ex) {
 						return ex.getStatus();

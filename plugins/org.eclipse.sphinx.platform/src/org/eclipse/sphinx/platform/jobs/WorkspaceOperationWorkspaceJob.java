@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [468171] Model element splitting service
  *
  * </copyright>
  */
@@ -39,6 +40,7 @@ public class WorkspaceOperationWorkspaceJob extends WorkspaceJob {
 		Assert.isNotNull(operation);
 		this.operation = operation;
 
+		setRule(operation.getRule());
 		setPriority(Job.BUILD);
 	}
 

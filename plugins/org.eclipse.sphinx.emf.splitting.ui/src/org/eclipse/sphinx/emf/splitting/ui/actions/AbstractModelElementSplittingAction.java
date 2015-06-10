@@ -30,14 +30,15 @@ import org.eclipse.sphinx.emf.splitting.ui.internal.Activator;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
-import org.eclipse.sphinx.platform.operations.IWorkspaceOperation;
+import org.eclipse.sphinx.platform.jobs.WorkspaceOperationWorkspaceJob;
 import org.eclipse.sphinx.platform.ui.operations.RunnableWithProgressAdapter;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
 
 public abstract class AbstractModelElementSplittingAction extends BaseSelectionListenerAction {
+
+	private boolean runInBackground;
 
 	protected IFile selectedModelFile;
 
@@ -45,6 +46,10 @@ public abstract class AbstractModelElementSplittingAction extends BaseSelectionL
 
 	public AbstractModelElementSplittingAction(String text) {
 		super(text);
+	}
+
+	public boolean isRunInBackground() {
+		return runInBackground;
 	}
 
 	/*
@@ -65,6 +70,17 @@ public abstract class AbstractModelElementSplittingAction extends BaseSelectionL
 		return selectedModelFile != null;
 	}
 
+	protected IModelElementSplittingOperation createModelElementSplittingOperation(Resource resource) {
+		BasicModelElementSplittingOperation operation = new BasicModelElementSplittingOperation(resource);
+		IModelElementSplittingListener modelElementSplittingListerners = getModelElementSplittingListerners();
+		operation.setModelElementSplittingListener(modelElementSplittingListerners);
+		return operation;
+	}
+
+	protected WorkspaceOperationWorkspaceJob createWorkspaceOperationJob(IModelElementSplittingOperation operation) {
+		return new WorkspaceOperationWorkspaceJob(operation);
+	}
+
 	/*
 	 * @see org.eclipse.jface.action.Action#run()
 	 */
@@ -72,11 +88,17 @@ public abstract class AbstractModelElementSplittingAction extends BaseSelectionL
 	public void run() {
 		Resource resource = getResource(createProgressMonitor());
 		if (resource != null) {
-			IWorkspaceOperation operation = createModelElementSplittingOperation(resource);
-			if (operation != null) {
+			// Create the model split operation
+			IModelElementSplittingOperation operation = createModelElementSplittingOperation(resource);
+
+			if (isRunInBackground()) {
+				// Run the workflow operation in a workspace job
+				WorkspaceOperationWorkspaceJob job = createWorkspaceOperationJob(operation);
+				job.schedule();
+			} else {
+				// Run the workflow operation in a progress monitor dialog
 				try {
-					Shell shell = ExtendedPlatformUI.getActiveShell();
-					ProgressMonitorDialog dialog = new ProgressMonitorDialog(shell);
+					ProgressMonitorDialog dialog = new ProgressMonitorDialog(ExtendedPlatformUI.getActiveShell());
 					dialog.run(true, true, new RunnableWithProgressAdapter(operation));
 				} catch (InterruptedException ex) {
 					// Operation has been canceled by user, do nothing
@@ -85,13 +107,6 @@ public abstract class AbstractModelElementSplittingAction extends BaseSelectionL
 				}
 			}
 		}
-	}
-
-	protected IModelElementSplittingOperation createModelElementSplittingOperation(Resource resource) {
-		BasicModelElementSplittingOperation operation = new BasicModelElementSplittingOperation(resource);
-		IModelElementSplittingListener modelElementSplittingListerners = getModelElementSplittingListerners();
-		operation.setModelElementSplittingListener(modelElementSplittingListerners);
-		return operation;
 	}
 
 	protected Resource getResource(IProgressMonitor monitor) {

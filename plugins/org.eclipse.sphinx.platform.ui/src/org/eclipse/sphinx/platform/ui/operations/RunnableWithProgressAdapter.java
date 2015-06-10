@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [468171] Model element splitting service
  *
  * </copyright>
  */
@@ -16,7 +17,7 @@ package org.eclipse.sphinx.platform.ui.operations;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -38,7 +39,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
  * provides the UI for the progress monitor and cancel button.
  * <p>
  * The {@link RunnableWithProgressAdapter} is in principal very similar to the {@link WorkspaceModifyOperation}. The
- * main difference is that the execution logic is provided by reusing and existing {@link IWorkspaceOperation} or
+ * main difference is that the execution logic is provided by delegating to provided {@link IWorkspaceOperation} or
  * {@link IWorkspaceRunnable} instead of overriding the {@link WorkspaceModifyOperation#execute(IProgressMonitor)}
  * method and implementing it right there.
  * </p>
@@ -68,7 +69,7 @@ public class RunnableWithProgressAdapter implements IRunnableWithProgress {
 	@Override
 	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 		try {
-			ResourcesPlugin.getWorkspace().run(operation, operation.getRule(), IResource.NONE, monitor);
+			ResourcesPlugin.getWorkspace().run(operation, operation.getRule(), IWorkspace.AVOID_UPDATE, monitor);
 		} catch (CoreException ex) {
 			throw new InvocationTargetException(ex, NLS.bind(Messages.error_whileRunningOperation, operation.getLabel()));
 		} catch (OperationCanceledException ex) {
