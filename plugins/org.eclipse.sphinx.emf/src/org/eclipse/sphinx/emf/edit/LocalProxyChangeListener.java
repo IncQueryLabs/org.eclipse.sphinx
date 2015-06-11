@@ -66,7 +66,29 @@ public class LocalProxyChangeListener extends ResourceSetListenerImpl {
 				if (notification.getFeature() instanceof EReference) {
 					EReference reference = (EReference) notification.getFeature();
 
-					// Object being removed from model (i.e. from its owner)?
+					switch (notification.getEventType()) {
+					case Notification.UNSET:
+						// Convert removed object plus its directly and indirectly contained children into
+						// proxies
+						if (reference.isContainer()) {
+							Object value = object.eGet(reference);
+							EObject oldValue = (EObject) notification.getOldValue();
+							if (oldValue != null && value == null) {
+								if (!object.eIsProxy()) {
+									EObjectUtil.proxify(oldValue, reference, object);
+								}
+							}
+						}
+						break;
+
+					// Object(s) being removed from model (i.e. from its owner)?
+					/*
+					 * !! Important Note !! Be sure to consider only removed objects and ignore all objects that have
+					 * just been moved. While the former have been effectively removed from their old containers and are
+					 * floating in memory, the latter have also been removed from their old containers but got assigned
+					 * to a new one right after. For obvious reasons such moved objects and their directly and
+					 * indirectly contained children must not be converted into proxies.
+					 */
 					/*
 					 * !! Important Note !! Don't use notification.getNewValue() == null to test if object has been
 					 * removed from the model. The reason is that plenty of successive modifications and notifications
@@ -75,20 +97,22 @@ public class LocalProxyChangeListener extends ResourceSetListenerImpl {
 					 * applicable by the time the notification was created but does not necessarily correspond to the
 					 * current object's state.
 					 */
-					switch (notification.getEventType()) {
 					case Notification.REMOVE:
 						// Convert removed object plus its directly and indirectly contained children into
 						// proxies
 						if (reference.isContainment()) {
-							if (reference.isMany()) {
-								@SuppressWarnings("unchecked")
-								List<Object> values = (List<Object>) object.eGet(reference);
-								if (!values.contains(notification.getOldValue())) {
-									EObjectUtil.proxify(object, reference, (EObject) notification.getOldValue());
+							if (!reference.isMany()) {
+								Object value = object.eGet(reference);
+								EObject oldValue = (EObject) notification.getOldValue();
+								if (oldValue.eResource() == null && value != oldValue) {
+									EObjectUtil.proxify(object, reference, oldValue);
 								}
 							} else {
-								if (object.eGet(reference) == null) {
-									EObjectUtil.proxify(object, reference, (EObject) notification.getOldValue());
+								@SuppressWarnings("unchecked")
+								List<Object> values = (List<Object>) object.eGet(reference);
+								EObject oldValue = (EObject) notification.getOldValue();
+								if (oldValue.eResource() == null && !values.contains(oldValue)) {
+									EObjectUtil.proxify(object, reference, oldValue);
 								}
 							}
 						}
@@ -100,65 +124,68 @@ public class LocalProxyChangeListener extends ResourceSetListenerImpl {
 							@SuppressWarnings("unchecked")
 							List<Object> values = (List<Object>) object.eGet(reference);
 							@SuppressWarnings("unchecked")
-							List<Object> oldValues = (List<Object>) notification.getOldValue();
-							for (Object oldValue : oldValues) {
-								if (!values.contains(oldValue)) {
-									EObjectUtil.proxify(object, reference, (EObject) oldValue);
+							List<EObject> oldValues = (List<EObject>) notification.getOldValue();
+							for (EObject oldValue : oldValues) {
+								if (oldValue.eResource() == null && !values.contains(oldValue)) {
+									EObjectUtil.proxify(object, reference, oldValue);
 								}
 							}
 						}
 						break;
+
+					case Notification.SET:
+						// Convert added object plus its directly and indirectly contained children
+						// back into regular EObjects
+						if (reference.isContainer()) {
+							Object value = object.eGet(reference);
+							if (value != null) {
+								if (object.eIsProxy()) {
+									EObjectUtil.deproxify(object);
+								}
+							}
+						}
+						break;
+
+					// Object(s) being added to model (i.e. to some owner)?
+					/*
+					 * !! Important Note !! Don't use notification.getOldValue() == null to test if object has been
+					 * added to the model. The reason is that plenty of successive modifications and notifications for
+					 * the same object and feature might have happened before we get called here. Therefore the old
+					 * value of an arbitrary notification which we are dealing with here is the old value which was
+					 * applicable by the time the notification was created but does not necessarily correspond to the
+					 * current object's state.
+					 */
 					case Notification.ADD:
+						// Convert added object plus its directly and indirectly contained children
+						// back into regular EObjects
 						if (reference.isContainment()) {
-							if (reference.isMany()) {
-								@SuppressWarnings("unchecked")
-								List<Object> references = (List<Object>) object.eGet(reference);
-								if (references.contains(notification.getNewValue())) {
-									EObjectUtil.deproxify((EObject) notification.getNewValue());
+							if (!reference.isMany()) {
+								Object value = object.eGet(reference);
+								EObject newValue = (EObject) notification.getNewValue();
+								if (value == newValue) {
+									EObjectUtil.deproxify(newValue);
 								}
 							} else {
-								if (object.eGet(reference) != null) {
-									EObjectUtil.deproxify((EObject) notification.getNewValue());
+								@SuppressWarnings("unchecked")
+								List<Object> values = (List<Object>) object.eGet(reference);
+								EObject newValue = (EObject) notification.getNewValue();
+								if (values.contains(newValue)) {
+									EObjectUtil.deproxify(newValue);
 								}
 							}
 						}
 						break;
 					case Notification.ADD_MANY:
+						// Convert added objects plus its directly and indirectly contained children
+						// back into regular EObjects
 						if (reference.isContainment()) {
 							@SuppressWarnings("unchecked")
 							List<Object> values = (List<Object>) object.eGet(reference);
 							@SuppressWarnings("unchecked")
-							List<Object> newValues = (List<Object>) notification.getNewValue();
-							for (Object newValue : newValues) {
+							List<EObject> newValues = (List<EObject>) notification.getNewValue();
+							for (EObject newValue : newValues) {
 								if (values.contains(newValue)) {
-									EObjectUtil.deproxify((EObject) newValue);
-								}
-							}
-						}
-						break;
-					case Notification.SET:
-						// Object being added to model (i.e. from its owner)?
-						/*
-						 * !! Important Note !! Don't use notification.getOldValue() == null to test if object has been
-						 * added to the model. The reason is that plenty of successive modifications and notifications
-						 * for the same object and feature might have happened before we get called here. Therefore the
-						 * old value of an arbitrary notification which we are dealing with here is the old value which
-						 * was applicable by the time the notification was created but does not necessarily correspond
-						 * to the current object's state.
-						 */
-						if (reference.isContainer() && object.eContainer() != null) {
-							// Convert added object plus its directly and indirectly contained children
-							// back into regular EObjects
-							if (object.eIsProxy()) {
-								EObjectUtil.deproxify(object);
-							}
-						}
-						break;
-					case Notification.UNSET:
-						if (reference.isContainer() && object.eContainer() == null) {
-							if (notification.getOldValue() != null) {
-								if (!object.eIsProxy()) {
-									EObjectUtil.proxify((EObject) notification.getOldValue(), reference, object);
+									EObjectUtil.deproxify(newValue);
 								}
 							}
 						}
