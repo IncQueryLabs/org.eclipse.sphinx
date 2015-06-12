@@ -63,6 +63,9 @@ public class Messages extends NLS {
 	public static String task_validatingResourceScopes;
 	public static String task_cleaningResourceScopeMarkers;
 
+	public static String operation_modelElementSplitting_label;
+	public static String subTask_savingModels;
+
 	public static String propertyDescriptionPostfix_mustBeADataTypeEgDefaultValue;
 	public static String propertyDescriptionPostfix_mustBeADataType;
 

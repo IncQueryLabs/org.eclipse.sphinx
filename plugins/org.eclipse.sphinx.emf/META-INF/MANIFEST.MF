@@ -43,6 +43,7 @@ Export-Package: org.eclipse.sphinx.emf,
  org.eclipse.sphinx.emf.resource,
  org.eclipse.sphinx.emf.saving,
  org.eclipse.sphinx.emf.scoping,
+ org.eclipse.sphinx.emf.splitting,
  org.eclipse.sphinx.emf.util,
  org.eclipse.sphinx.emf.validation
 Bundle-ActivationPolicy: lazy
