@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
+
+<!--
+<copyright>
+
+Copyright (c) 2015 itemis and others.
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+which accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html
+
+Contributors:
+    itemis - Initial API and implementation
+
+</copyright>
+-->
+
 <plugin>
       <extension
          point="org.eclipse.ui.navigator.viewer">
@@ -7,7 +23,7 @@
             viewerId="org.eclipse.ui.navigator.ProjectExplorer">
          <includes>
             <actionExtension
-                  pattern="org.eclipse.sphinx.emf.splitting.advanced.ui.splitting">
+                  pattern="org.eclipse.sphinx.examples.hummingbird20.splitting.ui.hummingbird20SplittingExampleActions">
             </actionExtension>
          </includes>
       </viewerActionBinding>
@@ -15,7 +31,7 @@
             viewerId="org.eclipse.sphinx.examples.explorer.views.modelExplorer">
          <includes>
             <actionExtension
-                  pattern="org.eclipse.sphinx.emf.splitting.advanced.ui.splitting">
+                  pattern="org.eclipse.sphinx.examples.hummingbird20.splitting.ui.hummingbird20SplittingExampleActions">
             </actionExtension>
          </includes>
       </viewerActionBinding>
@@ -23,14 +39,22 @@
       <extension
          point="org.eclipse.ui.navigator.navigatorContent">
       <actionProvider
-            class="org.eclipse.sphinx.examples.hummingbird20.splitting.ui.actions.providers.Hummingbirg20ModelElementSplittingActionProvider"
-            id="org.eclipse.sphinx.emf.splitting.advanced.ui.splitting">
+            class="org.eclipse.sphinx.examples.hummingbird20.splitting.ui.actions.providers.Hummingbirg20ModelSplitActionProvider"
+            id="org.eclipse.sphinx.examples.hummingbird20.splitting.ui.hummingbird20SplittingExampleActions">
          <enablement>
-            <instanceof
-                  value="org.eclipse.core.resources.IFile">
-            </instanceof>
+            <and>
+               <instanceof value="org.eclipse.core.resources.IFile"/>
+               <test
+                     property="org.eclipse.sphinx.emf.isInScope"
+                     value="true" />
+               <test
+                     property="org.eclipse.sphinx.emf.metaModelIdMatches"
+                     value="org\.eclipse\.sphinx\.examples\.hummingbird20"/>
+               <test
+                     property="org.eclipse.core.resources.name"
+                     value="*.typemodel"/>
+            </and>
          </enablement>
       </actionProvider>
    </extension>
-
 </plugin>

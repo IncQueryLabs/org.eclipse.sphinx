@@ -21,16 +21,16 @@ public class ModelSplitDirective {
 
 	private EObject eObject;
 	private URI targetResourceURI;
-	private boolean suppressAncestorsAttributes;
+	private boolean suppressAncestorAttributes;
 
-	public ModelSplitDirective(EObject eObject, URI targetURI) {
-		this(eObject, targetURI, false);
+	public ModelSplitDirective(EObject eObject, URI targetResourceURI) {
+		this(eObject, targetResourceURI, false);
 	}
 
-	public ModelSplitDirective(EObject eObject, URI targetResourceURI, boolean suppressAncestorsAttributes) {
+	public ModelSplitDirective(EObject eObject, URI targetResourceURI, boolean suppressAncestorAttributes) {
 		this.eObject = eObject;
 		this.targetResourceURI = targetResourceURI;
-		this.suppressAncestorsAttributes = suppressAncestorsAttributes;
+		this.suppressAncestorAttributes = suppressAncestorAttributes;
 	}
 
 	public EObject getEObject() {
@@ -41,7 +41,7 @@ public class ModelSplitDirective {
 		return targetResourceURI;
 	}
 
-	public boolean isSuppressAncestorsAttributes() {
-		return suppressAncestorsAttributes;
+	public boolean isSuppressAncestorAttributes() {
+		return suppressAncestorAttributes;
 	}
 }

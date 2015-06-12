@@ -17,6 +17,7 @@ package org.eclipse.sphinx.emf.ui.actions;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -33,18 +34,26 @@ import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
 
-public abstract class AbstractModelSplitAction extends BaseSelectionListenerAction {
-
-	private boolean runInBackground;
+public class BasicModelSplitAction extends BaseSelectionListenerAction {
 
 	protected IFile modelFile;
+	protected IModelSplitPolicy modelSplitPolicy;
+	private boolean runInBackground;
 
-	public AbstractModelSplitAction(String text) {
+	public BasicModelSplitAction(String text, IModelSplitPolicy modelSplitPolicy) {
 		super(text);
+
+		Assert.isNotNull(modelSplitPolicy);
+		this.modelSplitPolicy = modelSplitPolicy;
+		setRunInBackground(false);
 	}
 
 	public boolean isRunInBackground() {
 		return runInBackground;
+	}
+
+	public void setRunInBackground(boolean runInBackground) {
+		this.runInBackground = runInBackground;
 	}
 
 	/*
@@ -65,10 +74,8 @@ public abstract class AbstractModelSplitAction extends BaseSelectionListenerActi
 		return modelFile != null;
 	}
 
-	protected abstract IModelSplitPolicy getModelSplitPolicy();
-
 	protected IModelSplitOperation createModelSplitOperation(Resource resource) {
-		return new BasicModelSplitOperation(resource, getModelSplitPolicy());
+		return new BasicModelSplitOperation(resource, modelSplitPolicy);
 	}
 
 	protected WorkspaceOperationWorkspaceJob createWorkspaceOperationJob(IModelSplitOperation operation) {
@@ -80,7 +87,7 @@ public abstract class AbstractModelSplitAction extends BaseSelectionListenerActi
 	 */
 	@Override
 	public void run() {
-		// TODO Defer model loading to operation
+		// TODO Defer model loading to BasicModelSplitOperation
 		Resource resource = getResource();
 		if (resource != null) {
 			// Create the model split operation
@@ -98,7 +105,7 @@ public abstract class AbstractModelSplitAction extends BaseSelectionListenerActi
 				} catch (InterruptedException ex) {
 					// Operation has been canceled by user, do nothing
 				} catch (InvocationTargetException ex) {
-					PlatformLogUtil.logAsError(Activator.getDefault(), ex);
+					PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 				}
 			}
 		}

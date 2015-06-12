@@ -5,9 +5,7 @@ Bundle-SymbolicName: org.eclipse.sphinx.examples.hummingbird20.splitting.ui;sing
 Bundle-Version: 0.9.0.qualifier
 Bundle-Activator: org.eclipse.sphinx.examples.hummingbird20.splitting.ui.internal.Activator$Implementation
 Bundle-Vendor: %providerName
-Require-Bundle: org.eclipse.sphinx.emf.workspace,
- org.eclipse.sphinx.examples.hummingbird20.splitting,
- org.eclipse.sphinx.emf.splitting.ui,
+Require-Bundle: org.eclipse.sphinx.examples.hummingbird20.splitting,
  org.eclipse.sphinx.examples.hummingbird.ide.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
