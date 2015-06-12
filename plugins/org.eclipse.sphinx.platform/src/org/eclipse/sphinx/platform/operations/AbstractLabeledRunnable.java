@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,16 +12,25 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.workspace.util;
+package org.eclipse.sphinx.platform.operations;
 
-public abstract class LabeledRunnable implements Runnable {
+/**
+ * Default implementation of {@link ILabeledRunnable}.
+ *
+ * @see ILabeledWorkspaceRunnable
+ */
+public abstract class AbstractLabeledRunnable implements ILabeledRunnable {
 
 	private String label;
 
-	public LabeledRunnable(String label) {
+	public AbstractLabeledRunnable(String label) {
 		this.label = label;
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.platform.operations.ILabeledRunnable#getLabel()
+	 */
+	@Override
 	public String getLabel() {
 		return label;
 	}

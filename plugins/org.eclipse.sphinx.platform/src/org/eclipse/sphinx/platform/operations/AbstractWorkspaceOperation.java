@@ -14,26 +14,14 @@
  */
 package org.eclipse.sphinx.platform.operations;
 
-import org.eclipse.sphinx.platform.internal.messages.Messages;
-
 /**
  * Default implementation of {@link IWorkspaceOperation}.
  *
  * @see IWorkspaceOperation
  */
-public abstract class AbstractWorkspaceOperation implements IWorkspaceOperation {
-
-	private String label;
+public abstract class AbstractWorkspaceOperation extends AbstractLabeledWorkspaceRunnable implements IWorkspaceOperation {
 
 	public AbstractWorkspaceOperation(String label) {
-		this.label = label;
-	}
-
-	/*
-	 * @see org.eclipse.sphinx.platform.operations.IWorkspaceOperation#getLabel()
-	 */
-	@Override
-	public String getLabel() {
-		return label != null ? label : Messages.operation_unnamed_label;
+		super(label);
 	}
 }

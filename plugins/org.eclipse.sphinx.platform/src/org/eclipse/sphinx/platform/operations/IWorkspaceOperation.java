@@ -18,20 +18,15 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 /**
- * Enhancement of {@link IWorkspaceRunnable} to provide support for simple (i.e., non-undoable) operations in the
- * workspace that define their own {@link ISchedulingRule scheduling rule} and need to expose an operation label.
+ * Enhancement of {@link ILabeledWorkspaceRunnable} to provide support for simple (i.e., non-undoable) operations in the
+ * workspace that need to report progress, want to expose an operation label and define their own
+ * {@link ISchedulingRule scheduling rule}.
  *
+ * @see ILabeledWorkspaceRunnable
  * @see IWorkspaceRunnable
  * @see ISchedulingRule
  */
-public interface IWorkspaceOperation extends IWorkspaceRunnable {
-
-	/**
-	 * Return the label that should be used to show the name of the operation to the user (e.g., in error messages).
-	 *
-	 * @return The operation label. Should never be <code>null</code>.
-	 */
-	String getLabel();
+public interface IWorkspaceOperation extends ILabeledWorkspaceRunnable {
 
 	/**
 	 * Returns the {@link ISchedulingRule scheduling rule} required by this operation.

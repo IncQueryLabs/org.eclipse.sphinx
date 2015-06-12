@@ -18,18 +18,18 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.sphinx.emf.splitting.IModelElementSplittingListener;
+import org.eclipse.sphinx.emf.splitting.IModelSplitPolicy;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
 
-public class Hummingbird20TypeModelElementSplittingListener implements IModelElementSplittingListener {
+public class Hummingbird20TypeModelElementSplittingListener implements IModelSplitPolicy {
 
 	private static final String DEFAULT_COMPONENT_TYPES_TARGET_FILE_NAME = "ComponentTypes.typemodel"; //$NON-NLS-1$
 	private static final String DEFAULT_INTERFACES_TARGET_FILE_NAME = "Interfaces.typemodel"; //$NON-NLS-1$
 
 	@Override
-	public URI getTargetResourceURI(EObject eObject) {
+	public URI getSplitDirective(EObject eObject) {
 		if (!(eObject instanceof ComponentType) && !(eObject instanceof Interface)) {
 			return null;
 		}

@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  * {@link IWorkspaceOperation}s.
  *
  * @see IWorkspaceOperation
+ * @see ILabeledWorkspaceRunnable
  * @see IWorkspaceRunnable
  */
 public class WorkspaceOperationAdapter extends AbstractWorkspaceOperation {

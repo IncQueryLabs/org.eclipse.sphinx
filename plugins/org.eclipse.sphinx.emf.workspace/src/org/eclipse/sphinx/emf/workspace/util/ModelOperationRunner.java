@@ -19,6 +19,7 @@ import java.util.Map;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RunnableWithResult;
@@ -29,6 +30,8 @@ import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.emf.workspace.Activator;
+import org.eclipse.sphinx.platform.operations.ILabeledRunnable;
+import org.eclipse.sphinx.platform.operations.ILabeledWorkspaceRunnable;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
 public class ModelOperationRunner {
@@ -64,11 +67,11 @@ public class ModelOperationRunner {
 		}
 	}
 
-	public static void performModelModification(Resource affectedResource, LabeledRunnable runnable) throws CoreException {
+	public static void performModelModification(Resource affectedResource, ILabeledRunnable runnable) throws CoreException {
 		performModelModification(affectedResource, runnable, true);
 	}
 
-	public static void performModelModification(Resource affectedResource, LabeledRunnable runnable, boolean affectsDirtyState) throws CoreException {
+	public static void performModelModification(Resource affectedResource, ILabeledRunnable runnable, boolean affectsDirtyState) throws CoreException {
 		Assert.isNotNull(runnable);
 
 		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(affectedResource);
@@ -79,7 +82,7 @@ public class ModelOperationRunner {
 				IOperationHistory operationHistory = WorkspaceTransactionUtil.getOperationHistory(editingDomain);
 				Map<String, Object> options = WorkspaceTransactionUtil.getDefaultTransactionOptions();
 				options.put(Transaction.OPTION_NO_UNDO, affectsDirtyState ? Boolean.FALSE : Boolean.TRUE);
-				WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable, runnable.getLabel(), operationHistory, options, null);
+				WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable, operationHistory, options);
 			} catch (OperationCanceledException ex) {
 				throw ex;
 			} catch (Exception ex) {
@@ -91,6 +94,38 @@ public class ModelOperationRunner {
 			}
 		} else {
 			runnable.run();
+		}
+	}
+
+	public static void performModelModification(Resource affectedResource, ILabeledWorkspaceRunnable runnable, IProgressMonitor monitor)
+			throws CoreException {
+		performModelModification(affectedResource, runnable, true, monitor);
+	}
+
+	public static void performModelModification(Resource affectedResource, ILabeledWorkspaceRunnable runnable, boolean affectsDirtyState,
+			IProgressMonitor monitor) throws CoreException {
+		Assert.isNotNull(runnable);
+
+		TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(affectedResource);
+		if (editingDomain != null) {
+			boolean wasDirtyBefore = SaveIndicatorUtil.isDirty(editingDomain, affectedResource);
+
+			try {
+				IOperationHistory operationHistory = WorkspaceTransactionUtil.getOperationHistory(editingDomain);
+				Map<String, Object> options = WorkspaceTransactionUtil.getDefaultTransactionOptions();
+				options.put(Transaction.OPTION_NO_UNDO, affectsDirtyState ? Boolean.FALSE : Boolean.TRUE);
+				WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable, operationHistory, options, monitor);
+			} catch (OperationCanceledException ex) {
+				throw ex;
+			} catch (Exception ex) {
+				throw new CoreException(StatusUtil.createErrorStatus(Activator.getPlugin(), ex));
+			}
+
+			if (!wasDirtyBefore && !affectsDirtyState) {
+				SaveIndicatorUtil.unsetDirty(editingDomain, affectedResource);
+			}
+		} else {
+			runnable.run(monitor);
 		}
 	}
 }
