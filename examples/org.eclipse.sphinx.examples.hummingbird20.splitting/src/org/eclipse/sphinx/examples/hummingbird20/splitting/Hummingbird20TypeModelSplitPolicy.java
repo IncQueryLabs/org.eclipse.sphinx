@@ -47,7 +47,7 @@ public class Hummingbird20TypeModelSplitPolicy implements IModelSplitPolicy {
 
 			// Return corresponding model split directive making sure that ancestor objects get replicated into target
 			// resource WITH their attributes
-			return new Hummingbird20ModelSplitDirective(eObject, targetResourceURI);
+			return createModelSplitDirective(eObject, targetResourceURI, false);
 		}
 		if (eObject instanceof ComponentType) {
 			// Compute target resource URI for Hummingbird 2.0 component type objects
@@ -55,7 +55,7 @@ public class Hummingbird20TypeModelSplitPolicy implements IModelSplitPolicy {
 
 			// Return corresponding model split directive making sure that ancestor objects get replicated into target
 			// resource WITHOUT their attributes
-			return new Hummingbird20ModelSplitDirective(eObject, targetResourceURI, true);
+			return createModelSplitDirective(eObject, targetResourceURI, true);
 		}
 		return null;
 	}
@@ -63,9 +63,13 @@ public class Hummingbird20TypeModelSplitPolicy implements IModelSplitPolicy {
 	protected URI getTargetResourceBaseURI(EObject eObject) {
 		Assert.isNotNull(eObject);
 		Assert.isLegal(eObject.eResource() != null);
-
+	
 		IPath path = EcorePlatformUtil.createPath(eObject.eResource().getURI());
 		IPath targetResourceBasePath = path.removeLastSegments(1);
 		return EcorePlatformUtil.createURI(targetResourceBasePath);
+	}
+
+	protected Hummingbird20ModelSplitDirective createModelSplitDirective(EObject eObject, URI targetResourceURI, boolean ignoreAncestorAttributes) {
+		return new Hummingbird20ModelSplitDirective(eObject, targetResourceURI, ignoreAncestorAttributes);
 	}
 }
