@@ -37,13 +37,15 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
-import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.platform.operations.AbstractLabeledWorkspaceRunnable;
 import org.eclipse.sphinx.platform.operations.AbstractWorkspaceOperation;
@@ -94,22 +96,21 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 		return EcoreResourceUtil.getDefaultSaveOptions();
 	}
 
-	// TODO Check how this is done in BasicWorkflowRunnerOperation
-	protected TransactionalEditingDomain getEditingDomain() {
-		TransactionalEditingDomain editingDomain = null;
-		for (Resource resource : resources) {
-			editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(resource);
-			if (editingDomain != null) {
-				break;
-			}
+	protected TransactionalEditingDomain getEditingDomain(Collection<Resource> resources) {
+		Assert.isNotNull(resources);
+
+		if (!resources.isEmpty()) {
+			return TransactionUtil.getEditingDomain(resources.iterator().next());
 		}
-		return editingDomain;
+		return null;
 	}
 
 	@Override
 	public void run(IProgressMonitor monitor) throws CoreException {
 		if (!resources.isEmpty()) {
 			try {
+				final TransactionalEditingDomain editingDomain = getEditingDomain(resources);
+
 				ILabeledWorkspaceRunnable runnable = new AbstractLabeledWorkspaceRunnable(getLabel()) {
 					@Override
 					public void run(IProgressMonitor monitor) throws CoreException {
@@ -128,21 +129,26 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 						}
 
 						// Saves resulting split model resources
-						saveSplitResources(getEditingDomain(), processor, progress.newChild(1));
+						ResourceSet resourceSet = editingDomain != null ? editingDomain.getResourceSet() : new ResourceSetImpl();
+						saveSplitResources(resourceSet, processor, progress.newChild(1));
 
 						if (progress.isCanceled()) {
 							throw new OperationCanceledException();
 						}
 
 						// Deletes original model resources, if required
-						deleteOriginalResources(resources, progress.newChild(1));
+						if (deleteOriginalResources) {
+							deleteOriginalResources(resources, progress.newChild(1));
+						}
 
 						processor.dispose();
 					}
 				};
-				TransactionalEditingDomain editingDomain = getEditingDomain();
+
 				if (editingDomain != null) {
 					WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable, monitor);
+				} else {
+					runnable.run(monitor);
 				}
 			} catch (OperationCanceledException ex) {
 				throw ex;
@@ -189,9 +195,8 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 		}
 	}
 
-	protected void saveSplitResources(final TransactionalEditingDomain editingDomain, final ModelSplitProcessor processor, IProgressMonitor monitor)
+	protected void saveSplitResources(final ResourceSet resourceSet, final ModelSplitProcessor processor, IProgressMonitor monitor)
 			throws CoreException {
-		Assert.isNotNull(editingDomain);
 		Assert.isNotNull(processor);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
@@ -206,8 +211,8 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 						IMetaModelDescriptor metaModelDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(targetResourceContents
 								.iterator().next());
 						String contentTypeId = metaModelDescriptor != null ? metaModelDescriptor.getDefaultContentTypeId() : null;
-						Resource resource = EcoreResourceUtil.addNewModelResource(editingDomain.getResourceSet(), targetResourceURI,
-								contentTypeId, targetResourceContents);
+						Resource resource = EcoreResourceUtil.addNewModelResource(resourceSet, targetResourceURI, contentTypeId,
+								targetResourceContents);
 						resourcesToSave.add(resource);
 					}
 				}
@@ -249,50 +254,48 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 	protected void deleteOriginalResources(final Collection<Resource> resources, IProgressMonitor monitor) throws CoreException {
 		Assert.isNotNull(resources);
 
-		if (deleteOriginalResources) {
-			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-				@Override
-				public void run(IProgressMonitor monitor) throws CoreException {
-					final SubMonitor progress = SubMonitor.convert(monitor, resources.size());
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
+			public void run(IProgressMonitor monitor) throws CoreException {
+				final SubMonitor progress = SubMonitor.convert(monitor, resources.size());
+				if (progress.isCanceled()) {
+					throw new OperationCanceledException();
+				}
+
+				for (Resource resource : resources) {
+					// Delete resource if it exists physically, just unload it otherwise
+					if (EcoreResourceUtil.exists(resource.getURI())) {
+						try {
+							resource.delete(Collections.emptyMap());
+						} catch (IOException ex) {
+							PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+						}
+					} else {
+						EcoreResourceUtil.unloadResource(resource);
+					}
+
+					progress.worked(1);
 					if (progress.isCanceled()) {
 						throw new OperationCanceledException();
 					}
-
-					for (Resource resource : resources) {
-						// Delete resource if it exists physically, just unload it otherwise
-						if (EcoreResourceUtil.exists(resource.getURI())) {
-							try {
-								resource.delete(Collections.emptyMap());
-							} catch (IOException ex) {
-								PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-							}
-						} else {
-							EcoreResourceUtil.unloadResource(resource);
-						}
-
-						progress.worked(1);
-						if (progress.isCanceled()) {
-							throw new OperationCanceledException();
-						}
-					}
 				}
-			};
+			}
+		};
 
-			// Execute save operation as IWorkspaceRunnable on workspace in order to avoid resource change
-			// notifications during transaction execution
-			/*
-			 * !! Important Note !! Setting the IWorkspace.AVOID_UPDATE flag on the outer workspace job or workspace
-			 * runnable from which this method is called doesn't help because the matter of executing a transaction
-			 * inside suppresses its effect.
-			 */
-			/*
-			 * !! Important Note !! Only set IWorkspace.AVOID_UPDATE flag but don't define any scheduling restrictions
-			 * for the save operation right here (this must only be done on the outer workspace job or workspace
-			 * runnable from which this method is called). Otherwise it would be likely to end up in deadlocks with
-			 * operations which already have acquired exclusive access to the workspace but are waiting for exclusive
-			 * access to the model (i.e. for the transaction).
-			 */
-			ResourcesPlugin.getWorkspace().run(runnable, null, IWorkspace.AVOID_UPDATE, monitor);
-		}
+		// Execute save operation as IWorkspaceRunnable on workspace in order to avoid resource change
+		// notifications during transaction execution
+		/*
+		 * !! Important Note !! Setting the IWorkspace.AVOID_UPDATE flag on the outer workspace job or workspace
+		 * runnable from which this method is called doesn't help because the matter of executing a transaction inside
+		 * suppresses its effect.
+		 */
+		/*
+		 * !! Important Note !! Only set IWorkspace.AVOID_UPDATE flag but don't define any scheduling restrictions for
+		 * the save operation right here (this must only be done on the outer workspace job or workspace runnable from
+		 * which this method is called). Otherwise it would be likely to end up in deadlocks with operations which
+		 * already have acquired exclusive access to the workspace but are waiting for exclusive access to the model
+		 * (i.e. for the transaction).
+		 */
+		ResourcesPlugin.getWorkspace().run(runnable, null, IWorkspace.AVOID_UPDATE, monitor);
 	}
 }
