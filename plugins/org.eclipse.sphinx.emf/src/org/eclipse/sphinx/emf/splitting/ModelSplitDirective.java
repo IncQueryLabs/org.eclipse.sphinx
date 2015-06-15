@@ -14,23 +14,28 @@
  */
 package org.eclipse.sphinx.emf.splitting;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 
 public class ModelSplitDirective {
 
-	private EObject eObject;
-	private URI targetResourceURI;
-	private boolean suppressAncestorAttributes;
+	protected EObject eObject;
+	protected URI targetResourceURI;
+	protected boolean ignoreAncestorAttributes;
+	protected List<EAttribute> unignorableAncestorAttributes = null;
 
 	public ModelSplitDirective(EObject eObject, URI targetResourceURI) {
 		this(eObject, targetResourceURI, false);
 	}
 
-	public ModelSplitDirective(EObject eObject, URI targetResourceURI, boolean suppressAncestorAttributes) {
+	public ModelSplitDirective(EObject eObject, URI targetResourceURI, boolean ignoreAncestorAttributes) {
 		this.eObject = eObject;
 		this.targetResourceURI = targetResourceURI;
-		this.suppressAncestorAttributes = suppressAncestorAttributes;
+		this.ignoreAncestorAttributes = ignoreAncestorAttributes;
 	}
 
 	public EObject getEObject() {
@@ -41,8 +46,15 @@ public class ModelSplitDirective {
 		return targetResourceURI;
 	}
 
-	public boolean isSuppressAncestorAttributes() {
-		return suppressAncestorAttributes;
+	public boolean isIgnoreAncestorAttributes() {
+		return ignoreAncestorAttributes;
+	}
+
+	public List<EAttribute> getUnIgnorableAncestorAttributes() {
+		if (unignorableAncestorAttributes == null) {
+			unignorableAncestorAttributes = new ArrayList<EAttribute>();
+		}
+		return unignorableAncestorAttributes;
 	}
 
 	public boolean isValid() {

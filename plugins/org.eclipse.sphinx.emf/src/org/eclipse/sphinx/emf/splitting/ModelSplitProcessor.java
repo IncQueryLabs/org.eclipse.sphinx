@@ -26,11 +26,53 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.UniqueEList;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 
 public class ModelSplitProcessor {
+
+	protected static class ModelSplitCopier extends EcoreUtil.Copier {
+
+		private static final long serialVersionUID = 1L;
+
+		public EObject copy(EObject eObject, boolean copyContainments, boolean copyAttributes) {
+			if (eObject == null) {
+				return null;
+			}
+
+			EObject copyEObject = createCopy(eObject);
+			if (copyEObject != null) {
+				put(eObject, copyEObject);
+				EClass eClass = eObject.eClass();
+				for (int i = 0, size = eClass.getFeatureCount(); i < size; ++i) {
+					EStructuralFeature eStructuralFeature = eClass.getEStructuralFeature(i);
+					if (eStructuralFeature.isChangeable() && !eStructuralFeature.isDerived()) {
+						if (eStructuralFeature instanceof EAttribute) {
+							EAttribute eAttribute = (EAttribute) eStructuralFeature;
+							// Copy attributes only if required but be sure to copy at least ID attribute
+							if (copyAttributes && !eAttribute.isID()) {
+								copyAttribute(eAttribute, eObject, copyEObject);
+							}
+						} else {
+							EReference eReference = (EReference) eStructuralFeature;
+							// Copy containments only if required
+							if (copyContainments && eReference.isContainment()) {
+								copyContainment(eReference, eObject, copyEObject);
+							}
+						}
+					}
+				}
+
+				copyProxyURI(eObject, copyEObject);
+			}
+			return copyEObject;
+		}
+	}
 
 	private List<ModelSplitDirective> modelSplitDirectives = new ArrayList<ModelSplitDirective>();
 
@@ -66,6 +108,16 @@ public class ModelSplitProcessor {
 
 	public List<ModelSplitDirective> getModelSplitDirectives() {
 		return modelSplitDirectives;
+	}
+
+	public <T extends EObject> T copyAncestor(T ancestor, boolean ignoreAttributes) {
+		ModelSplitCopier copier = new ModelSplitCopier();
+		EObject result = copier.copy(ancestor, false, !ignoreAttributes);
+		copier.copyReferences();
+
+		@SuppressWarnings("unchecked")
+		T t = (T) result;
+		return t;
 	}
 
 	public void run(IProgressMonitor monitor) {
@@ -118,8 +170,7 @@ public class ModelSplitProcessor {
 			// Split current ancestor if not already done so
 			splitAncestor = getSplitEObject(ancestor, targetResourceURI);
 			if (splitAncestor == null) {
-				// TODO isSuppressAncestorAttributes
-				splitAncestor = ModelSplitUtil.copy(ancestor, false);
+				splitAncestor = copyAncestor(ancestor, directive.isIgnoreAncestorAttributes());
 				addSplitEObject(ancestor, splitAncestor, targetResourceURI);
 			}
 
