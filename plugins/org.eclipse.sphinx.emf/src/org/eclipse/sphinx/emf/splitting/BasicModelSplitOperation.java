@@ -205,8 +205,9 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 					if (targetResourceContents != null && !targetResourceContents.isEmpty()) {
 						IMetaModelDescriptor metaModelDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(targetResourceContents
 								.iterator().next());
+						String contentTypeId = metaModelDescriptor != null ? metaModelDescriptor.getDefaultContentTypeId() : null;
 						Resource resource = EcoreResourceUtil.addNewModelResource(editingDomain.getResourceSet(), targetResourceURI,
-								metaModelDescriptor != null ? metaModelDescriptor.getDefaultContentTypeId() : null, targetResourceContents);
+								contentTypeId, targetResourceContents);
 						resourcesToSave.add(resource);
 					}
 				}
