@@ -17,11 +17,9 @@ package org.eclipse.sphinx.emf.splitting;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -37,10 +35,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.common.util.UniqueEList;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sphinx.emf.Activator;
@@ -62,15 +57,12 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 	private IModelSplitPolicy modelSplitPolicy;
 	private boolean deleteOriginalResources = false;
 
-	private Map<EObject, Map<URI, EObject>> copyEObjectsMap = Collections.synchronizedMap(new HashMap<EObject, Map<URI, EObject>>());
-	private Map<URI, Set<EObject>> targetResourceContentsMap = Collections.synchronizedMap(new HashMap<URI, Set<EObject>>());
-
 	public BasicModelSplitOperation(Resource resource, IModelSplitPolicy modelSplitPolicy) {
 		this(Collections.singletonList(resource), modelSplitPolicy);
 	}
 
 	public BasicModelSplitOperation(Collection<Resource> resources, IModelSplitPolicy modelSplitPolicy) {
-		super(Messages.operation_modelElementSplitting_label);
+		super(Messages.operation_splitModel_label);
 		Assert.isNotNull(resources);
 		Assert.isNotNull(modelSplitPolicy);
 
@@ -98,6 +90,22 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 		return ResourcesPlugin.getWorkspace().getRoot();
 	}
 
+	protected Map<?, ?> getSaveOptions() {
+		return EcoreResourceUtil.getDefaultSaveOptions();
+	}
+
+	// TODO Check how this is done in BasicWorkflowRunnerOperation
+	protected TransactionalEditingDomain getEditingDomain() {
+		TransactionalEditingDomain editingDomain = null;
+		for (Resource resource : resources) {
+			editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(resource);
+			if (editingDomain != null) {
+				break;
+			}
+		}
+		return editingDomain;
+	}
+
 	@Override
 	public void run(IProgressMonitor monitor) throws CoreException {
 		if (!resources.isEmpty()) {
@@ -110,22 +118,26 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 							throw new OperationCanceledException();
 						}
 
-						try {
-							// Split given model resources
-							splitOriginalResources(resources, progress.newChild(1));
+						ModelSplitProcessor processor = new ModelSplitProcessor();
 
-							// Saves resulting splitted model resources
-							saveSplittedResources(getEditingDomain(), progress.newChild(1));
+						// Split given model resources
+						splitOriginalResources(resources, processor, progress.newChild(1));
 
-							// Deletes original model resources, if required
-							deleteOriginalResources(resources, progress.newChild(1));
-
-							copyEObjectsMap.clear();
-							targetResourceContentsMap.clear();
-						} catch (CoreException ex) {
-							throw new RuntimeException(ex);
+						if (progress.isCanceled()) {
+							throw new OperationCanceledException();
 						}
 
+						// Saves resulting split model resources
+						saveSplitResources(getEditingDomain(), processor, progress.newChild(1));
+
+						if (progress.isCanceled()) {
+							throw new OperationCanceledException();
+						}
+
+						// Deletes original model resources, if required
+						deleteOriginalResources(resources, progress.newChild(1));
+
+						processor.dispose();
 					}
 				};
 				TransactionalEditingDomain editingDomain = getEditingDomain();
@@ -141,35 +153,26 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 		}
 	}
 
-	TransactionalEditingDomain getEditingDomain() {
-		TransactionalEditingDomain editingDomain = null;
-		for (Resource resource : resources) {
-			editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(resource);
-			if (editingDomain != null) {
-				break;
-			}
-		}
-		return editingDomain;
-	}
-
-	protected void splitOriginalResources(Collection<Resource> resources, IProgressMonitor monitor) {
+	protected void splitOriginalResources(Collection<Resource> resources, ModelSplitProcessor processor, IProgressMonitor monitor) {
 		Assert.isNotNull(resources);
+		Assert.isNotNull(processor);
+
 		SubMonitor progress = SubMonitor.convert(monitor, resources.size());
 		if (progress.isCanceled()) {
 			throw new OperationCanceledException();
 		}
 
 		for (Resource resource : resources) {
-			// Collect model objects to be processed
+			// Traverse the resource's contents, present each model object to split policy and collect resulting split
+			// directives
 			SubMonitor splitResourcesProgress = progress.newChild(1).setWorkRemaining(2);
-			List<EObject> eObjects = new UniqueEList.FastCompare<EObject>();
 			for (TreeIterator<EObject> iterator = resource.getAllContents(); iterator.hasNext();) {
 				EObject eObject = iterator.next();
-				if (modelSplitPolicy.getSplitDirective(eObject) == null) {
-					continue;
+				ModelSplitDirective directive = modelSplitPolicy.getSplitDirective(eObject);
+				if (directive != null) {
+					processor.getModelSplitDirectives().add(directive);
+					iterator.prune();
 				}
-				eObjects.add(eObject);
-				iterator.prune();
 			}
 			splitResourcesProgress.worked(1);
 
@@ -177,17 +180,8 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 				throw new OperationCanceledException();
 			}
 
-			// Process model objects to be split
-			SubMonitor splitObjectsProgress = SubMonitor.convert(splitResourcesProgress.newChild(1), eObjects.size());
-			for (EObject eObject : eObjects) {
-				ModelSplitDirective directive = modelSplitPolicy.getSplitDirective(eObject);
-				EObject copyEObject = getCopiedEObject(eObject, directive.getTargetResourceURI());
-				if (copyEObject == null) {
-					clone(eObject, directive, splitObjectsProgress.newChild(1));
-				} else {
-					splitObjectsProgress.worked(1);
-				}
-			}
+			// Process split directives
+			processor.run(splitResourcesProgress.newChild(1));
 
 			if (splitResourcesProgress.isCanceled()) {
 				throw new OperationCanceledException();
@@ -195,103 +189,29 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 		}
 	}
 
-	protected EObject clone(EObject eObject, ModelSplitDirective modelSplitDirective, IProgressMonitor monitor) {
-		Assert.isNotNull(eObject);
-		Assert.isNotNull(modelSplitDirective);
-
-		EObject result = null;
-		List<EObject> ancestors = new UniqueEList.FastCompare<EObject>();
-		ancestors.add(eObject);
-
-		InternalEObject internalEObject = (InternalEObject) eObject;
-		for (InternalEObject container = internalEObject.eInternalContainer(); container != null; container = internalEObject.eInternalContainer()) {
-			ancestors.add(container);
-			internalEObject = container;
-		}
-		EObject rootEObject = internalEObject;
-
-		SubMonitor progress = SubMonitor.convert(monitor, ancestors.size());
-		if (progress.isCanceled()) {
-			throw new OperationCanceledException();
-		}
-
-		URI targetResourceURI = modelSplitDirective.getTargetResourceURI();
-		for (int i = 0; i < ancestors.size(); i++) {
-			EObject ancestor = ancestors.get(i);
-
-			EObject copyEObject = getCopiedEObject(ancestor, targetResourceURI);
-			if (copyEObject == null) {
-				copyEObject = i == 0 ? ancestor : ModelSplitUtil.copy(ancestor, false);
-				Map<URI, EObject> targets = new HashMap<URI, EObject>();
-				targets.put(targetResourceURI, copyEObject);
-				copyEObjectsMap.put(ancestor, targets);
-			}
-
-			if (i == 0) {
-				result = copyEObject;
-			}
-
-			if (i < ancestors.size() - 1) {
-				EObject container = ancestors.get(i + 1);
-				EStructuralFeature feature = ancestor.eContainingFeature();
-				if (container != null && feature != null) {
-					EObject copyContainer = getCopiedEObject(container, targetResourceURI);
-					if (copyContainer == null) {
-						copyContainer = ModelSplitUtil.copy(container, false);
-						Map<URI, EObject> targets = new HashMap<URI, EObject>();
-						targets.put(targetResourceURI, copyContainer);
-						copyEObjectsMap.put(container, targets);
-					}
-					ModelSplitUtil.setPropertyValue(copyContainer, feature, copyEObject);
-				}
-			}
-
-			progress.worked(1);
-			if (progress.isCanceled()) {
-				throw new OperationCanceledException();
-			}
-		}
-
-		Set<EObject> targetResourceContents = targetResourceContentsMap.get(targetResourceURI);
-		if (targetResourceContents == null) {
-			targetResourceContents = new HashSet<EObject>();
-		}
-		EObject copyRootEObject = getCopiedEObject(rootEObject, targetResourceURI);
-		targetResourceContents.add(copyRootEObject);
-		targetResourceContentsMap.put(targetResourceURI, targetResourceContents);
-		return result;
-	}
-
-	protected EObject getCopiedEObject(EObject eObject, URI targetResourceURI) {
-		Assert.isNotNull(eObject);
-		Assert.isNotNull(targetResourceURI);
-
-		Map<URI, EObject> map = copyEObjectsMap.get(eObject);
-		return map != null ? map.get(targetResourceURI) : null;
-	}
-
-	protected Map<?, ?> getSaveOptions() {
-		return EcoreResourceUtil.getDefaultSaveOptions();
-	}
-
-	protected void saveSplittedResources(final TransactionalEditingDomain editingDomain, IProgressMonitor monitor) throws CoreException {
+	protected void saveSplitResources(final TransactionalEditingDomain editingDomain, final ModelSplitProcessor processor, IProgressMonitor monitor)
+			throws CoreException {
 		Assert.isNotNull(editingDomain);
+		Assert.isNotNull(processor);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
+				// Create resources for split models
 				Set<Resource> resourcesToSave = new HashSet<Resource>();
-				for (Entry<URI, Set<EObject>> entry : targetResourceContentsMap.entrySet()) {
-					URI resourceURI = entry.getKey();
-					Set<EObject> rootEObjects = entry.getValue();
+				for (URI targetResourceURI : processor.getTargetResourceContents().keySet()) {
+					List<EObject> targetResourceContents = processor.getTargetResourceContents().get(targetResourceURI);
 
-					IMetaModelDescriptor metaModelDescriptor = rootEObjects != null && !rootEObjects.isEmpty() ? MetaModelDescriptorRegistry.INSTANCE
-							.getDescriptor(rootEObjects.iterator().next()) : null;
-					Resource resource = EcoreResourceUtil.addNewModelResource(editingDomain.getResourceSet(), resourceURI,
-							metaModelDescriptor != null ? metaModelDescriptor.getDefaultContentTypeId() : "", rootEObjects); //$NON-NLS-1$
-					resourcesToSave.add(resource);
+					if (targetResourceContents != null && !targetResourceContents.isEmpty()) {
+						IMetaModelDescriptor metaModelDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(targetResourceContents
+								.iterator().next());
+						Resource resource = EcoreResourceUtil.addNewModelResource(editingDomain.getResourceSet(), targetResourceURI,
+								metaModelDescriptor != null ? metaModelDescriptor.getDefaultContentTypeId() : null, targetResourceContents);
+						resourcesToSave.add(resource);
+					}
 				}
 
+				// Save split resources
 				final SubMonitor progress = SubMonitor.convert(monitor, Messages.subTask_savingModels, resourcesToSave.size());
 				if (progress.isCanceled()) {
 					throw new OperationCanceledException();
@@ -299,8 +219,8 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 
 				for (Resource resource : resourcesToSave) {
 					EcoreResourceUtil.saveModelResource(resource, getSaveOptions());
-					progress.worked(1);
 
+					progress.worked(1);
 					if (progress.isCanceled()) {
 						throw new OperationCanceledException();
 					}
@@ -338,6 +258,7 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 					}
 
 					for (Resource resource : resources) {
+						// Delete resource if it exists physically, just unload it otherwise
 						if (EcoreResourceUtil.exists(resource.getURI())) {
 							try {
 								resource.delete(Collections.emptyMap());
@@ -347,8 +268,8 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 						} else {
 							EcoreResourceUtil.unloadResource(resource);
 						}
-						progress.worked(1);
 
+						progress.worked(1);
 						if (progress.isCanceled()) {
 							throw new OperationCanceledException();
 						}

@@ -44,4 +44,18 @@ public class ModelSplitDirective {
 	public boolean isSuppressAncestorAttributes() {
 		return suppressAncestorAttributes;
 	}
+
+	public boolean isValid() {
+		if (eObject == null) {
+			return false;
+		}
+		if (targetResourceURI == null) {
+			return false;
+		}
+		// EObject to be split already in specified target resource?
+		if (eObject.eResource() != null && eObject.eResource().getURI() == targetResourceURI) {
+			return false;
+		}
+		return true;
+	}
 }

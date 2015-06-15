@@ -14,8 +14,6 @@
  */
 package org.eclipse.sphinx.emf.splitting;
 
-import java.util.List;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -25,17 +23,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 public final class ModelSplitUtil {
 
 	private ModelSplitUtil() {
-	}
-
-	@SuppressWarnings("unchecked")
-	public static void setPropertyValue(EObject eObject, EStructuralFeature feature, Object value) {
-		if (eObject != null && feature != null) {
-			if (feature.isMany()) {
-				((List<Object>) eObject.eGet(feature)).add(value);
-			} else {
-				eObject.eSet(feature, value);
-			}
-		}
 	}
 
 	public static <T extends EObject> T copy(T eObject, boolean copyContainment) {
