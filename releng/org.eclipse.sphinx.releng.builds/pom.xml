@@ -79,6 +79,7 @@
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.check</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.workflows</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20</module>
+		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.splitting</module>
 		<module>../../examples/org.eclipse.sphinx.examples.tests.perf</module>
 		<module>../../examples/org.eclipse.sphinx.examples.transform.xtend.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.uml2.ide.ui</module>
