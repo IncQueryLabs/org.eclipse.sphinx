@@ -6,7 +6,8 @@ Bundle-Version: 0.9.0.qualifier
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.jdom,
- org.eclipse.sphinx.testutils.integration.referenceworkspace
+ org.eclipse.sphinx.testutils.integration.referenceworkspace,
+ org.eclipse.sphinx.examples.hummingbird20.splitting
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.eclipse.sphinx.tests.emf.integration,
  org.eclipse.sphinx.tests.emf.integration.internal;x-internal:=true,
@@ -16,3 +17,4 @@ Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.tests.emf.integration.internal.Activator$Implementation
+Import-Package: org.eclipse.sphinx.platform.ui.util
