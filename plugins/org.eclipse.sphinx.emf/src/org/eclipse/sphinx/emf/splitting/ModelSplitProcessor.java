@@ -107,7 +107,7 @@ public class ModelSplitProcessor {
 	}
 
 	public List<IModelSplitDirective> getModelSplitDirectives() {
-		return Collections.unmodifiableList(modelSplitDirectives);
+		return modelSplitDirectives;
 	}
 
 	public <T extends EObject> T copyAncestor(T ancestor, boolean ignoreAttributes, List<EAttribute> mandatoryAttributes) {
