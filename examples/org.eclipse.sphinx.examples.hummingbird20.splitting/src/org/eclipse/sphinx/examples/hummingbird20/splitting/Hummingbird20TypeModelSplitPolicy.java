@@ -18,8 +18,8 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.sphinx.emf.splitting.IModelSplitDirective;
 import org.eclipse.sphinx.emf.splitting.IModelSplitPolicy;
-import org.eclipse.sphinx.emf.splitting.ModelSplitDirective;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
@@ -33,7 +33,7 @@ public class Hummingbird20TypeModelSplitPolicy implements IModelSplitPolicy {
 	 * @see org.eclipse.sphinx.emf.splitting.IModelSplitPolicy#getSplitDirective(org.eclipse.emf.ecore.EObject)
 	 */
 	@Override
-	public ModelSplitDirective getSplitDirective(EObject eObject) {
+	public IModelSplitDirective getSplitDirective(EObject eObject) {
 		if (eObject == null || eObject.eResource() == null) {
 			return null;
 		}
@@ -47,7 +47,7 @@ public class Hummingbird20TypeModelSplitPolicy implements IModelSplitPolicy {
 
 			// Return corresponding model split directive making sure that ancestor objects get replicated into target
 			// resource WITH their attributes
-			return new ModelSplitDirective(eObject, targetResourceURI);
+			return new Hummingbird20ModelSplitDirective(eObject, targetResourceURI);
 		}
 		if (eObject instanceof ComponentType) {
 			// Compute target resource URI for Hummingbird 2.0 component type objects
@@ -55,7 +55,7 @@ public class Hummingbird20TypeModelSplitPolicy implements IModelSplitPolicy {
 
 			// Return corresponding model split directive making sure that ancestor objects get replicated into target
 			// resource WITHOUT their attributes
-			return new ModelSplitDirective(eObject, targetResourceURI, true);
+			return new Hummingbird20ModelSplitDirective(eObject, targetResourceURI, true);
 		}
 		return null;
 	}

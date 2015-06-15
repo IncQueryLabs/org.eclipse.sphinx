@@ -21,42 +21,62 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 
-public class ModelSplitDirective {
+public class BasicModelSplitDirective implements IModelSplitDirective {
 
 	protected EObject eObject;
 	protected URI targetResourceURI;
 	protected boolean ignoreAncestorAttributes;
-	protected List<EAttribute> unignorableAncestorAttributes = null;
+	protected List<EAttribute> mandatoryAncestorAttributes = null;
 
-	public ModelSplitDirective(EObject eObject, URI targetResourceURI) {
+	public BasicModelSplitDirective(EObject eObject, URI targetResourceURI) {
 		this(eObject, targetResourceURI, false);
 	}
 
-	public ModelSplitDirective(EObject eObject, URI targetResourceURI, boolean ignoreAncestorAttributes) {
+	public BasicModelSplitDirective(EObject eObject, URI targetResourceURI, boolean ignoreAncestorAttributes) {
 		this.eObject = eObject;
 		this.targetResourceURI = targetResourceURI;
 		this.ignoreAncestorAttributes = ignoreAncestorAttributes;
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.splitting.IModelSplitDirective#getEObject()
+	 */
+	@Override
 	public EObject getEObject() {
 		return eObject;
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.splitting.IModelSplitDirective#getTargetResourceURI()
+	 */
+	@Override
 	public URI getTargetResourceURI() {
 		return targetResourceURI;
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.splitting.IModelSplitDirective#isIgnoreAncestorAttributes()
+	 */
+	@Override
 	public boolean isIgnoreAncestorAttributes() {
 		return ignoreAncestorAttributes;
 	}
 
-	public List<EAttribute> getUnIgnorableAncestorAttributes() {
-		if (unignorableAncestorAttributes == null) {
-			unignorableAncestorAttributes = new ArrayList<EAttribute>();
+	/*
+	 * @see org.eclipse.sphinx.emf.splitting.IModelSplitDirective#getUnignorableAncestorAttributes()
+	 */
+	@Override
+	public List<EAttribute> getMandatoryAncestorAttributes() {
+		if (mandatoryAncestorAttributes == null) {
+			mandatoryAncestorAttributes = new ArrayList<EAttribute>();
 		}
-		return unignorableAncestorAttributes;
+		return mandatoryAncestorAttributes;
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.splitting.IModelSplitDirective#isValid()
+	 */
+	@Override
 	public boolean isValid() {
 		if (eObject == null) {
 			return false;

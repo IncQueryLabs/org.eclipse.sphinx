@@ -168,7 +168,7 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 			SubMonitor splitResourcesProgress = progress.newChild(1).setWorkRemaining(2);
 			for (TreeIterator<EObject> iterator = resource.getAllContents(); iterator.hasNext();) {
 				EObject eObject = iterator.next();
-				ModelSplitDirective directive = modelSplitPolicy.getSplitDirective(eObject);
+				IModelSplitDirective directive = modelSplitPolicy.getSplitDirective(eObject);
 				if (directive != null) {
 					processor.getModelSplitDirectives().add(directive);
 					iterator.prune();

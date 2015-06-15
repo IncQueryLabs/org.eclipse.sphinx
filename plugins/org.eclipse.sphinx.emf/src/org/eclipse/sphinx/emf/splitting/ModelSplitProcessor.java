@@ -40,7 +40,7 @@ public class ModelSplitProcessor {
 
 		private static final long serialVersionUID = 1L;
 
-		public EObject copy(EObject eObject, boolean copyContainments, boolean copyAttributes) {
+		public EObject copy(EObject eObject, boolean copyContainments, boolean copyAttributes, List<EAttribute> mandatoryAttributes) {
 			if (eObject == null) {
 				return null;
 			}
@@ -55,7 +55,7 @@ public class ModelSplitProcessor {
 						if (eStructuralFeature instanceof EAttribute) {
 							EAttribute eAttribute = (EAttribute) eStructuralFeature;
 							// Copy attributes only if required but be sure to copy at least ID attribute
-							if (copyAttributes && !eAttribute.isID()) {
+							if (copyAttributes || mandatoryAttributes.contains(eAttribute)) {
 								copyAttribute(eAttribute, eObject, copyEObject);
 							}
 						} else {
@@ -74,7 +74,7 @@ public class ModelSplitProcessor {
 		}
 	}
 
-	private List<ModelSplitDirective> modelSplitDirectives = new ArrayList<ModelSplitDirective>();
+	private List<IModelSplitDirective> modelSplitDirectives = new ArrayList<IModelSplitDirective>();
 
 	private Map<EObject, Map<URI, EObject>> originalToSplitEObjectsMap = new HashMap<EObject, Map<URI, EObject>>();
 	private Map<URI, List<EObject>> targetResourceURIToContentsMap = new HashMap<URI, List<EObject>>();
@@ -106,13 +106,13 @@ public class ModelSplitProcessor {
 		return Collections.unmodifiableMap(targetResourceURIToContentsMap);
 	}
 
-	public List<ModelSplitDirective> getModelSplitDirectives() {
+	public List<IModelSplitDirective> getModelSplitDirectives() {
 		return modelSplitDirectives;
 	}
 
-	public <T extends EObject> T copyAncestor(T ancestor, boolean ignoreAttributes) {
+	public <T extends EObject> T copyAncestor(T ancestor, boolean ignoreAttributes, List<EAttribute> mandatoryAttributes) {
 		ModelSplitCopier copier = new ModelSplitCopier();
-		EObject result = copier.copy(ancestor, false, !ignoreAttributes);
+		EObject result = copier.copy(ancestor, false, !ignoreAttributes, mandatoryAttributes);
 		copier.copyReferences();
 
 		@SuppressWarnings("unchecked")
@@ -126,7 +126,7 @@ public class ModelSplitProcessor {
 			throw new OperationCanceledException();
 		}
 
-		for (ModelSplitDirective directive : modelSplitDirectives) {
+		for (IModelSplitDirective directive : modelSplitDirectives) {
 			if (directive.isValid()) {
 				processSplitDirective(directive);
 			}
@@ -138,7 +138,7 @@ public class ModelSplitProcessor {
 		}
 	}
 
-	protected void processSplitDirective(ModelSplitDirective directive) {
+	protected void processSplitDirective(IModelSplitDirective directive) {
 		Assert.isNotNull(directive);
 
 		EObject eObject = directive.getEObject();
@@ -170,7 +170,7 @@ public class ModelSplitProcessor {
 			// Split current ancestor if not already done so
 			splitAncestor = getSplitEObject(ancestor, targetResourceURI);
 			if (splitAncestor == null) {
-				splitAncestor = copyAncestor(ancestor, directive.isIgnoreAncestorAttributes());
+				splitAncestor = copyAncestor(ancestor, directive.isIgnoreAncestorAttributes(), directive.getMandatoryAncestorAttributes());
 				addSplitEObject(ancestor, splitAncestor, targetResourceURI);
 			}
 
