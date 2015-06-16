@@ -14,7 +14,7 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.splitting.ui.handlers;
 
-import org.eclipse.sphinx.emf.ui.handlers.BasicModelSplitHandler;
+import org.eclipse.sphinx.emf.workspace.ui.handlers.BasicModelSplitHandler;
 import org.eclipse.sphinx.examples.hummingbird20.splitting.Hummingbird20TypeModelSplitPolicy;
 
 public class Hummingbird20ModelSplitHandler extends BasicModelSplitHandler {

@@ -13,6 +13,7 @@ Bundle-Activator: org.eclipse.sphinx.emf.workspace.ui.internal.Activator$Impleme
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.eclipse.sphinx.emf.workspace.ui.actions,
  org.eclipse.sphinx.emf.workspace.ui.actions.providers,
+ org.eclipse.sphinx.emf.workspace.ui.handlers,
  org.eclipse.sphinx.emf.workspace.ui.internal;x-internal:=true,
  org.eclipse.sphinx.emf.workspace.ui.internal.messages;x-internal:=true,
  org.eclipse.sphinx.emf.workspace.ui.internal.saving;x-internal:=true,

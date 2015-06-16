@@ -195,7 +195,7 @@ public class ModelSplitProcessor {
 		getTargetResourceContents(targetResourceURI).add(splitRootContainer);
 	}
 
-	protected void dispose() {
+	public void dispose() {
 		originalToSplitEObjectsMap.clear();
 		targetResourceURIToContentsMap.clear();
 	}

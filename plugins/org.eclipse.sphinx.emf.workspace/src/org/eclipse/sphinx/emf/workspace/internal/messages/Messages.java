@@ -63,6 +63,12 @@ public class Messages extends NLS {
 	public static String subTask_creatingNewModelProject;
 
 	/*
+	 * Model splitting
+	 */
+	public static String operation_splitModel_label;
+	public static String subTask_savingModels;
+
+	/*
 	 * Error messages
 	 */
 	public static String error_createEditingDomainFactory;

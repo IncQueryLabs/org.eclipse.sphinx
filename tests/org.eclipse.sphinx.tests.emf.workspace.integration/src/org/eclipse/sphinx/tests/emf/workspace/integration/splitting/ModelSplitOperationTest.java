@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.tests.emf.integration.splitting;
+package org.eclipse.sphinx.tests.emf.workspace.integration.splitting;
 
 import java.util.Map;
 import java.util.Set;
@@ -23,16 +23,16 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.splitting.BasicModelSplitOperation;
 import org.eclipse.sphinx.emf.splitting.IModelSplitOperation;
 import org.eclipse.sphinx.emf.splitting.IModelSplitPolicy;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
+import org.eclipse.sphinx.emf.workspace.operations.BasicModelSplitOperation;
 import org.eclipse.sphinx.examples.hummingbird20.splitting.Hummingbird20TypeModelSplitPolicy;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
-import org.eclipse.sphinx.tests.emf.integration.internal.Activator;
+import org.eclipse.sphinx.tests.emf.workspace.integration.internal.Activator;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultIntegrationTestCase;
 import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestReferenceWorkspace;
 

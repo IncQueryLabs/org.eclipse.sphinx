@@ -12,9 +12,10 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.emf.splitting;
+package org.eclipse.sphinx.emf.workspace.operations;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -42,11 +43,18 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.sphinx.emf.Activator;
-import org.eclipse.sphinx.emf.internal.messages.Messages;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.splitting.IModelSplitDirective;
+import org.eclipse.sphinx.emf.splitting.IModelSplitOperation;
+import org.eclipse.sphinx.emf.splitting.IModelSplitPolicy;
+import org.eclipse.sphinx.emf.splitting.ModelSplitProcessor;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
+import org.eclipse.sphinx.emf.util.WorkspaceEditingDomainUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
+import org.eclipse.sphinx.emf.workspace.internal.messages.Messages;
+import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.platform.operations.AbstractLabeledWorkspaceRunnable;
 import org.eclipse.sphinx.platform.operations.AbstractWorkspaceOperation;
 import org.eclipse.sphinx.platform.operations.ILabeledWorkspaceRunnable;
@@ -56,20 +64,49 @@ import org.eclipse.sphinx.platform.util.StatusUtil;
 public class BasicModelSplitOperation extends AbstractWorkspaceOperation implements IModelSplitOperation {
 
 	private Collection<Resource> resources;
+	private Collection<URI> resourceURIs;
 	private IModelSplitPolicy modelSplitPolicy;
 	private boolean deleteOriginalResources = false;
 
-	public BasicModelSplitOperation(Resource resource, IModelSplitPolicy modelSplitPolicy) {
-		this(Collections.singletonList(resource), modelSplitPolicy);
-	}
+	private TransactionalEditingDomain editingDomain = null;
 
-	public BasicModelSplitOperation(Collection<Resource> resources, IModelSplitPolicy modelSplitPolicy) {
+	public BasicModelSplitOperation(IModelSplitPolicy modelSplitPolicy) {
 		super(Messages.operation_splitModel_label);
-		Assert.isNotNull(resources);
 		Assert.isNotNull(modelSplitPolicy);
 
-		this.resources = resources;
 		this.modelSplitPolicy = modelSplitPolicy;
+	}
+
+	public BasicModelSplitOperation(Resource resource, IModelSplitPolicy modelSplitPolicy) {
+		super(Messages.operation_splitModel_label);
+		Assert.isNotNull(resource);
+		Assert.isNotNull(modelSplitPolicy);
+
+		getResources().add(resource);
+		this.modelSplitPolicy = modelSplitPolicy;
+	}
+
+	public BasicModelSplitOperation(URI resourceURI, IModelSplitPolicy modelSplitPolicy) {
+		super(Messages.operation_splitModel_label);
+		Assert.isNotNull(resourceURI);
+		Assert.isNotNull(modelSplitPolicy);
+
+		getResourceURIs().add(resourceURI);
+		this.modelSplitPolicy = modelSplitPolicy;
+	}
+
+	public Collection<Resource> getResources() {
+		if (resources == null) {
+			resources = new ArrayList<Resource>();
+		}
+		return resources;
+	}
+
+	public Collection<URI> getResourceURIs() {
+		if (resourceURIs == null) {
+			resourceURIs = new ArrayList<URI>();
+		}
+		return resourceURIs;
 	}
 
 	@Override
@@ -92,77 +129,102 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 		return ResourcesPlugin.getWorkspace().getRoot();
 	}
 
+	protected TransactionalEditingDomain getEditingDomain() {
+		if (editingDomain == null) {
+			Collection<Resource> resources = getResources();
+			if (!resources.isEmpty()) {
+				editingDomain = TransactionUtil.getEditingDomain(resources.iterator().next());
+			}
+			Collection<URI> resourceURIs = getResourceURIs();
+			if (!resourceURIs.isEmpty()) {
+				editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(resourceURIs.iterator().next());
+			}
+		}
+		return editingDomain;
+	}
+
 	protected Map<?, ?> getSaveOptions() {
 		return EcoreResourceUtil.getDefaultSaveOptions();
 	}
 
-	protected TransactionalEditingDomain getEditingDomain(Collection<Resource> resources) {
-		Assert.isNotNull(resources);
-
-		if (!resources.isEmpty()) {
-			return TransactionUtil.getEditingDomain(resources.iterator().next());
-		}
-		return null;
-	}
-
 	@Override
 	public void run(IProgressMonitor monitor) throws CoreException {
-		if (!resources.isEmpty()) {
-			try {
-				final TransactionalEditingDomain editingDomain = getEditingDomain(resources);
-
-				ILabeledWorkspaceRunnable runnable = new AbstractLabeledWorkspaceRunnable(getLabel()) {
-					@Override
-					public void run(IProgressMonitor monitor) throws CoreException {
-						final SubMonitor progress = SubMonitor.convert(monitor, 3);
-						if (progress.isCanceled()) {
-							throw new OperationCanceledException();
-						}
-
-						ModelSplitProcessor processor = new ModelSplitProcessor();
-
-						// Split given model resources
-						splitOriginalResources(resources, processor, progress.newChild(1));
-
-						if (progress.isCanceled()) {
-							throw new OperationCanceledException();
-						}
-
-						// Saves resulting split model resources
-						ResourceSet resourceSet = editingDomain != null ? editingDomain.getResourceSet() : new ResourceSetImpl();
-						saveSplitResources(resourceSet, processor, progress.newChild(1));
-
-						if (progress.isCanceled()) {
-							throw new OperationCanceledException();
-						}
-
-						// Deletes original model resources, if required
-						if (deleteOriginalResources) {
-							deleteOriginalResources(resources, progress.newChild(1));
-						}
-
-						processor.dispose();
+		try {
+			// TODO Split runnable into separate transactions for loading, splitting & saving and deleting and make sure
+			// that only split & save operation can be undone under the condition that the original resource are not
+			// getting deleted
+			ILabeledWorkspaceRunnable runnable = new AbstractLabeledWorkspaceRunnable(getLabel()) {
+				@Override
+				public void run(IProgressMonitor monitor) throws CoreException {
+					final SubMonitor progress = SubMonitor.convert(monitor, 100);
+					if (progress.isCanceled()) {
+						throw new OperationCanceledException();
 					}
-				};
 
-				if (editingDomain != null) {
-					WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable, monitor);
-				} else {
-					runnable.run(monitor);
+					// Load model resources to be split
+					loadResources(progress.newChild(25));
+
+					if (progress.isCanceled()) {
+						throw new OperationCanceledException();
+					}
+
+					// Split model resources
+					ModelSplitProcessor processor = new ModelSplitProcessor();
+					splitResources(processor, progress.newChild(25));
+
+					if (progress.isCanceled()) {
+						throw new OperationCanceledException();
+					}
+
+					// Save resulting model resources
+					saveSplitResources(processor, progress.newChild(25));
+					processor.dispose();
+
+					if (progress.isCanceled()) {
+						throw new OperationCanceledException();
+					}
+
+					// Delete original model resources, if required
+					if (deleteOriginalResources) {
+						deleteOriginalResources(progress.newChild(25));
+					} else {
+						progress.worked(25);
+					}
 				}
-			} catch (OperationCanceledException ex) {
-				throw ex;
-			} catch (ExecutionException ex) {
-				IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
-				throw new CoreException(status);
+			};
+
+			TransactionalEditingDomain editingDomain = getEditingDomain();
+			if (editingDomain != null) {
+				WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable, monitor);
+			} else {
+				runnable.run(monitor);
+			}
+		} catch (OperationCanceledException ex) {
+			throw ex;
+		} catch (ExecutionException ex) {
+			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
+			throw new CoreException(status);
+		}
+	}
+
+	protected void loadResources(IProgressMonitor monitor) {
+		// Make sure that resources behind specified resource URIs are loaded
+		Collection<URI> resourceURIs = getResourceURIs();
+		ModelLoadManager.INSTANCE.loadURIs(resourceURIs, false, monitor);
+
+		// Add resources corresponding to specified resource URIs to resources to be split
+		for (URI resourceURI : resourceURIs) {
+			Resource resource = EcorePlatformUtil.getResource(resourceURI);
+			if (resource != null) {
+				resources.add(resource);
 			}
 		}
 	}
 
-	protected void splitOriginalResources(Collection<Resource> resources, ModelSplitProcessor processor, IProgressMonitor monitor) {
-		Assert.isNotNull(resources);
+	protected void splitResources(ModelSplitProcessor processor, IProgressMonitor monitor) {
 		Assert.isNotNull(processor);
 
+		Collection<Resource> resources = getResources();
 		SubMonitor progress = SubMonitor.convert(monitor, resources.size());
 		if (progress.isCanceled()) {
 			throw new OperationCanceledException();
@@ -195,13 +257,15 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 		}
 	}
 
-	protected void saveSplitResources(final ResourceSet resourceSet, final ModelSplitProcessor processor, IProgressMonitor monitor)
-			throws CoreException {
+	protected void saveSplitResources(final ModelSplitProcessor processor, IProgressMonitor monitor) throws CoreException {
 		Assert.isNotNull(processor);
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
+				TransactionalEditingDomain editingDomain = getEditingDomain();
+				ResourceSet resourceSet = editingDomain != null ? editingDomain.getResourceSet() : new ResourceSetImpl();
+
 				// Create resources for split models
 				Set<Resource> resourcesToSave = new HashSet<Resource>();
 				for (URI targetResourceURI : processor.getTargetResourceContents().keySet()) {
@@ -218,7 +282,7 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 				}
 
 				// Save split resources
-				final SubMonitor progress = SubMonitor.convert(monitor, Messages.subTask_savingModels, resourcesToSave.size());
+				SubMonitor progress = SubMonitor.convert(monitor, Messages.subTask_savingModels, resourcesToSave.size());
 				if (progress.isCanceled()) {
 					throw new OperationCanceledException();
 				}
@@ -251,13 +315,12 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 		ResourcesPlugin.getWorkspace().run(runnable, null, IWorkspace.AVOID_UPDATE, monitor);
 	}
 
-	protected void deleteOriginalResources(final Collection<Resource> resources, IProgressMonitor monitor) throws CoreException {
-		Assert.isNotNull(resources);
-
+	protected void deleteOriginalResources(IProgressMonitor monitor) throws CoreException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
-				final SubMonitor progress = SubMonitor.convert(monitor, resources.size());
+				Collection<Resource> resources = getResources();
+				SubMonitor progress = SubMonitor.convert(monitor, resources.size());
 				if (progress.isCanceled()) {
 					throw new OperationCanceledException();
 				}

@@ -14,7 +14,7 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.splitting.ui.actions;
 
-import org.eclipse.sphinx.emf.ui.actions.BasicModelSplitAction;
+import org.eclipse.sphinx.emf.workspace.ui.actions.BasicModelSplitAction;
 import org.eclipse.sphinx.examples.hummingbird20.splitting.Hummingbird20TypeModelSplitPolicy;
 import org.eclipse.sphinx.examples.hummingbird20.splitting.ui.internal.messages.Messages;
 
