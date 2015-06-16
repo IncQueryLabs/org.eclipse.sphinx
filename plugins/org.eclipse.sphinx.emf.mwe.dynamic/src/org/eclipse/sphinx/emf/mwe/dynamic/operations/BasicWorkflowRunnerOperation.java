@@ -135,13 +135,18 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 	@Override
 	public void run(final IProgressMonitor monitor) throws CoreException, OperationCanceledException {
 		try {
-			final SubMonitor progress = SubMonitor.convert(monitor, 100);
+			SubMonitor progress = SubMonitor.convert(monitor, 100);
+			if (progress.isCanceled()) {
+				throw new OperationCanceledException();
+			}
+
 			final Workflow workflowInstance = getWorkflowInstance();
 			if (workflowInstance == null) {
 				return;
 			}
 
 			// Load selected Sphinx/EMF model file (if any)
+			// FIXME Don't pass model around - just let methods directly access the field
 			model = loadModel(progress.newChild(5));
 
 			final IWorkflowContext context = createWorkflowContext(model, progress.newChild(90));
@@ -338,7 +343,7 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 			return null;
 		}
 
-		final SubMonitor progress = SubMonitor.convert(monitor, modelURIs.size());
+		final SubMonitor progress = SubMonitor.convert(monitor, modelURIs.size() * 2);
 		if (progress.isCanceled()) {
 			throw new OperationCanceledException();
 		}
@@ -346,8 +351,12 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 		List<EObject> modelObjects = new ArrayList<EObject>();
 
 		// Loads Sphinx integrated models
-		ModelLoadManager.INSTANCE.loadURIs(modelURIs, false, monitor);
+		// FIXME Pass appropriate SubMonitor instance rather than monitor directly
+		ModelLoadManager.INSTANCE.loadURIs(modelURIs, false, progress.newChild(modelURIs.size()));
 
+		// FIXME Use a regular ResourceSetImpl rather than a ScopingResourceSetImpl
+		// FIXME ResourceSet for regular EMF model files must not go out of scope and resources must be unloaded after
+		// workflow execution; implement this ResourceSet as field and use it as replacement for emfModelResources
 		ResourceSet resouceSet = new ScopingResourceSetImpl();
 		for (URI modelURI : modelURIs) {
 			IFile file = EcorePlatformUtil.getFile(modelURI.trimFragment());
