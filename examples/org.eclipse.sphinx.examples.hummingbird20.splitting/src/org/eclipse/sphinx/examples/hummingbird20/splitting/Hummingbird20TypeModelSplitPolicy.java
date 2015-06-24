@@ -38,23 +38,26 @@ public class Hummingbird20TypeModelSplitPolicy implements IModelSplitPolicy {
 			return null;
 		}
 
-		// Compute URI of target resource folder
-		URI targetResourceBaseURI = getTargetResourceBaseURI(eObject);
-
 		if (eObject instanceof Interface) {
+			// Compute URI of target resource folder
+			URI targetResourceBaseURI = getTargetResourceBaseURI(eObject);
+
 			// Compute target resource URI for Hummingbird 2.0 interface objects
 			URI targetResourceURI = targetResourceBaseURI.appendSegment(INTERFACES_TARGET_FILE_NAME);
 
 			// Return corresponding model split directive making sure that ancestor objects get replicated into target
-			// resource WITH their attributes
+			// resource WITH their intrinsic properties
 			return createModelSplitDirective(eObject, targetResourceURI, false);
 		}
 		if (eObject instanceof ComponentType) {
+			// Compute URI of target resource folder
+			URI targetResourceBaseURI = getTargetResourceBaseURI(eObject);
+
 			// Compute target resource URI for Hummingbird 2.0 component type objects
 			URI targetResourceURI = targetResourceBaseURI.appendSegment(COMPONENT_TYPES_TARGET_FILE_NAME);
 
 			// Return corresponding model split directive making sure that ancestor objects get replicated into target
-			// resource WITHOUT their attributes
+			// resource WITHOUT their intrinsic properties
 			return createModelSplitDirective(eObject, targetResourceURI, true);
 		}
 		return null;
@@ -63,7 +66,7 @@ public class Hummingbird20TypeModelSplitPolicy implements IModelSplitPolicy {
 	protected URI getTargetResourceBaseURI(EObject eObject) {
 		Assert.isNotNull(eObject);
 		Assert.isLegal(eObject.eResource() != null);
-	
+
 		IPath path = EcorePlatformUtil.createPath(eObject.eResource().getURI());
 		IPath targetResourceBasePath = path.removeLastSegments(1);
 		return EcorePlatformUtil.createURI(targetResourceBasePath);

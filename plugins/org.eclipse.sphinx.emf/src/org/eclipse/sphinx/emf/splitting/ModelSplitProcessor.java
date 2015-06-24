@@ -26,59 +26,69 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.emf.ecore.util.FeatureMap;
 
 public class ModelSplitProcessor {
 
-	protected static class ModelSplitCopier extends EcoreUtil.Copier {
+	protected static class AncestorCopier extends EcoreUtil.Copier {
 
 		private static final long serialVersionUID = 1L;
 
-		public EObject copy(EObject eObject, boolean copyContainments, boolean copyAttributes, List<EAttribute> mandatoryAttributes) {
-			if (eObject == null) {
+		protected IModelSplitDirective modelSplitDirective;
+
+		public AncestorCopier(IModelSplitDirective modelSplitDirective) {
+			Assert.isNotNull(modelSplitDirective);
+			this.modelSplitDirective = modelSplitDirective;
+		}
+
+		@Override
+		public EObject copy(EObject ancestor) {
+			if (ancestor == null) {
 				return null;
 			}
 
-			EObject copyEObject = createCopy(eObject);
-			if (copyEObject != null) {
-				put(eObject, copyEObject);
-				EClass eClass = eObject.eClass();
-				for (int i = 0, size = eClass.getFeatureCount(); i < size; ++i) {
-					EStructuralFeature eStructuralFeature = eClass.getEStructuralFeature(i);
+			EObject copiedAncestor = createCopy(ancestor);
+			if (copiedAncestor != null) {
+				put(ancestor, copiedAncestor);
+				for (EStructuralFeature eStructuralFeature : ancestor.eClass().getEAllStructuralFeatures()) {
 					if (eStructuralFeature.isChangeable() && !eStructuralFeature.isDerived()) {
-						if (eStructuralFeature instanceof EAttribute) {
-							EAttribute eAttribute = (EAttribute) eStructuralFeature;
-							if (FeatureMapUtil.isFeatureMap(eAttribute)) {
-								// Copy feature maps only if containments are required to be copied (see
-								// org.eclipse.emf.ecore.util.EcoreUtil.Copier#copyFeatureMap(FeatureMap) for details)
-								if (copyContainments) {
-									copyAttribute(eAttribute, eObject, copyEObject);
-								}
+						if (modelSplitDirective.shouldReplicateAncestorFeature(ancestor, eStructuralFeature)) {
+							if (eStructuralFeature instanceof EAttribute) {
+								EAttribute eAttribute = (EAttribute) eStructuralFeature;
+								copyAttribute(eAttribute, ancestor, copiedAncestor);
 							} else {
-								// Copy attributes only if required but be sure to copy at least mandatory attributes
-								if (copyAttributes || mandatoryAttributes.contains(eAttribute)) {
-									copyAttribute(eAttribute, eObject, copyEObject);
+								EReference eReference = (EReference) eStructuralFeature;
+								if (eReference.isContainment()) {
+									copyContainment(eReference, ancestor, copiedAncestor);
 								}
-							}
-						} else {
-							EReference eReference = (EReference) eStructuralFeature;
-							// Copy containments only if required
-							if (copyContainments && eReference.isContainment()) {
-								copyContainment(eReference, eObject, copyEObject);
 							}
 						}
 					}
 				}
 
-				copyProxyURI(eObject, copyEObject);
+				copyProxyURI(ancestor, copiedAncestor);
 			}
-			return copyEObject;
+			return copiedAncestor;
+		}
+
+		@Override
+		protected void copyFeatureMap(FeatureMap featureMap) {
+			for (int i = 0, size = featureMap.size(); i < size; ++i) {
+				EStructuralFeature feature = featureMap.getEStructuralFeature(i);
+				if (feature instanceof EReference && ((EReference) feature).isContainment()) {
+					if (modelSplitDirective.shouldReplicateAncestorFeature(((FeatureMap.Internal) featureMap).getEObject(), feature)) {
+						Object value = featureMap.getValue(i);
+						if (value != null) {
+							copy((EObject) value);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -118,13 +128,13 @@ public class ModelSplitProcessor {
 		return modelSplitDirectives;
 	}
 
-	public <T extends EObject> T copyAncestor(T ancestor, boolean ignoreAttributes, List<EAttribute> mandatoryAttributes) {
-		ModelSplitCopier copier = new ModelSplitCopier();
-		EObject result = copier.copy(ancestor, false, !ignoreAttributes, mandatoryAttributes);
+	protected <T extends EObject> T copyAncestor(T ancestor, IModelSplitDirective directive) {
+		AncestorCopier copier = new AncestorCopier(directive);
+		EObject copiedAncestor = copier.copy(ancestor);
 		copier.copyReferences();
 
 		@SuppressWarnings("unchecked")
-		T t = (T) result;
+		T t = (T) copiedAncestor;
 		return t;
 	}
 
@@ -144,9 +154,6 @@ public class ModelSplitProcessor {
 				throw new OperationCanceledException();
 			}
 		}
-
-		List<EObject> contents = getTargetResourceContents(URI
-				.createURI("platform:/resource/autosar4x.export.example/Symphony_Synthetic_FunctionsSoftware.arxml"));
 	}
 
 	protected void processSplitDirective(IModelSplitDirective directive) {
@@ -171,7 +178,6 @@ public class ModelSplitProcessor {
 
 		// Split given model object by just moving (rather than copying) original model object
 		addSplitEObject(eObject, eObject, targetResourceURI);
-		System.out.println(eObject.eResource().getURIFragment(eObject) + " => " + targetResourceURI);
 
 		// Split ancestor object branch
 		EObject lastEObject = eObject;
@@ -182,7 +188,7 @@ public class ModelSplitProcessor {
 			// Split current ancestor if not already done so
 			splitAncestor = getSplitEObject(ancestor, targetResourceURI);
 			if (splitAncestor == null) {
-				splitAncestor = copyAncestor(ancestor, directive.isIgnoreAncestorAttributes(), directive.getMandatoryAncestorAttributes());
+				splitAncestor = copyAncestor(ancestor, directive);
 				addSplitEObject(ancestor, splitAncestor, targetResourceURI);
 			}
 

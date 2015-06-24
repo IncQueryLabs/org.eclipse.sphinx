@@ -14,11 +14,9 @@
  */
 package org.eclipse.sphinx.emf.splitting;
 
-import java.util.List;
-
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 
 public interface IModelSplitDirective {
 
@@ -26,9 +24,9 @@ public interface IModelSplitDirective {
 
 	URI getTargetResourceURI();
 
-	boolean isIgnoreAncestorAttributes();
+	boolean stripAncestors();
 
-	List<EAttribute> getMandatoryAncestorAttributes();
+	boolean shouldReplicateAncestorFeature(EObject ancestor, EStructuralFeature feature);
 
 	boolean isValid();
 }

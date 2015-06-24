@@ -14,28 +14,25 @@
  */
 package org.eclipse.sphinx.emf.splitting;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 
 public class BasicModelSplitDirective implements IModelSplitDirective {
 
 	protected EObject eObject;
 	protected URI targetResourceURI;
-	protected boolean ignoreAncestorAttributes;
-	protected List<EAttribute> mandatoryAncestorAttributes = null;
+	protected boolean stripAncestors;
 
 	public BasicModelSplitDirective(EObject eObject, URI targetResourceURI) {
 		this(eObject, targetResourceURI, false);
 	}
 
-	public BasicModelSplitDirective(EObject eObject, URI targetResourceURI, boolean ignoreAncestorAttributes) {
+	public BasicModelSplitDirective(EObject eObject, URI targetResourceURI, boolean stripAncestors) {
 		this.eObject = eObject;
 		this.targetResourceURI = targetResourceURI;
-		this.ignoreAncestorAttributes = ignoreAncestorAttributes;
+		this.stripAncestors = stripAncestors;
 	}
 
 	/*
@@ -58,19 +55,24 @@ public class BasicModelSplitDirective implements IModelSplitDirective {
 	 * @see org.eclipse.sphinx.emf.splitting.IModelSplitDirective#isIgnoreAncestorAttributes()
 	 */
 	@Override
-	public boolean isIgnoreAncestorAttributes() {
-		return ignoreAncestorAttributes;
+	public boolean stripAncestors() {
+		return stripAncestors;
 	}
 
 	/*
-	 * @see org.eclipse.sphinx.emf.splitting.IModelSplitDirective#getUnignorableAncestorAttributes()
+	 * @see
+	 * org.eclipse.sphinx.emf.splitting.IModelSplitDirective#shouldReplicateAncestorFeature(org.eclipse.emf.ecore.EObject
+	 * , org.eclipse.emf.ecore.EStructuralFeature)
 	 */
 	@Override
-	public List<EAttribute> getMandatoryAncestorAttributes() {
-		if (mandatoryAncestorAttributes == null) {
-			mandatoryAncestorAttributes = new ArrayList<EAttribute>();
+	public boolean shouldReplicateAncestorFeature(EObject ancestor, EStructuralFeature feature) {
+		// Ancestor objects to be replicated including their intrinsic properties?
+		if (!stripAncestors) {
+			// Replicate all attributes
+			return feature instanceof EAttribute;
+		} else {
+			return false;
 		}
-		return mandatoryAncestorAttributes;
 	}
 
 	/*

@@ -15,8 +15,11 @@
 package org.eclipse.sphinx.examples.hummingbird20.splitting;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.sphinx.emf.splitting.BasicModelSplitDirective;
+import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
 
 public class Hummingbird20ModelSplitDirective extends BasicModelSplitDirective {
 
@@ -24,11 +27,19 @@ public class Hummingbird20ModelSplitDirective extends BasicModelSplitDirective {
 		super(eObject, targetResourceURI);
 	}
 
-	public Hummingbird20ModelSplitDirective(EObject eObject, URI targetResourceURI, boolean ignoreAncestorAttributes) {
-		super(eObject, targetResourceURI, ignoreAncestorAttributes);
+	public Hummingbird20ModelSplitDirective(EObject eObject, URI targetResourceURI, boolean stripAncestors) {
+		super(eObject, targetResourceURI, stripAncestors);
+	}
 
-		// Always replicate "name" attributes of ancestors of split model objects, i.e., even when all other
-		// ancestor attributes are requested to be ignored as per ignoreAncestorAttributes
-		// getMandatoryAncestorAttributes().add(Common20Package.eINSTANCE.getIdentifiable_Name());
+	@Override
+	public boolean shouldReplicateAncestorFeature(EObject ancestor, EStructuralFeature feature) {
+		// Ancestor objects to be replicated including their intrinsic properties?
+		if (!stripAncestors()) {
+			// Replicate all attributes and Description objects
+			return feature instanceof EAttribute || feature == Common20Package.eINSTANCE.getIdentifiable_Description();
+		} else {
+			// Always replicate name attribute at least
+			return feature == Common20Package.eINSTANCE.getIdentifiable_Name();
+		}
 	}
 }
