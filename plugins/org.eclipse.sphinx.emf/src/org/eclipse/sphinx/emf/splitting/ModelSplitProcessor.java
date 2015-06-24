@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.common.util.UniqueEList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -33,6 +32,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.FeatureMapUtil;
 
 public class ModelSplitProcessor {
 
@@ -54,9 +54,11 @@ public class ModelSplitProcessor {
 					if (eStructuralFeature.isChangeable() && !eStructuralFeature.isDerived()) {
 						if (eStructuralFeature instanceof EAttribute) {
 							EAttribute eAttribute = (EAttribute) eStructuralFeature;
-							// Copy attributes only if required but be sure to copy at least ID attribute
-							if (copyAttributes || mandatoryAttributes.contains(eAttribute)) {
-								copyAttribute(eAttribute, eObject, copyEObject);
+							if (!FeatureMapUtil.isFeatureMap(eAttribute)) {
+								// Copy attributes only if required but be sure to copy at least ID attribute
+								if (copyAttributes || mandatoryAttributes.contains(eAttribute)) {
+									copyAttribute(eAttribute, eObject, copyEObject);
+								}
 							}
 						} else {
 							EReference eReference = (EReference) eStructuralFeature;
@@ -136,6 +138,9 @@ public class ModelSplitProcessor {
 				throw new OperationCanceledException();
 			}
 		}
+
+		List<EObject> contents = getTargetResourceContents(URI
+				.createURI("platform:/resource/autosar4x.export.example/Symphony_Synthetic_FunctionsSoftware.arxml"));
 	}
 
 	protected void processSplitDirective(IModelSplitDirective directive) {
@@ -150,7 +155,7 @@ public class ModelSplitProcessor {
 		}
 
 		// Retrieve ancestor object branch
-		List<EObject> ancestors = new UniqueEList.FastCompare<EObject>();
+		List<EObject> ancestors = new ArrayList<EObject>();
 		InternalEObject internalEObject = (InternalEObject) eObject;
 		for (InternalEObject container = internalEObject.eInternalContainer(); container != null; container = internalEObject.eInternalContainer()) {
 			ancestors.add(container);
@@ -160,11 +165,12 @@ public class ModelSplitProcessor {
 
 		// Split given model object by just moving (rather than copying) original model object
 		addSplitEObject(eObject, eObject, targetResourceURI);
+		System.out.println(eObject.eResource().getURIFragment(eObject) + " => " + targetResourceURI);
 
 		// Split ancestor object branch
+		EObject lastEObject = eObject;
 		EObject lastSplitEObject = eObject;
-		for (int i = 0; i < ancestors.size(); i++) {
-			EObject ancestor = ancestors.get(i);
+		for (EObject ancestor : ancestors) {
 			EObject splitAncestor = null;
 
 			// Split current ancestor if not already done so
@@ -175,18 +181,19 @@ public class ModelSplitProcessor {
 			}
 
 			// Connect split ancestor to previously split ancestor and model objects
-			EStructuralFeature containingFeature = lastSplitEObject.eContainingFeature();
+			EStructuralFeature containingFeature = lastEObject.eContainingFeature();
 			if (containingFeature == null) {
-				throw new RuntimeException("Containing feature of '" + lastSplitEObject + "' not found"); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new RuntimeException("Containing feature of '" + lastEObject + "' not found"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			if (containingFeature.isMany()) {
 				@SuppressWarnings("unchecked")
 				List<Object> values = (List<Object>) splitAncestor.eGet(containingFeature);
 				values.add(lastSplitEObject);
 			} else {
-				eObject.eSet(containingFeature, lastSplitEObject);
+				splitAncestor.eSet(containingFeature, lastSplitEObject);
 			}
 
+			lastEObject = ancestor;
 			lastSplitEObject = splitAncestor;
 		}
 
