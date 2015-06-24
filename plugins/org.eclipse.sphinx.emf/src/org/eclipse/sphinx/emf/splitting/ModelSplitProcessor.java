@@ -54,8 +54,14 @@ public class ModelSplitProcessor {
 					if (eStructuralFeature.isChangeable() && !eStructuralFeature.isDerived()) {
 						if (eStructuralFeature instanceof EAttribute) {
 							EAttribute eAttribute = (EAttribute) eStructuralFeature;
-							if (!FeatureMapUtil.isFeatureMap(eAttribute)) {
-								// Copy attributes only if required but be sure to copy at least ID attribute
+							if (FeatureMapUtil.isFeatureMap(eAttribute)) {
+								// Copy feature maps only if containments are required to be copied (see
+								// org.eclipse.emf.ecore.util.EcoreUtil.Copier#copyFeatureMap(FeatureMap) for details)
+								if (copyContainments) {
+									copyAttribute(eAttribute, eObject, copyEObject);
+								}
+							} else {
+								// Copy attributes only if required but be sure to copy at least mandatory attributes
 								if (copyAttributes || mandatoryAttributes.contains(eAttribute)) {
 									copyAttribute(eAttribute, eObject, copyEObject);
 								}
