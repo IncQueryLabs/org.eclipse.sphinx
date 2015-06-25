@@ -313,7 +313,7 @@ public final class WorkspaceTransactionUtil {
 	 **/
 	public static void executeInWriteTransaction(TransactionalEditingDomain editingDomain, ILabeledWorkspaceRunnable runnable,
 			IProgressMonitor monitor) throws OperationCanceledException, ExecutionException {
-		executeInWriteTransaction(editingDomain, runnable, getOperationHistory(editingDomain), getDefaultTransactionOptions(), null);
+		executeInWriteTransaction(editingDomain, runnable, getOperationHistory(editingDomain), getDefaultTransactionOptions(), monitor);
 	}
 
 	/**
