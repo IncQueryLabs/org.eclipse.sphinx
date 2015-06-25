@@ -15,8 +15,10 @@
  */
 package org.eclipse.sphinx.emf.resource;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
@@ -24,24 +26,40 @@ import org.eclipse.emf.ecore.EObject;
 
 public class ModelResourceDescriptor {
 
-	Collection<EObject> modelRoots;
-	IPath path;
-	String contentTypeId;
+	private List<EObject> contents;
+	private IPath path;
+	private String contentTypeId;
 
-	public ModelResourceDescriptor(EObject modelRoot, IPath path, String contentTypeId) {
-		this(Collections.singleton(modelRoot), path, contentTypeId);
+	public ModelResourceDescriptor(EObject contents, IPath path, String contentTypeId) {
+		this(Collections.singleton(contents), path, contentTypeId);
 	}
 
-	public ModelResourceDescriptor(Collection<EObject> modelRoots, IPath path, String contentTypeId) {
-		Assert.isNotNull(modelRoots);
+	/**
+	 * @deprecated Use {@link #ModelResourceDescriptor(List, IPath, String)} instead.
+	 */
+	@Deprecated
+	public ModelResourceDescriptor(Collection<EObject> contents, IPath path, String contentTypeId) {
+		this(new ArrayList<EObject>(contents), path, contentTypeId);
+	}
+
+	public ModelResourceDescriptor(List<EObject> contents, IPath path, String contentTypeId) {
+		Assert.isNotNull(contents);
 		Assert.isNotNull(path);
-		this.modelRoots = modelRoots;
+		this.contents = contents;
 		this.path = path;
 		this.contentTypeId = contentTypeId;
 	}
 
+	/**
+	 * @deprecated Use {@link #getContents()} instead.
+	 */
+	@Deprecated
 	public Collection<EObject> getModelRoots() {
-		return modelRoots;
+		return getContents();
+	}
+
+	public List<EObject> getContents() {
+		return contents;
 	}
 
 	public IPath getPath() {

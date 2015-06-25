@@ -73,7 +73,7 @@ public class SaveAsNewFileHandler extends AbstractResultObjectHandler {
 		// Sort model resource descriptors according to editing domain which they should belong to
 		Map<TransactionalEditingDomain, Collection<ModelResourceDescriptor>> modelResourceDescriptors = new HashMap<TransactionalEditingDomain, Collection<ModelResourceDescriptor>>();
 		for (ModelResourceDescriptor modelResourceDescriptor : allModelResourceDescriptors) {
-			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(modelResourceDescriptor.getModelRoots().iterator()
+			IMetaModelDescriptor mmDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(modelResourceDescriptor.getContents().iterator()
 					.next());
 			IFile modelFile = ResourcesPlugin.getWorkspace().getRoot().getFile(modelResourceDescriptor.getPath());
 			TransactionalEditingDomain editingDomain = WorkspaceEditingDomainUtil.getEditingDomain(modelFile.getParent(), mmDescriptor);

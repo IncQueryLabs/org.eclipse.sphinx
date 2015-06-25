@@ -1531,7 +1531,7 @@ public final class EcorePlatformUtil {
 
 	/**
 	 * Add a new model {@link Resource} to the provided {@link TransactionalEditingDomain} , created by using
-	 * {@link EObject} modelRoot as based for the containing model.
+	 * {@link EObject content} as basis for the containing model.
 	 *
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain} where to add new resource.
@@ -1539,16 +1539,16 @@ public final class EcorePlatformUtil {
 	 *            The relative {@link IPath} of the new {@link Resource}.
 	 * @param contentTypeId
 	 *            The contenType ID of the contained model.
-	 * @param modelRoot
+	 * @param content
 	 *            The root element of the model to include in the new {@link Resource}.
 	 * @param async
 	 *            Boolean parameter to determine if the execution must be synchronous or asynchronous.
 	 * @param monitor
 	 *            The {@link IProgressMonitor}.
 	 */
-	public static void addNewModelResource(TransactionalEditingDomain editingDomain, IPath path, final String contentTypeId, EObject modelRoot,
+	public static void addNewModelResource(TransactionalEditingDomain editingDomain, IPath path, final String contentTypeId, EObject content,
 			boolean async, IProgressMonitor monitor) {
-		addNewModelResources(editingDomain, Collections.singletonList(new ModelResourceDescriptor(modelRoot, path, contentTypeId)), async, monitor);
+		addNewModelResources(editingDomain, Collections.singletonList(new ModelResourceDescriptor(content, path, contentTypeId)), async, monitor);
 	}
 
 	/**
@@ -1622,7 +1622,7 @@ public final class EcorePlatformUtil {
 
 						// Add new resource
 						Resource resource = EcoreResourceUtil.addNewModelResource(editingDomain.getResourceSet(), uri, descriptor.getContentTypeId(),
-								descriptor.getModelRoots());
+								descriptor.getContents());
 
 						// Mark new resource as dirty
 						SaveIndicatorUtil.setDirty(editingDomain, resource);
@@ -1651,9 +1651,9 @@ public final class EcorePlatformUtil {
 		}
 	}
 
-	public static void saveNewModelResource(TransactionalEditingDomain editingDomain, IPath path, final String contentTypeId, EObject modelRoot,
+	public static void saveNewModelResource(TransactionalEditingDomain editingDomain, IPath path, final String contentTypeId, EObject content,
 			boolean async, IProgressMonitor monitor) {
-		saveNewModelResources(editingDomain, Collections.singletonList(new ModelResourceDescriptor(modelRoot, path, contentTypeId)),
+		saveNewModelResources(editingDomain, Collections.singletonList(new ModelResourceDescriptor(content, path, contentTypeId)),
 				EcoreResourceUtil.getDefaultSaveOptions(), async, monitor);
 	}
 
@@ -1662,9 +1662,9 @@ public final class EcorePlatformUtil {
 		saveNewModelResources(editingDomain, modelResourceDescriptors, EcoreResourceUtil.getDefaultSaveOptions(), async, monitor);
 	}
 
-	public static void saveNewModelResource(TransactionalEditingDomain editingDomain, IPath path, final String contentTypeId, EObject modelRoot,
+	public static void saveNewModelResource(TransactionalEditingDomain editingDomain, IPath path, final String contentTypeId, EObject content,
 			Map<?, ?> options, boolean async, IProgressMonitor monitor) {
-		saveNewModelResources(editingDomain, Collections.singletonList(new ModelResourceDescriptor(modelRoot, path, contentTypeId)), options, async,
+		saveNewModelResources(editingDomain, Collections.singletonList(new ModelResourceDescriptor(content, path, contentTypeId)), options, async,
 				monitor);
 	}
 
@@ -1712,12 +1712,10 @@ public final class EcorePlatformUtil {
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain editing domain} onto which a write-transaction must be created
 	 *            in order to safely perform the saving; must not be <code>null</code>.
-	 * @param path
-	 *            The {@link IPath path} of the new file to save; must not be <code>null</code>.
-	 * @param contentType
-	 * @param modelRoot
+	 * @param modelResourceDescriptors
 	 * @param options
 	 * @param monitor
+	 * @throws CoreException
 	 */
 	private static void runSaveNewModelResources(final TransactionalEditingDomain editingDomain,
 			final Collection<ModelResourceDescriptor> modelResourceDescriptors, final Map<?, ?> options, IProgressMonitor monitor)
@@ -1736,11 +1734,31 @@ public final class EcorePlatformUtil {
 					@Override
 					public void run(IProgressMonitor monitor) throws CoreException {
 						SubMonitor progress = SubMonitor.convert(monitor, modelResourceDescriptors.size());
-						for (ModelResourceDescriptor descriptor : modelResourceDescriptors) {
-							progress.subTask(NLS.bind(Messages.subtask_savingResource, descriptor.getPath().toString()));
 
-							// Convert path to URI
-							URI uri = URI.createPlatformResourceURI(descriptor.getPath().toString(), true);
+						// Create and add new resources with specified path, content type, and contents to the given
+						// editing domain's resource set
+						/*
+						 * !! Important Note !! Don't use EcoreResourceUtil.saveNewModelResource() to create each
+						 * resource, add it to the resource set and save it in a single step. In case that the objects
+						 * of the different resource contents reference each other this way of saving them would end up
+						 * in DanglingHREFExceptions because the objects of the resources being saved at first would
+						 * reference other objects that are not yet contained in any resource.
+						 */
+						ResourceSet resourceSet = editingDomain.getResourceSet();
+						Set<Resource> resourcesToSave = new HashSet<Resource>();
+						for (ModelResourceDescriptor descriptor : modelResourceDescriptors) {
+							List<EObject> contents = descriptor.getContents();
+							if (!contents.isEmpty()) {
+								URI uri = URI.createPlatformResourceURI(descriptor.getPath().toString(), true);
+								String contentTypeId = descriptor.getContentTypeId();
+								Resource resource = EcoreResourceUtil.addNewModelResource(resourceSet, uri, contentTypeId, contents);
+								resourcesToSave.add(resource);
+							}
+						}
+
+						// Save new resources
+						for (Resource resource : resourcesToSave) {
+							progress.subTask(NLS.bind(Messages.subtask_savingResource, resource.getURI().toString()));
 
 							// Add progress monitor to save options
 							Map<?, ?> optionsWithProgressMonitor = addProgressMonitorToOptions(options, progress.newChild(1));
@@ -1749,14 +1767,13 @@ public final class EcorePlatformUtil {
 								// Save new resource
 								/*
 								 * !! Important Note !! Resource must be saved before marking it as freshly saved
-								 * because otherwise the resource would loose its dirty state and consequently not be
-								 * saved at all.
+								 * because otherwise the resource would loose its dirty state and consequently would not
+								 * be saved at all.
 								 */
-								EcoreResourceUtil.saveNewModelResource(editingDomain.getResourceSet(), uri, descriptor.getContentTypeId(),
-										descriptor.getModelRoots(), optionsWithProgressMonitor);
+								EcoreResourceUtil.saveModelResource(resource, optionsWithProgressMonitor);
 
 								// Mark resource as freshly saved in order to avoid that it gets automatically reloaded
-								SaveIndicatorUtil.setSaved(editingDomain, descriptor.getModelRoots().iterator().next().eResource());
+								SaveIndicatorUtil.setSaved(editingDomain, resource);
 							} catch (Exception ex) {
 								// Log exception in error log
 								/*
@@ -1765,10 +1782,10 @@ public final class EcorePlatformUtil {
 								 * problem handler later on (see
 								 * org.eclipse.sphinx.emf.util.EcoreResourceUtil#saveModelResource(Resource, Map<?,?>)
 								 * and org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler#resourceChanged(
-								 * IResourceChangeEvent) for details). However, this is a new resource which had never
-								 * saved before and does not yet exist in the file system. As a consequence, there is no
-								 * target to which the problem marker could be attached and the problem behind this
-								 * exception would remain unperceiveable if we wouldn't log anything at this point.
+								 * IResourceChangeEvent) for details). However, this is a new resource which has never
+								 * been saved before and does not yet exist in the file system. As a consequence, there
+								 * is no target to which the problem marker could be attached and the problem behind
+								 * this exception would remain unperceivable if we wouldn't log anything at this point.
 								 */
 								PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 							}
@@ -2035,10 +2052,9 @@ public final class EcorePlatformUtil {
 									// Save resource
 									/*
 									 * !! Important Note !! Resource must be saved before marking it as freshly saved
-									 * because otherwise the resource would loose its dirty state and consequently not
-									 * be saved at all.
+									 * because otherwise the resource would loose its dirty state and consequently would
+									 * not be saved at all.
 									 */
-
 									EcoreResourceUtil.saveModelResource(resource, optionsWithProgressMonitor);
 
 									// Mark resource as freshly saved in order to avoid that it gets automatically

@@ -18,10 +18,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IWorkspace;
@@ -29,23 +27,21 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.splitting.IModelSplitDirective;
+import org.eclipse.sphinx.emf.resource.ModelResourceDescriptor;
 import org.eclipse.sphinx.emf.splitting.IModelSplitOperation;
 import org.eclipse.sphinx.emf.splitting.IModelSplitPolicy;
 import org.eclipse.sphinx.emf.splitting.ModelSplitProcessor;
@@ -143,6 +139,18 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 		return editingDomain;
 	}
 
+	protected String getContentTypeId(List<EObject> resourceContents) {
+		Assert.isNotNull(resourceContents);
+
+		if (!resourceContents.isEmpty()) {
+			IMetaModelDescriptor metaModelDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resourceContents.get(0));
+			if (metaModelDescriptor != null) {
+				return metaModelDescriptor.getDefaultContentTypeId();
+			}
+		}
+		return null;
+	}
+
 	protected Map<?, ?> getSaveOptions() {
 		return EcoreResourceUtil.getDefaultSaveOptions();
 	}
@@ -156,39 +164,42 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 			ILabeledWorkspaceRunnable runnable = new AbstractLabeledWorkspaceRunnable(getLabel()) {
 				@Override
 				public void run(IProgressMonitor monitor) throws CoreException {
-					final SubMonitor progress = SubMonitor.convert(monitor, 100);
+					SubMonitor progress = SubMonitor.convert(monitor, 100);
 					if (progress.isCanceled()) {
 						throw new OperationCanceledException();
 					}
 
-					// Load model resources to be split
-					loadResources(progress.newChild(25));
+					ModelSplitProcessor processor = new ModelSplitProcessor(modelSplitPolicy);
+					try {
+						// Load model resources to be split
+						loadResources(progress.newChild(25));
 
-					if (progress.isCanceled()) {
-						throw new OperationCanceledException();
-					}
+						if (progress.isCanceled()) {
+							throw new OperationCanceledException();
+						}
 
-					// Split model resources
-					ModelSplitProcessor processor = new ModelSplitProcessor();
-					splitResources(processor, progress.newChild(25));
+						// Split model resources
+						processor.splitResources(getResources(), progress.newChild(25));
 
-					if (progress.isCanceled()) {
-						throw new OperationCanceledException();
-					}
+						if (progress.isCanceled()) {
+							throw new OperationCanceledException();
+						}
 
-					// Save resulting model resources
-					saveSplitResources(processor, progress.newChild(25));
-					processor.dispose();
+						// Save resulting model resources
+						saveSplitResources(processor, progress.newChild(25));
 
-					if (progress.isCanceled()) {
-						throw new OperationCanceledException();
-					}
+						if (progress.isCanceled()) {
+							throw new OperationCanceledException();
+						}
 
-					// Delete original model resources, if required
-					if (deleteOriginalResources) {
-						deleteOriginalResources(progress.newChild(25));
-					} else {
-						progress.worked(25);
+						// Delete original model resources, if required
+						if (deleteOriginalResources) {
+							deleteOriginalResources(progress.newChild(25));
+						} else {
+							progress.worked(25);
+						}
+					} finally {
+						processor.dispose();
 					}
 				}
 			};
@@ -221,101 +232,30 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 		}
 	}
 
-	protected void splitResources(ModelSplitProcessor processor, IProgressMonitor monitor) {
-		Assert.isNotNull(processor);
-
-		Collection<Resource> resources = getResources();
-		SubMonitor progress = SubMonitor.convert(monitor, resources.size());
-		if (progress.isCanceled()) {
-			throw new OperationCanceledException();
-		}
-
-		for (Resource resource : resources) {
-			// Traverse the resource's contents, present each model object to split policy and collect resulting split
-			// directives
-			SubMonitor splitResourcesProgress = progress.newChild(1).setWorkRemaining(2);
-			for (TreeIterator<EObject> iterator = resource.getAllContents(); iterator.hasNext();) {
-				EObject eObject = iterator.next();
-				IModelSplitDirective directive = modelSplitPolicy.getSplitDirective(eObject);
-				if (directive != null) {
-					processor.getModelSplitDirectives().add(directive);
-					iterator.prune();
-				}
-			}
-			splitResourcesProgress.worked(1);
-
-			if (splitResourcesProgress.isCanceled()) {
-				throw new OperationCanceledException();
-			}
-
-			// Process split directives
-			processor.run(splitResourcesProgress.newChild(1));
-
-			if (splitResourcesProgress.isCanceled()) {
-				throw new OperationCanceledException();
-			}
-		}
-	}
-
 	protected void saveSplitResources(final ModelSplitProcessor processor, IProgressMonitor monitor) throws CoreException {
 		Assert.isNotNull(processor);
+	
+		Collection<ModelResourceDescriptor> descriptors = getSplitResourceDescriptors(processor);
+		EcorePlatformUtil.saveNewModelResources(getEditingDomain(), descriptors, false, monitor);
+	}
 
-		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-			@Override
-			public void run(IProgressMonitor monitor) throws CoreException {
-				TransactionalEditingDomain editingDomain = getEditingDomain();
-				ResourceSet resourceSet = editingDomain != null ? editingDomain.getResourceSet() : new ResourceSetImpl();
+	protected Collection<ModelResourceDescriptor> getSplitResourceDescriptors(ModelSplitProcessor processor) {
+		Assert.isNotNull(processor);
 
-				// Create resources for split models
-				Set<Resource> resourcesToSave = new HashSet<Resource>();
-				for (URI targetResourceURI : processor.getTargetResourceContents().keySet()) {
-					List<EObject> targetResourceContents = processor.getTargetResourceContents().get(targetResourceURI);
-
-					if (targetResourceContents != null && !targetResourceContents.isEmpty()) {
-						IMetaModelDescriptor metaModelDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(targetResourceContents
-								.iterator().next());
-						String contentTypeId = metaModelDescriptor != null ? metaModelDescriptor.getDefaultContentTypeId() : null;
-						Resource resource = EcoreResourceUtil.addNewModelResource(resourceSet, targetResourceURI, contentTypeId,
-								targetResourceContents);
-						resourcesToSave.add(resource);
-					}
-				}
-
-				// Save split resources
-				SubMonitor progress = SubMonitor.convert(monitor, Messages.subTask_savingModels, resourcesToSave.size());
-				if (progress.isCanceled()) {
-					throw new OperationCanceledException();
-				}
-
-				for (Resource resource : resourcesToSave) {
-					EcoreResourceUtil.saveModelResource(resource, getSaveOptions());
-
-					progress.worked(1);
-					if (progress.isCanceled()) {
-						throw new OperationCanceledException();
-					}
-				}
+		List<ModelResourceDescriptor> descriptors = new ArrayList<ModelResourceDescriptor>(processor.getSplitModelContents().keySet().size());
+		for (URI uri : processor.getSplitModelContents().keySet()) {
+			List<EObject> contents = processor.getSplitModelContents().get(uri);
+			if (contents != null && !contents.isEmpty()) {
+				IPath path = EcorePlatformUtil.createPath(uri);
+				String contentTypeId = getContentTypeId(contents);
+				descriptors.add(new ModelResourceDescriptor(contents, path, contentTypeId));
 			}
-		};
-
-		// Execute save operation as IWorkspaceRunnable on workspace in order to avoid resource change
-		// notifications during transaction execution
-		/*
-		 * !! Important Note !! Setting the IWorkspace.AVOID_UPDATE flag on the outer workspace job or workspace
-		 * runnable from which this method is called doesn't help because the matter of executing a transaction inside
-		 * suppresses its effect.
-		 */
-		/*
-		 * !! Important Note !! Only set IWorkspace.AVOID_UPDATE flag but don't define any scheduling restrictions for
-		 * the save operation right here (this must only be done on the outer workspace job or workspace runnable from
-		 * which this method is called). Otherwise it would be likely to end up in deadlocks with operations which
-		 * already have acquired exclusive access to the workspace but are waiting for exclusive access to the model
-		 * (i.e. for the transaction).
-		 */
-		ResourcesPlugin.getWorkspace().run(runnable, null, IWorkspace.AVOID_UPDATE, monitor);
+		}
+		return descriptors;
 	}
 
 	protected void deleteOriginalResources(IProgressMonitor monitor) throws CoreException {
+		// TODO Wrap in write transaction and move to new EcorePlatformUtil method
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {

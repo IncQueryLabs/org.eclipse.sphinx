@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -1592,7 +1591,7 @@ public class EcoreResourceUtilTest extends DefaultIntegrationTestCase {
 			IPath existingFilePath = refWks.hbProject10_A.getFullPath().append(newResourceName);
 			final URI newResourceURI = URI.createPlatformResourceURI(existingFilePath.toString(), true);
 
-			final Collection<EObject> modelRootsToSave = null;
+			final List<EObject> modelRootsToSave = null;
 
 			ISchedulingRule rule = ExtendedPlatform.createSaveNewSchedulingRule(existingFilePath);
 
