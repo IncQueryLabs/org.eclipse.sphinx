@@ -14,9 +14,13 @@
  */
 package org.eclipse.sphinx.emf.splitting;
 
+import java.util.List;
+
 import org.eclipse.emf.ecore.EObject;
 
 public interface IModelSplitPolicy {
 
 	IModelSplitDirective getSplitDirective(EObject eObject);
+
+	String getContentTypeId(List<EObject> resourceContents);
 }

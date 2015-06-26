@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -27,21 +26,16 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.sphinx.emf.Activator;
-import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
-import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
-import org.eclipse.sphinx.emf.resource.ModelResourceDescriptor;
 import org.eclipse.sphinx.emf.splitting.IModelSplitOperation;
 import org.eclipse.sphinx.emf.splitting.IModelSplitPolicy;
 import org.eclipse.sphinx.emf.splitting.ModelSplitProcessor;
@@ -139,18 +133,6 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 		return editingDomain;
 	}
 
-	protected String getContentTypeId(List<EObject> resourceContents) {
-		Assert.isNotNull(resourceContents);
-
-		if (!resourceContents.isEmpty()) {
-			IMetaModelDescriptor metaModelDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(resourceContents.get(0));
-			if (metaModelDescriptor != null) {
-				return metaModelDescriptor.getDefaultContentTypeId();
-			}
-		}
-		return null;
-	}
-
 	protected Map<?, ?> getSaveOptions() {
 		return EcoreResourceUtil.getDefaultSaveOptions();
 	}
@@ -234,24 +216,7 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 
 	protected void saveSplitResources(final ModelSplitProcessor processor, IProgressMonitor monitor) throws CoreException {
 		Assert.isNotNull(processor);
-	
-		Collection<ModelResourceDescriptor> descriptors = getSplitResourceDescriptors(processor);
-		EcorePlatformUtil.saveNewModelResources(getEditingDomain(), descriptors, false, monitor);
-	}
-
-	protected Collection<ModelResourceDescriptor> getSplitResourceDescriptors(ModelSplitProcessor processor) {
-		Assert.isNotNull(processor);
-
-		List<ModelResourceDescriptor> descriptors = new ArrayList<ModelResourceDescriptor>(processor.getSplitModelContents().keySet().size());
-		for (URI uri : processor.getSplitModelContents().keySet()) {
-			List<EObject> contents = processor.getSplitModelContents().get(uri);
-			if (contents != null && !contents.isEmpty()) {
-				IPath path = EcorePlatformUtil.createPath(uri);
-				String contentTypeId = getContentTypeId(contents);
-				descriptors.add(new ModelResourceDescriptor(contents, path, contentTypeId));
-			}
-		}
-		return descriptors;
+		EcorePlatformUtil.saveNewModelResources(getEditingDomain(), processor.getSplitResourceDescriptors(), false, monitor);
 	}
 
 	protected void deleteOriginalResources(IProgressMonitor monitor) throws CoreException {

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
@@ -35,6 +36,8 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.FeatureMap;
+import org.eclipse.sphinx.emf.resource.ModelResourceDescriptor;
+import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 
 public class ModelSplitProcessor {
 
@@ -167,6 +170,19 @@ public class ModelSplitProcessor {
 
 	public Map<URI, List<EObject>> getSplitModelContents() {
 		return Collections.unmodifiableMap(targetResourceURIToContentsMap);
+	}
+
+	public Collection<ModelResourceDescriptor> getSplitResourceDescriptors() {
+		List<ModelResourceDescriptor> descriptors = new ArrayList<ModelResourceDescriptor>(targetResourceURIToContentsMap.keySet().size());
+		for (URI uri : targetResourceURIToContentsMap.keySet()) {
+			List<EObject> contents = targetResourceURIToContentsMap.get(uri);
+			if (contents != null && !contents.isEmpty()) {
+				IPath path = EcorePlatformUtil.createPath(uri);
+				String contentTypeId = modelSplitPolicy.getContentTypeId(contents);
+				descriptors.add(new ModelResourceDescriptor(contents, path, contentTypeId));
+			}
+		}
+		return Collections.unmodifiableList(descriptors);
 	}
 
 	protected List<IModelSplitDirective> collectSplitDirectives(Collection<EObject> eObjects, IProgressMonitor monitor) {
