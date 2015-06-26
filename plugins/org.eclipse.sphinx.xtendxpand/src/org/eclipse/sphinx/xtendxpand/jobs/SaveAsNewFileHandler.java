@@ -64,7 +64,7 @@ public class SaveAsNewFileHandler extends AbstractResultObjectHandler {
 						allocatedResultPaths.add(resultPath);
 
 						String resultContentTypeId = getContentTypeIdFor((EObject) resultObject);
-						allModelResourceDescriptors.add(new ModelResourceDescriptor((EObject) resultObject, resultPath, resultContentTypeId));
+						allModelResourceDescriptors.add(new ModelResourceDescriptor(resultPath, resultContentTypeId, (EObject) resultObject));
 					}
 				}
 			}

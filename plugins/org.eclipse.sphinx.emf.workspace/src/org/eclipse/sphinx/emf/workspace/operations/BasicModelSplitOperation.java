@@ -154,14 +154,14 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 					ModelSplitProcessor processor = new ModelSplitProcessor(modelSplitPolicy);
 					try {
 						// Load model resources to be split
-						loadResources(progress.newChild(25));
+						loadResourcesToSplit(processor, progress.newChild(25));
 
 						if (progress.isCanceled()) {
 							throw new OperationCanceledException();
 						}
 
 						// Split model resources
-						processor.splitResources(getResources(), progress.newChild(25));
+						processor.run(progress.newChild(25));
 
 						if (progress.isCanceled()) {
 							throw new OperationCanceledException();
@@ -200,7 +200,9 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 		}
 	}
 
-	protected void loadResources(IProgressMonitor monitor) {
+	protected void loadResourcesToSplit(ModelSplitProcessor processor, IProgressMonitor monitor) {
+		Assert.isNotNull(processor);
+
 		// Make sure that resources behind specified resource URIs are loaded
 		Collection<URI> resourceURIs = getResourceURIs();
 		ModelLoadManager.INSTANCE.loadURIs(resourceURIs, false, monitor);
@@ -212,10 +214,15 @@ public class BasicModelSplitOperation extends AbstractWorkspaceOperation impleme
 				resources.add(resource);
 			}
 		}
+
+		// Add resources to be split to model split processor
+		processor.getResourcesToSplit().addAll(resources);
 	}
 
-	protected void saveSplitResources(final ModelSplitProcessor processor, IProgressMonitor monitor) throws CoreException {
+	protected void saveSplitResources(ModelSplitProcessor processor, IProgressMonitor monitor) throws CoreException {
 		Assert.isNotNull(processor);
+
+		// Grab split resources from model split processor and save them
 		EcorePlatformUtil.saveNewModelResources(getEditingDomain(), processor.getSplitResourceDescriptors(), false, monitor);
 	}
 

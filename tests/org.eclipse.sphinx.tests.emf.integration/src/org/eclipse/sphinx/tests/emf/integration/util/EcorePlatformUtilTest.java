@@ -2201,18 +2201,18 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		options.put(XMLResource.OPTION_SCHEMA_LOCATION, Boolean.TRUE);
 		options.put(XMLResource.OPTION_SAVE_DOCTYPE, Boolean.TRUE);
 
-		ModelResourceDescriptor modelDesc1 = new ModelResourceDescriptor(createApplicationHB10(), newResourcePath10_1,
-				Hummingbird10Package.eCONTENT_TYPE);
-		ModelResourceDescriptor modelDesc2 = new ModelResourceDescriptor(createApplicationHB10(), newResourcePath10_2,
-				Hummingbird10Package.eCONTENT_TYPE);
-		ModelResourceDescriptor modelDesc3 = new ModelResourceDescriptor(createApplicationHB10(), newResourcePath10_3,
-				Hummingbird10Package.eCONTENT_TYPE);
-		ModelResourceDescriptor modelDesc4 = new ModelResourceDescriptor(createApplicationHB10(), newResourcePath10_4,
-				Hummingbird10Package.eCONTENT_TYPE);
-		ModelResourceDescriptor modelDesc5 = new ModelResourceDescriptor(createApplicationHB10(), newResourcePath10_5,
-				Hummingbird10Package.eCONTENT_TYPE);
-		ModelResourceDescriptor modelDesc6 = new ModelResourceDescriptor(createPlatform(), newResourcePath20_1,
-				Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId());
+		ModelResourceDescriptor modelDesc1 = new ModelResourceDescriptor(newResourcePath10_1, Hummingbird10Package.eCONTENT_TYPE,
+				createApplicationHB10());
+		ModelResourceDescriptor modelDesc2 = new ModelResourceDescriptor(newResourcePath10_2, Hummingbird10Package.eCONTENT_TYPE,
+				createApplicationHB10());
+		ModelResourceDescriptor modelDesc3 = new ModelResourceDescriptor(newResourcePath10_3, Hummingbird10Package.eCONTENT_TYPE,
+				createApplicationHB10());
+		ModelResourceDescriptor modelDesc4 = new ModelResourceDescriptor(newResourcePath10_4, Hummingbird10Package.eCONTENT_TYPE,
+				createApplicationHB10());
+		ModelResourceDescriptor modelDesc5 = new ModelResourceDescriptor(newResourcePath10_5, Hummingbird10Package.eCONTENT_TYPE,
+				createApplicationHB10());
+		ModelResourceDescriptor modelDesc6 = new ModelResourceDescriptor(newResourcePath20_1, Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId(),
+				createPlatform());
 
 		{
 			// Save resources with its corresponding editingDomain
@@ -2362,18 +2362,18 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		Collection<ModelResourceDescriptor> modelResourceDescriptors10 = new ArrayList<ModelResourceDescriptor>();
 		Collection<ModelResourceDescriptor> modelResourceDescriptors_mix = new ArrayList<ModelResourceDescriptor>();
 
-		ModelResourceDescriptor modelDesc1 = new ModelResourceDescriptor(createApplicationHB10(), newResourcePath10_1,
-				Hummingbird10Package.eCONTENT_TYPE);
-		ModelResourceDescriptor modelDesc2 = new ModelResourceDescriptor(createApplicationHB10(), newResourcePath10_2,
-				Hummingbird10Package.eCONTENT_TYPE);
-		ModelResourceDescriptor modelDesc3 = new ModelResourceDescriptor(createApplicationHB10(), newResourcePath10_3,
-				Hummingbird10Package.eCONTENT_TYPE);
-		ModelResourceDescriptor modelDesc4 = new ModelResourceDescriptor(createApplicationHB10(), newResourcePath10_4,
-				Hummingbird10Package.eCONTENT_TYPE);
-		ModelResourceDescriptor modelDesc5 = new ModelResourceDescriptor(createApplicationHB10(), newResourcePath10_5,
-				Hummingbird10Package.eCONTENT_TYPE);
-		ModelResourceDescriptor modelDesc6 = new ModelResourceDescriptor(createPlatform(), newResourcePath20_1,
-				Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId());
+		ModelResourceDescriptor modelDesc1 = new ModelResourceDescriptor(newResourcePath10_1, Hummingbird10Package.eCONTENT_TYPE,
+				createApplicationHB10());
+		ModelResourceDescriptor modelDesc2 = new ModelResourceDescriptor(newResourcePath10_2, Hummingbird10Package.eCONTENT_TYPE,
+				createApplicationHB10());
+		ModelResourceDescriptor modelDesc3 = new ModelResourceDescriptor(newResourcePath10_3, Hummingbird10Package.eCONTENT_TYPE,
+				createApplicationHB10());
+		ModelResourceDescriptor modelDesc4 = new ModelResourceDescriptor(newResourcePath10_4, Hummingbird10Package.eCONTENT_TYPE,
+				createApplicationHB10());
+		ModelResourceDescriptor modelDesc5 = new ModelResourceDescriptor(newResourcePath10_5, Hummingbird10Package.eCONTENT_TYPE,
+				createApplicationHB10());
+		ModelResourceDescriptor modelDesc6 = new ModelResourceDescriptor(newResourcePath20_1, Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId(),
+				createPlatform());
 
 		{
 			// Save resources with its corresponding editingDomain
@@ -4544,10 +4544,10 @@ public class EcorePlatformUtilTest extends DefaultIntegrationTestCase {
 		IPath path_1 = refWks.hbProject20_A.getFullPath().append(testFileName1);
 		IPath path_2 = refWks.hbProject20_A.getFullPath().append(testFileName2);
 
-		ModelResourceDescriptor modelResDes1 = new ModelResourceDescriptor(createPlatform(), path_1,
-				Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId());
-		ModelResourceDescriptor modelResDes2 = new ModelResourceDescriptor(createPlatform(), path_2,
-				Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId());
+		ModelResourceDescriptor modelResDes1 = new ModelResourceDescriptor(path_1, Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId(),
+				createPlatform());
+		ModelResourceDescriptor modelResDes2 = new ModelResourceDescriptor(path_2, Hummingbird20MMDescriptor.INSTANCE.getDefaultContentTypeId(),
+				createPlatform());
 
 		IFile file1 = refWks.hbProject20_A.getFile(path_1);
 		IFile file2 = refWks.hbProject20_A.getFile(path_2);

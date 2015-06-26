@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
@@ -37,7 +36,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.sphinx.emf.resource.ModelResourceDescriptor;
-import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 
 public class ModelSplitProcessor {
 
@@ -98,7 +96,9 @@ public class ModelSplitProcessor {
 		}
 	}
 
-	private IModelSplitPolicy modelSplitPolicy;
+	protected IModelSplitPolicy modelSplitPolicy;
+	private Collection<Resource> resourcesToSplit;
+	private Collection<EObject> eObjectsToSplit;
 
 	private Map<EObject, Map<URI, EObject>> originalToSplitEObjectsMap = new HashMap<EObject, Map<URI, EObject>>();
 	private Map<URI, List<EObject>> targetResourceURIToContentsMap = new HashMap<URI, List<EObject>>();
@@ -131,7 +131,34 @@ public class ModelSplitProcessor {
 		return targetResourceContents;
 	}
 
-	public void splitResources(Collection<Resource> resources, IProgressMonitor monitor) {
+	public Collection<Resource> getResourcesToSplit() {
+		if (resourcesToSplit == null) {
+			resourcesToSplit = new ArrayList<Resource>();
+		}
+		return resourcesToSplit;
+	}
+
+	public Collection<EObject> getEObjectsToSplit() {
+		if (eObjectsToSplit == null) {
+			eObjectsToSplit = new ArrayList<EObject>();
+		}
+		return eObjectsToSplit;
+	}
+
+	public void run(IProgressMonitor monitor) {
+		Collection<Resource> resourcesToSplit = getResourcesToSplit();
+		Collection<EObject> eObjectsToSplit = getEObjectsToSplit();
+
+		SubMonitor progress = SubMonitor.convert(monitor, resourcesToSplit.size() + eObjectsToSplit.size());
+		if (progress.isCanceled()) {
+			throw new OperationCanceledException();
+		}
+
+		splitResources(resourcesToSplit, progress.newChild(resourcesToSplit.size()));
+		splitEObjects(eObjectsToSplit, progress.newChild(eObjectsToSplit.size()));
+	}
+
+	protected void splitResources(Collection<Resource> resources, IProgressMonitor monitor) {
 		Assert.isNotNull(resources);
 
 		SubMonitor progress = SubMonitor.convert(monitor, resources.size());
@@ -148,7 +175,7 @@ public class ModelSplitProcessor {
 		}
 	}
 
-	public void splitEObjects(Collection<EObject> eObjects, IProgressMonitor monitor) {
+	protected void splitEObjects(Collection<EObject> eObjects, IProgressMonitor monitor) {
 		Assert.isNotNull(eObjects);
 
 		SubMonitor progress = SubMonitor.convert(monitor, 100);
@@ -177,9 +204,8 @@ public class ModelSplitProcessor {
 		for (URI uri : targetResourceURIToContentsMap.keySet()) {
 			List<EObject> contents = targetResourceURIToContentsMap.get(uri);
 			if (contents != null && !contents.isEmpty()) {
-				IPath path = EcorePlatformUtil.createPath(uri);
 				String contentTypeId = modelSplitPolicy.getContentTypeId(contents);
-				descriptors.add(new ModelResourceDescriptor(contents, path, contentTypeId));
+				descriptors.add(new ModelResourceDescriptor(uri, contentTypeId, contents));
 			}
 		}
 		return Collections.unmodifiableList(descriptors);

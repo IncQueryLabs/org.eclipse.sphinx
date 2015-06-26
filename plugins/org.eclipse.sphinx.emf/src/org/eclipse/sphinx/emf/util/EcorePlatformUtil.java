@@ -1548,7 +1548,7 @@ public final class EcorePlatformUtil {
 	 */
 	public static void addNewModelResource(TransactionalEditingDomain editingDomain, IPath path, final String contentTypeId, EObject content,
 			boolean async, IProgressMonitor monitor) {
-		addNewModelResources(editingDomain, Collections.singletonList(new ModelResourceDescriptor(content, path, contentTypeId)), async, monitor);
+		addNewModelResources(editingDomain, Collections.singletonList(new ModelResourceDescriptor(path, contentTypeId, content)), async, monitor);
 	}
 
 	/**
@@ -1617,16 +1617,15 @@ public final class EcorePlatformUtil {
 					for (ModelResourceDescriptor descriptor : modelResourceDescriptors) {
 						progress.subTask(NLS.bind(Messages.subtask_addingResource, descriptor.getPath().toString()));
 
-						// Convert path to URI
-						URI uri = URI.createPlatformResourceURI(descriptor.getPath().toString(), true);
+						List<EObject> contents = descriptor.getContents();
+						if (!contents.isEmpty()) {
+							// Add new resource
+							Resource resource = EcoreResourceUtil.addNewModelResource(editingDomain.getResourceSet(), descriptor.getURI(),
+									descriptor.getContentTypeId(), contents);
 
-						// Add new resource
-						Resource resource = EcoreResourceUtil.addNewModelResource(editingDomain.getResourceSet(), uri, descriptor.getContentTypeId(),
-								descriptor.getContents());
-
-						// Mark new resource as dirty
-						SaveIndicatorUtil.setDirty(editingDomain, resource);
-
+							// Mark new resource as dirty
+							SaveIndicatorUtil.setDirty(editingDomain, resource);
+						}
 						progress.worked(1);
 					}
 					return Status.OK_STATUS;
@@ -1653,7 +1652,7 @@ public final class EcorePlatformUtil {
 
 	public static void saveNewModelResource(TransactionalEditingDomain editingDomain, IPath path, final String contentTypeId, EObject content,
 			boolean async, IProgressMonitor monitor) {
-		saveNewModelResources(editingDomain, Collections.singletonList(new ModelResourceDescriptor(content, path, contentTypeId)),
+		saveNewModelResources(editingDomain, Collections.singletonList(new ModelResourceDescriptor(path, contentTypeId, content)),
 				EcoreResourceUtil.getDefaultSaveOptions(), async, monitor);
 	}
 
@@ -1664,7 +1663,7 @@ public final class EcorePlatformUtil {
 
 	public static void saveNewModelResource(TransactionalEditingDomain editingDomain, IPath path, final String contentTypeId, EObject content,
 			Map<?, ?> options, boolean async, IProgressMonitor monitor) {
-		saveNewModelResources(editingDomain, Collections.singletonList(new ModelResourceDescriptor(content, path, contentTypeId)), options, async,
+		saveNewModelResources(editingDomain, Collections.singletonList(new ModelResourceDescriptor(path, contentTypeId, content)), options, async,
 				monitor);
 	}
 
@@ -1744,14 +1743,12 @@ public final class EcorePlatformUtil {
 						 * in DanglingHREFExceptions because the objects of the resources being saved at first would
 						 * reference other objects that are not yet contained in any resource.
 						 */
-						ResourceSet resourceSet = editingDomain.getResourceSet();
 						Set<Resource> resourcesToSave = new HashSet<Resource>();
 						for (ModelResourceDescriptor descriptor : modelResourceDescriptors) {
 							List<EObject> contents = descriptor.getContents();
 							if (!contents.isEmpty()) {
-								URI uri = URI.createPlatformResourceURI(descriptor.getPath().toString(), true);
-								String contentTypeId = descriptor.getContentTypeId();
-								Resource resource = EcoreResourceUtil.addNewModelResource(resourceSet, uri, contentTypeId, contents);
+								Resource resource = EcoreResourceUtil.addNewModelResource(editingDomain.getResourceSet(), descriptor.getURI(),
+										descriptor.getContentTypeId(), contents);
 								resourcesToSave.add(resource);
 							}
 						}
