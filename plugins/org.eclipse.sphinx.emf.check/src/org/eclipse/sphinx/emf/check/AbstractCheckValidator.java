@@ -20,7 +20,6 @@ package org.eclipse.sphinx.emf.check;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -223,12 +222,12 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		return true;
 	}
 
-	protected void issue(Object object, EStructuralFeature feature, Object... arguments) {
+	protected void issue(Object object, EStructuralFeature feature, Object... messageArguments) {
 		if (object instanceof IWrapper<?>) {
 			Object eObject = ((IWrapper<?>) object).getTarget();
-			issue(eObject, feature, NO_INDEX, arguments);
+			issue(eObject, feature, NO_INDEX, messageArguments);
 		} else if (object instanceof EObject) {
-			issue((EObject) object, feature, NO_INDEX, arguments);
+			issue((EObject) object, feature, NO_INDEX, messageArguments);
 		} else {
 			throw new UnsupportedOperationException("Could not recognize type of " + object.toString()); //$NON-NLS-1$
 		}
@@ -239,10 +238,10 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	 *
 	 * @param object
 	 * @param feature
-	 * @param arguments
+	 * @param messageArguments
 	 */
-	protected void issue(EObject object, EStructuralFeature feature, Object... arguments) {
-		issue(object, feature, NO_INDEX, arguments);
+	protected void issue(EObject object, EStructuralFeature feature, Object... messageArguments) {
+		issue(object, feature, NO_INDEX, messageArguments);
 	}
 
 	/**
@@ -251,25 +250,25 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	 * @param object
 	 * @param feature
 	 * @param index
-	 * @param arguments
+	 * @param messageArguments
 	 */
-	protected void issue(EObject object, EStructuralFeature feature, int index, Object... arguments) {
+	protected void issue(EObject object, EStructuralFeature feature, int index, Object... messageArguments) {
 		String constraint = getState().get().constraint;
 		Catalog checkCatalog = getCheckCatalog();
 		if (checkCatalog == null) {
 			return;
 		}
-		String severityMessage = MessageFormat.format(checkCatalog.getMessage(constraint), arguments);
+		String message = MessageFormat.format(checkCatalog.getMessage(constraint), messageArguments);
 		Severity severity = checkCatalog.getSeverity(constraint);
 		switch (severity) {
 		case ERROR:
-			error(severityMessage, object, feature, index);
+			error(message, object, feature, index);
 			break;
 		case WARNING:
-			warning(severityMessage, object, feature, index);
+			warning(message, object, feature, index);
 			break;
 		case INFO:
-			info(severityMessage, object, feature, index);
+			info(message, object, feature, index);
 			break;
 		default:
 			throw new IllegalArgumentException("Unknow severity " + severity); //$NON-NLS-1$
@@ -281,16 +280,13 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void error(String message, EObject object, EStructuralFeature feature, int index) {
-		error(message, object, feature, index, createIssueData(object, feature, index));
+		getState().get().hasErrors = true;
+		getState().get().chain.add(createDiagnostic(Severity.ERROR, message, createLocationData(object, feature, index)));
 	}
 
-	protected void error(String message, EObject object, EStructuralFeature feature, int index, Object[] issueData) {
+	protected void error(String message, EObject object, EStructuralFeature feature, int index, Object[] data) {
 		getState().get().hasErrors = true;
-		if (!containsDiagnosticLocation(issueData)) {
-			getState().get().chain.add(createDiagnostic(Severity.INFO, message, addDiagnosticLocation(object, feature, index, issueData)));
-		} else {
-			getState().get().chain.add(createDiagnostic(Severity.ERROR, message, issueData));
-		}
+		getState().get().chain.add(createDiagnostic(Severity.ERROR, message, insertLocationData(data, object, feature, index)));
 	}
 
 	protected void warning(String message, EObject object, EStructuralFeature feature) {
@@ -298,15 +294,11 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void warning(String message, EObject object, EStructuralFeature feature, int index) {
-		warning(message, object, feature, index, createIssueData(object, feature, index));
+		getState().get().chain.add(createDiagnostic(Severity.WARNING, message, createLocationData(object, feature, index)));
 	}
 
-	protected void warning(String message, EObject object, EStructuralFeature feature, int index, Object[] issueData) {
-		if (!containsDiagnosticLocation(issueData)) {
-			getState().get().chain.add(createDiagnostic(Severity.INFO, message, addDiagnosticLocation(object, feature, index, issueData)));
-		} else {
-			getState().get().chain.add(createDiagnostic(Severity.WARNING, message, issueData));
-		}
+	protected void warning(String message, EObject object, EStructuralFeature feature, int index, Object[] data) {
+		getState().get().chain.add(createDiagnostic(Severity.WARNING, message, insertLocationData(data, object, feature, index)));
 	}
 
 	protected void info(String message, EObject object, EStructuralFeature feature) {
@@ -314,42 +306,27 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	}
 
 	protected void info(String message, EObject object, EStructuralFeature feature, int index) {
-		info(message, object, feature, index, createIssueData(object, feature, index));
+		getState().get().chain.add(createDiagnostic(Severity.INFO, message, createLocationData(object, feature, index)));
 	}
 
-	protected void info(String message, EObject object, EStructuralFeature feature, int index, Object[] issueData) {
-		if (!containsDiagnosticLocation(issueData)) {
-			getState().get().chain.add(createDiagnostic(Severity.INFO, message, addDiagnosticLocation(object, feature, index, issueData)));
-		} else {
-			getState().get().chain.add(createDiagnostic(Severity.INFO, message, issueData));
-		}
+	protected void info(String message, EObject object, EStructuralFeature feature, int index, Object[] data) {
+		getState().get().chain.add(createDiagnostic(Severity.INFO, message, insertLocationData(data, object, feature, index)));
 	}
 
-	protected Object[] addDiagnosticLocation(EObject object, EStructuralFeature feature, int index, Object[] issueData) {
-		Object[] result = Arrays.copyOf(issueData, issueData.length + 1);
-		result[issueData.length] = new DiagnosticLocation(object, feature, index);
-		return result;
+	protected Object[] insertLocationData(Object[] data, EObject object, EStructuralFeature feature, int index) {
+		Object[] locationData = createLocationData(object, feature, index);
+
+		Object[] newData = new Object[locationData.length + data.length];
+		System.arraycopy(locationData, 0, newData, 0, locationData.length);
+		System.arraycopy(data, 0, newData, locationData.length, data.length);
+		return newData;
 	}
 
-	protected boolean containsDiagnosticLocation(Object[] issueData) {
-		for (Object obj : issueData) {
-			if (obj instanceof DiagnosticLocation) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	protected Object[] createIssueData(EObject object, EStructuralFeature feature, int index) {
-		Object[] data = new Object[] { new DiagnosticLocation(object, feature, index),
-				new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint) };
+	protected Object[] createLocationData(EObject object, EStructuralFeature feature, int index) {
+		Object[] data = new Object[2];
+		data[0] = new DiagnosticLocation(object, feature, index);
+		data[1] = new SourceLocation(this.getClass(), getState().get().currentMethod, getState().get().constraint);
 		return data;
-	}
-
-	protected Diagnostic createDiagnostic(Severity severity, String message, Object[] issueData) {
-		int diagnosticSeverity = toDiagnosticSeverity(severity);
-		Diagnostic result = new BasicDiagnostic(diagnosticSeverity, this.getClass().getName(), 0, message, issueData);
-		return result;
 	}
 
 	protected int toDiagnosticSeverity(Severity severity) {
@@ -368,6 +345,12 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			throw new IllegalArgumentException("Unknow severity " + severity); //$NON-NLS-1$
 		}
 		return diagnosticSeverity;
+	}
+
+	protected Diagnostic createDiagnostic(Severity severity, String message, Object[] data) {
+		int diagnosticSeverity = toDiagnosticSeverity(severity);
+		Diagnostic result = new BasicDiagnostic(diagnosticSeverity, this.getClass().getName(), 0, message, data);
+		return result;
 	}
 
 	@Override
