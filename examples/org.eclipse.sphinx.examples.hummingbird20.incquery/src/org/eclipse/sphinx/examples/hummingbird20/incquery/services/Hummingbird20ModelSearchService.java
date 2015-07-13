@@ -1,4 +1,4 @@
-package org.eclipse.sphinx.examples.hummingbird20.incquery.service;
+package org.eclipse.sphinx.examples.hummingbird20.incquery.services;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +14,14 @@ import org.eclipse.sphinx.examples.hummingbird20.incquery.common.IdentifiablesBy
 import org.eclipse.sphinx.examples.hummingbird20.incquery.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
-public class Hummingbird20ModelSearchQuery extends AbstractIncQueryModelSearchService {
+public class Hummingbird20ModelSearchService extends AbstractIncQueryModelSearchService {
 
 	@Override
 	protected List<ModelSearchMatch> getMatches(IncQueryEngine engine, QuerySpecification querySpec) {
 		List<ModelSearchMatch> result = new ArrayList<ModelSearchMatch>();
 		try {
 			IdentifiablesByNameMatcher matcher = IdentifiablesByNameMatcher.on(engine);
+			// TODO Check with EMF-IncQuery guys if simple patterns and/or RegEx can be supported
 			Set<Identifiable> allValuesOfidentifiable = matcher.getAllValuesOfidentifiable(querySpec.getPattern());
 			for (Identifiable identifiable : allValuesOfidentifiable) {
 				result.add(new ModelSearchMatch(identifiable));

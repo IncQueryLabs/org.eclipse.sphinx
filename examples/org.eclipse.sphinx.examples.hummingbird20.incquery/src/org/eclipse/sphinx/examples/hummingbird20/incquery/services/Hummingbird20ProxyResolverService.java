@@ -1,4 +1,4 @@
-package org.eclipse.sphinx.examples.hummingbird20.incquery.service;
+package org.eclipse.sphinx.examples.hummingbird20.incquery.services;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;

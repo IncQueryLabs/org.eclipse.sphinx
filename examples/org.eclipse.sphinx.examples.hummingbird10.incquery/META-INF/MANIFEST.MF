@@ -8,7 +8,7 @@ Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: org.eclipse.sphinx.examples.hummingbird10.incquery,
  org.eclipse.sphinx.examples.hummingbird10.incquery.internal;x-internal:=true,
- org.eclipse.sphinx.examples.hummingbird10.incquery.service,
+ org.eclipse.sphinx.examples.hummingbird10.incquery.services,
  org.eclipse.sphinx.examples.hummingbird10.incquery.util
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.common,

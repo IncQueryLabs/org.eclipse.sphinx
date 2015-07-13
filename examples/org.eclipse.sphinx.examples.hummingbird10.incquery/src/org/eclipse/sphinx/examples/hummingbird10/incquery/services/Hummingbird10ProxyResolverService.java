@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.hummingbird10.incquery.service;
+package org.eclipse.sphinx.examples.hummingbird10.incquery.services;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;

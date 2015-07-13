@@ -12,7 +12,7 @@ Export-Package: org.eclipse.sphinx.examples.hummingbird20.incquery,
  org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel,
  org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.util,
  org.eclipse.sphinx.examples.hummingbird20.incquery.internal;x-internal:=true,
- org.eclipse.sphinx.examples.hummingbird20.incquery.service,
+ org.eclipse.sphinx.examples.hummingbird20.incquery.services,
  org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel,
  org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.util
 Require-Bundle: org.eclipse.emf.ecore,

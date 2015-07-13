@@ -13,13 +13,13 @@ Contributors:
 </copyright>
 --><plugin>
   <extension point="org.eclipse.sphinx.emf.metaModelServices">
-    <service class="org.eclipse.sphinx.examples.hummingbird20.incquery.service.Hummindbird20QueryService" id="org.eclipse.sphinx.examples.hummingbird20.incquery.service" type="org.eclipse.sphinx.emf.query.IModelQueryService">
+    <service class="org.eclipse.sphinx.examples.hummingbird20.incquery.services.Hummindbird20QueryService" id="org.eclipse.sphinx.examples.hummingbird20.incquery.service" type="org.eclipse.sphinx.emf.query.IModelQueryService">
       <applicableFor metaModelDescriptorIdPattern="org.eclipse.sphinx.examples.hummingbird20"/>
     </service>
-    <service class="org.eclipse.sphinx.examples.hummingbird20.incquery.service.Hummingbird20ProxyResolverService" id="org.eclipse.sphinx.examples.hummingbird20.incquery.proxymanagement.service" type="org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolverService">
+    <service class="org.eclipse.sphinx.examples.hummingbird20.incquery.services.Hummingbird20ProxyResolverService" id="org.eclipse.sphinx.examples.hummingbird20.incquery.proxymanagement.service" type="org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolverService">
       <applicableFor metaModelDescriptorIdPattern="org.eclipse.sphinx.examples.hummingbird20"/>
     </service>
-    <service class="org.eclipse.sphinx.examples.hummingbird20.incquery.service.Hummingbird20ModelSearchQuery" id="org.eclipse.sphinx.examples.hummingbird20.incquery.modelsearch.service" type="org.eclipse.sphinx.emf.search.ui.services.IModelSearchService">
+    <service class="org.eclipse.sphinx.examples.hummingbird20.incquery.services.Hummingbird20ModelSearchService" id="org.eclipse.sphinx.examples.hummingbird20.incquery.modelsearch.service" type="org.eclipse.sphinx.emf.search.ui.services.IModelSearchService">
       <applicableFor metaModelDescriptorIdPattern="org.eclipse.sphinx.examples.hummingbird20"/>
     </service>
   </extension>

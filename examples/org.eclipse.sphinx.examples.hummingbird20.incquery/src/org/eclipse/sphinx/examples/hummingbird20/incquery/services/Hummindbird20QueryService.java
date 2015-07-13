@@ -12,13 +12,14 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.examples.hummingbird20.incquery.service;
+package org.eclipse.sphinx.examples.hummingbird20.incquery.services;
 
 import org.eclipse.sphinx.emf.incquery.services.AbstractModelQueryService;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.common.CommonMatcherProvider;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.InstanceModelMatcherProvider;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.TypeModelMatcherProvider;
 
+//TODO Use AbstractWorkspaceModelQueryService
 public class Hummindbird20QueryService extends AbstractModelQueryService {
 
 	@Override
