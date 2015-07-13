@@ -32,6 +32,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.mwe2.runtime.workflow.IWorkflow;
 import org.eclipse.emf.mwe2.runtime.workflow.IWorkflowComponent;
 import org.eclipse.emf.mwe2.runtime.workflow.IWorkflowContext;
@@ -53,7 +54,6 @@ import org.eclipse.sphinx.emf.mwe.dynamic.components.IModelWorkflowComponent;
 import org.eclipse.sphinx.emf.mwe.dynamic.internal.Activator;
 import org.eclipse.sphinx.emf.mwe.dynamic.internal.messages.Messages;
 import org.eclipse.sphinx.emf.mwe.dynamic.util.XtendUtil;
-import org.eclipse.sphinx.emf.resource.ScopingResourceSetImpl;
 import org.eclipse.sphinx.emf.saving.SaveIndicatorUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
@@ -354,10 +354,9 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 		// FIXME Pass appropriate SubMonitor instance rather than monitor directly
 		ModelLoadManager.INSTANCE.loadURIs(modelURIs, false, progress.newChild(modelURIs.size()));
 
-		// FIXME Use a regular ResourceSetImpl rather than a ScopingResourceSetImpl
 		// FIXME ResourceSet for regular EMF model files must not go out of scope and resources must be unloaded after
 		// workflow execution; implement this ResourceSet as field and use it as replacement for emfModelResources
-		ResourceSet resouceSet = new ScopingResourceSetImpl();
+		ResourceSet resouceSet = new ResourceSetImpl();
 		for (URI modelURI : modelURIs) {
 			IFile file = EcorePlatformUtil.getFile(modelURI.trimFragment());
 			// Sphinx integrated model
