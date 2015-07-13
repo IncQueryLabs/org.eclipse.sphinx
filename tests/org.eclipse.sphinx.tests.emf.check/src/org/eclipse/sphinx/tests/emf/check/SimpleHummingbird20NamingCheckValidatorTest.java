@@ -15,7 +15,7 @@
 
 package org.eclipse.sphinx.tests.emf.check;
 
-import static org.eclipse.sphinx.examples.hummingbird20.check.simple.SimpleHummingbird20NamingCheckValidator.ISSUE_MSG_CASE1;
+import static org.eclipse.sphinx.examples.hummingbird20.check.simple.SimpleHummingbird20NamingCheckValidator.ISSUE_MSG;
 import static org.eclipse.sphinx.tests.emf.check.internal.mocks.ValidatorContribution.testableSimpleHummingbird20NamingCheckValidator;
 
 import java.util.Collection;
@@ -89,7 +89,7 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 		Assert.assertEquals(1, diagnostic.getChildren().size());
 
 		// Expected messages
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CASE1).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG).size());
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 		Assert.assertEquals(1, diagnostic.getChildren().size());
 
 		Assert.assertEquals(1, CheckTestUtil
-				.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG_CASE1).size());
+				.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG).size());
 	}
 
 	@Test
@@ -157,7 +157,7 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), errorMsg).size());
 
 		Assert.assertEquals(1, CheckTestUtil
-				.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG_CASE1).size());
+				.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG).size());
 	}
 
 	@Test

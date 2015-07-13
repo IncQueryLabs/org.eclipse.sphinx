@@ -15,11 +15,11 @@
 
 package org.eclipse.sphinx.tests.emf.check;
 
-import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CATEGORIES_CASE1;
-import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CATEGORIES_CASE2;
-import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CATEGORIES_CASE3;
-import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_CATEGORIES_CASE4;
-import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_SUPERTYPE;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_ARGUMENT_CATEGORIES_CASE1;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_ARGUMENT_CATEGORIES_CASE2;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_ARGUMENT_CATEGORIES_CASE3;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_ARGUMENT_CATEGORIES_CASE4;
+import static org.eclipse.sphinx.examples.hummingbird20.check.withcatalog.Hummingbird20NamingAndValuesCheckValidator.ISSUE_MSG_ARGUMENT_FORMAT_SUPERTYPE;
 import static org.eclipse.sphinx.tests.emf.check.internal.mocks.ValidatorContribution.testableHummingbird20NamingAndValuesCheckValidator;
 
 import java.text.MessageFormat;
@@ -94,13 +94,13 @@ public class Hummingbird20NamingAndValuesCheckValidatorTest {
 		Assert.assertEquals(4, diagnostic.getChildren().size());
 
 		// Expected messages
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE1).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE2).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE3).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE1).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE2).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE3).size());
 		Assert.assertEquals(
 				1,
 				CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
-						MessageFormat.format(ISSUE_MSG_SUPERTYPE, Application.class.getSimpleName())).size());
+						MessageFormat.format(ISSUE_MSG_ARGUMENT_FORMAT_SUPERTYPE, Application.class.getSimpleName())).size());
 	}
 
 	@Test
@@ -129,13 +129,13 @@ public class Hummingbird20NamingAndValuesCheckValidatorTest {
 		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries);
 		Assert.assertEquals(4, diagnostic.getChildren().size());
 
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE1).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE2).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE4).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE1).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE2).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE4).size());
 		Assert.assertEquals(
 				1,
 				CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
-						MessageFormat.format(ISSUE_MSG_SUPERTYPE, Application.class.getSimpleName())).size());
+						MessageFormat.format(ISSUE_MSG_ARGUMENT_FORMAT_SUPERTYPE, Application.class.getSimpleName())).size());
 	}
 
 	@Test
@@ -165,13 +165,13 @@ public class Hummingbird20NamingAndValuesCheckValidatorTest {
 		Assert.assertEquals(5, diagnostic.getChildren().size());
 
 		// Expected messages
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE1).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE2).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE3).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_CATEGORIES_CASE4).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE1).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE2).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE3).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE4).size());
 		Assert.assertEquals(
 				1,
 				CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
-						MessageFormat.format(ISSUE_MSG_SUPERTYPE, Application.class.getSimpleName())).size());
+						MessageFormat.format(ISSUE_MSG_ARGUMENT_FORMAT_SUPERTYPE, Application.class.getSimpleName())).size());
 	}
 }

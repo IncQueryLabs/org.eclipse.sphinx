@@ -13,12 +13,10 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Application;
  *
  * @see org.eclipse.sphinx.emf.check.AbstractCheckValidator
  */
-// TODO Add message arguments parameter to error()/warning()/info() methods, consider to remove issueData
-// parameter
 public class SimpleHummingbird20NamingCheckValidator extends AbstractCheckValidator {
 
 	private final static String INVALID_NAME_PREFIX = "_"; //$NON-NLS-1$
-	public static final String ISSUE_MSG_CASE1 = "(Case #1: The application name has an invalid prefix)"; //$NON-NLS-1$
+	public static final String ISSUE_MSG = "The application name has an invalid prefix"; //$NON-NLS-1$
 
 	public SimpleHummingbird20NamingCheckValidator() {
 
@@ -32,9 +30,9 @@ public class SimpleHummingbird20NamingCheckValidator extends AbstractCheckValida
 	void checkApplicationName(Application application) {
 		String name = application.getName();
 		if (name != null && name.startsWith(INVALID_NAME_PREFIX)) {
-			//error("The application name has an invalid prefix", application, Common20Package.Literals.IDENTIFIABLE__NAME); //$NON-NLS-1$
-			warning(ISSUE_MSG_CASE1, application, Common20Package.Literals.IDENTIFIABLE__NAME);
-			//info("The application name has an invalid prefix", application, Common20Package.Literals.IDENTIFIABLE__NAME); //$NON-NLS-1$
+			// error(ISSUE_MSG, application, Common20Package.Literals.IDENTIFIABLE__NAME);
+			warning(ISSUE_MSG, application, Common20Package.Literals.IDENTIFIABLE__NAME);
+			// info(ISSUE_MSG, application, Common20Package.Literals.IDENTIFIABLE__NAME);
 		}
 	}
 }

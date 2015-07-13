@@ -44,12 +44,12 @@ public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckVal
 
 	private static final Pattern ILLEGAL_CHARACTERS_PATTERN = Pattern.compile("[ \\t\\.,;]"); //$NON-NLS-1$
 
-	public static final String ISSUE_MSG_CATEGORIES_CASE1 = "(Case #1: part of Category1 and Category2 as per check catalog and blank check annotation)"; //$NON-NLS-1$
-	public static final String ISSUE_MSG_CATEGORIES_CASE2 = "(Case #2: part of Category1 and Category2 as per check catalog and check annotation)"; //$NON-NLS-1$
-	public static final String ISSUE_MSG_CATEGORIES_CASE3 = "(Case #3: only part of Category1 as per check catalog and narrowed down by check annotation)"; //$NON-NLS-1$
-	public static final String ISSUE_MSG_CATEGORIES_CASE4 = "(Case #4: only part of Category2 as per intersection of check catalog with partly disjunct check annotation)"; //$NON-NLS-1$
-	public static final String ISSUE_MSG_CATEGORIES_CASE5 = "(Case #5: not part of any category due to check catalog and check annotation being completely disjunct)"; //$NON-NLS-1$
-	public static final String ISSUE_MSG_SUPERTYPE = "(Checked applicable subtype: {0})"; //$NON-NLS-1$
+	public static final String ISSUE_MSG_ARGUMENT_CATEGORIES_CASE1 = "(Case #1: part of Category1 and Category2 as per check catalog and blank check annotation)"; //$NON-NLS-1$
+	public static final String ISSUE_MSG_ARGUMENT_CATEGORIES_CASE2 = "(Case #2: part of Category1 and Category2 as per check catalog and check annotation)"; //$NON-NLS-1$
+	public static final String ISSUE_MSG_ARGUMENT_CATEGORIES_CASE3 = "(Case #3: only part of Category1 as per check catalog and narrowed down by check annotation)"; //$NON-NLS-1$
+	public static final String ISSUE_MSG_ARGUMENT_CATEGORIES_CASE4 = "(Case #4: only part of Category2 as per intersection of check catalog with partly disjunct check annotation)"; //$NON-NLS-1$
+	public static final String ISSUE_MSG_ARGUMENT_CATEGORIES_CASE5 = "(Case #5: not part of any category due to check catalog and check annotation being completely disjunct)"; //$NON-NLS-1$
+	public static final String ISSUE_MSG_ARGUMENT_FORMAT_SUPERTYPE = "(Checked applicable subtype: {0})"; //$NON-NLS-1$
 
 	public Hummingbird20NamingAndValuesCheckValidator() {
 		super();
@@ -69,7 +69,7 @@ public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckVal
 	 */
 	@Check(constraint = "ApplicationNameNotValid")
 	void checkApplicationName(Application application) {
-		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, ISSUE_MSG_CATEGORIES_CASE1);
+		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, ISSUE_MSG_ARGUMENT_CATEGORIES_CASE1);
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckVal
 	 */
 	@Check(constraint = "ApplicationNameNotValid", categories = { "Category1", "Category2" })
 	void checkApplicationNameForCategories1And2(Application application) {
-		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, ISSUE_MSG_CATEGORIES_CASE2);
+		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, ISSUE_MSG_ARGUMENT_CATEGORIES_CASE2);
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckVal
 	 */
 	@Check(constraint = "ApplicationNameNotValid", categories = { "Category1" })
 	void checkApplicationNameForCategory1(Application application) {
-		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, ISSUE_MSG_CATEGORIES_CASE3);
+		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, ISSUE_MSG_ARGUMENT_CATEGORIES_CASE3);
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckVal
 	 */
 	@Check(constraint = "ApplicationNameNotValid", categories = { "Category2", "Category3" })
 	void checkApplicationNameForCategory2And3(Application application) {
-		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, ISSUE_MSG_CATEGORIES_CASE4);
+		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, ISSUE_MSG_ARGUMENT_CATEGORIES_CASE4);
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckVal
 	 */
 	@Check(constraint = "ApplicationNameNotValid", categories = { "Category3" })
 	void checkApplicationNameForCategory3(Application application) {
-		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, ISSUE_MSG_CATEGORIES_CASE5);
+		issue(application, Common20Package.Literals.IDENTIFIABLE__NAME, ISSUE_MSG_ARGUMENT_CATEGORIES_CASE5);
 	}
 
 	/**
@@ -155,7 +155,7 @@ public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckVal
 	 */
 	@Check(constraint = "IdentifiableNameNotValid")
 	void checkIdentifiableName(Identifiable identifiable) {
-		issue(identifiable, Common20Package.Literals.IDENTIFIABLE__NAME, MessageFormat.format(ISSUE_MSG_SUPERTYPE, identifiable.eClass().getName()));
+		issue(identifiable, Common20Package.Literals.IDENTIFIABLE__NAME, MessageFormat.format(ISSUE_MSG_ARGUMENT_FORMAT_SUPERTYPE, identifiable.eClass().getName()));
 	}
 
 	private boolean hasValidName(Identifiable identifiable) {
