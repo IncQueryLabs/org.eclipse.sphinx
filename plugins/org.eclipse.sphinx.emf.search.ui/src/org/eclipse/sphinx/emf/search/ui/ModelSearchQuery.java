@@ -99,6 +99,7 @@ public class ModelSearchQuery implements ISearchQuery {
 		if (descriptor != null) {
 			modelSearchService = new DefaultMetaModelServiceProvider().getService(descriptor, IModelSearchService.class);
 		}
+		// TODO Move this to MetaModelServiceRegistry
 		if (modelSearchService == null) {
 			modelSearchService = new DefaultMetaModelServiceProvider().getService(MetaModelDescriptorRegistry.ANY_MM, IModelSearchService.class);
 		}

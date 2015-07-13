@@ -31,13 +31,16 @@ public class BasicModelSearchService implements IModelSearchService {
 				EObject eObject = allContents.next();
 				EAttribute nameAttribute = helper.getNameAttribute(eObject);
 				if (nameAttribute != null) {
-					Object nameObj = eObject.eGet(nameAttribute);
-					if (spec.isCaseSensitive()) {
-						if (nameObj.toString().equals(spec.getPattern())) {
+					Object name = eObject.eGet(nameAttribute);
+					if (name != null) {
+						// TODO Add support for *, ?, \*, \?, \\
+						if (spec.isCaseSensitive()) {
+							if (name.toString().equals(spec.getPattern())) {
+								result.add(createModelSearchMatch(eObject));
+							}
+						} else if (name.toString().equalsIgnoreCase(spec.getPattern())) {
 							result.add(createModelSearchMatch(eObject));
 						}
-					} else if (nameObj.toString().equalsIgnoreCase(spec.getPattern())) {
-						result.add(createModelSearchMatch(eObject));
 					}
 				}
 			}
