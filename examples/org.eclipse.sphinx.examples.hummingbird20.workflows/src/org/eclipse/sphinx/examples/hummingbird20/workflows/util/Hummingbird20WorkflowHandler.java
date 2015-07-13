@@ -8,11 +8,11 @@ public class Hummingbird20WorkflowHandler implements IWorkflowHandler {
 
 	@Override
 	public void preRun(IWorkflow workflow, IWorkflowContext context) {
-		System.out.println("Pre-run workflow: " + workflow.getClass()); //$NON-NLS-1$
+		System.out.println("Pre-run handler for " + workflow.getClass().getSimpleName()); //$NON-NLS-1$
 	}
 
 	@Override
 	public void postRun(IWorkflow workflow, IWorkflowContext context) {
-		System.out.println("Post-run workflow: " + workflow.getClass()); //$NON-NLS-1$
+		System.out.println("Post-run handler for " + workflow.getClass().getSimpleName()); //$NON-NLS-1$
 	}
 }
