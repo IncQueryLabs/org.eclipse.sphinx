@@ -22,11 +22,11 @@ import org.eclipse.incquery.runtime.api.IncQueryMatcher;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.sphinx.emf.incquery.IIncQueryEngineHelper;
 import org.eclipse.sphinx.emf.incquery.IMatcherProvider;
-import org.eclipse.sphinx.emf.incquery.internal.Activator;
 import org.eclipse.sphinx.emf.incquery.services.AbstractModelQueryService;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.workspace.incquery.IWorkspaceIncQueryEngineHelper;
 import org.eclipse.sphinx.emf.workspace.incquery.WorkspaceIncQueryEngineHelper;
+import org.eclipse.sphinx.emf.workspace.incquery.internal.Activator;
 import org.eclipse.sphinx.emf.workspace.query.IWorkspaceModelQueryService;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
