@@ -28,7 +28,6 @@ class SimpleXtendWorkflowComponent extends AbstractWorkflowComponent2 {
 		println("Using some class from another project: " + ExampleWorkflowHelper)
 		val helper = new ExampleWorkflowHelper()
 		helper.doSomething
-		helper.doSomethingUsingAnonymousClass
 
 		println("Done!")
 	}

@@ -14,24 +14,10 @@
  */
 package org.eclipse.sphinx.examples.workflows.lib;
 
-import com.google.common.base.Function;
-
 @SuppressWarnings("nls")
 public class ExampleWorkflowHelper {
 
 	public void doSomething() {
 		System.out.println("Example class doing something");
-	}
-
-	public void doSomethingUsingAnonymousClass() {
-		System.out.println("Example class doing something using anonymous class");
-
-		Function<String, Integer> stringLengthFunction = new Function<String, Integer>() {
-			@Override
-			public Integer apply(String string) {
-				return string.length();
-			}
-		};
-		System.out.println("Length of 'Example String' = " + stringLengthFunction.apply("Example String"));
 	}
 }

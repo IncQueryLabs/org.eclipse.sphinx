@@ -30,7 +30,6 @@ public class SimpleJavaWorkflowComponent extends AbstractWorkflowComponent2 {
 		System.out.println("Using some class from another project: " + ExampleWorkflowHelper.class);
 		ExampleWorkflowHelper helper = new ExampleWorkflowHelper();
 		helper.doSomething();
-		helper.doSomethingUsingAnonymousClass();
 
 		System.out.println("Done!");
 	}
