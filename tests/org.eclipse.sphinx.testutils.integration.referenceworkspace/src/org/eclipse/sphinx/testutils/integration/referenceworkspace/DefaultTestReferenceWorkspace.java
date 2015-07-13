@@ -142,9 +142,6 @@ public class DefaultTestReferenceWorkspace extends AbstractReferenceWorkspace {
 	/* ----- HUMMINGBIRD 20 Workflows ----- */
 	public static final String HB_PROJECT_NAME_20_WORKFLOWS = "hbProject20.workflows";
 
-	public static final String HB_FILE_NAME_20_SAMPLE_1 = "model/sample.instancemodel";
-	public static final String HB_FILE_NAME_20_SAMPLE_2 = "model/sample2.instancemodel";
-
 	/* ----- Projects ----- */
 	public IProject hbProject10_A;
 	public IProject hbProject10_B;
@@ -241,8 +238,6 @@ public class DefaultTestReferenceWorkspace extends AbstractReferenceWorkspace {
 				Hummingbird20MMDescriptor.INSTANCE);
 		addFileDescriptors(HB_PROJECT_NAME_20_E, new String[] { UML2_FILE_NAME_20E_1, UML2_FILE_NAME_20E_2, UML2_FILE_NAME_20E_3 },
 				UML2MMDescriptor.INSTANCE);
-		addFileDescriptors(HB_PROJECT_NAME_20_WORKFLOWS, new String[] { HB_FILE_NAME_20_SAMPLE_1, HB_FILE_NAME_20_SAMPLE_2 },
-				Hummingbird20MMDescriptor.INSTANCE);
 	}
 
 	@Override
