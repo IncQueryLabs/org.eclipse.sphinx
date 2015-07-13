@@ -17,10 +17,10 @@ package org.eclipse.sphinx.examples.workflows.lib
 import java.util.List
 import org.eclipse.core.runtime.OperationCanceledException
 import org.eclipse.emf.ecore.EObject
-import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain
 import org.eclipse.emf.edit.provider.AdapterFactoryItemDelegator
 import org.eclipse.emf.mwe.core.WorkflowContext
 import org.eclipse.sphinx.emf.mwe.dynamic.IWorkflowSlots
+import org.eclipse.emf.edit.provider.ComposedAdapterFactory
 
 class ModelWorkflowExtensions {
 
@@ -34,17 +34,13 @@ class ModelWorkflowExtensions {
 	}
 
 	def static String getLabel(EObject modelObject) {
-		val editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(modelObject) as AdapterFactoryEditingDomain
-		if (editingDomain != null) {
-			val delegator = new AdapterFactoryItemDelegator(editingDomain.adapterFactory)
-			val label = delegator.getText(modelObject)
-			if (label != null && !label.empty) {
-				return label
-			} else {
-				return modelObject.eClass.name + " <Unnamed>"
-			}
+		val adapterFactory = new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
+		val delegator = new AdapterFactoryItemDelegator(adapterFactory)
+		val label = delegator.getText(modelObject)
+		if (label != null && !label.empty) {
+			return label
 		} else {
-			return modelObject.toString
+			return modelObject.eClass.name + " <Unnamed>"
 		}
 	}
 }
