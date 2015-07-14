@@ -57,8 +57,8 @@
 		<module>../../examples/org.eclipse.sphinx.examples.codegen.xpand.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.common.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.explorer</module>
-		<module>../../examples/org.eclipse.sphinx.examples.emf.compare.report.csv</module>
-		<module>../../examples/org.eclipse.sphinx.examples.emf.compare.report.html</module>
+		<module>../../examples/org.eclipse.sphinx.examples.emf.compare.reports.csv</module>
+		<module>../../examples/org.eclipse.sphinx.examples.emf.compare.reports.html</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird20.emf.compare</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.ide.ui</module>
 		<module>../../examples/org.eclipse.sphinx.examples.hummingbird.ide</module>

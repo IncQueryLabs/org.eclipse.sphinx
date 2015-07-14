@@ -20,13 +20,13 @@
    </license>
 
    <plugin
-         id="org.eclipse.sphinx.examples.emf.compare.report.csv"
+         id="org.eclipse.sphinx.examples.emf.compare.reports.csv"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
 
    <plugin
-         id="org.eclipse.sphinx.examples.emf.compare.report.html"
+         id="org.eclipse.sphinx.examples.emf.compare.reports.html"
          download-size="0"
          install-size="0"
          version="0.0.0"/>

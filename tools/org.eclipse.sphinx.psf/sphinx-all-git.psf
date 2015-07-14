@@ -7,8 +7,8 @@
 <project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.actions"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.codegen.xpand.ui"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.common.ui"/>
-<project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.emf.compare.report.csv"/>
-<project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.emf.compare.report.html"/>
+<project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.emf.compare.reports.csv"/>
+<project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.emf.compare.reports.html"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.explorer"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird.ide"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird.ide.ui"/>
@@ -159,8 +159,8 @@
 <item elementID="=org.eclipse.sphinx.examples.actions" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.codegen.xpand.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.common.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.sphinx.examples.emf.compare.report.csv" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.sphinx.examples.emf.compare.report.html" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.examples.emf.compare.reports.csv" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.examples.emf.compare.reports.html" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.explorer" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird.ide" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird.ide.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
