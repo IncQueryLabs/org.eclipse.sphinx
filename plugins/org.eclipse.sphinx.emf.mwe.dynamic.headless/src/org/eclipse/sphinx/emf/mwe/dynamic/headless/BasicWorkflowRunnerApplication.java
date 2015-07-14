@@ -11,6 +11,7 @@
  *     itemis - Initial API and implementation
  *     itemis - [454532] NPE in BasicWorkflowRunnerApplication
  *     itemis - [463978] org.eclipse.sphinx.emf.mwe.dynamic.headless.BasicWorkflowRunnerApplication.interrogate() handling of null URI
+ *     itemis - [472576] Headless workflow runner application unable to resolve model element URIs
  *
  * </copyright>
  */
@@ -176,7 +177,13 @@ public class BasicWorkflowRunnerApplication extends AbstractCLIApplication {
 	}
 
 	protected URI getModelURI(String modelOptionValue) {
-		return modelOptionValue != null ? EcorePlatformUtil.createURI(new Path(modelOptionValue).makeAbsolute()) : null;
+		if (modelOptionValue != null) {
+			URI modelURI = URI.createURI(modelOptionValue);
+			Path modelFilePath = new Path(modelURI.trimFragment().toString());
+			URI absoluteModelFileURI = EcorePlatformUtil.createURI(modelFilePath.makeAbsolute());
+			return absoluteModelFileURI.appendFragment(modelURI.fragment());
+		}
+		return null;
 	}
 
 	protected BasicWorkflowRunnerOperation createWorkflowRunnerOperation(Object workflow) {
