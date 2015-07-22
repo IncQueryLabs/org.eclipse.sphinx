@@ -216,9 +216,10 @@ public final class WorkspaceTransactionUtil {
 	 *             Thrown when the transaction could not be completed to an Exception.
 	 * @since 0.7.0
 	 * @deprecated Use
-	 *             {@link #executeInWriteTransaction(TransactionalEditingDomain, Runnable, String, IOperationHistory, Map)
-	 *             or #executeInWriteTransaction(TransactionalEditingDomain, ILabeledWorkspaceRunnable,
-	 *             IOperationHistory, Map, IProgressMonitor) instead.
+	 *             {@link #executeInWriteTransaction(TransactionalEditingDomain, Runnable, String, IOperationHistory, Map)}
+	 *             or
+	 *             {@link #executeInWriteTransaction(TransactionalEditingDomain, ILabeledWorkspaceRunnable, IOperationHistory, Map, IProgressMonitor)}
+	 *             instead.
 	 **/
 	@Deprecated
 	public static void executeInWriteTransaction(TransactionalEditingDomain editingDomain, final Runnable runnable, final String operationLabel,
