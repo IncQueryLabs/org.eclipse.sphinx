@@ -60,7 +60,9 @@ import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.util.WorkspaceTransactionUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.sphinx.jdt.loaders.ProjectClassLoader;
+import org.eclipse.sphinx.platform.operations.AbstractLabeledRunnable;
 import org.eclipse.sphinx.platform.operations.AbstractWorkspaceOperation;
+import org.eclipse.sphinx.platform.operations.ILabeledRunnable;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
 public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation implements IWorkflowRunnerOperation {
@@ -158,7 +160,7 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 				workflowHandler.preRun(workflowInstance, context);
 			}
 
-			Runnable runnable = new Runnable() {
+			ILabeledRunnable runnable = new AbstractLabeledRunnable(getLabel()) {
 				@Override
 				public void run() {
 					workflowInstance.run(context);
@@ -171,7 +173,7 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 				// Workflow intending to modify the model?
 				if (isModifyingModel(workflowInstance)) {
 					// Execute in write transaction
-					WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable, getLabel());
+					WorkspaceTransactionUtil.executeInWriteTransaction(editingDomain, runnable);
 				} else {
 					// Execute in read transaction
 					editingDomain.runExclusive(runnable);
