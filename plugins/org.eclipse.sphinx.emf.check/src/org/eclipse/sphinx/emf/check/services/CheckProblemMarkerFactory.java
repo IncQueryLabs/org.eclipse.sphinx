@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     itemis - Initial API and implementation
  *     itemis - [454883] CheckProblemMarkerFactory Exception because of std. EObject validation
  *     itemis - [456869] Duplicated Check problem markers due to URI comparison
+ *     itemis - [473262] Check Framework Robustness: Gracefully handle null feature
  *
  * </copyright>
  */
@@ -25,6 +26,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sphinx.emf.check.ICheckValidationMarker;
@@ -59,11 +61,29 @@ public class CheckProblemMarkerFactory implements ICheckValidationProblemMarkerF
 		// Location attribute
 		DiagnosticLocation affectedLocation = getAffectedLocation(diagnostic);
 		if (affectedLocation != null) {
-			String value = affectedLocation.getObject().eClass().getName() + "#" + affectedLocation.getFeature().getName(); //$NON-NLS-1$
-			if (affectedLocation.getIndex() != -1) {
-				value = value.concat("." + affectedLocation.getIndex()); //$NON-NLS-1$
+			StringBuilder affectedLocationAsString = new StringBuilder();
+
+			EObject object = affectedLocation.getObject();
+			if (object != null) {
+				affectedLocationAsString.append(object.eClass().getName());
+			} else {
+				affectedLocationAsString.append(Messages.markerLocation_unknownObject);
 			}
-			attributes.put(IMarker.LOCATION, value);
+
+			affectedLocationAsString.append("#"); //$NON-NLS-1$
+
+			EStructuralFeature feature = affectedLocation.getFeature();
+			if (feature != null) {
+				affectedLocationAsString.append(feature.getName());
+			} else {
+				affectedLocationAsString.append(Messages.markerLocation_unknownFeature);
+			}
+
+			if (affectedLocation.getIndex() != -1) {
+				affectedLocationAsString.append("."); //$NON-NLS-1$
+				affectedLocationAsString.append(affectedLocation.getIndex());
+			}
+			attributes.put(IMarker.LOCATION, affectedLocation.toString());
 		}
 
 		// Severity attribute
@@ -81,7 +101,7 @@ public class CheckProblemMarkerFactory implements ICheckValidationProblemMarkerF
 		// Message attribute
 		String message = diagnostic.getMessage();
 		if (message == null) {
-			message = Messages.noMessageAvailableForThisMarker;
+			message = Messages.markerMessage_unknownProblem;
 		}
 		attributes.put(IMarker.MESSAGE, message);
 

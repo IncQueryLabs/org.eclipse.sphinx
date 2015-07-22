@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [473262] Check Framework Robustness: Gracefully handle null feature
  *
  * </copyright>
  */
@@ -21,8 +22,11 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.emf.check.internal.messages.Messages"; //$NON-NLS-1$
 
 	public static String operation_checkValidation_label;
-	public static String noMessageAvailableForThisMarker;
 	public static String job_handlingDiagnostics_label;
+
+	public static String markerLocation_unknownObject;
+	public static String markerLocation_unknownFeature;
+	public static String markerMessage_unknownProblem;
 
 	static {
 		// initialize resource bundle
