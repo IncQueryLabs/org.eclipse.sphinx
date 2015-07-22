@@ -82,7 +82,7 @@ public final class WorkspaceTransactionUtil {
 				return IOperationHistory.GLOBAL_UNDO_CONTEXT;
 			}
 		}
-		return (IUndoContext) ResourcesPlugin.getWorkspace().getAdapter(IUndoContext.class);
+		return ResourcesPlugin.getWorkspace().getAdapter(IUndoContext.class);
 	}
 
 	/**
@@ -285,8 +285,6 @@ public final class WorkspaceTransactionUtil {
 	 *            The {@linkplain IOperationHistory operation history} to store the executed operation.
 	 * @param transactionOptions
 	 *            The options to set the transaction.
-	 * @param monitor
-	 *            The {@linkplain IProgressMonitor progress monitor} to use during operation execution.
 	 * @throws OperationCanceledException
 	 *             Thrown when the transaction is canceled by the user.
 	 * @throws ExecutionException
@@ -304,8 +302,8 @@ public final class WorkspaceTransactionUtil {
 	 *            The {@linkplain TransactionalEditingDomain editing domain} receiving the transaction.
 	 * @param runnable
 	 *            The {@linkplain ILabeledWorkspaceRunnable runnable} to be executed.
-	 * @param operationLabel
-	 *            The label of the operation to execute.
+	 * @param monitor
+	 *            The {@linkplain IProgressMonitor progress monitor} to use during operation execution.
 	 * @throws OperationCanceledException
 	 *             Thrown when the transaction is cancelled by the user.
 	 * @throws ExecutionException
@@ -323,8 +321,6 @@ public final class WorkspaceTransactionUtil {
 	 *            The {@linkplain TransactionalEditingDomain editing domain} receiving the transaction.
 	 * @param runnable
 	 *            The {@linkplain ILabeledWorkspaceRunnable runnable} to be executed.
-	 * @param operationLabel
-	 *            The label of the operation to be executed.
 	 * @param operationHistory
 	 *            The {@linkplain IOperationHistory operation history} to store the executed operation.
 	 * @param transactionOptions
