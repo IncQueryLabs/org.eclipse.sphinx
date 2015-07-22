@@ -168,6 +168,7 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 			};
 
 			// Workflow dealing with some model?
+			// FIXME Don't pass model around - just let methods directly access the field
 			TransactionalEditingDomain editingDomain = getEditingDomain(model);
 			if (editingDomain != null && hasModelWorkflowComponents(workflowInstance)) {
 				// Workflow intending to modify the model?
