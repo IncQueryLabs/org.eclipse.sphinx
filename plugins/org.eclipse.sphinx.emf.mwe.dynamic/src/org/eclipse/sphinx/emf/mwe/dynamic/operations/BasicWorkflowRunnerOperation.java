@@ -196,8 +196,6 @@ public class BasicWorkflowRunnerOperation extends AbstractWorkspaceOperation imp
 			}
 		} catch (OperationCanceledException ex) {
 			throw ex;
-		} catch (CoreException ex) {
-			throw ex;
 		} catch (Exception ex) {
 			IStatus status = StatusUtil.createErrorStatus(Activator.getPlugin(), ex);
 			throw new CoreException(status);
