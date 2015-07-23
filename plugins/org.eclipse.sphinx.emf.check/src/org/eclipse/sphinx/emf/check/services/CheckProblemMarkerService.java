@@ -65,7 +65,9 @@ public class CheckProblemMarkerService {
 		return new CheckProblemMarkerFactory();
 	}
 
-	// FIXME Use org.eclipse.sphinx.platform.resources.MarkerJob instead of local WorkspaceJob instance
+	// FIXME Use org.eclipse.sphinx.platform.resources.MarkerJob instead of local WorkspaceJob instance to avoid massive
+	// creation of WorkspaceJobs when markers for many root objects need to be created; see ResourceProblemMarkerService
+	// for details
 	public void updateProblemMarkers(EObject validationInput, final Diagnostic diagnostic) {
 		WorkspaceJob job = new WorkspaceJob(Messages.job_handlingDiagnostics_label) {
 			@Override

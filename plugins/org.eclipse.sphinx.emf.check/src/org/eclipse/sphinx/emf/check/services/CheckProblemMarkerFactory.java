@@ -83,7 +83,7 @@ public class CheckProblemMarkerFactory implements ICheckValidationProblemMarkerF
 				affectedLocationAsString.append("."); //$NON-NLS-1$
 				affectedLocationAsString.append(affectedLocation.getIndex());
 			}
-			attributes.put(IMarker.LOCATION, affectedLocation.toString());
+			attributes.put(IMarker.LOCATION, affectedLocationAsString.toString());
 		}
 
 		// Severity attribute
