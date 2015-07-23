@@ -34,11 +34,13 @@ import org.eclipse.sphinx.emf.check.operations.BasicCheckValidationOperation;
 import org.eclipse.sphinx.emf.check.util.EclipseProgressMonitorAdapter;
 import org.eclipse.sphinx.emf.mwe.dynamic.IWorkflowSlots;
 import org.eclipse.sphinx.emf.mwe.dynamic.components.AbstractWorkspaceWorkflowComponent;
+import org.eclipse.sphinx.emf.mwe.dynamic.components.IWorkspaceWorkflowComponent;
 
 /**
- * An abstract workflow component which makes use of the check validation service.
+ * An abstract {@link IWorkspaceWorkflowComponent workflow component} that can be used to perform check validation of
+ * the models provided in the {@link IWorkflowSlots#MODEL_SLOT_NAME model slot}.
  */
-public abstract class AbstractCheckWorkflowComponent extends AbstractWorkspaceWorkflowComponent {
+public abstract class AbstractCheckValidationWorkflowComponent extends AbstractWorkspaceWorkflowComponent {
 
 	private Set<String> categories;
 	private boolean intrinsicModelIntegrityConstraintsEnabled;
