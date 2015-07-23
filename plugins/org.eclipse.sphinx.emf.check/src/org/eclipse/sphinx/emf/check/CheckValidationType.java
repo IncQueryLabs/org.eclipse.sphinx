@@ -14,6 +14,6 @@
  */
 package org.eclipse.sphinx.emf.check;
 
-public enum CheckType {
+public enum CheckValidationType {
 	FAST, NORMAL, EXPENSIVE;
 }

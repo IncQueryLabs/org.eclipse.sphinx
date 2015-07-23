@@ -24,7 +24,7 @@ public class CheckValidatorState {
 	public Object currentObject = null;
 	public Method currentMethod = null;
 	public CheckValidationMode checkValidationMode = null;
-	public CheckType currentCheckType = null;
+	public CheckValidationType currentCheckType = null;
 	public boolean hasErrors = false;
 	public Map<Object, Object> context;
 	// TODO Rename to contraintId

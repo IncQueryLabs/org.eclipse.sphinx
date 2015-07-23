@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD })
 public @interface Check {
 
-	CheckType value() default CheckType.FAST;
+	CheckValidationType value() default CheckValidationType.FAST;
 
 	String constraint() default "";
 

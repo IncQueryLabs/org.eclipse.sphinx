@@ -20,55 +20,55 @@ public enum CheckValidationMode {
 
 	FAST_ONLY {
 		@Override
-		public boolean shouldCheck(CheckType type) {
-			return type == CheckType.FAST;
+		public boolean shouldCheck(CheckValidationType type) {
+			return type == CheckValidationType.FAST;
 		}
 
 		@Override
 		public String toString() {
-			return CheckType.FAST.toString();
+			return CheckValidationType.FAST.toString();
 		}
 	},
 
 	NORMAL_ONLY {
 		@Override
-		public boolean shouldCheck(CheckType type) {
-			return type == CheckType.NORMAL;
+		public boolean shouldCheck(CheckValidationType type) {
+			return type == CheckValidationType.NORMAL;
 		}
 
 		@Override
 		public String toString() {
-			return CheckType.NORMAL.toString();
+			return CheckValidationType.NORMAL.toString();
 		}
 	},
 
 	EXPENSIVE_ONLY {
 		@Override
-		public boolean shouldCheck(CheckType type) {
-			return type == CheckType.EXPENSIVE;
+		public boolean shouldCheck(CheckValidationType type) {
+			return type == CheckValidationType.EXPENSIVE;
 		}
 
 		@Override
 		public String toString() {
-			return CheckType.EXPENSIVE.toString();
+			return CheckValidationType.EXPENSIVE.toString();
 		}
 	},
 
 	NORMAL_AND_FAST {
 		@Override
-		public boolean shouldCheck(CheckType type) {
-			return type == CheckType.NORMAL || type == CheckType.FAST;
+		public boolean shouldCheck(CheckValidationType type) {
+			return type == CheckValidationType.NORMAL || type == CheckValidationType.FAST;
 		}
 
 		@Override
 		public String toString() {
-			return CheckType.NORMAL + "|" + CheckType.FAST; //$NON-NLS-1$
+			return CheckValidationType.NORMAL + "|" + CheckValidationType.FAST; //$NON-NLS-1$
 		}
 	},
 
 	ALL {
 		@Override
-		public boolean shouldCheck(CheckType type) {
+		public boolean shouldCheck(CheckValidationType type) {
 			return true;
 		}
 
@@ -95,5 +95,5 @@ public enum CheckValidationMode {
 
 	public final static String KEY = "check.mode"; //$NON-NLS-1$
 
-	public abstract boolean shouldCheck(CheckType type);
+	public abstract boolean shouldCheck(CheckValidationType type);
 }
