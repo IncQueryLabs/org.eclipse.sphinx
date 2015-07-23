@@ -12,7 +12,6 @@
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.tests.emf.check.internal.mocks;
 
 import org.eclipse.sphinx.tests.emf.check.internal.TestableHummingbird20ConnectionsCheckValidator;
