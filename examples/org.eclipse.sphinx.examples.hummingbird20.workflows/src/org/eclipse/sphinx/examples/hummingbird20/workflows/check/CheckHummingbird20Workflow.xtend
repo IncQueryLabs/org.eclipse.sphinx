@@ -16,9 +16,9 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.workflows.check
 
-import org.eclipse.sphinx.emf.check.workflows.AbstractCheckWorkflowComponent
 import org.eclipse.sphinx.emf.mwe.dynamic.WorkspaceWorkflow
 import org.eclipse.sphinx.emf.check.ICheckValidator
+import org.eclipse.sphinx.emf.check.workflows.AbstractCheckValidationWorkflowComponent
 
 class CheckHummingbird20Workflow extends WorkspaceWorkflow {
 
@@ -27,7 +27,7 @@ class CheckHummingbird20Workflow extends WorkspaceWorkflow {
 	}
 }
 
-class CheckHummingbird20WorkflowComponent extends AbstractCheckWorkflowComponent {
+class CheckHummingbird20WorkflowComponent extends AbstractCheckValidationWorkflowComponent {
 
 	new() {
 		categories += "Category1"
