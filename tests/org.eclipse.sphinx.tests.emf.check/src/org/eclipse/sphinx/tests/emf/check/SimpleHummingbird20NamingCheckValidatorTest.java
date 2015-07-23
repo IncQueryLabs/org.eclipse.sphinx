@@ -9,10 +9,11 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [473260] Progress indication of check framework
+ *     itemis - [473261] Check Validation: Cancel button unresponsive
  *
  * </copyright>
  */
-
 package org.eclipse.sphinx.tests.emf.check;
 
 import static org.eclipse.sphinx.examples.hummingbird20.check.simple.SimpleHummingbird20NamingCheckValidator.ISSUE_MSG;
@@ -29,7 +30,6 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.util.Diagnostician;
-import org.eclipse.sphinx.emf.check.ICheckValidationConstants;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.internal.CheckMethodWrapper;
@@ -80,7 +80,7 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 		Assert.assertEquals(0, checkCatalogs.size());
 
 		Set<String> categories = new HashSet<String>();
-		categories.add(ICheckValidationConstants.CATEGORY_ID_OTHER);
+		categories.add(ICheckValidator.OPTION_CATEGORIES_OTHER_ID);
 
 		Map<Object, Object> contextEntries = new HashMap<Object, Object>();
 		contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories);
@@ -122,8 +122,8 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
 		Assert.assertEquals(1, diagnostic.getChildren().size());
 
-		Assert.assertEquals(1, CheckTestUtil
-				.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG)
+				.size());
 	}
 
 	@Test
@@ -156,8 +156,8 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 		String errorMsg = "The feature 'components' of"; //$NON-NLS-1$
 		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), errorMsg).size());
 
-		Assert.assertEquals(1, CheckTestUtil
-				.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG).size());
+		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG)
+				.size());
 	}
 
 	@Test

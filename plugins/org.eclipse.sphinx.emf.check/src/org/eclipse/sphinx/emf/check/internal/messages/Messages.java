@@ -10,6 +10,8 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [473262] Check Framework Robustness: Gracefully handle null feature
+ *     itemis - [473260] Progress indication of check framework
+ *     itemis - [473261] Check Validation: Cancel button unresponsive
  *
  * </copyright>
  */
@@ -21,7 +23,10 @@ public class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.sphinx.emf.check.internal.messages.Messages"; //$NON-NLS-1$
 
-	public static String operation_checkValidation_label;
+	public static String operation_validate_label;
+
+	public static String task_validating;
+
 	public static String job_handlingDiagnostics_label;
 
 	public static String markerLocation_unknownObject;

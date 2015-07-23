@@ -12,6 +12,8 @@
  *     itemis - [457521] Check MethodWrapper should be null safe wrt instance.getFilter()
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
  *     itemis - [463895] org.eclipse.sphinx.emf.check.AbstractCheckValidator.validate(EClass, EObject, DiagnosticChain, Map<Object, Object>) throws NPE
+ *     itemis - [473260] Progress indication of check framework
+ *     itemis - [473261] Check Validation: Cancel button unresponsive
  *
  * </copyright>
  */
@@ -21,11 +23,9 @@ import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.util.BasicDiagnostic;
@@ -40,6 +40,7 @@ import org.eclipse.sphinx.emf.check.catalog.Severity;
 import org.eclipse.sphinx.emf.check.internal.Activator;
 import org.eclipse.sphinx.emf.check.internal.CheckMethodWrapper;
 import org.eclipse.sphinx.emf.check.util.CheckUtil;
+import org.eclipse.sphinx.emf.check.util.CheckValidationContextHelper;
 import org.eclipse.sphinx.emf.check.util.DiagnosticLocation;
 import org.eclipse.sphinx.emf.check.util.ExtendedEObjectValidator;
 import org.eclipse.sphinx.emf.check.util.SourceLocation;
@@ -59,7 +60,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	private final ThreadLocal<CheckValidatorState> state;
 
-	private ExtendedEObjectValidator extendedEObjectValidator;
+	private ExtendedEObjectValidator eObjectValidator;
 
 	private Map<Class<?>, List<CheckMethodWrapper>> collectedModelObjectTypeToCheckMethodsMap;
 
@@ -91,7 +92,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	public AbstractCheckValidator(CheckValidatorRegistry checkValidatorRegistry) {
 		state = new ThreadLocal<CheckValidatorState>();
-		extendedEObjectValidator = new ExtendedEObjectValidator();
+		eObjectValidator = new ExtendedEObjectValidator();
 		collectedModelObjectTypeToCheckMethodsMap = new HashMap<Class<?>, List<CheckMethodWrapper>>();
 		actualModelObjectTypeToCheckMethodsMap = new HashMap<Class<?>, List<CheckMethodWrapper>>();
 		this.checkValidatorRegistry = checkValidatorRegistry;
@@ -147,13 +148,6 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		return new CheckMethodWrapper(validator, method, checkValidatorRegistry);
 	}
 
-	protected boolean isIntrinsicModelIntegrityConstraintsEnabled(Map<Object, Object> context) {
-		Assert.isNotNull(context);
-
-		Object value = context.get(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS);
-		return value != null && Boolean.parseBoolean(value.toString());
-	}
-
 	@Override
 	public boolean validate(EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
 		return validate(eObject.eClass(), eObject, diagnostics, context);
@@ -161,7 +155,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 
 	@Override
 	public boolean validate(EClass eClass, EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
-		Set<String> selectedCategories = getCategoriesFromContext(context);
+		CheckValidationContextHelper helper = new CheckValidationContextHelper(context);
 
 		initCheckMethods();
 
@@ -173,21 +167,21 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 		state.checkValidationMode = mode;
 		state.context = context;
 
-		boolean intrinsicConstraintsValidattionResult = true;
-		if (isIntrinsicModelIntegrityConstraintsEnabled(context)) {
-			intrinsicConstraintsValidattionResult = extendedEObjectValidator.validate(eObject.eClass().getClassifierID(), eObject, diagnostics,
-					context);
+		// Validate intrinsic model integrity constraints if required
+		boolean intrinsicModelIntegrityConstraintErrors = false;
+		if (helper.areIntrinsicModelIntegrityConstraintsEnabled()) {
+			intrinsicModelIntegrityConstraintErrors = !eObjectValidator.validate(eObject.eClass().getClassifierID(), eObject, diagnostics, context);
 		}
 
 		for (CheckMethodWrapper method : getCheckMethodsForModelObjectType(getModelObjectType(eObject))) {
 			try {
-				method.invoke(state, selectedCategories);
+				method.invoke(state, helper.getConstraintCategories());
 			} catch (Exception ex) {
 				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			}
 		}
 
-		return !state.hasErrors && intrinsicConstraintsValidattionResult;
+		return !state.hasErrors && !intrinsicModelIntegrityConstraintErrors;
 	}
 
 	protected List<CheckMethodWrapper> getCheckMethodsForModelObjectType(Class<?> modelObjectType) {
@@ -203,18 +197,6 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 			actualModelObjectTypeToCheckMethodsMap.put(modelObjectType, actualCheckMethodsForModelObjectType);
 		}
 		return actualCheckMethodsForModelObjectType;
-	}
-
-	protected Set<String> getCategoriesFromContext(Map<Object, Object> context) {
-		if (context != null) {
-			Object categories = context.get(ICheckValidator.OPTION_CATEGORIES);
-			if (categories instanceof Set<?>) {
-				@SuppressWarnings("unchecked")
-				Set<String> castedCategories = (Set<String>) categories;
-				return castedCategories;
-			}
-		}
-		return Collections.emptySet();
 	}
 
 	@Override

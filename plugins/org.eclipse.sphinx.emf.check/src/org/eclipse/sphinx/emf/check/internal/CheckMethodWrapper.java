@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,8 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [463895] org.eclipse.sphinx.emf.check.AbstractCheckValidator.validate(EClass, EObject, DiagnosticChain, Map<Object, Object>) throws NPE
+ *     itemis - [473260] Progress indication of check framework
+ *     itemis - [473261] Check Validation: Cancel button unresponsive
  *
  * </copyright>
  */
@@ -27,7 +29,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.sphinx.emf.check.Check;
 import org.eclipse.sphinx.emf.check.CheckValidatorRegistry;
 import org.eclipse.sphinx.emf.check.CheckValidatorState;
-import org.eclipse.sphinx.emf.check.ICheckValidationConstants;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.catalog.Category;
@@ -78,7 +79,7 @@ public class CheckMethodWrapper {
 		Assert.isNotNull(selectedCategories);
 
 		for (String categoryId : selectedCategories) {
-			if (categoryId.equals(ICheckValidationConstants.CATEGORY_ID_OTHER)) {
+			if (categoryId.equals(ICheckValidator.OPTION_CATEGORIES_OTHER_ID)) {
 				return true;
 			}
 		}

@@ -11,6 +11,8 @@
  *     itemis - Initial API and implementation
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
  *     itemis - [458982] Improve check validation user experience
+ *     itemis - [473260] Progress indication of check framework
+ *     itemis - [473261] Check Validation: Cancel button unresponsive
  *
  * </copyright>
  */
@@ -25,7 +27,7 @@ import java.util.Map;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.sphinx.emf.check.CheckValidatorRegistry;
-import org.eclipse.sphinx.emf.check.ICheckValidationConstants;
+import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.catalog.Category;
 import org.eclipse.sphinx.emf.check.catalog.CheckCatalogFactory;
@@ -66,7 +68,7 @@ public class CategorySelectionContentProvider implements IStructuredContentProvi
 
 	protected Category getOtherCategory() {
 		if (otherCategory == null) {
-			otherCategory = createCategory(ICheckValidationConstants.CATEGORY_ID_OTHER, Messages.other_category_label, Messages.other_category_desc);
+			otherCategory = createCategory(ICheckValidator.OPTION_CATEGORIES_OTHER_ID, Messages.other_category_label, Messages.other_category_desc);
 		}
 		return otherCategory;
 	}

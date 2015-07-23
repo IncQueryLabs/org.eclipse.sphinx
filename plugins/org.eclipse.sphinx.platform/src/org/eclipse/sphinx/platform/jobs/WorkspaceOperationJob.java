@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [473260] Progress indication of check framework
+ *     itemis - [473261] Check Validation: Cancel button unresponsive
  *
  * </copyright>
  */
@@ -22,17 +24,17 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.sphinx.platform.internal.Activator;
-import org.eclipse.sphinx.platform.operations.IWorkspaceOperation;
+import org.eclipse.sphinx.platform.operations.ILabeledWorkspaceRunnable;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
 /**
- * A {@link Job} that can be used to run {@link IWorkspaceOperation}s as a background task.
+ * A {@link Job} that can be used to run {@link ILabeledWorkspaceRunnable}s as a background task.
  */
 public class WorkspaceOperationJob extends Job {
 
-	protected IWorkspaceOperation operation;
+	protected ILabeledWorkspaceRunnable operation;
 
-	public WorkspaceOperationJob(IWorkspaceOperation operation) {
+	public WorkspaceOperationJob(ILabeledWorkspaceRunnable operation) {
 		super(operation.getLabel());
 
 		Assert.isNotNull(operation);

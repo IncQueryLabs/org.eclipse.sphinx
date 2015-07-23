@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [473260] Progress indication of check framework
+ *     itemis - [473261] Check Validation: Cancel button unresponsive
  *
  * </copyright>
  */
@@ -17,6 +19,7 @@ package org.eclipse.sphinx.emf.mwe.dynamic.ui.actions;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -85,7 +88,7 @@ public class BasicWorkflowRunnerAction extends BaseSelectionListenerAction {
 		return operation;
 	}
 
-	protected WorkspaceOperationWorkspaceJob createWorkspaceOperationJob(IWorkflowRunnerOperation operation) {
+	protected WorkspaceJob createWorkspaceOperationJob(IWorkflowRunnerOperation operation) {
 		return new WorkspaceOperationWorkspaceJob(operation);
 	}
 
@@ -101,7 +104,7 @@ public class BasicWorkflowRunnerAction extends BaseSelectionListenerAction {
 
 		if (isRunInBackground()) {
 			// Run the workflow operation in a workspace job
-			WorkspaceOperationWorkspaceJob job = createWorkspaceOperationJob(operation);
+			WorkspaceJob job = createWorkspaceOperationJob(operation);
 			job.schedule();
 		} else {
 			// Run the workflow operation in a progress monitor dialog

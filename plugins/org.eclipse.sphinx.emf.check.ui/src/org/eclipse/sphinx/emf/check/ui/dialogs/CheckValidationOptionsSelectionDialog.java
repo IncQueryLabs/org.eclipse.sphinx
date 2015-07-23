@@ -10,6 +10,8 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
+ *     itemis - [473260] Progress indication of check framework
+ *     itemis - [473261] Check Validation: Cancel button unresponsive
  *
  * </copyright>
  */
@@ -46,7 +48,7 @@ public class CheckValidationOptionsSelectionDialog extends ListSelectionDialog {
 		Control control = super.createDialogArea(parent);
 
 		Button button = new Button((Composite) control, SWT.CHECK);
-		button.setText(Messages.text_enable_intrinsic_constraints);
+		button.setText(Messages.text_enableIntrinsicModelIntegrityConstraints);
 		button.setSelection(getSelectionFromSettings());
 		button.addSelectionListener(new SelectionListener() {
 

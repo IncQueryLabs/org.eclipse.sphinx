@@ -11,6 +11,8 @@
  *     itemis - Initial API and implementation
  *     itemis - [456869] Duplicated Check problem markers due to URI comparison
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
+ *     itemis - [473260] Progress indication of check framework
+ *     itemis - [473261] Check Validation: Cancel button unresponsive
  *
  * </copyright>
  */
@@ -26,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EValidator;
@@ -46,10 +49,12 @@ import org.eclipse.sphinx.emf.check.ui.dialogs.CategorySelectionLabelProvider;
 import org.eclipse.sphinx.emf.check.ui.dialogs.CheckValidationOptionsSelectionDialog;
 import org.eclipse.sphinx.emf.check.ui.internal.Activator;
 import org.eclipse.sphinx.emf.check.ui.internal.CheckValidationImageProvider;
+import org.eclipse.sphinx.emf.check.ui.internal.messages.Messages;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.IWrapper;
-import org.eclipse.sphinx.platform.jobs.WorkspaceOperationWorkspaceJob;
+import org.eclipse.sphinx.platform.jobs.WorkspaceOperationJob;
+import org.eclipse.sphinx.platform.operations.ILabeledWorkspaceRunnable;
 import org.eclipse.sphinx.platform.ui.operations.RunnableWithProgressAdapter;
 import org.eclipse.sphinx.platform.ui.util.ExtendedPlatformUI;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -100,12 +105,12 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 			if (modelObject instanceof EObject) {
 				final EPackage ePackage = ((EObject) modelObject).eClass().getEPackage();
 				EValidator validator = CheckValidatorRegistry.INSTANCE.getValidator(ePackage);
-				if (validator == null) {
-					return false;
+				if (validator != null) {
+					return true;
 				}
 			}
 		}
-		return !modelObjects.isEmpty();
+		return false;
 	}
 
 	protected List<Object> getModelObjects() {
@@ -171,11 +176,11 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 		final List<Object> modelObjects = getModelObjects();
 
 		// Create the check validation operation
-		final BasicCheckValidationOperation operation = createCheckValidationOperation(modelObjects, options);
+		final ILabeledWorkspaceRunnable operation = createCheckValidationOperation(modelObjects, options);
 
 		if (isRunInBackground()) {
 			// Run the check validation operation in a workspace job
-			WorkspaceOperationWorkspaceJob job = createWorkspaceOperationJob(operation);
+			Job job = createWorkspaceOperationJob(operation);
 			job.schedule();
 		} else {
 			// Run the check validation operation in a progress monitor dialog
@@ -190,12 +195,16 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 		}
 	}
 
-	protected WorkspaceOperationWorkspaceJob createWorkspaceOperationJob(BasicCheckValidationOperation operation) {
-		return new WorkspaceOperationWorkspaceJob(operation);
+	protected Job createWorkspaceOperationJob(ILabeledWorkspaceRunnable operation) {
+		return new WorkspaceOperationJob(operation);
 	}
 
 	protected BasicCheckValidationOperation createCheckValidationOperation(List<Object> modelObjects, Map<Object, Object> options) {
-		return new BasicCheckValidationOperation(modelObjects, options);
+		return new BasicCheckValidationOperation(getOperationName(), modelObjects, options);
+	}
+
+	public String getOperationName() {
+		return Messages.operation_validate_label;
 	}
 
 	// @return empty set (=> no check catalog), set with selected category ids, or null (=> check catalog but nothing
@@ -206,6 +215,8 @@ public class BasicCheckValidationAction extends BaseSelectionListenerAction {
 		// Creates the dialog allowing user to choose categories of constraints to validate
 		IStructuredContentProvider contentProvider = createContentProvider();
 		ILabelProvider labelProvider = createLabelProvider();
+
+		// FIXME Provide dialog strings through Java messages properties
 		CheckValidationOptionsSelectionDialog dialog = new CheckValidationOptionsSelectionDialog(ExtendedPlatformUI.getActiveShell(), new Object(),
 				contentProvider, labelProvider, IValidationUIConstants.CONSTRAINT_CATEGORIES_SELECTION_MESSAGE);
 		dialog.setTitle(IValidationUIConstants.CONSTRAINT_CATEGORIES_SELECTION_TITLE);
