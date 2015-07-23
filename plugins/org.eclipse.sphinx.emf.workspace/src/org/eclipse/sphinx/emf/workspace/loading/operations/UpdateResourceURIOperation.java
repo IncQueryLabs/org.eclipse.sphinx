@@ -115,6 +115,7 @@ public class UpdateResourceURIOperation extends AbstractWorkspaceOperation {
 						}
 
 						progress.worked(1);
+						progress.subTask(""); //$NON-NLS-1$
 						if (progress.isCanceled()) {
 							throw new OperationCanceledException();
 						}
@@ -160,6 +161,7 @@ public class UpdateResourceURIOperation extends AbstractWorkspaceOperation {
 			}
 
 			progress.worked(1);
+			progress.subTask(""); //$NON-NLS-1$
 			if (progress.isCanceled()) {
 				throw new OperationCanceledException();
 			}

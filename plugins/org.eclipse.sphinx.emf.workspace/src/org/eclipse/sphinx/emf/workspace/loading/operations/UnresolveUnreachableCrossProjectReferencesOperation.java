@@ -148,6 +148,7 @@ public class UnresolveUnreachableCrossProjectReferencesOperation extends Abstrac
 						PlatformLogUtil.logAsWarning(Activator.getPlugin(), ex);
 					}
 					progress.worked(1);
+					progress.subTask(""); //$NON-NLS-1$
 					if (progress.isCanceled()) {
 						throw new OperationCanceledException();
 					}

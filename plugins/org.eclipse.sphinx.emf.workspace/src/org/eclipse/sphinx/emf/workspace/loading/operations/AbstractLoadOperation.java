@@ -231,6 +231,7 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 			}
 
 			progress.worked(1);
+			progress.subTask(""); //$NON-NLS-1$
 			if (progress.isCanceled()) {
 				throw new OperationCanceledException();
 			}
@@ -302,6 +303,7 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 							PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 						}
 
+						loadProgress.subTask(""); //$NON-NLS-1$
 						if (loadProgress.isCanceled()) {
 							throw new OperationCanceledException();
 						}
@@ -379,6 +381,8 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 			// Clear lookup-based proxy resolver
 			lookupResolver.clear();
 		}
+
+		progress.subTask(""); //$NON-NLS-1$
 
 		// Perform a full garbage collection
 		ExtendedPlatform.performGarbageCollection();
@@ -544,6 +548,7 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 			}
 
 			progress.worked(1);
+			progress.subTask(""); //$NON-NLS-1$
 			if (progress.isCanceled()) {
 				throw new OperationCanceledException();
 			}

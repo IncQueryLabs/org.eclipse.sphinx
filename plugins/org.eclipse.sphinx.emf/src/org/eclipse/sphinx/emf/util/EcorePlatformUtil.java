@@ -1601,7 +1601,8 @@ public final class EcorePlatformUtil {
 	}
 
 	private static void runAddNewModelResources(final TransactionalEditingDomain editingDomain,
-			final Collection<ModelResourceDescriptor> modelResourceDescriptors, IProgressMonitor monitor) throws CoreException {
+			final Collection<ModelResourceDescriptor> modelResourceDescriptors, IProgressMonitor monitor) throws CoreException,
+			OperationCanceledException {
 		Assert.isNotNull(editingDomain);
 		Assert.isNotNull(modelResourceDescriptors);
 		SubMonitor progress = SubMonitor.convert(monitor, modelResourceDescriptors.size() == 1 ? Messages.task_addingNewModelResource
@@ -1627,6 +1628,10 @@ public final class EcorePlatformUtil {
 							SaveIndicatorUtil.setDirty(editingDomain, resource);
 						}
 						progress.worked(1);
+						progress.subTask(""); //$NON-NLS-1$
+						if (progress.isCanceled()) {
+							throw new OperationCanceledException();
+						}
 					}
 					return Status.OK_STATUS;
 				} catch (Exception ex) {
@@ -1715,10 +1720,11 @@ public final class EcorePlatformUtil {
 	 * @param options
 	 * @param monitor
 	 * @throws CoreException
+	 * @throws OperationCanceledException
 	 */
 	private static void runSaveNewModelResources(final TransactionalEditingDomain editingDomain,
 			final Collection<ModelResourceDescriptor> modelResourceDescriptors, final Map<?, ?> options, IProgressMonitor monitor)
-			throws CoreException {
+			throws CoreException, OperationCanceledException {
 		Assert.isNotNull(editingDomain);
 		Assert.isNotNull(modelResourceDescriptors);
 		SubMonitor progress = SubMonitor.convert(monitor, modelResourceDescriptors.size() == 1 ? Messages.task_savingNewModelResource
@@ -1785,6 +1791,11 @@ public final class EcorePlatformUtil {
 								 * this exception would remain unperceivable if we wouldn't log anything at this point.
 								 */
 								PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+							}
+
+							progress.subTask(""); //$NON-NLS-1$
+							if (progress.isCanceled()) {
+								throw new OperationCanceledException();
 							}
 						}
 					}
@@ -2011,9 +2022,11 @@ public final class EcorePlatformUtil {
 	 *            The save options.
 	 * @param monitor
 	 *            The progress monitor to use (can be <code>null</code>).
+	 * @throws CoreException
+	 * @throws OperationCanceledException
 	 */
 	private static void runSaveModelResources(final Map<TransactionalEditingDomain, Collection<Resource>> resourcesToSave, final Map<?, ?> options,
-			IProgressMonitor monitor) throws CoreException {
+			IProgressMonitor monitor) throws CoreException, OperationCanceledException {
 		Assert.isNotNull(resourcesToSave);
 		SubMonitor progress = SubMonitor.convert(monitor, resourcesToSave.size());
 
@@ -2067,6 +2080,11 @@ public final class EcorePlatformUtil {
 									 * org.eclipse.sphinx.emf.internal.resource.ResourceProblemHandler#resourceChanged(
 									 * IResourceChangeEvent) for details).
 									 */
+								}
+
+								progress.subTask(""); //$NON-NLS-1$
+								if (progress.isCanceled()) {
+									throw new OperationCanceledException();
 								}
 							}
 
@@ -2204,6 +2222,7 @@ public final class EcorePlatformUtil {
 	 *            The {@link IFile file}s containing the models.
 	 * @param editingDomain
 	 *            The {@link TransactionalEditingDomain editing domain} the {@link IFile file}s belong to.
+	 * @throws OperationCanceledException
 	 * @since 0.7.0
 	 */
 	public static void unloadFiles(final TransactionalEditingDomain editingDomain, final Collection<IFile> files, final boolean memoryOptimized,
@@ -2229,6 +2248,7 @@ public final class EcorePlatformUtil {
 							}
 
 							progress.worked(1);
+							progress.subTask(""); //$NON-NLS-1$
 							if (progress.isCanceled()) {
 								throw new OperationCanceledException();
 							}
@@ -2251,6 +2271,7 @@ public final class EcorePlatformUtil {
 	 *            The resources to unload.
 	 * @param editingDomain
 	 *            The editing domain owning {@link Resource resource}s.
+	 * @throws OperationCanceledException
 	 * @since 0.7.0
 	 */
 	public static void unloadResources(final TransactionalEditingDomain editingDomain, final Collection<Resource> resources,
@@ -2278,6 +2299,7 @@ public final class EcorePlatformUtil {
 							}
 
 							progress.worked(1);
+							progress.subTask(""); //$NON-NLS-1$
 							if (progress.isCanceled()) {
 								throw new OperationCanceledException();
 							}
@@ -2297,6 +2319,7 @@ public final class EcorePlatformUtil {
 	 *
 	 * @param editingDomain
 	 *            The editing domain owning {@link Resource resource}s.
+	 * @throws OperationCanceledException
 	 */
 	public static void unloadAllResources(final TransactionalEditingDomain editingDomain, IProgressMonitor monitor) throws OperationCanceledException {
 		if (editingDomain != null) {
@@ -2321,6 +2344,7 @@ public final class EcorePlatformUtil {
 							}
 
 							progress.worked(1);
+							progress.subTask(""); //$NON-NLS-1$
 							if (progress.isCanceled()) {
 								throw new OperationCanceledException();
 							}

@@ -65,7 +65,7 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 
 	/**
 	 * Creates a new instance of model project job
-	 * 
+	 *
 	 * @param jobName
 	 *            the name of the job, must not be null
 	 * @param newProject
@@ -77,7 +77,7 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 
 	/**
 	 * Creates a new instance of model project job with a required project nature id.
-	 * 
+	 *
 	 * @param jobName
 	 *            the name of the job, must not be null
 	 * @param natureId
@@ -92,7 +92,7 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 
 	/**
 	 * Creates a new instance of model project job with a required project nature id.
-	 * 
+	 *
 	 * @param jobNname
 	 *            the name of the job, must not be null
 	 * @param newProject
@@ -119,7 +119,7 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 
 	/**
 	 * Creates a new instance of model project job.
-	 * 
+	 *
 	 * @param jobName
 	 *            the name of the job, must not be null
 	 * @param newProject
@@ -143,7 +143,7 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 
 	/**
 	 * Creates a new instance of model project job.
-	 * 
+	 *
 	 * @param jobName
 	 *            the name of the job, must not be null
 	 * @param newProject
@@ -179,7 +179,7 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 	 * At a minimum the adaptable should be able to adapt to org.eclipse.swt.widgets.Shell.<br/>
 	 * Having a shell, such an adaptable can be obtained by <code>WorkspaceUndoUtil.getUIInfoAdapter(shell)</code><br/>
 	 * If null, a default shell will be created to ask the user for confirmation.
-	 * 
+	 *
 	 * @param uiInfo
 	 *            the uiInfo adaptable to set
 	 */
@@ -203,7 +203,7 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 
 	/**
 	 * Sets the referenced project. Can be null or an empty array.
-	 * 
+	 *
 	 * @param referencedProjects
 	 *            the referencedProjects to set
 	 */
@@ -240,7 +240,7 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 
 	/**
 	 * Creates the project on disk.
-	 * 
+	 *
 	 * @param monitor
 	 */
 	protected void createNewProject(IProgressMonitor monitor) throws CoreException {
@@ -260,11 +260,13 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 
 		newProject.create(description, progress.newChild(50));
 		newProject.open(IResource.NONE, progress.newChild(50));
+
+		progress.subTask(""); //$NON-NLS-1$
 	}
 
 	/**
 	 * Adds the required natures to the project created by this {@link CreateNewModelFileJob}.
-	 * 
+	 *
 	 * @param monitor
 	 */
 	protected void addNatures(IProgressMonitor monitor) throws CoreException {
@@ -276,6 +278,7 @@ public class CreateNewModelProjectJob<T extends IMetaModelDescriptor> extends Wo
 		if (natureId != null) {
 			progress.subTask(Messages.subTask_addingProjectNatures);
 			ExtendedPlatform.addNature(newProject, natureId, progress.newChild(100));
+			progress.subTask(""); //$NON-NLS-1$
 		}
 	}
 }
