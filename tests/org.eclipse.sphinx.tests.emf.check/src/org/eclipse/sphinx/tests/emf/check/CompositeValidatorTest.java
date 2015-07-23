@@ -37,7 +37,7 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection;
 import org.eclipse.sphinx.tests.emf.check.internal.Activator;
 import org.eclipse.sphinx.tests.emf.check.internal.TestableCheckValidatorRegistry;
 import org.eclipse.sphinx.tests.emf.check.internal.mocks.CheckValidatorRegistryMockFactory;
-import org.eclipse.sphinx.tests.emf.check.util.CheckTestUtil;
+import org.eclipse.sphinx.tests.emf.check.util.CheckValidationTestUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -64,35 +64,35 @@ public class CompositeValidatorTest {
 		Assert.assertNotNull(checkCatalogs);
 		Assert.assertEquals(2, checkCatalogs.size());
 
-		Application application = CheckTestUtil.createApplication("_myApp"); //$NON-NLS-1$
-		Component component = CheckTestUtil.createComponent("_myCompo"); //$NON-NLS-1$
+		Application application = CheckValidationTestUtil.createApplication("_myApp"); //$NON-NLS-1$
+		Component component = CheckValidationTestUtil.createComponent("_myCompo"); //$NON-NLS-1$
 		application.getComponents().add(component);
-		component.getOutgoingConnections().add(CheckTestUtil.createConnection("myOutConnection")); //$NON-NLS-1$
+		component.getOutgoingConnections().add(CheckValidationTestUtil.createConnection("myOutConnection")); //$NON-NLS-1$
 
 		Diagnostic diagnostic = diagnostician.validate(application);
 		Assert.assertEquals(8, diagnostic.getChildren().size());
 
 		// Expected messages
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE1).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE2).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE3).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE4).size());
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE5).size());
+		Assert.assertEquals(1, CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE1).size());
+		Assert.assertEquals(1, CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE2).size());
+		Assert.assertEquals(1, CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE3).size());
+		Assert.assertEquals(1, CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE4).size());
+		Assert.assertEquals(1, CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG_ARGUMENT_CATEGORIES_CASE5).size());
 
 		Assert.assertEquals(
 				1,
-				CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
+				CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
 						MessageFormat.format(ISSUE_MSG_ARGUMENT_FORMAT_SUPERTYPE, Application.class.getSimpleName())).size());
 		Assert.assertEquals(
 				1,
-				CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
+				CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
 						MessageFormat.format(ISSUE_MSG_ARGUMENT_FORMAT_SUPERTYPE, Component.class.getSimpleName())).size());
 		Assert.assertEquals(
 				1,
-				CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
+				CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(),
 						MessageFormat.format(ISSUE_MSG_ARGUMENT_FORMAT_SUPERTYPE, Connection.class.getSimpleName())).size());
 
-		Assert.assertEquals(0, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ERROR_MSG_CIRCULAR_CONTAINMENT).size());
+		Assert.assertEquals(0, CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ERROR_MSG_CIRCULAR_CONTAINMENT).size());
 
 	}
 }

@@ -25,7 +25,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.sphinx.emf.check.Check;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
 
-public class CheckUtil {
+public class CheckValidationUtil {
 
 	public static Collection<Method> getDeclaredCheckMethods(Class<? extends ICheckValidator> validatorType) {
 		Assert.isNotNull(validatorType);

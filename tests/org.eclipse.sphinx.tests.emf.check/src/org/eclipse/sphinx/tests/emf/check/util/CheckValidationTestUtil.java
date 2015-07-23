@@ -25,7 +25,7 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Fa
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Factory;
 
-public class CheckTestUtil {
+public class CheckValidationTestUtil {
 
 	public static List<Diagnostic> findDiagnositcsWithMsg(List<Diagnostic> diagnostics, String issueMsg) {
 		List<Diagnostic> result = new ArrayList<Diagnostic>();

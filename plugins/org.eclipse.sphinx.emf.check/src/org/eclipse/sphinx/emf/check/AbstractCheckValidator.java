@@ -39,7 +39,7 @@ import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.catalog.Severity;
 import org.eclipse.sphinx.emf.check.internal.Activator;
 import org.eclipse.sphinx.emf.check.internal.CheckMethodWrapper;
-import org.eclipse.sphinx.emf.check.util.CheckUtil;
+import org.eclipse.sphinx.emf.check.util.CheckValidationUtil;
 import org.eclipse.sphinx.emf.check.util.CheckValidationContextHelper;
 import org.eclipse.sphinx.emf.check.util.DiagnosticLocation;
 import org.eclipse.sphinx.emf.check.util.ExtendedEObjectValidator;
@@ -127,7 +127,7 @@ public abstract class AbstractCheckValidator implements ICheckValidator {
 	protected synchronized void initCheckMethods() {
 		if (!initialized) {
 			initialized = true;
-			Collection<Method> declaredCheckMethods = CheckUtil.getDeclaredCheckMethods(getClass());
+			Collection<Method> declaredCheckMethods = CheckValidationUtil.getDeclaredCheckMethods(getClass());
 			for (Method method : declaredCheckMethods) {
 				addCheckMethod(this, method);
 			}

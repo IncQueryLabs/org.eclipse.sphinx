@@ -29,7 +29,7 @@ import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.tests.emf.check.internal.Activator;
 import org.eclipse.sphinx.tests.emf.check.internal.TestableCheckValidatorRegistry;
 import org.eclipse.sphinx.tests.emf.check.internal.mocks.CheckValidatorRegistryMockFactory;
-import org.eclipse.sphinx.tests.emf.check.util.CheckTestUtil;
+import org.eclipse.sphinx.tests.emf.check.util.CheckValidationTestUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -60,11 +60,11 @@ public class IntrinsicModelIntegrityConstraintsTest {
 		Map<Object, Object> contextEntries = new HashMap<Object, Object>();
 		contextEntries.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, true);
 
-		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
+		Diagnostic diagnostic = diagnostician.validate(CheckValidationTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
 		Assert.assertEquals(1, diagnostic.getChildren().size());
 
 		String errorMsg = "The feature 'components' of"; //$NON-NLS-1$
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), errorMsg).size());
+		Assert.assertEquals(1, CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), errorMsg).size());
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class IntrinsicModelIntegrityConstraintsTest {
 		Map<Object, Object> contextEntries = new HashMap<Object, Object>();
 		contextEntries.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, false);
 
-		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
+		Diagnostic diagnostic = diagnostician.validate(CheckValidationTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
 		Assert.assertEquals(0, diagnostic.getChildren().size());
 	}
 }

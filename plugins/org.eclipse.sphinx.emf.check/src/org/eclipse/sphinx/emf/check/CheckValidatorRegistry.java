@@ -44,7 +44,7 @@ import org.eclipse.sphinx.emf.check.catalog.Catalog;
 import org.eclipse.sphinx.emf.check.internal.Activator;
 import org.eclipse.sphinx.emf.check.internal.CheckValidatorDescriptor;
 import org.eclipse.sphinx.emf.check.internal.EPackageMappings;
-import org.eclipse.sphinx.emf.check.util.CheckUtil;
+import org.eclipse.sphinx.emf.check.util.CheckValidationUtil;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
@@ -194,7 +194,7 @@ public class CheckValidatorRegistry {
 		Assert.isNotNull(validatorClass);
 
 		Set<Class<?>> classesUnderCheck = new HashSet<Class<?>>();
-		Collection<Method> methods = CheckUtil.getDeclaredCheckMethods(validatorClass);
+		Collection<Method> methods = CheckValidationUtil.getDeclaredCheckMethods(validatorClass);
 		for (Method method : methods) {
 			Annotation[] annotations = method.getAnnotations();
 			for (Annotation annotation : annotations) {

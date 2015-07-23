@@ -39,7 +39,7 @@ import org.eclipse.sphinx.tests.emf.check.internal.Activator;
 import org.eclipse.sphinx.tests.emf.check.internal.TestableCheckValidatorRegistry;
 import org.eclipse.sphinx.tests.emf.check.internal.TestableSimpleHummingbird20NamingCheckValidator;
 import org.eclipse.sphinx.tests.emf.check.internal.mocks.CheckValidatorRegistryMockFactory;
-import org.eclipse.sphinx.tests.emf.check.util.CheckTestUtil;
+import org.eclipse.sphinx.tests.emf.check.util.CheckValidationTestUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -85,11 +85,11 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 		Map<Object, Object> contextEntries = new HashMap<Object, Object>();
 		contextEntries.put(ICheckValidator.OPTION_CATEGORIES, categories);
 
-		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
+		Diagnostic diagnostic = diagnostician.validate(CheckValidationTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
 		Assert.assertEquals(1, diagnostic.getChildren().size());
 
 		// Expected messages
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG).size());
+		Assert.assertEquals(1, CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), ISSUE_MSG).size());
 	}
 
 	@Test
@@ -119,10 +119,10 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 
 		contextEntries.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, false);
 
-		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
+		Diagnostic diagnostic = diagnostician.validate(CheckValidationTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
 		Assert.assertEquals(1, diagnostic.getChildren().size());
 
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG)
+		Assert.assertEquals(1, CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG)
 				.size());
 	}
 
@@ -149,14 +149,14 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 		Map<Object, Object> contextEntries = new HashMap<Object, Object>();
 		contextEntries.put(ICheckValidator.OPTION_ENABLE_INTRINSIC_MODEL_INTEGRITY_CONSTRAINTS, true);
 
-		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
+		Diagnostic diagnostic = diagnostician.validate(CheckValidationTestUtil.createApplication("_myApp"), contextEntries); //$NON-NLS-1$
 		Assert.assertEquals(2, diagnostic.getChildren().size());
 
 		// Expected messages
 		String errorMsg = "The feature 'components' of"; //$NON-NLS-1$
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), errorMsg).size());
+		Assert.assertEquals(1, CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), errorMsg).size());
 
-		Assert.assertEquals(1, CheckTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG)
+		Assert.assertEquals(1, CheckValidationTestUtil.findDiagnositcsWithMsg(diagnostic.getChildren(), SimpleHummingbird20NamingCheckValidator.ISSUE_MSG)
 				.size());
 	}
 
@@ -180,7 +180,7 @@ public class SimpleHummingbird20NamingCheckValidatorTest {
 		Collection<Catalog> checkCatalogs = checkValidatorRegistry.getCheckCatalogs();
 		Assert.assertEquals(0, checkCatalogs.size());
 
-		Diagnostic diagnostic = diagnostician.validate(CheckTestUtil.createApplication("_myApp")); //$NON-NLS-1$
+		Diagnostic diagnostic = diagnostician.validate(CheckValidationTestUtil.createApplication("_myApp")); //$NON-NLS-1$
 		Assert.assertEquals(1, diagnostic.getChildren().size());
 	}
 }
