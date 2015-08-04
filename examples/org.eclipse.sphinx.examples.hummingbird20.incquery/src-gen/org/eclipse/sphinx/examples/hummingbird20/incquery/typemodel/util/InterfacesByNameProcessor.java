@@ -23,6 +23,5 @@ public abstract class InterfacesByNameProcessor implements IMatchProcessor<Inter
   @Override
   public void process(final InterfacesByNameMatch match) {
     process(match.getInterface(), match.getName());
-    
   }
 }

@@ -23,6 +23,5 @@ public abstract class ParametersByNameProcessor implements IMatchProcessor<Param
   @Override
   public void process(final ParametersByNameMatch match) {
     process(match.getParam(), match.getName());
-    
   }
 }

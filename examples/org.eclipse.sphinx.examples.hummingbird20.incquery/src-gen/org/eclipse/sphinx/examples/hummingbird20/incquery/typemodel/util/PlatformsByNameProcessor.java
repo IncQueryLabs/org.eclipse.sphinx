@@ -23,6 +23,5 @@ public abstract class PlatformsByNameProcessor implements IMatchProcessor<Platfo
   @Override
   public void process(final PlatformsByNameMatch match) {
     process(match.getPlatform(), match.getName());
-    
   }
 }

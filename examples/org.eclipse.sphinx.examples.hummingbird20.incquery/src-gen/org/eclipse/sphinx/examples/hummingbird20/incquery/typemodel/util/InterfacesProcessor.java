@@ -22,6 +22,5 @@ public abstract class InterfacesProcessor implements IMatchProcessor<InterfacesM
   @Override
   public void process(final InterfacesMatch match) {
     process(match.getInterface());
-    
   }
 }

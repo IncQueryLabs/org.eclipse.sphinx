@@ -22,6 +22,5 @@ public abstract class ComponentsProcessor implements IMatchProcessor<ComponentsM
   @Override
   public void process(final ComponentsMatch match) {
     process(match.getComponent());
-    
   }
 }

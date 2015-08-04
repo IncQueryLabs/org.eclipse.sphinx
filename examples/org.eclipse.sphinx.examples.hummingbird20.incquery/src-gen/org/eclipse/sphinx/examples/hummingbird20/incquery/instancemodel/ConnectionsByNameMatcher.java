@@ -11,7 +11,6 @@ import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.api.impl.BaseMatcher;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.incquery.runtime.matchers.tuple.Tuple;
-import org.eclipse.incquery.runtime.rete.misc.DeltaMonitor;
 import org.eclipse.incquery.runtime.util.IncQueryLoggingUtil;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.ConnectionsByNameMatch;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.util.ConnectionsByNameQuerySpecification;
@@ -40,15 +39,6 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection;
  */
 @SuppressWarnings("all")
 public class ConnectionsByNameMatcher extends BaseMatcher<ConnectionsByNameMatch> {
-  /**
-   * @return the singleton instance of the query specification of this pattern
-   * @throws IncQueryException if the pattern definition could not be loaded
-   * 
-   */
-  public static IQuerySpecification<ConnectionsByNameMatcher> querySpecification() throws IncQueryException {
-    return ConnectionsByNameQuerySpecification.instance();
-  }
-  
   /**
    * Initializes the pattern matcher within an existing EMF-IncQuery engine.
    * If the pattern matcher is already constructed in the engine, only a light-weight reference is returned.
@@ -175,24 +165,6 @@ public class ConnectionsByNameMatcher extends BaseMatcher<ConnectionsByNameMatch
   }
   
   /**
-   * Registers a new filtered delta monitor on this pattern matcher.
-   * The DeltaMonitor can be used to track changes (delta) in the set of filtered pattern matches from now on, considering those matches only that conform to the given fixed values of some parameters.
-   * It can also be reset to track changes from a later point in time,
-   * and changes can even be acknowledged on an individual basis.
-   * See {@link DeltaMonitor} for details.
-   * @param fillAtStart if true, all current matches are reported as new match events; if false, the delta monitor starts empty.
-   * @param pConnection the fixed value of pattern parameter connection, or null if not bound.
-   * @param pName the fixed value of pattern parameter name, or null if not bound.
-   * @return the delta monitor.
-   * @deprecated use the IncQuery Databinding API (IncQueryObservables) instead.
-   * 
-   */
-  @Deprecated
-  public DeltaMonitor<ConnectionsByNameMatch> newFilteredDeltaMonitor(final boolean fillAtStart, final Connection pConnection, final String pName) {
-    return rawNewFilteredDeltaMonitor(fillAtStart, new Object[]{pConnection, pName});
-  }
-  
-  /**
    * Returns a new (partial) match.
    * This can be used e.g. to call the matcher with a partial match.
    * <p>The returned match will be immutable. Use {@link #newEmptyMatch()} to obtain a mutable match object.
@@ -203,7 +175,6 @@ public class ConnectionsByNameMatcher extends BaseMatcher<ConnectionsByNameMatch
    */
   public ConnectionsByNameMatch newMatch(final Connection pConnection, final String pName) {
     return ConnectionsByNameMatch.newMatch(pConnection, pName);
-    
   }
   
   /**
@@ -241,7 +212,10 @@ public class ConnectionsByNameMatcher extends BaseMatcher<ConnectionsByNameMatch
    * 
    */
   public Set<Connection> getAllValuesOfconnection(final String pName) {
-    return rawAccumulateAllValuesOfconnection(new Object[]{null, pName});
+    return rawAccumulateAllValuesOfconnection(new Object[]{
+    null, 
+    pName
+    });
   }
   
   /**
@@ -279,39 +253,48 @@ public class ConnectionsByNameMatcher extends BaseMatcher<ConnectionsByNameMatch
    * 
    */
   public Set<String> getAllValuesOfname(final Connection pConnection) {
-    return rawAccumulateAllValuesOfname(new Object[]{pConnection, null});
+    return rawAccumulateAllValuesOfname(new Object[]{
+    pConnection, 
+    null
+    });
   }
   
   @Override
   protected ConnectionsByNameMatch tupleToMatch(final Tuple t) {
     try {
-      return ConnectionsByNameMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection) t.get(POSITION_CONNECTION), (java.lang.String) t.get(POSITION_NAME));
+    	return ConnectionsByNameMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection) t.get(POSITION_CONNECTION), (java.lang.String) t.get(POSITION_NAME));
     } catch(ClassCastException e) {
-      LOGGER.error("Element(s) in tuple not properly typed!",e);
-      return null;
+    	LOGGER.error("Element(s) in tuple not properly typed!",e);
+    	return null;
     }
-    
   }
   
   @Override
   protected ConnectionsByNameMatch arrayToMatch(final Object[] match) {
     try {
-      return ConnectionsByNameMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection) match[POSITION_CONNECTION], (java.lang.String) match[POSITION_NAME]);
+    	return ConnectionsByNameMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection) match[POSITION_CONNECTION], (java.lang.String) match[POSITION_NAME]);
     } catch(ClassCastException e) {
-      LOGGER.error("Element(s) in array not properly typed!",e);
-      return null;
+    	LOGGER.error("Element(s) in array not properly typed!",e);
+    	return null;
     }
-    
   }
   
   @Override
   protected ConnectionsByNameMatch arrayToMatchMutable(final Object[] match) {
     try {
-      return ConnectionsByNameMatch.newMutableMatch((org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection) match[POSITION_CONNECTION], (java.lang.String) match[POSITION_NAME]);
+    	return ConnectionsByNameMatch.newMutableMatch((org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection) match[POSITION_CONNECTION], (java.lang.String) match[POSITION_NAME]);
     } catch(ClassCastException e) {
-      LOGGER.error("Element(s) in array not properly typed!",e);
-      return null;
+    	LOGGER.error("Element(s) in array not properly typed!",e);
+    	return null;
     }
-    
+  }
+  
+  /**
+   * @return the singleton instance of the query specification of this pattern
+   * @throws IncQueryException if the pattern definition could not be loaded
+   * 
+   */
+  public static IQuerySpecification<ConnectionsByNameMatcher> querySpecification() throws IncQueryException {
+    return ConnectionsByNameQuerySpecification.instance();
   }
 }

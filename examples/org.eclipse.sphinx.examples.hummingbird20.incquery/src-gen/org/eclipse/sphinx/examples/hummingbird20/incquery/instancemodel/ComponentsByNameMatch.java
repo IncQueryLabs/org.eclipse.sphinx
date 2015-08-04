@@ -32,7 +32,6 @@ public abstract class ComponentsByNameMatch extends BasePatternMatch {
   private ComponentsByNameMatch(final Component pComponent, final String pName) {
     this.fComponent = pComponent;
     this.fName = pName;
-    
   }
   
   @Override
@@ -40,17 +39,14 @@ public abstract class ComponentsByNameMatch extends BasePatternMatch {
     if ("component".equals(parameterName)) return this.fComponent;
     if ("name".equals(parameterName)) return this.fName;
     return null;
-    
   }
   
   public Component getComponent() {
     return this.fComponent;
-    
   }
   
   public String getName() {
     return this.fName;
-    
   }
   
   @Override
@@ -65,52 +61,46 @@ public abstract class ComponentsByNameMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setComponent(final Component pComponent) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fComponent = pComponent;
-    
   }
   
   public void setName(final String pName) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fName = pName;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.componentsByName";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return ComponentsByNameMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fComponent, fName};
-    
   }
   
   @Override
   public ComponentsByNameMatch toImmutable() {
     return isMutable() ? newMatch(fComponent, fName) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
     result.append("\"component\"=" + prettyPrintValue(fComponent) + ", ");
-    result.append("\"name\"=" + prettyPrintValue(fName));
-    return result.toString();
     
+    result.append("\"name\"=" + prettyPrintValue(fName)
+    );
+    return result.toString();
   }
   
   @Override
@@ -120,7 +110,6 @@ public abstract class ComponentsByNameMatch extends BasePatternMatch {
     result = prime * result + ((fComponent == null) ? 0 : fComponent.hashCode());
     result = prime * result + ((fName == null) ? 0 : fName.hashCode());
     return result;
-    
   }
   
   @Override
@@ -128,10 +117,12 @@ public abstract class ComponentsByNameMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof ComponentsByNameMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -151,9 +142,8 @@ public abstract class ComponentsByNameMatch extends BasePatternMatch {
     	return ComponentsByNameQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -165,7 +155,6 @@ public abstract class ComponentsByNameMatch extends BasePatternMatch {
    */
   public static ComponentsByNameMatch newEmptyMatch() {
     return new Mutable(null, null);
-    
   }
   
   /**
@@ -179,7 +168,6 @@ public abstract class ComponentsByNameMatch extends BasePatternMatch {
    */
   public static ComponentsByNameMatch newMutableMatch(final Component pComponent, final String pName) {
     return new Mutable(pComponent, pName);
-    
   }
   
   /**
@@ -193,13 +181,11 @@ public abstract class ComponentsByNameMatch extends BasePatternMatch {
    */
   public static ComponentsByNameMatch newMatch(final Component pComponent, final String pName) {
     return new Immutable(pComponent, pName);
-    
   }
   
   private static final class Mutable extends ComponentsByNameMatch {
     Mutable(final Component pComponent, final String pName) {
       super(pComponent, pName);
-      
     }
     
     @Override
@@ -211,7 +197,6 @@ public abstract class ComponentsByNameMatch extends BasePatternMatch {
   private static final class Immutable extends ComponentsByNameMatch {
     Immutable(final Component pComponent, final String pName) {
       super(pComponent, pName);
-      
     }
     
     @Override

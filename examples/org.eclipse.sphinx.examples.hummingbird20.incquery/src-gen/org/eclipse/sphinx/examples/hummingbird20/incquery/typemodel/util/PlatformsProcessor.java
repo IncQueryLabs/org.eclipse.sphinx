@@ -22,6 +22,5 @@ public abstract class PlatformsProcessor implements IMatchProcessor<PlatformsMat
   @Override
   public void process(final PlatformsMatch match) {
     process(match.getPlatform());
-    
   }
 }

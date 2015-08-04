@@ -29,19 +29,16 @@ public abstract class IdentifiablesMatch extends BasePatternMatch {
   
   private IdentifiablesMatch(final Identifiable pIdentifiable) {
     this.fIdentifiable = pIdentifiable;
-    
   }
   
   @Override
   public Object get(final String parameterName) {
     if ("identifiable".equals(parameterName)) return this.fIdentifiable;
     return null;
-    
   }
   
   public Identifiable getIdentifiable() {
     return this.fIdentifiable;
-    
   }
   
   @Override
@@ -52,45 +49,39 @@ public abstract class IdentifiablesMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setIdentifiable(final Identifiable pIdentifiable) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fIdentifiable = pIdentifiable;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.common.identifiables";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return IdentifiablesMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fIdentifiable};
-    
   }
   
   @Override
   public IdentifiablesMatch toImmutable() {
     return isMutable() ? newMatch(fIdentifiable) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
-    result.append("\"identifiable\"=" + prettyPrintValue(fIdentifiable));
+    result.append("\"identifiable\"=" + prettyPrintValue(fIdentifiable)
+    );
     return result.toString();
-    
   }
   
   @Override
@@ -99,7 +90,6 @@ public abstract class IdentifiablesMatch extends BasePatternMatch {
     int result = 1;
     result = prime * result + ((fIdentifiable == null) ? 0 : fIdentifiable.hashCode());
     return result;
-    
   }
   
   @Override
@@ -107,10 +97,12 @@ public abstract class IdentifiablesMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof IdentifiablesMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -128,9 +120,8 @@ public abstract class IdentifiablesMatch extends BasePatternMatch {
     	return IdentifiablesQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -142,7 +133,6 @@ public abstract class IdentifiablesMatch extends BasePatternMatch {
    */
   public static IdentifiablesMatch newEmptyMatch() {
     return new Mutable(null);
-    
   }
   
   /**
@@ -155,7 +145,6 @@ public abstract class IdentifiablesMatch extends BasePatternMatch {
    */
   public static IdentifiablesMatch newMutableMatch(final Identifiable pIdentifiable) {
     return new Mutable(pIdentifiable);
-    
   }
   
   /**
@@ -168,13 +157,11 @@ public abstract class IdentifiablesMatch extends BasePatternMatch {
    */
   public static IdentifiablesMatch newMatch(final Identifiable pIdentifiable) {
     return new Immutable(pIdentifiable);
-    
   }
   
   private static final class Mutable extends IdentifiablesMatch {
     Mutable(final Identifiable pIdentifiable) {
       super(pIdentifiable);
-      
     }
     
     @Override
@@ -186,7 +173,6 @@ public abstract class IdentifiablesMatch extends BasePatternMatch {
   private static final class Immutable extends IdentifiablesMatch {
     Immutable(final Identifiable pIdentifiable) {
       super(pIdentifiable);
-      
     }
     
     @Override

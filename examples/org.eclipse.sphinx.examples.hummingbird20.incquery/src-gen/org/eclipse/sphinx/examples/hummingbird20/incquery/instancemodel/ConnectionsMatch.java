@@ -29,19 +29,16 @@ public abstract class ConnectionsMatch extends BasePatternMatch {
   
   private ConnectionsMatch(final Connection pConnection) {
     this.fConnection = pConnection;
-    
   }
   
   @Override
   public Object get(final String parameterName) {
     if ("connection".equals(parameterName)) return this.fConnection;
     return null;
-    
   }
   
   public Connection getConnection() {
     return this.fConnection;
-    
   }
   
   @Override
@@ -52,45 +49,39 @@ public abstract class ConnectionsMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setConnection(final Connection pConnection) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fConnection = pConnection;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.connections";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return ConnectionsMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fConnection};
-    
   }
   
   @Override
   public ConnectionsMatch toImmutable() {
     return isMutable() ? newMatch(fConnection) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
-    result.append("\"connection\"=" + prettyPrintValue(fConnection));
+    result.append("\"connection\"=" + prettyPrintValue(fConnection)
+    );
     return result.toString();
-    
   }
   
   @Override
@@ -99,7 +90,6 @@ public abstract class ConnectionsMatch extends BasePatternMatch {
     int result = 1;
     result = prime * result + ((fConnection == null) ? 0 : fConnection.hashCode());
     return result;
-    
   }
   
   @Override
@@ -107,10 +97,12 @@ public abstract class ConnectionsMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof ConnectionsMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -128,9 +120,8 @@ public abstract class ConnectionsMatch extends BasePatternMatch {
     	return ConnectionsQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -142,7 +133,6 @@ public abstract class ConnectionsMatch extends BasePatternMatch {
    */
   public static ConnectionsMatch newEmptyMatch() {
     return new Mutable(null);
-    
   }
   
   /**
@@ -155,7 +145,6 @@ public abstract class ConnectionsMatch extends BasePatternMatch {
    */
   public static ConnectionsMatch newMutableMatch(final Connection pConnection) {
     return new Mutable(pConnection);
-    
   }
   
   /**
@@ -168,13 +157,11 @@ public abstract class ConnectionsMatch extends BasePatternMatch {
    */
   public static ConnectionsMatch newMatch(final Connection pConnection) {
     return new Immutable(pConnection);
-    
   }
   
   private static final class Mutable extends ConnectionsMatch {
     Mutable(final Connection pConnection) {
       super(pConnection);
-      
     }
     
     @Override
@@ -186,7 +173,6 @@ public abstract class ConnectionsMatch extends BasePatternMatch {
   private static final class Immutable extends ConnectionsMatch {
     Immutable(final Connection pConnection) {
       super(pConnection);
-      
     }
     
     @Override

@@ -23,6 +23,5 @@ public abstract class PortsByNameProcessor implements IMatchProcessor<PortsByNam
   @Override
   public void process(final PortsByNameMatch match) {
     process(match.getPort(), match.getName());
-    
   }
 }

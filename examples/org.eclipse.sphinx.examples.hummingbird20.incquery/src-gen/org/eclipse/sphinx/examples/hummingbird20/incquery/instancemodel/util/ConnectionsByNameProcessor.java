@@ -23,6 +23,5 @@ public abstract class ConnectionsByNameProcessor implements IMatchProcessor<Conn
   @Override
   public void process(final ConnectionsByNameMatch match) {
     process(match.getConnection(), match.getName());
-    
   }
 }

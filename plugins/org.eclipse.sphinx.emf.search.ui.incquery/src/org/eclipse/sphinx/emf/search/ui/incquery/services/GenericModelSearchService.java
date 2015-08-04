@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
+import org.eclipse.incquery.runtime.emf.EMFScope;
 import org.eclipse.sphinx.emf.search.ui.ModelSearchMatch;
 import org.eclipse.sphinx.emf.search.ui.QuerySpecification;
 
@@ -45,7 +46,12 @@ public class GenericModelSearchService extends AbstractModelSearchService {
 	protected Set<EStructuralFeature> getFeatures(IncQueryEngine engine) {
 		Set<EStructuralFeature> value = engineToFeaturesMap.get(engine);
 		if (value == null) {
-			getFeatures(engine.getScope());
+			if (engine.getScope() instanceof EMFScope) {
+				Set<? extends Notifier> scopeRoots = ((EMFScope) engine.getScope()).getScopeRoots();
+				if (!scopeRoots.isEmpty()) {
+					getFeatures(scopeRoots.iterator().next());
+				}
+			}
 		}
 		return value;
 	}

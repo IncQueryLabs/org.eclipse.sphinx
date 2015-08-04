@@ -32,7 +32,6 @@ public abstract class IdentifiablesByNameMatch extends BasePatternMatch {
   private IdentifiablesByNameMatch(final Identifiable pIdentifiable, final String pName) {
     this.fIdentifiable = pIdentifiable;
     this.fName = pName;
-    
   }
   
   @Override
@@ -40,17 +39,14 @@ public abstract class IdentifiablesByNameMatch extends BasePatternMatch {
     if ("identifiable".equals(parameterName)) return this.fIdentifiable;
     if ("name".equals(parameterName)) return this.fName;
     return null;
-    
   }
   
   public Identifiable getIdentifiable() {
     return this.fIdentifiable;
-    
   }
   
   public String getName() {
     return this.fName;
-    
   }
   
   @Override
@@ -65,52 +61,46 @@ public abstract class IdentifiablesByNameMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setIdentifiable(final Identifiable pIdentifiable) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fIdentifiable = pIdentifiable;
-    
   }
   
   public void setName(final String pName) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fName = pName;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.common.identifiablesByName";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return IdentifiablesByNameMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fIdentifiable, fName};
-    
   }
   
   @Override
   public IdentifiablesByNameMatch toImmutable() {
     return isMutable() ? newMatch(fIdentifiable, fName) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
     result.append("\"identifiable\"=" + prettyPrintValue(fIdentifiable) + ", ");
-    result.append("\"name\"=" + prettyPrintValue(fName));
-    return result.toString();
     
+    result.append("\"name\"=" + prettyPrintValue(fName)
+    );
+    return result.toString();
   }
   
   @Override
@@ -120,7 +110,6 @@ public abstract class IdentifiablesByNameMatch extends BasePatternMatch {
     result = prime * result + ((fIdentifiable == null) ? 0 : fIdentifiable.hashCode());
     result = prime * result + ((fName == null) ? 0 : fName.hashCode());
     return result;
-    
   }
   
   @Override
@@ -128,10 +117,12 @@ public abstract class IdentifiablesByNameMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof IdentifiablesByNameMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -151,9 +142,8 @@ public abstract class IdentifiablesByNameMatch extends BasePatternMatch {
     	return IdentifiablesByNameQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -165,7 +155,6 @@ public abstract class IdentifiablesByNameMatch extends BasePatternMatch {
    */
   public static IdentifiablesByNameMatch newEmptyMatch() {
     return new Mutable(null, null);
-    
   }
   
   /**
@@ -179,7 +168,6 @@ public abstract class IdentifiablesByNameMatch extends BasePatternMatch {
    */
   public static IdentifiablesByNameMatch newMutableMatch(final Identifiable pIdentifiable, final String pName) {
     return new Mutable(pIdentifiable, pName);
-    
   }
   
   /**
@@ -193,13 +181,11 @@ public abstract class IdentifiablesByNameMatch extends BasePatternMatch {
    */
   public static IdentifiablesByNameMatch newMatch(final Identifiable pIdentifiable, final String pName) {
     return new Immutable(pIdentifiable, pName);
-    
   }
   
   private static final class Mutable extends IdentifiablesByNameMatch {
     Mutable(final Identifiable pIdentifiable, final String pName) {
       super(pIdentifiable, pName);
-      
     }
     
     @Override
@@ -211,7 +197,6 @@ public abstract class IdentifiablesByNameMatch extends BasePatternMatch {
   private static final class Immutable extends IdentifiablesByNameMatch {
     Immutable(final Identifiable pIdentifiable, final String pName) {
       super(pIdentifiable, pName);
-      
     }
     
     @Override

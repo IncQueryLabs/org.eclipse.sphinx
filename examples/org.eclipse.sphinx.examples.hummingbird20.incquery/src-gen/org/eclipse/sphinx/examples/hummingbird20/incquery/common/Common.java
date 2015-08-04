@@ -37,7 +37,6 @@ public final class Common extends BaseGeneratedPatternGroup {
     	INSTANCE = new Common();
     }
     return INSTANCE;
-    
   }
   
   private static Common INSTANCE;
@@ -45,7 +44,6 @@ public final class Common extends BaseGeneratedPatternGroup {
   private Common() throws IncQueryException {
     querySpecifications.add(IdentifiablesQuerySpecification.instance());
     querySpecifications.add(IdentifiablesByNameQuerySpecification.instance());
-    
   }
   
   public IdentifiablesQuerySpecification getIdentifiables() throws IncQueryException {

@@ -61,7 +61,6 @@ public final class Typemodel extends BaseGeneratedPatternGroup {
     	INSTANCE = new Typemodel();
     }
     return INSTANCE;
-    
   }
   
   private static Typemodel INSTANCE;
@@ -77,7 +76,6 @@ public final class Typemodel extends BaseGeneratedPatternGroup {
     querySpecifications.add(InterfacesByNameQuerySpecification.instance());
     querySpecifications.add(ParametersQuerySpecification.instance());
     querySpecifications.add(ParametersByNameQuerySpecification.instance());
-    
   }
   
   public PlatformsQuerySpecification getPlatforms() throws IncQueryException {

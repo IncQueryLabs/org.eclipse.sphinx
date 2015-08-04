@@ -32,7 +32,6 @@ public abstract class PortsByNameMatch extends BasePatternMatch {
   private PortsByNameMatch(final Port pPort, final String pName) {
     this.fPort = pPort;
     this.fName = pName;
-    
   }
   
   @Override
@@ -40,17 +39,14 @@ public abstract class PortsByNameMatch extends BasePatternMatch {
     if ("port".equals(parameterName)) return this.fPort;
     if ("name".equals(parameterName)) return this.fName;
     return null;
-    
   }
   
   public Port getPort() {
     return this.fPort;
-    
   }
   
   public String getName() {
     return this.fName;
-    
   }
   
   @Override
@@ -65,52 +61,46 @@ public abstract class PortsByNameMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setPort(final Port pPort) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fPort = pPort;
-    
   }
   
   public void setName(final String pName) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fName = pName;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.portsByName";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return PortsByNameMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fPort, fName};
-    
   }
   
   @Override
   public PortsByNameMatch toImmutable() {
     return isMutable() ? newMatch(fPort, fName) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
     result.append("\"port\"=" + prettyPrintValue(fPort) + ", ");
-    result.append("\"name\"=" + prettyPrintValue(fName));
-    return result.toString();
     
+    result.append("\"name\"=" + prettyPrintValue(fName)
+    );
+    return result.toString();
   }
   
   @Override
@@ -120,7 +110,6 @@ public abstract class PortsByNameMatch extends BasePatternMatch {
     result = prime * result + ((fPort == null) ? 0 : fPort.hashCode());
     result = prime * result + ((fName == null) ? 0 : fName.hashCode());
     return result;
-    
   }
   
   @Override
@@ -128,10 +117,12 @@ public abstract class PortsByNameMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof PortsByNameMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -151,9 +142,8 @@ public abstract class PortsByNameMatch extends BasePatternMatch {
     	return PortsByNameQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -165,7 +155,6 @@ public abstract class PortsByNameMatch extends BasePatternMatch {
    */
   public static PortsByNameMatch newEmptyMatch() {
     return new Mutable(null, null);
-    
   }
   
   /**
@@ -179,7 +168,6 @@ public abstract class PortsByNameMatch extends BasePatternMatch {
    */
   public static PortsByNameMatch newMutableMatch(final Port pPort, final String pName) {
     return new Mutable(pPort, pName);
-    
   }
   
   /**
@@ -193,13 +181,11 @@ public abstract class PortsByNameMatch extends BasePatternMatch {
    */
   public static PortsByNameMatch newMatch(final Port pPort, final String pName) {
     return new Immutable(pPort, pName);
-    
   }
   
   private static final class Mutable extends PortsByNameMatch {
     Mutable(final Port pPort, final String pName) {
       super(pPort, pName);
-      
     }
     
     @Override
@@ -211,7 +197,6 @@ public abstract class PortsByNameMatch extends BasePatternMatch {
   private static final class Immutable extends PortsByNameMatch {
     Immutable(final Port pPort, final String pName) {
       super(pPort, pName);
-      
     }
     
     @Override

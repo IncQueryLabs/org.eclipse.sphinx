@@ -32,7 +32,6 @@ public abstract class PlatformsByNameMatch extends BasePatternMatch {
   private PlatformsByNameMatch(final Platform pPlatform, final String pName) {
     this.fPlatform = pPlatform;
     this.fName = pName;
-    
   }
   
   @Override
@@ -40,17 +39,14 @@ public abstract class PlatformsByNameMatch extends BasePatternMatch {
     if ("platform".equals(parameterName)) return this.fPlatform;
     if ("name".equals(parameterName)) return this.fName;
     return null;
-    
   }
   
   public Platform getPlatform() {
     return this.fPlatform;
-    
   }
   
   public String getName() {
     return this.fName;
-    
   }
   
   @Override
@@ -65,52 +61,46 @@ public abstract class PlatformsByNameMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setPlatform(final Platform pPlatform) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fPlatform = pPlatform;
-    
   }
   
   public void setName(final String pName) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fName = pName;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.platformsByName";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return PlatformsByNameMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fPlatform, fName};
-    
   }
   
   @Override
   public PlatformsByNameMatch toImmutable() {
     return isMutable() ? newMatch(fPlatform, fName) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
     result.append("\"platform\"=" + prettyPrintValue(fPlatform) + ", ");
-    result.append("\"name\"=" + prettyPrintValue(fName));
-    return result.toString();
     
+    result.append("\"name\"=" + prettyPrintValue(fName)
+    );
+    return result.toString();
   }
   
   @Override
@@ -120,7 +110,6 @@ public abstract class PlatformsByNameMatch extends BasePatternMatch {
     result = prime * result + ((fPlatform == null) ? 0 : fPlatform.hashCode());
     result = prime * result + ((fName == null) ? 0 : fName.hashCode());
     return result;
-    
   }
   
   @Override
@@ -128,10 +117,12 @@ public abstract class PlatformsByNameMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof PlatformsByNameMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -151,9 +142,8 @@ public abstract class PlatformsByNameMatch extends BasePatternMatch {
     	return PlatformsByNameQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -165,7 +155,6 @@ public abstract class PlatformsByNameMatch extends BasePatternMatch {
    */
   public static PlatformsByNameMatch newEmptyMatch() {
     return new Mutable(null, null);
-    
   }
   
   /**
@@ -179,7 +168,6 @@ public abstract class PlatformsByNameMatch extends BasePatternMatch {
    */
   public static PlatformsByNameMatch newMutableMatch(final Platform pPlatform, final String pName) {
     return new Mutable(pPlatform, pName);
-    
   }
   
   /**
@@ -193,13 +181,11 @@ public abstract class PlatformsByNameMatch extends BasePatternMatch {
    */
   public static PlatformsByNameMatch newMatch(final Platform pPlatform, final String pName) {
     return new Immutable(pPlatform, pName);
-    
   }
   
   private static final class Mutable extends PlatformsByNameMatch {
     Mutable(final Platform pPlatform, final String pName) {
       super(pPlatform, pName);
-      
     }
     
     @Override
@@ -211,7 +197,6 @@ public abstract class PlatformsByNameMatch extends BasePatternMatch {
   private static final class Immutable extends PlatformsByNameMatch {
     Immutable(final Platform pPlatform, final String pName) {
       super(pPlatform, pName);
-      
     }
     
     @Override

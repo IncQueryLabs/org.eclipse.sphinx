@@ -29,19 +29,16 @@ public abstract class ApplicationsMatch extends BasePatternMatch {
   
   private ApplicationsMatch(final Application pApp) {
     this.fApp = pApp;
-    
   }
   
   @Override
   public Object get(final String parameterName) {
     if ("app".equals(parameterName)) return this.fApp;
     return null;
-    
   }
   
   public Application getApp() {
     return this.fApp;
-    
   }
   
   @Override
@@ -52,45 +49,39 @@ public abstract class ApplicationsMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setApp(final Application pApp) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fApp = pApp;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.applications";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return ApplicationsMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fApp};
-    
   }
   
   @Override
   public ApplicationsMatch toImmutable() {
     return isMutable() ? newMatch(fApp) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
-    result.append("\"app\"=" + prettyPrintValue(fApp));
+    result.append("\"app\"=" + prettyPrintValue(fApp)
+    );
     return result.toString();
-    
   }
   
   @Override
@@ -99,7 +90,6 @@ public abstract class ApplicationsMatch extends BasePatternMatch {
     int result = 1;
     result = prime * result + ((fApp == null) ? 0 : fApp.hashCode());
     return result;
-    
   }
   
   @Override
@@ -107,10 +97,12 @@ public abstract class ApplicationsMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof ApplicationsMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -128,9 +120,8 @@ public abstract class ApplicationsMatch extends BasePatternMatch {
     	return ApplicationsQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -142,7 +133,6 @@ public abstract class ApplicationsMatch extends BasePatternMatch {
    */
   public static ApplicationsMatch newEmptyMatch() {
     return new Mutable(null);
-    
   }
   
   /**
@@ -155,7 +145,6 @@ public abstract class ApplicationsMatch extends BasePatternMatch {
    */
   public static ApplicationsMatch newMutableMatch(final Application pApp) {
     return new Mutable(pApp);
-    
   }
   
   /**
@@ -168,13 +157,11 @@ public abstract class ApplicationsMatch extends BasePatternMatch {
    */
   public static ApplicationsMatch newMatch(final Application pApp) {
     return new Immutable(pApp);
-    
   }
   
   private static final class Mutable extends ApplicationsMatch {
     Mutable(final Application pApp) {
       super(pApp);
-      
     }
     
     @Override
@@ -186,7 +173,6 @@ public abstract class ApplicationsMatch extends BasePatternMatch {
   private static final class Immutable extends ApplicationsMatch {
     Immutable(final Application pApp) {
       super(pApp);
-      
     }
     
     @Override

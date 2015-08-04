@@ -29,19 +29,16 @@ public abstract class ComponentsMatch extends BasePatternMatch {
   
   private ComponentsMatch(final Component pComponent) {
     this.fComponent = pComponent;
-    
   }
   
   @Override
   public Object get(final String parameterName) {
     if ("component".equals(parameterName)) return this.fComponent;
     return null;
-    
   }
   
   public Component getComponent() {
     return this.fComponent;
-    
   }
   
   @Override
@@ -52,45 +49,39 @@ public abstract class ComponentsMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setComponent(final Component pComponent) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fComponent = pComponent;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.components";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return ComponentsMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fComponent};
-    
   }
   
   @Override
   public ComponentsMatch toImmutable() {
     return isMutable() ? newMatch(fComponent) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
-    result.append("\"component\"=" + prettyPrintValue(fComponent));
+    result.append("\"component\"=" + prettyPrintValue(fComponent)
+    );
     return result.toString();
-    
   }
   
   @Override
@@ -99,7 +90,6 @@ public abstract class ComponentsMatch extends BasePatternMatch {
     int result = 1;
     result = prime * result + ((fComponent == null) ? 0 : fComponent.hashCode());
     return result;
-    
   }
   
   @Override
@@ -107,10 +97,12 @@ public abstract class ComponentsMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof ComponentsMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -128,9 +120,8 @@ public abstract class ComponentsMatch extends BasePatternMatch {
     	return ComponentsQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -142,7 +133,6 @@ public abstract class ComponentsMatch extends BasePatternMatch {
    */
   public static ComponentsMatch newEmptyMatch() {
     return new Mutable(null);
-    
   }
   
   /**
@@ -155,7 +145,6 @@ public abstract class ComponentsMatch extends BasePatternMatch {
    */
   public static ComponentsMatch newMutableMatch(final Component pComponent) {
     return new Mutable(pComponent);
-    
   }
   
   /**
@@ -168,13 +157,11 @@ public abstract class ComponentsMatch extends BasePatternMatch {
    */
   public static ComponentsMatch newMatch(final Component pComponent) {
     return new Immutable(pComponent);
-    
   }
   
   private static final class Mutable extends ComponentsMatch {
     Mutable(final Component pComponent) {
       super(pComponent);
-      
     }
     
     @Override
@@ -186,7 +173,6 @@ public abstract class ComponentsMatch extends BasePatternMatch {
   private static final class Immutable extends ComponentsMatch {
     Immutable(final Component pComponent) {
       super(pComponent);
-      
     }
     
     @Override
