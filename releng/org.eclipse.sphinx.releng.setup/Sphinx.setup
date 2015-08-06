@@ -155,6 +155,8 @@
           name="org.eclipse.nebula.feature.feature.group"/>
       <requirement
           name="org.eclipse.nebula.examples.release.feature.feature.group"/>
+      <requirement
+          name="org.eclipse.license.feature.group"/>
       <repositoryList
           name="Dependencies">
         <repository
@@ -167,6 +169,8 @@
             url="http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository"/>
         <repository
             url="https://www.artop.org/containers/artop-sdk-update-site-4.0"/>
+        <repository
+            url="http://download.eclipse.org/cbi/updates/license"/>
       </repositoryList>
     </targlet>
   </setupTask>
