@@ -46,13 +46,13 @@
   <setupTask
       xsi:type="projects:ProjectsImportTask">
     <sourceLocator
-        rootFolder="${git.clone.sphinx.location}/plugins"
+        rootFolder="${git.clone.location}/plugins"
         locateNestedProjects="true"/>
     <sourceLocator
-        rootFolder="${git.clone.sphinx.location}/features"
+        rootFolder="${git.clone.location}/features"
         locateNestedProjects="true"/>
     <sourceLocator
-        rootFolder="${git.clone.sphinx.location}/releng"
+        rootFolder="${git.clone.location}/releng"
         locateNestedProjects="true"/>
   </setupTask>
   <setupTask
@@ -183,6 +183,13 @@
           key="/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.source"
           value="1.7"/>
     </setupTask>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:VariableTask"
+      type="FOLDER"
+      name="git.clone.location"
+      label="Git repository location">
+    <description>The location of the already cloned Git repository</description>
   </setupTask>
   <stream name="incquery-1.0"
       label="incquery-1.0"/>
