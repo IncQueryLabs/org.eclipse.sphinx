@@ -13,6 +13,12 @@
     name="sphinx"
     label="Sphinx">
   <setupTask
+      xsi:type="setup:EclipseIniTask"
+      id=""
+      option="-Doomph.redirection.sphinx"
+      value="=https://raw.githubusercontent.com/IncQueryLabs/automotive-sphinx-mirror/oomph/releng/org.eclipse.sphinx.releng.setup/Sphinx.setup?token=AAHNXbNJyuCyiIbppeexdzxTApgagMabks5VzIgNwA%3D%3D->${git.clone.sphinx.location|uri}/releng/org.eclipse.sphinx.releng.setup/Sphinx.setup"
+      vm="true"/>
+  <setupTask
       xsi:type="jdt:JRETask"
       version="JavaSE-1.7"
       location="${jre.location-1.7}">
