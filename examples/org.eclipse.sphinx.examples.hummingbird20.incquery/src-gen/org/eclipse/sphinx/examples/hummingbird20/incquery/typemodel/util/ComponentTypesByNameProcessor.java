@@ -23,6 +23,5 @@ public abstract class ComponentTypesByNameProcessor implements IMatchProcessor<C
   @Override
   public void process(final ComponentTypesByNameMatch match) {
     process(match.getComponentType(), match.getName());
-    
   }
 }

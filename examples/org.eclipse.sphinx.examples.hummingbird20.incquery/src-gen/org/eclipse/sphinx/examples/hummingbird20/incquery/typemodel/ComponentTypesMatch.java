@@ -29,19 +29,16 @@ public abstract class ComponentTypesMatch extends BasePatternMatch {
   
   private ComponentTypesMatch(final ComponentType pComponentType) {
     this.fComponentType = pComponentType;
-    
   }
   
   @Override
   public Object get(final String parameterName) {
     if ("componentType".equals(parameterName)) return this.fComponentType;
     return null;
-    
   }
   
   public ComponentType getComponentType() {
     return this.fComponentType;
-    
   }
   
   @Override
@@ -52,45 +49,39 @@ public abstract class ComponentTypesMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setComponentType(final ComponentType pComponentType) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fComponentType = pComponentType;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.componentTypes";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return ComponentTypesMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fComponentType};
-    
   }
   
   @Override
   public ComponentTypesMatch toImmutable() {
     return isMutable() ? newMatch(fComponentType) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
-    result.append("\"componentType\"=" + prettyPrintValue(fComponentType));
+    result.append("\"componentType\"=" + prettyPrintValue(fComponentType)
+    );
     return result.toString();
-    
   }
   
   @Override
@@ -99,7 +90,6 @@ public abstract class ComponentTypesMatch extends BasePatternMatch {
     int result = 1;
     result = prime * result + ((fComponentType == null) ? 0 : fComponentType.hashCode());
     return result;
-    
   }
   
   @Override
@@ -107,10 +97,12 @@ public abstract class ComponentTypesMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof ComponentTypesMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -128,9 +120,8 @@ public abstract class ComponentTypesMatch extends BasePatternMatch {
     	return ComponentTypesQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -142,7 +133,6 @@ public abstract class ComponentTypesMatch extends BasePatternMatch {
    */
   public static ComponentTypesMatch newEmptyMatch() {
     return new Mutable(null);
-    
   }
   
   /**
@@ -155,7 +145,6 @@ public abstract class ComponentTypesMatch extends BasePatternMatch {
    */
   public static ComponentTypesMatch newMutableMatch(final ComponentType pComponentType) {
     return new Mutable(pComponentType);
-    
   }
   
   /**
@@ -168,13 +157,11 @@ public abstract class ComponentTypesMatch extends BasePatternMatch {
    */
   public static ComponentTypesMatch newMatch(final ComponentType pComponentType) {
     return new Immutable(pComponentType);
-    
   }
   
   private static final class Mutable extends ComponentTypesMatch {
     Mutable(final ComponentType pComponentType) {
       super(pComponentType);
-      
     }
     
     @Override
@@ -186,7 +173,6 @@ public abstract class ComponentTypesMatch extends BasePatternMatch {
   private static final class Immutable extends ComponentTypesMatch {
     Immutable(final ComponentType pComponentType) {
       super(pComponentType);
-      
     }
     
     @Override

@@ -32,7 +32,6 @@ public abstract class ParametersByNameMatch extends BasePatternMatch {
   private ParametersByNameMatch(final Parameter pParam, final String pName) {
     this.fParam = pParam;
     this.fName = pName;
-    
   }
   
   @Override
@@ -40,17 +39,14 @@ public abstract class ParametersByNameMatch extends BasePatternMatch {
     if ("param".equals(parameterName)) return this.fParam;
     if ("name".equals(parameterName)) return this.fName;
     return null;
-    
   }
   
   public Parameter getParam() {
     return this.fParam;
-    
   }
   
   public String getName() {
     return this.fName;
-    
   }
   
   @Override
@@ -65,52 +61,46 @@ public abstract class ParametersByNameMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setParam(final Parameter pParam) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fParam = pParam;
-    
   }
   
   public void setName(final String pName) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fName = pName;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.parametersByName";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return ParametersByNameMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fParam, fName};
-    
   }
   
   @Override
   public ParametersByNameMatch toImmutable() {
     return isMutable() ? newMatch(fParam, fName) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
     result.append("\"param\"=" + prettyPrintValue(fParam) + ", ");
-    result.append("\"name\"=" + prettyPrintValue(fName));
-    return result.toString();
     
+    result.append("\"name\"=" + prettyPrintValue(fName)
+    );
+    return result.toString();
   }
   
   @Override
@@ -120,7 +110,6 @@ public abstract class ParametersByNameMatch extends BasePatternMatch {
     result = prime * result + ((fParam == null) ? 0 : fParam.hashCode());
     result = prime * result + ((fName == null) ? 0 : fName.hashCode());
     return result;
-    
   }
   
   @Override
@@ -128,10 +117,12 @@ public abstract class ParametersByNameMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof ParametersByNameMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -151,9 +142,8 @@ public abstract class ParametersByNameMatch extends BasePatternMatch {
     	return ParametersByNameQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -165,7 +155,6 @@ public abstract class ParametersByNameMatch extends BasePatternMatch {
    */
   public static ParametersByNameMatch newEmptyMatch() {
     return new Mutable(null, null);
-    
   }
   
   /**
@@ -179,7 +168,6 @@ public abstract class ParametersByNameMatch extends BasePatternMatch {
    */
   public static ParametersByNameMatch newMutableMatch(final Parameter pParam, final String pName) {
     return new Mutable(pParam, pName);
-    
   }
   
   /**
@@ -193,13 +181,11 @@ public abstract class ParametersByNameMatch extends BasePatternMatch {
    */
   public static ParametersByNameMatch newMatch(final Parameter pParam, final String pName) {
     return new Immutable(pParam, pName);
-    
   }
   
   private static final class Mutable extends ParametersByNameMatch {
     Mutable(final Parameter pParam, final String pName) {
       super(pParam, pName);
-      
     }
     
     @Override
@@ -211,7 +197,6 @@ public abstract class ParametersByNameMatch extends BasePatternMatch {
   private static final class Immutable extends ParametersByNameMatch {
     Immutable(final Parameter pParam, final String pName) {
       super(pParam, pName);
-      
     }
     
     @Override

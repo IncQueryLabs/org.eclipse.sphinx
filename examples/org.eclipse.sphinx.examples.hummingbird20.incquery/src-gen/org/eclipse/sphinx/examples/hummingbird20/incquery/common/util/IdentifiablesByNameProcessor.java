@@ -23,6 +23,5 @@ public abstract class IdentifiablesByNameProcessor implements IMatchProcessor<Id
   @Override
   public void process(final IdentifiablesByNameMatch match) {
     process(match.getIdentifiable(), match.getName());
-    
   }
 }

@@ -29,19 +29,16 @@ public abstract class InterfacesMatch extends BasePatternMatch {
   
   private InterfacesMatch(final Interface pInterface) {
     this.fInterface = pInterface;
-    
   }
   
   @Override
   public Object get(final String parameterName) {
     if ("interface".equals(parameterName)) return this.fInterface;
     return null;
-    
   }
   
   public Interface getInterface() {
     return this.fInterface;
-    
   }
   
   @Override
@@ -52,45 +49,39 @@ public abstract class InterfacesMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setInterface(final Interface pInterface) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fInterface = pInterface;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.interfaces";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return InterfacesMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fInterface};
-    
   }
   
   @Override
   public InterfacesMatch toImmutable() {
     return isMutable() ? newMatch(fInterface) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
-    result.append("\"interface\"=" + prettyPrintValue(fInterface));
+    result.append("\"interface\"=" + prettyPrintValue(fInterface)
+    );
     return result.toString();
-    
   }
   
   @Override
@@ -99,7 +90,6 @@ public abstract class InterfacesMatch extends BasePatternMatch {
     int result = 1;
     result = prime * result + ((fInterface == null) ? 0 : fInterface.hashCode());
     return result;
-    
   }
   
   @Override
@@ -107,10 +97,12 @@ public abstract class InterfacesMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof InterfacesMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -128,9 +120,8 @@ public abstract class InterfacesMatch extends BasePatternMatch {
     	return InterfacesQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -142,7 +133,6 @@ public abstract class InterfacesMatch extends BasePatternMatch {
    */
   public static InterfacesMatch newEmptyMatch() {
     return new Mutable(null);
-    
   }
   
   /**
@@ -155,7 +145,6 @@ public abstract class InterfacesMatch extends BasePatternMatch {
    */
   public static InterfacesMatch newMutableMatch(final Interface pInterface) {
     return new Mutable(pInterface);
-    
   }
   
   /**
@@ -168,13 +157,11 @@ public abstract class InterfacesMatch extends BasePatternMatch {
    */
   public static InterfacesMatch newMatch(final Interface pInterface) {
     return new Immutable(pInterface);
-    
   }
   
   private static final class Mutable extends InterfacesMatch {
     Mutable(final Interface pInterface) {
       super(pInterface);
-      
     }
     
     @Override
@@ -186,7 +173,6 @@ public abstract class InterfacesMatch extends BasePatternMatch {
   private static final class Immutable extends InterfacesMatch {
     Immutable(final Interface pInterface) {
       super(pInterface);
-      
     }
     
     @Override

@@ -22,6 +22,5 @@ public abstract class ConnectionsProcessor implements IMatchProcessor<Connection
   @Override
   public void process(final ConnectionsMatch match) {
     process(match.getConnection());
-    
   }
 }

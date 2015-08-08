@@ -11,7 +11,6 @@ import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.api.impl.BaseMatcher;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.incquery.runtime.matchers.tuple.Tuple;
-import org.eclipse.incquery.runtime.rete.misc.DeltaMonitor;
 import org.eclipse.incquery.runtime.util.IncQueryLoggingUtil;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.common.IdentifiablesMatch;
@@ -40,15 +39,6 @@ import org.eclipse.sphinx.examples.hummingbird20.incquery.common.util.Identifiab
  */
 @SuppressWarnings("all")
 public class IdentifiablesMatcher extends BaseMatcher<IdentifiablesMatch> {
-  /**
-   * @return the singleton instance of the query specification of this pattern
-   * @throws IncQueryException if the pattern definition could not be loaded
-   * 
-   */
-  public static IQuerySpecification<IdentifiablesMatcher> querySpecification() throws IncQueryException {
-    return IdentifiablesQuerySpecification.instance();
-  }
-  
   /**
    * Initializes the pattern matcher within an existing EMF-IncQuery engine.
    * If the pattern matcher is already constructed in the engine, only a light-weight reference is returned.
@@ -167,23 +157,6 @@ public class IdentifiablesMatcher extends BaseMatcher<IdentifiablesMatch> {
   }
   
   /**
-   * Registers a new filtered delta monitor on this pattern matcher.
-   * The DeltaMonitor can be used to track changes (delta) in the set of filtered pattern matches from now on, considering those matches only that conform to the given fixed values of some parameters.
-   * It can also be reset to track changes from a later point in time,
-   * and changes can even be acknowledged on an individual basis.
-   * See {@link DeltaMonitor} for details.
-   * @param fillAtStart if true, all current matches are reported as new match events; if false, the delta monitor starts empty.
-   * @param pIdentifiable the fixed value of pattern parameter identifiable, or null if not bound.
-   * @return the delta monitor.
-   * @deprecated use the IncQuery Databinding API (IncQueryObservables) instead.
-   * 
-   */
-  @Deprecated
-  public DeltaMonitor<IdentifiablesMatch> newFilteredDeltaMonitor(final boolean fillAtStart, final Identifiable pIdentifiable) {
-    return rawNewFilteredDeltaMonitor(fillAtStart, new Object[]{pIdentifiable});
-  }
-  
-  /**
    * Returns a new (partial) match.
    * This can be used e.g. to call the matcher with a partial match.
    * <p>The returned match will be immutable. Use {@link #newEmptyMatch()} to obtain a mutable match object.
@@ -193,7 +166,6 @@ public class IdentifiablesMatcher extends BaseMatcher<IdentifiablesMatch> {
    */
   public IdentifiablesMatch newMatch(final Identifiable pIdentifiable) {
     return IdentifiablesMatch.newMatch(pIdentifiable);
-    
   }
   
   /**
@@ -219,33 +191,39 @@ public class IdentifiablesMatcher extends BaseMatcher<IdentifiablesMatch> {
   @Override
   protected IdentifiablesMatch tupleToMatch(final Tuple t) {
     try {
-      return IdentifiablesMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.common.Identifiable) t.get(POSITION_IDENTIFIABLE));
+    	return IdentifiablesMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.common.Identifiable) t.get(POSITION_IDENTIFIABLE));
     } catch(ClassCastException e) {
-      LOGGER.error("Element(s) in tuple not properly typed!",e);
-      return null;
+    	LOGGER.error("Element(s) in tuple not properly typed!",e);
+    	return null;
     }
-    
   }
   
   @Override
   protected IdentifiablesMatch arrayToMatch(final Object[] match) {
     try {
-      return IdentifiablesMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.common.Identifiable) match[POSITION_IDENTIFIABLE]);
+    	return IdentifiablesMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.common.Identifiable) match[POSITION_IDENTIFIABLE]);
     } catch(ClassCastException e) {
-      LOGGER.error("Element(s) in array not properly typed!",e);
-      return null;
+    	LOGGER.error("Element(s) in array not properly typed!",e);
+    	return null;
     }
-    
   }
   
   @Override
   protected IdentifiablesMatch arrayToMatchMutable(final Object[] match) {
     try {
-      return IdentifiablesMatch.newMutableMatch((org.eclipse.sphinx.examples.hummingbird20.common.Identifiable) match[POSITION_IDENTIFIABLE]);
+    	return IdentifiablesMatch.newMutableMatch((org.eclipse.sphinx.examples.hummingbird20.common.Identifiable) match[POSITION_IDENTIFIABLE]);
     } catch(ClassCastException e) {
-      LOGGER.error("Element(s) in array not properly typed!",e);
-      return null;
+    	LOGGER.error("Element(s) in array not properly typed!",e);
+    	return null;
     }
-    
+  }
+  
+  /**
+   * @return the singleton instance of the query specification of this pattern
+   * @throws IncQueryException if the pattern definition could not be loaded
+   * 
+   */
+  public static IQuerySpecification<IdentifiablesMatcher> querySpecification() throws IncQueryException {
+    return IdentifiablesQuerySpecification.instance();
   }
 }

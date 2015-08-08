@@ -29,19 +29,16 @@ public abstract class PlatformsMatch extends BasePatternMatch {
   
   private PlatformsMatch(final Platform pPlatform) {
     this.fPlatform = pPlatform;
-    
   }
   
   @Override
   public Object get(final String parameterName) {
     if ("platform".equals(parameterName)) return this.fPlatform;
     return null;
-    
   }
   
   public Platform getPlatform() {
     return this.fPlatform;
-    
   }
   
   @Override
@@ -52,45 +49,39 @@ public abstract class PlatformsMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setPlatform(final Platform pPlatform) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fPlatform = pPlatform;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.platforms";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return PlatformsMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fPlatform};
-    
   }
   
   @Override
   public PlatformsMatch toImmutable() {
     return isMutable() ? newMatch(fPlatform) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
-    result.append("\"platform\"=" + prettyPrintValue(fPlatform));
+    result.append("\"platform\"=" + prettyPrintValue(fPlatform)
+    );
     return result.toString();
-    
   }
   
   @Override
@@ -99,7 +90,6 @@ public abstract class PlatformsMatch extends BasePatternMatch {
     int result = 1;
     result = prime * result + ((fPlatform == null) ? 0 : fPlatform.hashCode());
     return result;
-    
   }
   
   @Override
@@ -107,10 +97,12 @@ public abstract class PlatformsMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof PlatformsMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -128,9 +120,8 @@ public abstract class PlatformsMatch extends BasePatternMatch {
     	return PlatformsQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -142,7 +133,6 @@ public abstract class PlatformsMatch extends BasePatternMatch {
    */
   public static PlatformsMatch newEmptyMatch() {
     return new Mutable(null);
-    
   }
   
   /**
@@ -155,7 +145,6 @@ public abstract class PlatformsMatch extends BasePatternMatch {
    */
   public static PlatformsMatch newMutableMatch(final Platform pPlatform) {
     return new Mutable(pPlatform);
-    
   }
   
   /**
@@ -168,13 +157,11 @@ public abstract class PlatformsMatch extends BasePatternMatch {
    */
   public static PlatformsMatch newMatch(final Platform pPlatform) {
     return new Immutable(pPlatform);
-    
   }
   
   private static final class Mutable extends PlatformsMatch {
     Mutable(final Platform pPlatform) {
       super(pPlatform);
-      
     }
     
     @Override
@@ -186,7 +173,6 @@ public abstract class PlatformsMatch extends BasePatternMatch {
   private static final class Immutable extends PlatformsMatch {
     Immutable(final Platform pPlatform) {
       super(pPlatform);
-      
     }
     
     @Override

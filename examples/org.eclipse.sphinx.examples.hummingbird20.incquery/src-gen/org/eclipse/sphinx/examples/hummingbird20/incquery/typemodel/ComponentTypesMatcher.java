@@ -11,7 +11,6 @@ import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.api.impl.BaseMatcher;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.incquery.runtime.matchers.tuple.Tuple;
-import org.eclipse.incquery.runtime.rete.misc.DeltaMonitor;
 import org.eclipse.incquery.runtime.util.IncQueryLoggingUtil;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.ComponentTypesMatch;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.util.ComponentTypesQuerySpecification;
@@ -40,15 +39,6 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
  */
 @SuppressWarnings("all")
 public class ComponentTypesMatcher extends BaseMatcher<ComponentTypesMatch> {
-  /**
-   * @return the singleton instance of the query specification of this pattern
-   * @throws IncQueryException if the pattern definition could not be loaded
-   * 
-   */
-  public static IQuerySpecification<ComponentTypesMatcher> querySpecification() throws IncQueryException {
-    return ComponentTypesQuerySpecification.instance();
-  }
-  
   /**
    * Initializes the pattern matcher within an existing EMF-IncQuery engine.
    * If the pattern matcher is already constructed in the engine, only a light-weight reference is returned.
@@ -167,23 +157,6 @@ public class ComponentTypesMatcher extends BaseMatcher<ComponentTypesMatch> {
   }
   
   /**
-   * Registers a new filtered delta monitor on this pattern matcher.
-   * The DeltaMonitor can be used to track changes (delta) in the set of filtered pattern matches from now on, considering those matches only that conform to the given fixed values of some parameters.
-   * It can also be reset to track changes from a later point in time,
-   * and changes can even be acknowledged on an individual basis.
-   * See {@link DeltaMonitor} for details.
-   * @param fillAtStart if true, all current matches are reported as new match events; if false, the delta monitor starts empty.
-   * @param pComponentType the fixed value of pattern parameter componentType, or null if not bound.
-   * @return the delta monitor.
-   * @deprecated use the IncQuery Databinding API (IncQueryObservables) instead.
-   * 
-   */
-  @Deprecated
-  public DeltaMonitor<ComponentTypesMatch> newFilteredDeltaMonitor(final boolean fillAtStart, final ComponentType pComponentType) {
-    return rawNewFilteredDeltaMonitor(fillAtStart, new Object[]{pComponentType});
-  }
-  
-  /**
    * Returns a new (partial) match.
    * This can be used e.g. to call the matcher with a partial match.
    * <p>The returned match will be immutable. Use {@link #newEmptyMatch()} to obtain a mutable match object.
@@ -193,7 +166,6 @@ public class ComponentTypesMatcher extends BaseMatcher<ComponentTypesMatch> {
    */
   public ComponentTypesMatch newMatch(final ComponentType pComponentType) {
     return ComponentTypesMatch.newMatch(pComponentType);
-    
   }
   
   /**
@@ -219,33 +191,39 @@ public class ComponentTypesMatcher extends BaseMatcher<ComponentTypesMatch> {
   @Override
   protected ComponentTypesMatch tupleToMatch(final Tuple t) {
     try {
-      return ComponentTypesMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType) t.get(POSITION_COMPONENTTYPE));
+    	return ComponentTypesMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType) t.get(POSITION_COMPONENTTYPE));
     } catch(ClassCastException e) {
-      LOGGER.error("Element(s) in tuple not properly typed!",e);
-      return null;
+    	LOGGER.error("Element(s) in tuple not properly typed!",e);
+    	return null;
     }
-    
   }
   
   @Override
   protected ComponentTypesMatch arrayToMatch(final Object[] match) {
     try {
-      return ComponentTypesMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType) match[POSITION_COMPONENTTYPE]);
+    	return ComponentTypesMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType) match[POSITION_COMPONENTTYPE]);
     } catch(ClassCastException e) {
-      LOGGER.error("Element(s) in array not properly typed!",e);
-      return null;
+    	LOGGER.error("Element(s) in array not properly typed!",e);
+    	return null;
     }
-    
   }
   
   @Override
   protected ComponentTypesMatch arrayToMatchMutable(final Object[] match) {
     try {
-      return ComponentTypesMatch.newMutableMatch((org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType) match[POSITION_COMPONENTTYPE]);
+    	return ComponentTypesMatch.newMutableMatch((org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType) match[POSITION_COMPONENTTYPE]);
     } catch(ClassCastException e) {
-      LOGGER.error("Element(s) in array not properly typed!",e);
-      return null;
+    	LOGGER.error("Element(s) in array not properly typed!",e);
+    	return null;
     }
-    
+  }
+  
+  /**
+   * @return the singleton instance of the query specification of this pattern
+   * @throws IncQueryException if the pattern definition could not be loaded
+   * 
+   */
+  public static IQuerySpecification<ComponentTypesMatcher> querySpecification() throws IncQueryException {
+    return ComponentTypesQuerySpecification.instance();
   }
 }

@@ -32,7 +32,6 @@ public abstract class ConnectionsByNameMatch extends BasePatternMatch {
   private ConnectionsByNameMatch(final Connection pConnection, final String pName) {
     this.fConnection = pConnection;
     this.fName = pName;
-    
   }
   
   @Override
@@ -40,17 +39,14 @@ public abstract class ConnectionsByNameMatch extends BasePatternMatch {
     if ("connection".equals(parameterName)) return this.fConnection;
     if ("name".equals(parameterName)) return this.fName;
     return null;
-    
   }
   
   public Connection getConnection() {
     return this.fConnection;
-    
   }
   
   public String getName() {
     return this.fName;
-    
   }
   
   @Override
@@ -65,52 +61,46 @@ public abstract class ConnectionsByNameMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setConnection(final Connection pConnection) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fConnection = pConnection;
-    
   }
   
   public void setName(final String pName) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fName = pName;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.connectionsByName";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return ConnectionsByNameMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fConnection, fName};
-    
   }
   
   @Override
   public ConnectionsByNameMatch toImmutable() {
     return isMutable() ? newMatch(fConnection, fName) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
     result.append("\"connection\"=" + prettyPrintValue(fConnection) + ", ");
-    result.append("\"name\"=" + prettyPrintValue(fName));
-    return result.toString();
     
+    result.append("\"name\"=" + prettyPrintValue(fName)
+    );
+    return result.toString();
   }
   
   @Override
@@ -120,7 +110,6 @@ public abstract class ConnectionsByNameMatch extends BasePatternMatch {
     result = prime * result + ((fConnection == null) ? 0 : fConnection.hashCode());
     result = prime * result + ((fName == null) ? 0 : fName.hashCode());
     return result;
-    
   }
   
   @Override
@@ -128,10 +117,12 @@ public abstract class ConnectionsByNameMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof ConnectionsByNameMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -151,9 +142,8 @@ public abstract class ConnectionsByNameMatch extends BasePatternMatch {
     	return ConnectionsByNameQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -165,7 +155,6 @@ public abstract class ConnectionsByNameMatch extends BasePatternMatch {
    */
   public static ConnectionsByNameMatch newEmptyMatch() {
     return new Mutable(null, null);
-    
   }
   
   /**
@@ -179,7 +168,6 @@ public abstract class ConnectionsByNameMatch extends BasePatternMatch {
    */
   public static ConnectionsByNameMatch newMutableMatch(final Connection pConnection, final String pName) {
     return new Mutable(pConnection, pName);
-    
   }
   
   /**
@@ -193,13 +181,11 @@ public abstract class ConnectionsByNameMatch extends BasePatternMatch {
    */
   public static ConnectionsByNameMatch newMatch(final Connection pConnection, final String pName) {
     return new Immutable(pConnection, pName);
-    
   }
   
   private static final class Mutable extends ConnectionsByNameMatch {
     Mutable(final Connection pConnection, final String pName) {
       super(pConnection, pName);
-      
     }
     
     @Override
@@ -211,7 +197,6 @@ public abstract class ConnectionsByNameMatch extends BasePatternMatch {
   private static final class Immutable extends ConnectionsByNameMatch {
     Immutable(final Connection pConnection, final String pName) {
       super(pConnection, pName);
-      
     }
     
     @Override

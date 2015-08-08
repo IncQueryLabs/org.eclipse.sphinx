@@ -22,6 +22,5 @@ public abstract class PortsProcessor implements IMatchProcessor<PortsMatch> {
   @Override
   public void process(final PortsMatch match) {
     process(match.getPort());
-    
   }
 }

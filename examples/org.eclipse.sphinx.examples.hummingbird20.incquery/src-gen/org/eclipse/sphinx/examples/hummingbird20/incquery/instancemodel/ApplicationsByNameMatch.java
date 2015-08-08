@@ -32,7 +32,6 @@ public abstract class ApplicationsByNameMatch extends BasePatternMatch {
   private ApplicationsByNameMatch(final Application pApp, final String pName) {
     this.fApp = pApp;
     this.fName = pName;
-    
   }
   
   @Override
@@ -40,17 +39,14 @@ public abstract class ApplicationsByNameMatch extends BasePatternMatch {
     if ("app".equals(parameterName)) return this.fApp;
     if ("name".equals(parameterName)) return this.fName;
     return null;
-    
   }
   
   public Application getApp() {
     return this.fApp;
-    
   }
   
   public String getName() {
     return this.fName;
-    
   }
   
   @Override
@@ -65,52 +61,46 @@ public abstract class ApplicationsByNameMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setApp(final Application pApp) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fApp = pApp;
-    
   }
   
   public void setName(final String pName) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fName = pName;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.applicationsByName";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return ApplicationsByNameMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fApp, fName};
-    
   }
   
   @Override
   public ApplicationsByNameMatch toImmutable() {
     return isMutable() ? newMatch(fApp, fName) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
     result.append("\"app\"=" + prettyPrintValue(fApp) + ", ");
-    result.append("\"name\"=" + prettyPrintValue(fName));
-    return result.toString();
     
+    result.append("\"name\"=" + prettyPrintValue(fName)
+    );
+    return result.toString();
   }
   
   @Override
@@ -120,7 +110,6 @@ public abstract class ApplicationsByNameMatch extends BasePatternMatch {
     result = prime * result + ((fApp == null) ? 0 : fApp.hashCode());
     result = prime * result + ((fName == null) ? 0 : fName.hashCode());
     return result;
-    
   }
   
   @Override
@@ -128,10 +117,12 @@ public abstract class ApplicationsByNameMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof ApplicationsByNameMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -151,9 +142,8 @@ public abstract class ApplicationsByNameMatch extends BasePatternMatch {
     	return ApplicationsByNameQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -165,7 +155,6 @@ public abstract class ApplicationsByNameMatch extends BasePatternMatch {
    */
   public static ApplicationsByNameMatch newEmptyMatch() {
     return new Mutable(null, null);
-    
   }
   
   /**
@@ -179,7 +168,6 @@ public abstract class ApplicationsByNameMatch extends BasePatternMatch {
    */
   public static ApplicationsByNameMatch newMutableMatch(final Application pApp, final String pName) {
     return new Mutable(pApp, pName);
-    
   }
   
   /**
@@ -193,13 +181,11 @@ public abstract class ApplicationsByNameMatch extends BasePatternMatch {
    */
   public static ApplicationsByNameMatch newMatch(final Application pApp, final String pName) {
     return new Immutable(pApp, pName);
-    
   }
   
   private static final class Mutable extends ApplicationsByNameMatch {
     Mutable(final Application pApp, final String pName) {
       super(pApp, pName);
-      
     }
     
     @Override
@@ -211,7 +197,6 @@ public abstract class ApplicationsByNameMatch extends BasePatternMatch {
   private static final class Immutable extends ApplicationsByNameMatch {
     Immutable(final Application pApp, final String pName) {
       super(pApp, pName);
-      
     }
     
     @Override

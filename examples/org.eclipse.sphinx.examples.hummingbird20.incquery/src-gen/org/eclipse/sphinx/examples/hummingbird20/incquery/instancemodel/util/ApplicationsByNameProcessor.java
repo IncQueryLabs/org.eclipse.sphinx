@@ -23,6 +23,5 @@ public abstract class ApplicationsByNameProcessor implements IMatchProcessor<App
   @Override
   public void process(final ApplicationsByNameMatch match) {
     process(match.getApp(), match.getName());
-    
   }
 }

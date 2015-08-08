@@ -22,6 +22,5 @@ public abstract class ApplicationsProcessor implements IMatchProcessor<Applicati
   @Override
   public void process(final ApplicationsMatch match) {
     process(match.getApp());
-    
   }
 }

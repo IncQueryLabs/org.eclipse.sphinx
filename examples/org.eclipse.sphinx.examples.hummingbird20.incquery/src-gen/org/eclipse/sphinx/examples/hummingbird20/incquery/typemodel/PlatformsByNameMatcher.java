@@ -11,7 +11,6 @@ import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.api.impl.BaseMatcher;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.incquery.runtime.matchers.tuple.Tuple;
-import org.eclipse.incquery.runtime.rete.misc.DeltaMonitor;
 import org.eclipse.incquery.runtime.util.IncQueryLoggingUtil;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.PlatformsByNameMatch;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.util.PlatformsByNameQuerySpecification;
@@ -40,15 +39,6 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform;
  */
 @SuppressWarnings("all")
 public class PlatformsByNameMatcher extends BaseMatcher<PlatformsByNameMatch> {
-  /**
-   * @return the singleton instance of the query specification of this pattern
-   * @throws IncQueryException if the pattern definition could not be loaded
-   * 
-   */
-  public static IQuerySpecification<PlatformsByNameMatcher> querySpecification() throws IncQueryException {
-    return PlatformsByNameQuerySpecification.instance();
-  }
-  
   /**
    * Initializes the pattern matcher within an existing EMF-IncQuery engine.
    * If the pattern matcher is already constructed in the engine, only a light-weight reference is returned.
@@ -175,24 +165,6 @@ public class PlatformsByNameMatcher extends BaseMatcher<PlatformsByNameMatch> {
   }
   
   /**
-   * Registers a new filtered delta monitor on this pattern matcher.
-   * The DeltaMonitor can be used to track changes (delta) in the set of filtered pattern matches from now on, considering those matches only that conform to the given fixed values of some parameters.
-   * It can also be reset to track changes from a later point in time,
-   * and changes can even be acknowledged on an individual basis.
-   * See {@link DeltaMonitor} for details.
-   * @param fillAtStart if true, all current matches are reported as new match events; if false, the delta monitor starts empty.
-   * @param pPlatform the fixed value of pattern parameter platform, or null if not bound.
-   * @param pName the fixed value of pattern parameter name, or null if not bound.
-   * @return the delta monitor.
-   * @deprecated use the IncQuery Databinding API (IncQueryObservables) instead.
-   * 
-   */
-  @Deprecated
-  public DeltaMonitor<PlatformsByNameMatch> newFilteredDeltaMonitor(final boolean fillAtStart, final Platform pPlatform, final String pName) {
-    return rawNewFilteredDeltaMonitor(fillAtStart, new Object[]{pPlatform, pName});
-  }
-  
-  /**
    * Returns a new (partial) match.
    * This can be used e.g. to call the matcher with a partial match.
    * <p>The returned match will be immutable. Use {@link #newEmptyMatch()} to obtain a mutable match object.
@@ -203,7 +175,6 @@ public class PlatformsByNameMatcher extends BaseMatcher<PlatformsByNameMatch> {
    */
   public PlatformsByNameMatch newMatch(final Platform pPlatform, final String pName) {
     return PlatformsByNameMatch.newMatch(pPlatform, pName);
-    
   }
   
   /**
@@ -241,7 +212,10 @@ public class PlatformsByNameMatcher extends BaseMatcher<PlatformsByNameMatch> {
    * 
    */
   public Set<Platform> getAllValuesOfplatform(final String pName) {
-    return rawAccumulateAllValuesOfplatform(new Object[]{null, pName});
+    return rawAccumulateAllValuesOfplatform(new Object[]{
+    null, 
+    pName
+    });
   }
   
   /**
@@ -279,39 +253,48 @@ public class PlatformsByNameMatcher extends BaseMatcher<PlatformsByNameMatch> {
    * 
    */
   public Set<String> getAllValuesOfname(final Platform pPlatform) {
-    return rawAccumulateAllValuesOfname(new Object[]{pPlatform, null});
+    return rawAccumulateAllValuesOfname(new Object[]{
+    pPlatform, 
+    null
+    });
   }
   
   @Override
   protected PlatformsByNameMatch tupleToMatch(final Tuple t) {
     try {
-      return PlatformsByNameMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform) t.get(POSITION_PLATFORM), (java.lang.String) t.get(POSITION_NAME));
+    	return PlatformsByNameMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform) t.get(POSITION_PLATFORM), (java.lang.String) t.get(POSITION_NAME));
     } catch(ClassCastException e) {
-      LOGGER.error("Element(s) in tuple not properly typed!",e);
-      return null;
+    	LOGGER.error("Element(s) in tuple not properly typed!",e);
+    	return null;
     }
-    
   }
   
   @Override
   protected PlatformsByNameMatch arrayToMatch(final Object[] match) {
     try {
-      return PlatformsByNameMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform) match[POSITION_PLATFORM], (java.lang.String) match[POSITION_NAME]);
+    	return PlatformsByNameMatch.newMatch((org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform) match[POSITION_PLATFORM], (java.lang.String) match[POSITION_NAME]);
     } catch(ClassCastException e) {
-      LOGGER.error("Element(s) in array not properly typed!",e);
-      return null;
+    	LOGGER.error("Element(s) in array not properly typed!",e);
+    	return null;
     }
-    
   }
   
   @Override
   protected PlatformsByNameMatch arrayToMatchMutable(final Object[] match) {
     try {
-      return PlatformsByNameMatch.newMutableMatch((org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform) match[POSITION_PLATFORM], (java.lang.String) match[POSITION_NAME]);
+    	return PlatformsByNameMatch.newMutableMatch((org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform) match[POSITION_PLATFORM], (java.lang.String) match[POSITION_NAME]);
     } catch(ClassCastException e) {
-      LOGGER.error("Element(s) in array not properly typed!",e);
-      return null;
+    	LOGGER.error("Element(s) in array not properly typed!",e);
+    	return null;
     }
-    
+  }
+  
+  /**
+   * @return the singleton instance of the query specification of this pattern
+   * @throws IncQueryException if the pattern definition could not be loaded
+   * 
+   */
+  public static IQuerySpecification<PlatformsByNameMatcher> querySpecification() throws IncQueryException {
+    return PlatformsByNameQuerySpecification.instance();
   }
 }

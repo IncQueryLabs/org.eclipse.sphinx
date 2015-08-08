@@ -49,7 +49,6 @@ public final class Instancemodel extends BaseGeneratedPatternGroup {
     	INSTANCE = new Instancemodel();
     }
     return INSTANCE;
-    
   }
   
   private static Instancemodel INSTANCE;
@@ -61,7 +60,6 @@ public final class Instancemodel extends BaseGeneratedPatternGroup {
     querySpecifications.add(ComponentsByNameQuerySpecification.instance());
     querySpecifications.add(ConnectionsQuerySpecification.instance());
     querySpecifications.add(ConnectionsByNameQuerySpecification.instance());
-    
   }
   
   public ApplicationsQuerySpecification getApplications() throws IncQueryException {

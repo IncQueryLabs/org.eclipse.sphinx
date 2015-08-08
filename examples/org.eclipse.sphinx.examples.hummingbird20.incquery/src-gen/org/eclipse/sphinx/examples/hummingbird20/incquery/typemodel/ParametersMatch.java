@@ -29,19 +29,16 @@ public abstract class ParametersMatch extends BasePatternMatch {
   
   private ParametersMatch(final Parameter pParam) {
     this.fParam = pParam;
-    
   }
   
   @Override
   public Object get(final String parameterName) {
     if ("param".equals(parameterName)) return this.fParam;
     return null;
-    
   }
   
   public Parameter getParam() {
     return this.fParam;
-    
   }
   
   @Override
@@ -52,45 +49,39 @@ public abstract class ParametersMatch extends BasePatternMatch {
     	return true;
     }
     return false;
-    
   }
   
   public void setParam(final Parameter pParam) {
     if (!isMutable()) throw new java.lang.UnsupportedOperationException();
     this.fParam = pParam;
-    
   }
   
   @Override
   public String patternName() {
     return "org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.parameters";
-    
   }
   
   @Override
   public List<String> parameterNames() {
     return ParametersMatch.parameterNames;
-    
   }
   
   @Override
   public Object[] toArray() {
     return new Object[]{fParam};
-    
   }
   
   @Override
   public ParametersMatch toImmutable() {
     return isMutable() ? newMatch(fParam) : this;
-    
   }
   
   @Override
   public String prettyPrint() {
     StringBuilder result = new StringBuilder();
-    result.append("\"param\"=" + prettyPrintValue(fParam));
+    result.append("\"param\"=" + prettyPrintValue(fParam)
+    );
     return result.toString();
-    
   }
   
   @Override
@@ -99,7 +90,6 @@ public abstract class ParametersMatch extends BasePatternMatch {
     int result = 1;
     result = prime * result + ((fParam == null) ? 0 : fParam.hashCode());
     return result;
-    
   }
   
   @Override
@@ -107,10 +97,12 @@ public abstract class ParametersMatch extends BasePatternMatch {
     if (this == obj)
     	return true;
     if (!(obj instanceof ParametersMatch)) { // this should be infrequent
-    	if (obj == null)
+    	if (obj == null) {
     		return false;
-    	if (!(obj instanceof IPatternMatch))
+    	}
+    	if (!(obj instanceof IPatternMatch)) {
     		return false;
+    	}
     	IPatternMatch otherSig  = (IPatternMatch) obj;
     	if (!specification().equals(otherSig.specification()))
     		return false;
@@ -128,9 +120,8 @@ public abstract class ParametersMatch extends BasePatternMatch {
     	return ParametersQuerySpecification.instance();
     } catch (IncQueryException ex) {
      	// This cannot happen, as the match object can only be instantiated if the query specification exists
-     	throw new IllegalStateException	(ex);
+     	throw new IllegalStateException (ex);
     }
-    
   }
   
   /**
@@ -142,7 +133,6 @@ public abstract class ParametersMatch extends BasePatternMatch {
    */
   public static ParametersMatch newEmptyMatch() {
     return new Mutable(null);
-    
   }
   
   /**
@@ -155,7 +145,6 @@ public abstract class ParametersMatch extends BasePatternMatch {
    */
   public static ParametersMatch newMutableMatch(final Parameter pParam) {
     return new Mutable(pParam);
-    
   }
   
   /**
@@ -168,13 +157,11 @@ public abstract class ParametersMatch extends BasePatternMatch {
    */
   public static ParametersMatch newMatch(final Parameter pParam) {
     return new Immutable(pParam);
-    
   }
   
   private static final class Mutable extends ParametersMatch {
     Mutable(final Parameter pParam) {
       super(pParam);
-      
     }
     
     @Override
@@ -186,7 +173,6 @@ public abstract class ParametersMatch extends BasePatternMatch {
   private static final class Immutable extends ParametersMatch {
     Immutable(final Parameter pParam) {
       super(pParam);
-      
     }
     
     @Override
