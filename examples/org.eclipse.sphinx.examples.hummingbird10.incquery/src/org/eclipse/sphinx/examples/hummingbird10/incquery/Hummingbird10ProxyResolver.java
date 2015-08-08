@@ -20,11 +20,14 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
+import org.eclipse.incquery.runtime.base.api.NavigationHelper;
+import org.eclipse.incquery.runtime.emf.EMFScope;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.sphinx.emf.incquery.proxymanagment.AbstractProxyResolver;
 import org.eclipse.sphinx.examples.hummingbird10.Application;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
 import org.eclipse.sphinx.examples.hummingbird10.Connection;
+import org.eclipse.sphinx.examples.hummingbird10.Hummingbird10Package;
 import org.eclipse.sphinx.examples.hummingbird10.Interface;
 import org.eclipse.sphinx.examples.hummingbird10.Parameter;
 import org.eclipse.sphinx.examples.hummingbird10.incquery.internal.Activator;
@@ -64,29 +67,25 @@ public class Hummingbird10ProxyResolver extends AbstractProxyResolver {
 	}
 
 	private EObject[] doGetEObjectCandidates(Class<?> type, IncQueryEngine engine) throws IncQueryException {
+		NavigationHelper index = EMFScope.extractUnderlyingEMFIndex(engine);
 		if (Application.class == type) {
-			ApplicationsMatcher matcher = ApplicationsMatcher.on(engine);
-			Set<Application> candidates = matcher.getAllValuesOfapp();
+			Set<EObject> candidates = index.getAllInstances(Hummingbird10Package.eINSTANCE.getApplication());
 			return candidates.toArray(new EObject[candidates.size()]);
 		}
 		if (Component.class == type) {
-			ComponentsMatcher matcher = ComponentsMatcher.on(engine);
-			Set<Component> candidates = matcher.getAllValuesOfcomponent();
+			Set<EObject> candidates = index.getAllInstances(Hummingbird10Package.eINSTANCE.getComponent());
 			return candidates.toArray(new EObject[candidates.size()]);
 		}
 		if (Connection.class == type) {
-			ConnectionsMatcher matcher = ConnectionsMatcher.on(engine);
-			Set<Connection> candidates = matcher.getAllValuesOfconnection();
+			Set<EObject> candidates = index.getAllInstances(Hummingbird10Package.eINSTANCE.getConnection());
 			return candidates.toArray(new EObject[candidates.size()]);
 		}
 		if (Interface.class == type) {
-			InterfacesMatcher matcher = InterfacesMatcher.on(engine);
-			Set<Interface> candidates = matcher.getAllValuesOfinterface();
+			Set<EObject> candidates = index.getAllInstances(Hummingbird10Package.eINSTANCE.getInterface());
 			return candidates.toArray(new EObject[candidates.size()]);
 		}
 		if (Parameter.class == type) {
-			ParametersMatcher matcher = ParametersMatcher.on(engine);
-			Set<Parameter> candidates = matcher.getAllValuesOfparameter();
+			Set<EObject> candidates = index.getAllInstances(Hummingbird10Package.eINSTANCE.getParameter());
 			return candidates.toArray(new EObject[candidates.size()]);
 		}
 		return null;
