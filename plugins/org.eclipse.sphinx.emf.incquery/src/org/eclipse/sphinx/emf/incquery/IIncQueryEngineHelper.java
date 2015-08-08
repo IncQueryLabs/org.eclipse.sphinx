@@ -18,16 +18,16 @@ package org.eclipse.sphinx.emf.incquery;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.incquery.runtime.api.IncQueryEngine;
-import org.eclipse.incquery.runtime.exception.IncQueryException;
+import org.eclipse.viatra.query.runtime.api.ViatraQueryEngine;
+import org.eclipse.viatra.query.runtime.exception.ViatraQueryException;
 
 public interface IIncQueryEngineHelper {
 
-	IncQueryEngine getEngine(EObject contextObject) throws IncQueryException;
+	ViatraQueryEngine getEngine(EObject contextObject) throws ViatraQueryException;
 
-	IncQueryEngine getEngine(Resource contextResource) throws IncQueryException;
+	ViatraQueryEngine getEngine(Resource contextResource) throws ViatraQueryException;
 
-	IncQueryEngine getEngine(Resource resource, boolean strict) throws IncQueryException;
+	ViatraQueryEngine getEngine(Resource resource, boolean strict) throws ViatraQueryException;
 
-	IncQueryEngine getEngine(ResourceSet resourceSet) throws IncQueryException;
+	ViatraQueryEngine getEngine(ResourceSet resourceSet) throws ViatraQueryException;
 }

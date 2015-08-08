@@ -18,29 +18,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.incquery.runtime.api.IncQueryEngine;
-import org.eclipse.incquery.runtime.exception.IncQueryException;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.emf.search.ui.ModelSearchMatch;
 import org.eclipse.sphinx.emf.search.ui.QuerySpecification;
 import org.eclipse.sphinx.emf.search.ui.incquery.services.AbstractIncQueryModelSearchService;
-import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
-import org.eclipse.sphinx.examples.hummingbird20.incquery.common.IdentifiablesByNameMatcher;
+import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.viatra.query.runtime.api.ViatraQueryEngine;
+import org.eclipse.viatra.query.runtime.base.api.NavigationHelper;
+import org.eclipse.viatra.query.runtime.emf.EMFScope;
+import org.eclipse.viatra.query.runtime.exception.ViatraQueryException;
 
 public class Hummingbird20ModelSearchService extends AbstractIncQueryModelSearchService {
 
 	@Override
-	protected List<ModelSearchMatch> getMatches(IncQueryEngine engine, QuerySpecification querySpec) {
+	protected List<ModelSearchMatch> getMatches(ViatraQueryEngine engine, QuerySpecification querySpec) {
 		List<ModelSearchMatch> result = new ArrayList<ModelSearchMatch>();
 		try {
-			IdentifiablesByNameMatcher matcher = IdentifiablesByNameMatcher.on(engine);
+			NavigationHelper baseIndex = EMFScope.extractUnderlyingEMFIndex(engine);
 			// TODO Check with EMF-IncQuery guys if simple patterns and/or RegEx can be supported
-			Set<Identifiable> allValuesOfidentifiable = matcher.getAllValuesOfidentifiable(querySpec.getPattern());
-			for (Identifiable identifiable : allValuesOfidentifiable) {
+			Set<EObject> allValuesOfidentifiable = baseIndex.findByAttributeValue(querySpec.getPattern(),
+					Common20Package.Literals.IDENTIFIABLE__NAME);
+			for (EObject identifiable : allValuesOfidentifiable) {
 				result.add(new ModelSearchMatch(identifiable));
 			}
-		} catch (IncQueryException ex) {
+		} catch (ViatraQueryException ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
 		return result;

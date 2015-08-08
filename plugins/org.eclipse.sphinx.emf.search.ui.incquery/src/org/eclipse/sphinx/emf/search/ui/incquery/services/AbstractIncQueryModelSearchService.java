@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.incquery.runtime.api.IncQueryEngine;
-import org.eclipse.incquery.runtime.exception.IncQueryException;
+import org.eclipse.viatra.query.runtime.api.ViatraQueryEngine;
+import org.eclipse.viatra.query.runtime.exception.ViatraQueryException;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.search.ui.ModelSearchMatch;
 import org.eclipse.sphinx.emf.search.ui.QuerySpecification;
@@ -35,16 +35,16 @@ public abstract class AbstractIncQueryModelSearchService implements IModelSearch
 
 	private IWorkspaceIncQueryEngineHelper workspaceIncQueryEngineHelper;
 
-	protected abstract List<ModelSearchMatch> getMatches(IncQueryEngine engine, QuerySpecification querySpec);
+	protected abstract List<ModelSearchMatch> getMatches(ViatraQueryEngine engine, QuerySpecification querySpec);
 
 	@Override
 	public List<ModelSearchMatch> getMatches(Collection<Resource> resources, QuerySpecification querySpec) {
 		List<ModelSearchMatch> result = new ArrayList<ModelSearchMatch>();
 		for (Resource resource : resources) {
 			try {
-				IncQueryEngine engine = getWorkspaceIncQueryEngineHelper().getEngine(resource, true);
+				ViatraQueryEngine engine = getWorkspaceIncQueryEngineHelper().getEngine(resource, true);
 				result.addAll(getMatches(engine, querySpec));
-			} catch (IncQueryException ex) {
+			} catch (ViatraQueryException ex) {
 				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			}
 		}
@@ -54,9 +54,9 @@ public abstract class AbstractIncQueryModelSearchService implements IModelSearch
 	@Override
 	public List<ModelSearchMatch> getMatches(IModelDescriptor modelDescriptor, QuerySpecification querySpec) {
 		try {
-			IncQueryEngine engine = getWorkspaceIncQueryEngineHelper().getEngine(modelDescriptor);
+			ViatraQueryEngine engine = getWorkspaceIncQueryEngineHelper().getEngine(modelDescriptor);
 			return getMatches(engine, querySpec);
-		} catch (IncQueryException ex) {
+		} catch (ViatraQueryException ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			return Collections.emptyList();
 		}
