@@ -21,18 +21,17 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.incquery.runtime.api.IncQueryEngine;
-import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolver;
-import org.eclipse.sphinx.emf.incquery.AbstractIncQueryProvider;
 import org.eclipse.sphinx.emf.incquery.IIncQueryEngineHelper;
 import org.eclipse.sphinx.emf.incquery.IncQueryEngineHelper;
 import org.eclipse.sphinx.emf.incquery.internal.Activator;
 import org.eclipse.sphinx.emf.resource.ExtendedResourceSet;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.viatra.query.runtime.api.ViatraQueryEngine;
+import org.eclipse.viatra.query.runtime.exception.ViatraQueryException;
 
-public abstract class AbstractIncQueryProxyResolver extends AbstractIncQueryProvider implements IProxyResolver {
+public abstract class AbstractIncQueryProxyResolver implements IProxyResolver {
 
 	private IIncQueryEngineHelper incQueryEngineHelper;
 
@@ -54,7 +53,7 @@ public abstract class AbstractIncQueryProxyResolver extends AbstractIncQueryProv
 	 * @return
 	 */
 	// TODO Move engine parameter to first place, remove contextObject parameter
-	protected abstract EObject[] getEObjectCandidates(EObject proxy, Object contextObject, IncQueryEngine engine);
+	protected abstract EObject[] getEObjectCandidates(EObject proxy, Object contextObject, ViatraQueryEngine engine);
 
 	/**
 	 * @param uri
@@ -63,7 +62,7 @@ public abstract class AbstractIncQueryProxyResolver extends AbstractIncQueryProv
 	 * @return
 	 */
 	// TODO Move engine parameter to first place, remove contextObject parameter
-	protected abstract EObject[] getEObjectCandidates(URI uri, Object contextObject, IncQueryEngine engine);
+	protected abstract EObject[] getEObjectCandidates(URI uri, Object contextObject, ViatraQueryEngine engine);
 
 	protected EObject getMatchingEObject(URI uri, Object contextObject, EObject[] candidates) {
 		if (uri != null && candidates != null) {
@@ -93,10 +92,12 @@ public abstract class AbstractIncQueryProxyResolver extends AbstractIncQueryProv
 		return false;
 	}
 
+	protected abstract boolean isTypeSupported(EClass eType);
+
 	@Override
 	public boolean canResolve(EClass eType) {
 		if (eType != null) {
-			return getSupportedTypes().contains(eType.getInstanceClass()) && !eType.isAbstract() && !eType.isInterface();
+			return !eType.isAbstract() && !eType.isInterface() && isTypeSupported(eType);
 		}
 		return false;
 	}
@@ -119,11 +120,11 @@ public abstract class AbstractIncQueryProxyResolver extends AbstractIncQueryProv
 		try {
 			if (proxy != null) {
 				URI uri = trimContextInfo(((InternalEObject) proxy).eProxyURI(), contextObject);
-				IncQueryEngine engine = getIncQueryEngineHelper().getEngine(contextObject);
+				ViatraQueryEngine engine = getIncQueryEngineHelper().getEngine(contextObject);
 				EObject[] candidates = getEObjectCandidates(proxy, contextObject, engine);
 				return getMatchingEObject(uri, contextObject, candidates);
 			}
-		} catch (IncQueryException ex) {
+		} catch (ViatraQueryException ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
 		return null;
@@ -134,11 +135,11 @@ public abstract class AbstractIncQueryProxyResolver extends AbstractIncQueryProv
 		try {
 			if (contextResourceSet != null) {
 				uri = contextResourceSet.trimProxyContextInfo(uri);
-				IncQueryEngine engine = getIncQueryEngineHelper().getEngine(contextResourceSet);
+				ViatraQueryEngine engine = getIncQueryEngineHelper().getEngine(contextResourceSet);
 				EObject[] candidates = getEObjectCandidates(uri, contextObject, engine);
 				return getMatchingEObject(uri, contextObject, candidates);
 			}
-		} catch (IncQueryException ex) {
+		} catch (ViatraQueryException ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
 		return null;

@@ -16,12 +16,9 @@ package org.eclipse.sphinx.emf.workspace.incquery.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import org.eclipse.incquery.runtime.api.IncQueryMatcher;
-import org.eclipse.incquery.runtime.exception.IncQueryException;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.emf.incquery.IIncQueryEngineHelper;
-import org.eclipse.sphinx.emf.incquery.IMatcherProvider;
 import org.eclipse.sphinx.emf.incquery.services.AbstractModelQueryService;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.workspace.incquery.IWorkspaceIncQueryEngineHelper;
@@ -29,25 +26,25 @@ import org.eclipse.sphinx.emf.workspace.incquery.WorkspaceIncQueryEngineHelper;
 import org.eclipse.sphinx.emf.workspace.incquery.internal.Activator;
 import org.eclipse.sphinx.emf.workspace.query.IWorkspaceModelQueryService;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.viatra.query.runtime.api.ViatraQueryEngine;
+import org.eclipse.viatra.query.runtime.base.api.NavigationHelper;
+import org.eclipse.viatra.query.runtime.emf.EMFScope;
+import org.eclipse.viatra.query.runtime.exception.ViatraQueryException;
 
 // TODO Rename to AbstractWorkspaceIncQueryModelQueryService and move to org.eclipse.sphinx.emf.workspace.incquery package
 public abstract class AbstractWorkspaceModelQueryService extends AbstractModelQueryService implements IWorkspaceModelQueryService {
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public <T> List<T> getAllInstancesOf(IModelDescriptor modelDescriptor, Class<T> type) {
 		List<T> result = new ArrayList<T>();
 		try {
-			IMatcherProvider provider = getMatcherProvider(type);
-			if (provider != null) {
-				IWorkspaceIncQueryEngineHelper engineHelper = (IWorkspaceIncQueryEngineHelper) getIncQueryEngineHelper();
-				IncQueryMatcher matcher = provider.getMatcher(engineHelper.getEngine(modelDescriptor), type);
-				Set allValues = matcher.getAllValues((String) matcher.getParameterNames().get(0));
-				for (Object val : allValues) {
-					result.add((T) val);
-				}
+			IWorkspaceIncQueryEngineHelper engineHelper = (IWorkspaceIncQueryEngineHelper) getIncQueryEngineHelper();
+			ViatraQueryEngine engine = engineHelper.getEngine(modelDescriptor);
+			NavigationHelper baseIndex = EMFScope.extractUnderlyingEMFIndex(engine);
+			for (EObject element : baseIndex.getAllInstances(getEClassForType(type))) {
+				result.add(type.cast(element));
 			}
-		} catch (IncQueryException ex) {
+		} catch (ViatraQueryException ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
 		return result;

@@ -7,18 +7,14 @@ Bundle-Activator: org.eclipse.sphinx.examples.hummingbird20.incquery.internal.Ac
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: org.eclipse.sphinx.examples.hummingbird20.incquery,
- org.eclipse.sphinx.examples.hummingbird20.incquery.common,
- org.eclipse.sphinx.examples.hummingbird20.incquery.common.util,
- org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel,
- org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.util,
  org.eclipse.sphinx.examples.hummingbird20.incquery.internal;x-internal:=true,
- org.eclipse.sphinx.examples.hummingbird20.incquery.services,
- org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel,
- org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.util
+ org.eclipse.sphinx.examples.hummingbird20.incquery.services
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.sphinx.emf.search.ui.incquery,
  org.eclipse.sphinx.examples.hummingbird20;visibility:=reexport,
- org.apache.log4j
+ org.apache.log4j,
+ org.eclipse.viatra.query.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
+Import-Package: org.apache.log4j

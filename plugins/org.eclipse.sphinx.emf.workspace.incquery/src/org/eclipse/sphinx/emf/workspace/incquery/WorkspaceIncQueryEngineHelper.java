@@ -17,18 +17,19 @@ package org.eclipse.sphinx.emf.workspace.incquery;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.incquery.runtime.api.IncQueryEngine;
-import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.sphinx.emf.incquery.IncQueryEngineHelper;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSet;
 import org.eclipse.sphinx.emf.workspace.incquery.internal.DelegatingScopingResourceSetImpl;
+import org.eclipse.viatra.query.runtime.api.ViatraQueryEngine;
+import org.eclipse.viatra.query.runtime.emf.EMFScope;
+import org.eclipse.viatra.query.runtime.exception.ViatraQueryException;
 
 public class WorkspaceIncQueryEngineHelper extends IncQueryEngineHelper implements IWorkspaceIncQueryEngineHelper {
 
 	@Override
-	public IncQueryEngine getEngine(Resource contextResource) throws IncQueryException {
+	public ViatraQueryEngine getEngine(Resource contextResource) throws ViatraQueryException {
 		IModelDescriptor contextModelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(contextResource);
 		if (contextModelDescriptor != null) {
 			return getEngine(contextModelDescriptor);
@@ -37,15 +38,15 @@ public class WorkspaceIncQueryEngineHelper extends IncQueryEngineHelper implemen
 	}
 
 	@Override
-	public IncQueryEngine getEngine(IModelDescriptor contextModelDescriptor) throws IncQueryException {
+	public ViatraQueryEngine getEngine(IModelDescriptor contextModelDescriptor) throws ViatraQueryException {
 		if (contextModelDescriptor != null) {
 			ResourceSet resourceSet = contextModelDescriptor.getEditingDomain().getResourceSet();
 			if (resourceSet instanceof ScopingResourceSet) {
 				DelegatingScopingResourceSetImpl delegatingResourceSet = new DelegatingScopingResourceSetImpl((ScopingResourceSet) resourceSet,
 						contextModelDescriptor);
-				return IncQueryEngine.on(delegatingResourceSet);
+				return ViatraQueryEngine.on(new EMFScope(delegatingResourceSet));
 			}
-			return IncQueryEngine.on(resourceSet);
+			return ViatraQueryEngine.on(new EMFScope(resourceSet));
 		}
 		return null;
 	}

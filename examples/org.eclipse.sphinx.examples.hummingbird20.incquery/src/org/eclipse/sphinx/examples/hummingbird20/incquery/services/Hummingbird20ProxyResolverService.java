@@ -18,17 +18,13 @@ package org.eclipse.sphinx.examples.hummingbird20.incquery.services;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.sphinx.emf.ecore.proxymanagement.AbstractProxyResolverService;
-import org.eclipse.sphinx.examples.hummingbird20.incquery.common.CommonProxyResolver;
-import org.eclipse.sphinx.examples.hummingbird20.incquery.instancemodel.InstanceModelProxyResolver;
-import org.eclipse.sphinx.examples.hummingbird20.incquery.typemodel.TypeModelProxyResolver;
+import org.eclipse.sphinx.examples.hummingbird20.incquery.Hummingbird20ProxyResolver;
 
 public class Hummingbird20ProxyResolverService extends AbstractProxyResolverService {
 
 	@Override
 	protected void initProxyResolvers() {
-		getProxyResolvers().add(new CommonProxyResolver());
-		getProxyResolvers().add(new InstanceModelProxyResolver());
-		getProxyResolvers().add(new TypeModelProxyResolver());
+		getProxyResolvers().add(new Hummingbird20ProxyResolver());
 	}
 
 	@Override

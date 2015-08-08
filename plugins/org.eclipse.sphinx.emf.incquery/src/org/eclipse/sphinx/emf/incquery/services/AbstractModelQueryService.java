@@ -16,36 +16,26 @@ package org.eclipse.sphinx.emf.incquery.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.incquery.runtime.api.IncQueryMatcher;
-import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.sphinx.emf.incquery.IIncQueryEngineHelper;
-import org.eclipse.sphinx.emf.incquery.IMatcherProvider;
 import org.eclipse.sphinx.emf.incquery.IncQueryEngineHelper;
 import org.eclipse.sphinx.emf.incquery.internal.Activator;
 import org.eclipse.sphinx.emf.query.IModelQueryService;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+import org.eclipse.viatra.query.runtime.api.ViatraQueryEngine;
+import org.eclipse.viatra.query.runtime.base.api.NavigationHelper;
+import org.eclipse.viatra.query.runtime.emf.EMFScope;
+import org.eclipse.viatra.query.runtime.exception.ViatraQueryException;
 
 // TODO Rename to AbstractIncQueryModelQueryService and move to org.eclipse.sphinx.emf.incquery package
 public abstract class AbstractModelQueryService implements IModelQueryService {
 
-	private List<IMatcherProvider> matcherProviders = new ArrayList<IMatcherProvider>();
 	private IIncQueryEngineHelper incQueryEngineHelper;
 
 	public AbstractModelQueryService() {
-		initMatcherProviders();
-	}
-
-	protected abstract void initMatcherProviders();
-
-	protected List<IMatcherProvider> getMatcherProviders() {
-		if (matcherProviders == null) {
-			matcherProviders = new ArrayList<IMatcherProvider>();
-		}
-		return matcherProviders;
 	}
 
 	protected IIncQueryEngineHelper getIncQueryEngineHelper() {
@@ -59,34 +49,23 @@ public abstract class AbstractModelQueryService implements IModelQueryService {
 		return new IncQueryEngineHelper();
 	}
 
-	protected <T> IMatcherProvider getMatcherProvider(Class<T> type) {
-		for (IMatcherProvider provider : matcherProviders) {
-			if (provider.isProviderForType(type)) {
-				return provider;
-			}
-		}
-		return null;
-	}
-
 	@Override
 	public <T> List<T> getAllInstancesOf(EObject contextObject, Class<T> type) {
 		return getAllInstancesOf(contextObject.eResource(), type);
 	}
 
+	protected abstract EClass getEClassForType(Class<?> type);
+
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> List<T> getAllInstancesOf(Resource contextResource, Class<T> type) {
 		List<T> result = new ArrayList<T>();
 		try {
-			IMatcherProvider provider = getMatcherProvider(type);
-			if (provider != null) {
-				IncQueryMatcher matcher = provider.getMatcher(getIncQueryEngineHelper().getEngine(contextResource), type);
-				Set allValues = matcher.getAllValues((String) matcher.getParameterNames().get(0));
-				for (Object val : allValues) {
-					result.add((T) val);
-				}
+			ViatraQueryEngine engine = getIncQueryEngineHelper().getEngine(contextResource);
+			NavigationHelper baseIndex = EMFScope.extractUnderlyingEMFIndex(engine);
+			for (EObject element : baseIndex.getAllInstances(getEClassForType(type))) {
+				result.add(type.cast(element));
 			}
-		} catch (IncQueryException ex) {
+		} catch (ViatraQueryException ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
 		return result;
