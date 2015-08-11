@@ -95,7 +95,7 @@ public class CloseResourceOverrideAction extends CloseResourceAction {
 	 */
 	protected boolean saveDirtyModels() {
 		// Get the items to close
-		final List<IResource> resources = getSelectedResources();
+		final List<? extends IResource> resources = getSelectedResources();
 		if (resources == null || resources.isEmpty()) {
 			// No action needs to be taken since no resources are selected
 			return false;
