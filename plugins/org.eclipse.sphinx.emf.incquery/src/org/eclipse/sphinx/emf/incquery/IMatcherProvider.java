@@ -18,9 +18,14 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.api.IncQueryMatcher;
+import org.eclipse.incquery.runtime.base.api.NavigationHelper;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 
+/**
+ * @deprecated Use {@link NavigationHelper} instead to get all instances of a type!
+ */
 @SuppressWarnings("rawtypes")
+@Deprecated
 public interface IMatcherProvider {
 
 	boolean isProviderForType(EObject eObject);

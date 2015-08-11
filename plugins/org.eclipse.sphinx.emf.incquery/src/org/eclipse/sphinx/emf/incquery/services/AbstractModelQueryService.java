@@ -18,9 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.incquery.runtime.api.IncQueryMatcher;
+import org.eclipse.incquery.runtime.api.IncQueryEngine;
+import org.eclipse.incquery.runtime.base.api.NavigationHelper;
+import org.eclipse.incquery.runtime.emf.EMFScope;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.sphinx.emf.incquery.IIncQueryEngineHelper;
 import org.eclipse.sphinx.emf.incquery.IMatcherProvider;
@@ -28,6 +32,9 @@ import org.eclipse.sphinx.emf.incquery.IncQueryEngineHelper;
 import org.eclipse.sphinx.emf.incquery.internal.Activator;
 import org.eclipse.sphinx.emf.query.IModelQueryService;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 
 public abstract class AbstractModelQueryService implements IModelQueryService {
 
@@ -73,21 +80,49 @@ public abstract class AbstractModelQueryService implements IModelQueryService {
 	}
 
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> List<T> getAllInstancesOf(Resource contextResource, Class<T> type) {
-		List<T> result = new ArrayList<T>();
 		try {
-			IMatcherProvider provider = getMatcherProvider(type);
-			if (provider != null) {
-				IncQueryMatcher matcher = provider.getMatcher(getIncQueryEngineHelper().getEngine(contextResource), type);
-				Set allValues = matcher.getAllValues((String) matcher.getParameterNames().get(0));
-				for (Object val : allValues) {
-					result.add((T) val);
-				}
-			}
+			IncQueryEngine engine = getIncQueryEngineHelper().getEngine(contextResource);
+			return getAllInstancesOf(type, engine);
 		} catch (IncQueryException ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+			return null;
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected <T> List<T> getAllInstancesOf(Class<T> type, IncQueryEngine engine) throws IncQueryException {
+		List<T> result = new ArrayList<T>();
+		NavigationHelper index = EMFScope.extractUnderlyingEMFIndex(engine);
+		EClass eClass = findEClassForClass(type);
+		if (eClass != null) {
+			index.registerEClasses(ImmutableSet.of(eClass));
+			Set allValues = index.getAllInstances(eClass);
+			for (Object val : allValues) {
+				result.add((T) val);
+			}
 		}
 		return result;
 	}
+
+	private static <T> EClass findEClassForClass(Class<T> type) {
+		for (Object value : EPackage.Registry.INSTANCE.values()) {
+			EPackage ePackage = null;
+			if (value instanceof EPackage) {
+				ePackage = (EPackage) value;
+			} else if (value instanceof EPackage.Descriptor) {
+				EPackage.Descriptor descriptor = (EPackage.Descriptor) value;
+				ePackage = descriptor.getEPackage();
+			}
+			if (ePackage != null) {
+				for (EClass eClass : Iterables.filter(ePackage.getEClassifiers(), EClass.class)) {
+					if (eClass.getInstanceClass() == type) {
+						return eClass;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 }
