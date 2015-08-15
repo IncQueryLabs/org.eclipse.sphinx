@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>org.eclipse.sphinx.releng</groupId>
 		<artifactId>org.eclipse.sphinx.releng.parent</artifactId>
-		<version>0.9.0-SNAPSHOT</version>
+		<version>0.9.1-SNAPSHOT</version>
 		<relativePath>../../releng/org.eclipse.sphinx.releng.builds/parent/pom.xml</relativePath>
 	</parent>
 	<groupId>org.eclipse.sphinx.features</groupId>
 	<artifactId>org.eclipse.sphinx.examples.metamodels.hummingbird</artifactId>
-	<version>0.9.0-SNAPSHOT</version>
+	<version>0.9.1-SNAPSHOT</version>
 	<packaging>eclipse-feature</packaging>
 	<build>
 		<plugins>
