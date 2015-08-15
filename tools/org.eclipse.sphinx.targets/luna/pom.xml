@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.eclipse.sphinx.releng</groupId>
 		<artifactId>org.eclipse.sphinx.releng.parent</artifactId>
-		<version>0.9.0-SNAPSHOT</version>
+		<version>0.10.0-SNAPSHOT</version>
 		<relativePath>../../../releng/org.eclipse.sphinx.releng.builds/parent/pom.xml</relativePath>
 	</parent>
 	<groupId>org.eclipse.sphinx.targets</groupId>
 	<artifactId>luna</artifactId>
-	<version>0.9.0-SNAPSHOT</version>
+	<version>0.10.0-SNAPSHOT</version>
 	<name>org.eclipse.sphinx.targets.luna</name>
 	<packaging>eclipse-target-definition</packaging>
 </project>
