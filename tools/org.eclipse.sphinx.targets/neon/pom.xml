@@ -9,8 +9,8 @@
 		<relativePath>../../../releng/org.eclipse.sphinx.releng.builds/parent/pom.xml</relativePath>
 	</parent>
 	<groupId>org.eclipse.sphinx.targets</groupId>
-	<artifactId>kepler</artifactId>
+	<artifactId>mars</artifactId>
 	<version>0.10.0-SNAPSHOT</version>
-	<name>org.eclipse.sphinx.targets.luna</name>
+	<name>org.eclipse.sphinx.targets.mars</name>
 	<packaging>eclipse-target-definition</packaging>
 </project>
