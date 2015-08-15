@@ -82,7 +82,7 @@ public final class WorkspaceTransactionUtil {
 				return IOperationHistory.GLOBAL_UNDO_CONTEXT;
 			}
 		}
-		return ResourcesPlugin.getWorkspace().getAdapter(IUndoContext.class);
+		return (IUndoContext) ResourcesPlugin.getWorkspace().getAdapter(IUndoContext.class);
 	}
 
 	/**
@@ -224,7 +224,7 @@ public final class WorkspaceTransactionUtil {
 	@Deprecated
 	public static void executeInWriteTransaction(TransactionalEditingDomain editingDomain, final Runnable runnable, final String operationLabel,
 			IOperationHistory operationHistory, final Map<String, Object> transactionOptions, IProgressMonitor monitor)
-			throws OperationCanceledException, ExecutionException {
+					throws OperationCanceledException, ExecutionException {
 		Assert.isNotNull(editingDomain);
 		Assert.isNotNull(runnable);
 		Assert.isNotNull(operationHistory);
@@ -335,7 +335,7 @@ public final class WorkspaceTransactionUtil {
 	 **/
 	public static void executeInWriteTransaction(TransactionalEditingDomain editingDomain, final ILabeledWorkspaceRunnable runnable,
 			IOperationHistory operationHistory, final Map<String, Object> transactionOptions, IProgressMonitor monitor)
-			throws OperationCanceledException, ExecutionException {
+					throws OperationCanceledException, ExecutionException {
 		Assert.isNotNull(editingDomain);
 		Assert.isNotNull(runnable);
 		Assert.isNotNull(operationHistory);
