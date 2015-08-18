@@ -1,5 +1,3 @@
-* merge applicableTargetUpdateSiteName and applicableTargetJavadocSiteName
-
 #!/bin/sh
 
 ######################
