@@ -1,3 +1,5 @@
+* merge applicableTargetUpdateSiteName and applicableTargetJavadocSiteName
+
 #!/bin/sh
 
 ######################
@@ -9,6 +11,25 @@
 # $3: BUILD_ID: The id under which the selected build is going to be published, use following convention: I: yyyymmdd-hhmm, M: n RC: n, R: none
 # $4: SERVICE_RELEASE_NUMBER: The service release number of the build to be published (will be used to complement the major and minor version number in the name of the build to be published)
 # $5: MERGE_UPDATE_SITE: Whether to keep all previously published builds in project update site and merge the build to be published into it (project update site will be wiped out and replaced by the update site of the build to be published otherwise), must be one of: true, false
+
+###############################
+# Resulting downloads structure
+###############################
+
+# Downloads:
+# http://download.eclipse.org/sphinx/sphinx-Update-0.9.0*.zip
+#
+# Update sites/JavaDoc for upcoming new releases (service release = 0):
+# http://download.eclipse.org/sphinx/previews
+# http://download.eclipse.org/sphinx/previews/javadoc
+#
+# Update sites/JavaDoc for upcoming update releases (service release > 0):
+# http://download.eclipse.org/sphinx/updates/0.9.x
+# http://download.eclipse.org/sphinx/updates/0.9.x/javadoc
+#
+# Update sites/JavaDoc for releases:
+# http://download.eclipse.org/sphinx/releases/0.9.x
+# http://download.eclipse.org/sphinx/releases/0.9.x/javadoc
 
 echo "------------------------------------------------------------------------"
 echo "Echoing command line options"
@@ -30,13 +51,12 @@ buildUpdateSitePath=$relengProjectPath/repository/target/repository
 javadocProjectPath=docs/org.eclipse.sphinx.doc.isv
 buildJavadocSitePath=$javadocProjectPath/target/javadoc/reference/api
 
-projectUpdateSitesBasePath=sphinx/updates
-projectDownloadSitesBasePath=sphinx/downloads
-projectJavadocSiteBasePath=sphinx/javadoc
-updateSiteArchiveFileNamePrefix=sphinx-Update
-
 eclipsePackageVersion=4.4.2
 eclipsePackageBuildId=201502041700
+
+targetBasePath=sphinx
+targetDownloadsPath=$targetBasePath
+updateSiteArchiveFileNamePrefix=sphinx-Update
 
 ##################
 # Derived settings
@@ -55,48 +75,53 @@ localRelengProjectLocation=${WORKSPACE}/$relengProjectPath
 localUpdateSiteLocation=$localRelengProjectLocation/updates
 localDownloadSiteLocation=$localRelengProjectLocation/downloads
 
-projectUpdateSiteBackupLocation=$localRelengProjectLocation/backup
-
 eclipseDownloadsLocation=/home/data/httpd/download.eclipse.org
 eclipsePackageFileName=eclipse-platform-$eclipsePackageVersion-linux-gtk-x86_64.tar.gz
 eclipsePackageLocation=$eclipseDownloadsLocation/eclipse/downloads/drops4/R-$eclipsePackageVersion-$eclipsePackageBuildId/$eclipsePackageFileName
 eclipseInstallLocation=$localRelengProjectLocation/eclipse
+
+targetDownloadsLocation=$eclipseDownloadsLocation/$targetDownloadsPath
+targetBackupLocation=$localRelengProjectLocation/backup
 
 ##################
 # Runtime settings
 ##################
 
 case $BUILD_TYPE in
-    I) applicableProjectUpdateSiteName=interim
-       applicableProjectDownloadSiteName=integration
+    I) if [ $SERVICE_RELEASE_NUMBER == "0" ];
+			then
+				applicableTargetUpdateSitePath=$targetBasePath/previews
+				applicableTargetJavadocSitePath=$targetBasePath/previews/javadoc
+			else
+				applicableTargetUpdateSitePath=$targetBasePath/updates/$releaseStreamName
+				applicableTargetJavadocSitePath=$targetBasePath/updates/$releaseStreamName/javadoc
+			fi
        applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release.$BUILD_TYPE$BUILD_ID.zip
-       applicableProjectJavadocSiteName=interim
        ;;
-    M|RC) applicableProjectUpdateSiteName=interim
-    	  applicableProjectDownloadSiteName=stable
-    	  applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release$BUILD_TYPE$BUILD_ID.zip
-    	  applicableProjectJavadocSiteName=interim
-    	  ;;
-    R) applicableProjectUpdateSiteName=releases/$releaseStreamName
-       applicableProjectDownloadSiteName=releases/$releaseStreamName
+    M|RC) if [ $SERVICE_RELEASE_NUMBER == "0" ];
+			then
+				applicableTargetUpdateSitePath=$targetBasePath/previews
+				applicableTargetJavadocSitePath=$targetBasePath/previews/javadoc
+			else
+				applicableTargetUpdateSitePath=$targetBasePath/updates/$releaseStreamName
+				applicableTargetJavadocSitePath=$targetBasePath/updates/$releaseStreamName/javadoc
+			fi
+            applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release$BUILD_TYPE$BUILD_ID.zip
+            ;;
+    R) applicableTargetUpdateSitePath=$targetBasePath/releases/$releaseStreamName
+       applicableTargetJavadocSitePath=$targetBasePath/releases/$releaseStreamName/javadoc
        applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release.zip
-       applicableProjectJavadocSiteName=releases/$releaseStreamName
        ;;
-    T) applicableProjectUpdateSiteName=test/$releaseStreamName
-       applicableProjectDownloadSiteName=test/$releaseStreamName
+    T) applicableTargetUpdateSitePath=$targetBasePath/test/$releaseStreamName
+       applicableTargetJavadocSitePath=$targetBasePath/test/$releaseStreamName/javadoc
        applicableUpdateSiteArchiveFileName=$updateSiteArchiveFileNamePrefix-$release.$BUILD_TYPE$BUILD_ID.zip
-       applicableProjectJavadocSiteName=test/$releaseStreamName
        ;;
     *) exit 0
        ;;
 esac
-applicableProjectUpdateSitePath="$projectUpdateSitesBasePath/$applicableProjectUpdateSiteName"
-applicableProjectUpdateSiteLocation="$eclipseDownloadsLocation/$applicableProjectUpdateSitePath"
-applicableProjectDownloadSitePath="$projectDownloadSitesBasePath/$applicableProjectDownloadSiteName"
-applicableProjectDownloadSiteLocation="$eclipseDownloadsLocation/$applicableProjectDownloadSitePath"
+applicableTargetUpdateSiteLocation="$eclipseDownloadsLocation/$applicableTargetUpdateSitePath"
+applicableTargetJavadocSiteLocation="$eclipseDownloadsLocation/$applicableTargetJavadocSitePath"
 applicableLocalUpdateSiteArchiveLocation=$localDownloadSiteLocation/$applicableUpdateSiteArchiveFileName
-applicableProjectJavadocSitePath="$projectJavadocSiteBasePath/$applicableProjectJavadocSiteName"
-applicableProjectJavadocSiteLocation="$eclipseDownloadsLocation/$applicableProjectJavadocSitePath"
 
 #############################################################################################
 # Eclipse installation (required to create merged update site and set p2.mirrorsURL property)
@@ -157,27 +182,27 @@ echo "------------------------------------------------------------------------"
 echo "Publishing archived update site"
 echo "------------------------------------------------------------------------"
 
-echo "Copying $applicableLocalUpdateSiteArchiveLocation to $applicableProjectDownloadSiteLocation"
-mkdir -p $applicableProjectDownloadSiteLocation
-cp $applicableLocalUpdateSiteArchiveLocation $applicableProjectDownloadSiteLocation
+echo "Copying $applicableLocalUpdateSiteArchiveLocation to $targetDownloadsLocation"
+mkdir -p $targetDownloadsLocation
+cp $applicableLocalUpdateSiteArchiveLocation $targetDownloadsLocation
 
-if [ $MERGE_UPDATE_SITE != "false" ] && [ -f $applicableProjectUpdateSiteLocation/content.* ];
+if [ $MERGE_UPDATE_SITE != "false" ] && [ -f $applicableTargetUpdateSiteLocation/content.* ];
 	then
 		echo "------------------------------------------------------------------------"
 		echo "Merging project update site into build update site"
 		echo "------------------------------------------------------------------------"
 
-        echo "Merging $applicableProjectUpdateSiteLocation into $localUpdateSiteLocation"
-        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$applicableProjectUpdateSiteLocation -destination file:$localUpdateSiteLocation
-        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$applicableProjectUpdateSiteLocation -destination file:$localUpdateSiteLocation
+        echo "Merging $applicableTargetUpdateSiteLocation into $localUpdateSiteLocation"
+        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication -source file:$applicableTargetUpdateSiteLocation -destination file:$localUpdateSiteLocation
+        $eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication -source file:$applicableTargetUpdateSiteLocation -destination file:$localUpdateSiteLocation
 fi
 
 echo "------------------------------------------------------------------------"
 echo "Setting p2.mirrorsURL property"
 echo "------------------------------------------------------------------------"
 
-echo "Setting p2.mirrorsURL property of $localUpdateSiteLocation to http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSitePath (see https://wiki.eclipse.org/WTP/Releng/Tools/addRepoProperties for details)"
-$eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$localUpdateSiteLocation -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableProjectUpdateSitePath"
+echo "Setting p2.mirrorsURL property of $localUpdateSiteLocation to http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableTargetUpdateSitePath (see https://wiki.eclipse.org/WTP/Releng/Tools/addRepoProperties for details)"
+$eclipseInstallLocation/eclipse -nosplash --launcher.suppressErrors -clean -application org.eclipse.wtp.releng.tools.addRepoProperties -vmargs -DartifactRepoDirectory=$localUpdateSiteLocation -Dp2MirrorsURL="http://www.eclipse.org/downloads/download.php?format=xml&file=/$applicableTargetUpdateSitePath"
 
 if [ ! -f "$localUpdateSiteLocation/p2.index" ];
     then
@@ -191,34 +216,34 @@ if [ ! -f "$localUpdateSiteLocation/p2.index" ];
         echo "artifact.repository.factory.order = artifacts.xml,\!" >> $localUpdateSiteLocation/p2.index
 fi
 
-if [ -f "$applicableProjectUpdateSiteLocation/content.*" ];
+if [ -f "$applicableTargetUpdateSiteLocation/content.*" ];
     then
 		echo "------------------------------------------------------------------------"
 		echo "Creating backup of project update site"
 		echo "------------------------------------------------------------------------"
 
-		echo "Copying $applicableProjectUpdateSiteLocation/* to $projectUpdateSiteBackupLocation"
-        rm -rf $projectUpdateSiteBackupLocation
-        mkdir $projectUpdateSiteBackupLocation
-        cp -r $applicableProjectUpdateSiteLocation/* $projectUpdateSiteBackupLocation/
+		echo "Copying $applicableTargetUpdateSiteLocation/* to $targetBackupLocation"
+        rm -rf $targetBackupLocation
+        mkdir $targetBackupLocation
+        cp -r $applicableTargetUpdateSiteLocation/* $targetBackupLocation/
 fi
 
 echo "------------------------------------------------------------------------"
 echo "Publishing update site"
 echo "------------------------------------------------------------------------"
 
-echo "Removing $applicableProjectUpdateSiteLocation"
-rm -rf $applicableProjectUpdateSiteLocation
-echo "Copying $localUpdateSiteLocation/* to $applicableProjectUpdateSiteLocation"
-mkdir $applicableProjectUpdateSiteLocation
-cp -r $localUpdateSiteLocation/* $applicableProjectUpdateSiteLocation
+echo "Removing $applicableTargetUpdateSiteLocation"
+rm -rf $applicableTargetUpdateSiteLocation
+echo "Copying $localUpdateSiteLocation/* to $applicableTargetUpdateSiteLocation"
+mkdir $applicableTargetUpdateSiteLocation
+cp -r $localUpdateSiteLocation/* $applicableTargetUpdateSiteLocation
 
 echo "------------------------------------------------------------------------"
 echo "Publishing javadoc site"
 echo "------------------------------------------------------------------------"
 
-echo "Removing $applicableProjectJavadocSiteLocation"
-rm -rf $applicableProjectJavadocSiteLocation
-echo "Copying $buildJavadocSiteLocation/* to $applicableProjectJavadocSiteLocation"
-mkdir -p $applicableProjectJavadocSiteLocation
-cp -r $buildJavadocSiteLocation/* $applicableProjectJavadocSiteLocation
+echo "Removing $applicableTargetJavadocSiteLocation"
+rm -rf $applicableTargetJavadocSiteLocation
+echo "Copying $buildJavadocSiteLocation/* to $applicableTargetJavadocSiteLocation"
+mkdir -p $applicableTargetJavadocSiteLocation
+cp -r $buildJavadocSiteLocation/* $applicableTargetJavadocSiteLocation
