@@ -233,7 +233,7 @@ echo "------------------------------------------------------------------------"
 echo "Removing $applicableTargetUpdateSiteLocation"
 rm -rf $applicableTargetUpdateSiteLocation
 echo "Copying $localUpdateSiteLocation/* to $applicableTargetUpdateSiteLocation"
-mkdir $applicableTargetUpdateSiteLocation
+mkdir -p $applicableTargetUpdateSiteLocation
 cp -r $localUpdateSiteLocation/* $applicableTargetUpdateSiteLocation
 
 echo "------------------------------------------------------------------------"
