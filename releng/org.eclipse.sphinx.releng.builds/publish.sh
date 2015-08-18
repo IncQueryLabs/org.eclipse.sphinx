@@ -67,7 +67,7 @@ buildUpdateSiteLocation=$buildLocation/archive/$buildUpdateSitePath
 buildUpdateSiteURL=$BUILD_RUN/artifact/$buildUpdateSitePath
 buildJavadocSiteLocation=$buildLocation/archive/$buildJavadocSitePath
 
-releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d.\d)-[a-z]+/\d+/$#\1#; print;')
+releaseStream=$(echo "$BUILD_RUN" | perl -ne 's#.+/[a-z]+-(\d+\.\d+)-[a-z]+/\d+/$#\1#; print;')
 releaseStreamName=$releaseStream.x
 release=$releaseStream.$SERVICE_RELEASE_NUMBER
 
@@ -216,10 +216,10 @@ if [ ! -f "$localUpdateSiteLocation/p2.index" ];
         echo "artifact.repository.factory.order = artifacts.xml,\!" >> $localUpdateSiteLocation/p2.index
 fi
 
-if [ -f "$applicableTargetUpdateSiteLocation/content.*" ];
+if [ -f "$applicableTargetUpdateSiteLocation/content.jar" ];
     then
 		echo "------------------------------------------------------------------------"
-		echo "Creating backup of project update site"
+		echo "Creating backup of target update site and JavaDoc"
 		echo "------------------------------------------------------------------------"
 
 		echo "Copying $applicableTargetUpdateSiteLocation/* to $targetBackupLocation"
