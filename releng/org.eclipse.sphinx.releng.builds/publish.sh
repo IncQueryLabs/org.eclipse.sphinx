@@ -237,7 +237,7 @@ mkdir -p $applicableTargetUpdateSiteLocation
 cp -r $localUpdateSiteLocation/* $applicableTargetUpdateSiteLocation
 
 echo "------------------------------------------------------------------------"
-echo "Publishing javadoc site"
+echo "Publishing JavaDoc"
 echo "------------------------------------------------------------------------"
 
 echo "Removing $applicableTargetJavadocSiteLocation"
