@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - 475954: Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -37,6 +38,8 @@ import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.blacklist.ModelInde
 import org.eclipse.sphinx.emf.internal.ecore.proxymanagement.lookupresolver.EcoreIndex;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.model.IModelDescriptor;
+import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
 import org.eclipse.sphinx.emf.scoping.IResourceScopeProvider;
@@ -74,7 +77,8 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 	 * @param mmDescriptor
 	 *            The {@linkplain IMetaModelDescriptor meta-model descriptor} of the model which has been asked for
 	 *            loading.
-	 * @return <ul>
+	 * @return
+	 * 		<ul>
 	 *         <li><tt><b>true</b>&nbsp;&nbsp;</tt> if this job covers the loading of the specified projects with the
 	 *         specified meta-model descriptor;</li>
 	 *         <li><tt><b>false</b>&nbsp;</tt> otherwise.</li>
@@ -87,7 +91,8 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 	 *            The list of files this loading job is supposed to cover.
 	 * @param mmDescriptor
 	 *            The {@linkplain IMetaModelDescriptor meta-model descriptor} considered for loading.
-	 * @return <ul>
+	 * @return
+	 * 		<ul>
 	 *         <li><tt><b>true</b>&nbsp;&nbsp;</tt> if this job covers the loading of the specified files with the
 	 *         specified meta-model descriptor;</li>
 	 *         <li><tt><b>false</b>&nbsp;</tt> otherwise.</li>
@@ -350,36 +355,39 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 			throw new OperationCanceledException();
 		}
 
-		// Get complete set of model resources from given set of loaded files
+		// Get models behind given set of files
 		progress.subTask(Messages.subtask_initializingProxyResolution);
-		Collection<Resource> resources = new HashSet<Resource>();
+		Set<IModelDescriptor> models = new HashSet<IModelDescriptor>();
 		for (IFile file : files) {
+			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(file);
+			models.add(modelDescriptor);
 			Resource resource = EcorePlatformUtil.getResource(file);
-			if (resource != null && !resources.contains(resource)) {
-				resources.addAll(EcorePlatformUtil.getResourcesInModel(resource, true));
-			}
 		}
 
-		synchronized (lookupResolver) {
-			// Initialize lookup-based proxy resolver
-			lookupResolver.init(resources);
-			progress.worked(10);
+		// Force proxies within each model to be resolved
+		for (IModelDescriptor model : models) {
+			synchronized (lookupResolver) {
+				// Initialize lookup-based proxy resolver
+				Collection<Resource> resources = model.getLoadedResources(true);
+				lookupResolver.init(resources);
+				progress.worked(10);
 
-			// Request resolution of all proxies in given resources
-			SubMonitor resolveProxiesProgress = progress.newChild(80).setWorkRemaining(files.size());
-			for (Resource resource : resources) {
-				resolveProxiesProgress.subTask(NLS.bind(Messages.subtask_resolvingProxiesInResource, resource.getURI()));
+				// Try to resolve all proxies in given model
+				SubMonitor resolveProxiesProgress = progress.newChild(80).setWorkRemaining(files.size());
+				for (Resource resource : resources) {
+					resolveProxiesProgress.subTask(NLS.bind(Messages.subtask_resolvingProxiesInResource, resource.getURI()));
 
-				EObjectUtil.resolveAll(resource);
+					EObjectUtil.resolveAll(resource);
 
-				resolveProxiesProgress.worked(1);
-				if (resolveProxiesProgress.isCanceled()) {
-					throw new OperationCanceledException();
+					resolveProxiesProgress.worked(1);
+					if (resolveProxiesProgress.isCanceled()) {
+						throw new OperationCanceledException();
+					}
 				}
-			}
 
-			// Clear lookup-based proxy resolver
-			lookupResolver.clear();
+				// Clear lookup-based proxy resolver
+				lookupResolver.clear();
+			}
 		}
 
 		progress.subTask(""); //$NON-NLS-1$
@@ -417,7 +425,7 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 
 	protected void runReloadModelFiles(final Map<TransactionalEditingDomain, Collection<IFile>> filesToUnload,
 			final Map<TransactionalEditingDomain, Collection<IFile>> filesToLoad, final boolean memoryOptimized, IProgressMonitor monitor)
-			throws OperationCanceledException {
+					throws OperationCanceledException {
 		Assert.isNotNull(filesToUnload);
 		Assert.isNotNull(filesToLoad);
 		final SubMonitor progress = SubMonitor.convert(monitor, getFilesToUnloadCount(filesToUnload) + getFilesToLoadCount(filesToLoad));
