@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,12 +9,12 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - 475954: Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.incquery;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
@@ -28,19 +28,9 @@ import org.eclipse.sphinx.emf.workspace.incquery.internal.DelegatingScopingResou
 public class WorkspaceIncQueryEngineHelper extends IncQueryEngineHelper implements IWorkspaceIncQueryEngineHelper {
 
 	@Override
-	public IncQueryEngine getEngine(EObject contextObject) throws IncQueryException {
-		if (contextObject != null) {
-			return getEngine(contextObject.eResource());
-		}
-		return null;
-	}
-
-	@Override
 	public IncQueryEngine getEngine(Resource contextResource) throws IncQueryException {
-		if (contextResource != null) {
-			return getEngine(ModelDescriptorRegistry.INSTANCE.getModel(contextResource));
-		}
-		return null;
+		IModelDescriptor contextModelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(contextResource);
+		return getEngine(contextModelDescriptor);
 	}
 
 	@Override

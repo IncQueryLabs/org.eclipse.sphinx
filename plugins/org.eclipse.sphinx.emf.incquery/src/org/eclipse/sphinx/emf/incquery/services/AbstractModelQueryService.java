@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,6 +29,7 @@ import org.eclipse.sphinx.emf.incquery.internal.Activator;
 import org.eclipse.sphinx.emf.query.IModelQueryService;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
+// TODO Rename to AbstractIncQueryModelQueryService and move to org.eclipse.sphinx.emf.incquery package
 public abstract class AbstractModelQueryService implements IModelQueryService {
 
 	private List<IMatcherProvider> matcherProviders = new ArrayList<IMatcherProvider>();
