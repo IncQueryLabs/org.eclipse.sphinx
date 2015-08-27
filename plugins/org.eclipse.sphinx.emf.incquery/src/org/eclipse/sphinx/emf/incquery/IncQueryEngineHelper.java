@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - 475954: Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -26,11 +27,12 @@ public class IncQueryEngineHelper implements IIncQueryEngineHelper {
 	@Override
 	public IncQueryEngine getEngine(EObject contextObject) throws IncQueryException {
 		if (contextObject != null) {
-			Resource eResource = contextObject.eResource();
-			if (eResource != null) {
-				return getEngine(eResource);
+			Resource contextResource = contextObject.eResource();
+			if (contextResource != null) {
+				return getEngine(contextResource);
 			}
-			return IncQueryEngine.on(EcoreUtil.getRootContainer(contextObject));
+			EObject rootContainer = EcoreUtil.getRootContainer(contextObject);
+			return IncQueryEngine.on(rootContainer);
 		}
 		return null;
 	}
@@ -41,13 +43,13 @@ public class IncQueryEngineHelper implements IIncQueryEngineHelper {
 	}
 
 	@Override
-	public IncQueryEngine getEngine(Resource contextResource, boolean strict) throws IncQueryException {
-		if (contextResource != null) {
-			ResourceSet resourceSet = strict ? null : contextResource.getResourceSet();
-			if (resourceSet != null) {
+	public IncQueryEngine getEngine(Resource resource, boolean strict) throws IncQueryException {
+		if (resource != null) {
+			ResourceSet resourceSet = resource.getResourceSet();
+			if (resourceSet != null && !strict) {
 				return IncQueryEngine.on(resourceSet);
 			}
-			return IncQueryEngine.on(contextResource);
+			return IncQueryEngine.on(resource);
 		}
 		return null;
 	}

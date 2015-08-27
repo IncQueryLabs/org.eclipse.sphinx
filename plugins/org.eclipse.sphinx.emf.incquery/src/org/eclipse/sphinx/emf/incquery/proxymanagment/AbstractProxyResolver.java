@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - 475954: Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -23,15 +24,27 @@ import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolver;
 import org.eclipse.sphinx.emf.incquery.AbstractIncQueryProvider;
+import org.eclipse.sphinx.emf.incquery.IIncQueryEngineHelper;
+import org.eclipse.sphinx.emf.incquery.IncQueryEngineHelper;
 import org.eclipse.sphinx.emf.incquery.internal.Activator;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
+// TODO Rename to AbstractIncQueryProxyResolver
 public abstract class AbstractProxyResolver extends AbstractIncQueryProvider implements IProxyResolver {
 
-	public AbstractProxyResolver() {
-		super();
+	private IIncQueryEngineHelper incQueryEngineHelper;
+
+	protected IIncQueryEngineHelper getIncQueryEngineHelper() {
+		if (incQueryEngineHelper == null) {
+			incQueryEngineHelper = createIncQueryEngineHelper();
+		}
+		return incQueryEngineHelper;
+	}
+
+	protected IIncQueryEngineHelper createIncQueryEngineHelper() {
+		return new IncQueryEngineHelper();
 	}
 
 	/**
@@ -40,6 +53,7 @@ public abstract class AbstractProxyResolver extends AbstractIncQueryProvider imp
 	 * @param engine
 	 * @return
 	 */
+	// TODO Move engine parameter to first place, remove contextObject parameter
 	protected abstract EObject[] getEObjectCandidates(EObject proxy, Object contextObject, IncQueryEngine engine);
 
 	/**
@@ -48,6 +62,7 @@ public abstract class AbstractProxyResolver extends AbstractIncQueryProvider imp
 	 * @param engine
 	 * @return
 	 */
+	// TODO Move engine parameter to first place, remove contextObject parameter
 	protected abstract EObject[] getEObjectCandidates(URI proxyURI, Object contextObject, IncQueryEngine engine);
 
 	protected Class<?> getInstanceClass(EObject proxy) {
@@ -109,7 +124,7 @@ public abstract class AbstractProxyResolver extends AbstractIncQueryProvider imp
 	@Override
 	public EObject getEObject(EObject proxy, EObject contextObject, boolean loadOnDemand) {
 		try {
-			IncQueryEngine engine = getIncQueryEngineHelper().getEngine(contextObject.eResource());
+			IncQueryEngine engine = getIncQueryEngineHelper().getEngine(contextObject);
 			EObject[] eObjectCandidates = getEObjectCandidates(proxy, contextObject, engine);
 			return getMatchingEObject(proxy, eObjectCandidates);
 		} catch (IncQueryException ex) {

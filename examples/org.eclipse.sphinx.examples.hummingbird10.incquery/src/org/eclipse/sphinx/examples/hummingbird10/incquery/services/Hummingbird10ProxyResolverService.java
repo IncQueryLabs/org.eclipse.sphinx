@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - 475954: Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -16,7 +17,7 @@ package org.eclipse.sphinx.examples.hummingbird10.incquery.services;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.sphinx.emf.incquery.proxymanagment.AbstractProxyResolverService;
+import org.eclipse.sphinx.emf.ecore.proxymanagement.AbstractProxyResolverService;
 import org.eclipse.sphinx.examples.hummingbird10.incquery.Hummingbird10ProxyResolver;
 import org.eclipse.sphinx.examples.hummingbird10.incquery.util.Hummingbird10IncQueryHelper;
 

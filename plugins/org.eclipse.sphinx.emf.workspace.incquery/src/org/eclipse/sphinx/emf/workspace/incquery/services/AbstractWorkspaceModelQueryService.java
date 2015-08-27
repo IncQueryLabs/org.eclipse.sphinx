@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,6 +30,7 @@ import org.eclipse.sphinx.emf.workspace.incquery.internal.Activator;
 import org.eclipse.sphinx.emf.workspace.query.IWorkspaceModelQueryService;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
+// TODO Rename to AbstractWorkspaceIncQueryModelQueryService and move to org.eclipse.sphinx.emf.workspace.incquery package
 public abstract class AbstractWorkspaceModelQueryService extends AbstractModelQueryService implements IWorkspaceModelQueryService {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
