@@ -357,18 +357,19 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 
 		// Get models behind given set of files
 		progress.subTask(Messages.subtask_initializingProxyResolution);
-		Set<IModelDescriptor> models = new HashSet<IModelDescriptor>();
+		Set<IModelDescriptor> modelDescriptors = new HashSet<IModelDescriptor>();
 		for (IFile file : files) {
 			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(file);
-			models.add(modelDescriptor);
-			Resource resource = EcorePlatformUtil.getResource(file);
+			if (modelDescriptor != null) {
+				modelDescriptors.add(modelDescriptor);
+			}
 		}
 
 		// Force proxies within each model to be resolved
-		for (IModelDescriptor model : models) {
+		for (IModelDescriptor modelDescriptor : modelDescriptors) {
 			synchronized (lookupResolver) {
 				// Initialize lookup-based proxy resolver
-				Collection<Resource> resources = model.getLoadedResources(true);
+				Collection<Resource> resources = modelDescriptor.getLoadedResources(true);
 				lookupResolver.init(resources);
 				progress.worked(10);
 
