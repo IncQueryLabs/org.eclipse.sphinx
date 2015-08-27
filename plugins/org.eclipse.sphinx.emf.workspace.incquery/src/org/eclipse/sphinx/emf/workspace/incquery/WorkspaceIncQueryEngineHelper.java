@@ -30,7 +30,10 @@ public class WorkspaceIncQueryEngineHelper extends IncQueryEngineHelper implemen
 	@Override
 	public IncQueryEngine getEngine(Resource contextResource) throws IncQueryException {
 		IModelDescriptor contextModelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(contextResource);
-		return getEngine(contextModelDescriptor);
+		if (contextModelDescriptor != null) {
+			return getEngine(contextModelDescriptor);
+		}
+		return getEngine(contextResource, false);
 	}
 
 	@Override
