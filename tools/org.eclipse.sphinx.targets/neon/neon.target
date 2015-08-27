@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Sphinx Neon Target" sequenceNumber="1">
+<?pde version="3.8"?><target name="Sphinx Neon Target" sequenceNumber="2">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="4.6.0.I20150805-2000"/>
@@ -12,14 +12,14 @@
 <unit id="org.eclipse.emf.sdk.feature.group" version="2.12.0.v20150817-0432"/>
 <unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.9.0.201506010221"/>
 <unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.9.0.201505312255"/>
-<unit id="org.eclipse.emf.compare.feature.group" version="3.1.0.201506080833"/>
-<unit id="org.eclipse.emf.compare.ide.ui.feature.group" version="3.1.0.201506080833"/>
+<unit id="org.eclipse.emf.compare.feature.group" version="3.2.0.201508181443"/>
+<unit id="org.eclipse.emf.compare.ide.ui.feature.group" version="3.2.0.201508181443"/>
 <unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.9.0.201505312221"/>
 <unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.9.0.201506060219"/>
 <unit id="org.eclipse.gmf.tooling.feature.group" version="3.3.0.201506090515"/>
 <unit id="org.eclipse.uml2.sdk.feature.group" version="5.1.0.v20150601-0733"/>
 <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.7.0.v201505141512"/>
-<unit id="org.eclipse.mylyn.wikitext_feature.feature.group" version="2.6.0.v20150730-2328"/>
+<unit id="org.eclipse.mylyn.wikitext_feature.feature.group" version="2.6.0.v20150815-0144"/>
 <unit id="org.eclipse.xpand.sdk.feature.group" version="2.2.0.v201508180411"/>
 <unit id="org.eclipse.xsd.sdk.feature.group" version="2.11.0.v20150817-0432"/>
 <unit id="org.eclipse.xtext.sdk.feature.group" version="2.9.0.v201507170721"/>
