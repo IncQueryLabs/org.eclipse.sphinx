@@ -65,7 +65,7 @@ public class ConvertToXtendXpandEnabledPluginProjectJob extends WorkspaceJob {
 
 	private static final String PDE_EXECUTION_ENVIRONMENT_J2SE_15 = "J2SE-1.5"; //$NON-NLS-1$
 	private static final String PDE_EXECUTION_ENVIRONMENT_JavaSE_16 = "JavaSE-1.6"; //$NON-NLS-1$
-	private static final String PDE_EXECUTION_ENVIRONMENT_JavaSE_17 = "JavaSE-1.7"; //$NON-NLS-1$
+	private static final String PDE_EXECUTION_ENVIRONMENT_JavaSE_17 = "JavaSE-1.8"; //$NON-NLS-1$
 	private static final String PDE_EXECUTION_ENVIRONMENT_JavaSE_18 = "JavaSE-1.8"; //$NON-NLS-1$
 
 	private IProject project;

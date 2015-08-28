@@ -48,7 +48,7 @@ public class ConvertProjectToJavaProjectJob extends WorkspaceJob {
 
 	private static final String JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_J2SE_1_5 = "/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"; //$NON-NLS-1$
 	private static final String JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_JAVA_SE_1_6 = "/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"; //$NON-NLS-1$
-	private static final String JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_JAVA_SE_1_7 = "/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"; //$NON-NLS-1$
+	private static final String JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_JAVA_SE_1_7 = "/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"; //$NON-NLS-1$
 	private static final String JAVA_CLASSPATH_JRE_CONTAINER_ENTRY_SUFFIX_JAVA_SE_1_8 = "/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"; //$NON-NLS-1$
 
 	private Collection<IProject> projectsToConvert;
