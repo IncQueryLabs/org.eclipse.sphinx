@@ -7,7 +7,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.jdom,
  org.eclipse.sphinx.testutils.integration.referenceworkspace
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.eclipse.sphinx.tests.emf.integration,
  org.eclipse.sphinx.tests.emf.integration.internal;x-internal:=true,
  org.eclipse.sphinx.tests.emf.integration.internal.expressions;x-internal:=true,

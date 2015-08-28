@@ -17,4 +17,4 @@ Export-Package: org.eclipse.sphinx.pde.internal;x-internal:=true,
  org.eclipse.sphinx.pde.internal.messages;x-internal:=true,
  org.eclipse.sphinx.pde.jobs,
  org.eclipse.sphinx.pde.util
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

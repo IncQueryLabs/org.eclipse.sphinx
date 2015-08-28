@@ -7,7 +7,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.sphinx.examples.hummingbird20.splitting,
  org.eclipse.sphinx.testutils.integration.referenceworkspace
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: org.eclipse.sphinx.tests.emf.workspace.integration.domain.mapping,

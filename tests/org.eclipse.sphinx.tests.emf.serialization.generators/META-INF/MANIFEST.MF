@@ -7,7 +7,7 @@ Bundle-Activator: org.eclipse.sphinx.tests.emf.serialization.generators.internal
 Require-Bundle: org.eclipse.sphinx.emf.serialization,
  org.eclipse.sphinx.emf.serialization.generators,
  org.eclipse.sphinx.testutils
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.sphinx.tests.emf.serialization.generators,
  org.eclipse.sphinx.tests.emf.serialization.generators.internal;x-internal:=true,

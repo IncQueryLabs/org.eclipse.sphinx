@@ -15,6 +15,6 @@ Require-Bundle: org.eclipse.core.runtime,
 Export-Package: org.eclipse.sphinx.emf.mwe.dynamic.headless,
  org.eclipse.sphinx.emf.mwe.dynamic.headless.internal;x-internal:=true,
  org.eclipse.sphinx.emf.mwe.dynamic.headless.internal.messages;x-internal:=true
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Activator: org.eclipse.sphinx.emf.mwe.dynamic.headless.internal.Activator$Implementation
 

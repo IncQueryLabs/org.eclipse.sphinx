@@ -9,7 +9,7 @@ Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.sphinx.emf.validation.ui;visibility:=reexport,
  org.eclipse.sphinx.examples.common.ui
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.eclipse.sphinx.examples.validation.ui,
  org.eclipse.sphinx.examples.validation.ui.actions,
  org.eclipse.sphinx.examples.validation.ui.actions.providers,

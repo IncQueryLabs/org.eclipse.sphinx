@@ -11,7 +11,7 @@ Require-Bundle: org.eclipse.ui,
  com.google.inject,
  org.eclipse.sphinx.examples.hummingbird20,
  org.eclipse.sphinx.emf.check
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.sphinx.examples.hummingbird20.check.simple,
  org.eclipse.sphinx.examples.hummingbird20.check.withcatalog

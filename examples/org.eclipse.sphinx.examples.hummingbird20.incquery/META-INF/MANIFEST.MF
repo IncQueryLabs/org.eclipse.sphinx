@@ -20,5 +20,5 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.sphinx.emf.search.ui.incquery,
  org.eclipse.sphinx.examples.hummingbird20;visibility:=reexport,
  org.apache.log4j
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

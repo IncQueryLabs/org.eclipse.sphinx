@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Activator: org.eclipse.sphinx.tests.emf.serialization.internal.Activator$Implementation
 Export-Package: org.eclipse.sphinx.tests.emf.serialization.adapter,
  org.eclipse.sphinx.tests.emf.serialization.env,

@@ -7,6 +7,6 @@ Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.sphinx.emf,
  org.eclipse.emf.examples.library
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.eclipse.sphinx.examples.library.ide.metamodel
 Bundle-Localization: plugin

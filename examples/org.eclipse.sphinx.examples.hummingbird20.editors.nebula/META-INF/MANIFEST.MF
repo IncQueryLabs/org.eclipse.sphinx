@@ -14,7 +14,7 @@ Export-Package: org.eclipse.sphinx.examples.hummingbird20.editors.nebula,
  org.eclipse.sphinx.examples.hummingbird20.editors.nebula.providers,
  org.eclipse.sphinx.examples.hummingbird20.editors.nebula.sections
 Bundle-Activator: org.eclipse.sphinx.examples.hummingbird20.editors.nebula.internal.Activator$Implementation
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.emf.common,
  org.eclipse.sphinx.emf.editors.forms.nebula,
  org.eclipse.sphinx.examples.hummingbird20.edit
