@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
- *     itemis - 475954: Proxies with fragment-based proxy URIs may get resolved across model boundaries
+ *     itemis - [475954] Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */

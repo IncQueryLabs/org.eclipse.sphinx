@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2013-2014 itemis and others.
+ * Copyright (c) 2013-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
+ *     itemis - [475954] Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -20,11 +21,28 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolver;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.scoping.IResourceScope;
 
-public interface ExtendedResourceSet extends ResourceSet, IProxyResolver {
+public interface ExtendedResourceSet extends ResourceSet {
+
+	/**
+	 * Retrieves the {@linkplain EObject object} for specified {@link EObject proxy}. Allows to use provided
+	 * <code>contextObject</code> - i.e., the object referencing the proxy - to customize or optimize the way how the
+	 * resolution of the proxy is done.
+	 *
+	 * @param proxy
+	 *            The {@EObject proxy} to be resolved.
+	 * @param contextObject
+	 *            The {@link EObject context object} that can be used customize or optimize the way how the resolution
+	 *            of the proxy is done.
+	 * @param loadOnDemand
+	 *            Whether to load the resource or model containing the object that is referenced by given
+	 *            <code>proxy</code> if it is not already loaded.
+	 * @return The object that is represented by given <code>proxy</code> or <code>null</code> if given
+	 *         <code>proxy</code> cannot be resolved.
+	 */
+	EObject getEObject(EObject proxy, EObject contextObject, boolean loadOnDemand);
 
 	/**
 	 * Augments given {@link InternalEObject proxy} to a context-aware proxy by adding key/value pairs that contain the

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2013 itemis and others.
+ * Copyright (c) 2013-2015 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     itemis - Initial API and implementation
  *     itemis - [409458] Enhance ScopingResourceSetImpl#getEObjectInScope() to enable cross-document references between model files with different metamodels
  *     itemis - [409510] Enable resource scope-sensitive proxy resolutions without forcing metamodel implementations to subclass EObjectImpl
+ *     itemis - [475954] Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -22,6 +23,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.sphinx.emf.resource.ExtendedResourceSet;
 
 public class ProxyResolutionBehavior {
 
@@ -54,8 +56,8 @@ public class ProxyResolutionBehavior {
 		Assert.isNotNull(proxy);
 
 		EObject resolvedEObject = null;
-		if (resourceSet instanceof IProxyResolver) {
-			IProxyResolver resolver = (IProxyResolver) resourceSet;
+		if (resourceSet instanceof ExtendedResourceSet) {
+			ExtendedResourceSet resolver = (ExtendedResourceSet) resourceSet;
 			resolvedEObject = resolver.getEObject(proxy, contextObject, true);
 		} else {
 			resolvedEObject = resourceSet.getEObject(((InternalEObject) proxy).eProxyURI(), true);

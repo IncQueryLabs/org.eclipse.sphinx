@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
- *     itemis - 475954: Proxies with fragment-based proxy URIs may get resolved across model boundaries
+ *     itemis - [475954] Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.sphinx.emf.resource.ExtendedResourceSet;
 
 public abstract class AbstractProxyResolverService implements IProxyResolverService {
 
@@ -60,12 +61,12 @@ public abstract class AbstractProxyResolverService implements IProxyResolverServ
 	}
 
 	@Override
-	public EObject getEObject(URI uri, boolean loadOnDemand) {
+	public EObject getEObject(URI uri, ExtendedResourceSet contextResourceSet, Object contextObject, boolean loadOnDemand) {
 		EClass targetEClass = getTargetEClass(uri);
 		if (targetEClass != null) {
 			IProxyResolver proxyResolver = getProxyResolver(targetEClass);
 			if (proxyResolver != null) {
-				return proxyResolver.getEObject(uri, loadOnDemand);
+				return proxyResolver.getEObject(uri, contextResourceSet, contextObject, loadOnDemand);
 			}
 		}
 		return null;

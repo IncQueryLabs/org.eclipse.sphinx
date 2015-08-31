@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [475954] Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -16,6 +17,7 @@ package org.eclipse.sphinx.emf.incquery;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 
@@ -26,4 +28,6 @@ public interface IIncQueryEngineHelper {
 	IncQueryEngine getEngine(Resource contextResource) throws IncQueryException;
 
 	IncQueryEngine getEngine(Resource resource, boolean strict) throws IncQueryException;
+
+	IncQueryEngine getEngine(ResourceSet resourceSet) throws IncQueryException;
 }

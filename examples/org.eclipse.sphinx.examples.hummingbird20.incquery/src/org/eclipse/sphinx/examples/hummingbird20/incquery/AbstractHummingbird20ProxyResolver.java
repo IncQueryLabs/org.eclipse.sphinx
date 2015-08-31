@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
- *     itemis - 475954: Proxies with fragment-based proxy URIs may get resolved across model boundaries
+ *     itemis - [475954] Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -20,20 +20,13 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
-import org.eclipse.sphinx.emf.incquery.IIncQueryEngineHelper;
-import org.eclipse.sphinx.emf.incquery.proxymanagment.AbstractProxyResolver;
 import org.eclipse.sphinx.emf.resource.ExtendedResource;
-import org.eclipse.sphinx.emf.workspace.incquery.WorkspaceIncQueryEngineHelper;
+import org.eclipse.sphinx.emf.workspace.incquery.proxymanagement.AbstractScopingIncQueryProxyResolver;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 import org.eclipse.sphinx.examples.hummingbird20.incquery.internal.Activator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
-public abstract class AbstractHummingbird20ProxyResolver extends AbstractProxyResolver {
-
-	@Override
-	protected IIncQueryEngineHelper createIncQueryEngineHelper() {
-		return new WorkspaceIncQueryEngineHelper();
-	}
+public abstract class AbstractHummingbird20ProxyResolver extends AbstractScopingIncQueryProxyResolver {
 
 	@Override
 	protected EObject[] getEObjectCandidates(EObject proxy, Object contextObject, IncQueryEngine engine) {

@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
- *     itemis - 475954: Proxies with fragment-based proxy URIs may get resolved across model boundaries
+ *     itemis - [475954] Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -50,6 +50,14 @@ public class IncQueryEngineHelper implements IIncQueryEngineHelper {
 				return IncQueryEngine.on(resourceSet);
 			}
 			return IncQueryEngine.on(resource);
+		}
+		return null;
+	}
+
+	@Override
+	public IncQueryEngine getEngine(ResourceSet resourceSet) throws IncQueryException {
+		if (resourceSet != null) {
+			return IncQueryEngine.on(resourceSet);
 		}
 		return null;
 	}

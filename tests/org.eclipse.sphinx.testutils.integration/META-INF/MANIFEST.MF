@@ -7,7 +7,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.equinox.ds,
  org.eclipse.sphinx.testutils;visibility:=reexport
 Export-Package: org.eclipse.sphinx.testutils.integration,
- org.eclipse.sphinx.testutils.integration.internal;x-internal:=true
+ org.eclipse.sphinx.testutils.integration.internal;x-internal:=true,
+ org.eclipse.sphinx.testutils.integration.messages
 Bundle-Vendor: %providerName
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.testutils.integration.internal.Activator$Implementation
