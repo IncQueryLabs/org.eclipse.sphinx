@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2014 See4sys, BMW Car IT, itemis and others.
+ * Copyright (c) 2008-2015 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@
  *     itemis - [420792] Sphinx is not able to load resources that are registered in the EMF package registry
  *     itemis - [421205] Model descriptor registry does not return correct model descriptor for (shared) plugin resources
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
+ *     itemis - [475954] Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -121,6 +122,9 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 		return getResourcesInScope(contextObject, true, true);
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ScopingResourceSet#getResourcesInScope(java.lang.Object, boolean)
+	 */
 	@Override
 	public List<Resource> getResourcesInScope(Object contextObject, boolean includeReferencedScopes) {
 		return getResourcesInScope(contextObject, includeReferencedScopes, true);
@@ -168,6 +172,26 @@ public class ScopingResourceSetImpl extends ExtendedResourceSetImpl implements S
 			}
 		}
 		return Collections.unmodifiableList(new ArrayList<Resource>(resourcesInScope));
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.sphinx.emf.resource.ScopingResourceSet#isResourceInScope(org.eclipse.emf.ecore.resource.Resource,
+	 * java.lang.Object)
+	 */
+	@Override
+	public boolean isResourceInScope(Resource resource, Object contextObject) {
+		return isResourceInScope(resource, contextObject, true, true);
+	}
+
+	/*
+	 * @see
+	 * org.eclipse.sphinx.emf.resource.ScopingResourceSet#isResourceInScope(org.eclipse.emf.ecore.resource.Resource,
+	 * java.lang.Object, boolean)
+	 */
+	@Override
+	public boolean isResourceInScope(Resource resource, Object contextObject, boolean includeReferencedScopes) {
+		return isResourceInScope(resource, contextObject, includeReferencedScopes, true);
 	}
 
 	/**

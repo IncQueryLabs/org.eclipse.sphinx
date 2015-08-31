@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [475954] Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -17,10 +18,11 @@ package org.eclipse.sphinx.emf.ecore.proxymanagement;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.emf.metamodel.services.IMetaModelService;
+import org.eclipse.sphinx.emf.resource.ExtendedResourceSet;
 
 public interface IProxyResolverService extends IMetaModelService {
 
 	EObject getEObject(EObject proxy, EObject contextObject, boolean loadOnDemand);
 
-	EObject getEObject(URI uri, boolean loadOnDemand);
+	EObject getEObject(URI uri, ExtendedResourceSet contextResourceSet, Object contextObject, boolean loadOnDemand);
 }

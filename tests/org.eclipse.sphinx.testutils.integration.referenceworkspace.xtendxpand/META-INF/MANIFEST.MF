@@ -16,5 +16,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sphinx.examples.uml2.ide;visibility:=reexport,
  org.eclipse.sphinx.testutils.integration;visibility:=reexport
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand
+Export-Package: org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand,
+ org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.internal
 Bundle-Activator: org.eclipse.sphinx.testutils.integration.referenceworkspace.xtendxpand.internal.Activator$Implementation

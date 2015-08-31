@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2014 See4sys, BMW Car IT, itemis and others.
+ * Copyright (c) 2008-2015 See4sys, BMW Car IT, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@
  *     itemis - [425379] ExtendedResourceSet may contain a resource multiple times (with normalized and non-normalized URI)
  *	   itemis - [425175] Resources that produce exceptions while being loaded should not get unloaded by Sphinx thereafter
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
+ *     itemis - [475954] Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -39,7 +40,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -349,16 +349,6 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		return contextAwareProxyURIHelper.trimProxyContextInfo(proxyURI);
 	}
 
-	@Override
-	public boolean canResolve(EClass type) {
-		return true;
-	}
-
-	@Override
-	public boolean canResolve(EObject proxy) {
-		return true;
-	}
-
 	/*
 	 * @see org.eclipse.emf.ecore.resource.impl.ResourceSetImpl#getEObject(org.eclipse.emf.common.util.URI, boolean)
 	 */
@@ -371,10 +361,14 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		// Retrieve context information from given URI
 		String targetMMDescriptorId = contextAwareProxyURIHelper.getTargetMetaModelDescriptorId(uri);
 		IMetaModelDescriptor targetMMDescriptor = MetaModelDescriptorRegistry.INSTANCE.getDescriptor(targetMMDescriptorId);
+		URI contextURI = contextAwareProxyURIHelper.getContextURI(uri);
 
+		// Try to retrieve an IProxyResolverService for the given meta-model descriptor
 		IProxyResolverService proxyResolverService = getProxyResolverService(targetMMDescriptor);
 		if (proxyResolverService != null) {
-			return proxyResolverService.getEObject(uri, loadOnDemand);
+			// FIXME Make sure that cross-resource set proxy resolving capability doesn't get lost when using the proxy
+			// resolver service
+			return proxyResolverService.getEObject(uri, this, contextURI, loadOnDemand);
 		}
 
 		if (proxyHelper != null) {
@@ -399,9 +393,6 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 				}
 			}
 		}
-
-		// Retrieve context information from given URI
-		URI contextURI = contextAwareProxyURIHelper.getContextURI(uri);
 
 		// Try to resolve proxy URI in this resource set
 		EObject resolvedEObject = getEObject(uri, targetMMDescriptor, contextURI, loadOnDemand);
@@ -445,6 +436,8 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 		// Try to retrieve an IProxyResolverService for the given meta-model descriptor
 		IProxyResolverService proxyResolverService = getProxyResolverService(targetMMDescriptor);
 		if (proxyResolverService != null) {
+			// FIXME Make sure that cross-resource set proxy resolving capability doesn't get lost when using the proxy
+			// resolver service
 			return proxyResolverService.getEObject(proxy, contextObject, loadOnDemand);
 		}
 
@@ -685,9 +678,10 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 								resource.getErrors().add((XMIException) cause);
 							} else {
 								Exception causeEx = cause instanceof Exception ? (Exception) cause : null;
-								resource.getErrors().add(
-										new XMIException(NLS.bind(Messages.error_problemOccurredWhenLoadingResource, resource.getURI().toString()),
-												causeEx, resource.getURI().toString(), 1, 1));
+								resource.getErrors()
+										.add(new XMIException(
+												NLS.bind(Messages.error_problemOccurredWhenLoadingResource, resource.getURI().toString()), causeEx,
+												resource.getURI().toString(), 1, 1));
 							}
 						}
 					} else {
@@ -722,8 +716,8 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 				return resource.getEObject(uriFragment);
 			} catch (Exception ex) {
 				// Leave an error about what has happened on resource
-				resource.getErrors().add(
-						new ProxyURIIntegrityException(NLS.bind(Messages.error_problemOccurredWhenResolvingProxyURI, uriFragment), ex));
+				resource.getErrors()
+						.add(new ProxyURIIntegrityException(NLS.bind(Messages.error_problemOccurredWhenResolvingProxyURI, uriFragment), ex));
 			}
 
 			// Handle problems that may have been encountered during proxy resolution

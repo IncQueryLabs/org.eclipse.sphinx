@@ -13,5 +13,6 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.eclipse.sphinx.emf.workspace.incquery,
  org.eclipse.sphinx.emf.workspace.incquery.internal;x-internal:=true,
+ org.eclipse.sphinx.emf.workspace.incquery.proxymanagement,
  org.eclipse.sphinx.emf.workspace.incquery.services
 Bundle-Localization: plugin

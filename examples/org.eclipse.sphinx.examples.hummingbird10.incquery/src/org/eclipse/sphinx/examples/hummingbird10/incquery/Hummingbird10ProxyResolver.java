@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
- *     itemis - 475954: Proxies with fragment-based proxy URIs may get resolved across model boundaries
+ *     itemis - [475954] Proxies with fragment-based proxy URIs may get resolved across model boundaries
  *
  * </copyright>
  */
@@ -22,9 +22,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
-import org.eclipse.sphinx.emf.incquery.IIncQueryEngineHelper;
-import org.eclipse.sphinx.emf.incquery.proxymanagment.AbstractProxyResolver;
-import org.eclipse.sphinx.emf.workspace.incquery.WorkspaceIncQueryEngineHelper;
+import org.eclipse.sphinx.emf.workspace.incquery.proxymanagement.AbstractScopingIncQueryProxyResolver;
 import org.eclipse.sphinx.examples.hummingbird10.Application;
 import org.eclipse.sphinx.examples.hummingbird10.Component;
 import org.eclipse.sphinx.examples.hummingbird10.Connection;
@@ -34,7 +32,7 @@ import org.eclipse.sphinx.examples.hummingbird10.incquery.internal.Activator;
 import org.eclipse.sphinx.examples.hummingbird10.incquery.util.Hummingbird10IncQueryHelper;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
-public class Hummingbird10ProxyResolver extends AbstractProxyResolver {
+public class Hummingbird10ProxyResolver extends AbstractScopingIncQueryProxyResolver {
 
 	private Hummingbird10IncQueryHelper helper = new Hummingbird10IncQueryHelper();
 
@@ -45,11 +43,6 @@ public class Hummingbird10ProxyResolver extends AbstractProxyResolver {
 		getSupportedTypes().add(Connection.class);
 		getSupportedTypes().add(Interface.class);
 		getSupportedTypes().add(Parameter.class);
-	}
-
-	@Override
-	protected IIncQueryEngineHelper createIncQueryEngineHelper() {
-		return new WorkspaceIncQueryEngineHelper();
 	}
 
 	@Override

@@ -15,6 +15,7 @@ Export-Package: org.eclipse.sphinx.tests.emf.workspace.integration.domain.mappin
  org.eclipse.sphinx.tests.emf.workspace.integration.internal;x-internal:=true,
  org.eclipse.sphinx.tests.emf.workspace.integration.internal.loading;x-internal:=true,
  org.eclipse.sphinx.tests.emf.workspace.integration.loading,
+ org.eclipse.sphinx.tests.emf.workspace.integration.proxymanagement,
  org.eclipse.sphinx.tests.emf.workspace.integration.referentialintegrity,
  org.eclipse.sphinx.tests.emf.workspace.integration.saving,
  org.eclipse.sphinx.tests.emf.workspace.integration.splitting,
