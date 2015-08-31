@@ -57,8 +57,8 @@ public class ProxyResolutionBehavior {
 
 		EObject resolvedEObject = null;
 		if (resourceSet instanceof ExtendedResourceSet) {
-			ExtendedResourceSet resolver = (ExtendedResourceSet) resourceSet;
-			resolvedEObject = resolver.getEObject(proxy, contextObject, true);
+			ExtendedResourceSet extendedResourceSet = (ExtendedResourceSet) resourceSet;
+			resolvedEObject = extendedResourceSet.getEObject(proxy, contextObject, true);
 		} else {
 			resolvedEObject = resourceSet.getEObject(((InternalEObject) proxy).eProxyURI(), true);
 		}

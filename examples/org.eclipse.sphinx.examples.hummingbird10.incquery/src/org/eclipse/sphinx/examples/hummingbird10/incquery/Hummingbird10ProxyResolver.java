@@ -51,9 +51,8 @@ public class Hummingbird10ProxyResolver extends AbstractScopingIncQueryProxyReso
 	}
 
 	@Override
-	protected EObject[] getEObjectCandidates(URI proxyURI, Object contextObject, IncQueryEngine engine) {
-
-		Class<?> type = getInstanceClass(proxyURI);
+	protected EObject[] getEObjectCandidates(URI uri, Object contextObject, IncQueryEngine engine) {
+		Class<?> type = getInstanceClass(uri);
 		if (type != null) {
 			try {
 				return doGetEObjectCandidates(type, engine);
@@ -93,8 +92,8 @@ public class Hummingbird10ProxyResolver extends AbstractScopingIncQueryProxyReso
 		return null;
 	}
 
-	private Class<?> getInstanceClass(URI proxyURI) {
-		EClass eClass = helper.getEClass(proxyURI);
+	private Class<?> getInstanceClass(URI uri) {
+		EClass eClass = helper.getEClass(uri);
 		return eClass != null ? eClass.getInstanceClass() : null;
 	}
 }

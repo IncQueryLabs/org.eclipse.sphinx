@@ -43,11 +43,18 @@ public abstract class AbstractHummingbird20ProxyResolver extends AbstractScoping
 	}
 
 	@Override
-	protected EObject[] getEObjectCandidates(URI proxyURI, Object contextObject, IncQueryEngine engine) {
+	protected EObject[] getEObjectCandidates(URI uri, Object contextObject, IncQueryEngine engine) {
 		return new EObject[] {};
 	}
 
 	protected abstract EObject[] doGetEObjectCandidates(Class<?> type, String name, IncQueryEngine engine) throws IncQueryException;
+
+	protected Class<?> getInstanceClass(EObject proxy) {
+		if (proxy != null && proxy.eClass() != null) {
+			return proxy.eClass().getInstanceClass();
+		}
+		return null;
+	}
 
 	protected String getName(EObject proxy) {
 		InternalEObject internalEObject = (InternalEObject) proxy;
