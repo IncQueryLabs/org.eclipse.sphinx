@@ -22,7 +22,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.sphinx.emf.incquery.IIncQueryEngineHelper;
 import org.eclipse.sphinx.emf.incquery.proxymanagment.AbstractIncQueryProxyResolver;
 import org.eclipse.sphinx.emf.resource.ScopingResourceSet;
-import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.incquery.WorkspaceIncQueryEngineHelper;
 
 public abstract class AbstractScopingIncQueryProxyResolver extends AbstractIncQueryProxyResolver {
@@ -36,28 +35,23 @@ public abstract class AbstractScopingIncQueryProxyResolver extends AbstractIncQu
 	}
 
 	@Override
-	protected boolean matches(URI proxyURI, Object contextObject, EObject candidate) {
-		// FIXME Check if it wouldn't be more appropriate to use
-		// org.eclipse.sphinx.emf.resource.ExtendedResourceSetImpl.trimProxyContextInfo(URI)
-		proxyURI = proxyURI.trimQuery();
-		URI candidateURI = EcoreResourceUtil.getURI(candidate);
+	protected boolean matchesEObjectCandidate(URI uri, Object contextObject, EObject candidate) {
 		if (contextObject != null) {
 			if (isResourceInScope(candidate.eResource(), contextObject)) {
-				return proxyURI.equals(candidateURI);
+				return matchesEObjectCandidate(uri, candidate);
 			}
+			return false;
 		} else {
-			return proxyURI.equals(candidateURI);
+			return matchesEObjectCandidate(uri, candidate);
 		}
-		return false;
 	}
 
-	protected boolean isResourceInScope(Resource candidateResource, Object contextObject) {
-		if (contextObject != null) {
-			ResourceSet candiateResourceSet = candidateResource.getResourceSet();
-			if (candiateResourceSet instanceof ScopingResourceSet) {
-				return ((ScopingResourceSet) candiateResourceSet).isResourceInScope(candidateResource, contextObject);
-			}
+	protected boolean isResourceInScope(Resource resource, Object contextObject) {
+		ResourceSet resourceSet = resource.getResourceSet();
+		if (resourceSet instanceof ScopingResourceSet) {
+			return ((ScopingResourceSet) resourceSet).isResourceInScope(resource, contextObject);
+		} else {
+			return true;
 		}
-		return true;
 	}
 }

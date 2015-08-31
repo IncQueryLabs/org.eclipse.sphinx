@@ -19,6 +19,8 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.incquery.runtime.api.IncQueryEngine;
 import org.eclipse.incquery.runtime.exception.IncQueryException;
 import org.eclipse.sphinx.emf.ecore.proxymanagement.IProxyResolver;
@@ -55,26 +57,18 @@ public abstract class AbstractIncQueryProxyResolver extends AbstractIncQueryProv
 	protected abstract EObject[] getEObjectCandidates(EObject proxy, Object contextObject, IncQueryEngine engine);
 
 	/**
-	 * @param proxyURI
+	 * @param uri
 	 * @param contextObject
 	 * @param engine
 	 * @return
 	 */
 	// TODO Move engine parameter to first place, remove contextObject parameter
-	protected abstract EObject[] getEObjectCandidates(URI proxyURI, Object contextObject, IncQueryEngine engine);
-
-	// Remove this method and refactor AbstractHummingbird20ProxyResolver and subclasses to use EClass instead
-	protected Class<?> getInstanceClass(EObject proxy) {
-		if (proxy != null && proxy.eClass() != null) {
-			return proxy.eClass().getInstanceClass();
-		}
-		return null;
-	}
+	protected abstract EObject[] getEObjectCandidates(URI uri, Object contextObject, IncQueryEngine engine);
 
 	protected EObject getMatchingEObject(URI uri, Object contextObject, EObject[] candidates) {
 		if (uri != null && candidates != null) {
 			for (EObject candidate : candidates) {
-				if (matches(uri, contextObject, candidate)) {
+				if (matchesEObjectCandidate(uri, contextObject, candidate)) {
 					return candidate;
 				}
 			}
@@ -82,12 +76,13 @@ public abstract class AbstractIncQueryProxyResolver extends AbstractIncQueryProv
 		return null;
 	}
 
-	protected boolean matches(URI proxyURI, Object contextObject, EObject candidate) {
-		// FIXME Check if it wouldn't be more appropriate to use
-		// org.eclipse.sphinx.emf.resource.ExtendedResourceSetImpl.trimProxyContextInfo(URI)
-		proxyURI = proxyURI.trimQuery();
+	protected boolean matchesEObjectCandidate(URI uri, Object contextObject, EObject candidate) {
+		return matchesEObjectCandidate(uri, candidate);
+	}
+
+	protected boolean matchesEObjectCandidate(URI uri, EObject candidate) {
 		URI candidateURI = EcoreResourceUtil.getURI(candidate);
-		return proxyURI.equals(candidateURI);
+		return uri.equals(candidateURI);
 	}
 
 	@Override
@@ -106,12 +101,28 @@ public abstract class AbstractIncQueryProxyResolver extends AbstractIncQueryProv
 		return false;
 	}
 
+	protected URI trimContextInfo(URI proxyURI, EObject contextObject) {
+		if (contextObject != null) {
+			Resource contextResource = contextObject.eResource();
+			if (contextResource != null) {
+				ResourceSet contextResourceSet = contextResource.getResourceSet();
+				if (contextResourceSet instanceof ExtendedResourceSet) {
+					return ((ExtendedResourceSet) contextResourceSet).trimProxyContextInfo(proxyURI);
+				}
+			}
+		}
+		return proxyURI;
+	}
+
 	@Override
 	public EObject getEObject(EObject proxy, EObject contextObject, boolean loadOnDemand) {
 		try {
-			IncQueryEngine engine = getIncQueryEngineHelper().getEngine(contextObject);
-			EObject[] candidates = getEObjectCandidates(proxy, contextObject, engine);
-			return getMatchingEObject(((InternalEObject) proxy).eProxyURI(), contextObject, candidates);
+			if (proxy != null) {
+				URI uri = trimContextInfo(((InternalEObject) proxy).eProxyURI(), contextObject);
+				IncQueryEngine engine = getIncQueryEngineHelper().getEngine(contextObject);
+				EObject[] candidates = getEObjectCandidates(proxy, contextObject, engine);
+				return getMatchingEObject(uri, contextObject, candidates);
+			}
 		} catch (IncQueryException ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
@@ -122,6 +133,7 @@ public abstract class AbstractIncQueryProxyResolver extends AbstractIncQueryProv
 	public EObject getEObject(URI uri, ExtendedResourceSet contextResourceSet, Object contextObject, boolean loadOnDemand) {
 		try {
 			if (contextResourceSet != null) {
+				uri = contextResourceSet.trimProxyContextInfo(uri);
 				IncQueryEngine engine = getIncQueryEngineHelper().getEngine(contextResourceSet);
 				EObject[] candidates = getEObjectCandidates(uri, contextObject, engine);
 				return getMatchingEObject(uri, contextObject, candidates);
