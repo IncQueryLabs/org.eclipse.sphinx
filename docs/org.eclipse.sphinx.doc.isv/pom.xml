@@ -50,7 +50,6 @@
 							<tocFile>${doc.output.folder}/toc/javadoc.xml</tocFile>
 							<javadocOptions>
 								<additionalArguments>
-									<additionalArgument>-encoding UTF-8</additionalArgument>
 									<additionalArgument>-linkoffline
 										http://docs.oracle.com/javase/7/docs/api/
 										${doc.output.folder}/input/javase-7</additionalArgument>
