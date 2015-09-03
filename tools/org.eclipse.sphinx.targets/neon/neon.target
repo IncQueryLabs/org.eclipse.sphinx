@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Sphinx Neon Target" sequenceNumber="2">
+<?pde version="3.8"?><target name="Sphinx Neon Target" sequenceNumber="4">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="4.6.0.I20150805-2000"/>
@@ -19,7 +19,7 @@
 <unit id="org.eclipse.gmf.tooling.feature.group" version="3.3.0.201506090515"/>
 <unit id="org.eclipse.uml2.sdk.feature.group" version="5.1.0.v20150601-0733"/>
 <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.7.0.v201505141512"/>
-<unit id="org.eclipse.mylyn.wikitext_feature.feature.group" version="2.6.0.v20150815-0144"/>
+<unit id="org.eclipse.mylyn.wikitext_feature.feature.group" version="2.6.0.v20150901-2143"/>
 <unit id="org.eclipse.xpand.sdk.feature.group" version="2.2.0.v201508180411"/>
 <unit id="org.eclipse.xsd.sdk.feature.group" version="2.11.0.v20150817-0432"/>
 <unit id="org.eclipse.xtext.sdk.feature.group" version="2.9.0.v201507170721"/>
