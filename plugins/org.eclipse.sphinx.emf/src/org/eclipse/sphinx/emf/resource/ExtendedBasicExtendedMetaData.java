@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     itemis - [477076] Access to the "ordered" attributes in metamodels that are optimized for deterministic code generation
+ *     itemis - [477076] Access to the "ordered" attributes in metamodels that are optimized for deterministic code generation using QVTO or OCL
  *
  * </copyright>
  */

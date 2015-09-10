@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2015 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [477076] Access to the "ordered" attributes in metamodels that are optimized for deterministic code generation using QVTO or OCL
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.resource;
@@ -25,7 +26,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EModelElement;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.util.BasicExtendedMetaData;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.sphinx.emf.metamodel.IMetaModelDescriptor;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
@@ -35,7 +35,7 @@ import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
  * metamodel to be loaded with the most recent version of that metamodel. Relies on the {@link IMetaModelDescriptor
  * descriptor} of the metamodel in question to find out with XML resources can be deemed compatible and which not.
  */
-public class BasicMigrationExtendedMetaData extends BasicExtendedMetaData {
+public class BasicMigrationExtendedMetaData extends ExtendedBasicExtendedMetaData {
 
 	public BasicMigrationExtendedMetaData() {
 		super();
@@ -57,7 +57,7 @@ public class BasicMigrationExtendedMetaData extends BasicExtendedMetaData {
 	 * Does the same as the super implementation but maps given XML element to corresponding {@link EStructuralFeature
 	 * feature} of given {@link EClass} if underlying namespaces are compatible instead of doing so only when they are
 	 * equal.
-	 * 
+	 *
 	 * @see org.eclipse.emf.ecore.util.BasicExtendedMetaData#getLocalElement(org.eclipse.emf.ecore.EClass,
 	 *      java.lang.String, java.lang.String)
 	 */
@@ -115,7 +115,7 @@ public class BasicMigrationExtendedMetaData extends BasicExtendedMetaData {
 	/**
 	 * Tests if given XML namespace is equal to or compatible with the given {@link EStructuralFeature feature}
 	 * namespace.
-	 * 
+	 *
 	 * @param xmlNamespace
 	 *            The XML element namespace to be investigated.
 	 * @param featureNamespace
