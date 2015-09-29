@@ -44,7 +44,6 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.internal.content.ContentType;
 import org.eclipse.core.internal.content.ContentTypeHandler;
-import org.eclipse.core.internal.content.ContentTypeManager;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
@@ -188,13 +187,10 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 	 * Reads contributions to <em>Meta-Model Descriptor</em> extension point.
 	 * <p>
 	 * <table>
-	 * <tr valign=top>
-	 * <td><b>Note</b>&nbsp;&nbsp;</td>
-	 * <td>It is recommended to call this method inside a block <tt><b>synchronized</b></tt> on the encapsulated
-	 * <code>fMetaModelDescriptors</code> field in order to avoid inconsistencies in registered meta-model
-	 * {@linkplain IMetaModelDescriptor descriptor}s in case of concurrent read/adds.</td>
-	 * </tr>
-	 * </table>
+	 * <tr valign=top> <td><b>Note</b>&nbsp;&nbsp;</td> <td>It is recommended to call this method inside a block
+	 * <tt><b>synchronized</b></tt> on the encapsulated <code>fMetaModelDescriptors</code> field in order to avoid
+	 * inconsistencies in registered meta-model {@linkplain IMetaModelDescriptor descriptor}s in case of concurrent
+	 * read/adds.</td> </tr> </table>
 	 */
 	private void readContributedDescriptors() {
 		IExtensionRegistry extensionRegistry = getExtensionRegistry();
@@ -350,10 +346,8 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 					if (!overriddenIds.contains(overriddenTargetMetaModelDescriptorId)) {
 						overriddenIds.add(overriddenTargetMetaModelDescriptorId);
 					} else {
-						PlatformLogUtil.logAsWarning(
-								Activator.getPlugin(),
-								new RuntimeException(NLS.bind(Messages.warning_multipleTargetMetaModelDescriptorProvidersOverride,
-										overriddenTargetMetaModelDescriptorId)));
+						PlatformLogUtil.logAsWarning(Activator.getPlugin(), new RuntimeException(NLS
+								.bind(Messages.warning_multipleTargetMetaModelDescriptorProvidersOverride, overriddenTargetMetaModelDescriptorId)));
 					}
 				}
 			}
@@ -807,7 +801,7 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 
 		// Scan all registered content types
 		List<String> contentTypeIdCandidates = new ArrayList<String>(2);
-		for (IContentType contentType : ContentTypeManager.getInstance().getAllContentTypes()) {
+		for (IContentType contentType : Platform.getContentTypeManager().getAllContentTypes()) {
 			try {
 				// Sort out any content type which does not support required file extension
 				if (Arrays.asList(contentType.getFileSpecs(IContentTypeSettings.FILE_EXTENSION_SPEC)).contains(extension)) {
@@ -1415,9 +1409,8 @@ public class MetaModelDescriptorRegistry implements IAdaptable {
 		}
 
 		/*
-		 * @see
-		 * org.eclipse.sphinx.emf.internal.metamodel.IFileMetaModelDescriptorCache#moveDescriptor(org.eclipse.core.resources
-		 * .IFile, org.eclipse.core.resources.IFile)
+		 * @see org.eclipse.sphinx.emf.internal.metamodel.IFileMetaModelDescriptorCache#moveDescriptor(org.eclipse.core.
+		 * resources .IFile, org.eclipse.core.resources.IFile)
 		 */
 		@Override
 		public void moveDescriptor(IFile oldFile, IFile newFile) {
