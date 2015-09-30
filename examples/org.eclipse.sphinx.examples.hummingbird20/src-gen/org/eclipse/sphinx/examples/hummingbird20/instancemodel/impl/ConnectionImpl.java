@@ -31,12 +31,12 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.Port;
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Connection</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ConnectionImpl#getSourceComponent <em>Source Component</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ConnectionImpl#getSourcePort <em>Source Port</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ConnectionImpl#getTargetComponent <em>Target Component</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

@@ -29,13 +29,13 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform#getComponentTypes <em>Component Types</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform#getInterfaces <em>Interfaces</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform#getMixed <em>Mixed</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Platform#getXSISchemaLocation <em>XSI Schema Location</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getPlatform()
  * @model extendedMetaData="kind='mixed'"

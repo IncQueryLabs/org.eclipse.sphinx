@@ -28,6 +28,7 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getType <em>Type</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getOutgoingConnections <em>Outgoing Connections</em>}</li>
@@ -35,7 +36,6 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getParameterValues <em>Parameter Values</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Component#getParameterExpressions <em>Parameter Expressions</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getComponent()
  * @model

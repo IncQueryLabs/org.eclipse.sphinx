@@ -25,11 +25,11 @@ import org.eclipse.emf.ecore.util.FeatureMap;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpression#getMixed <em>Mixed</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterExpression#getExpressions <em>Expressions</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getParameterExpression()
  * @model extendedMetaData="kind='mixed'"

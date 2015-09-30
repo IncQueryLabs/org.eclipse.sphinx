@@ -22,10 +22,10 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Formula#getValue <em>Value</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getFormula()
  * @model

@@ -470,6 +470,12 @@ public class TypeModel20PackageImpl extends EPackageImpl implements TypeModel20P
 		   new String[] {
 			 "name", "xsi:schemaLocation", //$NON-NLS-1$ //$NON-NLS-2$
 			 "kind", "element" //$NON-NLS-1$ //$NON-NLS-2$
+		   });	
+		addAnnotation
+		  (getComponentType_Parameters(), 
+		   source, 
+		   new String[] {
+			 "ordered", "false" //$NON-NLS-1$ //$NON-NLS-2$
 		   });
 	}
 

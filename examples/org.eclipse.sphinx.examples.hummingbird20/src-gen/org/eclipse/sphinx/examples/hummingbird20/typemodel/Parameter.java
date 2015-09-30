@@ -26,11 +26,11 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter#getDataType <em>Data Type</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter#isOptional <em>Optional</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getParameter()
  * @model

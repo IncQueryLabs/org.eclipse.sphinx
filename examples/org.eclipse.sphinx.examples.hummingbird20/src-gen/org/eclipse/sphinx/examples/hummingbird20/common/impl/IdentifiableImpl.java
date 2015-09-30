@@ -30,11 +30,11 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Identifiable</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.common.impl.IdentifiableImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.common.impl.IdentifiableImpl#getDescription <em>Description</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

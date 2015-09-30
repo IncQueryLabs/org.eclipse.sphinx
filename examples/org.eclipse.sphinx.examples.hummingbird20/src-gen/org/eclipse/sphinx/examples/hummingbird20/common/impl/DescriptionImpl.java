@@ -30,10 +30,10 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Description;
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Description</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.common.impl.DescriptionImpl#getMixed <em>Mixed</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

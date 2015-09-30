@@ -26,11 +26,11 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Parameter</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ParameterImpl#getDataType <em>Data Type</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.ParameterImpl#isOptional <em>Optional</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

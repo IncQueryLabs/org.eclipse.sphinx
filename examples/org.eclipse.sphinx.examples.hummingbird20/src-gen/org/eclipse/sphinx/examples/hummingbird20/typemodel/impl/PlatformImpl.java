@@ -40,13 +40,13 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Platform</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PlatformImpl#getComponentTypes <em>Component Types</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PlatformImpl#getInterfaces <em>Interfaces</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PlatformImpl#getMixed <em>Mixed</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PlatformImpl#getXSISchemaLocation <em>XSI Schema Location</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

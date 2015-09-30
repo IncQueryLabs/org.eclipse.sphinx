@@ -27,12 +27,12 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType#getProvidedInterfaces <em>Provided Interfaces</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType#getPorts <em>Ports</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType#getParameters <em>Parameters</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getComponentType()
  * @model
@@ -115,6 +115,7 @@ public interface ComponentType extends Identifiable {
 	 * @return the value of the '<em>Parameters</em>' containment reference list.
 	 * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getComponentType_Parameters()
 	 * @model containment="true"
+	 *        extendedMetaData="ordered='false'"
 	 * @generated
 	 */
 	EList<Parameter> getParameters();

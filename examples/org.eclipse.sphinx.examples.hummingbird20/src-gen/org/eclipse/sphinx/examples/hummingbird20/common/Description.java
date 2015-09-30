@@ -27,10 +27,10 @@ import org.eclipse.emf.ecore.util.FeatureMap;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.common.Description#getMixed <em>Mixed</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.sphinx.examples.hummingbird20.common.Common20Package#getDescription()
  * @model extendedMetaData="kind='mixed'"

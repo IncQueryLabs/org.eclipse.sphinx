@@ -27,12 +27,12 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.Port;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection#getSourceComponent <em>Source Component</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection#getSourcePort <em>Source Port</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.Connection#getTargetComponent <em>Target Component</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package#getConnection()
  * @model

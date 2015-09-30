@@ -39,6 +39,7 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Component</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ComponentImpl#getType <em>Type</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ComponentImpl#getOutgoingConnections <em>Outgoing Connections</em>}</li>
@@ -46,7 +47,6 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ComponentImpl#getParameterValues <em>Parameter Values</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.ComponentImpl#getParameterExpressions <em>Parameter Expressions</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

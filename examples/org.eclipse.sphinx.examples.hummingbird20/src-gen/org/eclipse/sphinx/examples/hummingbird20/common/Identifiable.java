@@ -26,11 +26,11 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.common.Identifiable#getName <em>Name</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.common.Identifiable#getDescription <em>Description</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.sphinx.examples.hummingbird20.common.Common20Package#getIdentifiable()
  * @model abstract="true"

@@ -31,13 +31,13 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Port</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PortImpl#getOwner <em>Owner</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PortImpl#getRequiredInterface <em>Required Interface</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PortImpl#getMinProviderCount <em>Min Provider Count</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.PortImpl#getMaxProviderCount <em>Max Provider Count</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

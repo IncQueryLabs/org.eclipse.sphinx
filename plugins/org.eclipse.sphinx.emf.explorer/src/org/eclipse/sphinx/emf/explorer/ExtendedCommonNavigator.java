@@ -12,6 +12,7 @@
  *     itemis - [420520] Model explorer view state not restored completely when affected model objects are added lately
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
  *     itemis - [460260] Expanded paths are collapsed on resource reload
+ *     itemis - [478725] Enable model elements hold by ordered features to be displayed with their native order in Common Navigator-based views
  *
  * </copyright>
  */
@@ -51,10 +52,13 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.domain.factory.EditingDomainFactoryListenerRegistry;
 import org.eclipse.sphinx.emf.domain.factory.ITransactionalEditingDomainFactoryListener;
 import org.eclipse.sphinx.emf.explorer.internal.Activator;
+import org.eclipse.sphinx.emf.explorer.sorters.NonFinalCommonViewerSorter;
+import org.eclipse.sphinx.emf.explorer.sorters.OrderedAwareCommonViewerSorter;
 import org.eclipse.sphinx.emf.messages.EMFMessages;
 import org.eclipse.sphinx.emf.metamodel.MetaModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
@@ -97,8 +101,8 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
  * Extends the behavior of the Eclipse {@linkplain CommonNavigator Common Navigator}.
  */
 @SuppressWarnings("restriction")
-public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedPropertySheetPageContributor, IViewerProvider,
-		ITransactionalEditingDomainFactoryListener {
+public class ExtendedCommonNavigator extends CommonNavigator
+		implements ITabbedPropertySheetPageContributor, IViewerProvider, ITransactionalEditingDomainFactoryListener {
 
 	private IOperationHistoryListener affectedObjectsListener;
 	private IResourceChangeListener resourceMarkerChangeListener;
@@ -175,6 +179,9 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 	@Override
 	protected CommonViewer createCommonViewerObject(Composite aParent) {
 		CommonViewer viewer = new CommonViewer(getViewSite().getId(), aParent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL) {
+			/*
+			 * @see org.eclipse.jface.viewers.StructuredViewer#refresh()
+			 */
 			@Override
 			public void refresh() {
 				super.refresh();
@@ -182,11 +189,27 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 				deferredViewerState = treeViewerStateRecorder.getDeferredState();
 			}
 
+			/*
+			 * @see org.eclipse.ui.navigator.CommonViewer#refresh(java.lang.Object, boolean)
+			 */
 			@Override
 			public void refresh(Object element, boolean updateLabels) {
 				super.refresh(element, updateLabels);
 				treeViewerStateRecorder.applyState(deferredViewerState);
 				deferredViewerState = treeViewerStateRecorder.getDeferredState();
+			}
+
+			/*
+			 * Overridden to make sure that NonFinalCommonViewerSorter gets initialized in the same way as original
+			 * CommonViewerSorter
+			 * @see org.eclipse.ui.navigator.CommonViewer#setSorter(org.eclipse.jface.viewers.ViewerSorter)
+			 */
+			@Override
+			public void setSorter(ViewerSorter sorter) {
+				if (sorter != null && sorter instanceof NonFinalCommonViewerSorter) {
+					((NonFinalCommonViewerSorter) sorter).setContentService(getNavigatorContentService());
+				}
+				super.setSorter(sorter);
 			}
 		};
 
@@ -198,6 +221,10 @@ public class ExtendedCommonNavigator extends CommonNavigator implements ITabbedP
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
+
+		// Replace default sorter by one that honors the "ordered" information of the Ecore feature behind the
+		// collection holding the elements to be sorted
+		getCommonViewer().setSorter(new OrderedAwareCommonViewerSorter());
 
 		// Give action providers a chance to initialize retargetable actions
 		/*

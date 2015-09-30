@@ -33,11 +33,11 @@ import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Interface</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.InterfaceImpl#getProvidingComponentTypes <em>Providing Component Types</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.impl.InterfaceImpl#getRequiringPorts <em>Requiring Ports</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

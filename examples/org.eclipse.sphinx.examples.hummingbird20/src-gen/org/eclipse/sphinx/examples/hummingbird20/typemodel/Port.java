@@ -26,13 +26,13 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getOwner <em>Owner</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getRequiredInterface <em>Required Interface</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMinProviderCount <em>Min Provider Count</em>}</li>
  *   <li>{@link org.eclipse.sphinx.examples.hummingbird20.typemodel.Port#getMaxProviderCount <em>Max Provider Count</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package#getPort()
  * @model
