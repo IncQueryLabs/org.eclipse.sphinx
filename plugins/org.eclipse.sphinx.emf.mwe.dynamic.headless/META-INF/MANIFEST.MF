@@ -7,10 +7,7 @@ Bundle-SymbolicName: org.eclipse.sphinx.emf.mwe.dynamic.headless;singleton:=true
 Bundle-Localization: plugin
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.core.resources,
- org.eclipse.sphinx.platform,
- org.eclipse.sphinx.emf,
+Require-Bundle: org.eclipse.sphinx.emf,
  org.eclipse.sphinx.emf.mwe.dynamic
 Export-Package: org.eclipse.sphinx.emf.mwe.dynamic.headless,
  org.eclipse.sphinx.emf.mwe.dynamic.headless.internal;x-internal:=true,
