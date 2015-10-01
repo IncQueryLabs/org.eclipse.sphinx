@@ -11,6 +11,7 @@
  *     itemis - Initial API and implementation
  *     itemis - [473260] Progress indication of check framework
  *     itemis - [473261] Check Validation: Cancel button unresponsive
+ *     itemis - [478811] Check validation may compromise EMF Validation-based validation
  *
  * </copyright>
  */
@@ -29,6 +30,7 @@ import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.util.EObjectValidator;
 import org.eclipse.sphinx.emf.check.util.CheckValidationContextHelper;
 import org.eclipse.sphinx.emf.check.util.ExtendedEObjectValidator;
+import org.eclipse.sphinx.emf.validation.ICompositeValidator;
 
 /**
  * A delegating validator. This validator is automatically created when multiple check {@link EValidator validators} are
@@ -36,7 +38,7 @@ import org.eclipse.sphinx.emf.check.util.ExtendedEObjectValidator;
  * validator, it delegates the validation to all its children and returns the logical <em>AND</em> of the delegated
  * diagnostics results.
  */
-public class CompositeValidator implements EValidator {
+public class CompositeValidator implements ICompositeValidator {
 
 	protected class CompositeValidatorHandler {
 
@@ -70,41 +72,44 @@ public class CompositeValidator implements EValidator {
 		}
 	}
 
-	private List<EValidator> children;
+	private List<EValidator> validators;
 
 	public CompositeValidator() {
-		children = new ArrayList<EValidator>();
+		validators = new ArrayList<EValidator>();
 	}
 
-	public CompositeValidator(EValidator delegate) {
+	public CompositeValidator(EValidator validator) {
 		this();
-		addChild(delegate);
+		addValidator(validator);
 	}
 
-	public void addChild(EValidator delegate) {
-		if (this == delegate) {
+	@Override
+	public void addValidator(EValidator validator) {
+		if (this == validator) {
 			return;
 		}
-		if (!children.contains(delegate)) {
-			children.add(delegate);
+		if (!validators.contains(validator)) {
+			validators.add(validator);
 		}
 	}
 
-	public void removeChild(EValidator delegate) {
-		if (this == delegate) {
+	@Override
+	public void removeValidator(EValidator validator) {
+		if (this == validator) {
 			return;
 		}
-		if (children.contains(delegate)) {
-			children.remove(delegate);
+		if (validators.contains(validator)) {
+			validators.remove(validator);
 		}
 	}
 
-	public List<EValidator> getChildren() {
-		return children;
+	@Override
+	public List<EValidator> getValidators() {
+		return validators;
 	}
 
 	protected boolean containsEObjectValidator() {
-		for (EValidator validator : getChildren()) {
+		for (EValidator validator : getValidators()) {
 			if (validator instanceof EObjectValidator) {
 				return true;
 			}
@@ -118,7 +123,7 @@ public class CompositeValidator implements EValidator {
 		boolean result = handler.preValidate(eObject.eClass().getClassifierID(), eObject, diagnostics);
 
 		// Let child validators validate given model object
-		for (EValidator validator : getChildren()) {
+		for (EValidator validator : getValidators()) {
 			result &= validator.validate(eObject, diagnostics, context);
 		}
 
@@ -132,7 +137,7 @@ public class CompositeValidator implements EValidator {
 		boolean result = handler.preValidate(eClass.getClassifierID(), eObject, diagnostics);
 
 		// Let child validators validate given model object
-		for (EValidator validator : getChildren()) {
+		for (EValidator validator : getValidators()) {
 			result &= validator.validate(eClass, eObject, diagnostics, context);
 		}
 
@@ -146,7 +151,7 @@ public class CompositeValidator implements EValidator {
 		boolean result = handler.preValidate(eDataType.getClassifierID(), value, diagnostics);
 
 		// Let child validators validate given data type
-		for (EValidator validator : getChildren()) {
+		for (EValidator validator : getValidators()) {
 			result &= validator.validate(eDataType, value, diagnostics, context);
 		}
 

@@ -1,16 +1,17 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2013 See4sys, itemis and others.
+ *
+ * Copyright (c) 2008-2015 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [408238] eValidator not resolved correctly
- *     
+ *     itemis - [478811] Check validation may compromise EMF Validation-based validation
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.validation.diagnostic;
@@ -43,6 +44,7 @@ import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.emf.validation.service.IConstraintFilter;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.validation.ICompositeValidator;
 import org.eclipse.sphinx.emf.validation.diagnostic.filters.ExtensionPointFilter;
 import org.eclipse.sphinx.emf.validation.diagnostic.filters.util.ConstraintFilterValue;
 import org.eclipse.sphinx.emf.validation.evalidator.adapter.EValidatorAdapter;
@@ -74,12 +76,13 @@ public class ExtendedDiagnostician extends Diagnostician {
 
 	/**
 	 * Method which embeds validation with setting for filter and validation depth.
-	 * 
+	 *
 	 * @param eObject
 	 *            the object to validate
 	 * @param filter
 	 *            , filters on rules for validation
-	 * @param int validation depth
+	 * @param int
+	 *            validation depth
 	 * @return Diagnostic
 	 */
 	public Diagnostic validate(EObject eObject, Set<IConstraintFilter> filters, int depth) {
@@ -100,8 +103,9 @@ public class ExtendedDiagnostician extends Diagnostician {
 			resourceTxt = "( " + iresource.getName() + ")"; //$NON-NLS-1$//$NON-NLS-2$
 		}
 
-		BasicDiagnostic diagnostics = new BasicDiagnostic(EObjectValidator.DIAGNOSTIC_SOURCE, 0, EcorePlugin.INSTANCE.getString(
-				"_UI_DiagnosticRoot_diagnostic", new Object[] { getObjectLabel(eObject) + resourceTxt }), new Object[] { eObject }); //$NON-NLS-1$
+		BasicDiagnostic diagnostics = new BasicDiagnostic(EObjectValidator.DIAGNOSTIC_SOURCE, 0,
+				EcorePlugin.INSTANCE.getString("_UI_DiagnosticRoot_diagnostic", new Object[] { getObjectLabel(eObject) + resourceTxt }), //$NON-NLS-1$
+				new Object[] { eObject });
 		validate(eObject, diagnostics, context);
 
 		resetDepth();
@@ -112,12 +116,13 @@ public class ExtendedDiagnostician extends Diagnostician {
 
 	/**
 	 * Method which embeds validation with setting for filter and validation depth.
-	 * 
+	 *
 	 * @param eObject
 	 *            the object to validate
 	 * @param filter
 	 *            , filter on rules for validation
-	 * @param int validation depth
+	 * @param int
+	 *            validation depth
 	 * @return Diagnostic
 	 */
 	@SuppressWarnings("unchecked")
@@ -136,7 +141,7 @@ public class ExtendedDiagnostician extends Diagnostician {
 
 	/**
 	 * Method which embeds validation with setting for filter.
-	 * 
+	 *
 	 * @param eObject
 	 *            the object to validate
 	 * @param filter
@@ -151,7 +156,7 @@ public class ExtendedDiagnostician extends Diagnostician {
 	/**
 	 * Method which embeds validation with setting for filter. The validation depth is set to default value (infinite
 	 * one.)
-	 * 
+	 *
 	 * @param eObject
 	 *            the object to validate
 	 * @param filter
@@ -166,7 +171,7 @@ public class ExtendedDiagnostician extends Diagnostician {
 
 	/**
 	 * Method which embeds validation with setting for filter and validation depth.
-	 * 
+	 *
 	 * @param eObject
 	 * @param cfv
 	 * @return {@link Diagnostic}
@@ -183,7 +188,7 @@ public class ExtendedDiagnostician extends Diagnostician {
 
 	/**
 	 * Method which embeds validation with setting for filter
-	 * 
+	 *
 	 * @param eObject
 	 * @param cfv
 	 * @return {@link Diagnostic}
@@ -214,21 +219,27 @@ public class ExtendedDiagnostician extends Diagnostician {
 	}
 
 	protected EObjectValidator findEValidator(EClass eClass) {
-		Object eValidator = eValidatorRegistry.get(eClass.getEPackage());
+		Object eValidatorObject = eValidatorRegistry.get(eClass.getEPackage());
 
-		if (eValidator instanceof EValidatorAdapter) {
-			return (EValidatorAdapter) eValidator;
-		}
-
-		for (EClass eSuperType : eClass.getESuperTypes()) {
-			eValidator = findEValidator(eSuperType);
-			if (eValidator instanceof EValidatorAdapter) {
-				return (EValidatorAdapter) eValidator;
+		if (eValidatorObject instanceof EValidatorAdapter) {
+			return (EValidatorAdapter) eValidatorObject;
+		} else if (eValidatorObject instanceof ICompositeValidator) {
+			for (EValidator eValidator : ((ICompositeValidator) eValidatorObject).getValidators()) {
+				if (eValidator instanceof EValidatorAdapter) {
+					return (EValidatorAdapter) eValidator;
+				}
 			}
 		}
 
-		eValidator = eValidatorRegistry.get(null);
-		return eValidator instanceof EObjectValidator ? (EObjectValidator) eValidator : null;
+		for (EClass eSuperType : eClass.getESuperTypes()) {
+			eValidatorObject = findEValidator(eSuperType);
+			if (eValidatorObject instanceof EValidatorAdapter) {
+				return (EValidatorAdapter) eValidatorObject;
+			}
+		}
+
+		eValidatorObject = eValidatorRegistry.get(null);
+		return eValidatorObject instanceof EObjectValidator ? (EObjectValidator) eValidatorObject : null;
 	}
 
 	@Override
@@ -254,8 +265,9 @@ public class ExtendedDiagnostician extends Diagnostician {
 		}
 
 		if (goNext) {
-			result = eValidator instanceof EValidatorAdapter ? ((EValidatorAdapter) eValidator).validate(eClass, eObject, diagnostics, context,
-					filters) : eValidator.validate(eClass, eObject, diagnostics, context);
+			result = eValidator instanceof EValidatorAdapter
+					? ((EValidatorAdapter) eValidator).validate(eClass, eObject, diagnostics, context, filters)
+					: eValidator.validate(eClass, eObject, diagnostics, context);
 			if (isAnyProgressMonitor()) {
 				monitor.worked(1);
 				if (monitor.isCanceled()) {
@@ -302,7 +314,7 @@ public class ExtendedDiagnostician extends Diagnostician {
 
 	/**
 	 * Set the filter that will be applied with this diagnostician object
-	 * 
+	 *
 	 * @param icf
 	 * @see IConstraintFilter
 	 */
@@ -317,7 +329,7 @@ public class ExtendedDiagnostician extends Diagnostician {
 
 	/**
 	 * Set the filter that will be applied to this diagnostician object
-	 * 
+	 *
 	 * @param icfs
 	 * @see IConstraintFilter
 	 */
@@ -336,7 +348,7 @@ public class ExtendedDiagnostician extends Diagnostician {
 	 * set the depth of the validation performed through this diagnostician allowed value are
 	 * {@link EObjectUtil#DEPTH_ZERO}, {@link EObjectUtil#DEPTH_ONE} and {@link EObjectUtil#DEPTH_INFINITE}. If the
 	 * value is not on this range set the value to {@link ExtendedDiagnostician#VALIDATION_DEFAULT_DEPTH}.
-	 * 
+	 *
 	 * @param value
 	 * @see org.eclipse.sphinx.emf.util.EObjectUtil
 	 */
@@ -401,7 +413,7 @@ public class ExtendedDiagnostician extends Diagnostician {
 
 	/**
 	 * set the monitor for the validation job.
-	 * 
+	 *
 	 * @param monitor
 	 */
 	public void setProgressMonitor(IProgressMonitor monitor) {
@@ -410,7 +422,7 @@ public class ExtendedDiagnostician extends Diagnostician {
 
 	/**
 	 * accessor on the monitor for the validation job
-	 * 
+	 *
 	 * @return {@link IProgressMonitor}
 	 */
 	public IProgressMonitor getProgressMonitor() {
@@ -419,7 +431,7 @@ public class ExtendedDiagnostician extends Diagnostician {
 
 	/**
 	 * check if a progress monitor has been set
-	 * 
+	 *
 	 * @return yes if true, false otherwise
 	 */
 	public boolean isAnyProgressMonitor() {

@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [478811] Check validation may compromise EMF Validation-based validation
  *
  * </copyright>
  */
@@ -23,9 +24,9 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.emf.ecore.EValidator;
-import org.eclipse.sphinx.emf.check.CompositeValidator;
 import org.eclipse.sphinx.emf.check.ICheckValidator;
 import org.eclipse.sphinx.emf.check.catalog.Catalog;
+import org.eclipse.sphinx.emf.validation.ICompositeValidator;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
 import org.eclipse.sphinx.tests.emf.check.internal.Activator;
 import org.eclipse.sphinx.tests.emf.check.internal.TestableCheckValidatorRegistry;
@@ -51,9 +52,9 @@ public class CheckValidatorRegistryTest {
 
 		EValidator validator = checkValidatorRegistry.getValidator(InstanceModel20Package.eINSTANCE);
 		Assert.assertNotNull(validator);
-		Assert.assertTrue(validator instanceof CompositeValidator);
+		Assert.assertTrue(validator instanceof ICompositeValidator);
 
-		List<EValidator> children = ((CompositeValidator) validator).getChildren();
+		List<EValidator> children = ((ICompositeValidator) validator).getValidators();
 		Assert.assertEquals(3, children.size());
 
 	}

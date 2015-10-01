@@ -15,6 +15,7 @@
  *     itemis - [458921] Newly introduced registries for metamodel serives, check validators and workflow contributors are not standalone-safe
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
  *     itemis - [461051] API to get all registered check validators
+ *     itemis - [478811] Check validation may compromise EMF Validation-based validation
  *
  * </copyright>
  */
@@ -47,6 +48,7 @@ import org.eclipse.sphinx.emf.check.internal.EPackageMappings;
 import org.eclipse.sphinx.emf.check.util.CheckValidationUtil;
 import org.eclipse.sphinx.emf.util.EObjectUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
+import org.eclipse.sphinx.emf.validation.ICompositeValidator;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
@@ -256,17 +258,17 @@ public class CheckValidatorRegistry {
 			eValidatorRegistry.put(ePackage, validator);
 		}
 		// Existing validator being a composite validator?
-		else if (existingValidator instanceof CompositeValidator) {
+		else if (existingValidator instanceof ICompositeValidator) {
 			// Add given check validator as additional child validator
-			((CompositeValidator) existingValidator).addChild(validator);
+			((ICompositeValidator) existingValidator).addValidator(validator);
 		}
 		// Existing validator is an EValidator or another check validator
 		else {
 			// Replace existing validator by a composite validator containing existing validator and given check
 			// validator as child validators
-			CompositeValidator compositeValidator = new CompositeValidator();
-			compositeValidator.addChild(existingValidator);
-			compositeValidator.addChild(validator);
+			ICompositeValidator compositeValidator = new CompositeValidator();
+			compositeValidator.addValidator(existingValidator);
+			compositeValidator.addValidator(validator);
 			eValidatorRegistry.put(ePackage, compositeValidator);
 		}
 	}
@@ -281,7 +283,7 @@ public class CheckValidatorRegistry {
 	 */
 	public EValidator getValidator(EPackage ePackage) {
 		EValidator eValidator = getEValidatorRegistry().getEValidator(ePackage);
-		if (eValidator instanceof ICheckValidator || eValidator instanceof CompositeValidator) {
+		if (eValidator instanceof ICheckValidator || eValidator instanceof ICompositeValidator) {
 			return eValidator;
 		}
 		return null;
