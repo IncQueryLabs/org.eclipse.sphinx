@@ -6,6 +6,7 @@ Bundle-Version: 0.10.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib,
+ org.eclipse.sphinx.emf,
  org.eclipse.sphinx.emf.mwe.dynamic,
  org.eclipse.sphinx.examples.workflows.lib
 Bundle-Vendor: %providerName
