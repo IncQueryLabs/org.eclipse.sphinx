@@ -23,13 +23,13 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.sphinx.emf.check.ICheckValidationMarker;
-import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.eclipse.ui.views.markers.MarkerViewUtil;
 
 public class GenerateErrorMarkersHandler extends AbstractHandler {
@@ -37,9 +37,9 @@ public class GenerateErrorMarkersHandler extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
-		Job addJob = new Job("Add Error Markers") { //$NON-NLS-1$
+		Job addJob = new WorkspaceJob("Add Error Markers") {
 			@Override
-			protected IStatus run(IProgressMonitor monitor) {
+			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 				try {
 					IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 					Map<String, Object> attribs = new HashMap<String, Object>();
@@ -53,7 +53,8 @@ public class GenerateErrorMarkersHandler extends AbstractHandler {
 						attribs.put(IMarker.MESSAGE, "Error message " + i); //$NON-NLS-1$
 						attribs.put(IMarker.LOCATION, "Location " + i); //$NON-NLS-1$
 						attribs.put("testAttribute", String.valueOf(i / 2)); //$NON-NLS-1$
-						MarkerUtilities.createMarker(root, attribs, ICheckValidationMarker.CHECK_VALIDATION_PROBLEM);
+						IMarker marker = root.createMarker(ICheckValidationMarker.CHECK_VALIDATION_PROBLEM);
+						marker.setAttributes(attribs);
 					}
 				} catch (CoreException e) {
 					return e.getStatus();

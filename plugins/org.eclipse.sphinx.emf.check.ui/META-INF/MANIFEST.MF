@@ -3,17 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.sphinx.emf.check.ui;singleton:=true
 Bundle-Version: 0.10.0.qualifier
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ui.ide,
- org.eclipse.core.resources,
- org.eclipse.core.commands,
- org.eclipse.ui.workbench,
- org.eclipse.ui.editors,
- org.eclipse.ui.views.properties.tabbed,
- org.eclipse.emf.ecore,
+Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.sphinx.emf.ui,
- org.eclipse.sphinx.emf.check,
- org.eclipse.sphinx.emf.check.catalog
+ org.eclipse.sphinx.emf.check
 Bundle-Activator: org.eclipse.sphinx.emf.check.ui.internal.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.eclipse.sphinx.emf.check.ui,
