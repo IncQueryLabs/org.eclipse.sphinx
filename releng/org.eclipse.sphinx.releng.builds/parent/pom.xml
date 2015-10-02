@@ -212,7 +212,7 @@
 				<!-- !!! Important Note !!! The following element MUST be written in a single line. Otherwise the build will fail under Max OS X
 				(see https://bugs.eclipse.org/bugs/show_bug.cgi?id=427693). In particular, be careful when auto formatting this file with Ctrl+Shift+F
 				as it tends to break up this line into several pieces. -->
-				<tycho.surefire.extra.vmargs>-Xmx512m -XX:MaxPermSize=256m -XstartOnFirstThread</tycho.surefire.extra.vmargs>
+				<tycho.surefire.extra.vmargs>-Xmx512m -XstartOnFirstThread</tycho.surefire.extra.vmargs>
 			</properties>
 		</profile>
 		<profile>
@@ -223,7 +223,7 @@
 				</os>
 			</activation>
 			<properties>
-				<tycho.surefire.extra.vmargs>-Xmx512m -XX:MaxPermSize=256m</tycho.surefire.extra.vmargs>
+				<tycho.surefire.extra.vmargs>-Xmx512m</tycho.surefire.extra.vmargs>
 			</properties>
 		</profile>
 		<profile>
