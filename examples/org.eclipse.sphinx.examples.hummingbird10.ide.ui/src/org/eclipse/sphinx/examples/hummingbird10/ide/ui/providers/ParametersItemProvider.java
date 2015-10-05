@@ -41,6 +41,7 @@ public class ParametersItemProvider extends TransientItemProvider {
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
+
 			childrenFeatures.add(Hummingbird10Package.Literals.COMPONENT__PARAMETERS);
 		}
 		return childrenFeatures;
@@ -55,8 +56,8 @@ public class ParametersItemProvider extends TransientItemProvider {
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
 
-		newChildDescriptors.add(createChildParameter(Hummingbird10Package.Literals.COMPONENT__PARAMETERS,
-				Hummingbird10Factory.eINSTANCE.createParameter()));
+		newChildDescriptors
+				.add(createChildParameter(Hummingbird10Package.Literals.COMPONENT__PARAMETERS, Hummingbird10Factory.eINSTANCE.createParameter()));
 	}
 
 	@Override
