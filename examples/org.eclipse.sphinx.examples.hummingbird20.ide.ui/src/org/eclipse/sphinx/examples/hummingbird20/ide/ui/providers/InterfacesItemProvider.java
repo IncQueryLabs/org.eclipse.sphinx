@@ -52,6 +52,7 @@ public class InterfacesItemProvider extends TransientItemProvider {
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
+
 			childrenFeatures.add(TypeModel20Package.Literals.PLATFORM__INTERFACES);
 		}
 		return childrenFeatures;

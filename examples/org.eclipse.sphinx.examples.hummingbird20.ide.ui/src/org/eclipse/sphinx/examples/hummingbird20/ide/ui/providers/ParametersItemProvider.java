@@ -52,6 +52,7 @@ public class ParametersItemProvider extends TransientItemProvider {
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
+
 			childrenFeatures.add(TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS);
 		}
 		return childrenFeatures;
@@ -61,8 +62,8 @@ public class ParametersItemProvider extends TransientItemProvider {
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
 
-		newChildDescriptors.add(createChildParameter(TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS,
-				TypeModel20Factory.eINSTANCE.createParameter()));
+		newChildDescriptors
+				.add(createChildParameter(TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS, TypeModel20Factory.eINSTANCE.createParameter()));
 	}
 
 	@Override

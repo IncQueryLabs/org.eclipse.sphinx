@@ -46,8 +46,8 @@ public class ExtendedComponentItemProvider extends ComponentItemProvider {
 		if (label == null || label.length() == 0) {
 			styledLabel.append(getString("_UI_Component_type"), StyledString.Style.QUALIFIER_STYLER); //$NON-NLS-1$
 		} else {
-			styledLabel
-					.append(getString("_UI_Component_type"), StyledString.Style.QUALIFIER_STYLER).append(" ").append(label, IHummingbird20Styles.INSTANCE_STYLE); //$NON-NLS-1$ //$NON-NLS-2$
+			styledLabel.append(getString("_UI_Component_type"), StyledString.Style.QUALIFIER_STYLER).append(" ").append(label, //$NON-NLS-1$ //$NON-NLS-2$
+					IHummingbird20Styles.INSTANCE_STYLE);
 		}
 		return styledLabel;
 	}
@@ -60,9 +60,12 @@ public class ExtendedComponentItemProvider extends ComponentItemProvider {
 
 	@Override
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
-		super.getChildrenFeatures(object);
-		childrenFeatures.remove(InstanceModel20Package.Literals.COMPONENT__PARAMETER_VALUES);
-		childrenFeatures.remove(InstanceModel20Package.Literals.COMPONENT__OUTGOING_CONNECTIONS);
+		if (childrenFeatures == null) {
+			super.getChildrenFeatures(object);
+
+			childrenFeatures.remove(InstanceModel20Package.Literals.COMPONENT__PARAMETER_VALUES);
+			childrenFeatures.remove(InstanceModel20Package.Literals.COMPONENT__OUTGOING_CONNECTIONS);
+		}
 		return childrenFeatures;
 	}
 
@@ -92,9 +95,9 @@ public class ExtendedComponentItemProvider extends ComponentItemProvider {
 				public Collection<?> getAffectedObjects() {
 					Collection<?> affected = super.getAffectedObjects();
 					if (affected.contains(owner)) {
-						affected = Collections
-								.singleton(feature == InstanceModel20Package.Literals.COMPONENT__PARAMETER_VALUES ? adapterFactory.adapt(owner,
-										ParameterValuesItemProvider.class) : adapterFactory.adapt(owner, OutgoingConnectionsItemProvider.class));
+						affected = Collections.singleton(feature == InstanceModel20Package.Literals.COMPONENT__PARAMETER_VALUES
+								? adapterFactory.adapt(owner, ParameterValuesItemProvider.class)
+								: adapterFactory.adapt(owner, OutgoingConnectionsItemProvider.class));
 					}
 					return affected;
 				}

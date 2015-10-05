@@ -38,9 +38,12 @@ public class ExtendedPlatformItemProvider extends PlatformItemProvider {
 
 	@Override
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
-		super.getChildrenFeatures(object);
-		childrenFeatures.remove(TypeModel20Package.Literals.PLATFORM__COMPONENT_TYPES);
-		childrenFeatures.remove(TypeModel20Package.Literals.PLATFORM__INTERFACES);
+		if (childrenFeatures == null) {
+			super.getChildrenFeatures(object);
+
+			childrenFeatures.remove(TypeModel20Package.Literals.PLATFORM__COMPONENT_TYPES);
+			childrenFeatures.remove(TypeModel20Package.Literals.PLATFORM__INTERFACES);
+		}
 		return childrenFeatures;
 	}
 
@@ -69,8 +72,9 @@ public class ExtendedPlatformItemProvider extends PlatformItemProvider {
 				public Collection<?> getAffectedObjects() {
 					Collection<?> affected = super.getAffectedObjects();
 					if (affected.contains(owner)) {
-						affected = Collections.singleton(feature == TypeModel20Package.Literals.PLATFORM__COMPONENT_TYPES ? adapterFactory.adapt(
-								owner, ComponentTypesItemProvider.class) : adapterFactory.adapt(owner, InterfacesItemProvider.class));
+						affected = Collections.singleton(feature == TypeModel20Package.Literals.PLATFORM__COMPONENT_TYPES
+								? adapterFactory.adapt(owner, ComponentTypesItemProvider.class)
+								: adapterFactory.adapt(owner, InterfacesItemProvider.class));
 					}
 					return affected;
 				}

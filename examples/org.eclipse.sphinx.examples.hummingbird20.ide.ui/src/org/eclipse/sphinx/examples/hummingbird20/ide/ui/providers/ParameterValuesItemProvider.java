@@ -52,6 +52,7 @@ public class ParameterValuesItemProvider extends TransientItemProvider {
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
+
 			childrenFeatures.add(InstanceModel20Package.Literals.COMPONENT__PARAMETER_VALUES);
 		}
 		return childrenFeatures;

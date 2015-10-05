@@ -62,15 +62,16 @@ public class ExtendedConnectionItemProvider extends ConnectionItemProvider {
 
 	@Override
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
-		super.getChildrenFeatures(object);
+		if (childrenFeatures == null) {
+			super.getChildrenFeatures(object);
 
-		// Suppress description containment reference from children
-		childrenFeatures.remove(Common20Package.Literals.IDENTIFIABLE__DESCRIPTION);
+			// Suppress description containment reference from children
+			childrenFeatures.remove(Common20Package.Literals.IDENTIFIABLE__DESCRIPTION);
 
-		// Display source port and target component cross references as children
-		childrenFeatures.add(InstanceModel20Package.Literals.CONNECTION__SOURCE_PORT);
-		childrenFeatures.add(InstanceModel20Package.Literals.CONNECTION__TARGET_COMPONENT);
-
+			// Display source port and target component cross references as children
+			childrenFeatures.add(InstanceModel20Package.Literals.CONNECTION__SOURCE_PORT);
+			childrenFeatures.add(InstanceModel20Package.Literals.CONNECTION__TARGET_COMPONENT);
+		}
 		return childrenFeatures;
 	}
 

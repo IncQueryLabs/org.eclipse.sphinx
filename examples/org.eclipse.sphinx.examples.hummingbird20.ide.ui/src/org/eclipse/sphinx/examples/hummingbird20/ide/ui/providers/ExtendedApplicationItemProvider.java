@@ -38,8 +38,11 @@ public class ExtendedApplicationItemProvider extends ApplicationItemProvider {
 
 	@Override
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
-		super.getChildrenFeatures(object);
-		childrenFeatures.remove(InstanceModel20Package.Literals.APPLICATION__COMPONENTS);
+		if (childrenFeatures == null) {
+			super.getChildrenFeatures(object);
+
+			childrenFeatures.remove(InstanceModel20Package.Literals.APPLICATION__COMPONENTS);
+		}
 		return childrenFeatures;
 	}
 

@@ -44,9 +44,12 @@ public class ExtendedComponentTypeItemProvider extends ComponentTypeItemProvider
 
 	@Override
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
-		super.getChildrenFeatures(object);
-		childrenFeatures.remove(TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS);
-		childrenFeatures.remove(TypeModel20Package.Literals.COMPONENT_TYPE__PORTS);
+		if (childrenFeatures == null) {
+			super.getChildrenFeatures(object);
+
+			childrenFeatures.remove(TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS);
+			childrenFeatures.remove(TypeModel20Package.Literals.COMPONENT_TYPE__PORTS);
+		}
 		return childrenFeatures;
 	}
 
@@ -75,8 +78,8 @@ public class ExtendedComponentTypeItemProvider extends ComponentTypeItemProvider
 				public Collection<?> getAffectedObjects() {
 					Collection<?> affected = super.getAffectedObjects();
 					if (affected.contains(owner)) {
-						affected = Collections.singleton(feature == TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS ? adapterFactory.adapt(
-								owner, ParametersItemProvider.class) : adapterFactory.adapt(owner, PortsItemProvider.class));
+						affected = Collections.singleton(feature == TypeModel20Package.Literals.COMPONENT_TYPE__PARAMETERS
+								? adapterFactory.adapt(owner, ParametersItemProvider.class) : adapterFactory.adapt(owner, PortsItemProvider.class));
 					}
 					return affected;
 				}
