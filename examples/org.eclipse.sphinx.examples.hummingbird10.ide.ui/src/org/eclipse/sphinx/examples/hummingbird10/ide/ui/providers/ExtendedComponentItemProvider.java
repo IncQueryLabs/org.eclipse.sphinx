@@ -38,9 +38,12 @@ public class ExtendedComponentItemProvider extends ComponentItemProvider {
 
 	@Override
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
-		super.getChildrenFeatures(object);
-		childrenFeatures.remove(Hummingbird10Package.Literals.COMPONENT__PARAMETERS);
-		childrenFeatures.remove(Hummingbird10Package.Literals.COMPONENT__OUTGOING_CONNECTIONS);
+		if (childrenFeatures == null) {
+			super.getChildrenFeatures(object);
+
+			childrenFeatures.remove(Hummingbird10Package.Literals.COMPONENT__PARAMETERS);
+			childrenFeatures.remove(Hummingbird10Package.Literals.COMPONENT__OUTGOING_CONNECTIONS);
+		}
 		return childrenFeatures;
 	}
 
@@ -70,8 +73,9 @@ public class ExtendedComponentItemProvider extends ComponentItemProvider {
 				public Collection<?> getAffectedObjects() {
 					Collection<?> affected = super.getAffectedObjects();
 					if (affected.contains(owner)) {
-						affected = Collections.singleton(feature == Hummingbird10Package.Literals.COMPONENT__PARAMETERS ? adapterFactory.adapt(owner,
-								ParametersItemProvider.class) : adapterFactory.adapt(owner, OutgoingConnectionsItemProvider.class));
+						affected = Collections.singleton(feature == Hummingbird10Package.Literals.COMPONENT__PARAMETERS
+								? adapterFactory.adapt(owner, ParametersItemProvider.class)
+								: adapterFactory.adapt(owner, OutgoingConnectionsItemProvider.class));
 					}
 					return affected;
 				}

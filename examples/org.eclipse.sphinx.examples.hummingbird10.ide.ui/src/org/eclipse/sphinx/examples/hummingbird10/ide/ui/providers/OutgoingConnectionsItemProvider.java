@@ -41,6 +41,7 @@ public class OutgoingConnectionsItemProvider extends TransientItemProvider {
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
+
 			childrenFeatures.add(Hummingbird10Package.Literals.COMPONENT__OUTGOING_CONNECTIONS);
 		}
 		return childrenFeatures;
