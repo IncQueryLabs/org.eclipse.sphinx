@@ -54,6 +54,6 @@
 <nl>en_EN</nl>
 </environment>
 <launcherArgs>
-<vmArgs>-Xms128m -Xmx512m -XX:PermSize=256M -XX:MaxPermSize=512M</vmArgs>
+<vmArgs>-Xms128m -Xmx512m</vmArgs>
 </launcherArgs>
 </target>
