@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2010 See4sys and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.workspace.ui.internal;
@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
@@ -53,7 +54,8 @@ public class ModelLoadingProgressIndicator extends JobChangeAdapter {
 	/**
 	 * @param event
 	 *            The job change event owning the job that may be a model loader job.
-	 * @return <ul>
+	 * @return
+	 * 		<ul>
 	 *         <li><tt><b>true</b>&nbsp;&nbsp;</tt> if the specified {@linkplain IJobChangeEvent event} refers to a
 	 *         model loader job (<em>i.e.</em> to a job that belongs to the
 	 *         {@linkplain IExtendedPlatformConstants#FAMILY_MODEL_LOADING model loading} family);</li>
@@ -85,17 +87,20 @@ public class ModelLoadingProgressIndicator extends JobChangeAdapter {
 			 * parallel. Otherwise, the model loading job would be prevented from running and consequently short running
 			 * model loading jobs would never be complete when the progress dialog's short operation time delay is over.
 			 */
-			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					SafeRunner.run(new SafeRunnable("Creating dialog showing model loading progress...") { //$NON-NLS-1$ (internal message)
-								@Override
-								public void run() {
-									PlatformUI.getWorkbench().getProgressService().showInDialog(null, event.getJob());
-								}
-							});
-				}
-			});
+			Display display = PlatformUI.getWorkbench().getDisplay();
+			if (display != null && !display.isDisposed()) {
+				display.asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						SafeRunner.run(new SafeRunnable("Creating dialog showing model loading progress...") { //$NON-NLS-1$
+							@Override
+							public void run() {
+								PlatformUI.getWorkbench().getProgressService().showInDialog(null, event.getJob());
+							}
+						});
+					}
+				});
+			}
 		}
 	}
 }
