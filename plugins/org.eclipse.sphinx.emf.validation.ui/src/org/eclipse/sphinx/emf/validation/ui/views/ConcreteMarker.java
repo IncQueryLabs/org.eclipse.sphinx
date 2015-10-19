@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation, See4sys and others.
+ * Copyright (c) 2000, 2010 IBM Corporation, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,19 +7,22 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     See4sys - added support for problem markers on model objects (rather than 
- *               only on workspace resources). Unfortunately, there was no other 
- *               choice than copying the whole code from 
- *               org.eclipse.ui.views.markers.internal for that purpose because 
+ *     See4sys - added support for problem markers on model objects (rather than
+ *               only on workspace resources). Unfortunately, there was no other
+ *               choice than copying the whole code from
+ *               org.eclipse.ui.views.markers.internal for that purpose because
  *               many of the relevant classes, methods, and fields are private or
  *               package private.
+ *     itemis - [480135] Introduce metamodel and view content agnostic problem decorator for model elements
  *******************************************************************************/
 package org.eclipse.sphinx.emf.validation.ui.views;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EValidator;
+import org.eclipse.sphinx.emf.resource.ExtendedResource;
 import org.eclipse.sphinx.emf.validation.markers.IValidationMarker;
 import org.eclipse.sphinx.emf.validation.util.ValidationUtil;
 
@@ -42,7 +45,7 @@ public class ConcreteMarker extends MarkerNode {
 
 	private String eObjectID;
 
-	private String URIToDisplay;
+	private String uriToDisplay;
 
 	private String eObjectType;
 
@@ -108,7 +111,7 @@ public class ConcreteMarker extends MarkerNode {
 		if (validationProblem) {
 			// Let's get URI
 			String uri = marker.getAttribute(EValidator.URI_ATTRIBUTE, MarkerMessages.no_available_data);
-			URIToDisplay = ValidationUtil.getSegment(uri);
+			uriToDisplay = ExtendedResource.URI_FRAGMENT_SEPARATOR + URI.createURI(uri, true).fragment();
 			try {
 				Object object = marker.getAttribute(IValidationMarker.EOBJECT_ATTRIBUTE);
 				eObjectID = object == null ? ValidationUtil.getObjectId(uri) : (String) object;
@@ -118,7 +121,7 @@ public class ConcreteMarker extends MarkerNode {
 			}
 		} else {
 			eObjectID = MarkerMessages.no_available_data;
-			URIToDisplay = MarkerMessages.no_available_data;
+			uriToDisplay = MarkerMessages.no_available_data;
 			eObjectType = MarkerMessages.no_available_data;
 		}
 
@@ -155,7 +158,7 @@ public class ConcreteMarker extends MarkerNode {
 	}
 
 	public String getURIToDisplay() {
-		return URIToDisplay;
+		return uriToDisplay;
 	}
 
 	/*
@@ -207,7 +210,7 @@ public class ConcreteMarker extends MarkerNode {
 
 	/**
 	 * The underlying marker ID value.
-	 * 
+	 *
 	 * @return the marker's ID.
 	 */
 	public long getId() {
@@ -236,7 +239,7 @@ public class ConcreteMarker extends MarkerNode {
 
 	/**
 	 * Set the category the receiver is in.
-	 * 
+	 *
 	 * @param category
 	 */
 	public void setCategory(MarkerNode category) {
@@ -273,7 +276,7 @@ public class ConcreteMarker extends MarkerNode {
 
 	/**
 	 * Return the short name for the folder.
-	 * 
+	 *
 	 * @return String
 	 */
 	public String getShortFolder() {
@@ -285,7 +288,7 @@ public class ConcreteMarker extends MarkerNode {
 
 	/**
 	 * Get the location string. If the {@link IMarker#LOCATION } attribute was not set then return an empty String.
-	 * 
+	 *
 	 * @return String
 	 */
 	public String getLocationString() {
@@ -294,7 +297,7 @@ public class ConcreteMarker extends MarkerNode {
 
 	/**
 	 * Get the group for the reciever.
-	 * 
+	 *
 	 * @return Returns the group.
 	 */
 	public Object getGroup() {
@@ -303,7 +306,7 @@ public class ConcreteMarker extends MarkerNode {
 
 	/**
 	 * Set the group name.
-	 * 
+	 *
 	 * @param group
 	 *            the group name
 	 */

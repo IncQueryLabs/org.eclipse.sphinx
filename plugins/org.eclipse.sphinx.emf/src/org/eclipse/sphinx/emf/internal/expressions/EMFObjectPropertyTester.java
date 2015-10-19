@@ -1,15 +1,16 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2010 See4sys and others.
+ *
+ * Copyright (c) 2008-2015 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
- * 
+ *     itemis - [480135] Introduce metamodel and view content agnostic problem decorator for model elements
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.internal.expressions;
@@ -17,7 +18,6 @@ package org.eclipse.sphinx.emf.internal.expressions;
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
@@ -29,26 +29,37 @@ import org.eclipse.sphinx.emf.util.EObjectUtil;
 public class EMFObjectPropertyTester extends PropertyTester {
 
 	/**
-	 * A property testing that an object is an EObject, IWrapperItemProvider, or FeatureMap.Entry of the specified type
-	 * or a subtype of the same.
+	 * A property testing that an object is an {@link EObject} of the specified type or a subtype of the same.
 	 */
 	private static final String INSTANCE_OF = "instanceOf"; //$NON-NLS-1$
 
 	/**
-	 * A property testing that an object is an {@link EObject}, {@link IWrapperItemProvider}, or
-	 * {@link FeatureMap.Entry}, and its qualified instance class name matches specified regular expression.
+	 * A property testing that an object is an {@link EObject} whose qualified class name matches the specified regular
+	 * expression.
 	 */
 	private static final String CLASS_NAME_MATCHES = "classNameMatches"; //$NON-NLS-1$
 
 	/**
-	 * A property testing that an object is an {@link IWrapperItemProvider}, and its owner qualified instance class name
-	 * matches specified regular expression.
+	 * A property testing that an object is an {@link IWrapperItemProvider} with an
+	 * {@link IWrapperItemProvider#getOwner() owner} whose qualified class name matches the specified regular
+	 * expression.
+	 *
+	 * @deprecated Use {@link #VALUE_CLASS_NAME_MATCHES} instead.
 	 */
+	@Deprecated
 	private static final String OWNER_CLASS_NAME_MATCHES = "ownerClassNameMatches"; //$NON-NLS-1$
 
 	/**
-	 * A property testing that an object is an {@link TransientItemProvider}, and its parent name matches specified
-	 * regular expression.
+	 * A property testing that an object is an {@link IWrapperItemProvider} with a
+	 * {@link IWrapperItemProvider#getValue() value} whose qualified class name matches the specified regular
+	 * expression.
+	 */
+	private static final String VALUE_CLASS_NAME_MATCHES = "valueClassNameMatches"; //$NON-NLS-1$
+
+	/**
+	 * A property testing that an object is an {@link TransientItemProvider} with a
+	 * {@link TransientItemProvider#getTarget() parent} whose qualified class name matches the specified regular
+	 * expression.
 	 */
 	private static final String PARENT_CLASS_NAME_MATCHES = "parentClassNameMatches";//$NON-NLS-1$
 
@@ -65,35 +76,22 @@ public class EMFObjectPropertyTester extends PropertyTester {
 		}
 
 		// ownerClassNameMatches property
-		if (receiver instanceof IWrapperItemProvider && OWNER_CLASS_NAME_MATCHES.equals(property)) {
-			IWrapperItemProvider provider = (IWrapperItemProvider) receiver;
-
-			// Retrieve owner behind given IWrapperItemProvider
-			Object owner = provider.getOwner();
-			if (owner != null) {
-				// If owner is again an IWrapperItemProvider, we must look at it's value
-				if (owner instanceof IWrapperItemProvider && ((IWrapperItemProvider) owner).getValue() != null) {
-					Object value = ((IWrapperItemProvider) owner).getValue();
-
-					// If value is a TransientItemProvider, i.e., an intermediate category node, we must look at
-					// the parent of the latter
-					if (value instanceof TransientItemProvider && ((TransientItemProvider) value).getTarget() != null) {
-						// Test if the parent's class name matches
-						return ((TransientItemProvider) value).getTarget().getClass().getName().matches(expectedValue.toString());
+		if (receiver instanceof IWrapperItemProvider && (VALUE_CLASS_NAME_MATCHES.equals(property) || OWNER_CLASS_NAME_MATCHES.equals(property))) {
+			// Retrieve the given IWrapperItemProvider's value
+			Object value = AdapterFactoryEditingDomain.unwrap(receiver);
+			if (value != null) {
+				// If value is a TransientItemProvider, i.e., an intermediate category node, we must look at it's parent
+				if (value instanceof TransientItemProvider) {
+					TransientItemProvider provider = (TransientItemProvider) value;
+					Notifier target = provider.getTarget();
+					if (target != null) {
+						// Test if parent class name matches
+						return target.getClass().getName().matches(expectedValue.toString());
 					}
-
-					// Test if the value's class name matches
-					return value.getClass().getName().matches(expectedValue.toString());
 				}
 
-				// If owner is a TransientItemProvider, i.e., an intermediate category node, we must look at it's parent
-				else if (owner instanceof TransientItemProvider && ((TransientItemProvider) owner).getTarget() != null) {
-					// Test if the parent's class name matches
-					return ((TransientItemProvider) owner).getTarget().getClass().getName().matches(expectedValue.toString());
-				}
-
-				// Test if the owner's class name matches
-				return owner.getClass().getName().matches(expectedValue.toString());
+				// Test if value class name matches
+				return value.getClass().getName().matches(expectedValue.toString());
 			}
 			return false;
 		}

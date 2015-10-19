@@ -13,6 +13,7 @@
  *     itemis - [418005] Add support for model files with multiple root elements
  *     itemis - [420505] Editor shows no content when editor input object is added lately
  *     itemis - [460260] Expanded paths are collapsed on resource reload
+ *     itemis - [480135] Introduce metamodel and view content agnostic problem decorator for model elements
  *
  * </copyright>
  */
@@ -29,8 +30,13 @@ import java.util.WeakHashMap;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
@@ -102,6 +108,8 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 
 	protected ResourceSetListener modelContentRootChangedListener;
 
+	private IResourceChangeListener resourceMarkerChangeListener;
+
 	/**
 	 * Returns the viewer whose content is provided by this content provider.
 	 *
@@ -141,6 +149,11 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	@Override
 	public void init(ICommonContentExtensionSite config) {
 		contentDescriptor = config.getExtension().getDescriptor();
+
+		if (resourceMarkerChangeListener == null) {
+			resourceMarkerChangeListener = createResourceMarkerChangeListener();
+			ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceMarkerChangeListener, IResourceChangeEvent.POST_CHANGE);
+		}
 	}
 
 	protected boolean isTriggerPoint(IResource resource) {
@@ -638,6 +651,11 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 			modelContentProvider.dispose();
 		}
 		modelContentProviders.clear();
+
+		if (resourceMarkerChangeListener != null) {
+			ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceMarkerChangeListener);
+		}
+		resourceMarkerChangeListener = null;
 	}
 
 	protected void addTransactionalEditingDomainListeners(TransactionalEditingDomain editingDomain) {
@@ -689,9 +707,8 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 * Creates a ResourceSetChangedListener that detects (re-)loaded resources resources and refreshes their parent(s).
 	 */
 	protected ResourceSetListener createResourceChangedListener() {
-		return new ResourceSetListenerImpl(NotificationFilter
-				.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__IS_LOADED).or(
-						NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResourceSet(), ResourceSet.RESOURCE_SET__RESOURCES))) {
+		return new ResourceSetListenerImpl(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__IS_LOADED)
+				.or(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResourceSet(), ResourceSet.RESOURCE_SET__RESOURCES))) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
 				Set<Resource> loadedResources = new HashSet<Resource>();
@@ -903,6 +920,22 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 			@Override
 			public boolean isPostcommitOnly() {
 				return true;
+			}
+		};
+	}
+
+	/**
+	 * Refreshes the {@link CommonViewer viewer} in case of problem marker changes to trigger update of problem
+	 * decoration.
+	 */
+	protected IResourceChangeListener createResourceMarkerChangeListener() {
+		return new IResourceChangeListener() {
+			@Override
+			public void resourceChanged(IResourceChangeEvent event) {
+				IMarkerDelta[] markerDelta = event.findMarkerDeltas(IMarker.PROBLEM, true);
+				if (markerDelta != null && markerDelta.length > 0) {
+					refreshViewer();
+				}
 			}
 		};
 	}

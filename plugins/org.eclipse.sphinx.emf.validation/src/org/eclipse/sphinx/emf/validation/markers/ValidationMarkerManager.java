@@ -11,6 +11,7 @@
  *     See4sys - Initial API and implementation
  *     itemis - [418902] ValidationMarkerManager does not distinguish objects with identical URI
  *     itemis - [458509] NPE in ValidationMarkerManager
+ *     itemis - [480135] Introduce metamodel and view content agnostic problem decorator for model elements
  *
  * </copyright>
  */
@@ -35,6 +36,7 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.emf.common.util.Diagnostic;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -113,8 +115,8 @@ public class ValidationMarkerManager {
 		// created markers
 		int max_err = Platform.getPreferencesService().getInt(org.eclipse.sphinx.emf.validation.Activator.PLUGIN_ID,
 				IValidationPreferences.PREF_MAX_NUMBER_OF_ERRORS, IValidationPreferences.PREF_MAX_NUMBER_OF_ERRORS_DEFAULT, null);
-		IMarker[] markers = iResource.getWorkspace().getRoot()
-				.findMarkers(IValidationMarker.MODEL_VALIDATION_PROBLEM, true, IResource.DEPTH_INFINITE);
+		IMarker[] markers = iResource.getWorkspace().getRoot().findMarkers(IValidationMarker.MODEL_VALIDATION_PROBLEM, true,
+				IResource.DEPTH_INFINITE);
 		int nb_err = markers.length;
 
 		// compute nb markers to be added
@@ -465,30 +467,33 @@ public class ValidationMarkerManager {
 		}
 
 		// All the Markers connected with this resource
-		IMarker[] allMarkers = resource.findMarkers(markerType, true, IResource.DEPTH_INFINITE);
+		IMarker[] allMarkers = resource.findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
 
 		// URI of eObj
 		String[] tmp = ValidationUtil.splitURI(eObject);
-		if (tmp == null || tmp.length < 2) {
+		if (tmp == null || tmp.length == 0) {
 			return new IMarker[0];
 		}
 		String eObjURI = tmp[0];
-		String eObjType = tmp[1];
+		String eObjType = tmp.length > 1 ? tmp[1] : eObject.eClass().getName();
 
 		String markerURI, markerEObjType;
 		List<IMarker> result = new ArrayList<IMarker>();
-		for (IMarker current : allMarkers) {
-			if (current != null && current.exists()) {
-				tmp = ValidationUtil.splitURI((String) current.getAttribute(EValidator.URI_ATTRIBUTE));
-				if (tmp != null && tmp.length == 2) {
+		for (IMarker marker : allMarkers) {
+			if (marker != null && marker.exists()) {
+				tmp = ValidationUtil.splitURI((String) marker.getAttribute(EValidator.URI_ATTRIBUTE));
+				if (tmp != null && tmp.length > 0) {
 					markerURI = tmp[0];
-					markerEObjType = tmp[1];
-					Object hash = current.getAttribute(IValidationMarker.HASH_ATTRIBUTE);
+					markerEObjType = tmp.length > 1 ? tmp[1] : null;
+					Integer hash = (Integer) marker.getAttribute(IValidationMarker.HASH_ATTRIBUTE);
 
 					switch (depth) {
 					case EObjectUtil.DEPTH_ZERO:
-						if (markerURI.equals(eObjURI) && eObjType.equals(markerEObjType) && (Integer) hash == eObject.hashCode()) {
-							result.add(current);
+						// FIXME Remove hash code comparison by ResourceSetListener that deletes associated problem
+						// markers when model file gets deleted or reloaded (see ResourceProblemHandler for details)
+						if (URI.createURI(markerURI).fragment().equals(URI.createURI(eObjURI).fragment())
+								&& (markerEObjType == null || eObjType.equals(markerEObjType))) {
+							result.add(marker);
 						}
 						break;
 					case EObjectUtil.DEPTH_ONE: // same treatment, let's modify it later if necessary
@@ -500,12 +505,12 @@ public class ValidationMarkerManager {
 						}
 
 						if (shouldbeDeleted) {
-							result.add(current);
+							result.add(marker);
 						}
 						break;
 					case EObjectUtil.DEPTH_INFINITE:
 						if (markerURI.contains(eObjURI)) {
-							result.add(current);
+							result.add(marker);
 						}
 						break;
 					default:
@@ -514,7 +519,7 @@ public class ValidationMarkerManager {
 					}
 				}
 			} else {
-				String msg = NLS.bind(Messages.warningNoSuchMarker, current == null ? "???" : current.getId()); //$NON-NLS-1$
+				String msg = NLS.bind(Messages.warningNoSuchMarker, marker == null ? "???" : marker.getId()); //$NON-NLS-1$
 				PlatformLogUtil.logAsWarning(Activator.getDefault(), msg);
 			}
 		}

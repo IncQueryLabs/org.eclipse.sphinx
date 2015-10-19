@@ -13,6 +13,7 @@
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
  *     itemis - [460260] Expanded paths are collapsed on resource reload
  *     itemis - [478725] Enable model elements hold by ordered features to be displayed with their native order in Common Navigator-based views
+ *     itemis - [480135] Introduce metamodel and view content agnostic problem decorator for model elements
  *
  * </copyright>
  */
@@ -30,17 +31,8 @@ import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.ui.viewer.IViewerProvider;
@@ -48,8 +40,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.workspace.EMFCommandOperation;
 import org.eclipse.emf.workspace.IWorkspaceCommandStack;
+import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
+import org.eclipse.jface.viewers.DecorationContext;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
@@ -72,8 +67,6 @@ import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider;
 import org.eclipse.sphinx.emf.workspace.ui.saving.BasicModelSaveablesProvider.SiteNotifyingSaveablesLifecycleListener;
 import org.eclipse.sphinx.emf.workspace.ui.viewers.state.ITreeViewerState;
 import org.eclipse.sphinx.emf.workspace.ui.viewers.state.TreeViewerStateRecorder;
-import org.eclipse.sphinx.platform.IExtendedPlatformConstants;
-import org.eclipse.sphinx.platform.messages.PlatformMessages;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -84,14 +77,12 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.Saveable;
 import org.eclipse.ui.SaveablesLifecycleEvent;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.navigator.SaveablesProvider;
 import org.eclipse.ui.part.ShowInContext;
-import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
@@ -105,7 +96,6 @@ public class ExtendedCommonNavigator extends CommonNavigator
 		implements ITabbedPropertySheetPageContributor, IViewerProvider, ITransactionalEditingDomainFactoryListener {
 
 	private IOperationHistoryListener affectedObjectsListener;
-	private IResourceChangeListener resourceMarkerChangeListener;
 
 	protected Set<IPropertySheetPage> propertySheetPages = new HashSet<IPropertySheetPage>();
 	protected IUndoContext undoContext;
@@ -168,17 +158,23 @@ public class ExtendedCommonNavigator extends CommonNavigator
 			// Register the ResourceListener that detects objects changed by EMF commands
 			WorkspaceTransactionUtil.getOperationHistory(editingDomain).addOperationHistoryListener(affectedObjectsListener);
 		}
-
-		// Create and register IResourceChangeListener that detects resource maker changes
-		if (resourceMarkerChangeListener == null) {
-			resourceMarkerChangeListener = createResourceMarkerChangeListener();
-			ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceMarkerChangeListener, IResourceChangeEvent.POST_CHANGE);
-		}
 	}
 
 	@Override
 	protected CommonViewer createCommonViewerObject(Composite aParent) {
 		CommonViewer viewer = new CommonViewer(getViewSite().getId(), aParent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL) {
+
+			@Override
+			protected void init() {
+				super.init();
+
+				// Enable label decorators to access the underlying viewer's content provider
+				DecoratingStyledCellLabelProvider labelProvider = (DecoratingStyledCellLabelProvider) getLabelProvider();
+				DecorationContext decorationContext = new DecorationContext();
+				decorationContext.putProperty(ITreeContentProvider.class.getName(), getContentProvider());
+				labelProvider.setDecorationContext(decorationContext);
+			}
+
 			/*
 			 * @see org.eclipse.jface.viewers.StructuredViewer#refresh()
 			 */
@@ -362,11 +358,6 @@ public class ExtendedCommonNavigator extends CommonNavigator
 		}
 		affectedObjectsListener = null;
 
-		if (resourceMarkerChangeListener != null) {
-			ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceMarkerChangeListener);
-		}
-		resourceMarkerChangeListener = null;
-
 		super.dispose();
 	}
 
@@ -470,44 +461,6 @@ public class ExtendedCommonNavigator extends CommonNavigator
 		return new BasicModelSaveablesProvider();
 	}
 
-	/**
-	 * Creates an {@link IResourceChangeListener} in order to wake up decoration of IContainer and IResource.
-	 */
-	protected IResourceChangeListener createResourceMarkerChangeListener() {
-		return new IResourceChangeListener() {
-			@Override
-			public void resourceChanged(IResourceChangeEvent event) {
-				Assert.isNotNull(event);
-
-				IMarkerDelta[] markerDelta = event.findMarkerDeltas(IMarker.PROBLEM, true);
-				if (markerDelta != null && markerDelta.length > 0) {
-					UIJob job = new UIJob(PlatformMessages.job_updatingLabelDecoration) {
-						@Override
-						public IStatus runInUIThread(IProgressMonitor monitor) {
-							updateLabelDecoration();
-							return Status.OK_STATUS;
-						}
-
-						@Override
-						public boolean belongsTo(Object family) {
-							return IExtendedPlatformConstants.FAMILY_LABEL_DECORATION.equals(family);
-						}
-					};
-
-					/*
-					 * !! Important Note !! Schedule updating label decoration job only if no such is already underway
-					 * because running multiple label decoration updates concurrently causes deadlocks.
-					 */
-					if (Job.getJobManager().find(IExtendedPlatformConstants.FAMILY_LABEL_DECORATION).length == 0) {
-						job.setPriority(Job.BUILD);
-						job.setSystem(true);
-						job.schedule();
-					}
-				}
-			}
-		};
-	}
-
 	protected IOperationHistoryListener createAffectedObjectsListener() {
 		return new IOperationHistoryListener() {
 			@Override
@@ -588,11 +541,6 @@ public class ExtendedCommonNavigator extends CommonNavigator
 				}
 			}
 		};
-	}
-
-	protected void updateLabelDecoration() {
-		// Update validation label decoration
-		PlatformUI.getWorkbench().getDecoratorManager().update("org.eclipse.sphinx.emf.validation.ui.decorator"); //$NON-NLS-1$
 	}
 
 	/**

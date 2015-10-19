@@ -1,17 +1,18 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2013 See4sys, Continental Engineering Services, itemis and others.
+ *
+ * Copyright (c) 2008-2015 See4sys, Continental Engineering Services, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     Continental Engineering Services - Wait for the markers to be assigned to the resources
  *     itemis - [418005] Add support for model files with multiple root elements
- * 
+ *     itemis - [480135] Introduce metamodel and view content agnostic problem decorator for model elements
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.validation.util;
@@ -40,7 +41,6 @@ import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.emf.transaction.RunnableWithResult;
@@ -49,6 +49,7 @@ import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.emf.validation.service.IConstraintFilter;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
+import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.validation.Activator;
 import org.eclipse.sphinx.emf.validation.diagnostic.ExtendedDiagnostician;
 import org.eclipse.sphinx.emf.validation.internal.messages.Messages;
@@ -61,15 +62,6 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
  * useful utility methods.
  */
 public class ValidationUtil {
-
-	public static String getSegment(String uri) {
-		int lowerBound = uri.lastIndexOf("#"); //$NON-NLS-1$
-		int upperBound = uri.lastIndexOf("?"); //$NON-NLS-1$
-		if (lowerBound != -1 && upperBound != -1) {
-			return uri.substring(lowerBound + 1, upperBound);
-		}
-		return ""; //$NON-NLS-1$
-	}
 
 	public static String getObjectId(String uri) {
 		int lowerBound = uri.lastIndexOf("/"); //$NON-NLS-1$
@@ -93,7 +85,7 @@ public class ValidationUtil {
 					return TransactionUtil.runExclusive(editingDomain, new RunnableWithResult.Impl<URI>() {
 						@Override
 						public void run() {
-							setResult(EcoreUtil.getURI(eObject));
+							setResult(EcoreResourceUtil.getURI(eObject));
 						}
 					});
 				} catch (InterruptedException ex) {
@@ -133,7 +125,7 @@ public class ValidationUtil {
 	}
 
 	public static String getObjectType(String uri) {
-		return uri.substring(uri.lastIndexOf("=") + 1); //$NON-NLS-1$
+		return uri.lastIndexOf("=") != -1 ? uri.substring(uri.lastIndexOf("=") + 1) : ""; //$NON-NLS-1$ //$NON-NLS-3$
 	}
 
 	private static List<EObject> getModelObjects(Collection<?> objects) {
@@ -179,7 +171,7 @@ public class ValidationUtil {
 
 	/**
 	 * For progress bar, useful method which return number of Object to validate into model
-	 * 
+	 *
 	 * @param eObject
 	 * @return number of Object which will be validate
 	 */

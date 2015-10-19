@@ -4,7 +4,7 @@
 <!--
 <copyright>
 
-Copyright (c) 2008-2013 See4sys, itemis and others.
+Copyright (c) 2008-2015 See4sys, itemis and others.
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
 which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ http://www.eclipse.org/legal/epl-v10.html
 Contributors:
     See4sys - Initial API and implementation
     itemis - [409014] Listener URIChangeDetector registered for all transactional editing domains
+    itemis - [480135] Introduce metamodel and view content agnostic problem decorator for model elements
 
 </copyright>
 -->
@@ -43,14 +44,8 @@ Contributors:
     <propertyTester class="org.eclipse.sphinx.emf.internal.expressions.EMFObjectPropertyTester"
                     id="org.eclipse.sphinx.emf.expressions.wrapperItemProviderPropertyTester"
                     namespace="org.eclipse.sphinx.emf"
-                    properties="instanceOf, classNameMatches, ownerClassNameMatches"
+                    properties="valueClassNameMatches, ownerClassNameMatches"
                     type="org.eclipse.emf.edit.provider.IWrapperItemProvider">
-    </propertyTester>
-    <propertyTester class="org.eclipse.sphinx.emf.internal.expressions.EMFObjectPropertyTester"
-                    id="org.eclipse.sphinx.emf.expressions.featureMapEntryPropertyTester"
-                    namespace="org.eclipse.sphinx.emf"
-                    properties="instanceOf, classNameMatches"
-                    type="org.eclipse.emf.ecore.util.FeatureMap.Entry">
     </propertyTester>
     <propertyTester
           class="org.eclipse.sphinx.emf.internal.expressions.FilePropertyTester"
