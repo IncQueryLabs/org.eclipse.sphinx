@@ -43,6 +43,7 @@ import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.platform.util.StatusUtil;
 
+// TODO Rename to CheckValidationProblemMarkerService
 public class CheckProblemMarkerService {
 
 	public static final String UPDATE_CHECK_PROBLEM_MARKER = "UPDATE_CHECK_PROBLEM_MARKER"; //$NON-NLS-1$
