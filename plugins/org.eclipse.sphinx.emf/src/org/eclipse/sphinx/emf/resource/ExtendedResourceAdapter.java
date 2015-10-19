@@ -269,14 +269,16 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	}
 
 	protected URI resolveURI(URI uri) {
-		// Is URI a fragment-based URI not knowing the resource that contains the eObject it refers to?
+		Assert.isNotNull(uri);
+
+		// Is given URI a fragment-based URI not knowing the resource that contains the eObject it refers to?
 		if (uri.segmentCount() == 0) {
-			// Form resolved URI by using the URI of this adapter's target resource as prefix and URI fragment as
-			// postfix
-			Resource oldResource = (Resource) getTarget();
-			URI oldResourceURI = oldResource.getURI();
+			// Form resolved URI by using the URI of this adapter's target resource as prefix and the fragment of given
+			// URI as postfix
+			Resource resource = (Resource) getTarget();
+			URI resourceURI = resource.getURI();
 			String eObjectURIFragment = uri.fragment();
-			return getURI(oldResourceURI, eObjectURIFragment);
+			return getURI(resourceURI, eObjectURIFragment);
 		}
 		return uri;
 	}
