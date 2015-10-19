@@ -10,6 +10,7 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [480105] Occasional ConcurrentModificationException when re-launching Sphinx on previously used workspace
+ *     itemis - [480147] Massive performance problem and SWTError upon startup or viewer refresh when Model Explorer has expanded model content
  *
  * </copyright>
  */
@@ -47,7 +48,7 @@ public class TreeViewerStateRecorder implements IMementoAware {
 		if (deferredState != null) {
 			// Load models behind element(s) that could not be expanded so far
 			for (ITreeElementStateProvider provider : deferredState.getExpandedElements()) {
-				if (provider.canUnderlyingModelBeLoaded()) {
+				if (provider.canUnderlyingModelBeLoaded() && !provider.isUnderlyingModelLoaded()) {
 					provider.loadUnderlyingModel();
 				}
 			}
