@@ -42,7 +42,7 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
  */
 public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckValidator {
 
-	private static final Pattern ILLEGAL_CHARACTERS_PATTERN = Pattern.compile("[ \\t\\.,;]"); //$NON-NLS-1$
+	private static final Pattern ILLEGAL_CHARACTERS_PATTERN = Pattern.compile("[\\W]"); //$NON-NLS-1$
 
 	public static final String ISSUE_MSG_ARGUMENT_CATEGORIES_CASE1 = "(Case #1: part of Category1 and Category2 as per check catalog and blank check annotation)"; //$NON-NLS-1$
 	public static final String ISSUE_MSG_ARGUMENT_CATEGORIES_CASE2 = "(Case #2: part of Category1 and Category2 as per check catalog and check annotation)"; //$NON-NLS-1$
@@ -155,7 +155,8 @@ public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckVal
 	 */
 	@Check(constraint = "IdentifiableNameNotValid")
 	void checkIdentifiableName(Identifiable identifiable) {
-		issue(identifiable, Common20Package.Literals.IDENTIFIABLE__NAME, MessageFormat.format(ISSUE_MSG_ARGUMENT_FORMAT_SUPERTYPE, identifiable.eClass().getName()));
+		issue(identifiable, Common20Package.Literals.IDENTIFIABLE__NAME,
+				MessageFormat.format(ISSUE_MSG_ARGUMENT_FORMAT_SUPERTYPE, identifiable.eClass().getName()));
 	}
 
 	private boolean hasValidName(Identifiable identifiable) {
