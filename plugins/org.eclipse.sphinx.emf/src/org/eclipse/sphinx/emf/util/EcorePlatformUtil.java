@@ -18,6 +18,7 @@
  *     itemis - [427461] Add progress monitor to resource load options (useful for loading large models)
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *     itemis - [468171] Model element splitting service
+ *     itemis - [480122] Unable to navigate from Check Validation Problem markers to corresponding model element in Model Explorer
  *
  * </copyright>
  */
@@ -182,6 +183,36 @@ public final class EcorePlatformUtil {
 			uriString = uri.toString();
 		}
 		return new Path(uriString).removeTrailingSeparator();
+	}
+
+	/**
+	 * Resolves given fragment-based {@link URI} against the specified {@link IPath path}. Returns the given URI as is
+	 * if it is not fragment-based.
+	 * <p>
+	 * A fragment-based URI is a URI that doesn't contain any information about the resource that contains the model
+	 * object it refers to (e.g., hb:/#//MyComponent/MyParameterValue). By calling this method, such fragment-based URIs
+	 * will be expanded to a URI that starts with the specified path and is followed by the fragment of the given URI
+	 * (e.g., platform:/resource/MyProject/MyResource/#//MyComponent/MyParameterValue).
+	 * </p>
+	 *
+	 * @param uri
+	 *            The fragment-based URI to be resolved.
+	 * @param path
+	 *            The {@link IPath path} against which the fragment-based URI is to be resolved.
+	 * @return The resolved {@link URI} if given URI is a fragment-based URI, or the given URI as is otherwise.
+	 */
+	public static URI resolveURI(URI uri, IPath path) {
+		Assert.isNotNull(uri);
+
+		// Is given URI a fragment-based URI not knowing the resource that contains the eObject it refers to?
+		if (uri.segmentCount() == 0) {
+			// Form resolved URI by using the URI corresponding to specified path as prefix and the fragment of given
+			// URI as postfix
+			URI resourceURI = createURI(path);
+			String eObjectURIFragment = uri.fragment();
+			return resourceURI.appendFragment(eObjectURIFragment);
+		}
+		return uri;
 	}
 
 	/**
@@ -1098,9 +1129,8 @@ public final class EcorePlatformUtil {
 	 * @param contextResource
 	 *            The {@link Resource resource} used as context object for investigation.
 	 * @param includeReferencedModels
-	 *            Determines if the {@link IModelDescriptor model descriptors} referenced by the context
-	 *            {@link Resource resource} 's {@link IModelDescriptor model descriptor} must be considered for the
-	 *            research.
+	 *            Determines if the {@link IModelDescriptor model descriptors} referenced by the context {@link Resource
+	 *            resource} 's {@link IModelDescriptor model descriptor} must be considered for the research.
 	 * @return The resources in the context {@link Resource resource}'s model.
 	 * @since 0.7.0
 	 */
@@ -1601,12 +1631,12 @@ public final class EcorePlatformUtil {
 	}
 
 	private static void runAddNewModelResources(final TransactionalEditingDomain editingDomain,
-			final Collection<ModelResourceDescriptor> modelResourceDescriptors, IProgressMonitor monitor) throws CoreException,
-			OperationCanceledException {
+			final Collection<ModelResourceDescriptor> modelResourceDescriptors, IProgressMonitor monitor)
+					throws CoreException, OperationCanceledException {
 		Assert.isNotNull(editingDomain);
 		Assert.isNotNull(modelResourceDescriptors);
-		SubMonitor progress = SubMonitor.convert(monitor, modelResourceDescriptors.size() == 1 ? Messages.task_addingNewModelResource
-				: Messages.task_addingNewModelResources, 1);
+		SubMonitor progress = SubMonitor.convert(monitor,
+				modelResourceDescriptors.size() == 1 ? Messages.task_addingNewModelResource : Messages.task_addingNewModelResources, 1);
 
 		Map<String, Object> transactionOptions = WorkspaceTransactionUtil.getDefaultSaveNewTransactionOptions();
 		String label = modelResourceDescriptors.size() == 1 ? Messages.operation_addingNewModelResource : Messages.operation_addingNewModelResources;
@@ -1724,11 +1754,11 @@ public final class EcorePlatformUtil {
 	 */
 	private static void runSaveNewModelResources(final TransactionalEditingDomain editingDomain,
 			final Collection<ModelResourceDescriptor> modelResourceDescriptors, final Map<?, ?> options, IProgressMonitor monitor)
-			throws CoreException, OperationCanceledException {
+					throws CoreException, OperationCanceledException {
 		Assert.isNotNull(editingDomain);
 		Assert.isNotNull(modelResourceDescriptors);
-		SubMonitor progress = SubMonitor.convert(monitor, modelResourceDescriptors.size() == 1 ? Messages.task_savingNewModelResource
-				: Messages.task_savingNewModelResources, 1);
+		SubMonitor progress = SubMonitor.convert(monitor,
+				modelResourceDescriptors.size() == 1 ? Messages.task_savingNewModelResource : Messages.task_savingNewModelResources, 1);
 
 		Map<String, Object> transactionOptions = WorkspaceTransactionUtil.getDefaultSaveNewTransactionOptions();
 		String label = modelResourceDescriptors.size() == 1 ? Messages.operation_savingNewModelResource : Messages.operation_savingNewModelResources;
@@ -2031,8 +2061,8 @@ public final class EcorePlatformUtil {
 		SubMonitor progress = SubMonitor.convert(monitor, resourcesToSave.size());
 
 		for (final TransactionalEditingDomain editingDomain : resourcesToSave.keySet()) {
-			progress.setTaskName(resourcesToSave.get(editingDomain).size() == 1 ? Messages.task_savingModelResource
-					: Messages.task_savingModelResources);
+			progress.setTaskName(
+					resourcesToSave.get(editingDomain).size() == 1 ? Messages.task_savingModelResource : Messages.task_savingModelResources);
 
 			/*
 			 * !! Important Note !! The saving of model resources as such does not imply any modifications of the
@@ -2321,10 +2351,11 @@ public final class EcorePlatformUtil {
 	 *            The editing domain owning {@link Resource resource}s.
 	 * @throws OperationCanceledException
 	 */
-	public static void unloadAllResources(final TransactionalEditingDomain editingDomain, IProgressMonitor monitor) throws OperationCanceledException {
+	public static void unloadAllResources(final TransactionalEditingDomain editingDomain, IProgressMonitor monitor)
+			throws OperationCanceledException {
 		if (editingDomain != null) {
-			final SubMonitor progress = SubMonitor.convert(monitor, Messages.task_unloadingModelResources, editingDomain.getResourceSet()
-					.getResources().size());
+			final SubMonitor progress = SubMonitor.convert(monitor, Messages.task_unloadingModelResources,
+					editingDomain.getResourceSet().getResources().size());
 			if (progress.isCanceled()) {
 				throw new OperationCanceledException();
 			}

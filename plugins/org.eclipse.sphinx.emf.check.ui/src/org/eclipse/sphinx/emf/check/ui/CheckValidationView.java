@@ -10,6 +10,7 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
+ *     itemis - [480122] Unable to navigate from Check Validation Problem markers to corresponding model element in Model Explorer
  *
  * </copyright>
  */
@@ -55,8 +56,8 @@ public class CheckValidationView extends MarkerSupportView implements ITabbedPro
 				@Override
 				public ShowInContext getShowInContext() {
 					IMarker[] markers = getSelectedMarkers();
-					return new ShowInContext(new StructuredSelection(retrieveModelObjects(markers)), new StructuredSelection(
-							retrieveResources(markers)));
+					return new ShowInContext(new StructuredSelection(retrieveModelObjects(markers)),
+							new StructuredSelection(retrieveResources(markers)));
 				}
 			};
 		}
@@ -94,7 +95,9 @@ public class CheckValidationView extends MarkerSupportView implements ITabbedPro
 					if (editingDomain != null) {
 						String uriAttribute = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
 						if (uriAttribute != null) {
-							EObject object = EcorePlatformUtil.getEObject(editingDomain, URI.createURI(uriAttribute, true));
+							URI uri = URI.createURI(uriAttribute, true);
+							URI resolvedURI = EcorePlatformUtil.resolveURI(uri, resource.getFullPath());
+							EObject object = EcorePlatformUtil.getEObject(editingDomain, resolvedURI);
 							if (object != null) {
 								objects.add(object);
 							}
