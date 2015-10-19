@@ -1,15 +1,15 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2012 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     itemis - Initial API and implementation
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.examples.hummingbird20.validation.constraints;
@@ -25,7 +25,7 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
 
 public class IdentifiableNamesMustNotContainIllegalCharactersConstraint extends AbstractModelConstraint {
 
-	private static final Pattern ILLEGAL_CHARACTERS_PATTERN = Pattern.compile(".*[ \\t\\.,;].*"); //$NON-NLS-1$
+	private static final Pattern ILLEGAL_CHARACTERS_PATTERN = Pattern.compile("[\\W]"); //$NON-NLS-1$
 
 	/*
 	 * (non-Javadoc)
@@ -47,7 +47,7 @@ public class IdentifiableNamesMustNotContainIllegalCharactersConstraint extends 
 
 	/**
 	 * Tests if given {@link EObject} is applicable to this constraint.
-	 * 
+	 *
 	 * @param eObject
 	 *            The target {@link EObject}.
 	 * @return true if given {@link EObject} is applicable to this constraint, false otherwise.
@@ -69,7 +69,7 @@ public class IdentifiableNamesMustNotContainIllegalCharactersConstraint extends 
 
 	/**
 	 * The constraint itself.
-	 * 
+	 *
 	 * @param identifiable
 	 *            The target {@link Identifiable}.
 	 * @return true if given {@link Identifiable} satisfies this constraint, false otherwise.
@@ -77,6 +77,6 @@ public class IdentifiableNamesMustNotContainIllegalCharactersConstraint extends 
 	private boolean isValid(Identifiable identifiable) {
 		Assert.isNotNull(identifiable);
 
-		return !ILLEGAL_CHARACTERS_PATTERN.matcher(identifiable.getName()).matches();
+		return !ILLEGAL_CHARACTERS_PATTERN.matcher(identifiable.getName()).find();
 	}
 }
