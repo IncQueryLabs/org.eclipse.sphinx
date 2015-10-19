@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [480105] Occasional ConcurrentModificationException when re-launching Sphinx on previously used workspace
  *
  * </copyright>
  */
@@ -112,7 +113,8 @@ public class TreeViewerStateRecorder implements IMementoAware {
 			if (state != null && !state.isEmpty()) {
 				// Extract expanded element(s) that can be restored right now
 				List<ITreeElementStateProvider> expandableProviders = new ArrayList<ITreeElementStateProvider>();
-				Iterator<ITreeElementStateProvider> iter = state.getExpandedElements().iterator();
+				List<ITreeElementStateProvider> safeExpandedElements = new ArrayList<ITreeElementStateProvider>(state.getExpandedElements());
+				Iterator<ITreeElementStateProvider> iter = safeExpandedElements.iterator();
 				while (iter.hasNext()) {
 					ITreeElementStateProvider provider = iter.next();
 					if (!provider.hasUnderlyingModel() || provider.isUnderlyingModelLoaded()) {
@@ -147,7 +149,8 @@ public class TreeViewerStateRecorder implements IMementoAware {
 
 				// Extract selected element(s) that can be restored right now
 				List<ITreeElementStateProvider> selectableProviders = new ArrayList<ITreeElementStateProvider>();
-				iter = state.getSelectedElements().iterator();
+				List<ITreeElementStateProvider> safeSelectedElements = new ArrayList<>(state.getSelectedElements());
+				iter = safeSelectedElements.iterator();
 				while (iter.hasNext()) {
 					ITreeElementStateProvider provider = iter.next();
 					if (!provider.hasUnderlyingModel() || provider.isUnderlyingModelLoaded()) {
