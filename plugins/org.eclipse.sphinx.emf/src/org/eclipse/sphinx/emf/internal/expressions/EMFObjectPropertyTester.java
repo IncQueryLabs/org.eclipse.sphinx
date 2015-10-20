@@ -75,7 +75,7 @@ public class EMFObjectPropertyTester extends PropertyTester {
 			return false;
 		}
 
-		// ownerClassNameMatches property
+		// valueClassNameMatches property
 		if (receiver instanceof IWrapperItemProvider && (VALUE_CLASS_NAME_MATCHES.equals(property) || OWNER_CLASS_NAME_MATCHES.equals(property))) {
 			// Retrieve the given IWrapperItemProvider's value
 			Object value = AdapterFactoryEditingDomain.unwrap(receiver);
