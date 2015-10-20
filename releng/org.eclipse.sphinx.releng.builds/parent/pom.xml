@@ -173,7 +173,6 @@
 						<exclude>**/Test*.class</exclude>
 					</excludes>
 					<useUIHarness>false</useUIHarness>
-					<useUIThread>false</useUIThread>
 					<argLine>${tycho.surefire.extra.vmargs}</argLine>
 
 					<!-- Uncomment to remote debug tests run by Maven/Tycho build -->

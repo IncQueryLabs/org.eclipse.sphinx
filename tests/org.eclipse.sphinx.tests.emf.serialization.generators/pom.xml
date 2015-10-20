@@ -40,9 +40,6 @@ Contributors:
 					<includes>
 						<include>**/*Tests.class</include>
 					</includes>
-					<useUIHarness>false</useUIHarness>
-					<useUIThread>false</useUIThread>
-					<argLine>${test.vmargs}</argLine>
 				</configuration>
 			</plugin>
 		</plugins>

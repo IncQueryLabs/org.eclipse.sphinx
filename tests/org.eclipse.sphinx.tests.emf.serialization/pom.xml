@@ -26,8 +26,6 @@
 					<includes>
 						<include>**/*Tests.class</include>
 					</includes>
-					<useUIHarness>false</useUIHarness>
-					<useUIThread>false</useUIThread>
 				</configuration>
 			</plugin>
 		</plugins>
