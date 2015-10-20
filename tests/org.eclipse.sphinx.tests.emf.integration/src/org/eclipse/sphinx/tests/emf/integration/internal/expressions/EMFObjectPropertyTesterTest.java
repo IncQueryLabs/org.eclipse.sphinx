@@ -36,7 +36,7 @@ import org.eclipse.sphinx.testutils.integration.referenceworkspace.DefaultTestRe
 @SuppressWarnings({ "nls", "restriction" })
 public class EMFObjectPropertyTesterTest extends DefaultIntegrationTestCase {
 
-	private static final String OWNER_CLASS_NAME_MATCHES = "ownerClassNameMatches";
+	private static final String VALUE_CLASS_NAME_MATCHES = "valueClassNameMatches";
 	private static final String PARENT_CLASS_NAME_MATCHES = "parentClassNameMatches";
 
 	public EMFObjectPropertyTesterTest() {
@@ -82,7 +82,7 @@ public class EMFObjectPropertyTesterTest extends DefaultIntegrationTestCase {
 		assertTrue(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
 	}
 
-	public void testOwnerClassnameMatchesTest() {
+	public void testValueClassNameMatchesTest() {
 		IFile hbFile20_20A_1 = refWks.hbProject20_A.getFile(DefaultTestReferenceWorkspace.HB_FILE_NAME_20_20A_1);
 		assertNotNull(hbFile20_20A_1);
 		assertTrue(hbFile20_20A_1.isAccessible());
@@ -119,26 +119,24 @@ public class EMFObjectPropertyTesterTest extends DefaultIntegrationTestCase {
 				((AdapterFactoryEditingDomain) WorkspaceEditingDomainUtil.getEditingDomain(hbFile20_20A_1)).getAdapterFactory());
 
 		EMFObjectPropertyTester emfObjectProTester = new EMFObjectPropertyTester();
-		String property = OWNER_CLASS_NAME_MATCHES;
+		String property = VALUE_CLASS_NAME_MATCHES;
 		Object[] args = new Object[] {};
 
-		// Onwer of given object is not an Item Provider
 		Object receiver = wrapperItemProvider1;
-		assertTrue(emfObjectProTester.test(receiver, property, args, hb20Application.getClass().getName()));
+		assertTrue(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
+		assertFalse(emfObjectProTester.test(receiver, property, args, hb20Application.getClass().getName()));
+
+		receiver = wrapperItemProvider2;
+		assertTrue(emfObjectProTester.test(receiver, property, args, param.getClass().getName()));
 		assertFalse(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
 
-		// Onwer of given object is WrapperItemProvider
-		receiver = wrapperItemProvider2;
-		assertTrue(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
-		assertFalse(emfObjectProTester.test(receiver, property, args, hb20Application.getClass().getName()));
-
 		receiver = wrapperItemProvider22;
-		assertTrue(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
-		assertFalse(emfObjectProTester.test(receiver, property, args, hb20Application.getClass().getName()));
+		assertTrue(emfObjectProTester.test(receiver, property, args, param.getClass().getName()));
+		assertFalse(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
 
 		receiver = wrapperItemProvider3;
-		assertTrue(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
-		assertFalse(emfObjectProTester.test(receiver, property, args, hb20Application.getClass().getName()));
+		assertTrue(emfObjectProTester.test(receiver, property, args, param.getClass().getName()));
+		assertFalse(emfObjectProTester.test(receiver, property, args, component.getClass().getName()));
 
 	}
 }
