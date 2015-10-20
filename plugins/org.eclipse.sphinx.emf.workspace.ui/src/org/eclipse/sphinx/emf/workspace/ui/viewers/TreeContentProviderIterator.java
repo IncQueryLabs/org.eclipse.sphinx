@@ -26,7 +26,15 @@ import org.eclipse.emf.common.util.AbstractTreeIterator;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 
-public class TreeContentProviderIterator extends AbstractTreeIterator<Object> implements ITreeContentProviderIterator {
+/**
+ * An {@link ITreeContentIterator} implementation that iterates over an object and uses the provided
+ * {@link ITreeContentProvider content provider} to retrieve it's children, their children, and so on. Can be configured
+ * to use an {@link ITreeContentIterator.IItemFilter item filter} that excludes certain objects from the tree iteration.
+ * Also supports the detection of recurrent tree items, i.e., tree items that refer to the same underlying objects as
+ * one or several other tree items that have already been traversed, and makes sure that all child items of recurrent
+ * tree items are skipped.
+ */
+public class TreeContentProviderIterator extends AbstractTreeIterator<Object> implements ITreeContentIterator {
 
 	private static final long serialVersionUID = 1L;
 
@@ -50,6 +58,9 @@ public class TreeContentProviderIterator extends AbstractTreeIterator<Object> im
 		this.itemFilter = itemFilter;
 	}
 
+	/*
+	 * @see org.eclipse.emf.common.util.AbstractTreeIterator#next()
+	 */
 	@Override
 	public Object next() {
 		currentItem = super.next();
@@ -87,6 +98,9 @@ public class TreeContentProviderIterator extends AbstractTreeIterator<Object> im
 		return childItems.iterator();
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.emf.workspace.ui.viewers.ITreeContentIterator#isRecurrent()
+	 */
 	@Override
 	public boolean isRecurrent() {
 		return recurrentItems.contains(currentItem);

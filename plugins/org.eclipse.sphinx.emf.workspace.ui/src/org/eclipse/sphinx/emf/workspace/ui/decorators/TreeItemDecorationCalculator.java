@@ -21,13 +21,27 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
-import org.eclipse.sphinx.emf.workspace.ui.viewers.ITreeContentProviderIterator;
+import org.eclipse.sphinx.emf.workspace.ui.viewers.ITreeContentIterator;
 import org.eclipse.sphinx.emf.workspace.ui.viewers.TreeContentProviderIterator;
 import org.eclipse.sphinx.platform.resources.IProblemMarkerFinder;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
-public class DecorationOverlayCalculator {
+/**
+ * Calculates the decoration state for {@link TreeViewer tree viewer} items according to {@link IMarker#PROBLEM problem
+ * markers} that relate to the tree item in question or to any of its direct or indirect
+ * {@link ITreeContentProvider#getChildren(Object) children}. Caches the decoration state of every tree item once it has
+ * been calculated to increase the decoration performance when the same tree item is requested to be decorated multiple
+ * times.
+ * <p>
+ * Requires an instance of {@link IProblemMarkerFinder} to detect the problem markers for the given tree item as well as
+ * for its direct and indirect children.
+ * </p>
+ *
+ * @see IProblemMarkerFinder
+ */
+public class TreeItemDecorationCalculator {
 
 	public enum DecorationOverlayKind {
 		NONE, WARNING, ERROR;
@@ -49,24 +63,24 @@ public class DecorationOverlayCalculator {
 
 	protected IProblemMarkerFinder problemMarkerFinder;
 
-	private ITreeContentProviderIterator.IItemFilter itemFilter;
+	private ITreeContentIterator.IItemFilter itemFilter;
 
-	protected Map<Object, DecorationOverlayCalculator.DecorationOverlayKind> decorationOverlayCache = new HashMap<Object, DecorationOverlayCalculator.DecorationOverlayKind>();
+	protected Map<Object, TreeItemDecorationCalculator.DecorationOverlayKind> decorationOverlayCache = new HashMap<Object, TreeItemDecorationCalculator.DecorationOverlayKind>();
 
-	public DecorationOverlayCalculator(IProblemMarkerFinder problemMarkerFinder) {
+	public TreeItemDecorationCalculator(IProblemMarkerFinder problemMarkerFinder) {
 		Assert.isNotNull(problemMarkerFinder);
 		this.problemMarkerFinder = problemMarkerFinder;
 	}
 
-	public ITreeContentProviderIterator.IItemFilter getItemFilter() {
+	public ITreeContentIterator.IItemFilter getItemFilter() {
 		return itemFilter;
 	}
 
-	public void setItemFilter(ITreeContentProviderIterator.IItemFilter itemFilter) {
+	public void setItemFilter(ITreeContentIterator.IItemFilter itemFilter) {
 		this.itemFilter = itemFilter;
 	}
 
-	public DecorationOverlayCalculator.DecorationOverlayKind getDecorationOverlayKind(ITreeContentProvider contentProvider, Object item) {
+	public TreeItemDecorationCalculator.DecorationOverlayKind getDecorationOverlayKind(ITreeContentProvider contentProvider, Object item) {
 		Assert.isNotNull(contentProvider);
 		try {
 			DecorationOverlayKind itemOverlayKind = decorationOverlayCache.get(item);
@@ -74,7 +88,7 @@ public class DecorationOverlayCalculator {
 				return itemOverlayKind;
 			}
 
-			ITreeContentProviderIterator iter = new TreeContentProviderIterator(contentProvider, item, itemFilter);
+			ITreeContentIterator iter = new TreeContentProviderIterator(contentProvider, item, itemFilter);
 			while (iter.hasNext()) {
 				Object childItem = iter.next();
 				DecorationOverlayKind childItemOverlayKind = decorationOverlayCache.get(childItem);

@@ -19,12 +19,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
+import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.emf.transaction.RunnableWithResult;
@@ -35,8 +37,19 @@ import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.Activator;
 import org.eclipse.sphinx.platform.resources.AbstractProblemMarkerFinder;
+import org.eclipse.sphinx.platform.resources.IProblemMarkerFinder;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
+/**
+ * A reusable {@link IProblemMarkerFinder problem marker finder} implementation for model objects supporting
+ * {@link EObject}s, {@link TransientItemProvider}s, {@link IWrapperItemProvider}s, {@link FeatureMap.Entry}s.
+ * <p>
+ * To find the collection of problem markers that is applicable to the given model object, this implementation retrieves
+ * the model object's underlying {@link EObject}, then retrieves all {@link IMarker#PROBLEM problem marker}s attached to
+ * the {@link IFile file} in which this EObject is stored and retains all those having an
+ * {@link EValidator#URI_ATTRIBUTE URI attribute} that matches the URI of the underlying EObject.
+ * </p>
+ */
 public class BasicModelProblemMarkerFinder extends AbstractProblemMarkerFinder {
 
 	/*
@@ -61,18 +74,21 @@ public class BasicModelProblemMarkerFinder extends AbstractProblemMarkerFinder {
 		return false;
 	}
 
+	/*
+	 * @see org.eclipse.sphinx.platform.resources.IProblemMarkerFinder#getProblemMarkers(java.lang.Object)
+	 */
 	@Override
 	public Collection<IMarker> getProblemMarkers(Object object) throws CoreException {
 		Object unwrapped = AdapterFactoryEditingDomain.unwrap(object);
 		if (unwrapped instanceof EObject) {
 			EObject eObject = (EObject) unwrapped;
-			IResource resource = EcorePlatformUtil.getFile(eObject);
-			if (resource != null && resource.exists()) {
+			IFile file = EcorePlatformUtil.getFile(eObject);
+			if (file != null && file.exists()) {
 				URI eObjectURI = getURI(eObject);
 				String eObjectURIFragment = eObjectURI.fragment();
 				if (eObjectURIFragment != null) {
 					List<IMarker> applicableMarkers = new ArrayList<IMarker>();
-					for (IMarker marker : resource.findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO)) {
+					for (IMarker marker : file.findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO)) {
 						URI markerURI = getURI(marker);
 						if (markerURI != null) {
 							if (eObjectURIFragment.equals(markerURI.fragment())) {

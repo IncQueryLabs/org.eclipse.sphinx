@@ -19,6 +19,10 @@ import java.util.Collection;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 
+/**
+ * Provides services for finding {@link IMarker#PROBLEM problem marker}s and determining the combined severity of all
+ * problem markers for a given object.
+ */
 public interface IProblemMarkerFinder {
 
 	Collection<IMarker> getProblemMarkers(Object object) throws CoreException;

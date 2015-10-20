@@ -20,6 +20,11 @@ import java.util.Map;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 
+/**
+ * An abstract {@link IProblemMarkerFinder problem marker finder} implementation that implements
+ * {@link #getSeverity(Object)} and caches the resulting severity to increase the severity computation performance when
+ * the severity for the same object is requested to be computed multiple times.
+ */
 public abstract class AbstractProblemMarkerFinder implements IProblemMarkerFinder {
 
 	protected Map<Object, Integer> severityCache = new HashMap<Object, Integer>();

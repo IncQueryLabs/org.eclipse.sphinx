@@ -26,29 +26,54 @@ import org.eclipse.jface.viewers.IDecorationContext;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ILightweightLabelDecorator;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.sphinx.emf.workspace.resources.BasicModelProblemMarkerFinder;
-import org.eclipse.sphinx.emf.workspace.ui.decorators.DecorationOverlayCalculator.DecorationOverlayKind;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.sphinx.emf.workspace.ui.decorators.TreeItemDecorationCalculator.DecorationOverlayKind;
 import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
+import org.eclipse.sphinx.platform.resources.IProblemMarkerFinder;
 import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.decorators.DecorationBuilder;
 
+/**
+ * An extensible {@link ILightweightLabelDecorator lightweight label decorator} implementation which can be used to
+ * decorate {@link TreeViewer tree viewer} items according to the {@link IMarker#PROBLEM problem markers} that relate to
+ * the tree item in question or to any of its direct or indirect {@link ITreeContentProvider#getChildren(Object)
+ * children}.
+ * <p>
+ * Requires an instance of {@link TreeItemDecorationCalculator} to calculate the decoration state of the given tree item
+ * and an instance of {@link IProblemMarkerFinder} to detect the problem markers for the given tree item as well as for
+ * its direct and indirect children.
+ * </p>
+ * <p>
+ * Assumes that the {@link ITreeContentProvider content provider} to be used to retrieve the direct and indirect
+ * children of the given tree item is made available through a {@link IDecorationContext#getProperties() decoration
+ * context property} named <code>org.eclipse.jface.viewers.ITreeContentProvider</code> that is stored on the
+ * {@link IDecoration decoration definition} passed to the {@link #decorate(Object, IDecoration)} method (see
+ * {@link #getContentProvider(IDecoration)} for details).
+ * </p>
+ *
+ * @see TreeItemDecorationCalculator
+ * @see IProblemMarkerFinder
+ */
 @SuppressWarnings("restriction")
-public class BasicModelProblemDecorator implements ILightweightLabelDecorator {
+public abstract class AbstractTreeContentProblemDecorator implements ILightweightLabelDecorator {
 
-	protected DecorationOverlayCalculator decorationOverlayCalculator;
+	protected TreeItemDecorationCalculator decorationCalculator;
 	protected IResourceChangeListener problemMarkerChangeListener;
 
-	public BasicModelProblemDecorator() {
-		decorationOverlayCalculator = createDeclarationOverlayCalculator();
+	public AbstractTreeContentProblemDecorator() {
+		IProblemMarkerFinder problemMarkerFinder = createProblemMarkerFinder();
+		decorationCalculator = createDecorationCalculator(problemMarkerFinder);
 
 		problemMarkerChangeListener = createProblemMarkerChangeListener();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(problemMarkerChangeListener, IResourceChangeEvent.POST_CHANGE);
 	}
 
-	protected DecorationOverlayCalculator createDeclarationOverlayCalculator() {
-		return new DecorationOverlayCalculator(new BasicModelProblemMarkerFinder());
+	protected abstract IProblemMarkerFinder createProblemMarkerFinder();
+
+	protected TreeItemDecorationCalculator createDecorationCalculator(IProblemMarkerFinder problemMarkerFinder) {
+		return new TreeItemDecorationCalculator(problemMarkerFinder);
 	}
 
 	/**
@@ -62,7 +87,7 @@ public class BasicModelProblemDecorator implements ILightweightLabelDecorator {
 
 				IMarkerDelta[] markerDelta = event.findMarkerDeltas(IMarker.PROBLEM, true);
 				if (markerDelta != null && markerDelta.length > 0) {
-					decorationOverlayCalculator.reset();
+					decorationCalculator.reset();
 				}
 			}
 		};
@@ -74,10 +99,10 @@ public class BasicModelProblemDecorator implements ILightweightLabelDecorator {
 	 */
 	@Override
 	public void decorate(Object element, IDecoration decoration) {
-		ITreeContentProvider contentProvider = getTreeContentProvider(decoration);
+		ITreeContentProvider contentProvider = getContentProvider(decoration);
 		if (contentProvider != null) {
 			String overlayImageName = null;
-			DecorationOverlayKind overlayKind = decorationOverlayCalculator.getDecorationOverlayKind(contentProvider, element);
+			DecorationOverlayKind overlayKind = decorationCalculator.getDecorationOverlayKind(contentProvider, element);
 			switch (overlayKind) {
 			case NONE:
 				break;
@@ -100,7 +125,7 @@ public class BasicModelProblemDecorator implements ILightweightLabelDecorator {
 		}
 	}
 
-	protected ITreeContentProvider getTreeContentProvider(IDecoration decoration) {
+	protected ITreeContentProvider getContentProvider(IDecoration decoration) {
 		if (decoration instanceof DecorationBuilder) {
 			DecorationBuilder builder = (DecorationBuilder) decoration;
 			IDecorationContext context = builder.getDecorationContext();
