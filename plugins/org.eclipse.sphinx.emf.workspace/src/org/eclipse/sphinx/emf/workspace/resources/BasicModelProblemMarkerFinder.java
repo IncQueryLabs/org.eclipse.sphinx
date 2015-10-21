@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
-import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.emf.transaction.RunnableWithResult;
@@ -42,7 +41,7 @@ import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 
 /**
  * A reusable {@link IProblemMarkerFinder problem marker finder} implementation for model objects supporting
- * {@link EObject}s, {@link TransientItemProvider}s, {@link IWrapperItemProvider}s, {@link FeatureMap.Entry}s.
+ * {@link EObject}s, {@link TransientItemProvider}s, and {@link IWrapperItemProvider}s.
  * <p>
  * To find the collection of problem markers that is applicable to the given model object, this implementation retrieves
  * the model object's underlying {@link EObject}, then retrieves all {@link IMarker#PROBLEM problem marker}s attached to
@@ -82,7 +81,7 @@ public class BasicModelProblemMarkerFinder extends AbstractProblemMarkerFinder {
 		Object unwrapped = AdapterFactoryEditingDomain.unwrap(object);
 		if (unwrapped instanceof EObject) {
 			EObject eObject = (EObject) unwrapped;
-			IFile file = EcorePlatformUtil.getFile(eObject);
+			IFile file = getFile(eObject);
 			if (file != null && file.exists()) {
 				URI eObjectURI = getURI(eObject);
 				String eObjectURIFragment = eObjectURI.fragment();
@@ -101,6 +100,10 @@ public class BasicModelProblemMarkerFinder extends AbstractProblemMarkerFinder {
 			}
 		}
 		return Collections.emptyList();
+	}
+
+	protected IFile getFile(EObject eObject) {
+		return EcorePlatformUtil.getFile(eObject);
 	}
 
 	protected URI getURI(final EObject eObject) {

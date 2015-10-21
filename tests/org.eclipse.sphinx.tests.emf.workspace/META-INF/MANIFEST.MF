@@ -7,9 +7,13 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.sphinx.testutils,
- org.eclipse.sphinx.examples.hummingbird20
+ org.eclipse.sphinx.examples.hummingbird20,
+ org.easymock
 Export-Package: org.eclipse.sphinx.tests.emf.workspace.domain,
  org.eclipse.sphinx.tests.emf.workspace.internal,
- org.eclipse.sphinx.tests.emf.workspace.loading
+ org.eclipse.sphinx.tests.emf.workspace.loading,
+ org.eclipse.sphinx.tests.emf.workspace.resources,
+ org.eclipse.sphinx.tests.emf.workspace.resources.mocks,
+ org.eclipse.sphinx.tests.emf.workspace.resources.scenarios
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.tests.emf.workspace.internal.Activator$Implementation

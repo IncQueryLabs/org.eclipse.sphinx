@@ -145,6 +145,7 @@
 <item elementID="=org.eclipse.sphinx.tests.emf.ui.integration" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.tests.emf.workspace" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.tests.emf.workspace.integration" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.tests.emf.workspace.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.tests.jdt" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.tests.jdt.integration" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.tests.platform" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
