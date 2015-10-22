@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: org.eclipse.sphinx.tests.emf.workspace;singleton:=true
+Bundle-SymbolicName: org.eclipse.sphinx.tests.emf.workspace.ui;singleton:=true
 Bundle-Version: 0.10.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: %providerName
@@ -11,6 +11,6 @@ Require-Bundle: org.eclipse.sphinx.emf.workspace.ui,
  org.easymock,
  org.eclipse.sphinx.examples.hummingbird20
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: org.eclipse.sphinx.tests.emf.workspace.ui.internal.Activator$Implementation
-Export-Package: org.eclipse.sphinx.tests.emf.workspace.ui.viewers,
- org.eclipse.sphinx.tests.emf.workspace.ui.viewers.helpers
+Export-Package: org.eclipse.sphinx.tests.emf.workspace.ui.decorators,
+ org.eclipse.sphinx.tests.emf.workspace.ui.scenarios,
+ org.eclipse.sphinx.tests.emf.workspace.ui.viewers

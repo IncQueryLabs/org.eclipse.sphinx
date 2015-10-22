@@ -12,12 +12,27 @@
  *
  * </copyright>
  */
-package org.eclipse.sphinx.tests.emf.workspace.ui.viewers.helpers;
+package org.eclipse.sphinx.tests.emf.workspace.ui.scenarios;
 
+import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
+import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.sphinx.emf.edit.ExtendedDelegatingWrapperItemProvider;
+import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 
-public class DefaultTreeContentProvider implements ITreeContentProvider {
+public class BasicModelExplorerScenarioTreeContentProvider implements ITreeContentProvider {
+
+	private AdapterFactory adapterFactory = new AdapterFactoryImpl();
+
+	protected TransientItemProvider createTransientItemProvider() {
+		return new TransientItemProvider(adapterFactory);
+	}
+
+	protected IWrapperItemProvider createWrapperItemProvider(Object value) {
+		return new ExtendedDelegatingWrapperItemProvider(value, null, null, -1, adapterFactory);
+	}
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
