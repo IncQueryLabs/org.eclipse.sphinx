@@ -19,113 +19,113 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.sphinx.emf.workspace.ui.viewers.TreeContentProviderIterator;
-import org.eclipse.sphinx.tests.emf.workspace.ui.scenarios.Hummingbird20ModelExplorerScenarioTreeContentProvider;
+import org.eclipse.sphinx.tests.emf.workspace.ui.scenarios.Hummingbird20ScenarioTreeContentProvider;
 import org.junit.Test;
 
 public class TreeContentProviderIteratorTest {
 
 	@Test
 	public void testTreeContentProviderIteratorOnProject1() {
-		Hummingbird20ModelExplorerScenarioTreeContentProvider provider = new Hummingbird20ModelExplorerScenarioTreeContentProvider();
+		Hummingbird20ScenarioTreeContentProvider provider = new Hummingbird20ScenarioTreeContentProvider();
 		TreeContentProviderIterator iter = new TreeContentProviderIterator(provider, provider.project1);
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.project1);
+		assertSame(provider.project1, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.file1);
+		assertSame(provider.file1, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.application1);
+		assertSame(provider.application1, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.description1);
+		assertSame(provider.description1, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.components1);
+		assertSame(provider.components1, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component11);
+		assertSame(provider.component11, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.outgoingConnections11);
+		assertSame(provider.outgoingConnections11, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component11ToComponent22Connection);
+		assertSame(provider.component11ToComponent22Connection, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component22Ref);
+		assertSame(provider.component22Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.outgoingConnections22Ref);
+		assertSame(provider.outgoingConnections22Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component22ToComponent11ConnectionRef);
+		assertSame(provider.component22ToComponent11ConnectionRef, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component11RefRef);
+		assertSame(provider.component11RefRef, iter.next());
 		assertTrue(iter.isRecurrent());
 
 		// As component11RefRef is recurrent from the project1's perspective, its outgoingConnections11RefRef and
 		// parameterValues11RefRef children are skipped
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValues22Ref);
+		assertSame(provider.parameterValues22Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValue221Ref);
+		assertSame(provider.parameterValue221Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValues11);
+		assertSame(provider.parameterValues11, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValue111);
+		assertSame(provider.parameterValue111, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValue112);
+		assertSame(provider.parameterValue112, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component12);
+		assertSame(provider.component12, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.file2);
+		assertSame(provider.file2, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.application2);
+		assertSame(provider.application2, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.description2);
+		assertSame(provider.description2, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.components2);
+		assertSame(provider.components2, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component21);
+		assertSame(provider.component21, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component22);
+		assertSame(provider.component22, iter.next());
 		assertTrue(iter.isRecurrent());
 
 		// As component22 is recurrent from the project1's perspective, its outgoingConnections22 and parameterValue221
@@ -135,78 +135,78 @@ public class TreeContentProviderIteratorTest {
 
 	@Test
 	public void testTreeContentProviderIteratorOnFile1() {
-		Hummingbird20ModelExplorerScenarioTreeContentProvider provider = new Hummingbird20ModelExplorerScenarioTreeContentProvider();
+		Hummingbird20ScenarioTreeContentProvider provider = new Hummingbird20ScenarioTreeContentProvider();
 		TreeContentProviderIterator iter = new TreeContentProviderIterator(provider, provider.file1);
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.file1);
+		assertSame(provider.file1, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.application1);
+		assertSame(provider.application1, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.description1);
+		assertSame(provider.description1, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.components1);
+		assertSame(provider.components1, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component11);
+		assertSame(provider.component11, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.outgoingConnections11);
+		assertSame(provider.outgoingConnections11, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component11ToComponent22Connection);
+		assertSame(provider.component11ToComponent22Connection, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component22Ref);
+		assertSame(provider.component22Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.outgoingConnections22Ref);
+		assertSame(provider.outgoingConnections22Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component22ToComponent11ConnectionRef);
+		assertSame(provider.component22ToComponent11ConnectionRef, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component11RefRef);
+		assertSame(provider.component11RefRef, iter.next());
 		assertTrue(iter.isRecurrent());
 
 		// As component11RefRef is recurrent from the file1's perspective, its outgoingConnections11RefRef and
 		// parameterValues11RefRef children are skipped
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValues22Ref);
+		assertSame(provider.parameterValues22Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValue221Ref);
+		assertSame(provider.parameterValue221Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValues11);
+		assertSame(provider.parameterValues11, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValue111);
+		assertSame(provider.parameterValue111, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValue112);
+		assertSame(provider.parameterValue112, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component12);
+		assertSame(provider.component12, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertFalse(iter.hasNext());
@@ -214,78 +214,78 @@ public class TreeContentProviderIteratorTest {
 
 	@Test
 	public void testTreeContentProviderIteratorOnFile2() {
-		Hummingbird20ModelExplorerScenarioTreeContentProvider provider = new Hummingbird20ModelExplorerScenarioTreeContentProvider();
+		Hummingbird20ScenarioTreeContentProvider provider = new Hummingbird20ScenarioTreeContentProvider();
 		TreeContentProviderIterator iter = new TreeContentProviderIterator(provider, provider.file2);
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.file2);
+		assertSame(provider.file2, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.application2);
+		assertSame(provider.application2, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.description2);
+		assertSame(provider.description2, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.components2);
+		assertSame(provider.components2, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component21);
+		assertSame(provider.component21, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component22);
+		assertSame(provider.component22, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.outgoingConnections22);
+		assertSame(provider.outgoingConnections22, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component22ToComponent11Connection);
+		assertSame(provider.component22ToComponent11Connection, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component11Ref);
+		assertSame(provider.component11Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.outgoingConnections11Ref);
+		assertSame(provider.outgoingConnections11Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component11ToComponent22ConnectionRef);
+		assertSame(provider.component11ToComponent22ConnectionRef, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component22RefRef);
+		assertSame(provider.component22RefRef, iter.next());
 		assertTrue(iter.isRecurrent());
 
 		// As component22RefRef is recurrent from the file2's perspective, its outgoingConnections22RefRef and
 		// parameterValues22RefRef children are skipped
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValues11Ref);
+		assertSame(provider.parameterValues11Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValue111Ref);
+		assertSame(provider.parameterValue111Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValue112Ref);
+		assertSame(provider.parameterValue112Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValues22);
+		assertSame(provider.parameterValues22, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValue221);
+		assertSame(provider.parameterValue221, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertFalse(iter.hasNext());
@@ -293,58 +293,59 @@ public class TreeContentProviderIteratorTest {
 
 	@Test
 	public void testTreeContentProviderIteratorOnComponent11ToComponent22Connection() {
-		Hummingbird20ModelExplorerScenarioTreeContentProvider provider = new Hummingbird20ModelExplorerScenarioTreeContentProvider();
-		TreeContentProviderIterator iter = new TreeContentProviderIterator(provider, provider.component11ToComponent22Connection);
+		Hummingbird20ScenarioTreeContentProvider provider = new Hummingbird20ScenarioTreeContentProvider();
+		TreeContentProviderIterator iter = new TreeContentProviderIterator(provider,
+				provider.component11ToComponent22Connection);
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component11ToComponent22Connection);
+		assertSame(provider.component11ToComponent22Connection, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component22Ref);
+		assertSame(provider.component22Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.outgoingConnections22Ref);
+		assertSame(provider.outgoingConnections22Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component22ToComponent11ConnectionRef);
+		assertSame(provider.component22ToComponent11ConnectionRef, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component11RefRef);
+		assertSame(provider.component11RefRef, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.outgoingConnections11RefRef);
+		assertSame(provider.outgoingConnections11RefRef, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.component11ToComponent22ConnectionRefRef);
+		assertSame(provider.component11ToComponent22ConnectionRefRef, iter.next());
 		assertTrue(iter.isRecurrent());
 
 		// As component11ToComponent22ConnectionRefRef is recurrent from the component11ToComponent22Connection's
 		// perspective, its component22RefRefRef child is skipped
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValues11RefRef);
+		assertSame(provider.parameterValues11RefRef, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValue111RefRef);
+		assertSame(provider.parameterValue111RefRef, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValue112RefRef);
+		assertSame(provider.parameterValue112RefRef, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValues22Ref);
+		assertSame(provider.parameterValues22Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertTrue(iter.hasNext());
-		assertSame(iter.next(), provider.parameterValue221Ref);
+		assertSame(provider.parameterValue221Ref, iter.next());
 		assertFalse(iter.isRecurrent());
 
 		assertFalse(iter.hasNext());

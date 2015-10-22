@@ -22,7 +22,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.sphinx.emf.edit.ExtendedDelegatingWrapperItemProvider;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
 
-public class BasicModelExplorerScenarioTreeContentProvider implements ITreeContentProvider {
+public abstract class AbstractScenarioTreeContentProvider implements ITreeContentProvider {
 
 	private AdapterFactory adapterFactory = new AdapterFactoryImpl();
 
@@ -47,16 +47,6 @@ public class BasicModelExplorerScenarioTreeContentProvider implements ITreeConte
 	public boolean hasChildren(Object element) {
 		Object[] children = getChildren(element);
 		return children != null && children.length > 0;
-	}
-
-	@Override
-	public Object[] getChildren(Object parentElement) {
-		return null;
-	}
-
-	@Override
-	public Object getParent(Object element) {
-		return null;
 	}
 
 	@Override
