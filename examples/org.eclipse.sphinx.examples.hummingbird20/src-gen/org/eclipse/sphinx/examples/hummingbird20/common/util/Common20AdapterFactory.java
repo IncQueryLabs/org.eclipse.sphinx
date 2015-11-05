@@ -83,6 +83,10 @@ public class Common20AdapterFactory extends AdapterFactoryImpl {
 				return createDescriptionAdapter();
 			}
 			@Override
+			public Adapter caseTranslation(Translation object) {
+				return createTranslationAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -123,6 +127,20 @@ public class Common20AdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createDescriptionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.sphinx.examples.hummingbird20.common.Translation <em>Translation</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.common.Translation
+	 * @generated
+	 */
+	public Adapter createTranslationAdapter() {
 		return null;
 	}
 

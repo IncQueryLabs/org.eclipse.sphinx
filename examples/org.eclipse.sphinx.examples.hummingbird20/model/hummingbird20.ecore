@@ -34,7 +34,20 @@
           <details key="kind" value="elementWildcard"/>
         </eAnnotations>
       </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="language" eType="#//common/LanguageCultureName"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="translations" upperBound="-1"
+          eType="#//common/Translation" containment="true"/>
     </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Translation">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="language" eType="#//common/LanguageCultureName"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="resourceURI" eType="#//common/EURI"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EEnum" name="LanguageCultureName">
+      <eLiterals name="enUS" literal="en-US"/>
+      <eLiterals name="deDE" value="1" literal="de-DE"/>
+      <eLiterals name="frFR" value="2" literal="fr-FR"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EDataType" name="EURI" instanceClassName="org.eclipse.emf.common.util.URI"/>
   </eSubpackages>
   <eSubpackages name="typemodel" nsURI="http://www.eclipse.org/sphinx/examples/hummingbird/2.0.1/typemodel"
       nsPrefix="tm">

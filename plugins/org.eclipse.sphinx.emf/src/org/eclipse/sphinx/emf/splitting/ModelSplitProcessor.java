@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [474952] Replication of Ancestor Feature filters to much
  *
  * </copyright>
  */
@@ -43,41 +44,44 @@ public class ModelSplitProcessor {
 
 		private static final long serialVersionUID = 1L;
 
+		protected EObject ancestor;
 		protected IModelSplitDirective modelSplitDirective;
 
-		public AncestorCopier(IModelSplitDirective modelSplitDirective) {
+		public AncestorCopier(EObject ancestor, IModelSplitDirective modelSplitDirective) {
+			Assert.isNotNull(ancestor);
 			Assert.isNotNull(modelSplitDirective);
+			this.ancestor = ancestor;
 			this.modelSplitDirective = modelSplitDirective;
 		}
 
 		@Override
-		public EObject copy(EObject ancestor) {
-			if (ancestor == null) {
+		public EObject copy(EObject eObject) {
+			if (eObject == null) {
 				return null;
 			}
 
-			EObject copiedAncestor = createCopy(ancestor);
-			if (copiedAncestor != null) {
-				put(ancestor, copiedAncestor);
-				for (EStructuralFeature eStructuralFeature : ancestor.eClass().getEAllStructuralFeatures()) {
+			EObject copiedEObject = createCopy(eObject);
+			if (copiedEObject != null) {
+				put(eObject, copiedEObject);
+				for (EStructuralFeature eStructuralFeature : eObject.eClass().getEAllStructuralFeatures()) {
 					if (eStructuralFeature.isChangeable() && !eStructuralFeature.isDerived()) {
-						if (modelSplitDirective.shouldReplicateAncestorFeature(ancestor, eStructuralFeature)) {
+						if (eObject != ancestor || modelSplitDirective.shouldReplicateAncestorFeature(eObject, eStructuralFeature)) {
 							if (eStructuralFeature instanceof EAttribute) {
 								EAttribute eAttribute = (EAttribute) eStructuralFeature;
-								copyAttribute(eAttribute, ancestor, copiedAncestor);
+								copyAttribute(eAttribute, eObject, copiedEObject);
 							} else {
 								EReference eReference = (EReference) eStructuralFeature;
 								if (eReference.isContainment()) {
-									copyContainment(eReference, ancestor, copiedAncestor);
+									copyContainment(eReference, eObject, copiedEObject);
 								}
 							}
 						}
 					}
 				}
 
-				copyProxyURI(ancestor, copiedAncestor);
+				copyProxyURI(eObject, copiedEObject);
 			}
-			return copiedAncestor;
+			return copiedEObject;
 		}
 
 		@Override
@@ -311,7 +315,7 @@ public class ModelSplitProcessor {
 	}
 
 	protected <T extends EObject> T copyAncestor(T ancestor, IModelSplitDirective directive) {
-		AncestorCopier copier = new AncestorCopier(directive);
+		AncestorCopier copier = new AncestorCopier(ancestor, directive);
 		EObject copiedAncestor = copier.copy(ancestor);
 		copier.copyReferences();
 

@@ -110,6 +110,29 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all {@link org.eclipse.sphinx.examples.hummingbird20.common.Translation} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected TranslationItemProvider translationItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.eclipse.sphinx.examples.hummingbird20.common.Translation}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createTranslationAdapter() {
+		if (translationItemProvider == null) {
+			translationItemProvider = new TranslationItemProvider(this);
+		}
+
+		return translationItemProvider;
+	}
+
+	/**
 	 * This returns the root adapter factory that contains this factory.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
@@ -208,6 +231,7 @@ public class Common20ItemProviderAdapterFactory extends Common20AdapterFactory i
 	@Override
 	public void dispose() {
 		if (descriptionItemProvider != null) descriptionItemProvider.dispose();
+		if (translationItemProvider != null) translationItemProvider.dispose();
 	}
 
 }

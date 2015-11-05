@@ -40,6 +40,15 @@ public interface Common20Factory extends EFactory {
 	Description createDescription();
 
 	/**
+	 * Returns a new object of class '<em>Translation</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Translation</em>'.
+	 * @generated
+	 */
+	Translation createTranslation();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the package supported by this factory.

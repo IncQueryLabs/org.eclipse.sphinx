@@ -17,6 +17,8 @@ package org.eclipse.sphinx.examples.hummingbird20.common;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -115,13 +117,88 @@ public interface Common20Package extends EPackage {
 	int DESCRIPTION__MIXED = 0;
 
 	/**
+	 * The feature id for the '<em><b>Language</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DESCRIPTION__LANGUAGE = 1;
+
+	/**
+	 * The feature id for the '<em><b>Translations</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DESCRIPTION__TRANSLATIONS = 2;
+
+	/**
 	 * The number of structural features of the '<em>Description</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int DESCRIPTION_FEATURE_COUNT = 1;
+	int DESCRIPTION_FEATURE_COUNT = 3;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.common.impl.TranslationImpl <em>Translation</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.sphinx.examples.hummingbird20.common.impl.TranslationImpl
+	 * @see org.eclipse.sphinx.examples.hummingbird20.common.impl.Common20PackageImpl#getTranslation()
+	 * @generated
+	 */
+	int TRANSLATION = 2;
+
+	/**
+	 * The feature id for the '<em><b>Language</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TRANSLATION__LANGUAGE = 0;
+
+	/**
+	 * The feature id for the '<em><b>Resource URI</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TRANSLATION__RESOURCE_URI = 1;
+
+	/**
+	 * The number of structural features of the '<em>Translation</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TRANSLATION_FEATURE_COUNT = 2;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.sphinx.examples.hummingbird20.common.LanguageCultureName <em>Language Culture Name</em>}' enum.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.sphinx.examples.hummingbird20.common.LanguageCultureName
+	 * @see org.eclipse.sphinx.examples.hummingbird20.common.impl.Common20PackageImpl#getLanguageCultureName()
+	 * @generated
+	 */
+	int LANGUAGE_CULTURE_NAME = 3;
+
+	/**
+	 * The meta object id for the '<em>EURI</em>' data type.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.emf.common.util.URI
+	 * @see org.eclipse.sphinx.examples.hummingbird20.common.impl.Common20PackageImpl#getEURI()
+	 * @generated
+	 */
+	int EURI = 4;
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.common.Identifiable <em>Identifiable</em>}'.
@@ -175,6 +252,81 @@ public interface Common20Package extends EPackage {
 	 * @generated
 	 */
 	EAttribute getDescription_Mixed();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.sphinx.examples.hummingbird20.common.Description#getLanguage <em>Language</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Language</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.common.Description#getLanguage()
+	 * @see #getDescription()
+	 * @generated
+	 */
+	EAttribute getDescription_Language();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.sphinx.examples.hummingbird20.common.Description#getTranslations <em>Translations</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Translations</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.common.Description#getTranslations()
+	 * @see #getDescription()
+	 * @generated
+	 */
+	EReference getDescription_Translations();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.sphinx.examples.hummingbird20.common.Translation <em>Translation</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Translation</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.common.Translation
+	 * @generated
+	 */
+	EClass getTranslation();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.sphinx.examples.hummingbird20.common.Translation#getLanguage <em>Language</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Language</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.common.Translation#getLanguage()
+	 * @see #getTranslation()
+	 * @generated
+	 */
+	EAttribute getTranslation_Language();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.sphinx.examples.hummingbird20.common.Translation#getResourceURI <em>Resource URI</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Resource URI</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.common.Translation#getResourceURI()
+	 * @see #getTranslation()
+	 * @generated
+	 */
+	EAttribute getTranslation_ResourceURI();
+
+	/**
+	 * Returns the meta object for enum '{@link org.eclipse.sphinx.examples.hummingbird20.common.LanguageCultureName <em>Language Culture Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for enum '<em>Language Culture Name</em>'.
+	 * @see org.eclipse.sphinx.examples.hummingbird20.common.LanguageCultureName
+	 * @generated
+	 */
+	EEnum getLanguageCultureName();
+
+	/**
+	 * Returns the meta object for data type '{@link org.eclipse.emf.common.util.URI <em>EURI</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for data type '<em>EURI</em>'.
+	 * @see org.eclipse.emf.common.util.URI
+	 * @model instanceClass="org.eclipse.emf.common.util.URI"
+	 * @generated
+	 */
+	EDataType getEURI();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -237,6 +389,68 @@ public interface Common20Package extends EPackage {
 		 * @generated
 		 */
 		EAttribute DESCRIPTION__MIXED = eINSTANCE.getDescription_Mixed();
+
+		/**
+		 * The meta object literal for the '<em><b>Language</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DESCRIPTION__LANGUAGE = eINSTANCE.getDescription_Language();
+
+		/**
+		 * The meta object literal for the '<em><b>Translations</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference DESCRIPTION__TRANSLATIONS = eINSTANCE.getDescription_Translations();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.sphinx.examples.hummingbird20.common.impl.TranslationImpl <em>Translation</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.sphinx.examples.hummingbird20.common.impl.TranslationImpl
+		 * @see org.eclipse.sphinx.examples.hummingbird20.common.impl.Common20PackageImpl#getTranslation()
+		 * @generated
+		 */
+		EClass TRANSLATION = eINSTANCE.getTranslation();
+
+		/**
+		 * The meta object literal for the '<em><b>Language</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute TRANSLATION__LANGUAGE = eINSTANCE.getTranslation_Language();
+
+		/**
+		 * The meta object literal for the '<em><b>Resource URI</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute TRANSLATION__RESOURCE_URI = eINSTANCE.getTranslation_ResourceURI();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.sphinx.examples.hummingbird20.common.LanguageCultureName <em>Language Culture Name</em>}' enum.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.sphinx.examples.hummingbird20.common.LanguageCultureName
+		 * @see org.eclipse.sphinx.examples.hummingbird20.common.impl.Common20PackageImpl#getLanguageCultureName()
+		 * @generated
+		 */
+		EEnum LANGUAGE_CULTURE_NAME = eINSTANCE.getLanguageCultureName();
+
+		/**
+		 * The meta object literal for the '<em>EURI</em>' data type.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.emf.common.util.URI
+		 * @see org.eclipse.sphinx.examples.hummingbird20.common.impl.Common20PackageImpl#getEURI()
+		 * @generated
+		 */
+		EDataType EURI = eINSTANCE.getEURI();
 
 	}
 

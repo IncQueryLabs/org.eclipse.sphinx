@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
+import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
 import org.eclipse.emf.edit.provider.IItemFontProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
@@ -33,12 +34,15 @@ import org.eclipse.emf.edit.provider.IItemPropertySource;
 import org.eclipse.emf.edit.provider.IItemStyledLabelProvider;
 import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
 import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
+import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.StyledString;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 import org.eclipse.sphinx.emf.edit.ExtendedItemProviderAdapter;
 import org.eclipse.sphinx.emf.edit.ITreeItemAncestorProvider;
+import org.eclipse.sphinx.examples.hummingbird20.common.Common20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
 import org.eclipse.sphinx.examples.hummingbird20.common.Description;
+import org.eclipse.sphinx.examples.hummingbird20.common.LanguageCultureName;
 import org.eclipse.sphinx.examples.hummingbird20.edit.Activator;
 
 /**
@@ -67,8 +71,31 @@ public class DescriptionItemProvider extends ExtendedItemProviderAdapter impleme
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
+			addLanguagePropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
+	}
+
+	/**
+	 * This adds a property descriptor for the Language feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addLanguagePropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_Description_language_feature"), //$NON-NLS-1$
+				 getString("_UI_PropertyDescriptor_description", "_UI_Description_language_feature", "_UI_Description_type"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				 Common20Package.Literals.DESCRIPTION__LANGUAGE,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
 	}
 
 	/**
@@ -84,6 +111,7 @@ public class DescriptionItemProvider extends ExtendedItemProviderAdapter impleme
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
 			childrenFeatures.add(Common20Package.Literals.DESCRIPTION__MIXED);
+			childrenFeatures.add(Common20Package.Literals.DESCRIPTION__TRANSLATIONS);
 		}
 		return childrenFeatures;
 	}
@@ -127,7 +155,15 @@ public class DescriptionItemProvider extends ExtendedItemProviderAdapter impleme
 	 */
 	@Override
 	public Object getStyledText(Object object) {
-		return new StyledString(getString("_UI_Description_type")); //$NON-NLS-1$
+		LanguageCultureName labelValue = ((Description)object).getLanguage();
+		String label = labelValue == null ? null : labelValue.toString();
+    	StyledString styledLabel = new StyledString();
+		if (label == null || label.length() == 0) {
+			styledLabel.append(getString("_UI_Description_type"), StyledString.Style.QUALIFIER_STYLER);  //$NON-NLS-1$
+		} else {
+			styledLabel.append(getString("_UI_Description_type"), StyledString.Style.QUALIFIER_STYLER).append(" " + label); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		return styledLabel;
 	}
 
 	/**
@@ -142,7 +178,11 @@ public class DescriptionItemProvider extends ExtendedItemProviderAdapter impleme
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(Description.class)) {
+			case Common20Package.DESCRIPTION__LANGUAGE:
+				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
+				return;
 			case Common20Package.DESCRIPTION__MIXED:
+			case Common20Package.DESCRIPTION__TRANSLATIONS:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
 				return;
 		}
@@ -186,6 +226,11 @@ public class DescriptionItemProvider extends ExtendedItemProviderAdapter impleme
 				 FeatureMapUtil.createEntry
 					(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__CDATA,
 					 ""))); //$NON-NLS-1$
+
+		newChildDescriptors.add
+			(createChildParameter
+				(Common20Package.Literals.DESCRIPTION__TRANSLATIONS,
+				 Common20Factory.eINSTANCE.createTranslation()));
 	}
 
 	/**

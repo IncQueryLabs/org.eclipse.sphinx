@@ -133,7 +133,7 @@
     <xsd:annotation>
       <xsd:documentation>Represents a Parameter model object</xsd:documentation>
     </xsd:annotation>
-    <xsd:complexContent>
+    <xsd:complexContent mixed="true">
       <xsd:extension base="cn:Identifiable">
         <xsd:attribute name="dataType" type="xsd:string"/>
         <xsd:attribute name="optional" type="xsd:boolean"/>

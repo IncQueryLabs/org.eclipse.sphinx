@@ -15,8 +15,11 @@
  */
 package org.eclipse.sphinx.examples.hummingbird20.common.impl;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
@@ -26,6 +29,8 @@ import org.eclipse.sphinx.examples.hummingbird20.common.Common20Factory;
 import org.eclipse.sphinx.examples.hummingbird20.common.Common20Package;
 import org.eclipse.sphinx.examples.hummingbird20.common.Description;
 import org.eclipse.sphinx.examples.hummingbird20.common.Identifiable;
+import org.eclipse.sphinx.examples.hummingbird20.common.LanguageCultureName;
+import org.eclipse.sphinx.examples.hummingbird20.common.Translation;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Package;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.impl.InstanceModel20PackageImpl;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.TypeModel20Package;
@@ -47,6 +52,27 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	 * @generated
 	 */
 	private EClass descriptionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass translationEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EEnum languageCultureNameEEnum = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EDataType euriEDataType = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with {@link org.eclipse.emf.ecore.EPackage.Registry
@@ -164,6 +190,69 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getDescription_Language() {
+		return (EAttribute)descriptionEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getDescription_Translations() {
+		return (EReference)descriptionEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getTranslation() {
+		return translationEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getTranslation_Language() {
+		return (EAttribute)translationEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getTranslation_ResourceURI() {
+		return (EAttribute)translationEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EEnum getLanguageCultureName() {
+		return languageCultureNameEEnum;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EDataType getEURI() {
+		return euriEDataType;
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
@@ -195,6 +284,18 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 
 		descriptionEClass = createEClass(DESCRIPTION);
 		createEAttribute(descriptionEClass, DESCRIPTION__MIXED);
+		createEAttribute(descriptionEClass, DESCRIPTION__LANGUAGE);
+		createEReference(descriptionEClass, DESCRIPTION__TRANSLATIONS);
+
+		translationEClass = createEClass(TRANSLATION);
+		createEAttribute(translationEClass, TRANSLATION__LANGUAGE);
+		createEAttribute(translationEClass, TRANSLATION__RESOURCE_URI);
+
+		// Create enums
+		languageCultureNameEEnum = createEEnum(LANGUAGE_CULTURE_NAME);
+
+		// Create data types
+		euriEDataType = createEDataType(EURI);
 	}
 
 	/**
@@ -231,6 +332,21 @@ public class Common20PackageImpl extends EPackageImpl implements Common20Package
 
 		initEClass(descriptionEClass, Description.class, "Description", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 		initEAttribute(getDescription_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, Description.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getDescription_Language(), this.getLanguageCultureName(), "language", null, 0, 1, Description.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEReference(getDescription_Translations(), this.getTranslation(), null, "translations", null, 0, -1, Description.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+
+		initEClass(translationEClass, Translation.class, "Translation", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+		initEAttribute(getTranslation_Language(), this.getLanguageCultureName(), "language", null, 0, 1, Translation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getTranslation_ResourceURI(), this.getEURI(), "resourceURI", null, 0, 1, Translation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+
+		// Initialize enums and add enum literals
+		initEEnum(languageCultureNameEEnum, LanguageCultureName.class, "LanguageCultureName"); //$NON-NLS-1$
+		addEEnumLiteral(languageCultureNameEEnum, LanguageCultureName.EN_US);
+		addEEnumLiteral(languageCultureNameEEnum, LanguageCultureName.DE_DE);
+		addEEnumLiteral(languageCultureNameEEnum, LanguageCultureName.FR_FR);
+
+		// Initialize data types
+		initEDataType(euriEDataType, URI.class, "EURI", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 
 		// Create resource
 		createResource(eNS_URI);

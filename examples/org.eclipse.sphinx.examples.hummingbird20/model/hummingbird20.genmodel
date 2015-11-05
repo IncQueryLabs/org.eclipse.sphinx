@@ -4,9 +4,8 @@
     modelDirectory="/org.eclipse.sphinx.examples.hummingbird20/src-gen" creationSubmenus="true"
     editDirectory="/org.eclipse.sphinx.examples.hummingbird20.edit/src-gen" editorDirectory=""
     modelPluginID="org.eclipse.sphinx.examples.hummingbird20" templateDirectory="/org.eclipse.sphinx.examples.hummingbird20/templates"
-    dynamicTemplates="true" modelName="Hummingbird20" modelPluginClass="org.eclipse.sphinx.examples.hummingbird20.Activator"
-    editPluginClass="org.eclipse.sphinx.examples.hummingbird20.edit.Activator" editorPluginClass=""
-    generateSchema="true" nonNLSMarkers="true" rootExtendsClass="org.eclipse.sphinx.examples.hummingbird20.Hummingbird20EObjectImpl"
+    dynamicTemplates="true" modelName="Hummingbird20" modelPluginClass="" editPluginClass="org.eclipse.sphinx.examples.hummingbird20.edit.Activator"
+    editorPluginClass="" generateSchema="true" nonNLSMarkers="true" rootExtendsClass="org.eclipse.sphinx.examples.hummingbird20.Hummingbird20EObjectImpl"
     rootImplementsInterface="" testsDirectory="" testSuiteClass="" importerID="org.eclipse.emf.importer.ecore"
     complianceLevel="5.0" suppressGenModelAnnotations="false" copyrightFields="false"
     providerRootExtendsClass="org.eclipse.sphinx.emf.edit.ExtendedItemProviderAdapter"
@@ -40,12 +39,24 @@
           <details key="http://www.eclipse.org/emf/2002/Ecore" value="XMI.xsd"/>
         </genAnnotations>
       </genAnnotations>
+      <genEnums typeSafeEnumCompatible="false" ecoreEnum="hummingbird20.ecore#//common/LanguageCultureName">
+        <genEnumLiterals ecoreEnumLiteral="hummingbird20.ecore#//common/LanguageCultureName/enUS"/>
+        <genEnumLiterals ecoreEnumLiteral="hummingbird20.ecore#//common/LanguageCultureName/deDE"/>
+        <genEnumLiterals ecoreEnumLiteral="hummingbird20.ecore#//common/LanguageCultureName/frFR"/>
+      </genEnums>
+      <genDataTypes ecoreDataType="hummingbird20.ecore#//common/EURI"/>
       <genClasses ecoreClass="hummingbird20.ecore#//common/Identifiable">
         <genFeatures createChild="false" ecoreFeature="ecore:EAttribute hummingbird20.ecore#//common/Identifiable/name"/>
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference hummingbird20.ecore#//common/Identifiable/description"/>
       </genClasses>
       <genClasses ecoreClass="hummingbird20.ecore#//common/Description">
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute hummingbird20.ecore#//common/Description/mixed"/>
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute hummingbird20.ecore#//common/Description/language"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference hummingbird20.ecore#//common/Description/translations"/>
+      </genClasses>
+      <genClasses ecoreClass="hummingbird20.ecore#//common/Translation">
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute hummingbird20.ecore#//common/Translation/language"/>
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute hummingbird20.ecore#//common/Translation/resourceURI"/>
       </genClasses>
     </nestedGenPackages>
     <nestedGenPackages prefix="TypeModel20" basePackage="org.eclipse.sphinx.examples.hummingbird20"
