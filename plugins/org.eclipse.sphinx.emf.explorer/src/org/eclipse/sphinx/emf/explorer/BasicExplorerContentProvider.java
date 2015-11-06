@@ -955,6 +955,8 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 				for (IResource resource : resources) {
 					if (resource != null && resource.isAccessible()) {
 						if (isTriggerPoint(resource)) {
+							// FIXME Enable bulk refresh for many resources in a single asyncExec &
+							// record/applyTreeState cycle
 							refreshViewerOnObject(resource);
 						}
 					}
@@ -986,6 +988,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 				 * if so we would needlessly encounter multiple refreshes of the same file otherwise.
 				 */
 				for (Resource resource : resources) {
+					// FIXME Delegate to getWorkspaceResource()
 					IFile file = EcorePlatformUtil.getFile(resource);
 					if (file != null && file.isAccessible()) {
 						/*
@@ -1000,6 +1003,7 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 					}
 				}
 				for (IFile file : files) {
+					// FIXME Enable bulk refresh for many files in a single asyncExec & record/applyTreeState cycle
 					refreshViewerOnObject(file);
 				}
 			} else {
@@ -1014,6 +1018,8 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	 *
 	 * @param objects
 	 */
+	// FIXME Ignore model object viewer refreshes if refresh of underlying workspace resource or entire viewer is
+	// already underway
 	protected void refreshViewerOnModelObjects(Set<?> objects) {
 		if (!objects.isEmpty()) {
 			/*
@@ -1031,11 +1037,16 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 							IResource resource = getWorkspaceResource(modelResource);
 							if (resource != null && resource.isAccessible()) {
 								if (isTriggerPoint(resource)) {
+									// FIXME Enable bulk refresh for many resources in a single asyncExec &
+									// record/applyTreeState cycle
+									// TODO Delegate to refreshViewerOnModelResources()
 									refreshViewerOnObject(resource);
 								}
 							}
 						} else {
 							// Directly refresh the object
+							// FIXME Enable bulk refresh for many objects in a single asyncExec & record/applyTreeState
+							// cycle
 							refreshViewerOnObject(object);
 						}
 					}
