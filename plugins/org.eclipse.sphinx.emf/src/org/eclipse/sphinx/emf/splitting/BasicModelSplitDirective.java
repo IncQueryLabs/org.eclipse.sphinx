@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [474952] Replication of Ancestor Feature filters to much
  *
  * </copyright>
  */
@@ -60,9 +61,8 @@ public class BasicModelSplitDirective implements IModelSplitDirective {
 	}
 
 	/*
-	 * @see
-	 * org.eclipse.sphinx.emf.splitting.IModelSplitDirective#shouldReplicateAncestorFeature(org.eclipse.emf.ecore.EObject
-	 * , org.eclipse.emf.ecore.EStructuralFeature)
+	 * @see org.eclipse.sphinx.emf.splitting.IModelSplitDirective#shouldReplicateAncestorFeature(org.eclipse.emf.ecore.
+	 * EObject , org.eclipse.emf.ecore.EStructuralFeature)
 	 */
 	@Override
 	public boolean shouldReplicateAncestorFeature(EObject ancestor, EStructuralFeature feature) {
@@ -91,5 +91,12 @@ public class BasicModelSplitDirective implements IModelSplitDirective {
 			return false;
 		}
 		return true;
+	}
+
+	@SuppressWarnings("nls")
+	@Override
+	public String toString() {
+		return getClass().getName() + " [eObject=" + eObject + ", targetResourceURI=" + targetResourceURI + ", stripAncestors=" + stripAncestors
+				+ "]";
 	}
 }

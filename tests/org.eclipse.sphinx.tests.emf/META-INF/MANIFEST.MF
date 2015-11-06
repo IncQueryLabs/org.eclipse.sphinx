@@ -12,7 +12,8 @@ Require-Bundle: org.eclipse.core.expressions,
  org.eclipse.sphinx.examples.uml2.ide,
  org.eclipse.uml2.uml,
  org.easymock,
- org.eclipse.core.resources
+ org.eclipse.core.resources,
+ org.eclipse.sphinx.examples.hummingbird20.splitting
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.eclipse.sphinx.tests.emf.comparators,
  org.eclipse.sphinx.tests.emf.ecore,
@@ -25,6 +26,7 @@ Export-Package: org.eclipse.sphinx.tests.emf.comparators,
  org.eclipse.sphinx.tests.emf.properties,
  org.eclipse.sphinx.tests.emf.resource,
  org.eclipse.sphinx.tests.emf.serialization,
+ org.eclipse.sphinx.tests.emf.splitting,
  org.eclipse.sphinx.tests.emf.util
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.tests.emf.internal.Activator$Implementation

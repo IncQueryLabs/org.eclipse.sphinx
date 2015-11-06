@@ -275,6 +275,7 @@ public class ModelSplitProcessor {
 				// Split ancestor object branch
 				EObject lastEObject = eObject;
 				EObject lastSplitEObject = eObject;
+				boolean newSplitAncestor = true;
 				for (EObject ancestor : ancestors) {
 					EObject splitAncestor = null;
 
@@ -283,6 +284,8 @@ public class ModelSplitProcessor {
 					if (splitAncestor == null) {
 						splitAncestor = copyAncestor(ancestor, directive);
 						addSplitEObject(ancestor, splitAncestor, targetResourceURI);
+					} else {
+						newSplitAncestor = false;
 					}
 
 					// Connect split ancestor to previously split ancestor and model objects
@@ -298,13 +301,22 @@ public class ModelSplitProcessor {
 						splitAncestor.eSet(containingFeature, lastSplitEObject);
 					}
 
+					// Abort ancestor object branch splitting when having reached at an ancestor that has already been
+					// split
+					if (!newSplitAncestor) {
+						break;
+					}
+
 					lastEObject = ancestor;
 					lastSplitEObject = splitAncestor;
 				}
 
 				// Add split model object branch to target resource contents
 				EObject splitRootContainer = getSplitEObject(rootContainer, targetResourceURI);
-				getTargetResourceContents(targetResourceURI).add(splitRootContainer);
+				List<EObject> targetResourceContents = getTargetResourceContents(targetResourceURI);
+				if (!targetResourceContents.contains(splitRootContainer)) {
+					targetResourceContents.add(splitRootContainer);
+				}
 			}
 			progress.worked(1);
 
