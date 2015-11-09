@@ -23,11 +23,13 @@ import org.eclipse.sphinx.emf.splitting.IModelSplitDirective;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.ComponentType;
 import org.eclipse.sphinx.examples.hummingbird20.typemodel.Interface;
+import org.eclipse.sphinx.examples.hummingbird20.typemodel.Parameter;
 
 public class Hummingbird20TypeModelSplitPolicy extends AbstractModelSplitPolicy {
 
 	private static final String COMPONENT_TYPES_TARGET_FILE_NAME = "ComponentTypes.typemodel"; //$NON-NLS-1$
 	private static final String INTERFACES_TARGET_FILE_NAME = "Interfaces.typemodel"; //$NON-NLS-1$
+	private static final String MANDATORY_PARAMETERS_TARGET_FILE_NAME = "MandatoryParameters.typemodel"; //$NON-NLS-1$
 
 	/*
 	 * @see org.eclipse.sphinx.emf.splitting.IModelSplitPolicy#getSplitDirective(org.eclipse.emf.ecore.EObject)
@@ -59,6 +61,20 @@ public class Hummingbird20TypeModelSplitPolicy extends AbstractModelSplitPolicy 
 			// Return corresponding model split directive making sure that ancestor objects get replicated into target
 			// resource WITHOUT their intrinsic properties
 			return createModelSplitDirective(eObject, targetResourceURI, true);
+		}
+		if (eObject instanceof Parameter) {
+			// Mandatory parameter?
+			if (!((Parameter) eObject).isOptional()) {
+				// Compute URI of target resource folder
+				URI targetResourceBaseURI = getTargetResourceBaseURI(eObject);
+
+				// Compute target resource URI for mandatory Hummingbird 2.0 parameter objects
+				URI targetResourceURI = targetResourceBaseURI.appendSegment(MANDATORY_PARAMETERS_TARGET_FILE_NAME);
+
+				// Return corresponding model split directive making sure that ancestor objects get replicated into
+				// target resource WITH their intrinsic properties
+				return createModelSplitDirective(eObject, targetResourceURI, false);
+			}
 		}
 		return null;
 	}

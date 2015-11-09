@@ -105,6 +105,7 @@ public class ModelSplitProcessor {
 	private Collection<EObject> eObjectsToSplit;
 
 	private Map<EObject, Map<URI, EObject>> originalToSplitEObjectsMap = new HashMap<EObject, Map<URI, EObject>>();
+	private Map<EObject, EObject> eObjectToOriginalContainerMap = new HashMap<EObject, EObject>();
 	private Map<URI, List<EObject>> targetResourceURIToContentsMap = new HashMap<URI, List<EObject>>();
 
 	public ModelSplitProcessor(IModelSplitPolicy modelSplitPolicy) {
@@ -113,17 +114,29 @@ public class ModelSplitProcessor {
 	}
 
 	protected EObject getSplitEObject(EObject originalEObject, URI targetResourceURI) {
-		Map<URI, EObject> uriToSplitEObjectsMap = originalToSplitEObjectsMap.get(originalEObject);
-		if (uriToSplitEObjectsMap != null) {
-			return uriToSplitEObjectsMap.get(targetResourceURI);
+		Map<URI, EObject> targetResourceURIToSplitEObjectsMap = originalToSplitEObjectsMap.get(originalEObject);
+		if (targetResourceURIToSplitEObjectsMap != null) {
+			return targetResourceURIToSplitEObjectsMap.get(targetResourceURI);
 		}
 		return null;
 	}
 
 	protected void addSplitEObject(EObject originalEObject, EObject splitEObject, URI targetResourceURI) {
-		Map<URI, EObject> splitEObjects = new HashMap<URI, EObject>();
-		splitEObjects.put(targetResourceURI, splitEObject);
-		originalToSplitEObjectsMap.put(originalEObject, splitEObjects);
+		Map<URI, EObject> targetResourceURIToSplitEObjectsMap = originalToSplitEObjectsMap.get(originalEObject);
+		if (targetResourceURIToSplitEObjectsMap == null) {
+			targetResourceURIToSplitEObjectsMap = new HashMap<URI, EObject>();
+			originalToSplitEObjectsMap.put(originalEObject, targetResourceURIToSplitEObjectsMap);
+		}
+		targetResourceURIToSplitEObjectsMap.put(targetResourceURI, splitEObject);
+	}
+
+	protected void addOriginalContainer(EObject eObject, EObject originalContainer) {
+		eObjectToOriginalContainerMap.put(eObject, originalContainer);
+	}
+
+	protected EObject getOriginalContainer(EObject eObject) {
+		EObject originalContainer = eObjectToOriginalContainerMap.get(eObject);
+		return originalContainer != null ? originalContainer : ((InternalEObject) eObject).eInternalContainer();
 	}
 
 	protected List<EObject> getTargetResourceContents(URI targetResourceURI) {
@@ -218,18 +231,19 @@ public class ModelSplitProcessor {
 	protected List<IModelSplitDirective> collectSplitDirectives(Collection<EObject> eObjects, IProgressMonitor monitor) {
 		Assert.isNotNull(eObjects);
 
-		SubMonitor progress = SubMonitor.convert(monitor, eObjects.size());
+		SubMonitor progress = SubMonitor.convert(monitor, 2 * eObjects.size());
 		if (progress.isCanceled()) {
 			throw new OperationCanceledException();
 		}
 
+		// Determine split directives for given model objects as well as for all model objects that are directly and
+		// indirectly contained by the former
 		List<IModelSplitDirective> directives = new ArrayList<IModelSplitDirective>();
 		for (EObject eObject : eObjects) {
 			for (TreeIterator<EObject> iterator = eObject.eAllContents(); iterator.hasNext();) {
 				IModelSplitDirective directive = modelSplitPolicy.getSplitDirective(iterator.next());
 				if (directive != null) {
 					directives.add(directive);
-					iterator.prune();
 				}
 			}
 			progress.worked(1);
@@ -254,41 +268,54 @@ public class ModelSplitProcessor {
 				EObject eObject = directive.getEObject();
 				URI targetResourceURI = directive.getTargetResourceURI();
 
-				// Has given model object already been split?
-				if (getSplitEObject(eObject, targetResourceURI) != null) {
-					return;
-				}
-
-				// Retrieve ancestor object branch
-				List<EObject> ancestors = new ArrayList<EObject>();
-				InternalEObject internalEObject = (InternalEObject) eObject;
-				for (InternalEObject container = internalEObject.eInternalContainer(); container != null; container = internalEObject
-						.eInternalContainer()) {
-					ancestors.add(container);
-					internalEObject = container;
-				}
-				EObject rootContainer = internalEObject;
-
-				// Split given model object by just moving (rather than copying) original model object
+				// Split given model object by just moving (rather than copying) it to the contents of the intended
+				// target resource and keep track of its original container
 				addSplitEObject(eObject, eObject, targetResourceURI);
+				addOriginalContainer(eObject, eObject.eContainer());
 
-				// Split ancestor object branch
+				// Retrieve ancestor object branch - either up to first ancestor object that has already been split or
+				// entirely if none of them has
+				/*
+				 * !! Important Note !! Always walk up to original container to avoid that subsequent splitting of
+				 * ancestor objects is made from already split and therefore incomplete ancestor objects.
+				 */
+				List<EObject> ancestors = new ArrayList<EObject>();
+				for (EObject container = ((InternalEObject) eObject).eInternalContainer(); container != null; container = getOriginalContainer(
+						container)) {
+					// Use Setting
+					ancestors.add(container);
+
+					// Abort traversal if current ancestor object has already been split
+					if (getSplitEObject(container, targetResourceURI) != null) {
+						break;
+					}
+				}
+
+				// Split ancestor object branch as far as not already done so
 				EObject lastEObject = eObject;
 				EObject lastSplitEObject = eObject;
 				boolean newSplitAncestor = true;
 				for (EObject ancestor : ancestors) {
 					EObject splitAncestor = null;
 
-					// Split current ancestor if not already done so
+					// Split current ancestor object if not already done so
 					splitAncestor = getSplitEObject(ancestor, targetResourceURI);
 					if (splitAncestor == null) {
 						splitAncestor = copyAncestor(ancestor, directive);
 						addSplitEObject(ancestor, splitAncestor, targetResourceURI);
+
+						// Root container reached?
+						if (((InternalEObject) ancestor).eInternalContainer() == null) {
+							// Add split ancestor object as root container to the contents of the intended target
+							// resource
+							List<EObject> targetResourceContents = getTargetResourceContents(targetResourceURI);
+							targetResourceContents.add(splitAncestor);
+						}
 					} else {
 						newSplitAncestor = false;
 					}
 
-					// Connect split ancestor to previously split ancestor and model objects
+					// Connect split ancestor object to previously split ancestor or model object
 					EStructuralFeature containingFeature = lastEObject.eContainingFeature();
 					if (containingFeature == null) {
 						throw new RuntimeException("Containing feature of '" + lastEObject + "' not found"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -301,21 +328,13 @@ public class ModelSplitProcessor {
 						splitAncestor.eSet(containingFeature, lastSplitEObject);
 					}
 
-					// Abort ancestor object branch splitting when having reached at an ancestor that has already been
-					// split
+					// Abort splitting of ancestor object branch when having reached at an already split ancestor object
 					if (!newSplitAncestor) {
 						break;
 					}
 
 					lastEObject = ancestor;
 					lastSplitEObject = splitAncestor;
-				}
-
-				// Add split model object branch to target resource contents
-				EObject splitRootContainer = getSplitEObject(rootContainer, targetResourceURI);
-				List<EObject> targetResourceContents = getTargetResourceContents(targetResourceURI);
-				if (!targetResourceContents.contains(splitRootContainer)) {
-					targetResourceContents.add(splitRootContainer);
 				}
 			}
 			progress.worked(1);
@@ -338,6 +357,7 @@ public class ModelSplitProcessor {
 
 	public void dispose() {
 		originalToSplitEObjectsMap.clear();
+		eObjectToOriginalContainerMap.clear();
 		targetResourceURIToContentsMap.clear();
 	}
 }
