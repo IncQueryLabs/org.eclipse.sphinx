@@ -7,15 +7,16 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     See4sys - added support for problem markers on model objects (rather than 
- *               only on workspace resources). Unfortunately, there was no other 
- *               choice than copying the whole code from 
- *               org.eclipse.ui.views.markers.internal for that purpose because 
+ *     See4sys - added support for problem markers on model objects (rather than
+ *               only on workspace resources). Unfortunately, there was no other
+ *               choice than copying the whole code from
+ *               org.eclipse.ui.views.markers.internal for that purpose because
  *               many of the relevant classes, methods, and fields are private or
  *               package private.
  *******************************************************************************/
 package org.eclipse.sphinx.emf.validation.ui.views;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -93,24 +94,24 @@ public class ShowInAction extends Action {
 	/**
 	 * Returns the <code>IShowInSource</code> provided by the source part, or <code>null</code> if it does not provide
 	 * one.
-	 * 
+	 *
 	 * @param sourcePart
 	 *            the source part
 	 * @return an <code>IShowInSource</code> or <code>null</code>
 	 */
 	private IShowInSource getShowInSource(IWorkbenchPart sourcePart) {
-		return (IShowInSource) Util.getAdapter(sourcePart, IShowInSource.class);
+		return (IShowInSource) sourcePart.getAdapter(IShowInSource.class);
 	}
 
 	/**
 	 * Returns the <code>IShowInTarget</code> for the given part, or <code>null</code> if it does not provide one.
-	 * 
+	 *
 	 * @param targetPart
 	 *            the target part
 	 * @return the <code>IShowInTarget</code> or <code>null</code>
 	 */
 	private IShowInTarget getShowInTarget(IWorkbenchPart targetPart) {
-		return (IShowInTarget) Util.getAdapter(targetPart, IShowInTarget.class);
+		return (IShowInTarget) targetPart.getAdapter(IShowInTarget.class);
 	}
 
 	/**
@@ -121,7 +122,7 @@ public class ShowInAction extends Action {
 	 * if the source part is an editor, it creates the context from the editor's input and selection.
 	 * <p>
 	 * Subclasses may extend or reimplement.
-	 * 
+	 *
 	 * @return the <code>ShowInContext</code> to show or <code>null</code>
 	 */
 	private ShowInContext getContext(IWorkbenchPart sourcePart) {

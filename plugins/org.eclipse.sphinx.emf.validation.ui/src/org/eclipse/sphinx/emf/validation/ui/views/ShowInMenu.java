@@ -7,10 +7,10 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     See4sys - added support for problem markers on model objects (rather than 
- *               only on workspace resources). Unfortunately, there was no other 
- *               choice than copying the whole code from 
- *               org.eclipse.ui.views.markers.internal for that purpose because 
+ *     See4sys - added support for problem markers on model objects (rather than
+ *               only on workspace resources). Unfortunately, there was no other
+ *               choice than copying the whole code from
+ *               org.eclipse.ui.views.markers.internal for that purpose because
  *               many of the relevant classes, methods, and fields are private or
  *               package private.
  *******************************************************************************/
@@ -79,7 +79,7 @@ public class ShowInMenu extends ContributionItem {
 
 	/**
 	 * Creates a Show In menu.
-	 * 
+	 *
 	 * @param window
 	 *            the window containing the menu
 	 */
@@ -208,7 +208,7 @@ public class ShowInMenu extends ContributionItem {
 	 * Returns the source part, or <code>null</code> if there is no applicable source part
 	 * <p>
 	 * This implementation returns the current part in the window. Subclasses may extend or reimplement.
-	 * 
+	 *
 	 * @return the source part or <code>null</code>
 	 */
 	private IWorkbenchPart getSourcePart() {
@@ -222,25 +222,25 @@ public class ShowInMenu extends ContributionItem {
 	/**
 	 * Returns the <code>IShowInSource</code> provided by the source part, or <code>null</code> if it does not provide
 	 * one.
-	 * 
+	 *
 	 * @param sourcePart
 	 *            the source part
 	 * @return an <code>IShowInSource</code> or <code>null</code>
 	 */
 	private IShowInSource getShowInSource(IWorkbenchPart sourcePart) {
-		return (IShowInSource) Util.getAdapter(sourcePart, IShowInSource.class);
+		return (IShowInSource) sourcePart.getAdapter(IShowInSource.class);
 	}
 
 	/**
 	 * Returns the <code>IShowInTargetList</code> for the given source part, or <code>null</code> if it does not provide
 	 * one.
-	 * 
+	 *
 	 * @param sourcePart
 	 *            the source part
 	 * @return the <code>IShowInTargetList</code> or <code>null</code>
 	 */
 	private IShowInTargetList getShowInTargetList(IWorkbenchPart sourcePart) {
-		return (IShowInTargetList) Util.getAdapter(sourcePart, IShowInTargetList.class);
+		return (IShowInTargetList) sourcePart.getAdapter(IShowInTargetList.class);
 	}
 
 	/**
@@ -251,7 +251,7 @@ public class ShowInMenu extends ContributionItem {
 	 * if the source part is an editor, it creates the context from the editor's input and selection.
 	 * <p>
 	 * Subclasses may extend or reimplement.
-	 * 
+	 *
 	 * @return the <code>ShowInContext</code> to show or <code>null</code>
 	 */
 	private ShowInContext getContext(IWorkbenchPart sourcePart) {
