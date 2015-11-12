@@ -88,7 +88,7 @@ public class Hummingbird20TypeModelSplitPolicy extends AbstractModelSplitPolicy 
 		return EcorePlatformUtil.createURI(targetResourceBasePath);
 	}
 
-	protected Hummingbird20ModelSplitDirective createModelSplitDirective(EObject eObject, URI targetResourceURI, boolean ignoreAncestorAttributes) {
-		return new Hummingbird20ModelSplitDirective(eObject, targetResourceURI, ignoreAncestorAttributes);
+	protected Hummingbird20ModelSplitDirective createModelSplitDirective(EObject eObject, URI targetResourceURI, boolean stripAncestors) {
+		return new Hummingbird20ModelSplitDirective(eObject, targetResourceURI, stripAncestors);
 	}
 }
