@@ -18,11 +18,11 @@
 <unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.9.0.201506060219"/>
 <unit id="org.eclipse.gmf.tooling.feature.group" version="3.3.0.201506090515"/>
 <unit id="org.eclipse.uml2.sdk.feature.group" version="5.2.0.v20151109-0916"/>
-<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.7.2.v201510130022"/>
+<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.8.0.v201511030001"/>
 <unit id="org.eclipse.mylyn.wikitext_feature.feature.group" version="2.7.0.v20151015-1452"/>
 <unit id="org.eclipse.xpand.sdk.feature.group" version="2.2.0.v201509290912"/>
 <unit id="org.eclipse.xsd.sdk.feature.group" version="2.11.0.v20151109-0426"/>
-<unit id="org.eclipse.xtext.sdk.feature.group" version="2.9.0.v201511100835"/>
+<unit id="org.eclipse.xtext.sdk.feature.group" version="2.9.0.v201512010527"/>
 <repository location="http://download.eclipse.org/releases/staging"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
