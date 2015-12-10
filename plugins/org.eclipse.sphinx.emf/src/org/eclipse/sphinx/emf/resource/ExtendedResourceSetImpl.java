@@ -462,7 +462,6 @@ public class ExtendedResourceSetImpl extends ResourceSetImpl implements Extended
 				// If resolution of fragment-based proxies is currently disabled then don't resolve proxy just leave it
 				// as is
 				if (proxyHelper.isIgnoreFragmentBasedProxies()) {
-					System.out.println(uri);
 					return null;
 				}
 			}
