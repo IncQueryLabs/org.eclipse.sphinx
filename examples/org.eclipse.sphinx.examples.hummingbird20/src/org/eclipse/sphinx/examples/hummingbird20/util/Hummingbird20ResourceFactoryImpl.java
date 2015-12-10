@@ -119,7 +119,9 @@ public class Hummingbird20ResourceFactoryImpl extends ResourceFactoryImpl {
 		// details)
 		result.getDefaultLoadOptions().put(XMLResource.OPTION_SUPPRESS_DOCUMENT_ROOT, Boolean.TRUE);
 
-		// Configure not to augment contextAwareURI since Hummingbird20 extends the advanced ExtendEObjectImpl
+		// Don't use context-aware proxy URIs when creating proxy objects since Hummingbird 2.0 model classes
+		// extend Sphinx-defined ExtendedMinimalEObjectImpl which means that context information required for resource
+		// scoping-aware proxy resolution is passed along via API and doesn't need to be encoded into the proxy URIs
 		result.getDefaultLoadOptions().put(ExtendedResource.OPTION_USE_CONTEXT_AWARE_PROXY_URIS, Boolean.FALSE);
 
 		return result;
