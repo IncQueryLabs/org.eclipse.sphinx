@@ -1,17 +1,18 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2008-2013 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [393310] Viewer input for GenericContentsTreeSection should be calculated using content provider
  *     itemis - [418005] Add support for model files with multiple root elements
- *      
+ *     itemis - [484821] Newly created model elements are no longer selected in current viewer of BasicTransactionalFormEditor
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.editors.forms.pages;
@@ -24,11 +25,14 @@ import java.util.Set;
 
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -37,6 +41,7 @@ import org.eclipse.emf.edit.provider.AdapterFactoryItemDelegator;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryContentProvider;
 import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryLabelProvider;
+import org.eclipse.emf.workspace.EMFCommandOperation;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -223,7 +228,7 @@ public abstract class AbstractFormPage extends FormPage {
 
 	/**
 	 * Returns the list of sections added to this page by calling {@link AbstractFormPage#addSection(IFormSection)}
-	 * 
+	 *
 	 * @return
 	 */
 	public List<IFormSection> getSections() {
@@ -246,7 +251,7 @@ public abstract class AbstractFormPage extends FormPage {
 
 	/**
 	 * Sets the active section on this page.
-	 * 
+	 *
 	 * @param section
 	 */
 	public void setActiveSection(IFormSection section) {
@@ -336,6 +341,21 @@ public abstract class AbstractFormPage extends FormPage {
 	protected void doRefreshPage() {
 		for (IFormSection section : sections) {
 			section.refreshSection();
+		}
+
+		// Try to show objects affected by most recently executed, undone, or redone command in viewer
+		IUndoContext undoContext = (IUndoContext) getTransactionalFormEditor().getAdapter(IUndoContext.class);
+		if (undoContext != null) {
+			IOperationHistory operationHistory = getTransactionalFormEditor().getOperationHistory();
+			if (operationHistory != null) {
+				IUndoableOperation operation = operationHistory.getUndoOperation(undoContext);
+				if (operation instanceof EMFCommandOperation) {
+					Command command = ((EMFCommandOperation) operation).getCommand();
+					if (command != null) {
+						getTransactionalFormEditor().setSelectionToViewer(command.getAffectedObjects());
+					}
+				}
+			}
 		}
 	}
 

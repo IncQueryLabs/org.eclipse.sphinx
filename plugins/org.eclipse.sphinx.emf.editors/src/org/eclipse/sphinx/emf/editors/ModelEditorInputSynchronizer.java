@@ -20,10 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.commands.operations.IOperationHistory;
-import org.eclipse.core.commands.operations.OperationHistoryFactory;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -36,7 +33,6 @@ import org.eclipse.emf.transaction.ResourceSetChangeEvent;
 import org.eclipse.emf.transaction.ResourceSetListener;
 import org.eclipse.emf.transaction.ResourceSetListenerImpl;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.emf.workspace.IWorkspaceCommandStack;
 import org.eclipse.ui.IEditorInput;
 
 public class ModelEditorInputSynchronizer implements IDisposable {
@@ -108,7 +104,8 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 						if (notification.getNewBooleanValue()) {
 							Resource loadedResource = (Resource) notification.getNotifier();
 							// Is loaded resource containing editor input object?
-							if (editorInputChangeAnalyzer.containsEditorInputResourceURI(editorInput, Collections.singleton(loadedResource.getURI()))) {
+							if (editorInputChangeAnalyzer.containsEditorInputResourceURI(editorInput,
+									Collections.singleton(loadedResource.getURI()))) {
 								// Has loaded resource not been unloaded again subsequently?
 								if (loadedResource.isLoaded()) {
 									// Handle (re-)loaded editor input resource
@@ -164,9 +161,8 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 	}
 
 	protected ResourceSetListener createResourceRemovedListener() {
-		return new ResourceSetListenerImpl(NotificationFilter
-				.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__IS_LOADED).or(
-						NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResourceSet(), ResourceSet.RESOURCE_SET__RESOURCES))) {
+		return new ResourceSetListenerImpl(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__IS_LOADED)
+				.or(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResourceSet(), ResourceSet.RESOURCE_SET__RESOURCES))) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
 				// Retrieve removed and added resources from notification
@@ -202,7 +198,8 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 										addedResources.add(newResource);
 									}
 								}
-							} else if (notification.getEventType() == Notification.REMOVE || notification.getEventType() == Notification.REMOVE_MANY) {
+							} else if (notification.getEventType() == Notification.REMOVE
+									|| notification.getEventType() == Notification.REMOVE_MANY) {
 								List<Resource> oldResources = new ArrayList<Resource>();
 								Object oldValue = notification.getOldValue();
 								if (oldValue instanceof List<?>) {
@@ -349,14 +346,6 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 				return true;
 			}
 		};
-	}
-
-	protected IOperationHistory getOperationHistory() {
-		CommandStack commandStack = editingDomain.getCommandStack();
-		if (commandStack instanceof IWorkspaceCommandStack) {
-			return ((IWorkspaceCommandStack) commandStack).getOperationHistory();
-		}
-		return OperationHistoryFactory.getOperationHistory();
 	}
 
 	/*
