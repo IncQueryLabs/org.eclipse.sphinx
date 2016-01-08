@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2015 BMW Car IT, See4sys, itemis and others.
+ * Copyright (c) 2008-2016 BMW Car IT, See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,6 +23,7 @@
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
  *     itemis - [460534] Make sure that EcoreResourceUtil creates a ResourceSetImpl rather than a ScopingResourceSetImpl when no resource set is provided by the caller
  *     itemis - [460260] Expanded paths are collapsed on resource reload
+ *     itemis - [485407] Enable eager post-load proxy resolution to support manifold URI fragments referring to the same object
  *
  * </copyright>
  */
@@ -305,7 +306,41 @@ public final class EcoreResourceUtil {
 		return false;
 	}
 
-	private static XMLRootElementHandler readRootElement(URIConverter uriConverter, URI uri, XMLRootElementHandler handler, boolean useLexicalHandler) {
+	/**
+	 * Creates the normalized form of the given {@link URI} fragment using the provided {@link Resource resource}.
+	 * <p>
+	 * This may, in theory, do absolutely anything. The general idea behind this feature is to support resources in
+	 * which the URI fragments used to identify objects can have manifold forms. The URI fragments that refer to a given
+	 * object can then no longer be assumed to be always the same. Instead they may have alternative forms and look
+	 * differently from case to case (e.g., have an additional postfix in simple cases, or a completely different format
+	 * in more advanced cases). The URI fragment normalization enables such manifold URI fragments to be converted into
+	 * a common base form and make them comparable. There is no general assumption of what normalized URI fragments
+	 * should look like except for that they always must evaluate to the same string when the original URI fragments
+	 * refer to the same object.
+	 * </p>
+	 * <p>
+	 * It is important to emphasize that normalization can result in loss of information. The normalized URI fragment
+	 * should generally be used only for the comparison of the identities of the objects being referred to.
+	 * </p>
+	 *
+	 * @param resource
+	 *            The resource that contains or may contain cross-document references including the given URI fragment.
+	 * @param uriFragment
+	 *            The URI fragment to normalize.
+	 * @return The URI fragment in its normalized form, or the original URI fragment in case it already was normalized
+	 *         or the underlying resource type does not support alternative forms of URI fragments.
+	 */
+	public static String normalizeURIFragment(Resource resource, String uriFragment) {
+		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
+		if (extendedResource != null) {
+			return extendedResource.nomalizeURIFragment(uriFragment);
+		} else {
+			return uriFragment;
+		}
+	}
+
+	private static XMLRootElementHandler readRootElement(URIConverter uriConverter, URI uri, XMLRootElementHandler handler,
+			boolean useLexicalHandler) {
 		if (handler == null) {
 			handler = new XMLRootElementHandler();
 		}
@@ -819,7 +854,7 @@ public final class EcoreResourceUtil {
 	 * Returns the contents of given Resource. If the provided Resource is
 	 * <tt>null<tt> the method will return an empty list.
 	 *
-	 * @param resource
+	 * &#64;param resource
 	 * @return The content of the given <code>resource</code> or an empty list if no Resource is provided.
 	 */
 	public static EList<EObject> getResourceContents(Resource resource) {
@@ -872,7 +907,8 @@ public final class EcoreResourceUtil {
 	 *            The resource set to search resource in.
 	 * @param uri
 	 *            The URI of the concerned resource.
-	 * @return <ul>
+	 * @return
+	 * 		<ul>
 	 *         <li><tt><b>true</b>&nbsp;&nbsp;</tt> if resource set contains the model with specified the URI;</li>
 	 *         <li><tt><b>false</b>&nbsp;</tt> otherwise.</li>
 	 *         </ul>
@@ -1065,9 +1101,8 @@ public final class EcoreResourceUtil {
 				Throwable cause = ex.getCause();
 				Exception exception = cause instanceof Exception ? (Exception) cause : ex;
 				URI uri = resource.getURI();
-				resource.getErrors()
-						.add(new XMIException(NLS.bind(Messages.error_problemOccurredWhenSavingResource, uri.toString()), exception, uri.toString(),
-								1, 1));
+				resource.getErrors().add(new XMIException(NLS.bind(Messages.error_problemOccurredWhenSavingResource, uri.toString()), exception,
+						uri.toString(), 1, 1));
 
 				// Re-throw exception
 				throw new WrappedException(ex);
@@ -1297,9 +1332,8 @@ public final class EcoreResourceUtil {
 						// Record exception as error on resource
 						Throwable cause = ex.getCause();
 						Exception exception = cause instanceof Exception ? (Exception) cause : ex;
-						resource.getErrors().add(
-								new XMIException(NLS.bind(Messages.error_problemOccurredWhenLoadingResource, uri.toString()), exception, uri
-										.toString(), 1, 1));
+						resource.getErrors().add(new XMIException(NLS.bind(Messages.error_problemOccurredWhenLoadingResource, uri.toString()),
+								exception, uri.toString(), 1, 1));
 
 						// Re-throw exception
 						throw new WrappedException(ex);

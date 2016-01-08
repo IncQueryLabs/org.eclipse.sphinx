@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2015 See4sys, itemis and others.
+ * Copyright (c) 2008-2016 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@
  *     itemis - [434954] Hook for overwriting conversion of EMF Diagnostics to IMarkers
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
+ *     itemis - [485407] Enable eager post-load proxy resolution to support manifold URI fragments referring to the same object
  *
  * </copyright>
  */
@@ -291,9 +292,9 @@ public interface ExtendedResource {
 	/**
 	 * Returns a {@link URI} representing given {@link EObject eObject} owned by {@link EObject owner} through provided
 	 * {@link EStructuralFeature feature}.If the {@link EObject eObject} is stand-alone (i.e freshly removed and without
-	 * attached resource) the {@link URI} is determine using the {@link EObject owner} and the
-	 * {@link EStructuralFeature feature}, if the {@link EObject eObject} is still attached to a {@link Resource} the
-	 * {@link URI} is calculated using same implementation as in {@link ResourceImpl#unload()}.
+	 * attached resource) the {@link URI} is determine using the {@link EObject owner} and the {@link EStructuralFeature
+	 * feature}, if the {@link EObject eObject} is still attached to a {@link Resource} the {@link URI} is calculated
+	 * using same implementation as in {@link ResourceImpl#unload()}.
 	 * <p>
 	 * Clients may implement/override this method when they require URIs with custom formats to be created.
 	 * </p>
@@ -314,9 +315,9 @@ public interface ExtendedResource {
 	/**
 	 * Returns a {@link URI} representing given {@link EObject eObject} owned by {@link EObject owner} through provided
 	 * {@link EStructuralFeature feature}.If the {@link EObject eObject} is stand-alone (i.e freshly removed and without
-	 * attached resource) the {@link URI} is determine using the {@link EObject owner} and the
-	 * {@link EStructuralFeature feature}, if the {@link EObject eObject} is still attached to a {@link Resource} the
-	 * {@link URI} is calculated using same implementation as in {@link ResourceImpl#unload()}.
+	 * attached resource) the {@link URI} is determine using the {@link EObject owner} and the {@link EStructuralFeature
+	 * feature}, if the {@link EObject eObject} is still attached to a {@link Resource} the {@link URI} is calculated
+	 * using same implementation as in {@link ResourceImpl#unload()}.
 	 * <p>
 	 * Clients may implement/override this method when they require URIs with custom formats to be created.
 	 * </p>
@@ -371,6 +372,30 @@ public interface ExtendedResource {
 	 * @return The HREF URI to this object from this resource.
 	 */
 	URI getHREF(EObject eObject);
+
+	/**
+	 * Returns the normalized form of the given {@link URI} fragment.
+	 * <p>
+	 * This may, in theory, do absolutely anything. The general idea behind this feature is to support resources in
+	 * which the URI fragments used to identify objects can have manifold forms. The URI fragments that refer to a given
+	 * object can then no longer be assumed to be always the same. Instead they may have alternative forms and look
+	 * differently from case to case (e.g., have an additional postfix in simple cases, or a completely different format
+	 * in more advanced cases). The URI fragment normalization enables such manifold URI fragments to be converted into
+	 * a common base form and make them comparable. There is no general assumption of what normalized URI fragments
+	 * should look like except for that they always must evaluate to the same string when the original URI fragments
+	 * refer to the same object.
+	 * </p>
+	 * <p>
+	 * It is important to emphasize that normalization can result in loss of information. The normalized URI fragment
+	 * should generally be used only for the comparison of the identities of the objects being referred to.
+	 * </p>
+	 *
+	 * @param uriFragment
+	 *            The URI fragment to normalize.
+	 * @return The URI fragment in its normalized form, or the original URI fragment in case it already was normalized
+	 *         or the underlying resource type does not support alternative forms of URI fragments.
+	 */
+	String nomalizeURIFragment(String uriFragment);
 
 	/**
 	 * Determines whether or not the given URI string represents a valid URI.

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2014 itemis and others.
+ * Copyright (c) 2014-2016 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [475954] Proxies with fragment-based proxy URIs may get resolved across model boundaries
+ *     itemis - [485407] Enable eager post-load proxy resolution to support manifold URI fragments referring to the same object
  *
  * </copyright>
  */
@@ -356,7 +357,6 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 		}
 
 		// Get models behind given set of files
-		progress.subTask(Messages.subtask_initializingProxyResolution);
 		Set<IModelDescriptor> modelDescriptors = new HashSet<IModelDescriptor>();
 		for (IFile file : files) {
 			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(file);
@@ -369,6 +369,8 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 		for (IModelDescriptor modelDescriptor : modelDescriptors) {
 			synchronized (lookupResolver) {
 				// Initialize lookup-based proxy resolver
+				progress.subTask(NLS.bind(Messages.subtask_initializingProxyResolutionForModelInRoot,
+						modelDescriptor.getMetaModelDescriptor().getName(), modelDescriptor.getRoot().getFullPath()));
 				Collection<Resource> resources = modelDescriptor.getLoadedResources(true);
 				lookupResolver.init(resources);
 				progress.worked(10);
@@ -376,7 +378,7 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 				// Try to resolve all proxies in given model
 				SubMonitor resolveProxiesProgress = progress.newChild(80).setWorkRemaining(files.size());
 				for (Resource resource : resources) {
-					resolveProxiesProgress.subTask(NLS.bind(Messages.subtask_resolvingProxiesInResource, resource.getURI()));
+					resolveProxiesProgress.subTask(NLS.bind(Messages.subtask_resolvingProxiesInResource, resource.getURI().toPlatformString(true)));
 
 					EObjectUtil.resolveAll(resource);
 

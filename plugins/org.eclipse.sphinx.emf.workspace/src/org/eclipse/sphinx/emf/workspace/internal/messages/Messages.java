@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2013 See4sys, itemis and others.
+ * Copyright (c) 2008-2016 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - Removed obsolete messages and improved message names
+ *     itemis - [485407] Enable eager post-load proxy resolution to support manifold URI fragments referring to the same object
  *
  * </copyright>
  */
@@ -32,7 +33,7 @@ public class Messages extends NLS {
 	public static String task_loadingModelFiles;
 	public static String subtask_analyzingFile;
 	public static String subtask_loadingFile;
-	public static String subtask_initializingProxyResolution;
+	public static String subtask_initializingProxyResolutionForModelInRoot;
 	public static String subtask_resolvingProxiesInResource;
 
 	public static String task_unloadingModelsInProject;

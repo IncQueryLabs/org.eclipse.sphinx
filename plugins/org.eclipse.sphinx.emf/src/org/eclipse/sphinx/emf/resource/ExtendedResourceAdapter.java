@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2015 See4sys, itemis and others.
+ * Copyright (c) 2008-2016 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@
  *     itemis - [443647] Enable HREF representing serialized cross-document references to be customized through ExtendedResource of resource being serialized
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
  *     itemis - [460260] Expanded paths are collapsed on resource reload
+ *     itemis - [485407] Enable eager post-load proxy resolution to support manifold URI fragments referring to the same object
  *
  * </copyright>
  */
@@ -299,6 +300,15 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 	public URI getHREF(EObject eObject) {
 		// Let HREF default to URI of given object
 		return getURI(eObject);
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#nomalizeURIFragment(java.lang.String)
+	 */
+	@Override
+	public String nomalizeURIFragment(String uriFragment) {
+		// Let normalized URI fragment default to given URI fragment
+		return uriFragment;
 	}
 
 	/*
