@@ -161,6 +161,10 @@ public class Hummingbird20NamingAndValuesCheckValidator extends AbstractCheckVal
 
 	private boolean hasValidName(Identifiable identifiable) {
 		Assert.isNotNull(identifiable);
-		return !ILLEGAL_CHARACTERS_PATTERN.matcher(identifiable.getName()).find();
+		String name = identifiable.getName();
+		if (name != null) {
+			return !ILLEGAL_CHARACTERS_PATTERN.matcher(name).find();
+		}
+		return true;
 	}
 }

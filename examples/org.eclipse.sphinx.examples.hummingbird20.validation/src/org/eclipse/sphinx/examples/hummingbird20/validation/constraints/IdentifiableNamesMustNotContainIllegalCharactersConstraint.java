@@ -76,7 +76,10 @@ public class IdentifiableNamesMustNotContainIllegalCharactersConstraint extends 
 	 */
 	private boolean isValid(Identifiable identifiable) {
 		Assert.isNotNull(identifiable);
-
-		return !ILLEGAL_CHARACTERS_PATTERN.matcher(identifiable.getName()).find();
+		String name = identifiable.getName();
+		if (name != null) {
+			return !ILLEGAL_CHARACTERS_PATTERN.matcher(name).find();
+		}
+		return true;
 	}
 }
