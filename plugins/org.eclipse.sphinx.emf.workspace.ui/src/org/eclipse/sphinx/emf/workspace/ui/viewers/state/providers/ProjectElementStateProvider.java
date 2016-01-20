@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IMemento;
 
-public class ProjectElementStateProvider extends AbstractTreeElementStateProvider implements ITreeElementStateProvider {
+public class ProjectElementStateProvider extends AbstractTreeElementStateProvider {
 
 	private IProject project = null;
 

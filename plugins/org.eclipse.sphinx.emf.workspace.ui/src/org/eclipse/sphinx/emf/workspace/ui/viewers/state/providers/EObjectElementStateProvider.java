@@ -26,7 +26,7 @@ import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.ui.IMemento;
 
-public class EObjectElementStateProvider extends AbstractTreeElementStateProvider implements ITreeElementStateProvider {
+public class EObjectElementStateProvider extends AbstractTreeElementStateProvider {
 
 	private URI uri = null;
 	private EObject eObject = null;

@@ -37,7 +37,7 @@ import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.ui.IMemento;
 
-public class TransientElementStateProvider extends AbstractTreeElementStateProvider implements ITreeElementStateProvider {
+public class TransientElementStateProvider extends AbstractTreeElementStateProvider {
 
 	protected static final String TRANSIENT_CHILDREN_SEPARATOR = "/"; //$NON-NLS-1$
 
@@ -146,7 +146,7 @@ public class TransientElementStateProvider extends AbstractTreeElementStateProvi
 		IContentProvider contentProvider = viewer.getContentProvider();
 		if (contentProvider instanceof ITreeContentProvider) {
 			// Content provider ready to return children of given parent?
-			if (canGetChildren(parent)) {
+			if (isTreeContentProviderAvailable(parent)) {
 				// Try to find child among the given parent's children that matches specified transient child
 				for (Object child : ((ITreeContentProvider) contentProvider).getChildren(parent)) {
 					if (child instanceof TransientItemProvider) {

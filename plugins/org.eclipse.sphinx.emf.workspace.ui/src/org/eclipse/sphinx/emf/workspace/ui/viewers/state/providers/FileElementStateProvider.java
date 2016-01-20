@@ -25,7 +25,7 @@ import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
 import org.eclipse.ui.IMemento;
 
-public class FileElementStateProvider extends AbstractTreeElementStateProvider implements ITreeElementStateProvider {
+public class FileElementStateProvider extends AbstractTreeElementStateProvider {
 
 	private IFile file = null;
 
@@ -91,6 +91,6 @@ public class FileElementStateProvider extends AbstractTreeElementStateProvider i
 
 	@Override
 	public String toString() {
-		return "FileElementProvider [file=" + file + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+		return "FileElementProvider [file=" + file.getFullPath() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }

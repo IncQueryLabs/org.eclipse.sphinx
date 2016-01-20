@@ -111,47 +111,71 @@ public class TreeViewerStateRecorder implements IMementoAware {
 
 	public void applyState(ITreeViewerState state) {
 		if (canApplyState()) {
-			if (state != null && !state.isEmpty()) {
+			// Proceed to applying given tree viewer state if it is meaningful and if it is not already in the process
+			// of being applied
+			/*
+			 * !! Important Note !! It can happen that this function is invoked in a reentrant manner from the same
+			 * thread (more precisely, the UI thread) for the same tree viewer state object. This comes from the fact
+			 * that applying a tree viewer state involves checking if models are loaded which in turn involves creation
+			 * of read transactions. In case that the latter cannot be acquired immediately (e.g., because some
+			 * long-running model loading process is ongoing) the control goes back to the UI event loop which starts to
+			 * handle the next outstanding asynchronous request. The latter can happen to be just another refresh on the
+			 * same viewer and include an attempt to restore the same tree viewer state. Without an appropriate guard
+			 * against such reentrant invocations, the subsequent tree viewer state application logic would become
+			 * indeterministic and end up in occasional ConcurrentModificationExceptions or other sorts of problems that
+			 * are all but easy to spot.
+			 */
+			if (state != null && !state.isEmpty() && !state.isApplying()) {
+				state.setApplying(true);
+
 				// Extract expanded element(s) that can be restored right now
 				List<ITreeElementStateProvider> expandableProviders = new ArrayList<ITreeElementStateProvider>();
-				List<ITreeElementStateProvider> safeExpandedElements = new ArrayList<ITreeElementStateProvider>(state.getExpandedElements());
-				Iterator<ITreeElementStateProvider> iter = safeExpandedElements.iterator();
+				Iterator<ITreeElementStateProvider> iter = state.getExpandedElements().iterator();
 				while (iter.hasNext()) {
 					ITreeElementStateProvider provider = iter.next();
+					// FIXME bug 486155: The tree viewer state restoration upon Eclipse startup occasionally failing
+					// (https://bugs.eclipse.org/bugs/show_bug.cgi?id=486155)
 					if (!provider.hasUnderlyingModel() || provider.isUnderlyingModelLoaded()) {
 						expandableProviders.add(provider);
 						iter.remove();
 					}
 				}
 
-				// Iteratively restore expanded element(s)
+				// Progressively restore expanded element(s)
 				/*
-				 * !! Important Note !! Restrict number of iterative restoration attempts to total number of expandable
-				 * elements to avoid endless loops when some expandable elements appear to be permanently unresolvable
-				 * for some reason.
+				 * !! Important Note !! Restrict number of restoration attempts to total number of expandable elements
+				 * to avoid endless loops when some expandable elements appear to be permanently unresolvable for some
+				 * reason.
 				 */
 				for (int i = expandableProviders.size(); !expandableProviders.isEmpty() && i > 0; i--) {
+					// Remove elements with which we are done
 					iter = expandableProviders.iterator();
 					while (iter.hasNext()) {
 						ITreeElementStateProvider provider = iter.next();
+						// Keep all elements whose providers have not yet been fully resolved, i.e. where it's too early
+						// to say yet if they can be expanded or not
+						if (!provider.isResolved()) {
+							continue;
+						}
+
+						// Remove stale elements, elements that are no longer expandable, and elements that have been
+						// successfully expanded meanwhile
 						if (provider.isStale()) {
 							iter.remove();
-						} else if (provider.isResolved()) {
-							if (!provider.canBeExpanded()) {
-								iter.remove();
-							} else if (provider.isExpanded()) {
-								iter.remove();
-							}
+						} else if (!provider.canBeExpanded()) {
+							iter.remove();
+						} else if (provider.isExpanded()) {
+							iter.remove();
 						}
 					}
 
+					// Try to expand remaining elements
 					setExpandedElements(expandableProviders);
 				}
 
 				// Extract selected element(s) that can be restored right now
 				List<ITreeElementStateProvider> selectableProviders = new ArrayList<ITreeElementStateProvider>();
-				List<ITreeElementStateProvider> safeSelectedElements = new ArrayList<>(state.getSelectedElements());
-				iter = safeSelectedElements.iterator();
+				iter = state.getSelectedElements().iterator();
 				while (iter.hasNext()) {
 					ITreeElementStateProvider provider = iter.next();
 					if (!provider.hasUnderlyingModel() || provider.isUnderlyingModelLoaded()) {
@@ -162,6 +186,8 @@ public class TreeViewerStateRecorder implements IMementoAware {
 
 				// Restore selected element(s)
 				setSelectedElements(selectableProviders);
+
+				state.setApplying(false);
 			}
 		}
 
@@ -170,53 +196,31 @@ public class TreeViewerStateRecorder implements IMementoAware {
 	}
 
 	protected void setExpandedElements(final List<ITreeElementStateProvider> expandableProviders) {
-		if (!expandableProviders.isEmpty()) {
-			if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-				viewer.getControl().getDisplay().syncExec(new Runnable() {
-					@Override
-					public void run() {
-						if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-							for (ITreeElementStateProvider provider : expandableProviders) {
-								try {
-									Object element = provider.getTreeElement();
-									if (element != null) {
-										viewer.setExpandedState(element, true);
-									}
-								} catch (Exception ex) {
-									PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-								}
-							}
-						}
-					}
-				});
+		for (ITreeElementStateProvider provider : expandableProviders) {
+			try {
+				Object element = provider.getTreeElement();
+				if (element != null) {
+					viewer.setExpandedState(element, true);
+				}
+			} catch (Exception ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			}
 		}
 	}
 
 	protected void setSelectedElements(final List<ITreeElementStateProvider> selectableProviders) {
-		if (!selectableProviders.isEmpty()) {
-			if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-				viewer.getControl().getDisplay().syncExec(new Runnable() {
-					@Override
-					public void run() {
-						if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-							List<Object> selectableElements = new ArrayList<Object>();
-							for (ITreeElementStateProvider provider : selectableProviders) {
-								Object element = provider.getTreeElement();
-								if (element != null) {
-									selectableElements.add(element);
-								}
-							}
-							if (!selectableElements.isEmpty()) {
-								try {
-									viewer.setSelection(new StructuredSelection(selectableElements));
-								} catch (Exception ex) {
-									PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
-								}
-							}
-						}
-					}
-				});
+		List<Object> selectableElements = new ArrayList<Object>();
+		for (ITreeElementStateProvider provider : selectableProviders) {
+			Object element = provider.getTreeElement();
+			if (element != null) {
+				selectableElements.add(element);
+			}
+		}
+		if (!selectableElements.isEmpty()) {
+			try {
+				viewer.setSelection(new StructuredSelection(selectableElements));
+			} catch (Exception ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			}
 		}
 	}

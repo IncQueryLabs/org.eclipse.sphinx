@@ -24,6 +24,8 @@ public class TreeViewerState implements ITreeViewerState {
 	protected List<ITreeElementStateProvider> expandedElements = null;
 	protected List<ITreeElementStateProvider> selectedElements = null;
 
+	protected boolean applying = false;
+
 	/*
 	 * @see org.eclipse.sphinx.emf.workspace.ui.viewers.state.ITreeViewerState#getExpandedElements()
 	 */
@@ -52,5 +54,21 @@ public class TreeViewerState implements ITreeViewerState {
 	@Override
 	public boolean isEmpty() {
 		return getExpandedElements().isEmpty() && getSelectedElements().isEmpty();
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.workspace.ui.viewers.state.ITreeViewerState#isApplicationInProcess()
+	 */
+	@Override
+	public boolean isApplying() {
+		return applying;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.workspace.ui.viewers.state.ITreeViewerState#setApplying(boolean)
+	 */
+	@Override
+	public void setApplying(boolean applying) {
+		this.applying = applying;
 	}
 }

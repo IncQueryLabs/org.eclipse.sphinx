@@ -30,7 +30,7 @@ public abstract class AbstractTreeElementStateProvider implements ITreeElementSt
 		this.viewer = viewer;
 	}
 
-	protected boolean canGetChildren(Object element) {
+	protected boolean isTreeContentProviderAvailable(Object element) {
 		if (element == null) {
 			return false;
 		}
@@ -45,8 +45,9 @@ public abstract class AbstractTreeElementStateProvider implements ITreeElementSt
 
 	@Override
 	public boolean isResolved() {
+		// Providers with underlying models cannot be resolved as long as the latter have not been loaded
 		if (hasUnderlyingModel() && !isUnderlyingModelLoaded()) {
-			return !canUnderlyingModelBeLoaded();
+			return false;
 		} else {
 			// Provided tree element doesn't exist?
 			if (isStale()) {
@@ -55,7 +56,7 @@ public abstract class AbstractTreeElementStateProvider implements ITreeElementSt
 			} else {
 				// Provider is fully resolved as soon as navigator content associated with tree element becomes
 				// available
-				return canGetChildren(getTreeElement());
+				return isTreeContentProviderAvailable(getTreeElement());
 			}
 		}
 	}

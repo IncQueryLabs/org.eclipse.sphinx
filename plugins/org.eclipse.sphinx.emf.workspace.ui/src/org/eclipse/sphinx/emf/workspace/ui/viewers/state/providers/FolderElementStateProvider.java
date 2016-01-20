@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IMemento;
 
-public class FolderElementStateProvider extends AbstractTreeElementStateProvider implements ITreeElementStateProvider {
+public class FolderElementStateProvider extends AbstractTreeElementStateProvider {
 
 	private IFolder folder = null;
 

@@ -25,4 +25,8 @@ public interface ITreeViewerState {
 	List<ITreeElementStateProvider> getSelectedElements();
 
 	boolean isEmpty();
+
+	boolean isApplying();
+
+	void setApplying(boolean applying);
 }
