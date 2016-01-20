@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2015 See4sys, itemis and others.
+ * Copyright (c) 2008-2016 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@
  *     itemis - [420505] Editor shows no content when editor input object is added lately
  *     itemis - [460260] Expanded paths are collapsed on resource reload
  *     itemis - [480135] Introduce metamodel and view content agnostic problem decorator for model elements
+ *     itemis - [481581] Improve refresh behavior of BasicModelContentProvider to avoid performance problems due to needlessly repeated tree state restorations
  *
  * </copyright>
  */
@@ -40,7 +41,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.ui.viewer.IViewerProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -62,10 +62,13 @@ import org.eclipse.emf.transaction.ui.internal.Tracing;
 import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryContentProvider;
 import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryLabelProvider;
 import org.eclipse.emf.transaction.util.TransactionUtil;
-import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.sphinx.emf.Activator;
 import org.eclipse.sphinx.emf.edit.TransientItemProvider;
+import org.eclipse.sphinx.emf.explorer.refresh.FullRefreshStrategy;
+import org.eclipse.sphinx.emf.explorer.refresh.ModelObjectRefreshStrategy;
+import org.eclipse.sphinx.emf.explorer.refresh.ModelResourceRefreshStrategy;
+import org.eclipse.sphinx.emf.explorer.refresh.WorkspaceResourceRefreshStrategy;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
@@ -79,7 +82,6 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
-import org.eclipse.ui.navigator.ICommonContentProvider;
 import org.eclipse.ui.navigator.INavigatorContentDescriptor;
 
 /**
@@ -88,7 +90,7 @@ import org.eclipse.ui.navigator.INavigatorContentDescriptor;
  * objects.
  */
 @SuppressWarnings("restriction")
-public class BasicExplorerContentProvider implements ICommonContentProvider, IViewerProvider {
+public class BasicExplorerContentProvider implements IModelCommonContentProvider {
 
 	protected static final int LIMIT_INDIVIDUAL_RESOURCES_REFRESH = 20;
 
@@ -131,7 +133,11 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		return null;
 	}
 
-	protected ITreeViewerState recordViewerState() {
+	/*
+	 * @see org.eclipse.sphinx.emf.explorer.IExtendedCommonContentProvider#recordViewerState()
+	 */
+	@Override
+	public ITreeViewerState recordViewerState() {
 		ExtendedCommonNavigator navigator = getCommonNavigator();
 		if (navigator != null) {
 			return navigator.getViewerStateRecorder().recordState();
@@ -139,13 +145,22 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		return null;
 	}
 
-	protected void applyViewerState(ITreeViewerState state) {
+	/*
+	 * @see
+	 * org.eclipse.sphinx.emf.explorer.IExtendedCommonContentProvider#applyViewerState(org.eclipse.sphinx.emf.workspace.
+	 * ui.viewers.state.ITreeViewerState)
+	 */
+	@Override
+	public void applyViewerState(ITreeViewerState state) {
 		ExtendedCommonNavigator navigator = getCommonNavigator();
 		if (navigator != null) {
 			navigator.getViewerStateRecorder().applyState(state);
 		}
 	}
 
+	/*
+	 * @see org.eclipse.ui.navigator.ICommonContentProvider#init(org.eclipse.ui.navigator.ICommonContentExtensionSite)
+	 */
 	@Override
 	public void init(ICommonContentExtensionSite config) {
 		contentDescriptor = config.getExtension().getDescriptor();
@@ -156,45 +171,44 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		}
 	}
 
-	protected boolean isTriggerPoint(IResource resource) {
-		return contentDescriptor.isTriggerPoint(resource);
+	/*
+	 * @see org.eclipse.sphinx.emf.explorer.IExtendedCommonContentProvider#isTriggerPoint(java.lang.Object)
+	 */
+	@Override
+	public boolean isTriggerPoint(Object element) {
+		return contentDescriptor.isTriggerPoint(element);
 	}
 
-	protected boolean isPossibleChild(Object object) {
-		return contentDescriptor.isPossibleChild(object);
+	/*
+	 * @see org.eclipse.sphinx.emf.explorer.IExtendedCommonContentProvider#isPossibleChild(java.lang.Object)
+	 */
+	@Override
+	public boolean isPossibleChild(Object element) {
+		return contentDescriptor.isPossibleChild(element);
 	}
 
+	/*
+	 * @see org.eclipse.ui.navigator.IMementoAware#saveState(org.eclipse.ui.IMemento)
+	 */
 	@Override
 	public void saveState(IMemento memento) {
 		// Do nothing by default
 	}
 
+	/*
+	 * @see org.eclipse.ui.navigator.IMementoAware#restoreState(org.eclipse.ui.IMemento)
+	 */
 	@Override
 	public void restoreState(IMemento memento) {
 		// Do nothing by default
 	}
 
-	/**
-	 * Retrieves the model {@link Resource resource} behind specified workspace {@link IResource resource}. Returns
-	 * <code>null</code> if no such is available or the {@link IModelDescriptor model} behind specified workspace
-	 * resource has not been loaded yet.
-	 * <p>
-	 * Default implementation supports the handling of {@link IFile file} resources including lazy loading of the
-	 * underlying {@link IModelDescriptor model}s: if the given file belongs to some model that has not been loaded yet
-	 * then the loading of that model, i.e., the given file and all other files belonging to the same, will be
-	 * triggered. The model loading will be performed asynchronously and therefore won't block the UI. When the model
-	 * loading has been completed, the {@link #resourceChangedListener} automatically refreshes the underlying
-	 * {@link #viewer viewer} so that the model elements contained by the given file become visible.
-	 * <p>
-	 * Clients may override this method so as to add support for other resource types (e.g., {@link IProject project}s
-	 * or {@link IFolder folder}s) or implement different lazy or eager loading strategies.
-	 *
-	 * @param workspaceResource
-	 *            The workspace resource of which the model resource is to be retrieved.
-	 * @return The model resource behind specified workspace resource or <code>null</code> if no such is available or
-	 *         the model behind specified workspace resource has not been loaded yet.
+	/*
+	 * @see org.eclipse.sphinx.emf.explorer.ICommonModelContentProvider#getModelResource(org.eclipse.core.resources.
+	 * IResource)
 	 */
-	protected Resource getModelResource(IResource workspaceResource) {
+	@Override
+	public Resource getModelResource(IResource workspaceResource) {
 		// Is given workspace resource a file?
 		if (workspaceResource instanceof IFile) {
 			// Get model behind given workspace file
@@ -220,27 +234,13 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		return null;
 	}
 
-	/**
-	 * Returns a list of objects which are to be used as roots of the model content provided by this
-	 * {@link BasicExplorerContentProvider content provider} for the given model resource. They may or may not be the
-	 * actual root objects of the model resource.
-	 * <p>
-	 * The model content roots can be thought of being mapped to the workspace {@link IResource resource} behind given
-	 * model resource and are the actual parent objects of the model objects to be displayed as virtual children of the
-	 * workspace resource. The model content roots themselves will not become visible in the underlying viewer, only the
-	 * workspace resource they are mapped to and their children will.
-	 * </p>
-	 * <p>
-	 * This implementation returns a list containing the provided model resource itself as default. Clients are free to
-	 * override and implement alternative behaviors as appropriate.
-	 * </p>
-	 *
-	 * @param modelResource
-	 *            The model resource of which the model content roots are to be retrieved.
-	 * @return The list of notifier objects which are to be used as roots of the model content provided by this
-	 *         {@link BasicExplorerContentProvider content provider}.
+	/*
+	 * @see
+	 * org.eclipse.sphinx.emf.explorer.ICommonModelContentProvider#getModelContentRoots(org.eclipse.emf.ecore.resource.
+	 * Resource)
 	 */
-	protected List<Object> getModelContentRoots(Resource modelResource) {
+	@Override
+	public List<Object> getModelContentRoots(Resource modelResource) {
 		if (modelResource != null) {
 			ArrayList<Object> modelContentRoots = new ArrayList<Object>(3);
 
@@ -262,15 +262,13 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		return Collections.emptyList();
 	}
 
-	/**
-	 * Returns the {@link IResource resource} corresponding to given model {@link Resource resource}.
-	 *
-	 * @param modelResource
-	 *            The model resource of which the workspace resource it to be returned.
-	 * @return The workspace {@link IResource resource} corresponding to given model resource.
-	 * @see #getModelResource(IResource)
+	/*
+	 * @see
+	 * org.eclipse.sphinx.emf.explorer.ICommonModelContentProvider#getWorkspaceResource(org.eclipse.emf.ecore.resource.
+	 * Resource)
 	 */
-	protected IResource getWorkspaceResource(Resource modelResource) {
+	@Override
+	public IResource getWorkspaceResource(Resource modelResource) {
 		return EcorePlatformUtil.getFile(modelResource);
 	}
 
@@ -706,6 +704,12 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 	/**
 	 * Creates a ResourceSetChangedListener that detects (re-)loaded resources resources and refreshes their parent(s).
 	 */
+	// TODO To further reduce number of refresh requests: Combine this and subsequent ResourceSetListeners into a single
+	// ResourceSetListener, delegate to sub methods that evaluate notifications for changed resources, moved resources,
+	// changed cross references, and changed model content root elements, and makes sure that only a single refresh
+	// request that is the most appropriate is issued (e.g. when an entire resource has changed and needs to be
+	// refreshed then there is no need to request refreshes of changed cross references or model content root elements
+	// inside that resource).
 	protected ResourceSetListener createResourceChangedListener() {
 		return new ResourceSetListenerImpl(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResource(), Resource.RESOURCE__IS_LOADED)
 				.or(NotificationFilter.createFeatureFilter(EcorePackage.eINSTANCE.getEResourceSet(), ResourceSet.RESOURCE_SET__RESOURCES))) {
@@ -715,7 +719,6 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 				Set<Resource> unloadedResources = new HashSet<Resource>();
 				Set<Resource> addedResources = new HashSet<Resource>();
 				Set<Resource> removedResources = new HashSet<Resource>();
-				Set<Resource> changedResources = new HashSet<Resource>();
 
 				// Analyze notifications for changed resources; record only loaded and unloaded or added and removed
 				// resources which have not got unloaded/loaded or removed/added again later on
@@ -777,13 +780,14 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 						}
 					}
 				}
-				changedResources.addAll(loadedResources);
-				changedResources.addAll(addedResources);
-				changedResources.addAll(unloadedResources);
-				changedResources.addAll(removedResources);
 
 				// Handle changed resources
-				refreshViewerOnModelResources(changedResources);
+				ModelResourceRefreshStrategy refreshStrategy = new ModelResourceRefreshStrategy(BasicExplorerContentProvider.this, true);
+				refreshStrategy.getModelResourcesToRefresh().addAll(loadedResources);
+				refreshStrategy.getModelResourcesToRefresh().addAll(addedResources);
+				refreshStrategy.getModelResourcesToRefresh().addAll(unloadedResources);
+				refreshStrategy.getModelResourcesToRefresh().addAll(removedResources);
+				refreshStrategy.run();
 			}
 
 			@Override
@@ -801,7 +805,12 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 				for (Notification notification : event.getNotifications()) {
 					movedResources.add((Resource) notification.getNotifier());
 				}
-				refreshViewerOnModelResources(movedResources);
+				// TODO Add support for restoring tree viewer state for moved resources by adding a old/new resource URI
+				// mappings to the refresh strategy and applying it to recorded tree viewer state before reapplying it
+				// to viewer (see AbstractRefreshStrategy#run() for details)
+				ModelResourceRefreshStrategy refreshStrategy = new ModelResourceRefreshStrategy(BasicExplorerContentProvider.this, false);
+				refreshStrategy.getModelResourcesToRefresh().addAll(movedResources);
+				refreshStrategy.run();
 			}
 
 			@Override
@@ -815,17 +824,17 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 		return new ResourceSetListenerImpl(NotificationFilter.createNotifierTypeFilter(EObject.class)) {
 			@Override
 			public void resourceSetChanged(ResourceSetChangeEvent event) {
-				Set<EObject> objectsToRefresh = new HashSet<EObject>();
+				ModelObjectRefreshStrategy refreshStrategy = new ModelObjectRefreshStrategy(BasicExplorerContentProvider.this);
 				for (Notification notification : event.getNotifications()) {
 					EObject object = (EObject) notification.getNotifier();
 					if (notification.getFeature() instanceof EReference) {
 						EReference reference = (EReference) notification.getFeature();
 						if (!reference.isContainment() && !reference.isContainer() && reference.getEType() instanceof EClass) {
-							objectsToRefresh.add(object);
+							refreshStrategy.getModelObjectsToRefresh().add(object);
 						}
 					}
 				}
-				refreshViewerOnModelObjects(objectsToRefresh);
+				refreshStrategy.run();
 			}
 
 			@Override
@@ -907,14 +916,14 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 
 				// Check if changed objects are children of the model content roots and refresh corresponding workspace
 				// resource if so
-				Set<IResource> resourcesToRefresh = new HashSet<IResource>();
+				WorkspaceResourceRefreshStrategy refreshStrategy = new WorkspaceResourceRefreshStrategy(BasicExplorerContentProvider.this, true);
 				for (EObject changedObject : changedObjects) {
 					Object changedObjectParent = getParent(changedObject);
 					if (changedObjectParent instanceof IResource) {
-						resourcesToRefresh.add((IResource) changedObjectParent);
+						refreshStrategy.getWorkspaceResourcesToRefresh().add((IResource) changedObjectParent);
 					}
 				}
-				refreshViewerOnWorkspaceResources(resourcesToRefresh);
+				refreshStrategy.run();
 			}
 
 			@Override
@@ -934,171 +943,10 @@ public class BasicExplorerContentProvider implements ICommonContentProvider, IVi
 			public void resourceChanged(IResourceChangeEvent event) {
 				IMarkerDelta[] markerDelta = event.findMarkerDeltas(IMarker.PROBLEM, true);
 				if (markerDelta != null && markerDelta.length > 0) {
-					refreshViewer();
+					FullRefreshStrategy refreshStrategy = new FullRefreshStrategy(BasicExplorerContentProvider.this, false);
+					refreshStrategy.run();
 				}
 			}
 		};
-	}
-
-	/**
-	 * Refreshes viewer on specified workspace resources.
-	 *
-	 * @param resources
-	 */
-	protected void refreshViewerOnWorkspaceResources(Set<? extends IResource> resources) {
-		if (!resources.isEmpty()) {
-			/*
-			 * Performance optimization: Perform refresh on a per resource basis only if number of resources is
-			 * reasonably low.
-			 */
-			if (resources.size() < LIMIT_INDIVIDUAL_RESOURCES_REFRESH) {
-				for (IResource resource : resources) {
-					if (resource != null && resource.isAccessible()) {
-						if (isTriggerPoint(resource)) {
-							// FIXME Enable bulk refresh for many resources in a single asyncExec &
-							// record/applyTreeState cycle
-							refreshViewerOnObject(resource);
-						}
-					}
-				}
-			} else {
-				// Perform a full viewer refresh otherwise
-				refreshViewer();
-			}
-		}
-	}
-
-	/**
-	 * Refreshes viewer on specified model resources.
-	 *
-	 * @param resources
-	 */
-	protected void refreshViewerOnModelResources(Set<? extends Resource> resources) {
-		if (!resources.isEmpty()) {
-			/*
-			 * Performance optimization: Perform refresh on a per resource basis only if number of resources is
-			 * reasonably low.
-			 */
-			if (resources.size() < LIMIT_INDIVIDUAL_RESOURCES_REFRESH) {
-				Set<IFile> files = new HashSet<IFile>();
-				/*
-				 * !! Important Note !! Retrieve complete set of workspace files behind model resources first and then
-				 * perform refresh on these files rather than retrieving file from one model resource refreshing it and
-				 * proceeding with the next. There might exist multiple model resources for the same workspace file and
-				 * if so we would needlessly encounter multiple refreshes of the same file otherwise.
-				 */
-				for (Resource resource : resources) {
-					// FIXME Delegate to getWorkspaceResource()
-					IFile file = EcorePlatformUtil.getFile(resource);
-					if (file != null && file.isAccessible()) {
-						/*
-						 * !! Important Note !! Refresh viewer if file behind resource matches trigger point condition.
-						 * Refresh viewer regardless of that if resource has just been unloaded because the underlying
-						 * file might not match the trigger condition anymore in this case (e.g. if the file's XML
-						 * namespace or content type has been changed)
-						 */
-						if (isTriggerPoint(file) || !resource.isLoaded()) {
-							files.add(file);
-						}
-					}
-				}
-				for (IFile file : files) {
-					// FIXME Enable bulk refresh for many files in a single asyncExec & record/applyTreeState cycle
-					refreshViewerOnObject(file);
-				}
-			} else {
-				// Perform a full viewer refresh otherwise
-				refreshViewer();
-			}
-		}
-	}
-
-	/**
-	 * Refreshes viewer on specified model objects.
-	 *
-	 * @param objects
-	 */
-	// FIXME Ignore model object viewer refreshes if refresh of underlying workspace resource or entire viewer is
-	// already underway
-	protected void refreshViewerOnModelObjects(Set<?> objects) {
-		if (!objects.isEmpty()) {
-			/*
-			 * Performance optimization: Perform refresh on a per object basis only if number of objects is reasonably
-			 * low.
-			 */
-			if (objects.size() < LIMIT_INDIVIDUAL_OBJECTS_REFRESH) {
-				for (Object object : objects) {
-					if (isPossibleChild(object)) {
-						// Is current object a model content root?
-						Resource modelResource = EcoreResourceUtil.getResource(object);
-						List<Object> modelContentRoots = getModelContentRoots(modelResource);
-						if (modelContentRoots.contains(object)) {
-							// Refresh corresponding workspace resource
-							IResource resource = getWorkspaceResource(modelResource);
-							if (resource != null && resource.isAccessible()) {
-								if (isTriggerPoint(resource)) {
-									// FIXME Enable bulk refresh for many resources in a single asyncExec &
-									// record/applyTreeState cycle
-									// TODO Delegate to refreshViewerOnModelResources()
-									refreshViewerOnObject(resource);
-								}
-							}
-						} else {
-							// Directly refresh the object
-							// FIXME Enable bulk refresh for many objects in a single asyncExec & record/applyTreeState
-							// cycle
-							refreshViewerOnObject(object);
-						}
-					}
-				}
-			} else {
-				// Perform a full viewer refresh otherwise
-				refreshViewer();
-			}
-		}
-	}
-
-	/**
-	 * Refreshes viewer on specified object.
-	 *
-	 * @param object
-	 */
-	protected void refreshViewerOnObject(final Object object) {
-		if (object != null) {
-			if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-				viewer.getControl().getDisplay().asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-							if (viewer instanceof StructuredViewer) {
-								ITreeViewerState state = recordViewerState();
-								((StructuredViewer) viewer).refresh(object, true);
-								applyViewerState(state);
-							}
-						}
-					}
-				});
-			}
-		}
-	}
-
-	/**
-	 * Refreshes viewer completely.
-	 */
-	protected void refreshViewer() {
-		if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-			viewer.getControl().getDisplay().asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-						if (viewer instanceof StructuredViewer) {
-							ITreeViewerState state = recordViewerState();
-							((StructuredViewer) viewer).refresh();
-							applyViewerState(state);
-						}
-					}
-				}
-			});
-		}
 	}
 }

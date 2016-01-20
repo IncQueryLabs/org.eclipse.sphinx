@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2015 See4sys, itemis and others.
+ * Copyright (c) 2008-2016 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@
  *     itemis - [460260] Expanded paths are collapsed on resource reload
  *     itemis - [478725] Enable model elements hold by ordered features to be displayed with their native order in Common Navigator-based views
  *     itemis - [480135] Introduce metamodel and view content agnostic problem decorator for model elements
+ *     itemis - [481581] Improve refresh behavior of BasicModelContentProvider to avoid performance problems due to needlessly repeated tree state restorations
  *
  * </copyright>
  */
@@ -176,21 +177,18 @@ public class ExtendedCommonNavigator extends CommonNavigator
 			}
 
 			/*
-			 * @see org.eclipse.jface.viewers.StructuredViewer#refresh()
-			 */
-			@Override
-			public void refresh() {
-				super.refresh();
-				treeViewerStateRecorder.applyState(deferredViewerState);
-				deferredViewerState = treeViewerStateRecorder.getDeferredState();
-			}
-
-			/*
+			 * Overridden to apply remaining deferred viewer state
 			 * @see org.eclipse.ui.navigator.CommonViewer#refresh(java.lang.Object, boolean)
 			 */
 			@Override
 			public void refresh(Object element, boolean updateLabels) {
 				super.refresh(element, updateLabels);
+
+				/*
+				 * !! Important Note !! Don't override #refresh() to apply the deferred viewer state there as well. This
+				 * is actually needless and counterproductive because #refresh() delegates to #refresh(Object, boolean)
+				 * and therefore would result in 2 consecutive tentatives to apply the same deferred viewer state.
+				 */
 				treeViewerStateRecorder.applyState(deferredViewerState);
 				deferredViewerState = treeViewerStateRecorder.getDeferredState();
 			}

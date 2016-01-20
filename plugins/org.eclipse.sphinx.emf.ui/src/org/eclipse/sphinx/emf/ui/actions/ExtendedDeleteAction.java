@@ -1,16 +1,17 @@
 /**
  * <copyright>
- * 
- * Copyright (c) 2008-2013 See4sys, itemis and others.
+ *
+ * Copyright (c) 2008-2016 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     See4sys - Initial API and implementation
  *     itemis - [408533] Inner commands of Copy/Cut/Delete/Paste commands not created correctly when using ExtendedXxxAction with custom adapter factory
- * 
+ *     itemis - [481581] Improve refresh behavior of BasicModelContentProvider to avoid performance problems due to needlessly repeated tree state restorations
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.ui.actions;
@@ -42,9 +43,8 @@ public class ExtendedDeleteAction extends DeleteAction {
 	}
 
 	/*
-	 * @see
-	 * org.eclipse.emf.edit.ui.action.CommandActionHandler#updateSelection(org.eclipse.jface.viewers.IStructuredSelection
-	 * )
+	 * @see org.eclipse.emf.edit.ui.action.CommandActionHandler#updateSelection(org.eclipse.jface.viewers.
+	 * IStructuredSelection )
 	 */
 	@Override
 	public boolean updateSelection(IStructuredSelection selection) {
@@ -60,7 +60,7 @@ public class ExtendedDeleteAction extends DeleteAction {
 			}
 			return result;
 		}
-		return super.updateSelection(selection);
+		return false;
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class ExtendedDeleteAction extends DeleteAction {
 	/**
 	 * Tests if given {@link EditingDomain editing domain} supports automatic conversion of removed model objects into
 	 * proxies.
-	 * 
+	 *
 	 * @param domain
 	 *            The {@link EditingDomain editing domain} to be investigated.
 	 * @return <code>true</code> if given {@link EditingDomain editing domain} supports automatic conversion of removed
