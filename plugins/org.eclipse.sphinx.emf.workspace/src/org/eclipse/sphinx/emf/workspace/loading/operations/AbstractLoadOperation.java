@@ -321,10 +321,12 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 						updateUnresolvedProxyBlackList(loadedFiles, proxyHelper.getBlackList());
 
 						// Perform a performance-optimized resolution of fragment-based proxies
-						forceProxyResolution(loadedFiles, proxyHelper.getLookupResolver(), progress.newChild(10));
+						forceProxyResolution(loadedFiles, proxyHelper.getLookupResolver(), progress.newChild(20));
 
 						// Re-enable resolution of fragment-based proxies
 						proxyHelper.setIgnoreFragmentBasedProxies(false);
+					} else {
+						progress.worked(20);
 					}
 				}
 			});
@@ -351,10 +353,6 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 	protected void forceProxyResolution(Collection<IFile> files, EcoreIndex lookupResolver, IProgressMonitor monitor) {
 		Assert.isNotNull(files);
 		Assert.isNotNull(lookupResolver);
-		SubMonitor progress = SubMonitor.convert(monitor, 100);
-		if (progress.isCanceled()) {
-			throw new OperationCanceledException();
-		}
 
 		// Get models behind given set of files
 		Set<IModelDescriptor> modelDescriptors = new HashSet<IModelDescriptor>();
@@ -365,25 +363,38 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 			}
 		}
 
+		SubMonitor progress = SubMonitor.convert(monitor, modelDescriptors.size());
+		if (progress.isCanceled()) {
+			throw new OperationCanceledException();
+		}
+
 		// Force proxies within each model to be resolved
 		for (IModelDescriptor modelDescriptor : modelDescriptors) {
 			synchronized (lookupResolver) {
+				SubMonitor resolveProxiesInModelProgress = progress.newChild(1).setWorkRemaining(100);
+
 				// Initialize lookup-based proxy resolver
-				progress.subTask(NLS.bind(Messages.subtask_initializingProxyResolutionForModelInRoot,
+				resolveProxiesInModelProgress.subTask(NLS.bind(Messages.subtask_initializingProxyResolutionForModelInRoot,
 						modelDescriptor.getMetaModelDescriptor().getName(), modelDescriptor.getRoot().getFullPath()));
+
 				Collection<Resource> resources = modelDescriptor.getLoadedResources(true);
 				lookupResolver.init(resources);
-				progress.worked(10);
+
+				resolveProxiesInModelProgress.worked(50);
+				if (resolveProxiesInModelProgress.isCanceled()) {
+					throw new OperationCanceledException();
+				}
 
 				// Try to resolve all proxies in given model
-				SubMonitor resolveProxiesProgress = progress.newChild(80).setWorkRemaining(files.size());
+				SubMonitor resolveProxiesInResourcesProgress = resolveProxiesInModelProgress.newChild(50).setWorkRemaining(resources.size());
 				for (Resource resource : resources) {
-					resolveProxiesProgress.subTask(NLS.bind(Messages.subtask_resolvingProxiesInResource, resource.getURI().toPlatformString(true)));
+					resolveProxiesInResourcesProgress
+							.subTask(NLS.bind(Messages.subtask_resolvingProxiesInResource, resource.getURI().toPlatformString(true)));
 
 					EObjectUtil.resolveAll(resource);
 
-					resolveProxiesProgress.worked(1);
-					if (resolveProxiesProgress.isCanceled()) {
+					resolveProxiesInResourcesProgress.worked(1);
+					if (resolveProxiesInResourcesProgress.isCanceled()) {
 						throw new OperationCanceledException();
 					}
 				}
@@ -392,7 +403,6 @@ public abstract class AbstractLoadOperation extends AbstractWorkspaceOperation {
 				lookupResolver.clear();
 			}
 		}
-
 		progress.subTask(""); //$NON-NLS-1$
 
 		// Perform a full garbage collection
