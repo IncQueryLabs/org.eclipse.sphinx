@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2015 itemis and others.
+ * Copyright (c) 2015-2016 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     itemis - Initial API and implementation
  *     itemis - [480105] Occasional ConcurrentModificationException when re-launching Sphinx on previously used workspace
  *     itemis - [480147] Massive performance problem and SWTError upon startup or viewer refresh when Model Explorer has expanded model content
+ *     itemis - [480105] Occasional ConcurrentModificationException when re-launching Sphinx on previously used workspace
  *
  * </copyright>
  */
