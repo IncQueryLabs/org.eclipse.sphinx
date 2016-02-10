@@ -11,7 +11,11 @@ Require-Bundle: org.eclipse.core.expressions;visibility:=reexport,
  org.eclipse.emf.workspace;visibility:=reexport,
  org.eclipse.sphinx.platform;visibility:=reexport,
  org.apache.xerces;visibility:=reexport,
- org.jdom
+ org.jdom,
+ com.google.guava,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtend.lib.macro
 Export-Package: org.eclipse.sphinx.emf,
  org.eclipse.sphinx.emf.domain,
  org.eclipse.sphinx.emf.domain.factory,
@@ -49,3 +53,4 @@ Export-Package: org.eclipse.sphinx.emf,
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.sphinx.emf.Activator$Implementation
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+

@@ -25,6 +25,7 @@
 <project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.edit"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.editors.nebula"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.emf.compare"/>
+<project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.ide"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.ide.ui"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.incquery"/>
 <project reference="1.0,ssh://git.eclipse.org/gitroot/sphinx/org.eclipse.sphinx.git,master,examples/org.eclipse.sphinx.examples.hummingbird20.splitting"/>
@@ -178,6 +179,7 @@
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.edit" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.editors.nebula" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.emf.compare" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.examples.hummingbird20.ide" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.ide.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.incquery" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.splitting" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>

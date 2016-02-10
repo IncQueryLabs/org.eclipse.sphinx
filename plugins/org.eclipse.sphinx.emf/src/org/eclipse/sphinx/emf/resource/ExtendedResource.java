@@ -262,84 +262,73 @@ public interface ExtendedResource {
 	void unloaded(EObject eObject);
 
 	/**
-	 * Returns a {@link URI} representing given {@link InternalEObject}. Clients may implement/override this method when
-	 * they require URIs with custom formats to be created.
+	 * Returns the {@link URI} representing given {@link EObject object}.
 	 *
-	 * @param InternalEObject
-	 *            The {@link InternalEObject} for which the URI is to be created.
-	 * @return The URI for given {@link InternalEObject}, or <code>null</code> if no such could be created.
+	 * @param eObject
+	 *            The object to be handled.
+	 * @return The URI representing the provided object.
 	 */
 	URI getURI(EObject eObject);
 
 	/**
-	 * Returns a {@link URI} representing given {@link InternalEObject}. Clients may implement/override this method when
-	 * they require URIs with custom formats to be created.
+	 * Returns the {@link URI} representing given {@link EObject object}. The resulting URI can optionally be resolved
+	 * against the URI of the resource which contains the object in question.
 	 *
-	 * @param InternalEObject
-	 *            The {@link InternalEObject} for which the URI is to be created.
+	 * @param eObject
+	 *            The object to be handled.
 	 * @param resolve
-	 *            indicates whether the URI should resolved against the URI of the resource which contains the provided
-	 *            model object. This is useful is cases where the native model object URI evaluates in some sort of
-	 *            fragment-based URI which does not contain any information about the resource that contains the model
-	 *            object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true, such fragment-based
-	 *            URIs will be automatically expanded to a URI that starts with the URI of the model object's resource
-	 *            and is followed by the fragment of the model object's native URI (e.g.,
+	 *            Indicates whether the object's URI should be resolved against the URI of the resource which contains
+	 *            the provided model object. This is useful is cases where the native model object URI evaluates in some
+	 *            sort of fragment-based URI which does not contain any information about the resource that contains the
+	 *            model object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true, such
+	 *            fragment-based URIs will be automatically expanded to a URI that starts with the URI of the model
+	 *            object's resource and is followed by the fragment of the model object's native URI (e.g.,
 	 *            platform:/resource/MyProject/MyResource/#//MyComponent/MyParameterValue).
-	 * @return The URI for given {@link InternalEObject}, or <code>null</code> if no such could be created.
+	 * @return The URI representing the provided object.
 	 */
 	URI getURI(EObject eObject, boolean resolve);
 
 	/**
-	 * Returns a {@link URI} representing given {@link EObject eObject} owned by {@link EObject owner} through provided
-	 * {@link EStructuralFeature feature}.If the {@link EObject eObject} is stand-alone (i.e freshly removed and without
-	 * attached resource) the {@link URI} is determine using the {@link EObject owner} and the {@link EStructuralFeature
-	 * feature}, if the {@link EObject eObject} is still attached to a {@link Resource} the {@link URI} is calculated
-	 * using same implementation as in {@link ResourceImpl#unload()}.
-	 * <p>
-	 * Clients may implement/override this method when they require URIs with custom formats to be created.
-	 * </p>
+	 * Returns the {@link URI} representing given {@link EObject object}. If the object is removed (i.e., not contained
+	 * in any {@link Resource resource}) its URI is determined by appending the URI fragment segments obtained from the
+	 * removed object and its potential direct and indirect removed containers to the base URI obtained from the
+	 * provided {@link EObject old owner} and {@link EStructuralFeature old feature}. If the object is still contained
+	 * in a resource its URI is computed as usual and the old owner and old feature are ignored.
 	 *
 	 * @param oldOwner
-	 *            The {@link EObject} owning the {@link EObject} before it was deleted.
+	 *            The owner object that is assumed to having contained the given object before it was removed.
 	 * @param oldFeature
-	 *            The {@link EStructuralFeature} of the owner containing the {@link EObject eObject} before it was
-	 *            deleted.
+	 *            The feature through which the old owner did contain the given object before it was removed.
 	 * @param eObject
-	 *            The {@link EObject} for which the URI is to be created.
-	 * @return The URI for given {@link EObject eObject}, or <code>null</code> if no such could be created.If the
-	 *         provided {@link EObject} has no {@link Resource eResource} and no {@link EObject owner}, the returned
-	 *         value is null.
+	 *            The object to be handled.
+	 * @return The URI representing the provided object.
 	 */
 	URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject);
 
 	/**
-	 * Returns a {@link URI} representing given {@link EObject eObject} owned by {@link EObject owner} through provided
-	 * {@link EStructuralFeature feature}.If the {@link EObject eObject} is stand-alone (i.e freshly removed and without
-	 * attached resource) the {@link URI} is determine using the {@link EObject owner} and the {@link EStructuralFeature
-	 * feature}, if the {@link EObject eObject} is still attached to a {@link Resource} the {@link URI} is calculated
-	 * using same implementation as in {@link ResourceImpl#unload()}.
-	 * <p>
-	 * Clients may implement/override this method when they require URIs with custom formats to be created.
-	 * </p>
+	 * Returns the {@link URI} representing given {@link EObject object}. If the object is removed (i.e., not contained
+	 * in any {@link Resource resource}) its URI is determined by appending the URI fragment segments obtained from the
+	 * removed object and its potential direct and indirect removed containers to the base URI obtained from the
+	 * provided {@link EObject old owner} and {@link EStructuralFeature old feature}. If the object is still contained
+	 * in a resource its URI is computed as usual and the old owner and old feature are ignored. In both cases, the
+	 * resulting URI can optionally be resolved against the URI of the resource which does or did contain the object in
+	 * question.
 	 *
 	 * @param oldOwner
-	 *            The {@link EObject} owning the {@link EObject} before it was deleted.
+	 *            The owner object that is assumed to having contained the given object before it was removed.
 	 * @param oldFeature
-	 *            The {@link EStructuralFeature} of the owner containing the {@link EObject eObject} before it was
-	 *            deleted.
+	 *            The feature through which the old owner did contain the given object before it was removed.
 	 * @param eObject
-	 *            The {@link EObject} for which the URI is to be created.
+	 *            The object to be handled.
 	 * @param resolve
-	 *            indicates whether the URI should resolved against the URI of the resource which contains the provided
-	 *            model object. This is useful is cases where the native model object URI evaluates in some sort of
-	 *            fragment-based URI which does not contain any information about the resource that contains the model
-	 *            object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true, such fragment-based
-	 *            URIs will be automatically expanded to a URI that starts with the URI of the model object's resource
-	 *            and is followed by the fragment of the model object's native URI (e.g.,
+	 *            Indicates whether the object's URI should be resolved against the URI of the resource which contains
+	 *            the provided model object. This is useful is cases where the native model object URI evaluates in some
+	 *            sort of fragment-based URI which does not contain any information about the resource that contains the
+	 *            model object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true, such
+	 *            fragment-based URIs will be automatically expanded to a URI that starts with the URI of the model
+	 *            object's resource and is followed by the fragment of the model object's native URI (e.g.,
 	 *            platform:/resource/MyProject/MyResource/#//MyComponent/MyParameterValue).
-	 * @return The URI for given {@link EObject eObject}, or <code>null</code> if no such could be created.If the
-	 *         provided {@link EObject} has no {@link Resource eResource} and no {@link EObject owner}, the returned
-	 *         value is null.
+	 * @return The URI representing the provided object.
 	 */
 	URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject, boolean resolve);
 

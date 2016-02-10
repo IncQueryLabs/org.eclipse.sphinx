@@ -24,6 +24,7 @@
  *     itemis - [460534] Make sure that EcoreResourceUtil creates a ResourceSetImpl rather than a ScopingResourceSetImpl when no resource set is provided by the caller
  *     itemis - [460260] Expanded paths are collapsed on resource reload
  *     itemis - [485407] Enable eager post-load proxy resolution to support manifold URI fragments referring to the same object
+ *     itemis - [487564] Provide a reusable base implementation of an IURIChangeDetectorDelegate for URIs with hierarchical fragments
  *
  * </copyright>
  */
@@ -61,6 +62,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -231,37 +233,86 @@ public final class EcoreResourceUtil {
 	}
 
 	/**
-	 * Returns the URI of the provided model object.
+	 * Returns the {@link URI} representing given {@link EObject object}.
 	 *
 	 * @param eObject
-	 *            a model object.
-	 * @return the URI of the provided model object.
+	 *            The object to be handled.
+	 * @return The URI representing the provided object.
 	 */
 	public static URI getURI(EObject eObject) {
-		return getURI(eObject, false);
+		return getURI(null, null, eObject, false);
 	}
 
 	/**
-	 * Returns the URI of the provided model object.
+	 * Returns the {@link URI} representing given {@link EObject object}. The resulting URI can optionally be resolved
+	 * against the URI of the resource which contains the object in question.
 	 *
 	 * @param eObject
-	 *            a model object.
+	 *            The object to be handled.
 	 * @param resolve
-	 *            indicates whether the URI should be resolved against the URI of the resource which contains the
-	 *            provided model object. This is useful is cases where the native model object URI evaluates in some
+	 *            Indicates whether the object's URI should be resolved against the URI of the resource which contains
+	 *            the provided model object. This is useful is cases where the native model object URI evaluates in some
 	 *            sort of fragment-based URI which does not contain any information about the resource that contains the
 	 *            model object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true, such
 	 *            fragment-based URIs will be automatically expanded to a URI that starts with the URI of the model
 	 *            object's resource and is followed by the fragment of the model object's native URI (e.g.,
 	 *            platform:/resource/MyProject/MyResource/#//MyComponent/MyParameterValue).
-	 * @return the URI of the provided model object.
+	 * @return The URI representing the provided object.
 	 */
 	public static URI getURI(EObject eObject, boolean resolve) {
+		return getURI(null, null, eObject, false);
+	}
+
+	/**
+	 * Returns the {@link URI} representing given {@link EObject object}. If the object is removed (i.e., not contained
+	 * in any {@link Resource resource}) its URI is determined by appending the URI fragment segments obtained from the
+	 * removed object and its potential direct and indirect removed containers to the base URI obtained from the
+	 * provided {@link EObject old owner} and {@link EStructuralFeature old feature}. If the object is still contained
+	 * in a resource its URI is computed as usual and the old owner and old feature are ignored.
+	 *
+	 * @param oldOwner
+	 *            The owner object that is assumed to having contained the given object before it was removed.
+	 * @param oldFeature
+	 *            The feature through which the old owner did contain the given object before it was removed.
+	 * @param eObject
+	 *            The object to be handled.
+	 * @return The URI representing the provided object.
+	 */
+	public static URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject) {
+		return getURI(oldOwner, oldFeature, eObject, false);
+	}
+
+	/**
+	 * Returns the {@link URI} representing given {@link EObject object}. If the object is removed (i.e., not contained
+	 * in any {@link Resource resource}) its URI is determined by appending the URI fragment segments obtained from the
+	 * removed object and its potential direct and indirect removed containers to the base URI obtained from the
+	 * provided {@link EObject old owner} and {@link EStructuralFeature old feature}. If the object is still contained
+	 * in a resource its URI is computed as usual and the old owner and old feature are ignored. In both cases, the
+	 * resulting URI can optionally be resolved against the URI of the resource which does or did contain the object in
+	 * question.
+	 *
+	 * @param oldOwner
+	 *            The owner object that is assumed to having contained the given object before it was removed.
+	 * @param oldFeature
+	 *            The feature through which the old owner did contain the given object before it was removed.
+	 * @param eObject
+	 *            The object to be handled.
+	 * @param resolve
+	 *            Indicates whether the object's URI should be resolved against the URI of the resource which contains
+	 *            the provided model object. This is useful is cases where the native model object URI evaluates in some
+	 *            sort of fragment-based URI which does not contain any information about the resource that contains the
+	 *            model object (e.g., hb:/#//MyComponent/MyParameterValue). By setting resolve to true, such
+	 *            fragment-based URIs will be automatically expanded to a URI that starts with the URI of the model
+	 *            object's resource and is followed by the fragment of the model object's native URI (e.g.,
+	 *            platform:/resource/MyProject/MyResource/#//MyComponent/MyParameterValue).
+	 * @return The URI representing the provided object.
+	 */
+	public static URI getURI(EObject oldOwner, EStructuralFeature oldFeature, EObject eObject, boolean resolve) {
 		Assert.isNotNull(eObject);
 
-		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.getExtendedResource(eObject);
+		ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.getExtendedResource(oldOwner != null ? oldOwner : eObject);
 		if (extendedResource != null) {
-			return extendedResource.getURI(eObject, resolve);
+			return extendedResource.getURI(oldOwner, oldFeature, eObject, resolve);
 		} else {
 			return EcoreUtil.getURI(eObject);
 		}

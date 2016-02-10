@@ -27,6 +27,7 @@
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.edit" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.editors.nebula" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.emf.compare" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.sphinx.examples.hummingbird20.ide" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.ide.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.incquery" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.sphinx.examples.hummingbird20.splitting" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
