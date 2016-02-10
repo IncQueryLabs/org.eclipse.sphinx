@@ -260,7 +260,7 @@ public final class EcoreResourceUtil {
 	 * @return The URI representing the provided object.
 	 */
 	public static URI getURI(EObject eObject, boolean resolve) {
-		return getURI(null, null, eObject, false);
+		return getURI(null, null, eObject, resolve);
 	}
 
 	/**

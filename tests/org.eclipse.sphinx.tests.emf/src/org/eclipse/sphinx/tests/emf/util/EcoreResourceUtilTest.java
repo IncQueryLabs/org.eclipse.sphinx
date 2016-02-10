@@ -171,7 +171,8 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 			EObject contextObject = modelRoot10.eResource().getContents().get(0);
 			assertNotNull(contextObject);
 
-			assertTrue(EcoreResourceUtil.getModelName(contextObject), EcoreResourceUtil.getModelName(contextObject).equalsIgnoreCase("Hummingbird10"));
+			assertTrue(EcoreResourceUtil.getModelName(contextObject),
+					EcoreResourceUtil.getModelName(contextObject).equalsIgnoreCase("Hummingbird10"));
 		}
 
 		// Uml2 Model
@@ -279,10 +280,10 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 
 		// =====================================================
 		// ----Read TargetNamspace from HB20 xsd file
-		URL schemaURLHB20_InstanceModel = FileLocator.find(org.eclipse.sphinx.examples.hummingbird20.Activator.getPlugin().getBundle(), new Path(
-				"model/InstanceModel20XMI.xsd"), null);
-		URL schemaURLHB20_TypeModel = FileLocator.find(org.eclipse.sphinx.examples.hummingbird20.Activator.getPlugin().getBundle(), new Path(
-				"model/TypeModel20XMI.xsd"), null);
+		URL schemaURLHB20_InstanceModel = FileLocator.find(org.eclipse.sphinx.examples.hummingbird20.Activator.getPlugin().getBundle(),
+				new Path("model/InstanceModel20XMI.xsd"), null);
+		URL schemaURLHB20_TypeModel = FileLocator.find(org.eclipse.sphinx.examples.hummingbird20.Activator.getPlugin().getBundle(),
+				new Path("model/TypeModel20XMI.xsd"), null);
 
 		ResourceSet testResourceSet = new ResourceSetImpl();
 
@@ -311,8 +312,8 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		assertEquals(outsideWorkspaceURI, EcoreResourceUtil.convertToPlatformResourceURI(outsideWorkspaceURI));
 		// =====================================================
 		// The given URI is already a Platform plugin URI
-		URI platformPluginURI = URI.createPlatformPluginURI(Activator.getPlugin().getBundle().getSymbolicName()
-				+ "resources/input/hbFile20.instancemodel", true);
+		URI platformPluginURI = URI
+				.createPlatformPluginURI(Activator.getPlugin().getBundle().getSymbolicName() + "resources/input/hbFile20.instancemodel", true);
 		assertEquals(platformPluginURI, EcoreResourceUtil.convertToPlatformResourceURI(platformPluginURI));
 		// =====================================================
 		// The given URI is not a Platform Resource URI
@@ -346,7 +347,8 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 		// =====================================================
 		// Resource with SchemaLocation - Result: NOT NULL
 		assertEquals(1, EcoreResourceUtil.readSchemaLocationEntries(resource20_withSchema).size());
-		assertEquals("InstanceModel20XMI.xsd", EcoreResourceUtil.readSchemaLocationEntries(resource20_withSchema).get(InstanceModel20Package.eNS_URI));
+		assertEquals("InstanceModel20XMI.xsd",
+				EcoreResourceUtil.readSchemaLocationEntries(resource20_withSchema).get(InstanceModel20Package.eNS_URI));
 		// =====================================================
 		// Resource without SchemaLocation- Result: NULL
 		assertEquals(0, EcoreResourceUtil.readSchemaLocationEntries(resource10_withoutSchema).size());
@@ -398,10 +400,10 @@ public class EcoreResourceUtilTest extends AbstractTestCase {
 
 		URI uri = EcoreResourceUtil.getURI(modelRoot20);
 		assertNotNull(uri);
-		assertTrue("hb:/#/".equals(uri.toString()));
+		assertEquals("hb:/#/", uri.toString());
 
 		uri = EcoreResourceUtil.getURI(modelRoot20, true);
 		assertNotNull(uri);
-		assertTrue("platform:/plugin/org.eclipse.sphinx.tests.emf/resources/input/hbFile20.instancemodel#/".equals(uri.toString()));
+		assertEquals("platform:/plugin/org.eclipse.sphinx.tests.emf/resources/input/hbFile20.instancemodel#/", uri.toString());
 	}
 }
