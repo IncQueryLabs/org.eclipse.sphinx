@@ -32,7 +32,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sphinx.emf.mwe.dynamic.headless.internal.messages.Messages;
 import org.eclipse.sphinx.emf.mwe.dynamic.operations.BasicWorkflowRunnerOperation;
@@ -82,11 +81,11 @@ import org.eclipse.sphinx.platform.cli.ICommonCLIConstants;
  * -workflow org.example/src/org/example/MyWorkflowFile.xtend</li>
  * </ul>
  */
+// TODO Externalize strings in related extention point contributions (see plugin.xml for details)
 public class BasicWorkflowRunnerApplication extends AbstractCLIApplication {
 
+	// TODO Replace with JavaExtensions.CLASS_NAME_PATTERN
 	private static final Pattern JAVA_CLASS_NAME_PATTERN = Pattern.compile("((?:\\w|\\.)+)(\\.)([A-Z](?:\\w)+)"); //$NON-NLS-1$
-
-	protected Resource modelResource = null;
 
 	/*
 	 * @see org.eclipse.sphinx.platform.cli.AbstractCLIApplication#getCommandLineSyntax()
