@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Sphinx Neon Target" sequenceNumber="15">
+<?pde version="3.8"?><target name="Sphinx Neon Target" sequenceNumber="16">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="4.6.0.I20160128-2000"/>
@@ -19,7 +19,7 @@
 <unit id="org.eclipse.gmf.tooling.feature.group" version="3.3.0.201506090515"/>
 <unit id="org.eclipse.uml2.sdk.feature.group" version="5.2.0.v20160201-0937"/>
 <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.8.0.v201511240159"/>
-<unit id="org.eclipse.mylyn.wikitext_feature.feature.group" version="2.7.0.v20151015-1452"/>
+<unit id="org.eclipse.mylyn.wikitext_feature.feature.group" version="2.8.0.v20160219-2043"/>
 <unit id="org.eclipse.xpand.sdk.feature.group" version="2.2.0.v201602020334"/>
 <unit id="org.eclipse.xsd.sdk.feature.group" version="2.12.0.v20160201-0859"/>
 <unit id="org.eclipse.xtext.sdk.feature.group" version="2.10.0.v201602020334"/>
@@ -43,7 +43,7 @@
 <unit id="org.apache.xml.serializer" version="2.7.1.v201005080400"/>
 <unit id="org.easymock" version="2.4.0.v20090202-0900"/>
 <unit id="org.jdom" version="1.1.1.v201101151400"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
