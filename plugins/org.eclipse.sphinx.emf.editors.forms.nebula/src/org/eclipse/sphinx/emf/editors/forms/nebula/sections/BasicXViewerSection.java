@@ -35,11 +35,12 @@ import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.nebula.widgets.xviewer.XViewer;
-import org.eclipse.nebula.widgets.xviewer.XViewerColumn;
-import org.eclipse.nebula.widgets.xviewer.XViewerColumn.SortDataType;
 import org.eclipse.nebula.widgets.xviewer.XViewerFactory;
 import org.eclipse.nebula.widgets.xviewer.XViewerSorter;
 import org.eclipse.nebula.widgets.xviewer.XViewerTextFilter;
+import org.eclipse.nebula.widgets.xviewer.core.model.SortDataType;
+import org.eclipse.nebula.widgets.xviewer.core.model.XViewerAlign;
+import org.eclipse.nebula.widgets.xviewer.core.model.XViewerColumn;
 import org.eclipse.nebula.widgets.xviewer.edit.XViewerEditAdapter;
 import org.eclipse.sphinx.emf.editors.forms.BasicTransactionalFormEditor;
 import org.eclipse.sphinx.emf.editors.forms.nebula.internal.Activator;
@@ -236,9 +237,9 @@ public class BasicXViewerSection extends AbstractViewerFormSection {
 	protected void registerColumns(XViewerFactory xViewerFactory) {
 		List<IItemPropertyDescriptor> propertyDescriptors = formPage.getItemDelegator().getPropertyDescriptors(exampleValue);
 		for (IItemPropertyDescriptor propertyDescriptor : propertyDescriptors) {
-			xViewerFactory.registerColumns(new XViewerColumn(propertyDescriptor.getId(exampleValue).toString(), propertyDescriptor
-					.getDisplayName(exampleValue), 100, SWT.LEFT, true, getSortDataType(propertyDescriptor, exampleValue), false, propertyDescriptor
-					.getDescription(exampleValue)));
+			xViewerFactory.registerColumns(new XViewerColumn(propertyDescriptor.getId(exampleValue).toString(),
+					propertyDescriptor.getDisplayName(exampleValue), 100, XViewerAlign.Left, true, getSortDataType(propertyDescriptor, exampleValue),
+					false, propertyDescriptor.getDescription(exampleValue)));
 		}
 	}
 

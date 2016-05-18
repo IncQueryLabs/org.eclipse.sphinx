@@ -8,7 +8,8 @@ Bundle-Vendor: %providerName
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sphinx.emf.editors.forms;visibility:=reexport,
- org.eclipse.nebula.widgets.xviewer;visibility:=reexport
+ org.eclipse.nebula.widgets.xviewer;visibility:=reexport,
+ org.eclipse.nebula.widgets.xviewer.core;visibility:=reexport
 Export-Package: org.eclipse.sphinx.emf.editors.forms.nebula.internal;x-internal:=true,
  org.eclipse.sphinx.emf.editors.forms.nebula.providers,
  org.eclipse.sphinx.emf.editors.forms.nebula.sections
