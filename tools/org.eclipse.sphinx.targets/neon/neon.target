@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Sphinx Neon Target" sequenceNumber="18">
+<?pde version="3.8"?><target name="Sphinx Neon Target" sequenceNumber="19">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="4.6.0.I20160512-1000"/>
@@ -8,12 +8,13 @@
 <repository location="http://download.eclipse.org/eclipse/updates/4.6milestones"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.compare.feature.group" version="3.2.0.201604280603"/>
+<unit id="org.eclipse.emf.compare.ide.ui.feature.group" version="3.2.0.201604280603"/>
+<unit id="org.eclipse.emf.ecore.xcore.lib.feature.group" version="1.2.100.v20160429-0936"/>
 <unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.3.20.v201604291319"/>
 <unit id="org.eclipse.emf.sdk.feature.group" version="2.12.0.v20160429-0808"/>
 <unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.10.0.201605031913"/>
 <unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.10.0.201605030103"/>
-<unit id="org.eclipse.emf.compare.feature.group" version="3.2.0.201604280603"/>
-<unit id="org.eclipse.emf.compare.ide.ui.feature.group" version="3.2.0.201604280603"/>
 <unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.10.0.201605030030"/>
 <unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.10.0.201605032009"/>
 <unit id="org.eclipse.gmf.tooling.feature.group" version="3.3.0.201506090515"/>
