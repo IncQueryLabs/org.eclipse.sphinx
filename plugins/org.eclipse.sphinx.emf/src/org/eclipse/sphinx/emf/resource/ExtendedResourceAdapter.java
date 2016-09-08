@@ -16,6 +16,7 @@
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
  *     itemis - [460260] Expanded paths are collapsed on resource reload
  *     itemis - [485407] Enable eager post-load proxy resolution to support manifold URI fragments referring to the same object
+ *     itemis - [501108] The tree viewer state restoration upon Eclipse startup not working for model elements being added after the loading of the underlying has been finished
  *
  * </copyright>
  */
@@ -123,6 +124,14 @@ public class ExtendedResourceAdapter extends AdapterImpl implements ExtendedReso
 			useContextAwareProxyURIs = !Boolean.FALSE.equals(loadOptions.get(OPTION_USE_CONTEXT_AWARE_PROXY_URIS));
 		}
 		return useContextAwareProxyURIs;
+	}
+
+	/*
+	 * @see org.eclipse.sphinx.emf.resource.ExtendedResource#isResourceFullyLoaded()
+	 */
+	@Override
+	public boolean isFullyLoaded() {
+		return ((Resource) getTarget()).isLoaded();
 	}
 
 	/*

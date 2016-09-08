@@ -10,6 +10,7 @@
  * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [480105] Occasional ConcurrentModificationException when re-launching Sphinx on previously used workspace
+ *     itemis - [501108] The tree viewer state restoration upon Eclipse startup not working for model elements being added after the loading of the underlying has been finished
  *
  * </copyright>
  */
@@ -17,14 +18,22 @@ package org.eclipse.sphinx.emf.workspace.ui.viewers.state.providers;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 import org.eclipse.sphinx.emf.model.ModelDescriptorRegistry;
+import org.eclipse.sphinx.emf.resource.ExtendedResource;
+import org.eclipse.sphinx.emf.resource.ExtendedResourceAdapterFactory;
 import org.eclipse.sphinx.emf.util.EcorePlatformUtil;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 import org.eclipse.sphinx.emf.workspace.loading.ModelLoadManager;
+import org.eclipse.sphinx.emf.workspace.ui.internal.Activator;
+import org.eclipse.sphinx.emf.workspace.util.ModelOperationRunner;
+import org.eclipse.sphinx.platform.util.PlatformLogUtil;
 import org.eclipse.ui.IMemento;
 
 public class EObjectElementStateProvider extends AbstractTreeElementStateProvider {
@@ -59,7 +68,27 @@ public class EObjectElementStateProvider extends AbstractTreeElementStateProvide
 
 	@Override
 	public boolean isUnderlyingModelLoaded() {
-		return EcorePlatformUtil.getResource(uri) != null;
+		final Resource resource = EcorePlatformUtil.getResource(uri);
+		if (resource != null) {
+			try {
+				RunnableWithResult<Boolean> runnable = new RunnableWithResult.Impl<Boolean>() {
+					@Override
+					public void run() {
+						ExtendedResource extendedResource = ExtendedResourceAdapterFactory.INSTANCE.adapt(resource);
+						if (extendedResource != null) {
+							setResult(extendedResource.isFullyLoaded());
+						} else {
+							setResult(true);
+						}
+					}
+				};
+				return ModelOperationRunner.performModelAccess(resource, runnable);
+			} catch (CoreException ex) {
+				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
+				return false;
+			}
+		}
+		return false;
 	}
 
 	@Override

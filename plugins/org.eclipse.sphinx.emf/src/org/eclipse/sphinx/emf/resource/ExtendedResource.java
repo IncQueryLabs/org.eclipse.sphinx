@@ -15,6 +15,7 @@
  *     itemis - [442342] Sphinx doen't trim context information from proxy URIs when serializing proxyfied cross-document references
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
  *     itemis - [485407] Enable eager post-load proxy resolution to support manifold URI fragments referring to the same object
+ *     itemis - [501108] The tree viewer state restoration upon Eclipse startup not working for model elements being added after the loading of the underlying has been finished
  *
  * </copyright>
  */
@@ -247,6 +248,19 @@ public interface ExtendedResource {
 	 * {@link Resource resource} has been loaded or saved.
 	 */
 	Map<Object, Object> getProblemHandlingOptions();
+
+	/**
+	 * Indicates if the underlying {@link Resource resource} has been fully loaded. By default, this is the case when
+	 * {@link Resource#isLoaded()} returns <code>true</code>.
+	 * <p>
+	 * Custom {@link ExtendedResource} implementations may override this method and adapt its behavior to take
+	 * additional aspects into account, e.g., the completion state of asynchronously performed post load operations or
+	 * communication processes running in the background.
+	 * </p>
+	 *
+	 * @return <code>true</code> if the underlying resource has been fully loaded, <code>false</code> otherwise.
+	 */
+	boolean isFullyLoaded();
 
 	/**
 	 * Improved implementation of org.eclipse.emf.ecore.resource.impl.ResourceImpl#unloaded(InternalEObject) enabling
