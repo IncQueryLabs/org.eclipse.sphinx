@@ -9,44 +9,33 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [501109] The tree viewer state restoration upon Eclipse startup and viewer refreshed still running in cases where it is not needed
  *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.explorer.refresh;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.sphinx.emf.explorer.IModelCommonContentProvider;
 
-public class ModelResourceRefreshStrategy extends AbstractRefreshStrategy implements Runnable {
+public class ModelResourceRefreshStrategy extends AbstractRefreshStrategy<Resource> implements Runnable {
 
 	private static final int MAX_INDIVIDUAL_MODEL_RESOURCE_REFRESHES = 20;
 
-	private Set<Resource> modelResourcesToRefresh = null;
-
-	public ModelResourceRefreshStrategy(IModelCommonContentProvider contentProvider, boolean affectsTreeViewerState) {
-		super(contentProvider, affectsTreeViewerState);
-	}
-
-	public Set<Resource> getModelResourcesToRefresh() {
-		if (modelResourcesToRefresh == null) {
-			modelResourcesToRefresh = new HashSet<Resource>();
-		}
-		return modelResourcesToRefresh;
+	public ModelResourceRefreshStrategy(IModelCommonContentProvider contentProvider, boolean preserveTreeViewerState) {
+		super(contentProvider, preserveTreeViewerState);
 	}
 
 	@Override
 	protected boolean shouldPerformSelectiveRefresh() {
-		return getModelResourcesToRefresh().size() < MAX_INDIVIDUAL_MODEL_RESOURCE_REFRESHES;
+		return getTreeElementsToRefresh().size() < MAX_INDIVIDUAL_MODEL_RESOURCE_REFRESHES;
 	}
 
 	@Override
 	protected void performSelectiveRefresh(StructuredViewer viewer) {
-		for (Resource modelResource : getModelResourcesToRefresh()) {
+		for (Resource modelResource : getTreeElementsToRefresh()) {
 			IResource workspaceResource = contentProvider.getWorkspaceResource(modelResource);
 			if (workspaceResource != null && workspaceResource.isAccessible()) {
 				/*

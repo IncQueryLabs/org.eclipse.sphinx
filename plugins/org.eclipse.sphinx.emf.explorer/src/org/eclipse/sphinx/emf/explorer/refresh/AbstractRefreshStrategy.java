@@ -9,10 +9,14 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [501109] The tree viewer state restoration upon Eclipse startup and viewer refreshed still running in cases where it is not needed
  *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.explorer.refresh;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.StructuredViewer;
@@ -31,11 +35,13 @@ import org.eclipse.sphinx.emf.workspace.ui.viewers.state.ITreeViewerState;
  * that are actually need to be refreshed which can save a lot of runtime-performance in many situations.
  * </p>
  */
-public abstract class AbstractRefreshStrategy implements Runnable {
+public abstract class AbstractRefreshStrategy<T> implements Runnable {
 
 	protected final IModelCommonContentProvider contentProvider;
 
 	private final boolean preserveTreeViewerState;
+
+	private Set<T> treeElementsToRefresh = null;
 
 	public AbstractRefreshStrategy(IModelCommonContentProvider contentProvider, boolean preserveTreeViewerState) {
 		Assert.isNotNull(contentProvider);
@@ -43,34 +49,47 @@ public abstract class AbstractRefreshStrategy implements Runnable {
 		this.preserveTreeViewerState = preserveTreeViewerState;
 	}
 
+	public Set<T> getTreeElementsToRefresh() {
+		if (treeElementsToRefresh == null) {
+			treeElementsToRefresh = new HashSet<T>();
+		}
+		return treeElementsToRefresh;
+	}
+
 	/*
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override
 	public final void run() {
-		final Viewer viewer = contentProvider.getViewer();
-		if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-			viewer.getControl().getDisplay().asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
-						// Record current tree viewer expansion and selection state if needed
-						ITreeViewerState state = null;
-						if (preserveTreeViewerState) {
-							state = contentProvider.recordViewerState();
-						}
+		if (canRun()) {
+			final Viewer viewer = contentProvider.getViewer();
+			if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
+				viewer.getControl().getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed()) {
+							// Record current tree viewer expansion and selection state if needed
+							ITreeViewerState state = null;
+							if (preserveTreeViewerState) {
+								state = contentProvider.recordViewerState();
+							}
 
-						// Perform viewer refresh relying on implemented refresh strategy
-						refresh(viewer);
+							// Perform viewer refresh relying on implemented refresh strategy
+							refresh(viewer);
 
-						// Restore previous tree viewer expansion and selection state if needed
-						if (preserveTreeViewerState) {
-							contentProvider.applyViewerState(state);
+							// Restore previous tree viewer expansion and selection state if needed
+							if (preserveTreeViewerState) {
+								contentProvider.applyViewerState(state);
+							}
 						}
 					}
-				}
-			});
+				});
+			}
 		}
+	}
+
+	protected boolean canRun() {
+		return !getTreeElementsToRefresh().isEmpty();
 	}
 
 	protected final void refresh(Viewer viewer) {

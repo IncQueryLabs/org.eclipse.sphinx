@@ -15,6 +15,7 @@
  *     itemis - [460260] Expanded paths are collapsed on resource reload
  *     itemis - [480135] Introduce metamodel and view content agnostic problem decorator for model elements
  *     itemis - [481581] Improve refresh behavior of BasicModelContentProvider to avoid performance problems due to needlessly repeated tree state restorations
+ *     itemis - [501109] The tree viewer state restoration upon Eclipse startup and viewer refreshed still running in cases where it is not needed
  *
  * </copyright>
  */
@@ -783,10 +784,11 @@ public class BasicExplorerContentProvider implements IModelCommonContentProvider
 
 				// Handle changed resources
 				ModelResourceRefreshStrategy refreshStrategy = new ModelResourceRefreshStrategy(BasicExplorerContentProvider.this, true);
-				refreshStrategy.getModelResourcesToRefresh().addAll(loadedResources);
-				refreshStrategy.getModelResourcesToRefresh().addAll(addedResources);
-				refreshStrategy.getModelResourcesToRefresh().addAll(unloadedResources);
-				refreshStrategy.getModelResourcesToRefresh().addAll(removedResources);
+				Set<Resource> resourcesToRefresh = refreshStrategy.getTreeElementsToRefresh();
+				resourcesToRefresh.addAll(loadedResources);
+				resourcesToRefresh.addAll(addedResources);
+				resourcesToRefresh.addAll(unloadedResources);
+				resourcesToRefresh.addAll(removedResources);
 				refreshStrategy.run();
 			}
 
@@ -809,7 +811,7 @@ public class BasicExplorerContentProvider implements IModelCommonContentProvider
 				// mappings to the refresh strategy and applying it to recorded tree viewer state before reapplying it
 				// to viewer (see AbstractRefreshStrategy#run() for details)
 				ModelResourceRefreshStrategy refreshStrategy = new ModelResourceRefreshStrategy(BasicExplorerContentProvider.this, false);
-				refreshStrategy.getModelResourcesToRefresh().addAll(movedResources);
+				refreshStrategy.getTreeElementsToRefresh().addAll(movedResources);
 				refreshStrategy.run();
 			}
 
@@ -830,7 +832,7 @@ public class BasicExplorerContentProvider implements IModelCommonContentProvider
 					if (notification.getFeature() instanceof EReference) {
 						EReference reference = (EReference) notification.getFeature();
 						if (!reference.isContainment() && !reference.isContainer() && reference.getEType() instanceof EClass) {
-							refreshStrategy.getModelObjectsToRefresh().add(object);
+							refreshStrategy.getTreeElementsToRefresh().add(object);
 						}
 					}
 				}
@@ -920,7 +922,7 @@ public class BasicExplorerContentProvider implements IModelCommonContentProvider
 				for (EObject changedObject : changedObjects) {
 					Object changedObjectParent = getParent(changedObject);
 					if (changedObjectParent instanceof IResource) {
-						refreshStrategy.getWorkspaceResourcesToRefresh().add((IResource) changedObjectParent);
+						refreshStrategy.getTreeElementsToRefresh().add((IResource) changedObjectParent);
 					}
 				}
 				refreshStrategy.run();

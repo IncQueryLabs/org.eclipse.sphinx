@@ -9,14 +9,13 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [501109] The tree viewer state restoration upon Eclipse startup and viewer refreshed still running in cases where it is not needed
  *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.explorer.refresh;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.emf.ecore.EObject;
@@ -25,31 +24,22 @@ import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.sphinx.emf.explorer.IModelCommonContentProvider;
 import org.eclipse.sphinx.emf.util.EcoreResourceUtil;
 
-public class ModelObjectRefreshStrategy extends AbstractRefreshStrategy implements Runnable {
+public class ModelObjectRefreshStrategy extends AbstractRefreshStrategy<EObject> implements Runnable {
 
 	private static final int MAX_INDIVIDUAL_MODEL_OBJECT_REFRESHES = 100;
-
-	private Set<EObject> modelObjectsToRefresh = null;
 
 	public ModelObjectRefreshStrategy(IModelCommonContentProvider contentProvider) {
 		super(contentProvider, false);
 	}
 
-	public Set<EObject> getModelObjectsToRefresh() {
-		if (modelObjectsToRefresh == null) {
-			modelObjectsToRefresh = new HashSet<EObject>();
-		}
-		return modelObjectsToRefresh;
-	}
-
 	@Override
 	protected boolean shouldPerformSelectiveRefresh() {
-		return getModelObjectsToRefresh().size() < MAX_INDIVIDUAL_MODEL_OBJECT_REFRESHES;
+		return getTreeElementsToRefresh().size() < MAX_INDIVIDUAL_MODEL_OBJECT_REFRESHES;
 	}
 
 	@Override
 	protected void performSelectiveRefresh(StructuredViewer viewer) {
-		for (EObject modelObject : getModelObjectsToRefresh()) {
+		for (EObject modelObject : getTreeElementsToRefresh()) {
 			if (contentProvider.isPossibleChild(modelObject)) {
 				// Is current object a model content root?
 				Resource modelResource = EcoreResourceUtil.getResource(modelObject);
