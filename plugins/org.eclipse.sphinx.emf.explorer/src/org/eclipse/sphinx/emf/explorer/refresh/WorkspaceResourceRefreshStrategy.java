@@ -9,43 +9,32 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
+ *     itemis - [501109] The tree viewer state restoration upon Eclipse startup and viewer refreshed still running in cases where it is not needed
  *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.explorer.refresh;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.sphinx.emf.explorer.IModelCommonContentProvider;
 
-public class WorkspaceResourceRefreshStrategy extends AbstractRefreshStrategy implements Runnable {
+public class WorkspaceResourceRefreshStrategy extends AbstractRefreshStrategy<IResource> implements Runnable {
 
 	private static final int MAX_INDIVIDUAL_WORKSPACE_RESOURCE_REFRESHES = 20;
-
-	private Set<IResource> workspaceResourcesToRefresh = null;
 
 	public WorkspaceResourceRefreshStrategy(IModelCommonContentProvider contentProvider, boolean preserveTreeViewerState) {
 		super(contentProvider, preserveTreeViewerState);
 	}
 
-	public Set<IResource> getWorkspaceResourcesToRefresh() {
-		if (workspaceResourcesToRefresh == null) {
-			workspaceResourcesToRefresh = new HashSet<IResource>();
-		}
-		return workspaceResourcesToRefresh;
-	}
-
 	@Override
 	protected boolean shouldPerformSelectiveRefresh() {
-		return getWorkspaceResourcesToRefresh().size() < MAX_INDIVIDUAL_WORKSPACE_RESOURCE_REFRESHES;
+		return getTreeElementsToRefresh().size() < MAX_INDIVIDUAL_WORKSPACE_RESOURCE_REFRESHES;
 	}
 
 	@Override
 	protected void performSelectiveRefresh(StructuredViewer viewer) {
-		for (IResource workspaceResource : getWorkspaceResourcesToRefresh()) {
+		for (IResource workspaceResource : getTreeElementsToRefresh()) {
 			if (workspaceResource != null && workspaceResource.isAccessible()) {
 				if (contentProvider.isTriggerPoint(workspaceResource)) {
 					viewer.refresh(workspaceResource, true);

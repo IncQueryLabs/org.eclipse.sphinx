@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2015 See4sys, BMW Car IT and others.
+ * Copyright (c) 2008-2016 See4sys, BMW Car IT and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,12 +12,14 @@
  *     BMW Car IT - Added/Updated javadoc
  *     itemis - [458976] Validators are not singleton when they implement checks for different EPackages
  *     itemis - [460260] Expanded paths are collapsed on resource reload
+ *     itemis - [501110] Provide an isSet(EObject) method in EObjectUtil
  *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -300,6 +302,40 @@ public final class EObjectUtil {
 	}
 
 	/**
+	 * Checks if the given {@link EObject} is set which is the case if any of its features are set. The optionally
+	 * specified {@link EStructuralFeature ignored feature}s as well as {@link EReference#isContainer() container
+	 * reference}s and derived {@link EStructuralFeature#isDerived() derived feature}s are excluded in this check.
+	 *
+	 * @param eObject
+	 *            The {@link EObject} to test.
+	 * @param ignoredFeatures
+	 *            The {@link EStructuralFeature features}s to be ignored during the test.
+	 * @return <code>true</code> if the given {@link EObject} is set, <code>false</code> otherwise.
+	 */
+	public static boolean isSet(EObject eObject, EStructuralFeature... ignoredFeatures) {
+		List<EStructuralFeature> ignoredFeatureList = Arrays.asList(ignoredFeatures);
+		for (EStructuralFeature feature : eObject.eClass().getEAllStructuralFeatures()) {
+			// Skip container features
+			if (feature instanceof EReference && ((EReference) feature).isContainer()) {
+				continue;
+			}
+
+			// Skip ignored features
+			if (ignoredFeatures != null && ignoredFeatureList.contains(feature)) {
+				continue;
+			}
+
+			// Return true when hitting on any non-derived feature that is set
+			if (!feature.isDerived()) {
+				if (eObject.eIsSet(feature)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Returns a collection of {@link EStructuralFeature.Setting settings} objects describing the inverse references of
 	 * given {@link EObject object}, i.e., the {@link EObject objects}s and {@link EStructuralFeature features}s that
 	 * reference given {@link EObject object}.
@@ -363,8 +399,8 @@ public final class EObjectUtil {
 				 * of all other EPackage.Descriptors we are about to iterate over.
 				 */
 				try {
-					IConfigurationElement configurationElement = (IConfigurationElement) ReflectUtil
-							.getInvisibleFieldValue(ePackageObject, "element"); //$NON-NLS-1$
+					IConfigurationElement configurationElement = (IConfigurationElement) ReflectUtil.getInvisibleFieldValue(ePackageObject,
+							"element"); //$NON-NLS-1$
 					String ePackagePluginId = configurationElement.getDeclaringExtension().getContributor().getName();
 					String ePackageTypeName = configurationElement.getAttribute("class"); //$NON-NLS-1$
 					if (ePackageTypeName != null) {
@@ -549,9 +585,10 @@ public final class EObjectUtil {
 	 *            The given key of the annotationSource to filter
 	 * @param detailValue
 	 *            The given value of specified key of the annotationSource to filter
-	 * @return The set of EClassifiers in the specified EPackage that: <li>the Annotation matches the given
-	 *         <code><i><b>annotationSource</b></i></code> and</li> <li>have a details with key is equals
-	 *         <code><i><b>detailKey</b></i></code> and</li> <li>value is equals <code><i><b>detailValue</b></i></code></li>
+	 * @return The set of EClassifiers in the specified EPackage that:
+	 *         <li>the Annotation matches the given <code><i><b>annotationSource</b></i></code> and</li>
+	 *         <li>have a details with key is equals <code><i><b>detailKey</b></i></code> and</li>
+	 *         <li>value is equals <code><i><b>detailValue</b></i></code></li>
 	 */
 	public static List<EClassifier> getAnnotatedEClassifiers(EPackage ePackage, String annotationSource, String detailKey, String detailValue) {
 		Assert.isNotNull(ePackage);
@@ -828,8 +865,8 @@ public final class EObjectUtil {
 	 * Visits all proxies in given {@link Resource resource} and tries to resolve them.
 	 * <p>
 	 * Does principally the same thing as {@link EcoreUtil#resolveAll(Resource)} but provides more robustness by
-	 * catching exceptions that are raised during proxy resolution and attaching them as errors on given
-	 * {@link Resource resource}.
+	 * catching exceptions that are raised during proxy resolution and attaching them as errors on given {@link Resource
+	 * resource}.
 	 * </p>
 	 *
 	 * @param resource
@@ -854,9 +891,8 @@ public final class EObjectUtil {
 				// Exception due to something different than that resource does not exist?
 				if (EcoreResourceUtil.exists(resource.getURI())) {
 					// Leave an error about what has happened on resource
-					resource.getErrors().add(
-							new ProxyURIIntegrityException(NLS.bind(Messages.error_problemOccurredWhenResolvingReferencesOfObject, eObject.eClass()
-									.getName()), ex));
+					resource.getErrors().add(new ProxyURIIntegrityException(
+							NLS.bind(Messages.error_problemOccurredWhenResolvingReferencesOfObject, eObject.eClass().getName()), ex));
 				}
 			}
 		}
