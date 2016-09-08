@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2015 itemis and others.
+ * Copyright (c) 2015-2016 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,8 @@
  *
  * Contributors:
  *     itemis - Initial API and implementation
- *
+ *     itemis - [501112] Temporary model loading form editor page sometimes happens to remain in place forever even when underlying model has been loaded
+
  * </copyright>
  */
 package org.eclipse.sphinx.emf.editors;
@@ -226,13 +227,15 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 				}
 
 				// Include removed resources the resource containing editor input object?
-				Set<URI> removedResourceURIs = new HashSet<URI>(removedResources.size());
-				for (Resource removedResource : removedResources) {
-					removedResourceURIs.add(removedResource.getURI());
-				}
-				if (editorInputChangeAnalyzer.containsEditorInputResourceURI(editorInput, removedResourceURIs)) {
-					// Handle removed editor input resource
-					editorInputChangeHandler.handleEditorInputResourceRemoved(editorInput);
+				if (!removedResources.isEmpty()) {
+					Set<URI> removedResourceURIs = new HashSet<URI>(removedResources.size());
+					for (Resource removedResource : removedResources) {
+						removedResourceURIs.add(removedResource.getURI());
+					}
+					if (editorInputChangeAnalyzer.containsEditorInputResourceURI(editorInput, removedResourceURIs)) {
+						// Handle removed editor input resource
+						editorInputChangeHandler.handleEditorInputResourceRemoved(editorInput);
+					}
 				}
 			}
 
@@ -316,28 +319,36 @@ public class ModelEditorInputSynchronizer implements IDisposable {
 					}
 				}
 
-				// Was or did added object contain the editor input object?
-				if (editorInputChangeAnalyzer.containsEditorInputObject(editorInput, addedObjects)) {
-					// Handle added editor input object
-					editorInputChangeHandler.handleEditorInputObjectAdded(editorInput, addedObjects);
+				// Is editor input object part of the added objects or contained by one or them?
+				if (!addedObjects.isEmpty()) {
+					if (editorInputChangeAnalyzer.containsEditorInputObject(editorInput, addedObjects)) {
+						// Handle added editor input object
+						editorInputChangeHandler.handleEditorInputObjectAdded(editorInput, addedObjects);
+					}
 				}
 
-				// Was or did removed object contain the editor input object?
-				if (editorInputChangeAnalyzer.containsEditorInputObject(editorInput, removedObjects)) {
-					// Handle removed editor input object
-					editorInputChangeHandler.handleEditorInputObjectRemoved(editorInput, removedObjects);
+				// Is editor input object part of the removed objects or contained by one or them?
+				if (!removedObjects.isEmpty()) {
+					if (editorInputChangeAnalyzer.containsEditorInputObject(editorInput, removedObjects)) {
+						// Handle removed editor input object
+						editorInputChangeHandler.handleEditorInputObjectRemoved(editorInput, removedObjects);
+					}
 				}
 
-				// Was or did moved object contain the editor input object?
-				if (editorInputChangeAnalyzer.containsEditorInputObject(editorInput, movedObjects)) {
-					// Handle moved editor input object
-					editorInputChangeHandler.handleEditorInputObjectMoved(editorInput, movedObjects);
+				// Is editor input object part of the moved objects or contained by one or them?
+				if (!movedObjects.isEmpty()) {
+					if (editorInputChangeAnalyzer.containsEditorInputObject(editorInput, movedObjects)) {
+						// Handle moved editor input object
+						editorInputChangeHandler.handleEditorInputObjectMoved(editorInput, movedObjects);
+					}
 				}
 
-				// Was or did changed object contain the editor input object?
-				if (editorInputChangeAnalyzer.containsEditorInputObject(editorInput, changedObjects)) {
-					// Handle changed editor input object
-					editorInputChangeHandler.handleEditorInputObjectChanged(editorInput, changedObjects);
+				// Is editor input object part of the changed objects or contained by one or them?
+				if (!changedObjects.isEmpty()) {
+					if (editorInputChangeAnalyzer.containsEditorInputObject(editorInput, changedObjects)) {
+						// Handle changed editor input object
+						editorInputChangeHandler.handleEditorInputObjectChanged(editorInput, changedObjects);
+					}
 				}
 			}
 

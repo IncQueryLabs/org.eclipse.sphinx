@@ -1,7 +1,7 @@
 /**
  * <copyright>
  *
- * Copyright (c) 2008-2015 See4sys, itemis and others.
+ * Copyright (c) 2008-2016 See4sys, itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,6 +21,7 @@
  *     itemis - [458862] Navigation from problem markers in Check Validation view to model editors and Model Explorer view broken
  *     itemis - [459054] Rework the implementation of BasicTransactionalFormsEditor to reuse common functionalities provided the Sphinx Common Editor Logic plugin
  *     itemis - [460260] Expanded paths are collapsed on resource reload
+ *     itemis - [501112] Temporary model loading form editor page sometimes happens to remain in place forever even when underlying model has been loaded
  *
  * </copyright>
  */
@@ -699,10 +700,10 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 					EditingDomain editingDomain = getEditingDomain();
 					AdapterFactory adapterFactory = getAdapterFactory();
 					if (editingDomain != null && adapterFactory != null) {
-						contentOutlineViewer.setContentProvider(new TransactionalAdapterFactoryContentProvider(
-								(TransactionalEditingDomain) editingDomain, adapterFactory));
-						contentOutlineViewer.setLabelProvider(new TransactionalAdapterFactoryLabelProvider(
-								(TransactionalEditingDomain) editingDomain, adapterFactory));
+						contentOutlineViewer.setContentProvider(
+								new TransactionalAdapterFactoryContentProvider((TransactionalEditingDomain) editingDomain, adapterFactory));
+						contentOutlineViewer.setLabelProvider(
+								new TransactionalAdapterFactoryLabelProvider((TransactionalEditingDomain) editingDomain, adapterFactory));
 						contentOutlineViewer.setInput(editorInputObject);
 					} else {
 						if (contentOutlineViewer.getContentProvider() != null) {
@@ -1080,8 +1081,8 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 	}
 
 	public void setStatusLineManager(ISelection selection) {
-		IStatusLineManager statusLineManager = currentSelectionProvider != null && currentSelectionProvider == contentOutlineViewer ? contentOutlineStatusLineManager
-				: getActionBars() != null ? getActionBars().getStatusLineManager() : null;
+		IStatusLineManager statusLineManager = currentSelectionProvider != null && currentSelectionProvider == contentOutlineViewer
+				? contentOutlineStatusLineManager : getActionBars() != null ? getActionBars().getStatusLineManager() : null;
 		if (statusLineManager != null) {
 			if (selection instanceof IStructuredSelection) {
 				Collection<?> collection = ((IStructuredSelection) selection).toList();
@@ -1359,9 +1360,9 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 			IFile file = EcoreUIUtil.getFileFromEditorInput(getEditorInput());
 			IModelDescriptor modelDescriptor = ModelDescriptorRegistry.INSTANCE.getModel(file);
 			if (modelDescriptor == null) {
-				MessageDialog.openError(getSite().getShell(), Messages.error_editorInitialization_title, NLS
-						.bind(Messages.error_editorInitialization_modelNotLoaded, file != null ? file.getFullPath().toString() : getEditorInput()
-								.getName()));
+				MessageDialog.openError(getSite().getShell(), Messages.error_editorInitialization_title,
+						NLS.bind(Messages.error_editorInitialization_modelNotLoaded,
+								file != null ? file.getFullPath().toString() : getEditorInput().getName()));
 				showProblemsView();
 				close(false);
 				return;
@@ -1383,6 +1384,10 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 
 		// Create editor pages normally
 		super.createPages();
+	}
+
+	protected IFormPage getMessagePage() {
+		return messagePage;
 	}
 
 	protected void setMessagePage(IFormPage messagePage) {
@@ -1441,11 +1446,14 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 	}
 
 	protected synchronized void finishCreatePages() {
-		if (!isDisposed()) {
+		if (!isDisposed() && getMessagePage() != null) {
 			// Remove previously displayed message page
 			setMessagePage(null);
+
 			// Try to create actual pages
 			createPages();
+
+			// Activate first page if no other page is already active
 			if (getActivePage() == -1) {
 				setActivePage(0);
 			}
@@ -1553,13 +1561,25 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 
 	@Override
 	public boolean containsEditorInputObject(IEditorInput editorInput, Set<EObject> objects) {
+		// Determine if editor input object or one of its containers is part of the specified set of objects
 		Object editorInputObject = getEditorInputObject();
-		if (editorInputObject != null) {
-			return objects != null ? objects.contains(editorInputObject) : false;
-		} else {
-			Object oldEditorInputObject = getOldEditorInputObject();
-			return objects != null ? objects.contains(oldEditorInputObject) : false;
+		if (editorInputObject == null) {
+			editorInputObject = getOldEditorInputObject();
 		}
+		if (editorInputObject != null) {
+			if (objects.contains(editorInputObject)) {
+				return true;
+			} else {
+				if (editorInputObject instanceof EObject) {
+					for (EObject parent = ((EObject) editorInputObject).eContainer(); parent != null; parent = parent.eContainer()) {
+						if (objects.contains(parent)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -1583,45 +1603,23 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 		 */
 		@Override
 		public void handleEditorInputObjectAdded(IEditorInput editorInput, final Set<EObject> addedObjects) {
-			// Has editor input for which this editor had been opened or one of its containers part of the added
-			// objects?
-			Object editorInputObject = getEditorInputObject();
-			if (editorInputObject != null && !addedObjects.isEmpty()) {
-				boolean reset = false;
-				if (addedObjects.contains(editorInputObject)) {
-					reset = true;
-				} else {
-					if (editorInputObject instanceof EObject) {
-						for (EObject parent = ((EObject) editorInputObject).eContainer(); parent != null; parent = parent.eContainer()) {
-							if (addedObjects.contains(parent)) {
-								reset = true;
-								return;
-							}
+			IWorkbenchPartSite site = getSite();
+			if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
+				site.getShell().getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						// Reset the editor state
+						reset();
+
+						// Finish page creation if editor is currently visible; otherwise mark that as to be
+						// done when editor gets activated the next time
+						if (getSite().getPage().isPartVisible(BasicTransactionalFormEditor.this)) {
+							finishCreatePages();
+						} else {
+							finishCreatePagesOnActivation = true;
 						}
 					}
-				}
-
-				if (reset) {
-					// Handle added editor input object
-					IWorkbenchPartSite site = getSite();
-					if (site != null && site.getShell() != null && !site.getShell().isDisposed()) {
-						site.getShell().getDisplay().asyncExec(new Runnable() {
-							@Override
-							public void run() {
-								// Reset the editor state
-								reset();
-
-								// Finish page creation if editor is currently visible; otherwise mark that as to be
-								// done when editor gets activated the next time
-								if (getSite().getPage().isPartVisible(BasicTransactionalFormEditor.this)) {
-									finishCreatePages();
-								} else {
-									finishCreatePagesOnActivation = true;
-								}
-							}
-						});
-					}
-				}
+				});
 			}
 		}
 
@@ -1630,24 +1628,8 @@ public class BasicTransactionalFormEditor extends FormEditor implements IModelEd
 		 */
 		@Override
 		public void handleEditorInputObjectRemoved(IEditorInput editorInput, Set<EObject> removedObjects) {
-			// Is editor input object on which this editor had been opened so far or one of its containers part of
-			// the removed objects?
-			Object editorInputObject = getEditorInputObject();
-			if (editorInputObject == null && !removedObjects.isEmpty()) {
-				Object oldEditorInputObject = getOldEditorInputObject();
-				if (removedObjects.contains(oldEditorInputObject)) {
-					close(false);
-				} else {
-					if (oldEditorInputObject instanceof EObject) {
-						for (EObject parent = ((EObject) oldEditorInputObject).eContainer(); parent != null; parent = parent.eContainer()) {
-							if (removedObjects.contains(parent)) {
-								close(false);
-								return;
-							}
-						}
-					}
-				}
-			}
+			// Close editor
+			close(false);
 		}
 
 		/**
