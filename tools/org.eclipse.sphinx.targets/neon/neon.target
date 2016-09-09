@@ -5,7 +5,7 @@
 <unit id="org.eclipse.sdk.ide" version="4.6.0.I20160606-1100"/>
 <unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.200.v20160606-1100"/>
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.6.300.v20160525-1303"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.6milestones"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.6"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.incquery.runtime.feature.feature.group" version="0.8.1.201410011502"/>
@@ -47,7 +47,7 @@
 <unit id="org.eclipse.xsd.sdk.feature.group" version="2.12.0.v20160526-0356"/>
 <unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.10.0.201606071631"/>
 <unit id="org.eclipse.uml2.sdk.feature.group" version="5.2.0.v20160516-0939"/>
-<repository location="http://download.eclipse.org/staging/neon"/>
+<repository location="http://download.eclipse.org/releases/neon"/>
 </location>
 </locations>
 <environment>
