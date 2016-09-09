@@ -19,11 +19,11 @@ Contributors:
 	<parent>
 		<groupId>org.eclipse.sphinx.releng</groupId>
 		<artifactId>org.eclipse.sphinx.releng.parent</artifactId>
-		<version>0.10.0-SNAPSHOT</version>
+		<version>0.11.0-SNAPSHOT</version>
 		<relativePath>../../releng/org.eclipse.sphinx.releng.builds/parent/pom.xml</relativePath>
 	</parent>
 	<artifactId>org.eclipse.sphinx.emf.serialization</artifactId>
-	<version>0.10.0-SNAPSHOT</version>
+	<version>0.11.0-SNAPSHOT</version>
 	<packaging>eclipse-plugin</packaging>
 	<groupId>org.eclipse.sphinx.plugins</groupId>
 	<properties>
