@@ -9,7 +9,7 @@
 		<relativePath>../../../releng/org.eclipse.sphinx.releng.builds/parent/pom.xml</relativePath>
 	</parent>
 	<groupId>org.eclipse.sphinx.targets</groupId>
-	<artifactId>neon</artifactId>
+	<artifactId>oxygen</artifactId>
 	<version>0.11.0-SNAPSHOT</version>
 	<name>org.eclipse.sphinx.targets.oxygen</name>
 	<packaging>eclipse-target-definition</packaging>
