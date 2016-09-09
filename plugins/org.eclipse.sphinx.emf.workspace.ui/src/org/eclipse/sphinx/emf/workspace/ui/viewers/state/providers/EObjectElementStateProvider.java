@@ -82,7 +82,8 @@ public class EObjectElementStateProvider extends AbstractTreeElementStateProvide
 						}
 					}
 				};
-				return ModelOperationRunner.performModelAccess(resource, runnable);
+				ModelOperationRunner.performModelAccess(resource, runnable);
+				return runnable.getResult();
 			} catch (CoreException ex) {
 				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 				return false;
