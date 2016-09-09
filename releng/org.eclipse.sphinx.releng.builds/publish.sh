@@ -49,8 +49,8 @@ buildUpdateSitePath=$relengProjectPath/repository/target/repository
 javadocProjectPath=docs/org.eclipse.sphinx.doc.isv
 buildJavadocSitePath=$javadocProjectPath/target/javadoc/reference/api
 
-eclipsePackageVersion=4.4.2
-eclipsePackageBuildId=201502041700
+eclipsePackageVersion=4.5.2
+eclipsePackageBuildId=201602121500
 
 targetBasePath=sphinx
 targetDownloadsPath=$targetBasePath
