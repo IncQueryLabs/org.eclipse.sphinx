@@ -1,30 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Sphinx Luna Target" sequenceNumber="24">
+<?pde version="3.8"?><target name="Sphinx Oxygen Target" sequenceNumber="26">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="4.4.2.M20150204-1700"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.102.v20150204-1316"/>
-<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.3.v20150204-1745"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.compare.feature.group" version="3.0.2.201501201328"/>
-<unit id="org.eclipse.emf.compare.ide.ui.feature.group" version="3.0.2.201501201328"/>
-<unit id="org.eclipse.emf.ecore.xcore.lib.feature.group" version="1.2.0.v20150202-0452"/>
-<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.3.4.v201409021027"/>
-<unit id="org.eclipse.emf.sdk.feature.group" version="2.10.2.v20150123-0452"/>
-<unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.8.0.201405281451"/>
-<unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.8.0.201405281429"/>
-<unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.8.0.201405281433"/>
-<unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.8.1.201408201453"/>
-<unit id="org.eclipse.gmf.tooling.feature.group" version="3.2.1.201502182128"/>
-<unit id="org.eclipse.uml2.sdk.feature.group" version="5.0.2.v20150202-0947"/>
-<unit id="org.eclipse.mylyn.wikitext_feature.feature.group" version="2.3.2.v20150217-2315"/>
-<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.6.3.v201501292352"/>
-<unit id="org.eclipse.xpand.sdk.feature.group" version="2.0.0.v201406030414"/>
-<unit id="org.eclipse.xsd.sdk.feature.group" version="2.10.0.v20150123-0452"/>
-<unit id="org.eclipse.xtext.sdk.feature.group" version="2.7.3.v201411190455"/>
-<repository location="http://download.eclipse.org/releases/luna"/>
+<unit id="org.eclipse.sdk.ide" version="4.7.0.I20160803-2000"/>
+<unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.200.v20160803-2000"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.300.v20160525-1303"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.7milestones"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.incquery.runtime.feature.feature.group" version="0.8.1.201410011502"/>
@@ -49,6 +30,24 @@
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/cbi/updates/license"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.compare.ide.ui.feature.group" version="3.2.0.201605311222"/>
+<unit id="org.eclipse.gmf.runtime.sdk.feature.group" version="1.10.0.201606071959"/>
+<unit id="org.eclipse.emf.ecore.xcore.lib.feature.group" version="1.2.100.v20160526-0606"/>
+<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.8.0.v201605120129"/>
+<unit id="org.eclipse.xpand.sdk.feature.group" version="2.2.0.v201605260315"/>
+<unit id="org.eclipse.mylyn.wikitext_feature.feature.group" version="2.10.0.v20160818-1444"/>
+<unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.10.0.201606071900"/>
+<unit id="org.eclipse.emf.validation.sdk.feature.group" version="1.10.0.201606071713"/>
+<unit id="org.eclipse.gmf.tooling.feature.group" version="3.3.1.201509291144"/>
+<unit id="org.eclipse.emf.sdk.feature.group" version="2.12.0.v20160526-0356"/>
+<unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.3.20.v201605261103"/>
+<unit id="org.eclipse.xtext.sdk.feature.group" version="2.10.0.v201605250459"/>
+<unit id="org.eclipse.xsd.sdk.feature.group" version="2.12.0.v20160526-0356"/>
+<unit id="org.eclipse.gmf.runtime.notation.sdk.feature.group" version="1.10.0.201606071631"/>
+<unit id="org.eclipse.uml2.sdk.feature.group" version="5.2.0.v20160516-0939"/>
+<repository location="http://download.eclipse.org/staging/oxygen"/>
 </location>
 </locations>
 <environment>
