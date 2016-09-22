@@ -14,12 +14,12 @@
  */
 package org.eclipse.sphinx.emf.workspace.incquery;
 
-import org.eclipse.incquery.runtime.api.IncQueryEngine;
-import org.eclipse.incquery.runtime.exception.IncQueryException;
+import org.eclipse.viatra.query.runtime.api.ViatraQueryEngine;
+import org.eclipse.viatra.query.runtime.exception.ViatraQueryException;
 import org.eclipse.sphinx.emf.incquery.IIncQueryEngineHelper;
 import org.eclipse.sphinx.emf.model.IModelDescriptor;
 
 public interface IWorkspaceIncQueryEngineHelper extends IIncQueryEngineHelper {
 
-	IncQueryEngine getEngine(IModelDescriptor contextModelDescriptor) throws IncQueryException;
+	ViatraQueryEngine getEngine(IModelDescriptor contextModelDescriptor) throws ViatraQueryException;
 }

@@ -19,45 +19,46 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.incquery.runtime.api.IncQueryEngine;
-import org.eclipse.incquery.runtime.exception.IncQueryException;
+import org.eclipse.viatra.query.runtime.api.ViatraQueryEngine;
+import org.eclipse.viatra.query.runtime.emf.EMFScope;
+import org.eclipse.viatra.query.runtime.exception.ViatraQueryException;
 
 public class IncQueryEngineHelper implements IIncQueryEngineHelper {
 
 	@Override
-	public IncQueryEngine getEngine(EObject contextObject) throws IncQueryException {
+	public ViatraQueryEngine getEngine(EObject contextObject) throws ViatraQueryException {
 		if (contextObject != null) {
 			Resource contextResource = contextObject.eResource();
 			if (contextResource != null) {
 				return getEngine(contextResource);
 			}
 			EObject rootContainer = EcoreUtil.getRootContainer(contextObject);
-			return IncQueryEngine.on(rootContainer);
+			return ViatraQueryEngine.on(new EMFScope(rootContainer));
 		}
 		return null;
 	}
 
 	@Override
-	public IncQueryEngine getEngine(Resource contextResource) throws IncQueryException {
+	public ViatraQueryEngine getEngine(Resource contextResource) throws ViatraQueryException {
 		return getEngine(contextResource, false);
 	}
 
 	@Override
-	public IncQueryEngine getEngine(Resource resource, boolean strict) throws IncQueryException {
+	public ViatraQueryEngine getEngine(Resource resource, boolean strict) throws ViatraQueryException {
 		if (resource != null) {
 			ResourceSet resourceSet = resource.getResourceSet();
 			if (resourceSet != null && !strict) {
-				return IncQueryEngine.on(resourceSet);
+				return ViatraQueryEngine.on(new EMFScope(resourceSet));
 			}
-			return IncQueryEngine.on(resource);
+			return ViatraQueryEngine.on(new EMFScope(resource));
 		}
 		return null;
 	}
 
 	@Override
-	public IncQueryEngine getEngine(ResourceSet resourceSet) throws IncQueryException {
+	public ViatraQueryEngine getEngine(ResourceSet resourceSet) throws ViatraQueryException {
 		if (resourceSet != null) {
-			return IncQueryEngine.on(resourceSet);
+			return ViatraQueryEngine.on(new EMFScope(resourceSet));
 		}
 		return null;
 	}
