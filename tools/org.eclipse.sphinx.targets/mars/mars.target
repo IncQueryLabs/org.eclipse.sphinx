@@ -5,7 +5,7 @@
 <unit id="org.eclipse.sdk.ide" version="4.5.1.M20150904-0015"/>
 <unit id="org.eclipse.rcp.configuration.feature.group" version="1.0.101.v20150904-0015"/>
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.6.200.v20150602-1417"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.5-M-builds"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.5"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.mwe.sdk.feature.group" version="1.3.11.v201508030321"/>
@@ -26,8 +26,8 @@
 <repository location="http://download.eclipse.org/releases/maintenance"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.incquery.runtime.feature.feature.group" version="0.8.1.201410011502"/>
-<repository location="http://download.eclipse.org/incquery/updates/release"/>
+<unit id="org.eclipse.incquery.runtime.feature.feature.group" version="1.2.1.201605270941"/>
+<repository location="http://download.eclipse.org/viatra/updates/release"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.feature.feature.group" version="0.0.0"/>
