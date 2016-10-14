@@ -1,16 +1,16 @@
 /**
  * <copyright>
- * 
+ *
  * Copyright (c) 2012-2014 itemis and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: 
+ *
+ * Contributors:
  *     itemis - Initial API and implementation
  *     itemis - [434230] ParseException when trying to sort BasicXViewerSection for columns displaying Date-typed EAttributes
- * 
+ *
  * </copyright>
  */
 package org.eclipse.sphinx.emf.editors.forms.nebula.providers;
@@ -23,8 +23,8 @@ import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.nebula.widgets.xviewer.XViewer;
-import org.eclipse.nebula.widgets.xviewer.XViewerColumn;
 import org.eclipse.nebula.widgets.xviewer.XViewerLabelProvider;
+import org.eclipse.nebula.widgets.xviewer.core.model.XViewerColumn;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 

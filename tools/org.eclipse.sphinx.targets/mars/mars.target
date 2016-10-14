@@ -22,11 +22,11 @@
 <unit id="org.eclipse.mylyn.wikitext_feature.feature.group" version="2.6.0.v20150901-2143"/>
 <unit id="org.eclipse.xpand.sdk.feature.group" version="2.1.0.v201505260349"/>
 <unit id="org.eclipse.xsd.sdk.feature.group" version="2.11.0.v20150806-0404"/>
-<unit id="org.eclipse.xtext.sdk.feature.group" version="2.8.4.v201508050135"/>
-<repository location="http://download.eclipse.org/releases/maintenance"/>
+<unit id="org.eclipse.xtext.sdk.feature.group" version="2.9.1.v201512180746"/>
+<repository location="http://download.eclipse.org/releases/mars"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.incquery.runtime.feature.feature.group" version="1.2.1.201605270941"/>
+<unit id="org.eclipse.viatra.query.runtime.feature.feature.group" version="1.2.1.201605270938"/>
 <repository location="http://download.eclipse.org/viatra/updates/release"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">

@@ -17,4 +17,5 @@ Bundle-Activator: org.eclipse.sphinx.examples.hummingbird20.editors.nebula.inter
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.emf.common,
  org.eclipse.sphinx.emf.editors.forms.nebula,
- org.eclipse.sphinx.examples.hummingbird20.edit
+ org.eclipse.sphinx.examples.hummingbird20.edit,
+ org.eclipse.nebula.widgets.xviewer.core;bundle-version="1.0.0"

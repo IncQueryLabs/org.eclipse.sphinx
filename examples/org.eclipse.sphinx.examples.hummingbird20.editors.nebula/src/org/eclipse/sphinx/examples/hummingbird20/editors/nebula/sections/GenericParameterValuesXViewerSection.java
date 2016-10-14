@@ -25,9 +25,10 @@ import org.eclipse.emf.transaction.ui.provider.TransactionalAdapterFactoryConten
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.nebula.widgets.xviewer.XViewer;
-import org.eclipse.nebula.widgets.xviewer.XViewerColumn;
-import org.eclipse.nebula.widgets.xviewer.XViewerColumn.SortDataType;
 import org.eclipse.nebula.widgets.xviewer.XViewerFactory;
+import org.eclipse.nebula.widgets.xviewer.core.model.SortDataType;
+import org.eclipse.nebula.widgets.xviewer.core.model.XViewerAlign;
+import org.eclipse.nebula.widgets.xviewer.core.model.XViewerColumn;
 import org.eclipse.sphinx.emf.editors.forms.nebula.providers.BasicModelXViewerLabelProvider;
 import org.eclipse.sphinx.emf.editors.forms.nebula.sections.BasicXViewerSection;
 import org.eclipse.sphinx.emf.editors.forms.pages.AbstractFormPage;
@@ -37,7 +38,6 @@ import org.eclipse.sphinx.examples.hummingbird20.instancemodel.InstanceModel20Pa
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.ParameterValue;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.edit.ComponentItemProvider;
 import org.eclipse.sphinx.examples.hummingbird20.instancemodel.edit.InstanceModel20ItemProviderAdapterFactory;
-import org.eclipse.swt.SWT;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
 
@@ -126,7 +126,7 @@ public class GenericParameterValuesXViewerSection extends BasicXViewerSection {
 	@Override
 	protected void registerColumns(XViewerFactory xViewerFactory) {
 		super.registerColumns(xViewerFactory);
-		xViewerFactory.registerColumns(new XViewerColumn(XCOL_ID_EXTRA_INFO, Messages.xcol_ColumnName_Extra_INFO, 50, SWT.LEFT, true,
+		xViewerFactory.registerColumns(new XViewerColumn(XCOL_ID_EXTRA_INFO, Messages.xcol_ColumnName_Extra_INFO, 50, XViewerAlign.Left, true,
 				SortDataType.Float, false, Messages.xcol_ColumnDesc_Extra_INFO));
 	}
 
