@@ -15,6 +15,7 @@
  */
 package org.eclipse.sphinx.emf.workspace.incquery.proxymanagement;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.URI;
@@ -82,7 +83,9 @@ public abstract class AbstractScopingIncQueryProxyResolver extends AbstractIncQu
 		if (!isBlank(name)) {
 			try {
 				NavigationHelper baseIndex = EMFScope.extractUnderlyingEMFIndex(engine);
-				Set<EObject> candidates = baseIndex.findByFeatureValue(name, getNameFeature(proxy.eClass()));
+				EStructuralFeature nameFeature = getNameFeature(proxy.eClass());
+				baseIndex.registerEStructuralFeatures(Collections.singleton(nameFeature));
+				Set<EObject> candidates = baseIndex.findByFeatureValue(name, nameFeature);
 				return candidates.toArray(new EObject[candidates.size()]);
 			} catch (ViatraQueryException ex) {
 				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
