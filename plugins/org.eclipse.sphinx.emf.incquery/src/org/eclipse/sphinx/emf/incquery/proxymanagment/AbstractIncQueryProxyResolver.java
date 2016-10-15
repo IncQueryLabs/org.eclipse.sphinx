@@ -97,7 +97,7 @@ public abstract class AbstractIncQueryProxyResolver implements IProxyResolver {
 	@Override
 	public boolean canResolve(EClass eType) {
 		if (eType != null) {
-			return !eType.isAbstract() && !eType.isInterface() && isTypeSupported(eType);
+			return isTypeSupported(eType);
 		}
 		return false;
 	}

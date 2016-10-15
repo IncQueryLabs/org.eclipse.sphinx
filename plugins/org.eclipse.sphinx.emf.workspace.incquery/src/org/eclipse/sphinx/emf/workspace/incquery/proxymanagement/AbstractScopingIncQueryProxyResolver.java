@@ -15,8 +15,11 @@
  */
 package org.eclipse.sphinx.emf.workspace.incquery.proxymanagement;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
@@ -82,12 +85,27 @@ public abstract class AbstractScopingIncQueryProxyResolver extends AbstractIncQu
 		String name = getName(proxy);
 		if (!isBlank(name)) {
 			try {
-				NavigationHelper baseIndex = EMFScope.extractUnderlyingEMFIndex(engine);
-				EStructuralFeature nameFeature = getNameFeature(proxy.eClass());
-				baseIndex.registerEStructuralFeatures(Collections.singleton(nameFeature));
+				final NavigationHelper baseIndex = EMFScope.extractUnderlyingEMFIndex(engine);
+				final EStructuralFeature nameFeature = getNameFeature(proxy.eClass());
+				baseIndex.coalesceTraversals(new Callable<Void>() {
+
+					@Override
+					public Void call() throws Exception {
+						baseIndex.registerEStructuralFeatures(Collections.singleton(nameFeature));
+						return null;
+					}
+				});
+
 				Set<EObject> candidates = baseIndex.findByFeatureValue(name, nameFeature);
+				Iterator<EObject> elements = candidates.iterator();
+				while (elements.hasNext()) {
+					EObject element = elements.next();
+					if (!proxy.eClass().isInstance(element)) {
+						elements.remove();
+					}
+				}
 				return candidates.toArray(new EObject[candidates.size()]);
-			} catch (ViatraQueryException ex) {
+			} catch (ViatraQueryException | InvocationTargetException ex) {
 				PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 			}
 		}

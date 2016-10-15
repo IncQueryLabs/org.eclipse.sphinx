@@ -14,9 +14,13 @@
  */
 package org.eclipse.sphinx.emf.workspace.incquery.services;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sphinx.emf.incquery.IIncQueryEngineHelper;
 import org.eclipse.sphinx.emf.incquery.services.AbstractModelQueryService;
@@ -40,11 +44,20 @@ public abstract class AbstractWorkspaceModelQueryService extends AbstractModelQu
 		try {
 			IWorkspaceIncQueryEngineHelper engineHelper = (IWorkspaceIncQueryEngineHelper) getIncQueryEngineHelper();
 			ViatraQueryEngine engine = engineHelper.getEngine(modelDescriptor);
-			NavigationHelper baseIndex = EMFScope.extractUnderlyingEMFIndex(engine);
-			for (EObject element : baseIndex.getAllInstances(getEClassForType(type))) {
+			final NavigationHelper baseIndex = EMFScope.extractUnderlyingEMFIndex(engine);
+			final EClass eClassForType = getEClassForType(type);
+			baseIndex.coalesceTraversals(new Callable<Void>() {
+
+				@Override
+				public Void call() throws Exception {
+					baseIndex.registerEClasses(Collections.singleton(eClassForType));
+					return null;
+				}
+			});
+			for (EObject element : baseIndex.getAllInstances(eClassForType)) {
 				result.add(type.cast(element));
 			}
-		} catch (ViatraQueryException ex) {
+		} catch (ViatraQueryException | InvocationTargetException ex) {
 			PlatformLogUtil.logAsError(Activator.getPlugin(), ex);
 		}
 		return result;
